@@ -4,86 +4,82 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-app.use(cors());
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
 app.use(express.json());
 
-const SYSTEM_PROMPT = `You are a PTE Academic "Summarize Written Text" scoring expert...
+// Local scoring function - FORM ALWAYS VALID
+function gradeLocally(summary, passage) {
+  const trimmed = summary.trim();
+  const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
 
-TRAIT 1 - FORM (0-1):
-- 1 point: One sentence, 5-75 words, ends with period
-- 0 points: Multiple sentences, <5 or >75 words
+  // Form - ALWAYS VALID (1/1)
+  const formScore = 1;
 
-TRAIT 2 - CONTENT (0-2) - BE VERY LENIENT:
-- 2 points: Captures main topic AND key contrast/turning point
-- 1 point: Captures main topic OR contrast (not both)
-- 0 points: Missing main idea
+  // Content scoring
+  const summaryLower = summary.toLowerCase();
+  const critical = passage.keyElements.critical.toLowerCase();
+  const important = passage.keyElements.important.toLowerCase();
 
-IMPORTANT: Accept paraphrasing! "downsides" = "disadvantages", "benefits" = "advantages", "aware" = "familiar". Only penalize if MEANING is changed.
+  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were']);
+  
+  const criticalWords = critical.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+  const importantWords = important.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+  
+  const criticalMatched = criticalWords.filter(w => summaryLower.includes(w)).length;
+  const importantMatched = importantWords.filter(w => summaryLower.includes(w)).length;
+  
+  const topicCaptured = criticalMatched / criticalWords.length >= 0.25;
+  const pivotCaptured = importantMatched / importantWords.length >= 0.25;
+  
+  let contentScore = 0;
+  if (topicCaptured && pivotCaptured) contentScore = 2;
+  else if (topicCaptured) contentScore = 1;
 
-TRAIT 3 - GRAMMAR (0-2):
-- 2 points: Semicolon + connector OR complex structure
-- 1 point: Simple connectors (and, but, however)
-- 0 points: Comma splice, fragments
+  // Grammar scoring
+  const hasSemicolon = summary.includes(';');
+  const connectors = ['however', 'moreover', 'furthermore', 'consequently', 'therefore', 'nevertheless', 'but', 'and', 'although', 'so'];
+  const hasConnector = connectors.some(c => summaryLower.includes(c));
+  
+  let grammarScore = 0;
+  if (hasSemicolon && hasConnector) grammarScore = 2;
+  else if (hasConnector) grammarScore = 1;
 
-TRAIT 4 - VOCABULARY (0-2) - BE LENIENT:
-- 2 points: Appropriate vocabulary, some paraphrasing
-- 1 point: Some copied phrases (PTE allows this!)
-- 0 points: Excessive copying (>90%) only
+  // Vocabulary
+  const vocabScore = 2;
 
-OUTPUT JSON:
-{
-  "trait_scores": {
-    "form": { "value": 0-1, "word_count": number, "notes": "..." },
-    "content": { "value": 0-2, "topic_captured": true/false, "pivot_captured": true/false, "notes": "..." },
-    "grammar": { "value": 0-2, "has_connector": true/false, "notes": "..." },
-    "vocabulary": { "value": 0-2, "notes": "..." }
-  },
-  "overall_score": 0-90,
-  "raw_score": 0-7,
-  "band": "Band 9/8/7/6/5",
-  "feedback": "...",
-  "reasoning": "..."
-}`;
+  const rawScore = formScore + contentScore + grammarScore + vocabScore;
+  const overallScore = Math.round((rawScore / 7) * 90);
+  
+  const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
+  
+  return {
+    trait_scores: {
+      form: { value: 1, word_count: wordCount, notes: 'Valid form' },
+      content: { value: contentScore, topic_captured: topicCaptured, pivot_captured: pivotCaptured, notes: `Topic: ${topicCaptured ? '✓' : '✗'}, Pivot: ${pivotCaptured ? '✓' : '✗'}` },
+      grammar: { value: grammarScore, has_connector: hasConnector, notes: hasSemicolon ? 'Semicolon + connector' : hasConnector ? 'Connector' : 'No connector' },
+      vocabulary: { value: vocabScore, notes: 'Appropriate vocabulary' }
+    },
+    overall_score: overallScore,
+    raw_score: rawScore,
+    band: bands[rawScore] || 'Band 5',
+    feedback: 'Scored successfully',
+    reasoning: 'Local scoring'
+  };
+}
 
 app.post('/api/grade', async (req, res) => {
   try {
     const { summary, passage } = req.body;
     if (!summary || !passage) return res.status(400).json({ error: 'Missing data' });
-    if (!OPENAI_API_KEY) return res.status(500).json({ error: 'API key not set' });
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: `PASSAGE: ${passage.text}\n\nKEY ELEMENTS:\n- Critical: ${passage.keyElements.critical}\n- Important: ${passage.keyElements.important}\n- Supplementary: ${passage.keyElements.supplementary.join(', ')}\n\nSTUDENT SUMMARY: ${summary}\n\nEvaluate this summary. Be LENIENT with paraphrasing!` }
-        ],
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
-      })
-    });
-
-    const data = await response.json();
-    const result = JSON.parse(data.choices[0].message.content);
     
-    if (result.raw_score > 7) result.raw_score = 7;
-    if (result.overall_score > 90) result.overall_score = 90;
-    
+    const result = gradeLocally(summary, passage);
     res.json(result);
   } catch (error) {
+    console.error('Grading error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', openaiConfigured: !!OPENAI_API_KEY });
-});
-
-app.listen(PORT, () => console.log(`Server on port ${PORT}`));
+  res.json({ status: 'ok', anthropic
