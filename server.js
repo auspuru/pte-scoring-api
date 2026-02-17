@@ -21,27 +21,22 @@ function validateForm(summary) {
   
   const errors = [];
   
-  // Check word count
   if (wordCount < 5) errors.push('Too short (minimum 5 words)');
   if (wordCount > 75) errors.push('Too long (maximum 75 words)');
   
-  // Check for multiple sentences
   const sentenceMatches = trimmed.match(/[.!?]+\s+[A-Z]/g);
   if (sentenceMatches && sentenceMatches.length > 0) {
     errors.push('Multiple sentences detected');
   }
   
-  // Check ending punctuation
   if (!/[.!?]$/.test(trimmed)) {
     errors.push('Must end with punctuation');
   }
   
-  // Check for newlines
   if (/[\n\r]/.test(summary)) {
     errors.push('Contains line breaks');
   }
   
-  // Check for bullets
   if (/^[•\-*\d]\s|^\d+\.\s/m.test(summary)) {
     errors.push('Contains bullet points');
   }
@@ -59,7 +54,6 @@ function validateForm(summary) {
 function extractConcepts(text) {
   if (!text) return [];
   
-  // Remove common stop words and extract meaningful terms
   const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 
     'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should',
     'may', 'might', 'must', 'shall', 'can', 'need', 'dare', 'ought', 'used', 'to', 'of',
@@ -88,101 +82,87 @@ function calculateSimilarity(text1, text2) {
   return intersection.size / union.size;
 }
 
-// Local content analysis
+// Check for keyword presence (more lenient than similarity)
+function checkKeywordPresence(summary, keyText) {
+  if (!keyText) return { present: false, score: 0 };
+  
+  const sumLower = summary.toLowerCase();
+  const keyLower = keyText.toLowerCase();
+  
+  // Extract important words (4+ chars) from key text
+  const keyWords = keyLower
+    .split(/\s+/)
+    .map(w => w.replace(/[^\w]/g, ''))
+    .filter(w => w.length >= 4);
+  
+  if (keyWords.length === 0) return { present: false, score: 0 };
+  
+  // Count how many key words appear in summary
+  const matches = keyWords.filter(word => sumLower.includes(word)).length;
+  const score = matches / keyWords.length;
+  
+  // Also check for semantic similarity as backup
+  const simScore = calculateSimilarity(summary, keyText);
+  
+  // Return true if either method shows good coverage
+  return {
+    present: score >= 0.25 || simScore >= 0.2,
+    keywordScore: Math.round(score * 100),
+    simScore: Math.round(simScore * 100)
+  };
+}
+
+// Local content analysis - MORE LENIENT
 function analyzeContentLocal(summary, passage) {
-  const summaryLower = summary.toLowerCase();
+  // TOPIC check
+  const topicCheck = checkKeywordPresence(summary, passage.keyElements?.critical || '');
   
-  // Get key elements
-  const topic = passage.keyElements?.critical || '';
-  const pivot = passage.keyElements?.important || '';
-  const conclusion = passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || '';
+  // PIVOT check - be more lenient
+  const pivotCheck = checkKeywordPresence(summary, passage.keyElements?.important || '');
   
-  // Calculate similarities
-  const topicSim = calculateSimilarity(summary, topic);
-  const pivotSim = calculateSimilarity(summary, pivot);
-  const conclusionSim = conclusion ? calculateSimilarity(summary, conclusion) : 1;
-  
-  // Determine coverage
-  const topicCaptured = topicSim >= 0.3;
-  const pivotCaptured = pivotSim >= 0.25;
-  const conclusionCaptured = conclusionSim >= 0.2 || !conclusion;
+  // CONCLUSION check
+  const conclusionCheck = checkKeywordPresence(summary, 
+    passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || '');
   
   // Calculate content score
   let contentScore = 2;
-  if (!topicCaptured) contentScore -= 1;
-  if (!pivotCaptured) contentScore -= 0.5;
-  if (!conclusionCaptured) contentScore -= 0.5;
+  if (!topicCheck.present) contentScore -= 1;
+  if (!pivotCheck.present) contentScore -= 0.5;
+  if (!conclusionCheck.present) contentScore -= 0.3;
   contentScore = Math.max(0, contentScore);
   
   // Check for connectors
   const connectorPattern = /\b(however|although|while|but|yet|nevertheless|whereas|despite|though|moreover|furthermore|therefore|thus|hence|consequently|and|so)\b/i;
   const hasConnector = connectorPattern.test(summary);
   
-  // Check for contradictions (simple keyword-based)
-  const contradictions = [];
-  const passageLower = (passage.text || '').toLowerCase();
-  
-  // Check for negation flips
-  const negationPairs = [
-    ['not important', 'important'],
-    ['does not', 'does'],
-    ['no longer', 'still'],
-    ['decreasing', 'increasing'],
-    ['declining', 'growing']
-  ];
-  
-  for (const [neg, pos] of negationPairs) {
-    if (passageLower.includes(pos) && summaryLower.includes(neg)) {
-      contradictions.push(`Possible negation flip: "${pos}" vs "${neg}"`);
-    }
-  }
-  
   return {
     scores: {
       content: Math.round(contentScore),
-      topic: { captured: topicCaptured, similarity: Math.round(topicSim * 100) },
-      pivot: { captured: pivotCaptured, similarity: Math.round(pivotSim * 100) },
-      conclusion: { captured: conclusionCaptured, similarity: Math.round(conclusionSim * 100) }
+      topic: { 
+        captured: topicCheck.present, 
+        keywordScore: topicCheck.keywordScore,
+        simScore: topicCheck.simScore
+      },
+      pivot: { 
+        captured: pivotCheck.present, 
+        keywordScore: pivotCheck.keywordScore,
+        simScore: pivotCheck.simScore
+      },
+      conclusion: { 
+        captured: conclusionCheck.present, 
+        keywordScore: conclusionCheck.keywordScore,
+        simScore: conclusionCheck.simScore
+      }
     },
     grammar: {
       hasConnector,
       score: hasConnector ? 2 : 1
     },
-    contradictions,
     vocabulary: {
       score: 2,
       notes: 'Verbatim and paraphrase both accepted'
     }
   };
-}
-
-// ============ HYBRID GRADING DECISION ============
-
-function shouldUseAI(summary, passage, localResult) {
-  // Use AI for complex cases:
-  // 1. Borderline content scores (around 1)
-  // 2. Potential contradictions detected
-  // 3. Low similarity scores but might be good paraphrase
-  // 4. Form is valid but content is unclear
-  
-  const contentScore = localResult.scores.content;
-  const topicSim = localResult.scores.topic.similarity;
-  const pivotSim = localResult.scores.pivot.similarity;
-  
-  // Borderline cases need AI review
-  if (contentScore === 1) return true;
-  
-  // Potential contradictions need AI verification
-  if (localResult.contradictions.length > 0) return true;
-  
-  // Very low similarity might be good paraphrase or completely off
-  if (topicSim < 20 && contentScore > 0) return true;
-  
-  // High similarity with low score discrepancy
-  if (topicSim > 50 && pivotSim > 40 && contentScore < 2) return true;
-  
-  // Default to local for clear cases
-  return false;
 }
 
 // ============ AI GRADING ============
@@ -206,14 +186,15 @@ SCORING PRINCIPLES:
 1. ACCEPT BOTH verbatim copying AND paraphrasing - judge on meaning, not wording
 2. CONTENT (0-2): Score based on accurate capture of key ideas
    - 2/2: Topic, pivot, and conclusion all clearly present
-   - 1/2: Some elements missing or unclear
+   - 1/2: Some elements missing or unclear  
    - 0/2: Major contradiction or completely wrong topic
-3. Only deduct for: unclear meaning, contradictions, missing key ideas
 
-PIVOT DETECTION:
-- Pivot is captured if summary mentions BOTH the main topic AND the contrasting element
-- Example: "reading is important while digital media grows" = pivot captured ✓
-- Example: "despite digital trends, reading remains key" = pivot captured ✓`,
+PIVOT DETECTION - BE VERY LENIENT:
+- Pivot is captured if summary mentions BOTH the main topic AND the contrasting/opposing element
+- Example: "reading is important while digital media increases" = pivot captured ✓
+- Example: "despite digital trends, reading remains key" = pivot captured ✓
+- Example: "reading helps academic success, noting digital media is rising" = pivot captured ✓
+- If the summary mentions the contrast element AT ALL, mark pivot as captured`,
         messages: [{
           role: 'user',
           content: `PASSAGE: "${passage.text}"
@@ -225,13 +206,15 @@ KEY ELEMENTS:
 
 STUDENT SUMMARY: "${summary}"
 
-LOCAL ANALYSIS:
-- Topic similarity: ${localResult.scores.topic.similarity}%
-- Pivot similarity: ${localResult.scores.pivot.similarity}%
+LOCAL ANALYSIS (use this as guidance):
+- Topic keyword match: ${localResult.scores.topic.keywordScore}%
+- Pivot keyword match: ${localResult.scores.pivot.keywordScore}%
+- Conclusion keyword match: ${localResult.scores.conclusion.keywordScore}%
 - Has connector: ${localResult.grammar.hasConnector}
-- Potential issues: ${localResult.contradictions.join(', ') || 'None detected'}
 
-Evaluate and return JSON:
+IMPORTANT: If local analysis shows pivot keyword match >= 25%, mark pivot_captured as TRUE.
+
+Return JSON:
 {
   "trait_scores": {
     "form": { "value": 1, "word_count": ${formCheck.wordCount}, "notes": "Valid form" },
@@ -265,15 +248,32 @@ Evaluate and return JSON:
     
     const aiResult = JSON.parse(jsonMatch[0]);
     
+    // OVERRIDE AI if local analysis shows good coverage but AI says no
+    let topicCaptured = aiResult.trait_scores?.content?.topic_captured;
+    let pivotCaptured = aiResult.trait_scores?.content?.pivot_captured;
+    let conclusionCaptured = aiResult.trait_scores?.content?.conclusion_captured;
+    
+    // If local shows good keyword match, override AI
+    if (localResult.scores.topic.keywordScore >= 25) topicCaptured = true;
+    if (localResult.scores.pivot.keywordScore >= 25) pivotCaptured = true;
+    if (localResult.scores.conclusion.keywordScore >= 20) conclusionCaptured = true;
+    
+    // Recalculate content score based on overrides
+    let contentScore = 2;
+    if (!topicCaptured) contentScore -= 1;
+    if (!pivotCaptured) contentScore -= 0.5;
+    if (!conclusionCaptured) contentScore -= 0.3;
+    contentScore = Math.max(0, Math.round(contentScore));
+    
     return {
       trait_scores: {
         form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
         content: {
-          value: Math.min(Math.max(Number(aiResult.trait_scores?.content?.value) || 2, 0), 2),
-          topic_captured: aiResult.trait_scores?.content?.topic_captured ?? localResult.scores.topic.captured,
-          pivot_captured: aiResult.trait_scores?.content?.pivot_captured ?? localResult.scores.pivot.captured,
-          conclusion_captured: aiResult.trait_scores?.content?.conclusion_captured ?? localResult.scores.conclusion.captured,
-          notes: aiResult.trait_scores?.content?.notes || 'AI evaluated'
+          value: contentScore,
+          topic_captured: topicCaptured,
+          pivot_captured: pivotCaptured,
+          conclusion_captured: conclusionCaptured,
+          notes: aiResult.trait_scores?.content?.notes || 'Evaluated'
         },
         grammar: {
           value: Math.min(Math.max(Number(aiResult.trait_scores?.grammar?.value) || localResult.grammar.score, 0), 2),
@@ -297,18 +297,16 @@ Evaluate and return JSON:
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok',
-    version: '3.0.0',
+    version: '3.1.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
-    gradingModes: ['local', 'ai', 'hybrid'],
-    policy: 'Hybrid: Local for clear cases, AI for borderline/complex cases'
+    policy: 'Local keyword matching + AI for complex cases'
   });
 });
 
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'PTE Scoring API v3.0.0',
-    endpoints: ['/api/health', '/api/grade'],
-    features: ['Hybrid grading', 'Local + AI analysis', 'TOPIC-PIVOT-CONCLUSION structure']
+    message: 'PTE Scoring API v3.1.0',
+    endpoints: ['/api/health', '/api/grade']
   });
 });
 
@@ -330,7 +328,7 @@ app.post('/api/grade', async (req, res) => {
       return res.json({
         trait_scores: {
           form: { value: 0, word_count: formCheck.wordCount, notes: formCheck.errors.join('; ') },
-          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error - content not scored' },
+          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
           grammar: { value: 0, has_connector: false, notes: 'Form error' },
           vocabulary: { value: 0, notes: 'Form error' }
         },
@@ -342,75 +340,30 @@ app.post('/api/grade', async (req, res) => {
       });
     }
 
-    // Step 2: Local content analysis
+    // Step 2: Local content analysis (LENIENT)
     const localResult = analyzeContentLocal(summary, passage);
     console.log('Local analysis:', localResult);
     
     // Step 3: Decide whether to use AI
-    const useAI = ANTHROPIC_API_KEY && shouldUseAI(summary, passage, localResult);
+    // Use AI only for very low scores or when Anthropic is available and we want double-check
+    const useAI = ANTHROPIC_API_KEY && localResult.scores.content < 1.5;
     console.log('Use AI:', useAI);
     
     let result;
     
     if (useAI) {
-      // Use AI for complex cases
+      // Use AI for low-scoring cases
       const aiResult = await gradeWithAI(summary, passage, formCheck, localResult);
       
       if (aiResult) {
         result = aiResult;
       } else {
-        // Fallback to local if AI fails
-        const contentScore = localResult.scores.content;
-        const grammarScore = localResult.grammar.score;
-        const rawScore = 1 + contentScore + grammarScore + 2;
-        
-        result = {
-          trait_scores: {
-            form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-            content: {
-              value: contentScore,
-              topic_captured: localResult.scores.topic.captured,
-              pivot_captured: localResult.scores.pivot.captured,
-              conclusion_captured: localResult.scores.conclusion.captured,
-              notes: `Topic: ${localResult.scores.topic.similarity}%, Pivot: ${localResult.scores.pivot.similarity}%`
-            },
-            grammar: {
-              value: grammarScore,
-              has_connector: localResult.grammar.hasConnector,
-              notes: localResult.grammar.hasConnector ? 'Connector present' : 'No connector'
-            },
-            vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
-          },
-          feedback: 'AI failed - using local scoring',
-          scoring_mode: 'local_fallback'
-        };
+        // Fallback to local
+        result = buildLocalResult(formCheck, localResult);
       }
     } else {
-      // Use local scoring for clear cases
-      const contentScore = localResult.scores.content;
-      const grammarScore = localResult.grammar.score;
-      const rawScore = 1 + contentScore + grammarScore + 2;
-      
-      result = {
-        trait_scores: {
-          form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-          content: {
-            value: contentScore,
-            topic_captured: localResult.scores.topic.captured,
-            pivot_captured: localResult.scores.pivot.captured,
-            conclusion_captured: localResult.scores.conclusion.captured,
-            notes: `Topic: ${localResult.scores.topic.similarity}%, Pivot: ${localResult.scores.pivot.similarity}%`
-          },
-          grammar: {
-            value: grammarScore,
-            has_connector: localResult.grammar.hasConnector,
-            notes: localResult.grammar.hasConnector ? 'Connector present' : 'No connector'
-          },
-          vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
-        },
-        feedback: contentScore >= 1.5 ? 'Good coverage of key ideas' : 'Some key elements missing',
-        scoring_mode: 'local'
-      };
+      // Use local scoring (more lenient)
+      result = buildLocalResult(formCheck, localResult);
     }
     
     // Calculate final scores
@@ -429,10 +382,12 @@ app.post('/api/grade', async (req, res) => {
       raw_score: rawScore,
       band: bands[rawScore] || 'Band 5',
       local_analysis: {
-        topic_similarity: localResult.scores.topic.similarity,
-        pivot_similarity: localResult.scores.pivot.similarity,
-        conclusion_similarity: localResult.scores.conclusion.similarity,
-        contradictions: localResult.contradictions
+        topic_keyword_match: localResult.scores.topic.keywordScore,
+        topic_sim: localResult.scores.topic.simScore,
+        pivot_keyword_match: localResult.scores.pivot.keywordScore,
+        pivot_sim: localResult.scores.pivot.simScore,
+        conclusion_keyword_match: localResult.scores.conclusion.keywordScore,
+        conclusion_sim: localResult.scores.conclusion.simScore
       }
     };
     
@@ -445,6 +400,33 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
+function buildLocalResult(formCheck, localResult) {
+  const contentScore = localResult.scores.content;
+  const grammarScore = localResult.grammar.score;
+  const rawScore = 1 + contentScore + grammarScore + 2;
+  
+  return {
+    trait_scores: {
+      form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
+      content: {
+        value: contentScore,
+        topic_captured: localResult.scores.topic.captured,
+        pivot_captured: localResult.scores.pivot.captured,
+        conclusion_captured: localResult.scores.conclusion.captured,
+        notes: `Topic: ${localResult.scores.topic.keywordScore}%, Pivot: ${localResult.scores.pivot.keywordScore}%`
+      },
+      grammar: {
+        value: grammarScore,
+        has_connector: localResult.grammar.hasConnector,
+        notes: localResult.grammar.hasConnector ? 'Connector present' : 'No connector'
+      },
+      vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
+    },
+    feedback: contentScore >= 1.5 ? 'Good coverage of key ideas' : 'Some key elements missing',
+    scoring_mode: 'local'
+  };
+}
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -452,7 +434,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE Scoring API v3.0.0 on port ${PORT}`);
-  console.log(`📝 Hybrid grading: Local for clear cases, AI for complex cases`);
+  console.log(`✅ PTE Scoring API v3.1.0 on port ${PORT}`);
+  console.log(`📝 Lenient keyword matching + AI for edge cases`);
   console.log(`🤖 Anthropic: ${ANTHROPIC_API_KEY ? 'Configured' : 'Not configured'}`);
 });
