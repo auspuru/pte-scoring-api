@@ -6,172 +6,250 @@ const PORT = parseInt(process.env.PORT) || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const fetch = global.fetch || require('node-fetch');
 
-// PTE Academic synonym database for common terms
-const SYNONYM_MAP = {
-  // Key concepts from passages
-  'adaptive': ['adjustable', 'flexible', 'responsive', 'modifying', 'changing'],
-  'persistence': ['perseverance', 'determination', 'tenacity', 'endurance', 'dedication', 'commitment', 'doggedness'],
-  'success': ['achievement', 'accomplishment', 'triumph', 'victory', 'prosperity', 'attainment'],
-  'talent': ['natural ability', 'gift', 'aptitude', 'skill', 'capacity', 'flair', 'genius', 'innate ability'],
-  'intelligence': ['intellect', 'brainpower', 'smartness', 'cleverness', 'reasoning', 'mental ability'],
-  'setbacks': ['failures', 'obstacles', 'difficulties', 'challenges', 'hurdles', 'reverses', 'problems', 'issues'],
-  'tough': ['difficult', 'hard', 'challenging', 'demanding', 'arduous', 'harder'],
-  'smart': ['intelligent', 'clever', 'bright', 'brilliant', 'sharp'],
-  'achievers': ['high performers', 'successful people', 'winners', 'leaders', 'top performers'],
-  'view': ['see', 'regard', 'consider', 'perceive', 'look upon', 'treat'],
-  'opportunities': ['chances', 'prospects', 'openings', 'possibilities', 'avenues'],
-  'goals': ['aims', 'objectives', 'targets', 'ambitions', 'purposes'],
-  'develop': ['build', 'cultivate', 'foster', 'nurture', 'establish', 'create'],
-  'practice': ['habit', 'routine', 'exercise', 'training', 'drill', 'repetition'],
-  'brain': ['mind', 'intellect', 'mentality', 'cognition', 'memory'],
-  'mindset': ['attitude', 'outlook', 'perspective', 'mentality', 'approach'],
-  'research': ['study', 'investigation', 'analysis', 'inquiry', 'exploration'],
-  'discovered': ['found', 'revealed', 'uncovered', 'identified', 'detected', 'learned'],
-  'credit': ['attribute', 'ascribe', 'assign', 'accredit', 'acknowledge'],
-  'working': ['functioning', 'operating', 'performing', 'laboring', 'toiling'],
-  'harder': ['more difficult', 'tougher', 'more demanding', 'more challenging'],
-  'small': ['little', 'minor', 'modest', 'minimal', 'slight'],
-  'pause': ['stop', 'halt', 'break', 'interrupt', 'wait'],
-  'teaching': ['instructing', 'educating', 'training', 'showing', 'guiding'],
-  'wrong': ['incorrect', 'mistaken', 'erroneous', 'false', 'inaccurate'],
-  'shocking': ['surprising', 'astonishing', 'staggering', 'startling', 'remarkable'],
-  'reach': ['achieve', 'attain', 'accomplish', 'fulfill', 'meet'],
-  'blame': ['fault', 'accuse', 'censure', 'attribute to', 'hold responsible'],
-  'circumstances': ['conditions', 'situations', 'factors', 'context', 'environment'],
-  'determines': ['decides', 'defines', 'establishes', 'sets', 'dictates'],
-  'future': ['prospect', 'outcome', 'destiny', 'later', 'coming time']
-};
-
-// Constants
-const MAX_RETRIES = 2;
-const REQUEST_TIMEOUT = 30000;
-const MIN_PARAPHRASE_WORDS = 4; // Minimum words that must be changed to synonyms
-const MAX_VERBATIM_RATIO = 0.6; // Max 60% verbatim allowed
-
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Utility: Normalize text
 function normalize(text) {
   return text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-// Utility: Get unique words
 function getWords(text) {
   return normalize(text).split(' ').filter(w => w.length > 2);
 }
 
-// Check paraphrase quality - returns analysis object
-function analyzeParaphrase(studentSummary, passageText) {
-  const studentWords = getWords(studentSummary);
-  const passageWords = getWords(passageText);
-  const passageWordSet = new Set(passageWords);
+// Universal content analyzer - works for ANY passage type
+function analyzeContentUniversal(summary, passage) {
+  const summaryNorm = normalize(summary);
+  const summaryWords = getWords(summary);
+  const summarySet = new Set(summaryWords);
+  const passageText = passage.text || '';
+  const keyElements = passage.keyElements || {};
   
-  let verbatimCount = 0;
-  let synonymSubstitutions = 0;
-  let changedWords = [];
-  let matchedSynonyms = [];
+  const results = {
+    topic: { captured: false, score: 0, evidence: [], missing: [] },
+    pivot: { captured: false, score: 0, evidence: [], missing: [] },
+    conclusion: { captured: false, score: 0, evidence: [], missing: [] },
+    overallContent: 0,
+    criticalGaps: [],
+    semanticMatches: []
+  };
+
+  // Extract key concepts from keyElements (dynamically)
+  const topicConcepts = extractKeyConcepts(keyElements.critical || '');
+  const pivotConcepts = extractKeyConcepts(keyElements.important || '');
+  const conclusionConcepts = extractKeyConcepts(keyElements.conclusion || keyElements.supplementary?.[0] || '');
+
+  // TOPIC ANALYSIS (The "What/Who")
+  // Check if summary captures the main subject/action from keyElements.critical
+  let topicMatches = 0;
+  let topicEvidence = [];
   
-  // Check each word in student summary
-  studentWords.forEach(word => {
-    if (passageWordSet.has(word)) {
-      verbatimCount++;
-    } else {
-      // Check if it's a synonym of any passage word
-      let isSynonym = false;
-      let originalWord = '';
-      
-      for (const [key, synonyms] of Object.entries(SYNONYM_MAP)) {
-        // Check if word matches a synonym
-        if (synonyms.includes(word) && passageWordSet.has(key)) {
-          isSynonym = true;
-          originalWord = key;
-          break;
-        }
-        // Check if word is the key and original passage had synonym (reverse)
-        if (key === word && synonyms.some(s => passageWordSet.has(s))) {
-          isSynonym = true;
-          originalWord = word;
-          break;
-        }
-        // Check both directions in synonym list
-        if (synonyms.includes(word)) {
-          // Check if any form of key or other synonyms exist in passage
-          const allForms = [key, ...synonyms];
-          if (allForms.some(form => passageWordSet.has(form))) {
-            isSynonym = true;
-            originalWord = key;
-            break;
-          }
-        }
-      }
-      
-      if (isSynonym) {
-        synonymSubstitutions++;
-        changedWords.push({ from: originalWord, to: word });
-      }
+  topicConcepts.forEach(concept => {
+    const variations = getVariations(concept);
+    const found = variations.some(v => summaryNorm.includes(v));
+    if (found) {
+      topicMatches++;
+      topicEvidence.push(concept);
     }
   });
   
-  const totalContentWords = studentWords.length;
-  const verbatimRatio = totalContentWords > 0 ? verbatimCount / totalContentWords : 0;
+  // Also check for core semantic elements in passage title/first sentence
+  const passageWords = getWords(passageText.substring(0, 200)); // First 200 chars usually contain topic
+  const coreNouns = passageWords.filter(w => w.length > 4).slice(0, 5); // Long words are usually content words
   
-  // Check for phrase-level copying (3+ word sequences)
-  const passagePhrases = getNgrams(passageText, 3);
-  const studentPhrases = getNgrams(studentSummary, 3);
-  let copiedPhrases = 0;
-  
-  studentPhrases.forEach(phrase => {
-    if (passagePhrases.has(phrase)) copiedPhrases++;
+  let coreMatches = 0;
+  coreNouns.forEach(noun => {
+    if (summaryNorm.includes(noun)) coreMatches++;
   });
   
+  // Score topic (0-2)
+  if (topicMatches >= 2 || (topicMatches >= 1 && coreMatches >= 2)) {
+    results.topic.score = 2;
+    results.topic.captured = true;
+  } else if (topicMatches === 1 || coreMatches >= 2) {
+    results.topic.score = 1;
+    results.topic.missing.push('Clear topic statement');
+  } else {
+    results.topic.score = 0;
+    results.criticalGaps.push('CRITICAL: Main topic missing');
+  }
+  
+  results.topic.evidence = topicEvidence;
+
+  // PIVOT ANALYSIS (The "Contrast/Turn")
+  // Check if summary captures the contrast/important point
+  let pivotMatches = 0;
+  let pivotEvidence = [];
+  
+  pivotConcepts.forEach(concept => {
+    const variations = getVariations(concept);
+    const found = variations.some(v => summaryNorm.includes(v));
+    if (found) {
+      pivotMatches++;
+      pivotEvidence.push(concept);
+    }
+  });
+  
+  // Check for contrast indicators
+  const hasContrast = ['but', 'however', 'although', 'though', 'while', 'whereas', 'yet', 'nevertheless', 'despite'].some(w => summaryNorm.includes(w));
+  const hasComparison = ['than', 'compared', 'contrast', 'difference', 'rather', 'instead'].some(w => summaryNorm.includes(w));
+  
+  if (pivotMatches >= 2 && (hasContrast || hasComparison)) {
+    results.pivot.score = 2;
+    results.pivot.captured = true;
+  } else if (pivotMatches >= 1) {
+    results.pivot.score = 1;
+    if (!hasContrast) results.pivot.missing.push('Contrast word (however/but/although)');
+  } else {
+    results.pivot.score = 0;
+    results.criticalGaps.push('CRITICAL: Key contrast/point missing');
+  }
+  
+  results.pivot.evidence = pivotEvidence;
+
+  // CONCLUSION ANALYSIS (Supplementary)
+  let conclusionMatches = 0;
+  conclusionConcepts.forEach(concept => {
+    const variations = getVariations(concept);
+    if (variations.some(v => summaryNorm.includes(v))) conclusionMatches++;
+  });
+  
+  results.conclusion.score = Math.min(conclusionMatches, 2);
+  results.conclusion.captured = conclusionMatches > 0;
+
+  // Calculate overall content score
+  // Weight: Topic 40%, Pivot 40%, Conclusion 20%
+  const weightedScore = (results.topic.score * 0.4) + (results.pivot.score * 0.4) + (results.conclusion.score * 0.2);
+  
+  // STRICT CAP: If critical gaps exist, cap the score
+  if (results.criticalGaps.length > 0) {
+    results.overallContent = Math.min(Math.round(weightedScore), 1); // Max 1 if critical gaps
+  } else {
+    results.overallContent = Math.min(Math.round(weightedScore), 2);
+  }
+  
+  // Additional strict rule: If topic is 0, max overall is 1
+  if (results.topic.score === 0) {
+    results.overallContent = Math.min(results.overallContent, 1);
+    results.scoreCapped = true;
+  }
+  
+  return results;
+}
+
+// Extract key concepts from a string (handles "X rather than Y" format)
+function extractKeyConcepts(text) {
+  if (!text) return [];
+  
+  // Split on common separators
+  const concepts = text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+(?:rather than|instead of|vs|versus|and|or|but)\s+/g)
+    .map(s => s.trim())
+    .filter(s => s.length > 3)
+    .slice(0, 6); // Max 6 concepts
+  
+  return [...new Set(concepts)];
+}
+
+// Get variations of a concept (stemming, synonyms)
+function getVariations(concept) {
+  const variations = [concept];
+  
+  // Add plural/singular variants
+  if (concept.endsWith('s')) {
+    variations.push(concept.slice(0, -1));
+  } else {
+    variations.push(concept + 's');
+  }
+  
+  // Add common suffix variations
+  if (concept.endsWith('y')) {
+    variations.push(concept.slice(0, -1) + 'ies');
+  }
+  if (concept.endsWith('e')) {
+    variations.push(concept + 'd');
+    variations.push(concept + 's');
+  }
+  
+  // Common synonym mappings (universal)
+  const universalSynonyms = {
+    'persistence': ['perseverance', 'determination', 'tenacity', 'dedication'],
+    'success': ['achievement', 'accomplishment', 'triumph', 'victory'],
+    'advantages': ['benefits', 'pros', 'positives', 'merits', 'upside'],
+    'disadvantages': ['drawbacks', 'cons', 'negatives', 'downsides', 'problems'],
+    'city': ['urban', 'town', 'metropolitan', 'municipal'],
+    'country': ['rural', 'farm', 'village', 'countryside', 'pastoral'],
+    'exchange': ['swap', 'trade', 'change', 'switch', 'move', 'shift'],
+    'research': ['study', 'investigation', 'analysis', 'inquiry'],
+    'discovered': ['found', 'revealed', 'uncovered', 'identified'],
+    'author': ['writer', 'narrator', 'speaker', 'he', 'she']
+  };
+  
+  const baseWord = concept.split(' ').pop(); // Get last word
+  if (universalSynonyms[baseWord]) {
+    variations.push(...universalSynonyms[baseWord]);
+  }
+  
+  return variations;
+}
+
+// Detect patchwriting (phrase copying)
+function analyzePatchwriting(summary, passage) {
+  const getNgrams = (text, n) => {
+    const words = normalize(text).split(' ').filter(w => w.length > 0);
+    const grams = [];
+    for (let i = 0; i <= words.length - n; i++) {
+      grams.push(words.slice(i, i + n).join(' '));
+    }
+    return grams;
+  };
+  
+  const passage4grams = new Set(getNgrams(passage, 4));
+  const student4grams = getNgrams(summary, 4);
+  
+  let copiedCount = 0;
+  const copiedPhrases = [];
+  
+  student4grams.forEach(gram => {
+    if (passage4grams.has(gram)) {
+      copiedCount++;
+      copiedPhrases.push(gram);
+    }
+  });
+  
+  // Check for "stitched" summaries (multiple short copied phrases)
+  const uniqueCopied = [...new Set(copiedPhrases)];
+  const stitchPattern = uniqueCopied.length > 3 && copiedCount > 5;
+  
   return {
-    verbatimCount,
-    verbatimRatio,
-    synonymSubstitutions,
-    changedWords,
-    copiedPhrases,
-    totalWords: totalContentWords,
-    isVerbatim: verbatimRatio > MAX_VERBATIM_RATIO,
-    hasAdequateParaphrase: synonymSubstitutions >= MIN_PARAPHRASE_WORDS,
-    paraphraseScore: Math.min((synonymSubstitutions / MIN_PARAPHRASE_WORDS) * 2, 2), // 0-2 scale
-    uniqueWords: totalContentWords - verbatimCount
+    copied4grams: copiedCount,
+    uniquePhrases: uniqueCopied.slice(0, 5),
+    isPatchwriting: copiedCount > 3 || stitchPattern,
+    stitchPattern: stitchPattern
   };
 }
 
-// Generate n-grams
-function getNgrams(text, n) {
-  const words = getWords(text);
-  const ngrams = new Set();
-  for (let i = 0; i <= words.length - n; i++) {
-    ngrams.add(words.slice(i, i + n).join(' '));
-  }
-  return ngrams;
-}
-
-// Form validation
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
-    return { wordCount: 0, isValidForm: false, error: 'Summary must be a string' };
+    return { wordCount: 0, isValidForm: false };
   }
   
   const trimmed = summary.trim();
   const words = trimmed.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
-  
   const sentenceMatches = trimmed.match(/[.!?]+(?:\s+|$)/g);
   const sentenceCount = sentenceMatches ? sentenceMatches.length : 0;
-  
   const endsWithPeriod = /[.!?]$/.test(trimmed);
   const hasNewlines = /[\n\r]/.test(summary);
   const hasBullets = /^[•\-*\d]\s|^\d+\.\s/m.test(summary);
   
   const isValidForm = wordCount >= 5 && wordCount <= 75 && endsWithPeriod && !hasNewlines && !hasBullets && sentenceCount === 1;
   
-  return { wordCount, isValidForm, sentenceCount, details: { endsWithPeriod, hasNewlines, hasBullets } };
+  return { wordCount, isValidForm, sentenceCount };
 }
 
-// Extract JSON
 function extractJSON(text) {
   if (!text) return null;
   const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -185,11 +263,17 @@ function extractJSON(text) {
   return null;
 }
 
-// Safe passage validator
 function validatePassage(passage) {
   if (!passage || typeof passage !== 'object') return { valid: false, error: 'Passage must be an object' };
   if (!passage.text || typeof passage.text !== 'string') return { valid: false, error: 'Passage text required' };
-  if (!passage.keyElements || typeof passage.keyElements !== 'object') return { valid: false, error: 'keyElements required' };
+  if (!passage.keyElements || typeof passage.keyElements !== 'object') {
+    // Allow but warn if keyElements missing
+    console.warn('Warning: keyElements missing, using text analysis');
+    passage.keyElements = {
+      critical: passage.text.substring(0, 100),
+      important: passage.text.substring(100, 200)
+    };
+  }
   
   return { 
     valid: true,
@@ -197,12 +281,12 @@ function validatePassage(passage) {
     critical: passage.keyElements.critical || 'N/A',
     important: passage.keyElements.important || 'N/A',
     conclusion: passage.keyElements.conclusion || passage.keyElements.supplementary?.[0] || 'N/A',
-    fullText: passage.text
+    fullText: passage.text,
+    raw: passage
   };
 }
 
-// Timeout wrapper
-async function fetchWithTimeout(url, options, timeout = REQUEST_TIMEOUT) {
+async function fetchWithTimeout(url, options, timeout = 30000) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
   try {
@@ -215,7 +299,6 @@ async function fetchWithTimeout(url, options, timeout = REQUEST_TIMEOUT) {
   }
 }
 
-// Grade endpoint
 app.post('/api/grade', async (req, res) => {
   try {
     const { summary, passage } = req.body;
@@ -237,8 +320,7 @@ app.post('/api/grade', async (req, res) => {
         overall_score: 0,
         raw_score: 0,
         band: 'Band 5',
-        feedback: 'Form validation failed.',
-        paraphrase_analysis: { warning: 'Form invalid - paraphrase not analyzed' }
+        feedback: 'Form validation failed.'
       });
     }
 
@@ -247,64 +329,52 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Invalid passage', details: passageCheck.error });
     }
 
-    // Analyze paraphrase quality locally first
-    const paraAnalysis = analyzeParaphrase(summary, passageCheck.fullText);
+    // Universal content analysis
+    const contentAnalysis = analyzeContentUniversal(summary, passageCheck.raw);
+    const patchAnalysis = analyzePatchwriting(summary, passageCheck.fullText);
     
-    // If too verbatim, warn but don't auto-fail (let AI decide context)
-    let paraphraseWarning = '';
-    if (paraAnalysis.isVerbatim) {
-      paraphraseWarning = 'Warning: High verbatim similarity detected. Ensure you paraphrase using your own words.';
-    }
-    
-    // Check if they met the 4-word synonym minimum
-    if (!paraAnalysis.hasAdequateParaphrase) {
-      paraphraseWarning += ` Only ${paraAnalysis.synonymSubstitutions} synonym substitutions found (min ${MIN_PARAPHRASE_WORDS} recommended).`;
-    }
+    // Determine scores
+    const maxContentScore = contentAnalysis.overallContent;
+    const contentWarning = contentAnalysis.criticalGaps.length > 0 
+      ? `Missing: ${contentAnalysis.criticalGaps.join('; ')}` 
+      : '';
 
-    // No API key - local scoring with paraphrase bonus
+    // No API key - strict local scoring
     if (!ANTHROPIC_API_KEY) {
-      const connectors = ['however', 'although', 'while', 'but', 'yet', 'moreover', 'furthermore', 'therefore'];
-      const hasConnector = connectors.some(c => summary.toLowerCase().includes(c));
-      
-      // Base scores
-      let contentScore = 2;
-      let vocabScore = paraAnalysis.hasAdequateParaphrase ? 2 : 1; // Penalize if not enough paraphrasing
-      
-      if (paraAnalysis.isVerbatim) {
-        contentScore = 1; // Penalize verbatim copying
-        vocabScore = 0;
-      }
-      
+      const hasConnector = ['however', 'although', 'while', 'but', 'yet', 'moreover', 'furthermore', 'therefore', 'thus'].some(c => 
+        normalize(summary).includes(c)
+      );
       const grammarScore = hasConnector ? 2 : 1;
-      const rawScore = 1 + contentScore + grammarScore + vocabScore;
+      const vocabScore = patchAnalysis.isPatchwriting ? 0 : (patchAnalysis.copied4grams > 0 ? 1 : 2);
+      
+      const rawScore = 1 + maxContentScore + grammarScore + vocabScore;
       const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
       
       return res.json({
         trait_scores: {
           form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-          content: { value: contentScore, topic_captured: true, pivot_captured: true, conclusion_captured: true, notes: paraAnalysis.isVerbatim ? 'Too verbatim' : 'Local scoring' },
-          grammar: { value: grammarScore, has_connector: hasConnector, notes: hasConnector ? 'Connector found' : 'No connector' },
-          vocabulary: { value: vocabScore, notes: paraAnalysis.hasAdequateParaphrase ? 'Good paraphrasing' : 'Insufficient synonym variety' }
+          content: { 
+            value: maxContentScore, 
+            topic_captured: contentAnalysis.topic.captured, 
+            pivot_captured: contentAnalysis.pivot.captured, 
+            conclusion_captured: contentAnalysis.conclusion.captured,
+            notes: contentWarning || 'Universally assessed'
+          },
+          grammar: { value: grammarScore, has_connector: hasConnector, notes: hasConnector ? 'Connector found' : 'Simple structure' },
+          vocabulary: { value: vocabScore, notes: patchAnalysis.isPatchwriting ? 'Patchwriting detected' : 'Original wording' }
         },
         overall_score: overallScore,
         raw_score: rawScore,
-        band: overallScore >= 79 ? 'Band 8+' : overallScore >= 65 ? 'Band 7' : 'Band 6',
-        feedback: paraAnalysis.isVerbatim 
-          ? 'Your summary copies too many words from the passage. Use synonyms and restructure sentences.' 
-          : `Good attempt. ${hasConnector ? '' : 'Try adding a connector like "however" or "moreover".'}`,
-        paraphrase_analysis: {
-          ...paraAnalysis,
-          warning: paraphraseWarning,
-          status: paraAnalysis.hasAdequateParaphrase ? 'ACCEPTABLE' : 'NEEDS_IMPROVEMENT',
-          synonym_substitutions_detected: paraAnalysis.changedWords
-        },
-        scoring_mode: 'local_with_paraphrase_check'
+        band: overallScore >= 79 ? 'Band 8+' : overallScore >= 65 ? 'Band 7' : overallScore >= 50 ? 'Band 6' : 'Band 5',
+        feedback: contentWarning || 'Summary evaluated.',
+        content_analysis: contentAnalysis,
+        scoring_mode: 'universal_local'
       });
     }
 
-    // AI scoring with paraphrase context
+    // AI scoring with universal constraints
     let lastError = null;
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    for (let attempt = 0; attempt < 2; attempt++) {
       try {
         const response = await fetchWithTimeout(
           'https://api.anthropic.com/v1/messages',
@@ -319,58 +389,61 @@ app.post('/api/grade', async (req, res) => {
               model: 'claude-3-haiku-20240307',
               max_tokens: 2000,
               temperature: 0.0,
-              system: `You are a PTE Academic examiner. Evaluate paraphrasing quality:
+              system: `You are a PTE Academic examiner. UNIVERSAL RULES FOR ALL PASSAGES:
 
-PARAPHRASE REQUIREMENTS:
-- Student MUST change at least 4 words to synonyms (nearest meaning) to demonstrate understanding
-- Acceptable: "natural ability" for "talent", "difficult" for "tough", "perseverance" for "persistence"
-- Acceptable: Adding connector words or restructuring sentence order
-- NOT acceptable: Copying 3+ word phrases verbatim from passage
-- NOT acceptable: Changing only 1-2 words while keeping 80%+ of original text
+STRICT CONTENT REQUIREMENTS (All passages):
+1. TOPIC must be clearly stated (who/what is this about?)
+2. PIVOT must show contrast or key turning point
+3. If TOPIC is buried/implied rather than stated → Content max 1/2
+4. If PIVOT is missing → Content max 1/2
+5. If BOTH unclear → Content 0/2
 
-VERBATIM DETECTION:
-- If >60% words are copied exactly from passage, mark as "verbatim" and reduce vocabulary score
-- If student changed 4+ words to appropriate synonyms, mark as "good paraphrase"
+PATCHWRITING DETECTION:
+- 4+ word sequences copied = patchwriting
+- "Stitching" copied phrases with semicolons = patchwriting
+- Changing only 1-2 words in a sentence = patchwriting
 
-SCORING:
-- Content: Full credit if meaning accurate, regardless of paraphrasing (unless completely wrong)
-- Vocabulary: 2/2 if 4+ good synonyms used, 1/2 if 2-3 synonyms, 0/2 if verbatim copying
-- Grammar: Check for complex connectors (however, although, while, but, moreover, etc.)`,
+SCORING CAPS:
+- Vocabulary 0/2 if patchwriting detected
+- Content 1/2 max if topic not clearly stated
+- Content 0/2 if completely misses main subject`,
               messages: [{
                 role: 'user',
-                content: `Evaluate this PTE summary.
+                content: `Grade this summary for passage: "${passageCheck.text.substring(0, 300)}..."
 
-PASSAGE: "${passageCheck.text}"
-
-KEY ELEMENTS:
+KEY ELEMENTS REQUIRED:
 - TOPIC: ${passageCheck.critical}
-- PIVOT: ${passageCheck.important}  
+- PIVOT: ${passageCheck.important}
 - CONCLUSION: ${passageCheck.conclusion}
 
 STUDENT SUMMARY: "${summary}"
 
-PARAPHRASE ANALYSIS (Auto-generated):
-- Verbatim word count: ${paraAnalysis.verbatimCount}
-- Synonym substitutions detected: ${paraAnalysis.synonymSubstitutions}
-- Verbatim ratio: ${(paraAnalysis.verbatimRatio * 100).toFixed(1)}%
-- Changed words: ${JSON.stringify(paraAnalysis.changedWords.slice(0, 6))}
-- 4-word minimum met: ${paraAnalysis.hasAdequateParaphrase ? 'YES' : 'NO'}
+LOCAL ANALYSIS:
+- Topic captured: ${contentAnalysis.topic.captured} (score: ${contentAnalysis.topic.score}/2)
+- Pivot captured: ${contentAnalysis.pivot.captured} (score: ${contentAnalysis.pivot.score}/2)
+- Critical gaps: ${contentAnalysis.criticalGaps.join(', ') || 'None'}
+- Patchwriting detected: ${patchAnalysis.isPatchwriting} (${patchAnalysis.copied4grams} copied phrases)
+
+STRICT INSTRUCTIONS:
+1. If student buried the topic (e.g., said "it was good" without saying WHAT), reduce Content score
+2. If student missed the pivot/contrast entirely, reduce Content score  
+3. If student copied phrases verbatim, give Vocabulary 0/2
 
 Return JSON:
 {
   "trait_scores": {
     "form": { "value": 1, "word_count": ${formCheck.wordCount}, "notes": "Valid form" },
-    "content": { "value": 0-2, "topic_captured": true/false, "pivot_captured": true/false, "conclusion_captured": true/false, "notes": "..." },
-    "grammar": { "value": 0-2, "has_connector": true/false, "connector_used": "...", "notes": "..." },
-    "vocabulary": { "value": 0-2, "paraphrase_quality": "excellent/good/poor/verbatim", "synonyms_count": number, "notes": "..." }
+    "content": { 
+      "value": 0-2, 
+      "topic_captured": true/false,
+      "pivot_captured": true/false,
+      "notes": "Explain any deductions for missing/unclear elements"
+    },
+    "grammar": { "value": 0-2, "has_connector": true/false, "notes": "..." },
+    "vocabulary": { "value": 0-2, "patchwriting_detected": true/false, "notes": "..." }
   },
-  "paraphrase_evaluation": {
-    "is_verbatim": true/false,
-    "synonyms_used": ["word -> synonym", ...],
-    "recommendation": "..."
-  },
-  "feedback": "...",
-  "overall_assessment": "..."
+  "deductions": ["List any score reductions and why"],
+  "feedback": "Specific feedback on missing elements"
 }`
               }]
             })
@@ -386,12 +459,30 @@ Return JSON:
         const aiResult = extractJSON(aiContent);
         if (!aiResult) throw new Error('JSON parse failed');
 
-        // Calculate final scores
-        const contentValue = Math.min(Math.max(Number(aiResult.trait_scores?.content?.value) || 1, 0), 2);
-        const grammarValue = Math.min(Math.max(Number(aiResult.trait_scores?.grammar?.value) || 1, 0), 2);
-        const vocabValue = Math.min(Math.max(Number(aiResult.trait_scores?.vocabulary?.value) || 1, 0), 2);
+        // Apply universal caps regardless of AI score
+        let finalContent = Math.min(Math.max(Number(aiResult.trait_scores?.content?.value) || 0, 0), 2);
+        let finalVocab = Math.min(Math.max(Number(aiResult.trait_scores?.vocabulary?.value) || 2, 0), 2);
         
-        const rawScore = 1 + contentValue + grammarValue + vocabValue;
+        // ENFORCE: Content cap if topic missing
+        if (!contentAnalysis.topic.captured && finalContent > 1) {
+          finalContent = 1;
+        }
+        if (contentAnalysis.topic.score === 0 && finalContent > 0) {
+          finalContent = 0;
+        }
+        
+        // ENFORCE: Content cap if pivot missing
+        if (!contentAnalysis.pivot.captured && finalContent > 1) {
+          finalContent = 1;
+        }
+        
+        // ENFORCE: Vocab 0 if patchwriting
+        if (patchAnalysis.isPatchwriting) {
+          finalVocab = 0;
+        }
+        
+        const grammarScore = Math.min(Math.max(Number(aiResult.trait_scores?.grammar?.value) || 1, 0), 2);
+        const rawScore = 1 + finalContent + grammarScore + finalVocab;
         const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
         const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
 
@@ -399,49 +490,68 @@ Return JSON:
           trait_scores: {
             form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
             content: {
-              value: contentValue,
-              topic_captured: !!aiResult.trait_scores?.content?.topic_captured,
-              pivot_captured: !!aiResult.trait_scores?.content?.pivot_captured,
-              conclusion_captured: !!aiResult.trait_scores?.content?.conclusion_captured,
+              value: finalContent,
+              topic_captured: contentAnalysis.topic.captured,
+              pivot_captured: contentAnalysis.pivot.captured,
+              conclusion_captured: contentAnalysis.conclusion.captured,
               notes: aiResult.trait_scores?.content?.notes || ''
             },
             grammar: {
-              value: grammarValue,
+              value: grammarScore,
               has_connector: !!aiResult.trait_scores?.grammar?.has_connector,
-              connector_used: aiResult.trait_scores?.grammar?.connector_used || '',
               notes: aiResult.trait_scores?.grammar?.notes || ''
             },
             vocabulary: {
-              value: vocabValue,
-              paraphrase_quality: aiResult.trait_scores?.vocabulary?.paraphrase_quality || 'good',
-              synonyms_count: paraAnalysis.synonymSubstitutions,
-              notes: aiResult.trait_scores?.vocabulary?.notes || ''
+              value: finalVocab,
+              patchwriting_detected: patchAnalysis.isPatchwriting,
+              notes: patchAnalysis.isPatchwriting 
+                ? `Copied phrases: ${patchAnalysis.uniquePhrases.join(', ')}...` 
+                : (aiResult.trait_scores?.vocabulary?.notes || 'Original')
             }
           },
           overall_score: overallScore,
           raw_score: rawScore,
           band: bands[rawScore] || 'Band 5',
-          feedback: aiResult.feedback || aiResult.overall_assessment || 'Evaluated',
-          paraphrase_analysis: {
-            ...paraAnalysis,
-            ai_evaluation: aiResult.paraphrase_evaluation || {},
-            status: paraAnalysis.hasAdequateParaphrase ? 'MEETS_MINIMUM_4_SYNONYMS' : 'BELOW_MINIMUM_SYNONYMS',
-            recommendation: paraAnalysis.hasAdequateParaphrase 
-              ? 'Good paraphrasing detected' 
-              : `Change at least ${MIN_PARAPHRASE_WORDS - paraAnalysis.synonymSubstitutions} more words to synonyms`
+          feedback: aiResult.feedback || contentWarning || 'Evaluated',
+          content_analysis: {
+            topic_score: contentAnalysis.topic.score,
+            pivot_score: contentAnalysis.pivot.score,
+            critical_gaps: contentAnalysis.criticalGaps,
+            enforced_caps: {
+              content_capped: finalContent < (aiResult.trait_scores?.content?.value || 0),
+              vocab_capped: finalVocab < (aiResult.trait_scores?.vocabulary?.value || 0)
+            }
           },
-          word_count: formCheck.wordCount,
-          scoring_mode: 'ai_with_paraphrase_validation'
+          scoring_mode: 'universal_ai_validated'
         });
         
       } catch (apiError) {
         lastError = apiError;
-        if (attempt < MAX_RETRIES - 1) await new Promise(r => setTimeout(r, 1000));
+        if (attempt < 1) await new Promise(r => setTimeout(r, 1000));
       }
     }
 
     // Fallback
-    res.status(500).json({ error: 'AI scoring failed', message: lastError?.message });
+    const rawScore = 1 + maxContentScore + 1 + (patchAnalysis.isPatchwriting ? 0 : 2);
+    res.json({
+      trait_scores: {
+        form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
+        content: { 
+          value: maxContentScore, 
+          topic_captured: contentAnalysis.topic.captured,
+          pivot_captured: contentAnalysis.pivot.captured,
+          notes: contentAnalysis.criticalGaps.join('; ') || 'Local analysis'
+        },
+        grammar: { value: 1, has_connector: false, notes: 'Fallback' },
+        vocabulary: { value: patchAnalysis.isPatchwriting ? 0 : 2, notes: 'Fallback' }
+      },
+      overall_score: Math.min(Math.round((rawScore / 7) * 90), 90),
+      raw_score: rawScore,
+      band: 'Band 7',
+      feedback: contentWarning || 'AI unavailable - local scoring applied',
+      content_analysis: contentAnalysis,
+      warning: 'AI failed, using universal local analysis'
+    });
 
   } catch (error) {
     console.error('Grading error:', error);
@@ -449,15 +559,21 @@ Return JSON:
   }
 });
 
-// Health check
+app.get('/api/grade', (req, res) => {
+  res.status(405).json({ error: 'Use POST method' });
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', anthropicConfigured: !!ANTHROPIC_API_KEY, version: '2.3.0' });
+  res.json({ 
+    status: 'ok', 
+    anthropicConfigured: !!ANTHROPIC_API_KEY, 
+    version: '3.0.0',
+    features: ['universal_content_validation', 'dynamic_topic_detection', 'patchwriting_detection', 'strict_scoring_caps']
+  });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE Scoring API v2.3.0 on port ${PORT}`);
-  console.log(`📝 Paraphrase detection: ${MIN_PARAPHRASE_WORDS}+ synonym minimum`);
-  console.log(`🚫 Verbatim threshold: ${(MAX_VERBATIM_RATIO * 100)}%`);
+  console.log(`✅ PTE Scoring API v3.0.0 (Universal) on port ${PORT}`);
+  console.log(`🌍 Works with any passage type`);
+  console.log(`📋 Strict validation: Topic + Pivot mandatory for all`);
 });
-
-module.exports = app;
