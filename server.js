@@ -44,41 +44,88 @@ function validateForm(summary) {
   return { wordCount, isValidForm, errors: isValidForm ? [] : errors };
 }
 
-// SMART pivot detection - recognizes contrast indicators
-function detectPivot(summary, pivotText) {
-  const sumLower = summary.toLowerCase();
-  const pivotLower = pivotText.toLowerCase();
+// ========== SMART CONCEPT DETECTION ==========
+
+// Extract meaningful content words
+function extractContentWords(text) {
+  if (!text) return [];
   
-  // Contrast indicators that signal pivot capture
-  const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless', 'nonetheless'];
-  const hasContrastWord = contrastWords.some(w => sumLower.includes(w));
+  const stopWords = new Set(['this', 'that', 'with', 'from', 'they', 'have', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'will', 'about', 'than', 'them', 'into', 'just', 'like', 'over', 'also', 'back', 'only', 'know', 'take', 'year', 'good', 'some', 'come', 'make', 'well', 'work', 'life', 'even', 'more', 'very', 'what', 'when', 'much', 'would', 'there', 'could', 'other', 'after', 'first', 'never', 'these', 'think', 'where', 'being', 'every', 'great', 'might', 'shall', 'still', 'those', 'while', 'should', 'really', 'before', 'always', 'another', 'around', 'because', 'through', 'during', 'without', 'against', 'among', 'within', 'upon', 'towards', 'across', 'behind', 'below', 'above', 'under', 'between', 'beyond', 'except', 'despite', 'regarding', 'concerning', 'following', 'including']);
   
-  // Extract key concepts from pivot (the "what" of the contrast)
-  const pivotKeyTerms = pivotLower
+  return text.toLowerCase()
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length > 4 && !['despite', 'although', 'while', 'however', 'though', 'whereas'].includes(w));
-  
-  // Check how many pivot key terms appear in summary
-  const matches = pivotKeyTerms.filter(term => sumLower.includes(term));
-  const matchRatio = pivotKeyTerms.length > 0 ? matches.length / pivotKeyTerms.length : 0;
-  
-  // PIVOT IS CAPTURED IF:
-  // 1. Has contrast word AND key terms from pivot appear
-  // 2. OR high percentage of pivot terms appear
-  const captured = (hasContrastWord && matches.length >= 2) || matchRatio >= 0.3;
-  
-  return {
-    captured,
-    hasContrastWord,
-    matches: matches.length,
-    total: pivotKeyTerms.length,
-    ratio: Math.round(matchRatio * 100)
-  };
+    .filter(w => w.length >= 4 && !stopWords.has(w));
 }
 
-// AI grading for accurate content evaluation
-async function gradeWithAI(summary, passage) {
+// Calculate coverage percentage
+function calculateCoverage(summary, keyText) {
+  if (!keyText || !summary) return { percentage: 0, matches: 0, total: 0 };
+  
+  const sumLower = summary.toLowerCase();
+  const keyWords = extractContentWords(keyText);
+  
+  if (keyWords.length === 0) return { percentage: 100, matches: 0, total: 0 };
+  
+  const matches = keyWords.filter(word => sumLower.includes(word));
+  const percentage = Math.round((matches.length / keyWords.length) * 100);
+  
+  return { percentage, matches: matches.length, total: keyWords.length };
+}
+
+// ========== SMART TOPIC DETECTION ==========
+function detectTopic(summary, topicText) {
+  const coverage = calculateCoverage(summary, topicText);
+  
+  // Topic captured if 20%+ keywords OR contains core subject words
+  const captured = coverage.percentage >= 20 || coverage.matches >= 2;
+  
+  return { captured, coverage };
+}
+
+// ========== SMART PIVOT DETECTION ==========
+function detectPivot(summary, pivotText) {
+  const sumLower = summary.toLowerCase();
+  const coverage = calculateCoverage(summary, pivotText);
+  
+  // Contrast indicators
+  const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless', 'nonetheless', 'even though', 'in contrast', 'on the other hand', 'conversely', 'meanwhile', 'whereas'];
+  const hasContrastWord = contrastWords.some(w => sumLower.includes(w));
+  
+  // PIVOT captured if:
+  // - Has contrast word AND 2+ pivot keywords, OR
+  // - 25%+ pivot keyword coverage
+  const captured = (hasContrastWord && coverage.matches >= 2) || coverage.percentage >= 25;
+  
+  return { captured, hasContrastWord, coverage };
+}
+
+// ========== SMART CONCLUSION DETECTION ==========
+function detectConclusion(summary, conclusionText) {
+  if (!conclusionText) return { captured: true, coverage: { percentage: 100 } };
+  
+  const sumLower = summary.toLowerCase();
+  const coverage = calculateCoverage(summary, conclusionText);
+  
+  // Result/implication indicators
+  const resultWords = ['therefore', 'thus', 'hence', 'consequently', 'as a result', 'leading to', 'resulting in', 'so', 'outcome', 'impact', 'effect', 'conclusion'];
+  const hasResultWord = resultWords.some(w => sumLower.includes(w));
+  
+  // CONCLUSION captured if:
+  // - 15%+ keywords, OR
+  // - Has result word AND 1+ keywords, OR
+  // - 2+ keywords from conclusion
+  const captured = coverage.percentage >= 15 || 
+                   (hasResultWord && coverage.matches >= 1) || 
+                   coverage.matches >= 2;
+  
+  return { captured, hasResultWord, coverage };
+}
+
+// ========== AI ENHANCEMENT ==========
+async function enhanceWithAI(summary, passage, localResult) {
+  if (!ANTHROPIC_API_KEY) return null;
+  
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -89,24 +136,13 @@ async function gradeWithAI(summary, passage) {
       },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307',
-        max_tokens: 800,
+        max_tokens: 600,
         temperature: 0,
-        system: `You are a PTE Academic examiner. Evaluate summaries for TOPIC-PIVOT-CONCLUSION capture.
+        system: `You validate PTE summary concept detection. Check if TOPIC, PIVOT, and CONCLUSION are captured.
 
-CRITICAL RULE FOR PIVOT DETECTION:
-The pivot is CAPTURED if the summary includes BOTH:
-1. The main topic (reading importance, etc.)
-2. The contrasting element (digital media increasing, etc.)
+CAPTURED means: the concept appears in the summary (verbatim OR paraphrased).
 
-Examples of pivot captured:
-- "reading is important while digital media increases" ✓
-- "despite digital media, reading remains key" ✓
-- "reading helps success, noting digital media rises" ✓
-- "importance of reading while also highlighting digital media consumption" ✓
-
-The pivot is NOT captured if only one side is mentioned.
-
-Return JSON only.`,
+Return JSON only with validation results.`,
         messages: [{
           role: 'user',
           content: `PASSAGE: "${passage.text}"
@@ -114,20 +150,27 @@ Return JSON only.`,
 KEY ELEMENTS:
 - TOPIC: ${passage.keyElements?.critical}
 - PIVOT: ${passage.keyElements?.important}
-- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || 'N/A'}
+- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]}
 
 STUDENT SUMMARY: "${summary}"
 
-Evaluate and return JSON:
+LOCAL DETECTION:
+- Topic: ${localResult.topic.captured ? 'YES' : 'NO'} (${localResult.topic.coverage.percentage}%)
+- Pivot: ${localResult.pivot.captured ? 'YES' : 'NO'} (contrast word: ${localResult.pivot.hasContrastWord}, ${localResult.pivot.coverage.percentage}%)
+- Conclusion: ${localResult.conclusion.captured ? 'YES' : 'NO'} (${localResult.conclusion.coverage.percentage}%)
+
+Validate and return JSON:
 {
-  "content": {
-    "value": 0-2,
-    "topic_captured": true/false,
-    "pivot_captured": true/false,
-    "conclusion_captured": true/false,
-    "notes": "explanation"
+  "validation": {
+    "topic_correct": true/false,
+    "pivot_correct": true/false,
+    "conclusion_correct": true/false
   },
-  "feedback": "what was good or needs improvement"
+  "adjustments": {
+    "topic_override": true/false/null,
+    "pivot_override": true/false/null,
+    "conclusion_override": true/false/null
+  }
 }`
         }]
       })
@@ -148,22 +191,28 @@ Evaluate and return JSON:
   }
 }
 
+// ========== API ENDPOINTS ==========
+
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok',
-    version: '7.0.0',
-    anthropicConfigured: !!ANTHROPIC_API_KEY
+    version: '8.0.0',
+    anthropicConfigured: !!ANTHROPIC_API_KEY,
+    policy: 'Smart TOPIC-PIVOT-CONCLUSION detection'
   });
 });
 
 app.post('/api/grade', async (req, res) => {
+  console.log('Grade request received');
+  
   try {
     const { summary, passage } = req.body;
     
     if (!summary || !passage) {
       return res.status(400).json({ error: 'Missing summary or passage' });
-n    }
+    }
 
+    // Step 1: Form validation
     const formCheck = validateForm(summary);
     
     if (!formCheck.isValidForm) {
@@ -177,103 +226,134 @@ n    }
         overall_score: 0,
         raw_score: 0,
         band: 'Band 5',
-        feedback: `Form failed: ${formCheck.errors.join(', ')}`
+        feedback: `Form validation failed: ${formCheck.errors.join(', ')}`
       });
     }
 
-    // Detect pivot locally first
-    const pivotDetection = detectPivot(summary, passage.keyElements?.important || '');
-    console.log('Pivot detection:', pivotDetection);
+    // Step 2: Smart concept detection
+    const topicResult = detectTopic(summary, passage.keyElements?.critical || '');
+    const pivotResult = detectPivot(summary, passage.keyElements?.important || '');
+    const conclusionResult = detectConclusion(summary, passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]);
+    
+    console.log('Detection:', {
+      topic: `${topicResult.captured} (${topicResult.coverage.percentage}%)`,
+      pivot: `${pivotResult.captured} (${pivotResult.coverage.percentage}%)`,
+      conclusion: `${conclusionResult.captured} (${conclusionResult.coverage.percentage}%)`
+    });
 
-    let contentResult;
+    // Step 3: Optional AI validation
+    const aiValidation = await enhanceWithAI(summary, passage, {
+      topic: topicResult,
+      pivot: pivotResult,
+      conclusion: conclusionResult
+    });
+
+    // Apply AI overrides if provided
+    let topicCaptured = topicResult.captured;
+    let pivotCaptured = pivotResult.captured;
+    let conclusionCaptured = conclusionResult.captured;
     let scoringMode = 'local';
 
-    // Try AI first if available
-    if (ANTHROPIC_API_KEY) {
-      const aiResult = await gradeWithAI(summary, passage);
-      if (aiResult) {
-        // Override AI if local shows clear pivot capture
-        if (pivotDetection.captured && !aiResult.content?.pivot_captured) {
-          aiResult.content.pivot_captured = true;
-          aiResult.content.notes = 'Pivot captured (verified)';
-        }
-        contentResult = aiResult.content;
-        scoringMode = 'ai';
-      } else {
-        // Fallback to local
-        contentResult = getLocalResult(summary, passage, pivotDetection);
+    if (aiValidation?.adjustments) {
+      if (aiValidation.adjustments.topic_override !== null) {
+        topicCaptured = aiValidation.adjustments.topic_override;
       }
-    } else {
-      contentResult = getLocalResult(summary, passage, pivotDetection);
+      if (aiValidation.adjustments.pivot_override !== null) {
+        pivotCaptured = aiValidation.adjustments.pivot_override;
+      }
+      if (aiValidation.adjustments.conclusion_override !== null) {
+        conclusionCaptured = aiValidation.adjustments.conclusion_override;
+      }
+      scoringMode = 'ai_enhanced';
     }
 
-    // Grammar check
-    const hasConnector = /\b(however|although|while|but|yet|nevertheless|whereas|despite|though|moreover|furthermore|therefore|thus)\b/i.test(summary);
+    // Step 4: Calculate content score
+    let contentScore = 2;
+    if (!topicCaptured) contentScore -= 1;
+    if (!pivotCaptured) contentScore -= 0.5;
+    if (!conclusionCaptured) contentScore -= 0.3;
+    contentScore = Math.max(0, Math.round(contentScore));
+
+    // Step 5: Grammar check
+    const connectorPattern = /\b(however|although|while|but|yet|nevertheless|whereas|despite|though|moreover|furthermore|therefore|thus|hence|consequently)\b/i;
+    const hasConnector = connectorPattern.test(summary);
     const grammarScore = hasConnector ? 2 : 1;
 
-    // Calculate scores
-    const rawScore = 1 + contentResult.value + grammarScore + 2;
+    // Step 6: Calculate final scores
+    const rawScore = 1 + contentScore + grammarScore + 2;
     const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
     const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
 
-    res.json({
+    // Build feedback
+    let feedback = '';
+    if (contentScore >= 2) {
+      feedback = 'Excellent! All key concepts captured.';
+    } else if (contentScore === 1) {
+      const missing = [];
+      if (!topicCaptured) missing.push('topic');
+      if (!pivotCaptured) missing.push('pivot');
+      if (!conclusionCaptured) missing.push('conclusion');
+      feedback = missing.length > 0 
+        ? `Good coverage. ${missing.join(', ')} could be clearer.`
+        : 'Good coverage. Some elements could be more explicit.';
+    } else {
+      feedback = 'Key concepts missing. Review the passage and try again.';
+    }
+
+    const result = {
       trait_scores: {
         form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
         content: {
-          value: contentResult.value,
-          topic_captured: contentResult.topic_captured,
-          pivot_captured: contentResult.pivot_captured,
-          conclusion_captured: contentResult.conclusion_captured,
-          notes: contentResult.notes
+          value: contentScore,
+          topic_captured: topicCaptured,
+          pivot_captured: pivotCaptured,
+          conclusion_captured: conclusionCaptured,
+          notes: `Topic: ${topicResult.coverage.percentage}% | Pivot: ${pivotResult.coverage.percentage}% | Conclusion: ${conclusionResult.coverage.percentage}%`
         },
-        grammar: { value: grammarScore, has_connector: hasConnector, notes: hasConnector ? 'Connector present' : 'No connector' },
+        grammar: {
+          value: grammarScore,
+          has_connector: hasConnector,
+          notes: hasConnector ? 'Connector present' : 'No connector'
+        },
         vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
       },
       overall_score: overallScore,
       raw_score: rawScore,
       band: bands[rawScore] || 'Band 5',
-      feedback: contentResult.value >= 2 ? 'Excellent! All key concepts captured.' : contentResult.value >= 1 ? 'Good coverage, some elements could be clearer.' : 'Key concepts missing.',
+      feedback,
       scoring_mode: scoringMode,
-      pivot_analysis: pivotDetection
-    });
+      detection_details: {
+        topic: {
+          captured: topicCaptured,
+          coverage: topicResult.coverage.percentage,
+          matches: topicResult.coverage.matches
+        },
+        pivot: {
+          captured: pivotCaptured,
+          coverage: pivotResult.coverage.percentage,
+          has_contrast_word: pivotResult.hasContrastWord,
+          matches: pivotResult.coverage.matches
+        },
+        conclusion: {
+          captured: conclusionCaptured,
+          coverage: conclusionResult.coverage.percentage,
+          has_result_word: conclusionResult.hasResultWord,
+          matches: conclusionResult.coverage.matches
+        }
+      }
+    };
+
+    console.log('Result:', JSON.stringify(result, null, 2));
+    res.json(result);
     
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal error' });
+    console.error('Grading error:', error);
+    res.status(500).json({ error: 'Internal error', message: error.message });
   }
 });
 
-function getLocalResult(summary, passage, pivotDetection) {
-  const sumLower = summary.toLowerCase();
-  
-  // Topic check
-  const topicText = (passage.keyElements?.critical || '').toLowerCase();
-  const topicWords = topicText.split(/\s+/).filter(w => w.length > 4);
-  const topicMatches = topicWords.filter(w => sumLower.includes(w));
-  const topicCaptured = topicMatches.length >= 2 || topicWords.length === 0;
-  
-  // Conclusion check
-  const conclusionText = (passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || '').toLowerCase();
-  const conclusionWords = conclusionText.split(/\s+/).filter(w => w.length > 4);
-  const conclusionMatches = conclusionWords.filter(w => sumLower.includes(w));
-  const conclusionCaptured = conclusionMatches.length >= 1 || conclusionWords.length === 0;
-  
-  // Calculate score
-  let score = 2;
-  if (!topicCaptured) score -= 1;
-  if (!pivotDetection.captured) score -= 0.5;
-  if (!conclusionCaptured) score -= 0.3;
-  
-  return {
-    value: Math.max(0, Math.round(score)),
-    topic_captured: topicCaptured,
-    pivot_captured: pivotDetection.captured,
-    conclusion_captured: conclusionCaptured,
-    notes: `Pivot: ${pivotDetection.ratio}% match, contrast word: ${pivotDetection.hasContrastWord}`
-  };
-}
-
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE Scoring API v7.0.0 on port ${PORT}`);
-  console.log(`📝 Smart pivot detection enabled`);
+  console.log(`✅ PTE Scoring API v8.0.0 on port ${PORT}`);
+  console.log(`📝 Smart TOPIC-PIVOT-CONCLUSION detection enabled`);
+  console.log(`🤖 AI enhancement: ${ANTHROPIC_API_KEY ? 'Enabled' : 'Disabled'}`);
 });
