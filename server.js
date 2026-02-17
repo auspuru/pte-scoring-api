@@ -9,25 +9,69 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.use(cors());
 app.use(express.json());
 
+// Synonym mapping for paraphrase detection
+const synonyms = {
+  'move': ['exchange', 'shift', 'change', 'switch', 'transfer', 'relocate'],
+  'exchange': ['move', 'shift', 'change', 'switch', 'swap'],
+  'choice': ['decision', 'option', 'selection'],
+  'decision': ['choice', 'option', 'selection'],
+  'advantages': ['benefits', 'pros', 'positives', 'merits'],
+  'benefits': ['advantages', 'pros', 'positives'],
+  'disadvantages': ['drawbacks', 'cons', 'negatives', 'downsides'],
+  'drawbacks': ['disadvantages', 'cons', 'negatives'],
+  'city': ['urban', 'town', 'metropolitan'],
+  'country': ['rural', 'farm', 'countryside'],
+  'cottage': ['house', 'home', 'residence'],
+  'terrace': ['house', 'townhouse', 'home'],
+  'familiar': ['aware', 'knowledgeable', 'acquainted'],
+  'aware': ['familiar', 'conscious', 'mindful'],
+  'persuade': ['convince', 'influence', 'sway'],
+  'convince': ['persuade', 'influence'],
+  'lifestyle': ['way', 'life', 'living'],
+  'attempted': ['tried', 'sought', 'aimed'],
+  'tried': ['attempted', 'sought'],
+  'author': ['writer', 'narrator', 'speaker'],
+  'writer': ['author', 'narrator']
+};
+
+function wordOrSynonymInSummary(word, summaryLower) {
+  if (summaryLower.includes(word)) return true;
+  const wordSynonyms = synonyms[word] || [];
+  return wordSynonyms.some(syn => summaryLower.includes(syn));
+}
+
 function gradeLocally(summary, passage) {
   const trimmed = summary.trim();
-  const words = trimmed.split(/s+/).filter(w => w.length > 0);
+  const words = trimmed.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
 
   const summaryLower = summary.toLowerCase();
   const critical = passage.keyElements.critical.toLowerCase();
   const important = passage.keyElements.important.toLowerCase();
 
-  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were']);
+  // Check direct phrase match first
+  const criticalPrefix = critical.substring(0, Math.min(40, critical.length));
+  const importantPrefix = important.substring(0, Math.min(40, important.length));
   
-  const criticalWords = critical.split(/s+/).filter(w => w.length >= 3 && !stopWords.has(w));
-  const importantWords = important.split(/s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+  let topicCaptured = summaryLower.includes(criticalPrefix);
+  let pivotCaptured = summaryLower.includes(importantPrefix);
   
-  const criticalMatched = criticalWords.filter(w => summaryLower.includes(w)).length;
-  const importantMatched = importantWords.filter(w => summaryLower.includes(w)).length;
-  
-  const topicCaptured = criticalWords.length > 0 ? (criticalMatched / criticalWords.length >= 0.25) : false;
-  const pivotCaptured = importantWords.length > 0 ? (importantMatched / importantWords.length >= 0.25) : false;
+  if (!topicCaptured || !pivotCaptured) {
+    const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'he', 'she', 'it', 'they', 'his', 'her', 'their', 'this', 'that', 'these', 'those', 'who', 'what', 'which', 'when', 'where', 'why', 'how']);
+    
+    const criticalWords = critical.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+    const importantWords = important.split(/\s+/).filter(w => w.length >= 3 && !stopWords.has(w));
+    
+    const criticalMatched = criticalWords.filter(w => wordOrSynonymInSummary(w, summaryLower)).length;
+    const importantMatched = importantWords.filter(w => wordOrSynonymInSummary(w, summaryLower)).length;
+    
+    if (!topicCaptured) {
+      topicCaptured = criticalWords.length > 0 ? (criticalMatched / criticalWords.length >= 0.20) : false;
+    }
+    if (!pivotCaptured) {
+      pivotCaptured = importantWords.length > 0 ? (importantMatched / importantWords.length >= 0.20) : false;
+    }
+  }
   
   let contentScore = 0;
   if (topicCaptured && pivotCaptured) contentScore = 2;
@@ -43,7 +87,7 @@ function gradeLocally(summary, passage) {
 
   const vocabScore = 2;
   const rawScore = 1 + contentScore + grammarScore + vocabScore;
-  const overallScore = Math.round((rawScore / 7) * 90);
+  const overallScore = Math.min(Math.round((rawScore / 7) * 9), 9);
   
   const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
   
@@ -87,7 +131,7 @@ app.post('/api/grade', async (req, res) => {
     }
 
     const trimmed = summary.trim();
-    const words = trimmed.split(/s+/).filter(w => w.length > 0);
+    const words = trimmed.split(/\s+/).filter(w => w.length > 0);
     const wordCount = words.length;
 
     if (!ANTHROPIC_API_KEY) {
@@ -106,23 +150,21 @@ app.post('/api/grade', async (req, res) => {
         body: JSON.stringify({
           model: 'claude-3-haiku-20240307',
           max_tokens: 1000,
-          system: `You are a PTE Academic scoring expert. Score using:
+          system: `You are a PTE Academic scoring expert. Score the summary using:
+
 TRAIT 1: FORM (0-1) - One sentence, 5-75 words, ends with period
-TRAIT 2: CONTENT (0-2) - Captures topic AND pivot
+TRAIT 2: CONTENT (0-2) - VERY IMPORTANT: Detect PARAPHRASES and SYNONYMS!
+  - topic_captured: Does summary capture the MAIN IDEA (even with different words)?
+  - pivot_captured: Does summary capture the KEY CONTRAST/SHIFT (even with different words)?
+  - ACCEPT paraphrases: "move" = "exchange", "choice" = "decision", "advantages" = "benefits"
+  - Only mark FALSE if meaning is completely wrong or missing
 TRAIT 3: GRAMMAR (0-2) - Semicolon + connector = 2
-TRAIT 4: VOCABULARY (0-2) - PTE allows copying
+TRAIT 4: VOCABULARY (0-2) - PTE allows copying key phrases
 
 Return JSON: {"trait_scores":{"form":{"value":0-1,"word_count":N,"notes":"..."},"content":{"value":0-2,"topic_captured":true/false,"pivot_captured":true/false,"notes":"..."},"grammar":{"value":0-2,"has_connector":true/false,"notes":"..."},"vocabulary":{"value":0-2,"notes":"..."}},"overall_score":0-90,"raw_score":0-7,"band":"Band 9/8/7/6/5","feedback":"...","reasoning":"..."}`,
           messages: [{
             role: 'user',
-            content: `PASSAGE: ${passage.text}
-KEY ELEMENTS:
-- Critical: ${passage.keyElements.critical}
-- Important: ${passage.keyElements.important}
-
-STUDENT SUMMARY: ${summary}
-
-Score this summary. Be lenient with synonyms. Return ONLY valid JSON.`
+            content: `PASSAGE: ${passage.text}\nKEY ELEMENTS:\n- Critical (main idea): ${passage.keyElements.critical}\n- Important (key contrast): ${passage.keyElements.important}\n\nSTUDENT SUMMARY: ${summary}\n\nScore this summary. Be VERY LENIENT with paraphrasing - "exchange" for "move", "decision" for "choice", etc. are ALL acceptable. Only penalize if the meaning is completely wrong. Return ONLY valid JSON.`
           }]
         })
       });
@@ -140,7 +182,7 @@ Score this summary. Be lenient with synonyms. Return ONLY valid JSON.`
         return res.json(result);
       }
 
-      const jsonMatch = content.match(/{[sS]*}/);
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         const result = gradeLocally(summary, passage);
         return res.json(result);
@@ -165,9 +207,8 @@ Score this summary. Be lenient with synonyms. Return ONLY valid JSON.`
       const vocabScore = result.trait_scores.vocabulary.value || 0;
       
       result.raw_score = formScore + contentScore + grammarScore + vocabScore;
-      result.overall_score = Math.round((result.raw_score / 7) * 90);
+      result.overall_score = Math.min(Math.round((result.raw_score / 7) * 9), 9);
       if (result.raw_score > 7) result.raw_score = 7;
-      if (result.overall_score > 90) result.overall_score = 90;
       
       const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
       result.band = bands[result.raw_score] || 'Band 5';
