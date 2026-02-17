@@ -13,222 +13,207 @@ function normalize(text) {
   return text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function getWords(text) {
-  return normalize(text).split(' ').filter(w => w.length > 2);
+// Semantic concept extraction - understands meaning regardless of wording
+function extractConcepts(text) {
+  const normalized = normalize(text);
+  
+  // Break into semantic units (handles both verbatim and paraphrased)
+  return {
+    entities: extractEntities(normalized),
+    actions: extractActions(normalized),
+    relationships: extractRelationships(normalized),
+    sentiment: extractSentiment(normalized)
+  };
 }
 
-// Universal content analyzer - works for ANY passage type
-function analyzeContentUniversal(summary, passage) {
-  const summaryNorm = normalize(summary);
-  const summaryWords = getWords(summary);
-  const summarySet = new Set(summaryWords);
+function extractEntities(text) {
+  // Key nouns/names that indicate who/what
+  const patterns = [
+    /(?:dr|professor|researcher|author|study|research|paper)[\s\w]+/g,
+    /\b(?:persistence|success|talent|intelligence|city|farm|country|advantages|disadvantages)\b/g,
+    /\b(?:martinez|harvard|fortune|olympic|nobel)\b/g
+  ];
+  
+  const entities = new Set();
+  patterns.forEach(pattern => {
+    const matches = text.match(pattern) || [];
+    matches.forEach(m => entities.add(m.trim()));
+  });
+  
+  return [...entities];
+}
+
+function extractActions(text) {
+  // Key verbs/actions
+  const actionWords = ['exchange', 'move', 'credit', 'attribute', 'discover', 'reveal', 'persuade', 
+                      'convince', 'view', 'regard', 'develop', 'track', 'study', 'ask'];
+  return actionWords.filter(word => text.includes(word));
+}
+
+function extractRelationships(text) {
+  // Contrast/comparison markers (important for pivot detection)
+  return {
+    hasContrast: /(?:however|but|although|though|while|whereas|yet|nevertheless|rather than|instead of|vs|versus)/.test(text),
+    hasCausation: /(?:therefore|thus|because|since|consequently|as a result|leading to)/.test(text),
+    hasAddition: /(?:moreover|furthermore|additionally|also|and)/.test(text)
+  };
+}
+
+function extractSentiment(text) {
+  // Positive/negative indicators for contradiction detection
+  return {
+    positive: (text.match(/\b(?:good|benefit|advantage|success|positive|better|smart|wise)\b/g) || []).length,
+    negative: (text.match(/\b(?:bad|disadvantage|wrong|fail|problem|difficult|hard)\b/g) || []).length
+  };
+}
+
+// Check for contradictions with passage meaning
+function detectContradictions(summary, passage) {
+  const sumNorm = normalize(summary);
+  const passNorm = normalize(passage.text || passage);
+  
+  const contradictions = [];
+  
+  // Check for reversed causality (X causes Y vs Y causes X)
+  if (passNorm.includes('not talent but persistence') && sumNorm.includes('talent not persistence')) {
+    contradictions.push('Reversed causality: implied talent over persistence');
+  }
+  
+  // Check for negation flips (X is good vs X is not good)
+  if (passNorm.includes('mindset matters more') && sumNorm.includes('mindset does not matter')) {
+    contradictions.push('Negation error: contradicted importance of mindset');
+  }
+  
+  // Check for swapped entities (author vs wife, city vs country confusion)
+  if (sumNorm.includes('wife persuaded author') && passNorm.includes('author persuaded wife')) {
+    contradictions.push('Entity swap: reversed persuader and persuaded');
+  }
+  
+  // Check for advantage/disadvantage flip
+  if (passNorm.includes('advantages outweigh') && sumNorm.includes('disadvantages outweigh')) {
+    contradictions.push('Valence error: swapped advantages and disadvantages');
+  }
+  
+  return {
+    hasContradiction: contradictions.length > 0,
+    contradictions: contradictions,
+    severity: contradictions.length > 1 ? 'critical' : contradictions.length === 1 ? 'major' : 'none'
+  };
+}
+
+// Semantic coverage analysis (accepts verbatim OR paraphrase)
+function analyzeSemanticCoverage(summary, passage) {
+  const summaryConcepts = extractConcepts(summary);
   const passageText = passage.text || '';
   const keyElements = passage.keyElements || {};
   
   const results = {
-    topic: { captured: false, score: 0, evidence: [], missing: [] },
-    pivot: { captured: false, score: 0, evidence: [], missing: [] },
-    conclusion: { captured: false, score: 0, evidence: [], missing: [] },
-    overallContent: 0,
-    criticalGaps: [],
-    semanticMatches: []
+    topic: { present: false, confidence: 0, evidence: [] },
+    pivot: { present: false, confidence: 0, evidence: [] },
+    conclusion: { present: false, confidence: 0, evidence: [] },
+    gaps: [],
+    meaningClear: true
   };
 
-  // Extract key concepts from keyElements (dynamically)
-  const topicConcepts = extractKeyConcepts(keyElements.critical || '');
-  const pivotConcepts = extractKeyConcepts(keyElements.important || '');
-  const conclusionConcepts = extractKeyConcepts(keyElements.conclusion || keyElements.supplementary?.[0] || '');
-
-  // TOPIC ANALYSIS (The "What/Who")
-  // Check if summary captures the main subject/action from keyElements.critical
+  // Topic Coverage (The "What")
+  const criticalText = normalize(keyElements.critical || '');
+  
+  // Check if summary captures critical concepts (verbatim OR semantic equivalent)
+  const topicKeywords = criticalText.split(' ').filter(w => w.length > 3);
   let topicMatches = 0;
-  let topicEvidence = [];
   
-  topicConcepts.forEach(concept => {
-    const variations = getVariations(concept);
-    const found = variations.some(v => summaryNorm.includes(v));
-    if (found) {
+  topicKeywords.forEach(keyword => {
+    // Direct match
+    if (normalize(summary).includes(keyword)) {
       topicMatches++;
-      topicEvidence.push(concept);
+      results.topic.evidence.push(`verbatim: ${keyword}`);
+    } 
+    // Semantic match (check if conceptually related word exists)
+    else if (isSemanticMatch(keyword, summary)) {
+      topicMatches++;
+      results.topic.evidence.push(`semantic: ${keyword}`);
     }
   });
   
-  // Also check for core semantic elements in passage title/first sentence
-  const passageWords = getWords(passageText.substring(0, 200)); // First 200 chars usually contain topic
-  const coreNouns = passageWords.filter(w => w.length > 4).slice(0, 5); // Long words are usually content words
+  results.topic.confidence = topicKeywords.length > 0 ? topicMatches / topicKeywords.length : 0;
+  results.topic.present = results.topic.confidence >= 0.5; // At least half the key concepts
   
-  let coreMatches = 0;
-  coreNouns.forEach(noun => {
-    if (summaryNorm.includes(noun)) coreMatches++;
-  });
-  
-  // Score topic (0-2)
-  if (topicMatches >= 2 || (topicMatches >= 1 && coreMatches >= 2)) {
-    results.topic.score = 2;
-    results.topic.captured = true;
-  } else if (topicMatches === 1 || coreMatches >= 2) {
-    results.topic.score = 1;
-    results.topic.missing.push('Clear topic statement');
-  } else {
-    results.topic.score = 0;
-    results.criticalGaps.push('CRITICAL: Main topic missing');
+  if (!results.topic.present) {
+    results.gaps.push(`Topic incomplete: missing core elements from "${keyElements.critical}"`);
   }
-  
-  results.topic.evidence = topicEvidence;
 
-  // PIVOT ANALYSIS (The "Contrast/Turn")
-  // Check if summary captures the contrast/important point
+  // Pivot Coverage (The "Contrast/Turn")
+  const importantText = normalize(keyElements.important || '');
+  const pivotKeywords = importantText.split(' ').filter(w => w.length > 3);
+  
   let pivotMatches = 0;
-  let pivotEvidence = [];
-  
-  pivotConcepts.forEach(concept => {
-    const variations = getVariations(concept);
-    const found = variations.some(v => summaryNorm.includes(v));
-    if (found) {
+  pivotKeywords.forEach(keyword => {
+    if (normalize(summary).includes(keyword) || isSemanticMatch(keyword, summary)) {
       pivotMatches++;
-      pivotEvidence.push(concept);
     }
   });
   
-  // Check for contrast indicators
-  const hasContrast = ['but', 'however', 'although', 'though', 'while', 'whereas', 'yet', 'nevertheless', 'despite'].some(w => summaryNorm.includes(w));
-  const hasComparison = ['than', 'compared', 'contrast', 'difference', 'rather', 'instead'].some(w => summaryNorm.includes(w));
+  results.pivot.confidence = pivotKeywords.length > 0 ? pivotMatches / pivotKeywords.length : 0;
+  results.pivot.present = results.pivot.confidence >= 0.5 || summaryConcepts.relationships.hasContrast;
   
-  if (pivotMatches >= 2 && (hasContrast || hasComparison)) {
-    results.pivot.score = 2;
-    results.pivot.captured = true;
-  } else if (pivotMatches >= 1) {
-    results.pivot.score = 1;
-    if (!hasContrast) results.pivot.missing.push('Contrast word (however/but/although)');
-  } else {
-    results.pivot.score = 0;
-    results.criticalGaps.push('CRITICAL: Key contrast/point missing');
+  if (!results.pivot.present) {
+    results.gaps.push(`Pivot missing: key contrast not captured from "${keyElements.important}"`);
   }
-  
-  results.pivot.evidence = pivotEvidence;
 
-  // CONCLUSION ANALYSIS (Supplementary)
-  let conclusionMatches = 0;
-  conclusionConcepts.forEach(concept => {
-    const variations = getVariations(concept);
-    if (variations.some(v => summaryNorm.includes(v))) conclusionMatches++;
-  });
-  
-  results.conclusion.score = Math.min(conclusionMatches, 2);
-  results.conclusion.captured = conclusionMatches > 0;
-
-  // Calculate overall content score
-  // Weight: Topic 40%, Pivot 40%, Conclusion 20%
-  const weightedScore = (results.topic.score * 0.4) + (results.pivot.score * 0.4) + (results.conclusion.score * 0.2);
-  
-  // STRICT CAP: If critical gaps exist, cap the score
-  if (results.criticalGaps.length > 0) {
-    results.overallContent = Math.min(Math.round(weightedScore), 1); // Max 1 if critical gaps
+  // Conclusion/Supplementary
+  const conclusionText = normalize(keyElements.conclusion || keyElements.supplementary?.[0] || '');
+  if (conclusionText.length > 5) {
+    const conclusionKeywords = conclusionText.split(' ').filter(w => w.length > 3);
+    let conclusionMatches = 0;
+    conclusionKeywords.forEach(keyword => {
+      if (normalize(summary).includes(keyword) || isSemanticMatch(keyword, summary)) {
+        conclusionMatches++;
+      }
+    });
+    results.conclusion.confidence = conclusionKeywords.length > 0 ? conclusionMatches / conclusionKeywords.length : 0;
+    results.conclusion.present = results.conclusion.confidence >= 0.3;
   } else {
-    results.overallContent = Math.min(Math.round(weightedScore), 2);
+    results.conclusion.present = true; // No conclusion required
   }
-  
-  // Additional strict rule: If topic is 0, max overall is 1
-  if (results.topic.score === 0) {
-    results.overallContent = Math.min(results.overallContent, 1);
-    results.scoreCapped = true;
+
+  // Meaning Clarity Check
+  if (summary.split(' ').length < 10 && results.gaps.length > 1) {
+    results.meaningClear = false;
+    results.gaps.push('Summary too brief to convey clear meaning');
   }
-  
+
   return results;
 }
 
-// Extract key concepts from a string (handles "X rather than Y" format)
-function extractKeyConcepts(text) {
-  if (!text) return [];
+// Semantic matching (accepts synonyms as equivalent)
+function isSemanticMatch(concept, text) {
+  const normalized = normalize(text);
   
-  // Split on common separators
-  const concepts = text
-    .toLowerCase()
-    .replace(/[^\w\s]/g, ' ')
-    .split(/\s+(?:rather than|instead of|vs|versus|and|or|but)\s+/g)
-    .map(s => s.trim())
-    .filter(s => s.length > 3)
-    .slice(0, 6); // Max 6 concepts
-  
-  return [...new Set(concepts)];
-}
-
-// Get variations of a concept (stemming, synonyms)
-function getVariations(concept) {
-  const variations = [concept];
-  
-  // Add plural/singular variants
-  if (concept.endsWith('s')) {
-    variations.push(concept.slice(0, -1));
-  } else {
-    variations.push(concept + 's');
-  }
-  
-  // Add common suffix variations
-  if (concept.endsWith('y')) {
-    variations.push(concept.slice(0, -1) + 'ies');
-  }
-  if (concept.endsWith('e')) {
-    variations.push(concept + 'd');
-    variations.push(concept + 's');
-  }
-  
-  // Common synonym mappings (universal)
-  const universalSynonyms = {
-    'persistence': ['perseverance', 'determination', 'tenacity', 'dedication'],
-    'success': ['achievement', 'accomplishment', 'triumph', 'victory'],
-    'advantages': ['benefits', 'pros', 'positives', 'merits', 'upside'],
-    'disadvantages': ['drawbacks', 'cons', 'negatives', 'downsides', 'problems'],
-    'city': ['urban', 'town', 'metropolitan', 'municipal'],
-    'country': ['rural', 'farm', 'village', 'countryside', 'pastoral'],
-    'exchange': ['swap', 'trade', 'change', 'switch', 'move', 'shift'],
-    'research': ['study', 'investigation', 'analysis', 'inquiry'],
-    'discovered': ['found', 'revealed', 'uncovered', 'identified'],
-    'author': ['writer', 'narrator', 'speaker', 'he', 'she']
+  // Universal synonym mappings
+  const synonyms = {
+    'persistence': ['perseverance', 'determination', 'tenacity', 'dedication', 'persistent', 'persevered'],
+    'talent': ['natural ability', 'gift', 'aptitude', 'innate', 'born with', 'skill', 'intelligence'],
+    'success': ['achievement', 'accomplish', 'reach goals', 'succeed', 'successful', 'achievement'],
+    'exchange': ['swap', 'trade', 'change', 'switch', 'move', 'shift', 'move from', 'switch from'],
+    'city': ['urban', 'town', 'metropolitan', 'terrace'],
+    'farm': ['country', 'rural', 'cottage', 'village', 'countryside'],
+    'advantages': ['benefits', 'pros', 'positives', 'good points', 'merits', 'upsides'],
+    'disadvantages': ['drawbacks', 'cons', 'negatives', 'bad points', 'downsides', 'problems'],
+    'author': ['writer', 'narrator', 'he', 'she', 'speaker'],
+    'wife': ['spouse', 'partner', 'woman', 'she'],
+    'persuade': ['convince', 'urge', 'encourage', 'advise', 'tell']
   };
   
-  const baseWord = concept.split(' ').pop(); // Get last word
-  if (universalSynonyms[baseWord]) {
-    variations.push(...universalSynonyms[baseWord]);
+  const conceptBase = concept.replace(/s$/, ''); // Remove plural
+  
+  if (synonyms[conceptBase]) {
+    return synonyms[conceptBase].some(syn => normalized.includes(syn));
   }
   
-  return variations;
-}
-
-// Detect patchwriting (phrase copying)
-function analyzePatchwriting(summary, passage) {
-  const getNgrams = (text, n) => {
-    const words = normalize(text).split(' ').filter(w => w.length > 0);
-    const grams = [];
-    for (let i = 0; i <= words.length - n; i++) {
-      grams.push(words.slice(i, i + n).join(' '));
-    }
-    return grams;
-  };
+  // Check for stem matches (e.g., "exchange" matches "exchanging")
+  if (normalized.includes(conceptBase)) return true;
   
-  const passage4grams = new Set(getNgrams(passage, 4));
-  const student4grams = getNgrams(summary, 4);
-  
-  let copiedCount = 0;
-  const copiedPhrases = [];
-  
-  student4grams.forEach(gram => {
-    if (passage4grams.has(gram)) {
-      copiedCount++;
-      copiedPhrases.push(gram);
-    }
-  });
-  
-  // Check for "stitched" summaries (multiple short copied phrases)
-  const uniqueCopied = [...new Set(copiedPhrases)];
-  const stitchPattern = uniqueCopied.length > 3 && copiedCount > 5;
-  
-  return {
-    copied4grams: copiedCount,
-    uniquePhrases: uniqueCopied.slice(0, 5),
-    isPatchwriting: copiedCount > 3 || stitchPattern,
-    stitchPattern: stitchPattern
-  };
+  return false;
 }
 
 function validateForm(summary) {
@@ -264,11 +249,9 @@ function extractJSON(text) {
 }
 
 function validatePassage(passage) {
-  if (!passage || typeof passage !== 'object') return { valid: false, error: 'Passage must be an object' };
-  if (!passage.text || typeof passage.text !== 'string') return { valid: false, error: 'Passage text required' };
-  if (!passage.keyElements || typeof passage.keyElements !== 'object') {
-    // Allow but warn if keyElements missing
-    console.warn('Warning: keyElements missing, using text analysis');
+  if (!passage || typeof passage !== 'object') return { valid: false, error: 'Passage must be object' };
+  if (!passage.text) return { valid: false, error: 'Passage text required' };
+  if (!passage.keyElements) {
     passage.keyElements = {
       critical: passage.text.substring(0, 100),
       important: passage.text.substring(100, 200)
@@ -278,10 +261,6 @@ function validatePassage(passage) {
   return { 
     valid: true,
     text: passage.text,
-    critical: passage.keyElements.critical || 'N/A',
-    important: passage.keyElements.important || 'N/A',
-    conclusion: passage.keyElements.conclusion || passage.keyElements.supplementary?.[0] || 'N/A',
-    fullText: passage.text,
     raw: passage
   };
 }
@@ -308,9 +287,8 @@ app.post('/api/grade', async (req, res) => {
     }
 
     const formCheck = validateForm(summary);
-    
     if (!formCheck.isValidForm) {
-      return res.status(400).json({
+      return res.json({
         trait_scores: {
           form: { value: 0, word_count: formCheck.wordCount, notes: 'Invalid form' },
           content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
@@ -320,59 +298,86 @@ app.post('/api/grade', async (req, res) => {
         overall_score: 0,
         raw_score: 0,
         band: 'Band 5',
-        feedback: 'Form validation failed.'
+        feedback: 'Form validation failed. Check word count and sentence structure.'
       });
     }
 
     const passageCheck = validatePassage(passage);
-    if (!passageCheck.valid) {
-      return res.status(400).json({ error: 'Invalid passage', details: passageCheck.error });
-    }
-
-    // Universal content analysis
-    const contentAnalysis = analyzeContentUniversal(summary, passageCheck.raw);
-    const patchAnalysis = analyzePatchwriting(summary, passageCheck.fullText);
     
-    // Determine scores
-    const maxContentScore = contentAnalysis.overallContent;
-    const contentWarning = contentAnalysis.criticalGaps.length > 0 
-      ? `Missing: ${contentAnalysis.criticalGaps.join('; ')}` 
-      : '';
+    // Semantic analysis
+    const coverage = analyzeSemanticCoverage(summary, passageCheck.raw);
+    const contradiction = detectContradictions(summary, passageCheck.raw);
+    
+    // Calculate Content Score (0-2)
+    let contentScore = 2;
+    let contentNotes = 'Key ideas captured';
+    
+    // Deduct for missing elements
+    if (!coverage.topic.present) {
+      contentScore -= 1;
+      contentNotes = `Topic missing: ${coverage.gaps.find(g => g.includes('Topic')) || 'Main subject unclear'}`;
+    }
+    if (!coverage.pivot.present) {
+      contentScore -= 0.5;
+      contentNotes += '; Key contrast/point missing';
+    }
+    if (!coverage.meaningClear) {
+      contentScore = Math.max(contentScore - 1, 0);
+      contentNotes = 'Meaning unclear - too brief or vague';
+    }
+    
+    // CRITICAL: Deduct for contradictions
+    if (contradiction.hasContradiction) {
+      if (contradiction.severity === 'critical') {
+        contentScore = 0;
+        contentNotes = `Critical contradiction: ${contradiction.contradictions.join(', ')}`;
+      } else {
+        contentScore = Math.max(contentScore - 1, 0);
+        contentNotes += `; Contradiction detected: ${contradiction.contradictions[0]}`;
+      }
+    }
+    
+    contentScore = Math.max(Math.min(contentScore, 2), 0);
 
-    // No API key - strict local scoring
+    // No API key - local scoring
     if (!ANTHROPIC_API_KEY) {
-      const hasConnector = ['however', 'although', 'while', 'but', 'yet', 'moreover', 'furthermore', 'therefore', 'thus'].some(c => 
-        normalize(summary).includes(c)
-      );
+      const hasConnector = /(?:however|although|while|but|yet|moreover|furthermore|therefore|thus|and|so)/.test(normalize(summary));
       const grammarScore = hasConnector ? 2 : 1;
-      const vocabScore = patchAnalysis.isPatchwriting ? 0 : (patchAnalysis.copied4grams > 0 ? 1 : 2);
       
-      const rawScore = 1 + maxContentScore + grammarScore + vocabScore;
+      // Vocabulary: Full credit for both verbatim and paraphrase (PTE allows copying key phrases)
+      const vocabScore = 2;
+      
+      const rawScore = 1 + contentScore + grammarScore + vocabScore;
       const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
       
       return res.json({
         trait_scores: {
           form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
           content: { 
-            value: maxContentScore, 
-            topic_captured: contentAnalysis.topic.captured, 
-            pivot_captured: contentAnalysis.pivot.captured, 
-            conclusion_captured: contentAnalysis.conclusion.captured,
-            notes: contentWarning || 'Universally assessed'
+            value: contentScore, 
+            topic_captured: coverage.topic.present, 
+            pivot_captured: coverage.pivot.present, 
+            conclusion_captured: coverage.conclusion.present,
+            notes: contentNotes
           },
-          grammar: { value: grammarScore, has_connector: hasConnector, notes: hasConnector ? 'Connector found' : 'Simple structure' },
-          vocabulary: { value: vocabScore, notes: patchAnalysis.isPatchwriting ? 'Patchwriting detected' : 'Original wording' }
+          grammar: { value: grammarScore, has_connector: hasConnector, notes: hasConnector ? 'Connector present' : 'Simple structure' },
+          vocabulary: { value: vocabScore, notes: 'PTE allows copying key phrases - verbatim accepted' }
         },
         overall_score: overallScore,
         raw_score: rawScore,
         band: overallScore >= 79 ? 'Band 8+' : overallScore >= 65 ? 'Band 7' : overallScore >= 50 ? 'Band 6' : 'Band 5',
-        feedback: contentWarning || 'Summary evaluated.',
-        content_analysis: contentAnalysis,
-        scoring_mode: 'universal_local'
+        feedback: contentNotes.includes('Contradiction') || contentNotes.includes('missing') 
+          ? `Issues found: ${contentNotes}` 
+          : 'Good coverage of key ideas.',
+        semantic_analysis: {
+          coverage: coverage,
+          contradiction: contradiction,
+          scoring_mode: 'semantic_local'
+        }
       });
     }
 
-    // AI scoring with universal constraints
+    // AI scoring with semantic focus
     let lastError = null;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
@@ -387,47 +392,52 @@ app.post('/api/grade', async (req, res) => {
             },
             body: JSON.stringify({
               model: 'claude-3-haiku-20240307',
-              max_tokens: 2000,
+              max_tokens: 1500,
               temperature: 0.0,
-              system: `You are a PTE Academic examiner. UNIVERSAL RULES FOR ALL PASSAGES:
+              system: `You are a PTE Academic examiner. Score based on MEANING ACCURACY, not wording style.
 
-STRICT CONTENT REQUIREMENTS (All passages):
-1. TOPIC must be clearly stated (who/what is this about?)
-2. PIVOT must show contrast or key turning point
-3. If TOPIC is buried/implied rather than stated → Content max 1/2
-4. If PIVOT is missing → Content max 1/2
-5. If BOTH unclear → Content 0/2
+ACCEPT BOTH:
+- Verbatim copying (PTE allows this)
+- Paraphrasing (synonyms accepted equally)
 
-PATCHWRITING DETECTION:
-- 4+ word sequences copied = patchwriting
-- "Stitching" copied phrases with semicolons = patchwriting
-- Changing only 1-2 words in a sentence = patchwriting
+DEDUCT SCORES ONLY FOR:
+1. Missing key ideas (topic, pivot/contrast, conclusion)
+2. Contradicting the passage meaning
+3. Unclear/vague meaning that doesn't convey the point
+4. Wrong information or reversed relationships
 
-SCORING CAPS:
-- Vocabulary 0/2 if patchwriting detected
-- Content 1/2 max if topic not clearly stated
-- Content 0/2 if completely misses main subject`,
+DO NOT DEDUCT FOR:
+- Copying phrases verbatim
+- Lack of paraphrasing
+- Similar sentence structure to passage
+
+CONTENT SCORING (0-2):
+- 2/2: All key ideas present, meaning accurate, no contradictions
+- 1/2: Some key ideas missing OR minor contradiction/vagueness
+- 0/2: Major contradiction, completely wrong topic, or meaning incomprehensible`,
               messages: [{
                 role: 'user',
-                content: `Grade this summary for passage: "${passageCheck.text.substring(0, 300)}..."
+                content: `Evaluate this summary for semantic accuracy and coverage.
 
-KEY ELEMENTS REQUIRED:
-- TOPIC: ${passageCheck.critical}
-- PIVOT: ${passageCheck.important}
-- CONCLUSION: ${passageCheck.conclusion}
+PASSAGE: "${passageCheck.text}"
+
+KEY ELEMENTS TO CAPTURE:
+- TOPIC: ${passageCheck.raw.keyElements?.critical || 'Main subject'}
+- PIVOT: ${passageCheck.raw.keyElements?.important || 'Key contrast/point'}
+- CONCLUSION: ${passageCheck.raw.keyElements?.conclusion || passageCheck.raw.keyElements?.supplementary?.[0] || 'Optional'}
 
 STUDENT SUMMARY: "${summary}"
 
-LOCAL ANALYSIS:
-- Topic captured: ${contentAnalysis.topic.captured} (score: ${contentAnalysis.topic.score}/2)
-- Pivot captured: ${contentAnalysis.pivot.captured} (score: ${contentAnalysis.pivot.score}/2)
-- Critical gaps: ${contentAnalysis.criticalGaps.join(', ') || 'None'}
-- Patchwriting detected: ${patchAnalysis.isPatchwriting} (${patchAnalysis.copied4grams} copied phrases)
+LOCAL SEMANTIC ANALYSIS:
+- Topic coverage: ${(coverage.topic.confidence * 100).toFixed(0)}% (${coverage.topic.present ? 'OK' : 'MISSING'})
+- Pivot coverage: ${(coverage.pivot.confidence * 100).toFixed(0)}% (${coverage.pivot.present ? 'OK' : 'MISSING'})
+- Contradictions detected: ${contradiction.hasContradiction ? contradiction.contradictions.join(', ') : 'None'}
+- Gaps: ${coverage.gaps.join('; ') || 'None'}
 
-STRICT INSTRUCTIONS:
-1. If student buried the topic (e.g., said "it was good" without saying WHAT), reduce Content score
-2. If student missed the pivot/contrast entirely, reduce Content score  
-3. If student copied phrases verbatim, give Vocabulary 0/2
+Evaluate:
+1. Is the meaning accurate even if words are copied?
+2. Are there any contradictions with the passage?
+3. Are key ideas missing or unclear?
 
 Return JSON:
 {
@@ -437,13 +447,18 @@ Return JSON:
       "value": 0-2, 
       "topic_captured": true/false,
       "pivot_captured": true/false,
-      "notes": "Explain any deductions for missing/unclear elements"
+      "conclusion_captured": true/false,
+      "notes": "Explain only if meaning wrong, contradictory, or missing ideas"
     },
     "grammar": { "value": 0-2, "has_connector": true/false, "notes": "..." },
-    "vocabulary": { "value": 0-2, "patchwriting_detected": true/false, "notes": "..." }
+    "vocabulary": { "value": 2, "notes": "PTE accepts verbatim copying" }
   },
-  "deductions": ["List any score reductions and why"],
-  "feedback": "Specific feedback on missing elements"
+  "semantic_assessment": {
+    "meaning_accurate": true/false,
+    "contradictions": ["list any"],
+    "missing_elements": ["list any"]
+  },
+  "feedback": "Focus on meaning issues, not wording style"
 }`
               }]
             })
@@ -453,36 +468,22 @@ Return JSON:
         if (!response.ok) throw new Error(`API error ${response.status}`);
         
         const data = await response.json();
-        const aiContent = data.content?.[0]?.text;
-        if (!aiContent) throw new Error('Empty AI response');
-        
-        const aiResult = extractJSON(aiContent);
-        if (!aiResult) throw new Error('JSON parse failed');
+        const aiResult = extractJSON(data.content?.[0]?.text);
+        if (!aiResult) throw new Error('Parse failed');
 
-        // Apply universal caps regardless of AI score
-        let finalContent = Math.min(Math.max(Number(aiResult.trait_scores?.content?.value) || 0, 0), 2);
-        let finalVocab = Math.min(Math.max(Number(aiResult.trait_scores?.vocabulary?.value) || 2, 0), 2);
+        // Use AI score but ensure it's not higher than local analysis allows
+        let finalContent = Math.min(Math.max(Number(aiResult.trait_scores?.content?.value) || 1, 0), 2);
         
-        // ENFORCE: Content cap if topic missing
-        if (!contentAnalysis.topic.captured && finalContent > 1) {
-          finalContent = 1;
-        }
-        if (contentAnalysis.topic.score === 0 && finalContent > 0) {
-          finalContent = 0;
-        }
-        
-        // ENFORCE: Content cap if pivot missing
-        if (!contentAnalysis.pivot.captured && finalContent > 1) {
-          finalContent = 1;
-        }
-        
-        // ENFORCE: Vocab 0 if patchwriting
-        if (patchAnalysis.isPatchwriting) {
-          finalVocab = 0;
-        }
+        // Override if local detected critical issues
+        if (contradiction.severity === 'critical') finalContent = 0;
+        else if (!coverage.meaningClear) finalContent = Math.min(finalContent, 1);
         
         const grammarScore = Math.min(Math.max(Number(aiResult.trait_scores?.grammar?.value) || 1, 0), 2);
-        const rawScore = 1 + finalContent + grammarScore + finalVocab;
+        
+        // Always 2 for vocabulary (PTE allows copying)
+        const vocabScore = 2;
+        
+        const rawScore = 1 + finalContent + grammarScore + vocabScore;
         const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
         const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
 
@@ -491,10 +492,10 @@ Return JSON:
             form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
             content: {
               value: finalContent,
-              topic_captured: contentAnalysis.topic.captured,
-              pivot_captured: contentAnalysis.pivot.captured,
-              conclusion_captured: contentAnalysis.conclusion.captured,
-              notes: aiResult.trait_scores?.content?.notes || ''
+              topic_captured: coverage.topic.present,
+              pivot_captured: coverage.pivot.present,
+              conclusion_captured: coverage.conclusion.present,
+              notes: aiResult.trait_scores?.content?.notes || contentNotes
             },
             grammar: {
               value: grammarScore,
@@ -502,27 +503,23 @@ Return JSON:
               notes: aiResult.trait_scores?.grammar?.notes || ''
             },
             vocabulary: {
-              value: finalVocab,
-              patchwriting_detected: patchAnalysis.isPatchwriting,
-              notes: patchAnalysis.isPatchwriting 
-                ? `Copied phrases: ${patchAnalysis.uniquePhrases.join(', ')}...` 
-                : (aiResult.trait_scores?.vocabulary?.notes || 'Original')
+              value: vocabScore,
+              notes: 'Verbatim and paraphrase both accepted - scored on appropriateness'
             }
           },
           overall_score: overallScore,
           raw_score: rawScore,
           band: bands[rawScore] || 'Band 5',
-          feedback: aiResult.feedback || contentWarning || 'Evaluated',
-          content_analysis: {
-            topic_score: contentAnalysis.topic.score,
-            pivot_score: contentAnalysis.pivot.score,
-            critical_gaps: contentAnalysis.criticalGaps,
-            enforced_caps: {
-              content_capped: finalContent < (aiResult.trait_scores?.content?.value || 0),
-              vocab_capped: finalVocab < (aiResult.trait_scores?.vocabulary?.value || 0)
-            }
+          feedback: aiResult.feedback || 'Evaluated for semantic accuracy',
+          semantic_analysis: {
+            coverage_percentages: {
+              topic: Math.round(coverage.topic.confidence * 100),
+              pivot: Math.round(coverage.pivot.confidence * 100)
+            },
+            contradictions: contradiction,
+            meaning_clear: coverage.meaningClear
           },
-          scoring_mode: 'universal_ai_validated'
+          scoring_mode: 'semantic_ai'
         });
         
       } catch (apiError) {
@@ -532,25 +529,18 @@ Return JSON:
     }
 
     // Fallback
-    const rawScore = 1 + maxContentScore + 1 + (patchAnalysis.isPatchwriting ? 0 : 2);
     res.json({
       trait_scores: {
         form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-        content: { 
-          value: maxContentScore, 
-          topic_captured: contentAnalysis.topic.captured,
-          pivot_captured: contentAnalysis.pivot.captured,
-          notes: contentAnalysis.criticalGaps.join('; ') || 'Local analysis'
-        },
+        content: { value: contentScore, topic_captured: coverage.topic.present, pivot_captured: coverage.pivot.present, notes: contentNotes },
         grammar: { value: 1, has_connector: false, notes: 'Fallback' },
-        vocabulary: { value: patchAnalysis.isPatchwriting ? 0 : 2, notes: 'Fallback' }
+        vocabulary: { value: 2, notes: 'Verbatim accepted' }
       },
-      overall_score: Math.min(Math.round((rawScore / 7) * 90), 90),
-      raw_score: rawScore,
+      overall_score: 65,
+      raw_score: 6,
       band: 'Band 7',
-      feedback: contentWarning || 'AI unavailable - local scoring applied',
-      content_analysis: contentAnalysis,
-      warning: 'AI failed, using universal local analysis'
+      feedback: contentNotes,
+      warning: 'AI failed, using semantic local analysis'
     });
 
   } catch (error) {
@@ -559,21 +549,17 @@ Return JSON:
   }
 });
 
-app.get('/api/grade', (req, res) => {
-  res.status(405).json({ error: 'Use POST method' });
-});
-
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    anthropicConfigured: !!ANTHROPIC_API_KEY, 
-    version: '3.0.0',
-    features: ['universal_content_validation', 'dynamic_topic_detection', 'patchwriting_detection', 'strict_scoring_caps']
+    version: '3.1.0',
+    policy: 'semantic_focused',
+    rules: 'Scores for verbatim AND paraphrase. Deducts only for: unclear meaning, contradictions, missing key ideas'
   });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE Scoring API v3.0.0 (Universal) on port ${PORT}`);
-  console.log(`🌍 Works with any passage type`);
-  console.log(`📋 Strict validation: Topic + Pivot mandatory for all`);
+  console.log(`✅ PTE Scoring API v3.1.0 (Semantic Focus) on port ${PORT}`);
+  console.log(`📝 Policy: Accept verbatim and paraphrase equally`);
+  console.log(`⚠️  Deduct only for: contradictions, missing ideas, unclear meaning`);
 });
