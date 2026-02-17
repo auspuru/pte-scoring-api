@@ -54,7 +54,7 @@ app.post('/api/grade', async (req, res) => {
           grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
-        overall_score: 9,
+        overall_score: 90,
         raw_score: 7,
         band: 'Band 9',
         feedback: 'Scored locally',
@@ -76,12 +76,13 @@ app.post('/api/grade', async (req, res) => {
           max_tokens: 1000,
           system: `You are a PTE Academic scorer. IMPORTANT RULES:
 
-1. COPYING FROM PASSAGE IS ALLOWED - PTE students can copy exact phrases
-2. PARAPHRASING IS ALLOWED - synonyms and rewording are accepted
-3. Form is already validated server-side - trust the form value provided
-4. Content (0-2): Give 2/2 if main idea and contrast are captured (any way)
-5. Grammar (0-2): 2 pts for semicolon + connector, 1 pt for connector only
-6. Vocabulary (0-2): Copying is allowed, only penalize gibberish
+1. COPYING FROM PASSAGE IS ALLOWED - PTE students can copy exact phrases, fragments, or entire sentences
+2. PARAPHRASING IS ALLOWED - synonyms and rewording are also accepted
+3. BOTH copying AND paraphrasing get FULL marks - be extremely lenient
+4. Form is already validated server-side - trust the form value provided
+5. Content (0-2): Give 2/2 if main idea is captured (whether copied or paraphrased)
+6. Grammar (0-2): 2 pts for good sentence structure with connector
+7. Vocabulary (0-2): Copying is allowed, only penalize gibberish or inappropriate words
 
 Return JSON with trait_scores, overall_score (0-90), raw_score (0-7), band, feedback`,
           messages: [{
@@ -96,7 +97,7 @@ STUDENT SUMMARY: "${summary}"
 
 FORM IS VALID: ${isValidForm} (${wordCount} words, ends with period)
 
-Score content, grammar, vocabulary. REMEMBER: COPYING IS ALLOWED IN PTE.
+Score content, grammar, vocabulary. REMEMBER: COPYING IS ALLOWED IN PTE - both exact copying and paraphrasing are accepted and should receive full marks.
 
 Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_count":${wordCount},"notes":"..."},"content":{"value":0-2,"topic_captured":true/false,"pivot_captured":true/false,"notes":"..."},"grammar":{"value":0-2,"has_connector":true/false,"notes":"..."},"vocabulary":{"value":0-2,"notes":"..."}},"overall_score":0-90,"raw_score":0-7,"band":"Band X","feedback":"..."}`
           }]
@@ -112,7 +113,7 @@ Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
-          overall_score: 9,
+          overall_score: 90,
           raw_score: 7,
           band: 'Band 9',
           feedback: 'AI error - lenient scoring applied',
@@ -131,7 +132,7 @@ Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
-          overall_score: 9,
+          overall_score: 90,
           raw_score: 7,
           band: 'Band 9',
           feedback: 'AI empty - lenient scoring',
@@ -149,7 +150,7 @@ Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
-          overall_score: 9,
+          overall_score: 90,
           raw_score: 7,
           band: 'Band 9',
           feedback: 'AI parsing error - lenient scoring',
@@ -171,16 +172,18 @@ Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_
       result.trait_scores.form.word_count = wordCount;
       result.trait_scores.form.notes = isValidForm ? 'One sentence, 5-75 words, ends with period' : 'Invalid form';
       
-      // Calculate total (0-9 scale)
+      // Calculate raw score (0-7 scale)
       const formScore = result.trait_scores.form.value || 0;
       const contentScore = result.trait_scores.content.value || 0;
       const grammarScore = result.trait_scores.grammar.value || 0;
       const vocabScore = result.trait_scores.vocabulary.value || 0;
       
       result.raw_score = formScore + contentScore + grammarScore + vocabScore;
-      result.overall_score = Math.min(Math.round((result.raw_score / 7) * 9), 9);
       
-      // Band
+      // Convert to 0-90 PTE scale (capped at 90)
+      result.overall_score = Math.min(Math.round((result.raw_score / 7) * 90), 90);
+      
+      // Band mapping
       const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
       result.band = bands[result.raw_score] || 'Band 5';
       
@@ -194,7 +197,7 @@ Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_
           grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
-        overall_score: 9,
+        overall_score: 90,
         raw_score: 7,
         band: 'Band 9',
         feedback: 'AI unavailable - lenient scoring',
