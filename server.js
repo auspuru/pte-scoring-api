@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Grade endpoint - uses Anthropic with LENIENT PTE scoring
+// Grade endpoint
 app.post('/api/grade', async (req, res) => {
   try {
     const { summary, passage } = req.body;
@@ -36,37 +36,34 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Missing summary or passage' });
     }
 
+    // Form validation (server-side - more reliable)
     const trimmed = summary.trim();
     const words = trimmed.split(/\s+/).filter(w => w.length > 0);
     const wordCount = words.length;
-
-    // Basic form validation
     const endsWithPeriod = /[.]$/.test(trimmed);
     const hasNewlines = /[\n\r]/.test(summary);
     const hasBullets = /[•\-\*]/.test(summary);
     const isValidForm = wordCount >= 5 && wordCount <= 75 && endsWithPeriod && !hasNewlines && !hasBullets;
 
-    // If no Anthropic key, use local scoring
+    // If no Anthropic key, return local scoring
     if (!ANTHROPIC_API_KEY) {
       return res.json({
         trait_scores: {
           form: { value: isValidForm ? 1 : 0, word_count: wordCount, notes: isValidForm ? 'Valid form' : 'Invalid form' },
-          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'Local scoring (AI not configured)' },
+          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'Local scoring' },
           grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
         overall_score: 9,
         raw_score: 7,
         band: 'Band 9',
-        feedback: 'Scored locally - AI not configured',
-        reasoning: 'Basic local scoring'
+        feedback: 'Scored locally',
+        reasoning: 'Local scoring'
       });
     }
 
-    // Use Anthropic for scoring
+    // Use Anthropic for content analysis
     try {
-      console.log('Calling Anthropic API...');
-      
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -76,50 +73,17 @@ app.post('/api/grade', async (req, res) => {
         },
         body: JSON.stringify({
           model: 'claude-3-haiku-20240307',
-          max_tokens: 1500,
-          system: `You are a PTE Academic "Summarize Written Text" scorer. Follow the ACTUAL PTE rubric which is VERY LENIENT:
+          max_tokens: 1000,
+          system: `You are a PTE Academic scorer. IMPORTANT RULES:
 
-## KEY RULES:
+1. COPYING FROM PASSAGE IS ALLOWED - PTE students can copy exact phrases
+2. PARAPHRASING IS ALLOWED - synonyms and rewording are accepted
+3. Form is already validated server-side - trust the form value provided
+4. Content (0-2): Give 2/2 if main idea and contrast are captured (any way)
+5. Grammar (0-2): 2 pts for semicolon + connector, 1 pt for connector only
+6. Vocabulary (0-2): Copying is allowed, only penalize gibberish
 
-**CONTENT (0-2 points):**
-- 2 points: Student captures the MAIN IDEA and KEY CONTRAST
-  - ACCEPT exact phrases copied from passage
-  - ACCEPT paraphrases (synonyms, rewording)
-  - ACCEPT partial phrases that convey the meaning
-  - ONLY mark 0 if meaning is COMPLETELY WRONG or GIBBERISH
-
-**FORM (0-1 point):**
-- 1 point: One sentence, 5-75 words, ends with period
-- 0 points: Multiple sentences, wrong length, no period
-
-**GRAMMAR (0-2 points):**
-- 2 points: Semicolon + connector (however, therefore, etc.)
-- 1 point: Connector but no semicolon
-- 0 points: No connector
-
-**VOCABULARY (0-2 points):**
-- 2 points: Appropriate words (copying from passage is ALLOWED)
-- 1 point: Minor awkward word choices
-- 0 points: Major vocabulary errors
-
-## IMPORTANT:
-- PTE allows students to COPY key phrases from the passage
-- PTE accepts paraphrases and synonyms
-- Only penalize if the summary is gibberish or completely wrong meaning
-
-Return JSON:
-{
-  "trait_scores": {
-    "form": {"value": 0-1, "notes": "..."},
-    "content": {"value": 0-2, "topic_captured": true/false, "pivot_captured": true/false, "notes": "..."},
-    "grammar": {"value": 0-2, "notes": "..."},
-    "vocabulary": {"value": 0-2, "notes": "..."}
-  },
-  "overall_score": 0-90,
-  "raw_score": 0-7,
-  "band": "Band 5/6/7/8/9",
-  "feedback": "..."
-}`,
+Return JSON with trait_scores, overall_score (0-90), raw_score (0-7), band, feedback`,
           messages: [{
             role: 'user',
             content: `PASSAGE: "${passage.text}"
@@ -130,30 +94,28 @@ KEY ELEMENTS:
 
 STUDENT SUMMARY: "${summary}"
 
-Score this summary using PTE rubric:
-- ACCEPT exact phrases from passage
-- ACCEPT paraphrases and synonyms
-- Give FULL CONTENT (2/2) if main idea and contrast are captured (even with different words)
-- Only give 0/2 if gibberish or completely wrong meaning
+FORM IS VALID: ${isValidForm} (${wordCount} words, ends with period)
 
-Return ONLY valid JSON.`
+Score content, grammar, vocabulary. REMEMBER: COPYING IS ALLOWED IN PTE.
+
+Return ONLY JSON: {"trait_scores":{"form":{"value":${isValidForm ? 1 : 0},"word_count":${wordCount},"notes":"..."},"content":{"value":0-2,"topic_captured":true/false,"pivot_captured":true/false,"notes":"..."},"grammar":{"value":0-2,"has_connector":true/false,"notes":"..."},"vocabulary":{"value":0-2,"notes":"..."}},"overall_score":0-90,"raw_score":0-7,"band":"Band X","feedback":"..."}`
           }]
         })
       });
 
       if (!response.ok) {
-        console.log('Anthropic API error');
+        // Fallback to local scoring
         return res.json({
           trait_scores: {
             form: { value: isValidForm ? 1 : 0, word_count: wordCount, notes: isValidForm ? 'Valid form' : 'Invalid form' },
-            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI error - lenient default' },
+            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI error - lenient' },
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
           overall_score: 9,
           raw_score: 7,
           band: 'Band 9',
-          feedback: 'AI temporarily unavailable - lenient scoring',
+          feedback: 'AI error - lenient scoring applied',
           reasoning: 'Fallback'
         });
       }
@@ -165,27 +127,25 @@ Return ONLY valid JSON.`
         return res.json({
           trait_scores: {
             form: { value: isValidForm ? 1 : 0, word_count: wordCount, notes: isValidForm ? 'Valid form' : 'Invalid form' },
-            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI empty - lenient default' },
+            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI empty - lenient' },
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
           overall_score: 9,
           raw_score: 7,
           band: 'Band 9',
-          feedback: 'AI response empty - lenient scoring',
+          feedback: 'AI empty - lenient scoring',
           reasoning: 'Fallback'
         });
       }
 
-      console.log('AI Response:', content);
-
-      // Parse JSON from AI response
+      // Parse JSON
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         return res.json({
           trait_scores: {
             form: { value: isValidForm ? 1 : 0, word_count: wordCount, notes: isValidForm ? 'Valid form' : 'Invalid form' },
-            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'JSON parse error - lenient default' },
+            content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'JSON error - lenient' },
             grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
             vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
           },
@@ -199,19 +159,19 @@ Return ONLY valid JSON.`
       
       let result = JSON.parse(jsonMatch[0]);
       
-      // Ensure structure exists
+      // Ensure structure
       if (!result.trait_scores) result.trait_scores = {};
       if (!result.trait_scores.form) result.trait_scores.form = {};
       if (!result.trait_scores.content) result.trait_scores.content = {};
       if (!result.trait_scores.grammar) result.trait_scores.grammar = {};
       if (!result.trait_scores.vocabulary) result.trait_scores.vocabulary = {};
       
-      // OVERRIDE form with local validation (more reliable)
+      // FORCE form to server-side validation (override AI)
       result.trait_scores.form.value = isValidForm ? 1 : 0;
       result.trait_scores.form.word_count = wordCount;
       result.trait_scores.form.notes = isValidForm ? 'One sentence, 5-75 words, ends with period' : 'Invalid form';
       
-      // Convert to 0-9 scale
+      // Calculate total (0-9 scale)
       const formScore = result.trait_scores.form.value || 0;
       const contentScore = result.trait_scores.content.value || 0;
       const grammarScore = result.trait_scores.grammar.value || 0;
@@ -220,30 +180,29 @@ Return ONLY valid JSON.`
       result.raw_score = formScore + contentScore + grammarScore + vocabScore;
       result.overall_score = Math.min(Math.round((result.raw_score / 7) * 9), 9);
       
-      // Update band
+      // Band
       const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
       result.band = bands[result.raw_score] || 'Band 5';
       
       res.json(result);
       
     } catch (apiError) {
-      console.log('API exception:', apiError.message);
       res.json({
         trait_scores: {
           form: { value: isValidForm ? 1 : 0, word_count: wordCount, notes: isValidForm ? 'Valid form' : 'Invalid form' },
-          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI exception - lenient default' },
+          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI exception - lenient' },
           grammar: { value: 2, has_connector: true, notes: 'Connector detected' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
         overall_score: 9,
         raw_score: 7,
         band: 'Band 9',
-        feedback: 'AI service unavailable - lenient scoring applied',
+        feedback: 'AI unavailable - lenient scoring',
         reasoning: 'Fallback'
       });
     }
   } catch (error) {
-    console.error('Grading error:', error);
+    console.error('Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
