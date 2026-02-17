@@ -29,7 +29,8 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({ 
     message: 'PTE Scoring API', 
-    version: '1.0.0',
+    version: '2.0.0',
+    structure: 'TOPIC-PIVOT-CONCLUSION',
     endpoints: ['/api/health', '/api/grade']
   });
 });
@@ -80,9 +81,9 @@ app.post('/api/grade', async (req, res) => {
       return res.json({
         trait_scores: {
           form: { value: 0, word_count: formCheck.wordCount, notes: formNotes },
-          content: { value: 0, topic_captured: false, pivot_captured: false, notes: 'Form error' },
+          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
           grammar: { value: 0, has_connector: false, notes: 'Form error' },
-n          vocabulary: { value: 0, notes: 'Form error' }
+          vocabulary: { value: 0, notes: 'Form error' }
         },
         overall_score: 0,
         raw_score: 0,
@@ -94,8 +95,10 @@ n          vocabulary: { value: 0, notes: 'Form error' }
 
     // No Anthropic key - local scoring
     if (!ANTHROPIC_API_KEY) {
+      console.log('No Anthropic key, using local scoring');
+      
       const summaryLower = summary.toLowerCase();
-      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore'];
+      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore', 'therefore', 'thus', 'hence', 'consequently'];
       const hasConnector = connectors.some(c => summaryLower.includes(c));
       
       const rawScore = hasConnector ? 7 : 6;
@@ -104,7 +107,7 @@ n          vocabulary: { value: 0, notes: 'Form error' }
       return res.json({
         trait_scores: {
           form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'Local scoring' },
+          content: { value: 2, topic_captured: true, pivot_captured: true, conclusion_captured: true, notes: 'Local scoring' },
           grammar: { value: hasConnector ? 2 : 1, has_connector: hasConnector, notes: hasConnector ? 'Connector detected' : 'No connector' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
@@ -116,7 +119,7 @@ n          vocabulary: { value: 0, notes: 'Form error' }
       });
     }
 
-    // Anthropic AI scoring
+    // Anthropic AI scoring with TOPIC-PIVOT-CONCLUSION structure
     console.log('Calling Anthropic API...');
     
     try {
@@ -130,33 +133,43 @@ n          vocabulary: { value: 0, notes: 'Form error' }
         body: JSON.stringify({
           model: 'claude-3-haiku-20240307',
           max_tokens: 1500,
-          system: `You are a PTE Academic examiner. Score based on TOPIC-PIVOT structure:
+          system: `You are a PTE Academic examiner. Score based on TOPIC-PIVOT-CONCLUSION structure:
 
 FORM (0 or 1): Already validated. Return 1.
 
 CONTENT (0, 1, or 2):
-- 2/2: TOPIC captured + PIVOT accurately represented
-- 1/2: TOPIC mentioned but PIVOT missing or distorted
+- 2/2: TOPIC captured + PIVOT accurately represented + CONCLUSION/IMPLICATION included
+- 1/2: TOPIC mentioned but PIVOT or CONCLUSION missing/distorted
 - 0/2: TOPIC completely wrong
 
 GRAMMAR (0, 1, or 2): 2 with connector, 1 without, 0 with errors
 VOCABULARY (0, 1, or 2): 2 appropriate, 1 awkward, 0 inappropriate
 
-If pivot meaning is changed, deduct content points!`,
+If the pivot/conclusion meaning is changed, deduct content points!`,
           messages: [{
             role: 'user',
             content: `PASSAGE: "${passage.text}"
 
-TOPIC: ${passage.keyElements.critical}
-PIVOT: ${passage.keyElements.important}
+TOPIC-PIVOT-CONCLUSION STRUCTURE:
+- TOPIC (Main Idea): ${passage.keyElements.critical}
+- PIVOT (Contrast/Turning Point): ${passage.keyElements.important}
+- CONCLUSION (Implication/Result): ${passage.keyElements.conclusion || passage.keyElements.supplementary?.[0] || 'N/A'}
 
-SUMMARY: "${summary}"
+STUDENT SUMMARY: "${summary}"
+
+Evaluate: Does the summary capture TOPIC, accurately represent PIVOT, and include CONCLUSION?
 
 Return JSON only:
 {
   "trait_scores": {
     "form": { "value": 1, "word_count": ${formCheck.wordCount}, "notes": "Valid form" },
-    "content": { "value": 0-2, "topic_captured": true/false, "pivot_captured": true/false, "notes": "..." },
+    "content": { 
+      "value": 0-2, 
+      "topic_captured": true/false, 
+      "pivot_captured": true/false,
+      "conclusion_captured": true/false,
+      "notes": "..." 
+    },
     "grammar": { "value": 0-2, "has_connector": true/false, "notes": "..." },
     "vocabulary": { "value": 0-2, "notes": "..." }
   },
@@ -200,6 +213,7 @@ Return JSON only:
             value: contentValue,
             topic_captured: aiResult.trait_scores?.content?.topic_captured || false,
             pivot_captured: aiResult.trait_scores?.content?.pivot_captured || false,
+            conclusion_captured: aiResult.trait_scores?.content?.conclusion_captured || false,
             notes: aiResult.trait_scores?.content?.notes || 'Content assessed'
           },
           grammar: {
@@ -224,7 +238,7 @@ Return JSON only:
       
       // Fallback
       const summaryLower = summary.toLowerCase();
-      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore'];
+      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore', 'therefore', 'thus', 'hence', 'consequently'];
       const hasConnector = connectors.some(c => summaryLower.includes(c));
       
       const rawScore = hasConnector ? 7 : 6;
@@ -232,7 +246,7 @@ Return JSON only:
       return res.json({
         trait_scores: {
           form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'AI error - fallback' },
+          content: { value: 2, topic_captured: true, pivot_captured: true, conclusion_captured: true, notes: 'AI error - fallback' },
           grammar: { value: hasConnector ? 2 : 1, has_connector: hasConnector, notes: hasConnector ? 'Connector detected' : 'No connector' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
@@ -253,7 +267,7 @@ Return JSON only:
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ error: 'Internal server error' });
-n});
+});
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
