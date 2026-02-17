@@ -16,7 +16,7 @@ app.get('/api/health', (req, res) => {
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     localScoring: true
   });
-n});
+});
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -90,16 +90,16 @@ app.post('/api/grade', async (req, res) => {
       });
     }
 
-    // If no Anthropic key, use local scoring with basic content check
+    // If no Anthropic key, use local scoring
     if (!ANTHROPIC_API_KEY) {
       const summaryLower = summary.toLowerCase();
-      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though'];
+      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore'];
       const hasConnector = connectors.some(c => summaryLower.includes(c));
       
       return res.json({
         trait_scores: {
           form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'Local scoring - lenient' },
+n          content: { value: 2, topic_captured: true, pivot_captured: true, notes: 'Local scoring - lenient' },
           grammar: { value: hasConnector ? 2 : 1, has_connector: hasConnector, notes: hasConnector ? 'Connector detected' : 'No connector' },
           vocabulary: { value: 2, notes: 'Appropriate vocabulary' }
         },
@@ -123,39 +123,40 @@ app.post('/api/grade', async (req, res) => {
         body: JSON.stringify({
           model: 'claude-3-haiku-20240307',
           max_tokens: 1500,
-          system: `You are a PTE Academic examiner. Score strictly based on these rules:
+          system: `You are a PTE Academic examiner. Score based on TOPIC-PIVOT-CONCLUSION structure:
 
-**FORM (0 or 1):** Already validated as correct. Always return 1.
+**FORM (0 or 1):** Already validated. Always return 1.
 
-**CONTENT (0, 1, or 2):** Score based on ACCURACY of main idea capture:
-- 2/2: Main idea AND contrast/pivot are ACCURATELY captured (nuance preserved)
-- 1/2: Main topic mentioned but nuance changed, distorted, or key contrast missed
-- 0/2: Main idea completely wrong or missing
+**CONTENT (0, 1, or 2):** 
+- 2/2: TOPIC captured + PIVOT/contrast accurately represented
+- 1/2: TOPIC mentioned but PIVOT missing, distorted, or nuance changed
+- 0/2: TOPIC completely wrong or missing
 
 **GRAMMAR (0, 1, or 2):**
-- 2/2: Proper sentence structure with appropriate connector
-- 1/2: Grammatically correct but no connector or awkward phrasing
-- 0/2: Grammar errors present
+- 2/2: Proper sentence with connector (however, although, while, but, etc.)
+- 1/2: Grammatically correct but no connector
+- 0/2: Grammar errors
 
 **VOCABULARY (0, 1, or 2):**
-- 2/2: Appropriate word choices, can copy from passage
-- 1/2: Some awkward word choices
+- 2/2: Appropriate word choices (copying allowed)
+- 1/2: Some awkward choices
 - 0/2: Inappropriate vocabulary
 
-CRITICAL: If the summary changes the MEANING or NUANCE of the original, deduct content points!`,
+CRITICAL: If the summary changes the MEANING of the pivot/contrast, deduct content points!`,
           messages: [{
             role: 'user',
             content: `ORIGINAL PASSAGE:
 """${passage.text}"""
 
-KEY ELEMENTS TO CAPTURE:
-- Critical (Main Idea): ${passage.keyElements.critical}
-- Important (Contrast/Pivot): ${passage.keyElements.important}
+STRUCTURE TO EVALUATE:
+- TOPIC (Critical): ${passage.keyElements.critical}
+- PIVOT (Important contrast): ${passage.keyElements.important}
+- SUPPLEMENTARY: ${passage.keyElements.supplementary.join(', ')}
 
 STUDENT SUMMARY:
 """${summary}"""
 
-Evaluate ACCURATELY. Does the summary capture the EXACT nuance of the original?
+Evaluate: Does the summary capture the TOPIC and accurately represent the PIVOT/contrast?
 
 Return ONLY this JSON:
 {
@@ -165,19 +166,19 @@ Return ONLY this JSON:
       "value": 0-2, 
       "topic_captured": true/false, 
       "pivot_captured": true/false, 
-      "notes": "Explain what was captured or missed" 
+      "notes": "Did it capture topic? Did it preserve the pivot/contrast accurately?" 
     },
     "grammar": { 
       "value": 0-2, 
       "has_connector": true/false, 
-      "notes": "Grammar assessment" 
+      "notes": "Connector usage assessment" 
     },
     "vocabulary": { 
       "value": 0-2, 
       "notes": "Vocabulary assessment" 
     }
   },
-  "feedback": "Detailed feedback on what was good and what needs improvement"
+  "feedback": "What was captured well and what needs improvement"
 }`
           }]
         })
@@ -194,6 +195,7 @@ Return ONLY this JSON:
         throw new Error('Empty AI response');
       }
 
+      // Parse JSON from AI response
       const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error('No JSON found in AI response');
@@ -234,6 +236,7 @@ Return ONLY this JSON:
       const rawScore = traitScores.form.value + traitScores.content.value + traitScores.grammar.value + traitScores.vocabulary.value;
       const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
       
+      // Band mapping
       const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
       const band = bands[rawScore] || 'Band 5';
       
@@ -255,7 +258,7 @@ Return ONLY this JSON:
       
       // Fallback to lenient local scoring
       const summaryLower = summary.toLowerCase();
-      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though'];
+      const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore'];
       const hasConnector = connectors.some(c => summaryLower.includes(c));
       
       res.json({
