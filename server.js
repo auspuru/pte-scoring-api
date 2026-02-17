@@ -4,19 +4,21 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: '*', methods: ['GET', 'POST', 'OPTIONS'] }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
-// Local scoring function - FORM ALWAYS VALID
 function gradeLocally(summary, passage) {
   const trimmed = summary.trim();
   const words = trimmed.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
 
-  // Form - ALWAYS VALID (1/1)
   const formScore = 1;
 
-  // Content scoring
   const summaryLower = summary.toLowerCase();
   const critical = passage.keyElements.critical.toLowerCase();
   const important = passage.keyElements.important.toLowerCase();
@@ -36,7 +38,6 @@ function gradeLocally(summary, passage) {
   if (topicCaptured && pivotCaptured) contentScore = 2;
   else if (topicCaptured) contentScore = 1;
 
-  // Grammar scoring
   const hasSemicolon = summary.includes(';');
   const connectors = ['however', 'moreover', 'furthermore', 'consequently', 'therefore', 'nevertheless', 'but', 'and', 'although', 'so'];
   const hasConnector = connectors.some(c => summaryLower.includes(c));
@@ -45,7 +46,6 @@ function gradeLocally(summary, passage) {
   if (hasSemicolon && hasConnector) grammarScore = 2;
   else if (hasConnector) grammarScore = 1;
 
-  // Vocabulary
   const vocabScore = 2;
 
   const rawScore = formScore + contentScore + grammarScore + vocabScore;
@@ -56,7 +56,7 @@ function gradeLocally(summary, passage) {
   return {
     trait_scores: {
       form: { value: 1, word_count: wordCount, notes: 'Valid form' },
-      content: { value: contentScore, topic_captured: topicCaptured, pivot_captured: pivotCaptured, notes: `Topic: ${topicCaptured ? '✓' : '✗'}, Pivot: ${pivotCaptured ? '✓' : '✗'}` },
+      content: { value: contentScore, topic_captured: topicCaptured, pivot_captured: pivotCaptured, notes: 'Content scored' },
       grammar: { value: grammarScore, has_connector: hasConnector, notes: hasSemicolon ? 'Semicolon + connector' : hasConnector ? 'Connector' : 'No connector' },
       vocabulary: { value: vocabScore, notes: 'Appropriate vocabulary' }
     },
@@ -71,7 +71,9 @@ function gradeLocally(summary, passage) {
 app.post('/api/grade', async (req, res) => {
   try {
     const { summary, passage } = req.body;
-    if (!summary || !passage) return res.status(400).json({ error: 'Missing data' });
+    if (!summary || !passage) {
+      return res.status(400).json({ error: 'Missing data' });
+    }
     
     const result = gradeLocally(summary, passage);
     res.json(result);
@@ -82,4 +84,9 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', anthropic
+  res.json({ status: 'ok', anthropicConfigured: false });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
