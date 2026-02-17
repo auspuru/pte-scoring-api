@@ -8,7 +8,7 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// ============ LOCAL GRADING FUNCTIONS ============
+// ============ SMART CONCEPT DETECTION ============
 
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
@@ -43,25 +43,58 @@ function validateForm(summary) {
   
   const isValidForm = errors.length === 0;
   
-  return { 
-    wordCount, 
-    isValidForm,
-    errors: isValidForm ? [] : errors
-  };
+  return { wordCount, isValidForm, errors: isValidForm ? [] : errors };
 }
 
-// Extract key concepts from text
+// Extract semantic concepts (meaning-bearing words)
 function extractConcepts(text) {
   if (!text) return [];
   
   const stopWords = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 
     'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should',
-    'may', 'might', 'must', 'shall', 'can', 'need', 'dare', 'ought', 'used', 'to', 'of',
-    'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during',
-    'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then',
-    'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more',
-    'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so',
-    'than', 'too', 'very', 'just', 'and', 'but', 'if', 'or', 'because', 'until', 'while']);
+    'may', 'might', 'must', 'shall', 'can', 'need', 'to', 'of', 'in', 'for', 'on', 'with', 
+    'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 
+    'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 
+    'why', 'how', 'all', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 
+    'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'and', 'but', 'if', 'or', 
+    'because', 'until', 'while', 'this', 'that', 'these', 'those', 'they', 'them', 'their', 
+    'there', 'then', 'than', 'also', 'its', 'it', 'he', 'she', 'his', 'her', 'him', 'we', 'us', 
+    'our', 'you', 'your', 'i', 'me', 'my', 'mine', 'am', 'get', 'got', 'gets', 'getting', 'go', 
+    'goes', 'went', 'going', 'gone', 'make', 'makes', 'made', 'making', 'take', 'takes', 'took', 
+    'taking', 'come', 'comes', 'came', 'coming', 'see', 'sees', 'saw', 'seen', 'seeing', 'know', 
+    'knows', 'knew', 'known', 'knowing', 'think', 'thinks', 'thought', 'thinking', 'say', 'says', 
+    'said', 'saying', 'use', 'uses', 'used', 'using', 'find', 'finds', 'found', 'finding', 'give', 
+    'gives', 'gave', 'given', 'giving', 'tell', 'tells', 'told', 'telling', 'become', 'becomes', 
+    'became', 'becoming', 'leave', 'leaves', 'left', 'leaving', 'put', 'puts', 'putting', 'mean', 
+    'means', 'meant', 'meaning', 'keep', 'keeps', 'kept', 'keeping', 'let', 'lets', 'letting', 
+    'begin', 'begins', 'began', 'begun', 'beginning', 'seem', 'seems', 'seemed', 'seeming', 'help', 
+    'helps', 'helped', 'helping', 'show', 'shows', 'showed', 'shown', 'showing', 'hear', 'hears', 
+    'heard', 'hearing', 'play', 'plays', 'played', 'playing', 'run', 'runs', 'ran', 'running', 
+    'move', 'moves', 'moved', 'moving', 'live', 'lives', 'lived', 'living', 'believe', 'believes', 
+    'believed', 'believing', 'bring', 'brings', 'brought', 'bringing', 'happen', 'happens', 
+    'happened', 'happening', 'write', 'writes', 'wrote', 'written', 'writing', 'provide', 'provides', 
+    'provided', 'providing', 'sit', 'sits', 'sat', 'sitting', 'stand', 'stands', 'stood', 'standing', 
+    'lose', 'loses', 'lost', 'losing', 'pay', 'pays', 'paid', 'paying', 'meet', 'meets', 'met', 
+    'meeting', 'include', 'includes', 'included', 'including', 'continue', 'continues', 'continued', 
+    'continuing', 'set', 'sets', 'setting', 'learn', 'learns', 'learned', 'learning', 'change', 
+    'changes', 'changed', 'changing', 'lead', 'leads', 'led', 'leading', 'understand', 'understands', 
+    'understood', 'understanding', 'watch', 'watches', 'watched', 'watching', 'follow', 'follows', 
+    'followed', 'following', 'stop', 'stops', 'stopped', 'stopping', 'create', 'creates', 'created', 
+    'creating', 'speak', 'speaks', 'spoke', 'spoken', 'speaking', 'read', 'reads', 'reading', 'allow', 
+    'allows', 'allowed', 'allowing', 'add', 'adds', 'added', 'adding', 'spend', 'spends', 'spent', 
+    'spending', 'grow', 'grows', 'grew', 'grown', 'growing', 'open', 'opens', 'opened', 'opening', 
+    'walk', 'walks', 'walked', 'walking', 'win', 'wins', 'won', 'winning', 'offer', 'offers', 'offered', 
+    'offering', 'remember', 'remembers', 'remembered', 'remembering', 'love', 'loves', 'loved', 'loving', 
+    'consider', 'considers', 'considered', 'considering', 'appear', 'appears', 'appeared', 'appearing', 
+    'buy', 'buys', 'bought', 'buying', 'wait', 'waits', 'waited', 'waiting', 'serve', 'serves', 'served', 
+    'serving', 'die', 'dies', 'died', 'dying', 'send', 'sends', 'sent', 'sending', 'expect', 'expects', 
+    'expected', 'expecting', 'build', 'builds', 'built', 'building', 'stay', 'stays', 'stayed', 'staying', 
+    'fall', 'falls', 'fell', 'fallen', 'falling', 'cut', 'cuts', 'cutting', 'reach', 'reaches', 'reached', 
+    'reaching', 'kill', 'kills', 'killed', 'killing', 'remain', 'remains', 'remained', 'remaining', 'suggest', 
+    'suggests', 'suggested', 'suggesting', 'raise', 'raises', 'raised', 'raising', 'pass', 'passes', 'passed', 
+    'passing', 'sell', 'sells', 'sold', 'selling', 'require', 'requires', 'required', 'requiring', 'report', 
+    'reports', 'reported', 'reporting', 'decide', 'decides', 'decided', 'deciding', 'pull', 'pulls', 'pulled', 
+    'pulling']);
   
   return text.toLowerCase()
     .replace(/[^\w\s]/g, ' ')
@@ -69,7 +102,7 @@ function extractConcepts(text) {
     .filter(w => w.length > 3 && !stopWords.has(w));
 }
 
-// Calculate semantic similarity between two texts
+// Calculate Jaccard similarity
 function calculateSimilarity(text1, text2) {
   const concepts1 = new Set(extractConcepts(text1));
   const concepts2 = new Set(extractConcepts(text2));
@@ -82,92 +115,143 @@ function calculateSimilarity(text1, text2) {
   return intersection.size / union.size;
 }
 
-// Check for keyword presence (more lenient than similarity)
-function checkKeywordPresence(summary, keyText) {
-  if (!keyText) return { present: false, score: 0 };
-  
+// SMART concept detection with validation
+function detectConceptsSmart(summary, passage) {
   const sumLower = summary.toLowerCase();
-  const keyLower = keyText.toLowerCase();
   
-  // Extract important words (4+ chars) from key text
-  const keyWords = keyLower
-    .split(/\s+/)
-    .map(w => w.replace(/[^\w]/g, ''))
-    .filter(w => w.length >= 4);
+  // Get key elements
+  const topicText = passage.keyElements?.critical || '';
+  const pivotText = passage.keyElements?.important || '';
+  const conclusionText = passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || '';
   
-  if (keyWords.length === 0) return { present: false, score: 0 };
+  // ========== TOPIC DETECTION ==========
+  // Check if main subject is present
+  const topicConcepts = extractConcepts(topicText);
+  const topicMatches = topicConcepts.filter(c => sumLower.includes(c));
+  const topicSim = calculateSimilarity(summary, topicText);
+  const topicCaptured = topicMatches.length >= Math.max(2, topicConcepts.length * 0.25) || topicSim >= 0.2;
   
-  // Count how many key words appear in summary
-  const matches = keyWords.filter(word => sumLower.includes(word)).length;
-  const score = matches / keyWords.length;
+  // ========== PIVOT DETECTION (SMART) ==========
+  // Pivot requires: (1) main topic present AND (2) contrasting element present
+  const pivotConcepts = extractConcepts(pivotText);
   
-  // Also check for semantic similarity as backup
-  const simScore = calculateSimilarity(summary, keyText);
+  // Extract the "contrast" part of pivot (usually after "despite", "although", "while", "but")
+  const contrastKeywords = ['despite', 'although', 'while', 'but', 'however', 'yet', 'though', 'whereas', 'nevertheless'];
+  let pivotContrastPart = pivotText;
   
-  // Return true if either method shows good coverage
-  return {
-    present: score >= 0.25 || simScore >= 0.2,
-    keywordScore: Math.round(score * 100),
-    simScore: Math.round(simScore * 100)
-  };
-}
-
-// Local content analysis - MORE LENIENT
-function analyzeContentLocal(summary, passage) {
-  // TOPIC check
-  const topicCheck = checkKeywordPresence(summary, passage.keyElements?.critical || '');
-  
-  // PIVOT check - be more lenient
-  const pivotCheck = checkKeywordPresence(summary, passage.keyElements?.important || '');
-  
-  // CONCLUSION check
-  const conclusionCheck = checkKeywordPresence(summary, 
-    passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || '');
-  
-  // Calculate content score
-  let contentScore = 2;
-  if (!topicCheck.present) contentScore -= 1;
-  if (!pivotCheck.present) contentScore -= 0.5;
-  if (!conclusionCheck.present) contentScore -= 0.3;
-  contentScore = Math.max(0, contentScore);
-  
-  // Check for connectors
-  const connectorPattern = /\b(however|although|while|but|yet|nevertheless|whereas|despite|though|moreover|furthermore|therefore|thus|hence|consequently|and|so)\b/i;
-  const hasConnector = connectorPattern.test(summary);
-  
-  return {
-    scores: {
-      content: Math.round(contentScore),
-      topic: { 
-        captured: topicCheck.present, 
-        keywordScore: topicCheck.keywordScore,
-        simScore: topicCheck.simScore
-      },
-      pivot: { 
-        captured: pivotCheck.present, 
-        keywordScore: pivotCheck.keywordScore,
-        simScore: pivotCheck.simScore
-      },
-      conclusion: { 
-        captured: conclusionCheck.present, 
-        keywordScore: conclusionCheck.keywordScore,
-        simScore: conclusionCheck.simScore
-      }
-    },
-    grammar: {
-      hasConnector,
-      score: hasConnector ? 2 : 1
-    },
-    vocabulary: {
-      score: 2,
-      notes: 'Verbatim and paraphrase both accepted'
+  for (const kw of contrastKeywords) {
+    const idx = pivotText.toLowerCase().indexOf(kw);
+    if (idx !== -1) {
+      pivotContrastPart = pivotText.substring(idx + kw.length).trim();
+      break;
     }
+  }
+  
+  // Check if contrast concepts are in summary
+  const contrastConcepts = extractConcepts(pivotContrastPart);
+  const contrastMatches = contrastConcepts.filter(c => sumLower.includes(c));
+  const hasContrastElement = contrastMatches.length >= 1 || contrastKeywords.some(kw => sumLower.includes(kw));
+  
+  // Pivot is captured if: topic element present AND contrast element present
+  const pivotCaptured = topicMatches.length >= 1 && hasContrastElement;
+  const pivotSim = calculateSimilarity(summary, pivotText);
+  
+  // ========== CONCLUSION DETECTION ==========
+  const conclusionConcepts = extractConcepts(conclusionText);
+  const conclusionMatches = conclusionConcepts.filter(c => sumLower.includes(c));
+  const conclusionSim = conclusionText ? calculateSimilarity(summary, conclusionText) : 1;
+  const conclusionCaptured = !conclusionText || conclusionMatches.length >= 1 || conclusionSim >= 0.15;
+  
+  // ========== CONTRADICTION DETECTION ==========
+  const contradictions = [];
+  const passageLower = (passage.text || '').toLowerCase();
+  
+  // Check for reversed relationships
+  const reversals = [
+    { pos: 'not talent but persistence', neg: 'talent not persistence', desc: 'Reversed: talent over persistence' },
+    { pos: 'reading remains', neg: 'reading declining', desc: 'Reversed: reading declining' },
+    { pos: 'advantages outweigh', neg: 'disadvantages outweigh', desc: 'Reversed: disadvantages over advantages' },
+    { pos: 'more important', neg: 'less important', desc: 'Reversed: importance' }
+  ];
+  
+  for (const r of reversals) {
+    if (passageLower.includes(r.pos.split(' ')[0]) && sumLower.includes(r.neg.split(' ')[0])) {
+      if (passageLower.includes(r.pos.split(' ').slice(-1)[0]) && sumLower.includes(r.neg.split(' ').slice(-1)[0])) {
+        contradictions.push(r.desc);
+      }
+    }
+  }
+  
+  // Check for negation flips
+  const negations = ['not', 'no', 'never', 'nothing', 'neither', 'nor', 'hardly', 'scarcely', 'barely'];
+  const keyPhrases = extractConcepts(passage.text || '').slice(0, 10);
+  
+  for (const phrase of keyPhrases) {
+    const phraseInPassage = passageLower.includes(phrase);
+    const negatedInSummary = negations.some(n => {
+      const idx = sumLower.indexOf(phrase);
+      if (idx === -1) return false;
+      const before = sumLower.substring(Math.max(0, idx - 20), idx);
+      return before.includes(` ${n} `) || before.endsWith(` ${n}`);
+    });
+    
+    if (phraseInPassage && negatedInSummary) {
+      contradictions.push(`Negation: "${phrase}"`);
+    }
+  }
+  
+  return {
+    topic: {
+      captured: topicCaptured,
+      matches: topicMatches.length,
+      total: topicConcepts.length,
+      similarity: Math.round(topicSim * 100)
+    },
+    pivot: {
+      captured: pivotCaptured,
+      hasContrastElement,
+      contrastMatches: contrastMatches.length,
+      similarity: Math.round(pivotSim * 100)
+    },
+    conclusion: {
+      captured: conclusionCaptured,
+      matches: conclusionMatches.length,
+      similarity: Math.round(conclusionSim * 100)
+    },
+    contradictions
   };
 }
 
-// ============ AI GRADING ============
+// Calculate content score based on detection
+function calculateContentScore(detection) {
+  let score = 2;
+  
+  // Topic is critical
+  if (!detection.topic.captured) {
+    score -= 1;
+  }
+  
+  // Pivot is important
+  if (!detection.pivot.captured) {
+    score -= 0.5;
+  }
+  
+  // Conclusion is supplementary
+  if (!detection.conclusion.captured) {
+    score -= 0.3;
+  }
+  
+  // Contradictions are severe
+  if (detection.contradictions.length > 0) {
+    score -= 0.5 * detection.contradictions.length;
+  }
+  
+  return Math.max(0, Math.round(score));
+}
 
-async function gradeWithAI(summary, passage, formCheck, localResult) {
+// ============ AI VALIDATION ============
+
+async function validateWithAI(summary, passage, localDetection, localScore) {
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -178,116 +262,65 @@ async function gradeWithAI(summary, passage, formCheck, localResult) {
       },
       body: JSON.stringify({
         model: 'claude-3-haiku-20240307',
-        max_tokens: 1000,
-        temperature: 0.1,
-        system: `You are a PTE Academic examiner using TOPIC-PIVOT-CONCLUSION structure.
+        max_tokens: 800,
+        temperature: 0,
+        system: `You are a PTE Academic validator. Your job is to verify if the local analysis correctly identified captured concepts.
 
-SCORING PRINCIPLES:
-1. ACCEPT BOTH verbatim copying AND paraphrasing - judge on meaning, not wording
-2. CONTENT (0-2): Score based on accurate capture of key ideas
-   - 2/2: Topic, pivot, and conclusion all clearly present
-   - 1/2: Some elements missing or unclear  
-   - 0/2: Major contradiction or completely wrong topic
+VALIDATION RULES:
+1. TOPIC captured = main subject of passage appears in summary
+2. PIVOT captured = BOTH main topic AND contrasting element appear in summary
+3. CONCLUSION captured = result/implication appears in summary
+4. CONTRADICTION = summary says opposite of passage
 
-PIVOT DETECTION - BE VERY LENIENT:
-- Pivot is captured if summary mentions BOTH the main topic AND the contrasting/opposing element
-- Example: "reading is important while digital media increases" = pivot captured ✓
-- Example: "despite digital trends, reading remains key" = pivot captured ✓
-- Example: "reading helps academic success, noting digital media is rising" = pivot captured ✓
-- If the summary mentions the contrast element AT ALL, mark pivot as captured`,
+Respond with JSON only.`,
         messages: [{
           role: 'user',
           content: `PASSAGE: "${passage.text}"
 
 KEY ELEMENTS:
-- TOPIC: ${passage.keyElements?.critical || 'N/A'}
-- PIVOT: ${passage.keyElements?.important || 'N/A'}
-- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || 'N/A'}
+- TOPIC: ${passage.keyElements?.critical}
+- PIVOT: ${passage.keyElements?.important}
+- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]}
 
 STUDENT SUMMARY: "${summary}"
 
-LOCAL ANALYSIS (use this as guidance):
-- Topic keyword match: ${localResult.scores.topic.keywordScore}%
-- Pivot keyword match: ${localResult.scores.pivot.keywordScore}%
-- Conclusion keyword match: ${localResult.scores.conclusion.keywordScore}%
-- Has connector: ${localResult.grammar.hasConnector}
+LOCAL ANALYSIS:
+- Topic captured: ${localDetection.topic.captured} (${localDetection.topic.matches}/${localDetection.topic.total} concepts, ${localDetection.topic.similarity}% sim)
+- Pivot captured: ${localDetection.pivot.captured} (hasContrast: ${localDetection.pivot.hasContrastElement}, ${localDetection.pivot.similarity}% sim)
+- Conclusion captured: ${localDetection.conclusion.captured} (${localDetection.conclusion.similarity}% sim)
+- Contradictions: ${localDetection.contradictions.join(', ') || 'None'}
 
-IMPORTANT: If local analysis shows pivot keyword match >= 25%, mark pivot_captured as TRUE.
-
-Return JSON:
+Validate and return JSON:
 {
-  "trait_scores": {
-    "form": { "value": 1, "word_count": ${formCheck.wordCount}, "notes": "Valid form" },
-    "content": { 
-      "value": 0-2, 
-      "topic_captured": true/false, 
-      "pivot_captured": true/false, 
-      "conclusion_captured": true/false,
-      "notes": "Brief explanation"
-    },
-    "grammar": { "value": 0-2, "has_connector": true/false, "notes": "..." },
-    "vocabulary": { "value": 2, "notes": "Verbatim accepted" }
+  "validation": {
+    "topic_correct": true/false,
+    "pivot_correct": true/false,
+    "conclusion_correct": true/false,
+    "contradictions_correct": true/false
   },
-  "feedback": "What was good or needs improvement"
+  "adjustments": {
+    "topic_override": true/false/null,
+    "pivot_override": true/false/null,
+    "conclusion_override": true/false/null
+  },
+  "reason": "brief explanation"
 }`
         }]
       })
     });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
+    if (!response.ok) return null;
+    
     const data = await response.json();
     const aiContent = data.content?.[0]?.text;
     const jsonMatch = aiContent?.match(/\{[\s\S]*\}/);
     
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response');
-    }
+    if (!jsonMatch) return null;
     
-    const aiResult = JSON.parse(jsonMatch[0]);
-    
-    // OVERRIDE AI if local analysis shows good coverage but AI says no
-    let topicCaptured = aiResult.trait_scores?.content?.topic_captured;
-    let pivotCaptured = aiResult.trait_scores?.content?.pivot_captured;
-    let conclusionCaptured = aiResult.trait_scores?.content?.conclusion_captured;
-    
-    // If local shows good keyword match, override AI
-    if (localResult.scores.topic.keywordScore >= 25) topicCaptured = true;
-    if (localResult.scores.pivot.keywordScore >= 25) pivotCaptured = true;
-    if (localResult.scores.conclusion.keywordScore >= 20) conclusionCaptured = true;
-    
-    // Recalculate content score based on overrides
-    let contentScore = 2;
-    if (!topicCaptured) contentScore -= 1;
-    if (!pivotCaptured) contentScore -= 0.5;
-    if (!conclusionCaptured) contentScore -= 0.3;
-    contentScore = Math.max(0, Math.round(contentScore));
-    
-    return {
-      trait_scores: {
-        form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-        content: {
-          value: contentScore,
-          topic_captured: topicCaptured,
-          pivot_captured: pivotCaptured,
-          conclusion_captured: conclusionCaptured,
-          notes: aiResult.trait_scores?.content?.notes || 'Evaluated'
-        },
-        grammar: {
-          value: Math.min(Math.max(Number(aiResult.trait_scores?.grammar?.value) || localResult.grammar.score, 0), 2),
-          has_connector: aiResult.trait_scores?.grammar?.has_connector ?? localResult.grammar.hasConnector,
-          notes: aiResult.trait_scores?.grammar?.notes || ''
-        },
-        vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
-      },
-      feedback: aiResult.feedback || 'Evaluated by AI',
-      scoring_mode: 'ai'
-    };
+    return JSON.parse(jsonMatch[0]);
     
   } catch (error) {
-    console.error('AI grading error:', error.message);
+    console.error('AI validation error:', error);
     return null;
   }
 }
@@ -297,16 +330,9 @@ Return JSON:
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok',
-    version: '3.1.0',
+    version: '4.0.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
-    policy: 'Local keyword matching + AI for complex cases'
-  });
-});
-
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'PTE Scoring API v3.1.0',
-    endpoints: ['/api/health', '/api/grade']
+    policy: 'Smart concept detection with AI validation'
   });
 });
 
@@ -320,15 +346,14 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Missing summary or passage' });
     }
 
-    // Step 1: Validate form (always local)
+    // Step 1: Form validation
     const formCheck = validateForm(summary);
-    console.log('Form check:', formCheck);
     
     if (!formCheck.isValidForm) {
       return res.json({
         trait_scores: {
           form: { value: 0, word_count: formCheck.wordCount, notes: formCheck.errors.join('; ') },
-          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
+n          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
           grammar: { value: 0, has_connector: false, notes: 'Form error' },
           vocabulary: { value: 0, notes: 'Form error' }
         },
@@ -340,59 +365,83 @@ app.post('/api/grade', async (req, res) => {
       });
     }
 
-    // Step 2: Local content analysis (LENIENT)
-    const localResult = analyzeContentLocal(summary, passage);
-    console.log('Local analysis:', localResult);
+    // Step 2: Smart concept detection
+    const detection = detectConceptsSmart(summary, passage);
+    console.log('Smart detection:', detection);
     
-    // Step 3: Decide whether to use AI
-    // Use AI only for very low scores or when Anthropic is available and we want double-check
-    const useAI = ANTHROPIC_API_KEY && localResult.scores.content < 1.5;
-    console.log('Use AI:', useAI);
+    // Step 3: Calculate content score
+    let contentScore = calculateContentScore(detection);
     
-    let result;
+    // Step 4: AI validation for borderline cases
+    let aiValidation = null;
+    let useAIResult = false;
     
-    if (useAI) {
-      // Use AI for low-scoring cases
-      const aiResult = await gradeWithAI(summary, passage, formCheck, localResult);
+    if (ANTHROPIC_API_KEY && (contentScore === 1 || detection.contradictions.length > 0)) {
+      aiValidation = await validateWithAI(summary, passage, detection, contentScore);
       
-      if (aiResult) {
-        result = aiResult;
-      } else {
-        // Fallback to local
-        result = buildLocalResult(formCheck, localResult);
+      if (aiValidation) {
+        // Apply AI overrides if provided
+        if (aiValidation.adjustments?.topic_override !== null) {
+          detection.topic.captured = aiValidation.adjustments.topic_override;
+        }
+        if (aiValidation.adjustments?.pivot_override !== null) {
+          detection.pivot.captured = aiValidation.adjustments.pivot_override;
+        }
+        if (aiValidation.adjustments?.conclusion_override !== null) {
+          detection.conclusion.captured = aiValidation.adjustments.conclusion_override;
+        }
+        
+        // Recalculate score after adjustments
+        contentScore = calculateContentScore(detection);
+        useAIResult = true;
       }
-    } else {
-      // Use local scoring (more lenient)
-      result = buildLocalResult(formCheck, localResult);
     }
     
-    // Calculate final scores
-    const rawScore = result.trait_scores.form.value + 
-                     result.trait_scores.content.value + 
-                     result.trait_scores.grammar.value + 
-                     result.trait_scores.vocabulary.value;
+    // Step 5: Grammar check
+    const connectorPattern = /\b(however|although|while|but|yet|nevertheless|whereas|despite|though|moreover|furthermore|therefore|thus|hence|consequently)\b/i;
+    const hasConnector = connectorPattern.test(summary);
+    const grammarScore = hasConnector ? 2 : 1;
     
+    // Step 6: Build result
+    const rawScore = 1 + contentScore + grammarScore + 2;
     const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
-    
     const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
     
-    const finalResult = {
-      ...result,
+    const result = {
+      trait_scores: {
+        form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
+        content: {
+          value: contentScore,
+          topic_captured: detection.topic.captured,
+          pivot_captured: detection.pivot.captured,
+          conclusion_captured: detection.conclusion.captured,
+          notes: detection.contradictions.length > 0 
+            ? `Contradictions: ${detection.contradictions.join(', ')}`
+            : `Topic: ${detection.topic.similarity}%, Pivot: ${detection.pivot.similarity}%`
+        },
+        grammar: {
+          value: grammarScore,
+          has_connector: hasConnector,
+          notes: hasConnector ? 'Connector present' : 'No connector'
+        },
+        vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
+      },
       overall_score: overallScore,
       raw_score: rawScore,
       band: bands[rawScore] || 'Band 5',
-      local_analysis: {
-        topic_keyword_match: localResult.scores.topic.keywordScore,
-        topic_sim: localResult.scores.topic.simScore,
-        pivot_keyword_match: localResult.scores.pivot.keywordScore,
-        pivot_sim: localResult.scores.pivot.simScore,
-        conclusion_keyword_match: localResult.scores.conclusion.keywordScore,
-        conclusion_sim: localResult.scores.conclusion.simScore
-      }
+      feedback: detection.contradictions.length > 0
+        ? `Contradictions detected: ${detection.contradictions.join(', ')}`
+        : contentScore >= 2
+          ? 'Excellent coverage of key ideas'
+          : contentScore >= 1
+            ? 'Good coverage, some elements could be clearer'
+            : 'Key ideas missing or unclear',
+      scoring_mode: useAIResult ? 'ai_validated' : 'local',
+      detection_details: detection
     };
     
-    console.log('Final result:', finalResult);
-    res.json(finalResult);
+    console.log('Final result:', result);
+    res.json(result);
     
   } catch (error) {
     console.error('Grading error:', error);
@@ -400,41 +449,7 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
-function buildLocalResult(formCheck, localResult) {
-  const contentScore = localResult.scores.content;
-  const grammarScore = localResult.grammar.score;
-  const rawScore = 1 + contentScore + grammarScore + 2;
-  
-  return {
-    trait_scores: {
-      form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-      content: {
-        value: contentScore,
-        topic_captured: localResult.scores.topic.captured,
-        pivot_captured: localResult.scores.pivot.captured,
-        conclusion_captured: localResult.scores.conclusion.captured,
-        notes: `Topic: ${localResult.scores.topic.keywordScore}%, Pivot: ${localResult.scores.pivot.keywordScore}%`
-      },
-      grammar: {
-        value: grammarScore,
-        has_connector: localResult.grammar.hasConnector,
-        notes: localResult.grammar.hasConnector ? 'Connector present' : 'No connector'
-      },
-      vocabulary: { value: 2, notes: 'Verbatim and paraphrase accepted' }
-    },
-    feedback: contentScore >= 1.5 ? 'Good coverage of key ideas' : 'Some key elements missing',
-    scoring_mode: 'local'
-  };
-}
-
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE Scoring API v3.1.0 on port ${PORT}`);
-  console.log(`📝 Lenient keyword matching + AI for edge cases`);
-  console.log(`🤖 Anthropic: ${ANTHROPIC_API_KEY ? 'Configured' : 'Not configured'}`);
+  console.log(`✅ PTE Scoring API v4.0.0 (Smart Detection) on port ${PORT}`);
+  console.log(`🤖 AI validation: ${ANTHROPIC_API_KEY ? 'Enabled' : 'Disabled'}`);
 });
