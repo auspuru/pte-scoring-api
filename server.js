@@ -12,7 +12,7 @@ app.use(express.json({ limit: '10mb' }));
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
     return { wordCount: 0, isValidForm: false, errors: ['Invalid input'] };
-  }
+  } 
   
   const trimmed = summary.trim();
   const words = trimmed.split(/\s+/).filter(w => w.length > 0);
