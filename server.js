@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -9,19 +8,19 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // ========== UTILITY FUNCTIONS ==========
-
-// Calculate semantic similarity between two texts (Jaccard index on content words)
 function calculateSimilarity(text1, text2) {
   const set1 = new Set(text1.toLowerCase().match(/\b[a-z]{4,}\b/g) || []);
   const set2 = new Set(text2.toLowerCase().match(/\b[a-z]{4,}\b/g) || []);
-  
   const intersection = new Set([...set1].filter(x => set2.has(x)));
   const union = new Set([...set1, ...set2]);
-  
   return union.size === 0 ? 0 : intersection.size / union.size;
 }
 
-// Extract key concepts (nouns/verbs) - simplified
+// *** commonWords defined at module level (before extractConcepts) ***
+const commonWords = new Set([
+  // ... your long list goes here ...
+]);
+
 function extractConcepts(text) {
   if (!text) return [];
   return text.toLowerCase()
@@ -31,7 +30,6 @@ function extractConcepts(text) {
     .filter(w => !commonWords.has(w));
 }
 
-// Bot/Template detection patterns
 const botPatterns = [
   /\b(this passage|the passage|the text|the author)\b/gi,
   /\b(not only.*but also|on the one hand.*on the other hand)\b/gi,
@@ -44,50 +42,33 @@ const botPatterns = [
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
     return { wordCount: 0, isValidForm: false, errors: ['Invalid input'] };
-  } 
-  
+  }
   const trimmed = summary.trim();
   const words = trimmed.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
-  
   const errors = [];
-  
+
   if (wordCount < 5) errors.push('Too short (minimum 5 words)');
   if (wordCount > 75) errors.push('Too long (maximum 75 words)');
-  
+
   const sentenceMatches = trimmed.match(/[.!?]+\s+[A-Z]/g);
   if (sentenceMatches && sentenceMatches.length > 0) {
     errors.push('Multiple sentences detected');
   }
-  
-  if (!/[.!?]$/.test(trimmed)) {
-    errors.push('Must end with punctuation');
-  }
-  
-  if (/[\n\r]/.test(summary)) {
-    errors.push('Contains line breaks');
-  }
-  
-  if (/^[•\-*\d]\s|^\d+\.\s/m.test(summary)) {
-    errors.push('Contains bullet points');
-  }
-  
-  return { 
-    wordCount, 
-    isValidForm: errors.length === 0, 
-    errors 
-  };
+  if (!/[.!?]$/.test(trimmed)) errors.push('Must end with punctuation');
+  if (/[\n\r]/.test(summary)) errors.push('Contains line breaks');
+  if (/^[•\-*\d]\s|^\d+\.\s/m.test(summary)) errors.push('Contains bullet points');
+
+  return { wordCount, isValidForm: errors.length === 0, errors };
 }
 
 // ========== AI GRADING (PRIMARY) ==========
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
-  
   try {
-    // Check for copy-paste (high similarity = potential plagiarism)
     const similarity = calculateSimilarity(summary, passage.text);
     const isLikelyCopied = similarity > 0.65;
-    
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -103,32 +84,28 @@ async function aiGrade(summary, passage) {
 
 PASSAGE KEY ELEMENTS:
 - CRITICAL/TOPIC: ${passage.keyElements?.critical || 'N/A'}
-- IMPORTANT/PIVOT: ${passage.keyElements?.important || 'N/A'}  
+- IMPORTANT/PIVOT: ${passage.keyElements?.important || 'N/A'}
 - CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || 'N/A'}
 
 STRICT RULES:
-1. CONTENT (0-2): 
-   - 2 = ALL key elements captured with EXACT meaning preserved (paraphrasing OK, meaning changes are NOT)
-   - 1 = Minor meaning distortion OR missing supplementary elements only
-   - 0 = Missing critical/important elements OR major meaning errors OR contradictions
-   - If student misses the main topic or pivot point → AUTOMATIC 0
-
+1. CONTENT (0-3): 1 point per captured element
+   - 1 point if TOPIC captured with meaning preserved
+   - 1 point if PIVOT captured with meaning preserved
+   - 1 point if CONCLUSION captured with meaning preserved
+   - Paraphrasing OK, meaning changes are NOT
 2. PARAPHRASE DETECTION:
-   - Accept synonyms that preserve exact meaning (e.g., "car" → "vehicle")
-   - REJECT "synonyms" that change nuance (e.g., "important" → "minor", "increases" → "changes")
-   - REJECT missing qualifiers (e.g., "young people" → "people", "some" → "all")
-
+   - Accept synonyms that preserve exact meaning
+   - REJECT synonyms that change nuance
+   - REJECT missing qualifiers
 3. BOT/TEMPLATE DETECTION:
-   - Generic phrases like "This passage discusses", "There are advantages and disadvantages" = RED FLAG
-   - Unnatural word combinations suggest AI generation
+   - Generic phrases = RED FLAG
 
 SCORING CRITERIA:
 - FORM (0-1): 1 if 5-75 words, one sentence, proper punctuation
-- CONTENT (0-2): As above - STRICT - missing key idea = 0
+- CONTENT (0-3): 1 point per element captured
 - GRAMMAR (0-2): 2=no errors+connector, 1=minor errors, 0=major errors
 - VOCABULARY (0-2): Always 2 unless extremely repetitive
-
-${isLikelyCopied ? 'WARNING: Summary appears to be copy-pasted from passage (high lexical similarity). Penalize if verbatim reproduction.' : ''}
+${isLikelyCopied ? 'WARNING: High lexical similarity detected. Penalize if verbatim reproduction.' : ''}
 
 Return JSON ONLY with no markdown formatting:`,
         messages: [{
@@ -141,16 +118,16 @@ ${isLikelyCopied ? '\nNote: High similarity detected - check for copying.' : ''}
 Grade strictly and return EXACTLY this JSON structure:
 {
   "form": { "value": 0-1, "word_count": number, "notes": "..." },
-  "content": { 
-    "value": 0-2, 
+  "content": {
+    "value": 0-3,
     "topic_captured": true/false,
-    "pivot_captured": true/false, 
+    "pivot_captured": true/false,
     "conclusion_captured": true/false,
     "meaning_preserved": true/false,
     "notes": "..."
   },
-  "grammar": { 
-    "value": 0-2, 
+  "grammar": {
+    "value": 0-2,
     "spelling_errors": [],
     "grammar_issues": [],
     "has_connector": true/false,
@@ -170,30 +147,24 @@ Grade strictly and return EXACTLY this JSON structure:
       console.log('AI API error:', response.status);
       return null;
     }
-    
+
     const data = await response.json();
     const content = data.content?.[0]?.text;
-    
-    // Extract JSON from response
     const match = content.match(/\{[\s\S]*\}/);
     if (!match) {
       console.log('No JSON in AI response:', content);
       return null;
     }
-    
+
     const result = JSON.parse(match[0]);
-    
-    // Enforce strict content rule: if topic not captured, content must be 0
+
+    // Enforce: if topic not captured, content must be 0
     if (result.content && !result.content.topic_captured && result.content.value > 0) {
       result.content.value = 0;
       result.content.notes = (result.content.notes || '') + ' [AUTO-CORRECTED: Missing critical topic = 0]';
     }
-    
-    return {
-      ...result,
-      scoring_mode: 'ai'
-    };
-    
+
+    return { ...result, scoring_mode: 'ai' };
   } catch (e) {
     console.error('AI grading error:', e.message);
     return null;
@@ -203,74 +174,51 @@ Grade strictly and return EXACTLY this JSON structure:
 // ========== LOCAL FALLBACK GRADING ==========
 function localGrade(summary, passage, formCheck) {
   const sumLower = summary.toLowerCase();
-  const passageLower = passage.text.toLowerCase();
-  
-  // Calculate semantic similarity
   const similarity = calculateSimilarity(summary, passage.text);
   const isLikelyBot = botPatterns.some(pattern => pattern.test(summary));
-  
-  // Extract key concepts from passage elements
+
   const topicConcepts = extractConcepts(passage.keyElements?.critical);
   const pivotConcepts = extractConcepts(passage.keyElements?.important);
-  const conclusionConcepts = extractConcepts(passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]);
-  
-  // Check coverage with semantic weighting
+  const conclusionConcepts = extractConcepts(
+    passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]
+  );
+
   function checkConceptCoverage(concepts, text) {
-    if (!concepts || concepts.length === 0) return { captured: true, ratio: 1 };
+    if (!concepts || concepts.length === 0) return { captured: true, ratio: 1, matches: 0 };
     const matches = concepts.filter(c => text.includes(c)).length;
     return {
-      captured: matches >= Math.ceil(concepts.length * 0.5), // 50% threshold
+      captured: matches >= Math.ceil(concepts.length * 0.5),
       ratio: matches / concepts.length,
       matches
     };
   }
-  
+
   const topicCheck = checkConceptCoverage(topicConcepts, sumLower);
-  
-  // Pivot check - requires contrast word OR concept match
-  const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless'];
+
+  const contrastWords = ['however','although','while','but','yet','though','despite','whereas','nevertheless'];
   const hasContrast = contrastWords.some(w => sumLower.includes(w));
   const pivotCheck = checkConceptCoverage(pivotConcepts, sumLower);
   const pivotCaptured = (hasContrast && pivotCheck.ratio > 0.3) || pivotCheck.ratio >= 0.6;
-  
+
   const conclusionCheck = checkConceptCoverage(conclusionConcepts, sumLower);
-  
-  // STRICT CONTENT SCORING
-  let contentValue = 2;
-  let contentNotes = [];
-  
-  // If critical topic missing → automatic 0 (as requested)
-  if (!topicCheck.captured) {
-    contentValue = 0;
-    contentNotes.push(`CRITICAL TOPIC MISSING (${topicCheck.matches}/${topicConcepts.length} concepts)`);
-  } else if (topicCheck.ratio < 0.8) {
-    contentValue -= 1;
-    contentNotes.push(`Topic partial (${Math.round(topicCheck.ratio * 100)}%)`);
-  }
-  
-  // If pivot missing and we have one → penalize heavily
-  if (pivotConcepts.length > 0 && !pivotCaptured) {
-    if (contentValue > 0) contentValue = Math.min(contentValue, 1); // Cap at 1 if missing pivot
-    contentNotes.push(`PIVOT MISSING (${pivotCheck.matches}/${pivotConcepts.length} concepts, contrast:${hasContrast})`);
-  }
-  
-  // Conclusion missing → minor penalty (only if we had one)
-  if (conclusionConcepts.length > 0 && !conclusionCheck.captured) {
-    contentValue -= 0.5;
-    contentNotes.push(`Conclusion partial`);
-  }
-  
-  // Similarity penalties (copy-paste detection)
+
+  // CONTENT: 0-3 (1 point per element captured)
+  let contentValue = 0;
+  if (topicCheck.captured) contentValue += 1;
+  if (pivotCaptured) contentValue += 1;
+  if (conclusionCheck.captured) contentValue += 1;
+
+  const contentNotes = [
+    `Topic:${topicCheck.matches}/${topicConcepts.length}`,
+    `Pivot:${pivotCheck.matches}/${pivotConcepts.length}`,
+    `Conclusion:${conclusionCheck.matches}/${conclusionConcepts.length}`
+  ].join(', ');
+
+  // Similarity penalty — copy-paste detection
   if (similarity > 0.7) {
-    contentNotes.push(`HIGH SIMILARITY (${Math.round(similarity * 100)}%) - possible copy`);
-    contentValue -= 0.5;
-  } else if (similarity < 0.2 && contentValue > 0) {
-    contentNotes.push(`LOW SIMILARITY (${Math.round(similarity * 100)}%) - off-topic?`);
-    contentValue -= 0.5;
+    contentValue = Math.max(0, contentValue - 1);
   }
-  
-  contentValue = Math.max(0, Math.round(contentValue));
-  
+
   // Grammar check
   const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore', 'therefore', 'thus'];
   const hasConnector = connectors.some(c => sumLower.includes(c));
@@ -282,129 +230,225 @@ function localGrade(summary, passage, formCheck) {
     const words = summary.toLowerCase().match(/\b[a-z]+\b/g) || [];
   const spellingErrors = words.filter(w => w.length > 3 && !commonWords.has(w)).slice(0, 5);
   
-  const grammarIssues = [];
-  if (/\b(is|are|was|were)\s+\w+ing\b/i.test(summary)) grammarIssues.push('Check verb tense');
-  if (/\b(a)\s+[aeiou]/gi.test(summary)) grammarIssues.push('Use "an" before vowels');
-  
-  const grammarValue = spellingErrors.length > 0 ? 1 : (hasConnector ? 2 : 1);
-  
-  let feedback = '';
-  if (spellingErrors.length > 0) feedback += `Check: ${spellingErrors.join(', ')}. `;
-  if (contentValue >= 2) feedback += 'Excellent coverage!';
-  else if (contentValue === 1) {
-    const missing = [];
-    if (!topicCheck.captured) missing.push('topic');
-    if (!pivotCaptured) missing.push('pivot');
-    if (!conclusionCheck.captured) missing.push('conclusion');
-    feedback += missing.length > 0 ? `Good. Clarify ${missing.join(', ')}.` : 'Good.';
-  } else {
-    feedback += 'Key concepts missing.';
-  }
-  
-  return {
-    form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
-    content: {
-      value: contentValue,
-      topic_captured: topicCheck.captured,
-      pivot_captured: pivotCaptured,
-      conclusion_captured: conclusionCheck.captured,
-      notes: `Topic:${topicCheck.matches}/${topicCheck.total}, Pivot:${pivotMatches}/${pivotKeywords.length}, Conclusion:${conclusionCheck.matches}/${conclusionCheck.total}`
-    },
-    grammar: {
-      value: grammarValue,
-      spelling_errors: spellingErrors,
-      grammar_issues: grammarIssues,
-      has_connector: hasConnector,
-      connector_type: connectorType,
-      notes: hasConnector ? `Connector: ${connectorType}` : 'No connector'
-    },
-    vocabulary: { value: 2, notes: 'Verbatim & paraphrase OK' },
-    feedback,
-    scoring_mode: 'local'
-  };
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const PORT = parseInt(process.env.PORT) || 3001;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+
+// ========== UTILITY FUNCTIONS ==========
+function calculateSimilarity(text1, text2) {
+  const set1 = new Set(text1.toLowerCase().match(/\b[a-z]{4,}\b/g) || []);
+  const set2 = new Set(text2.toLowerCase().match(/\b[a-z]{4,}\b/g) || []);
+  const intersection = new Set([...set1].filter(x => set2.has(x)));
+  const union = new Set([...set1, ...set2]);
+  return union.size === 0 ? 0 : intersection.size / union.size;
 }
 
-// ========== API ENDPOINTS ==========
+// *** commonWords defined at module level (before extractConcepts) ***
+const commonWords = new Set([
+  // ... your long list goes here ...
+]);
 
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    version: '11.0.0',
-    anthropicConfigured: !!ANTHROPIC_API_KEY,
-    mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
-  });
-});
+function extractConcepts(text) {
+  if (!text) return [];
+  return text.toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 4)
+    .filter(w => !commonWords.has(w));
+}
 
-app.post('/api/grade', async (req, res) => {
-  try {
-    const { summary, passage } = req.body;
-    
-    if (!summary || !passage) {
-      return res.status(400).json({ error: 'Missing summary or passage' });
-    }
+const botPatterns = [
+  /\b(this passage|the passage|the text|the author)\b/gi,
+  /\b(not only.*but also|on the one hand.*on the other hand)\b/gi,
+  /\b(in conclusion|to conclude|in summary|to sum up)\b/gi,
+  /\b(furthermore|moreover|nevertheless|nonetheless)\s+furthermore/gi,
+  /\b(advantages?|disadvantages?|benefits?|drawbacks?)\s+and\s+(advantages?|disadvantages?|benefits?|drawbacks?)/gi
+];
 
-    const formCheck = validateForm(summary);
-    
-    if (!formCheck.isValidForm) {
-      return res.json({
-        
-        trait_scores: {
-          form: { value: 0, word_count: formCheck.wordCount, notes: formCheck.errors.join('; ') },
-          content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
-          grammar: { value: 0, has_connector: false, notes: 'Form error' },
-          vocabulary: { value: 0, notes: 'Form error' }
-        },
-        spell_check: { errors: [], hasErrors: false },
-        grammar_details: { issues: [], hasConnector: false },
-        overall_score: 0,
-        raw_score: 0,
-        band: 'Band 5',
-        feedback: `Form failed: ${formCheck.errors.join(', ')}`,
-        scoring_mode: 'local'
-      });
-    }
-
-    let result = await aiGrade(summary, passage);
-    
-    if (!result) {
-      console.log('AI failed, using local grading');
-      result = localGrade(summary, passage, formCheck);
-    }
-
-    const rawScore = result.form.value + result.content.value + result.grammar.value + result.vocabulary.value;
-    const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
-    const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
-
-    res.json({
-      trait_scores: {
-        form: result.form,
-        content: result.content,
-        grammar: result.grammar,
-        vocabulary: result.vocabulary
-      },
-      spell_check: { 
-        errors: result.grammar.spelling_errors || [], 
-        hasErrors: (result.grammar.spelling_errors || []).length > 0 
-      },
-      grammar_details: {
-        issues: result.grammar.grammar_issues || [],
-        hasConnector: result.grammar.has_connector,
-        connectorType: result.grammar.connector_type
-      },
-      overall_score: overallScore,
-      raw_score: rawScore,
-      band: bands[rawScore] || 'Band 5',
-      feedback: result.feedback,
-      scoring_mode: result.scoring_mode
-    });
-    
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal error' });
+// ========== FORM VALIDATION ==========
+function validateForm(summary) {
+  if (!summary || typeof summary !== 'string') {
+    return { wordCount: 0, isValidForm: false, errors: ['Invalid input'] };
   }
-});
+  const trimmed = summary.trim();
+  const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+  const wordCount = words.length;
+  const errors = [];
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v11.0.0 on port ${PORT}`);
-  console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
-});
+  if (wordCount < 5) errors.push('Too short (minimum 5 words)');
+  if (wordCount > 75) errors.push('Too long (maximum 75 words)');
+
+  const sentenceMatches = trimmed.match(/[.!?]+\s+[A-Z]/g);
+  if (sentenceMatches && sentenceMatches.length > 0) {
+    errors.push('Multiple sentences detected');
+  }
+  if (!/[.!?]$/.test(trimmed)) errors.push('Must end with punctuation');
+  if (/[\n\r]/.test(summary)) errors.push('Contains line breaks');
+  if (/^[•\-*\d]\s|^\d+\.\s/m.test(summary)) errors.push('Contains bullet points');
+
+  return { wordCount, isValidForm: errors.length === 0, errors };
+}
+
+// ========== AI GRADING (PRIMARY) ==========
+async function aiGrade(summary, passage) {
+  if (!ANTHROPIC_API_KEY) return null;
+  try {
+    const similarity = calculateSimilarity(summary, passage.text);
+    const isLikelyCopied = similarity > 0.65;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 800,
+        temperature: 0,
+        system: `You are a PTE Academic examiner. Grade summaries STRICTLY with ZERO tolerance for missing key ideas.
+
+PASSAGE KEY ELEMENTS:
+- CRITICAL/TOPIC: ${passage.keyElements?.critical || 'N/A'}
+- IMPORTANT/PIVOT: ${passage.keyElements?.important || 'N/A'}
+- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || 'N/A'}
+
+STRICT RULES:
+1. CONTENT (0-3): 1 point per captured element
+   - 1 point if TOPIC captured with meaning preserved
+   - 1 point if PIVOT captured with meaning preserved
+   - 1 point if CONCLUSION captured with meaning preserved
+   - Paraphrasing OK, meaning changes are NOT
+2. PARAPHRASE DETECTION:
+   - Accept synonyms that preserve exact meaning
+   - REJECT synonyms that change nuance
+   - REJECT missing qualifiers
+3. BOT/TEMPLATE DETECTION:
+   - Generic phrases = RED FLAG
+
+SCORING CRITERIA:
+- FORM (0-1): 1 if 5-75 words, one sentence, proper punctuation
+- CONTENT (0-3): 1 point per element captured
+- GRAMMAR (0-2): 2=no errors+connector, 1=minor errors, 0=major errors
+- VOCABULARY (0-2): Always 2 unless extremely repetitive
+${isLikelyCopied ? 'WARNING: High lexical similarity detected. Penalize if verbatim reproduction.' : ''}
+
+Return JSON ONLY with no markdown formatting:`,
+        messages: [{
+          role: 'user',
+          content: `PASSAGE: "${passage.text}"
+
+STUDENT SUMMARY: "${summary}"
+${isLikelyCopied ? '\nNote: High similarity detected - check for copying.' : ''}
+
+Grade strictly and return EXACTLY this JSON structure:
+{
+  "form": { "value": 0-1, "word_count": number, "notes": "..." },
+  "content": {
+    "value": 0-3,
+    "topic_captured": true/false,
+    "pivot_captured": true/false,
+    "conclusion_captured": true/false,
+    "meaning_preserved": true/false,
+    "notes": "..."
+  },
+  "grammar": {
+    "value": 0-2,
+    "spelling_errors": [],
+    "grammar_issues": [],
+    "has_connector": true/false,
+    "connector_type": "however/although/etc or null",
+    "notes": "..."
+  },
+  "vocabulary": { "value": 0-2, "notes": "..." },
+  "bot_detected": true/false,
+  "similarity_score": ${similarity.toFixed(2)},
+  "feedback": "One line feedback"
+}`
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      console.log('AI API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    const content = data.content?.[0]?.text;
+    const match = content.match(/\{[\s\S]*\}/);
+    if (!match) {
+      console.log('No JSON in AI response:', content);
+      return null;
+    }
+
+    const result = JSON.parse(match[0]);
+
+    // Enforce: if topic not captured, content must be 0
+    if (result.content && !result.content.topic_captured && result.content.value > 0) {
+      result.content.value = 0;
+      result.content.notes = (result.content.notes || '') + ' [AUTO-CORRECTED: Missing critical topic = 0]';
+    }
+
+    return { ...result, scoring_mode: 'ai' };
+  } catch (e) {
+    console.error('AI grading error:', e.message);
+    return null;
+  }
+}
+
+// ========== LOCAL FALLBACK GRADING ==========
+function localGrade(summary, passage, formCheck) {
+  const sumLower = summary.toLowerCase();
+  const similarity = calculateSimilarity(summary, passage.text);
+  const isLikelyBot = botPatterns.some(pattern => pattern.test(summary));
+
+  const topicConcepts = extractConcepts(passage.keyElements?.critical);
+  const pivotConcepts = extractConcepts(passage.keyElements?.important);
+  const conclusionConcepts = extractConcepts(
+    passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]
+  );
+
+  function checkConceptCoverage(concepts, text) {
+    if (!concepts || concepts.length === 0) return { captured: true, ratio: 1, matches: 0 };
+    const matches = concepts.filter(c => text.includes(c)).length;
+    return {
+      captured: matches >= Math.ceil(concepts.length * 0.5),
+      ratio: matches / concepts.length,
+      matches
+    };
+  }
+
+  const topicCheck = checkConceptCoverage(topicConcepts, sumLower);
+
+  const contrastWords = ['however','although','while','but','yet','though','despite','whereas','nevertheless'];
+  const hasContrast = contrastWords.some(w => sumLower.includes(w));
+  const pivotCheck = checkConceptCoverage(pivotConcepts, sumLower);
+  const pivotCaptured = (hasContrast && pivotCheck.ratio > 0.3) || pivotCheck.ratio >= 0.6;
+
+  const conclusionCheck = checkConceptCoverage(conclusionConcepts, sumLower);
+
+  // CONTENT: 0-3 (1 point per element captured)
+  let contentValue = 0;
+  if (topicCheck.captured) contentValue += 1;
+  if (pivotCaptured) contentValue += 1;
+  if (conclusionCheck.captured) contentValue += 1;
+
+  const contentNotes = [
+    `Topic:${topicCheck.matches}/${topicConcepts.length}`,
+    `Pivot:${pivotCheck.matches}/${pivotConcepts.length}`,
+    `Conclusion:${conclusionCheck.matches}/${conclusionConcepts.length}`
+  ].join(', ');
+
+  // Similarity penalty — copy-paste detection
+  if (similarity > 0.7) {
+    contentValue = Math.max(0, contentValue - 1);
+  }
+
+  // ===== GRAMMAR CHECK CONTINUES BELOW =====
