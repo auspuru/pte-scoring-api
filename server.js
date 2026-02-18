@@ -63,7 +63,7 @@ async function aiGrade(summary, passage) {
         model: 'claude-3-haiku-20240307',
         max_tokens: 800,
         temperature: 0,
-        system: `You are a PTE Academic examiner. Grade summaries STRICTLY.
+       system: `You are a PTE Academic examiner. Grade summaries STRICTLY.
 
 PASSAGE STRUCTURE:
 - TOPIC: ${passage.keyElements?.critical}
@@ -83,10 +83,12 @@ STRICT MEANING DETECTION RULES:
 
 SCORING:
 1. FORM (0-1): 1 if 5-75 words, one sentence, ends with punctuation
-2. CONTENT (0-2): 
-   - 2 = ALL elements captured with EXACT meaning preserved
-   - 1 = 2 elements correct OR minor meaning drift
-   - 0 = 0-1 elements OR major meaning errors
+2. CONTENT (0-3): 
+   - 3 = ALL 3 elements captured with EXACT meaning preserved
+   - 2 = 2 elements correct
+   - 1 = 1 element correct
+   - 0 = 0 elements OR major meaning errors
+   - DEDUCT 1 BAND for each missing element
 3. GRAMMAR (0-2): Check spelling, grammar, connectors
    - 2 = no errors, uses connector (however/although/while/but)
    - 1 = minor errors OR no connector
@@ -291,6 +293,7 @@ app.post('/api/grade', async (req, res) => {
     
     if (!formCheck.isValidForm) {
       return res.json({
+        
         trait_scores: {
           form: { value: 0, word_count: formCheck.wordCount, notes: formCheck.errors.join('; ') },
           content: { value: 0, topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form error' },
