@@ -190,20 +190,7 @@ function localGrade(summary, passage, formCheck) {
   if (!conclusionCheck.captured) contentValue -= 0.3;
   contentValue = Math.max(0, Math.round(contentValue));
 
- const Connectors = [
-  'and', 'but', 'or', 'nor', 'for', 'yet', 'so', 'although', 'though', 'even though', 
-  'while', 'whereas', 'if', 'unless', 'until', 'since', 'because', 'as', 'provided', 
-  'whenever', 'wherever', 'however', 'therefore', 'thus', 'hence', 'consequently', 
-  'nevertheless', 'nonetheless', 'moreover', 'furthermore', 'additionally', 'besides', 
-  'further', 'furthermore', 'accordingly', 'similarly', 'likewise', 'otherwise', 
-  'instead', 'rather', 'nonetheless', 'notwithstanding', 'regardless', 'anyway', 
-  'meanwhile', 'subsequently', 'previously', 'eventually', 'finally', 'lastly', 
-  'firstly', 'secondly', 'thirdly', 'namely', 'specifically', 'essentially', 
-  'basically', 'overall', 'admittedly', 'granted', 'alternatively', 'conversely', 
-  'simultaneously', 'henceforth', 'thereafter', 'further', 'moreover', 'nonetheless', 
-  'notwithstanding', 'otherwise', 'rather', 'similarly', 'still', 'then', 'therefore', 
-  'thus', 'whereupon', 'whenever', 'whereas', 'whereby', 'wherein'
-];'];
+  const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore', 'therefore', 'thus'];
   const hasConnector = connectors.some(c => sumLower.includes(c));
   const connectorType = hasConnector ? connectors.find(c => sumLower.includes(c)) : null;
 
