@@ -3,386 +3,393 @@ const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
+const PORT = process.env.PORT || 3001;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-// CORS configuration
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
+const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+
+// ─── BAND MAP ────────────────────────────────────────────────────────────────
+const BAND_MAP = {
+  0: 'Band 5', 1: 'Band 5', 2: 'Band 5',
+  3: 'Band 6', 4: 'Band 6',
+  5: 'Band 7', 6: 'Band 7',
+  7: 'Band 8',
+  8: 'Band 9'
+};
+
+// ─── RATE LIMITER (10 requests/minute per IP) ─────────────────────────────────
+const requestCounts = new Map();
+
+app.use((req, res, next) => {
+  if (req.path !== '/api/grade') return next();
+
+  const ip = req.ip || req.connection.remoteAddress;
+  const now = Date.now();
+  const windowStart = now - 60000;
+
+  for (const [key, time] of requestCounts) {
+    if (time < windowStart) requestCounts.delete(key);
+  }
+
+  const count = Array.from(requestCounts.entries())
+    .filter(([key, time]) => key.startsWith(ip) && time > windowStart)
+    .length;
+
+  if (count >= 10) {
+    return res.status(429).json({ error: 'Too many requests. Max 10 grades per minute.' });
+  }
+
+  requestCounts.set(`${ip}-${now}`, now);
+  next();
 });
 
-// Use Haiku model (available on your account)
-const MODEL = 'claude-3-haiku-20240307';
-
-// Cache for responses (max 500 entries)
-const cache = new Map();
+// ─── CACHE (size-limited, no memory leak) ────────────────────────────────────
+const gradeCache = new Map();
 const MAX_CACHE = 500;
 
-// Rate limiting (10 requests per minute per IP)
-const rateLimit = new Map();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS = 10;
-
-// Check rate limit
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const windowStart = now - RATE_LIMIT_WINDOW;
-  
-  if (!rateLimit.has(ip)) {
-    rateLimit.set(ip, []);
-  }
-  
-  const requests = rateLimit.get(ip).filter(time => time > windowStart);
-  requests.push(now);
-  rateLimit.set(ip, requests);
-  
-  return requests.length <= MAX_REQUESTS;
+function getCached(key) {
+  return gradeCache.get(key) || null;
 }
 
-// Health check endpoint
+function setCache(key, value) {
+  if (gradeCache.size >= MAX_CACHE) {
+    const firstKey = gradeCache.keys().next().value;
+    gradeCache.delete(firstKey);
+  }
+  gradeCache.set(key, value);
+}
+
+// ─── INPUT SANITIZATION (Prevent prompt injection) ───────────────────────────
+function sanitizeInput(text) {
+  return text
+    .replace(/ignore previous instructions/gi, '')
+    .replace(/system prompt/gi, '')
+    .replace(/you are now/gi, '')
+    .replace(/give me 90/gi, '')
+    .slice(0, 2000);
+}
+
+// ─── FINITE VERB VALIDATOR (Prevents noun-list gaming) ───────────────────────
+function hasFiniteVerb(text) {
+  const patterns = [
+    /\b(is|are|was|were|be|been|being)\b/i,
+    /\b(has|have|had|do|does|did|will|would|could|should|may|might|must)\s+\w+/i,
+    /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explains|persuaded|acknowledged|opted|demonstrates|indicates|reveals|discovered|challenges|advises|argues|claims|states|finds|identifies|examines|credit|discusses|transformed|overtook|dominates)\b/i
+  ];
+  return patterns.some(p => p.test(text));
+}
+
+// ─── FORM VALIDATION (grace zone + abbreviation handling + verb check) ────────
+function calculateForm(text, type) {
+  const cleanInput = sanitizeInput(text);
+  const wc = cleanInput.trim().split(/\s+/).filter(w => w.length > 0).length;
+
+  if (type === 'summarize-written-text') {
+    const cleanText = cleanInput.replace(/(?:Dr|Mr|Mrs|Ms|Prof|U\.K|U\.S|i\.e|e\.g|etc)\./gi, '##');
+    const sentenceCount = (cleanText.match(/[.!?](\s|$)/g) || []).length;
+
+    if (sentenceCount !== 1) return { score: 0, reason: 'Multiple sentences detected', wordCount: wc };
+    if (!hasFiniteVerb(cleanInput)) return { score: 0, reason: 'No finite verb — not a complete sentence', wordCount: wc };
+    if (wc >= 5 && wc <= 80) return { score: 1, reason: 'Valid', wordCount: wc };
+    return { score: 0, reason: wc < 5 ? 'Too short (min 5 words)' : 'Too long (max 75 words)', wordCount: wc };
+  }
+
+  if (type === 'write-essay') {
+    if (wc >= 200 && wc <= 300) return { score: 2, reason: 'Valid', wordCount: wc };
+    if ((wc >= 120 && wc < 200) || (wc > 300 && wc <= 380)) return { score: 1, reason: 'Outside ideal range', wordCount: wc };
+    return { score: 0, reason: wc < 120 ? 'Too short' : 'Too long', wordCount: wc };
+  }
+
+  return { score: 0, reason: 'Unknown type', wordCount: wc };
+}
+
+// ─── IMPROVED FIRST-PERSON DETECTION (Narrative vs Interview quotes) ──────────
+function checkFirstPersonTrap(text, passageText) {
+  const iCount = (passageText.match(/\b(I|my|me|I've|I'd|I'm)\b/g) || []).length;
+  // Only penalise true narratives (3+ first-person uses), not interview quotes with Dr./researcher
+  const isNarrative = iCount > 2 && !passageText.includes('Dr.') && !/researcher|professor|scientist/i.test(passageText);
+
+  if (isNarrative && /^\s*(I|My|Me)\b/.test(text)) {
+    return {
+      penalty: true,
+      note: "First-person trap: passage is a narrative using 'I/my' — student must shift to 'The author/narrator'.",
+      suggestion: "Change 'I made' to 'The author made' or 'The narrator made'."
+    };
+  }
+  return { penalty: false };
+}
+
+// ─── AI GRADING ENGINE ───────────────────────────────────────────────────────
+async function gradeResponse(text, type, passageText) {
+
+  const cacheKey = (text + type + passageText).slice(0, 200);
+  const cached = getCached(cacheKey);
+  if (cached) {
+    console.log('Cache hit');
+    return { ...cached, cached: true };
+  }
+
+  const firstPersonCheck = checkFirstPersonTrap(text, passageText);
+
+  const systemPrompt = [
+    'You are an elite PTE Academic Examiner. Evaluate ONLY against the passage provided.',
+    '',
+    '═══════════════════════════════════════════════════════',
+    'CONTENT — THE SWT TRINITY (0-3)',
+    '═══════════════════════════════════════════════════════',
+    'Award 1 point each for correctly capturing:',
+    '  TOPIC (1pt)      — Main subject introduced in first 1-2 sentences of passage.',
+    '  PIVOT (1pt)      — The contrast or turning point (markers: But, However, Yet, Although).',
+    '  CONCLUSION (1pt) — Final implication or resolution (last 1-2 sentences).',
+    '',
+    'CONTENT RULES:',
+    '  VERBATIM OK:      Copying nouns and technical terms directly is ACCEPTABLE — full marks.',
+    '  MEANING ERROR:    Swapping meaning (advantage->disadvantage) = 0 for that element.',
+    '  FACTUAL ERROR:    Wrong numbers or names = 0 for that element.',
+    '    Example: passage says "3.4 times" — student writes "34 times" = FACTUAL ERROR = 0.',
+    '  VERBATIM MISTAKE: Miscopying passage words (found-members vs founder-members) = -1 content.',
+    '  MISSING PIVOT:    If passage has But/However and student ignores it entirely = max 2/3.',
+    '  FIRST-PERSON:     Already pre-checked — see user message for penalty status.',
+    '',
+    '═══════════════════════════════════════════════════════',
+    'VOCABULARY (0-2) — APPROPRIATENESS IS PRIMARY',
+    '═══════════════════════════════════════════════════════',
+    'CRITICAL: Band 9 responses can score 2/2 with minimal synonym swaps.',
+    'Proof: "became the founder-members...; however, progress was not smooth;',
+    '  moreover, the UK\'s financial hub has overtaken rivals..." = 2/2 vocabulary.',
+    '',
+    '  2 = Word choice is appropriate and meaning is clear.',
+    '      Verbatim copying of nouns/terms is fine for 2/2.',
+    '      Smart swaps are a BONUS — detect and praise but do not require for 2.',
+    '  1 = Minor word choice issues that slightly affect clarity.',
+    '  0 = Word choice so poor that meaning is distorted or lost.',
+    '',
+    'SMART SWAP DETECTION (bonus only — does not change score directly):',
+    '  frustrated->dissatisfied, large->substantial, made a choice->opted for,',
+    '  advantages->benefits, familiar with->acknowledged, long way from->far from,',
+    '  good idea->beneficial decision, list compressed to category noun.',
+    '  → synonym_usage: "optimal" if 2+ swaps, "low" if 1, "none" if none.',
+    '',
+    'LIST COMPRESSION (Band 9 bonus):',
+    '  If student compressed 3+ passage items into a single category noun = compression_detected: true.',
+    '  Example: "shop, listen to music and communicate" → "communication methods".',
+    '  Praise in feedback.',
+    '',
+    '═══════════════════════════════════════════════════════',
+    'GRAMMAR (0-2) — Relaxed for minor spelling',
+    '═══════════════════════════════════════════════════════',
+    '  2 = Good overall control. 1-2 minor spelling errors ACCEPTABLE if meaning is clear.',
+    '      Correct connector with semicolon ("; however," / "; moreover,") = 2.',
+    '      Chaining 2+ connectors correctly = Band 9 signal — reward in feedback.',
+    '  1 = 3+ spelling errors OR missing connector OR 1 serious grammar error.',
+    '  0 = Errors that prevent understanding OR connector used with wrong logic.',
+    '',
+    'CONNECTOR LOGIC — wrong type = Grammar deduction:',
+    '  "however / yet / although / whereas"    → CONTRAST only.',
+    '  "moreover / furthermore / additionally"  → ADDITION only.',
+    '  "consequently / therefore / thus"        → CAUSE-EFFECT only.',
+    '',
+    'Return ONLY valid JSON. No markdown. No text outside the JSON object.',
+  ].join('\n');
+
+  const userPrompt = [
+    'PASSAGE:',
+    '"' + passageText + '"',
+    '',
+    'STUDENT RESPONSE:',
+    '"' + text + '"',
+    '',
+    'PRE-CHECK:',
+    firstPersonCheck.penalty
+      ? 'FIRST-PERSON TRAP DETECTED — deduct 1 content point. ' + firstPersonCheck.note
+      : 'No first-person trap.',
+    '',
+    'Return this exact JSON:',
+    '{',
+    '  "content": 0,',
+    '  "topic_captured": false,',
+    '  "pivot_captured": false,',
+    '  "conclusion_captured": false,',
+    '  "content_notes": "Specific: which Trinity element was missed and exactly why.",',
+    '  "grammar": {',
+    '    "score": 0,',
+    '    "spelling_errors": [{ "word": "misspelled", "suggestion": "correct" }],',
+    '    "grammar_issues": [{ "issue": "describe problem", "suggestion": "fix", "rule": "rule name" }],',
+    '    "has_connector": false,',
+    '    "connector_type": "contrast|addition|reason|none",',
+    '    "connector_logic_correct": true,',
+    '    "chained_connectors": false',
+    '  },',
+    '  "vocabulary": 0,',
+    '  "synonym_usage": "none|low|optimal",',
+    '  "smart_swaps_detected": ["e.g. frustrated->dissatisfied"],',
+    '  "compression_detected": false,',
+    '  "compressed_items": ["e.g. shop+music+communicate -> communication methods"],',
+    '  "feedback": "MISSING: [Topic/Pivot/Conclusion - exactly what was expected]. PRESENT: [what was captured well]. SWAPS: [list swaps found or none]. FIX: [one specific actionable suggestion]."',
+    '}',
+  ].join('\n');
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',  // ← REPLACED: Using Haiku instead of Sonnet
+      max_tokens: 1200,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }]
+    });
+
+    const rawText = response.content[0].text;
+    const match = rawText.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No JSON found in AI response');
+
+    const result = JSON.parse(match[0]);
+    const finalResult = { ...result, mode: 'ai' };
+    setCache(cacheKey, finalResult);
+    return finalResult;
+
+  } catch (err) {
+    console.error('AI Grading Error:', err.message);
+    return {
+      content: 0,
+      topic_captured: false,
+      pivot_captured: false,
+      conclusion_captured: false,
+      content_notes: 'Local fallback — AI unavailable.',
+      grammar: {
+        score: 1,
+        spelling_errors: [],
+        grammar_issues: [],
+        has_connector: false,
+        connector_type: 'none',
+        connector_logic_correct: false,
+        chained_connectors: false
+      },
+      vocabulary: 1,
+      synonym_usage: 'none',
+      smart_swaps_detected: [],
+      compression_detected: false,
+      compressed_items: [],
+      feedback: 'AI grading unavailable. Please ensure ANTHROPIC_API_KEY is set correctly.',
+      mode: 'local'
+    };
+  }
+}
+
+// ─── ROUTES ──────────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '5.5.0',
-    model: MODEL,
-    anthropicConfigured: !!process.env.ANTHROPIC_API_KEY,
-    cacheSize: cache.size
+    version: '5.3.1-haiku',  // ← Updated version
+    model: 'claude-3-haiku-20240307',  // ← REPLACED
+    anthropicConfigured: !!ANTHROPIC_API_KEY,
+    cacheSize: gradeCache.size,
+    mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-fallback'
   });
 });
 
-// Sanitize input to prevent prompt injection
-function sanitizeInput(text) {
-  return text
-    .replace(/[<>]/g, '')
-    .replace(/\{.*?\}/g, '')
-    .substring(0, 5000);
-}
-
-// Check for finite verb (basic)
-function hasFiniteVerb(text) {
-  const finitePatterns = [
-    /\b(is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|could|should|may|might|must|can|shall)\b/i,
-    /\b[a-z]+ed\b/i,
-    /\b[a-z]+ing\b/i,
-    /\b[a-z]+s\b/i
-  ];
-  return finitePatterns.some(p => p.test(text));
-}
-
-// Check for connectors
-function detectConnector(text) {
-  const connectors = {
-    contrast: ['however', 'although', 'though', 'while', 'whereas', 'but', 'yet', 'nevertheless', 'nonetheless', 'despite', 'in contrast', 'on the other hand', 'conversely'],
-    addition: ['and', 'also', 'furthermore', 'moreover', 'additionally', 'besides', 'in addition', 'as well as'],
-    reason: ['because', 'since', 'as', 'therefore', 'thus', 'hence', 'consequently', 'so', 'due to', 'owing to', 'accordingly', 'as a result'],
-    sequence: ['first', 'second', 'then', 'next', 'finally', 'subsequently', 'afterwards', 'meanwhile'],
-    example: ['for example', 'for instance', 'such as', 'like', 'namely', 'specifically']
-  };
-  
-  const lower = text.toLowerCase();
-  for (const [type, words] of Object.entries(connectors)) {
-    for (const word of words) {
-      if (lower.includes(word.toLowerCase())) {
-        return { has: true, type, word };
-      }
-    }
-  }
-  return { has: false, type: 'none', word: null };
-}
-
-// Check for first-person usage
-function checkFirstPerson(text, passage) {
-  const firstPerson = /\b(I|me|my|mine|myself)\b/i;
-  const passageHasFirstPerson = firstPerson.test(passage);
-  const summaryHasFirstPerson = firstPerson.test(text);
-  
-  return passageHasFirstPerson && summaryHasFirstPerson;
-}
-
-// Local grading fallback
-function localGrade(text, passage) {
-  const words = text.trim().split(/\s+/).length;
-  const connector = detectConnector(text);
-  const firstPersonPenalty = checkFirstPerson(text, passage);
-  
-  // Check for chained connectors
-  const connectorWords = ['however', 'although', 'though', 'while', 'but', 'and', 'therefore', 'consequently', 'furthermore', 'moreover'];
-  const foundConnectors = connectorWords.filter(c => text.toLowerCase().includes(c));
-  const chainedConnectors = foundConnectors.length >= 2;
-  
-  // Basic content detection
-  const passageLower = passage.toLowerCase();
-  const textLower = text.toLowerCase();
-  
-  // Extract key terms from passage (simple approach)
-  const keyTerms = passageLower.match(/\b[a-z]{5,}\b/g) || [];
-  const uniqueTerms = [...new Set(keyTerms)].slice(0, 20);
-  const matchedTerms = uniqueTerms.filter(term => textLower.includes(term));
-  const contentScore = Math.min(3, Math.floor(matchedTerms.length / 5));
-  
-  // Grammar score
-  let grammarScore = 1;
-  if (connector.has) grammarScore = 2;
-  if (chainedConnectors) grammarScore = 1; // Penalty for chained
-  
-  // Vocabulary score
-  const vocabScore = contentScore >= 2 ? 2 : 1;
-  
-  const rawScore = 1 + contentScore + grammarScore + vocabScore; // Form is always 1 if we got here
-  const overallScore = Math.round((rawScore / 8) * 90);
-  
-  let band;
-  if (overallScore >= 79) band = 'Band 8';
-  else if (overallScore >= 65) band = 'Band 7';
-  else if (overallScore >= 51) band = 'Band 6';
-  else if (overallScore >= 40) band = 'Band 5';
-  else band = 'Band 4';
-  
-  return {
-    trait_scores: {
-      form: 1,
-      content: contentScore,
-      grammar: grammarScore,
-      vocabulary: vocabScore
-    },
-    content_details: {
-      topic_captured: contentScore >= 1,
-      pivot_captured: contentScore >= 2,
-      conclusion_captured: contentScore >= 3,
-      first_person_penalty: firstPersonPenalty,
-      notes: 'Local grading'
-    },
-    grammar_details: {
-      spelling_errors: [],
-      grammar_issues: [],
-      has_connector: connector.has,
-      connector_type: connector.type,
-      connector_logic_correct: true,
-      chained_connectors: chainedConnectors
-    },
-    vocabulary_details: {
-      synonym_usage: contentScore >= 2 ? 'good' : 'basic',
-      smart_swaps_detected: [],
-      compression_detected: false,
-      compressed_items: []
-    },
-    overall_score: overallScore,
-    raw_score: rawScore,
-    band: band,
-    form_gate_triggered: false,
-    form_reason: 'Valid',
-    word_count: words,
-    feedback: 'Graded using local fallback.',
-    scoring_mode: 'local'
-  };
-}
-
-// AI grading with Anthropic
-async function aiGrade(text, passage) {
-  const prompt = `You are a PTE Academic scoring expert. Grade this Summarize Written Text response.
-
-PASSAGE:
-${passage}
-
-STUDENT SUMMARY:
-${text}
-
-Analyze and return ONLY a JSON object with this exact structure:
-{
-  "trait_scores": {
-    "form": 0-1 (1 if 5-75 words and one sentence, else 0),
-    "content": 0-3 (0=none, 1=topic only, 2=topic+pivot, 3=all three),
-    "grammar": 0-2 (2=no errors+connector, 1=minor errors, 0=major errors),
-    "vocabulary": 0-2 (2=excellent synonyms, 1=adequate, 0=poor)
-  },
-  "content_details": {
-    "topic_captured": true/false,
-    "pivot_captured": true/false,
-    "conclusion_captured": true/false,
-    "first_person_penalty": true/false (if passage uses "I" and summary also uses "I" instead of "the author"),
-    "notes": "brief explanation"
-  },
-  "grammar_details": {
-    "spelling_errors": [{"word": "misspelled", "suggestion": "correct"}],
-    "grammar_issues": [{"issue": "description", "suggestion": "fix", "rule": "rule name"}],
-    "has_connector": true/false,
-    "connector_type": "contrast/addition/reason/none",
-    "connector_logic_correct": true/false,
-    "chained_connectors": true/false (true if 2+ connectors used)
-  },
-  "vocabulary_details": {
-    "synonym_usage": "none/basic/good/excellent",
-    "smart_swaps_detected": ["word → synonym"],
-    "compression_detected": true/false,
-    "compressed_items": ["compressed phrases"]
-  },
-  "feedback": "2-3 sentences of constructive feedback"
-}
-
-Important scoring rules:
-- Content 0/3: Missing topic, pivot, and conclusion
-- Content 1/3: Topic captured only
-- Content 2/3: Topic + pivot captured
-- Content 3/3: All three elements captured
-- Deduct 1 band if first_person_penalty is true (passage is narrative but summary uses "I")
-- Grammar: 2 = perfect with connector, 1 = minor issues, 0 = major issues
-- Chained connectors (using 2+ like "Although... but...") = grammar penalty`;
-
-  const response = await anthropic.messages.create({
-    model: MODEL,
-    max_tokens: 1500,
-    temperature: 0.1,
-    messages: [{ role: 'user', content: prompt }]
-  });
-
-  const content = response.content[0].text;
-  const jsonMatch = content.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('Invalid AI response');
-  
-  const aiResult = JSON.parse(jsonMatch[0]);
-  
-  // Calculate scores
-  const traits = aiResult.trait_scores;
-  const rawScore = traits.form + traits.content + traits.grammar + traits.vocabulary;
-  const overallScore = Math.round((rawScore / 8) * 90);
-  
-  let band;
-  if (overallScore >= 79) band = 'Band 8';
-  else if (overallScore >= 65) band = 'Band 7';
-  else if (overallScore >= 51) band = 'Band 6';
-  else if (overallScore >= 40) band = 'Band 5';
-  else band = 'Band 4';
-  
-  // Apply first-person penalty to band if needed
-  if (aiResult.content_details.first_person_penalty) {
-    if (band === 'Band 8') band = 'Band 7';
-    else if (band === 'Band 7') band = 'Band 6';
-    else if (band === 'Band 6') band = 'Band 5';
-    else if (band === 'Band 5') band = 'Band 4';
-  }
-  
-  return {
-    ...aiResult,
-    overall_score: overallScore,
-    raw_score: rawScore,
-    band: band,
-    form_gate_triggered: false,
-    form_reason: 'Valid',
-    word_count: text.trim().split(/\s+/).length,
-    scoring_mode: 'ai'
-  };
-}
-
-// Main grading endpoint
 app.post('/api/grade', async (req, res) => {
   try {
-    const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    
-    // Rate limiting
-    if (!checkRateLimit(clientIP)) {
-      return res.status(429).json({ error: 'Rate limit exceeded. Max 10 requests per minute.' });
+    const { text, type, prompt } = req.body;
+
+    if (!text || !type || !prompt) {
+      return res.status(400).json({ error: 'Missing required fields: text, type, prompt' });
     }
-    
-    const { text, type, prompt: passage } = req.body;
-    
-    // Validation
-    if (!text || !passage) {
-      return res.status(400).json({ error: 'Missing text or passage' });
-    }
-    
-    if (type !== 'summarize-written-text') {
-      return res.status(400).json({ error: 'Invalid type' });
-    }
-    
-    // Sanitize inputs
+
+    // Sanitize input
     const cleanText = sanitizeInput(text);
-    const cleanPassage = sanitizeInput(passage);
-    
-    // Check word count
-    const words = cleanText.trim().split(/\s+/).length;
-    if (words < 5 || words > 75) {
+
+    // Step 1: Form gate — validate before touching AI
+    const formCheck = calculateForm(cleanText, type);
+    const firstPersonCheck = checkFirstPersonTrap(cleanText, prompt);
+
+    // Early return if form invalid — saves API cost
+    if (formCheck.score === 0) {
       return res.json({
         trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
-        content_details: { topic_captured: false, pivot_captured: false, conclusion_captured: false, first_person_penalty: false, notes: 'Form invalid' },
+        content_details: { topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form invalid — not graded.' },
         grammar_details: { spelling_errors: [], grammar_issues: [], has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false },
         vocabulary_details: { synonym_usage: 'none', smart_swaps_detected: [], compression_detected: false, compressed_items: [] },
         overall_score: 10,
         raw_score: 0,
         band: 'Band 5',
         form_gate_triggered: true,
-        form_reason: words < 5 ? 'Too short (min 5 words)' : 'Too long (max 75 words)',
-        word_count: words,
-        feedback: `FORM ERROR: Summary must be between 5-75 words. Your summary is ${words} words.`,
+        form_reason: formCheck.reason,
+        word_count: formCheck.wordCount,
+        feedback: 'FORM ERROR: ' + formCheck.reason + '. Your response must be exactly one complete sentence (5-75 words) containing a subject and verb.',
         scoring_mode: 'local'
       });
     }
-    
-    // Check for finite verb (form validation)
-    if (!hasFiniteVerb(cleanText)) {
-      return res.json({
-        trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
-        content_details: { topic_captured: false, pivot_captured: false, conclusion_captured: false, first_person_penalty: false, notes: 'No finite verb' },
-        grammar_details: { spelling_errors: [], grammar_issues: [], has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false },
-        vocabulary_details: { synonym_usage: 'none', smart_swaps_detected: [], compression_detected: false, compressed_items: [] },
-        overall_score: 10,
-        raw_score: 0,
-        band: 'Band 5',
-        form_gate_triggered: true,
-        form_reason: 'No finite verb — not a complete sentence',
-        word_count: words,
-        feedback: 'FORM ERROR: No finite verb — not a complete sentence. Your response must be exactly one complete sentence (5-75 words) with a subject and verb.',
-        scoring_mode: 'local'
-      });
+
+    // Step 2: AI grading
+    const result = await gradeResponse(cleanText, type, prompt);
+
+    // Step 3: Apply first-person penalty to content score
+    let contentScore = result.content || 0;
+    if (firstPersonCheck.penalty) {
+      contentScore = Math.max(0, contentScore - 1);
     }
-    
-    // Check cache
-    const cacheKey = cleanText.toLowerCase().trim() + '|' + cleanPassage.substring(0, 100);
-    if (cache.has(cacheKey)) {
-      const cached = cache.get(cacheKey);
-      cached.scoring_mode = 'cached';
-      return res.json(cached);
-    }
-    
-    // Try AI grading first
-    let result;
-    if (process.env.ANTHROPIC_API_KEY) {
-      try {
-        result = await aiGrade(cleanText, cleanPassage);
-      } catch (aiError) {
-        console.error('AI Grading Error:', aiError.message);
-        result = localGrade(cleanText, cleanPassage);
-        result.feedback = 'AI grading unavailable. Using local fallback. ' + result.feedback;
-      }
-    } else {
-      result = localGrade(cleanText, cleanPassage);
-      result.feedback = 'AI not configured. Using local grading. ' + result.feedback;
-    }
-    
-    // Cache result
-    if (cache.size >= MAX_CACHE) {
-      const firstKey = cache.keys().next().value;
-      cache.delete(firstKey);
-    }
-    cache.set(cacheKey, result);
-    
-    res.json(result);
-    
+
+    const rawScore = formCheck.score +
+                     contentScore +
+                     (result.grammar?.score || 0) +
+                     (result.vocabulary || 0);
+
+    const maxPossible = type === 'write-essay' ? 9 : 8;
+    const overallScore = Math.min(90, 10 + Math.round((rawScore / maxPossible) * 80));
+
+    res.json({
+      trait_scores: {
+        form:       formCheck.score,
+        content:    contentScore,
+        grammar:    result.grammar?.score,
+        vocabulary: result.vocabulary
+      },
+      content_details: {
+        topic_captured:       result.topic_captured,
+        pivot_captured:       result.pivot_captured,
+        conclusion_captured:  result.conclusion_captured,
+        first_person_penalty: firstPersonCheck.penalty || false,
+        notes:                result.content_notes
+      },
+      grammar_details: {
+        spelling_errors:         result.grammar?.spelling_errors || [],
+        grammar_issues:          result.grammar?.grammar_issues || [],
+        has_connector:           result.grammar?.has_connector || false,
+        connector_type:          result.grammar?.connector_type || 'none',
+        connector_logic_correct: result.grammar?.connector_logic_correct || false,
+        chained_connectors:      result.grammar?.chained_connectors || false
+      },
+      vocabulary_details: {
+        synonym_usage:        result.synonym_usage,
+        smart_swaps_detected: result.smart_swaps_detected || [],
+        compression_detected: result.compression_detected || false,
+        compressed_items:     result.compressed_items || []
+      },
+      overall_score: overallScore,
+      raw_score:     rawScore,
+      band:          BAND_MAP[rawScore] || 'Band 5',
+      form_gate_triggered: false,
+      word_count:    formCheck.wordCount,
+      feedback:      result.feedback,
+      scoring_mode:  result.cached ? 'cached' : result.mode
+    });
+
   } catch (error) {
-    console.error('Grading error:', error);
-    res.status(500).json({ error: 'Internal server error', message: error.message });
+    console.error('Route error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log('✅ PTE Grading API v5.5.0 on port', PORT);
-  console.log('🤖 AI mode:', process.env.ANTHROPIC_API_KEY ? 'active' : 'disabled');
-  console.log('📦 Model:', MODEL);
+// ─── START ───────────────────────────────────────────────────────────────────
+app.listen(PORT, '0.0.0.0', () => {
+  console.log('✅ PTE Grading API v5.3.1-haiku on port ' + PORT);
+  if (!ANTHROPIC_API_KEY) {
+    console.warn('⚠️  ANTHROPIC_API_KEY not set — running in local fallback mode');
+  } else if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+    console.error('❌ ANTHROPIC_API_KEY looks wrong — expected format: sk-ant-...');
+  } else {
+    console.log('🤖 AI mode active — model: claude-3-haiku-20240307');  // ← REPLACED
+  }
 });
