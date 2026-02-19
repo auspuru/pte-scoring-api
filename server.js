@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 // ─── CORS CONFIG ─────────────────────────────────────────────────────────────
-// Allow all origins in development (restrict in production)
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -16,7 +15,7 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 
-// Initialize Anthropic only if key exists
+// Initialize Anthropic
 let anthropic = null;
 if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
@@ -80,23 +79,60 @@ function sanitizeInput(text) {
 // ─── SENTENCE COMPLETENESS CHECK ─────────────────────────────────────────────
 function isCompleteSentence(text) {
   if (!text || text.length < 5) return { complete: false, reason: 'Too short' };
-  const lastWord = text.trim().split(/\s+/).pop().toLowerCase().replace(/[.!?;,]$/, '');
-  const hangingWords = ['for', 'the', 'a', 'an', 'and', 'but', 'or', 'with', 'by', 'to', 'of', 'in', 'on', 'that', 'which', 'who', 'as', 'at'];
   
-  if (hangingWords.includes(lastWord)) {
-    return { complete: false, reason: `Sentence ends with "${lastWord}" — incomplete` };
+  const trimmed = text.trim();
+  const lastChar = trimmed.slice(-1);
+  const lastWord = trimmed.split(/\s+/).pop().toLowerCase().replace(/[.!?;,]$/, '');
+  
+  // Check for hanging words (prepositions, articles, conjunctions)
+  const hangingWords = ['for', 'the', 'a', 'an', 'and', 'but', 'or', 'with', 'by', 'to', 'of', 'in', 'on', 'that', 'which', 'who', 'as', 'at', 'is', 'was', 'were'];
+  
+  if (hangingWords.includes(lastWord) && lastChar !== '.') {
+    return { complete: false, reason: `Incomplete sentence (ends with "${lastWord}")` };
   }
+  
+  // Must end with proper punctuation
+  if (!/[.!?]$/.test(trimmed)) {
+    return { complete: false, reason: 'Sentence must end with period, question mark, or exclamation' };
+  }
+  
   return { complete: true };
 }
 
-// ─── FINITE VERB CHECK ───────────────────────────────────────────────────────
+// ─── FINITE VERB CHECK (FIXED) ───────────────────────────────────────────────
 function hasFiniteVerb(text) {
-  const patterns = [
-    /\b(is|are|was|were|be|been|being)\b/i,
-    /\b(has|have|had|do|does|did|will|would|could|should|may|might|must)\s+\w+/i,
-    /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explains|persuaded|acknowledged|opted|demonstrates|indicates|reveals|discovered|challenges|advises|argues|claims|states|finds|identifies|examines|credit|discusses|transformed|overtook|dominates|generates|acts|possesses|created|allows|improved|expressed|attempts|discussed|explained|highlighted|suggested)\b/i
-  ];
-  return patterns.some(p => p.test(text));
+  if (!text) return false;
+  
+  const lowerText = text.toLowerCase();
+  
+  // Pattern 1: Being verbs + complement
+  const beingPattern = /\b(is|are|was|were|be|been|being)\s+\w+/i;
+  
+  // Pattern 2: Helping verbs + main verb
+  const helpingPattern = /\b(has|have|had|do|does|did|will|would|could|should|may|might|must|shall|can)\s+\w+/i;
+  
+  // Pattern 3: Past tense verbs (comprehensive list)
+  const pastVerbs = /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explained|emphasized|warned|revealed|acknowledged|demonstrated|indicated|suggested|argued|claimed|stated|identified|examined|credited|discussed|transformed|overtook|dominated|generated|acted|possessed|opted|created|allowed|improved|expressed|attempted|highlighted|resulted|ensured|remained|faced|bore|surged|dropped|required|offered|hoped|concluded|predicted|reduced|impacted|caused|affected|threatened|increased|decreased|showed|found|thought|believed|said|noted|mentioned|added|continued|started|wanted|needed|looked|worked|lived|called|tried|asked|moved|played|believed|brought|happened|stood|understood|wrote|spoke|spent|grew|opened|walked|watched|heard|let|began|knew|ate|ran|went|came|did|saw|got|had|did)\b/i;
+  
+  // Pattern 4: Present tense verbs (3rd person singular) - THE CRITICAL FIX
+  const presentVerbs = /\b(threatens|affects|reduces|impacts|causes|creates|demonstrates|indicates|reveals|shows|explains|emphasizes|warns|claims|states|suggests|argues|acknowledges|discusses|provides|includes|requires|offers|makes|takes|becomes|finds|gives|tells|feels|leaves|puts|means|keeps|begins|seems|helps|writes|stands|loses|pays|continues|changes|leads|considers|appears|serves|sends|expects|builds|stays|falls|reaches|remains|raises|passes|reports|decides|acts|possesses|opts|demonstrates|indicates|reveals|discovers|challenges|advises|argues|claims|states|finds|identifies|examines|credits|discusses|transforms|overtakes|dominates|generates|acknowledges|opts|significantly impacts|creates|allows|improves|minimizes|expressed|attempts|discussed|explained|highlighted|suggested|results|ensures|remains|faces|bears|surges|drops|requires|offers|hopes|warns|emphasizes|reveals|concludes|predicts|indicates|saves|rewards|replaces|exchanges|persuades|develops|becomes|stays|runs|comes|goes|does|has|says|gets|makes|takes|sees|knows|thinks|looks|wants|needs|likes|uses|finds|gives|tells|asks|works|feels|tries|leaves|calls|keeps|brings|begins|helps|shows|hears|plays|runs|moves|lives|believes|brings|happens|stands|understands|writes|speaks|spends|grows|opens|walks|watches)\b/i;
+  
+  // Check all patterns
+  if (beingPattern.test(lowerText)) return true;
+  if (helpingPattern.test(lowerText)) return true;
+  if (pastVerbs.test(lowerText)) return true;
+  if (presentVerbs.test(lowerText)) return true;
+  
+  // Fallback: Check for common verb endings (-s, -es, -ed, -ing)
+  const words = lowerText.split(/\s+/);
+  const verbEndingPattern = /(s|es|ed|ing|tion|sion)$/;
+  const hasVerbEnding = words.some(word => {
+    const clean = word.replace(/[.,;!?]$/, '');
+    return clean.length > 2 && verbEndingPattern.test(clean) && 
+           !['this', 'thus', 'gas', 'pass', 'class', 'glass', 'grass', 'across', 'loss', 'boss', 'toss', 'crisis', 'analysis', 'basis', 'his', 'hers', 'its', 'ours', 'yours', 'theirs'].includes(clean);
+  });
+  
+  return hasVerbEnding;
 }
 
 // ─── FORM VALIDATION ─────────────────────────────────────────────────────────
@@ -106,17 +142,24 @@ function calculateForm(text, type) {
   const wc = words.length;
 
   if (type === 'summarize-written-text') {
+    // Word count check first
+    if (wc < 5) return { score: 0, reason: 'Too short (minimum 5 words)', wordCount: wc };
+    if (wc > 75) return { score: 0, reason: 'Too long (maximum 75 words)', wordCount: wc };
+    
+    // Sentence count check
     const cleanText = cleanInput.replace(/(?:Dr|Mr|Mrs|Ms|Prof|U\.K|U\.S|i\.e|e\.g|etc)\./gi, '##');
     const sentenceCount = (cleanText.match(/[.!?](\s|$)/g) || []).length;
-
-    if (wc < 5) return { score: 0, reason: 'Too short (min 5 words)', wordCount: wc };
-    if (wc > 75) return { score: 0, reason: 'Too long (max 75 words)', wordCount: wc };
+    
     if (sentenceCount !== 1) return { score: 0, reason: 'Must be exactly one sentence', wordCount: wc };
     
+    // Completeness check
     const completeness = isCompleteSentence(cleanInput);
     if (!completeness.complete) return { score: 0, reason: completeness.reason, wordCount: wc };
     
-    if (!hasFiniteVerb(cleanInput)) return { score: 0, reason: 'No finite verb detected', wordCount: wc };
+    // Finite verb check (THE FIX)
+    if (!hasFiniteVerb(cleanInput)) {
+      return { score: 0, reason: 'No finite verb detected - add a main verb like "threatens", "affects", "reduces"', wordCount: wc };
+    }
     
     return { score: 1, reason: 'Valid', wordCount: wc };
   }
@@ -127,11 +170,12 @@ function calculateForm(text, type) {
 // ─── FIRST PERSON CHECK ──────────────────────────────────────────────────────
 function checkFirstPersonTrap(text, passageText) {
   if (!passageText) return { penalty: false };
+  
   const iCount = (passageText.match(/\b(I|my|me|I've|I'd|I'm)\b/g) || []).length;
   const isNarrative = iCount > 2 && !passageText.includes('Dr.') && !/researcher|professor|scientist/i.test(passageText);
 
   if (isNarrative && /^\s*(I|My|Me)\b/.test(text)) {
-    return { penalty: true, note: "Shift 'I/my' to 'The author/narrator'" };
+    return { penalty: true, note: "First-person trap: Use 'The author' instead of 'I'" };
   }
   return { penalty: false };
 }
@@ -144,38 +188,37 @@ async function gradeResponse(text, type, passageText) {
 
   const firstPersonCheck = checkFirstPersonTrap(text, passageText);
 
-  // If no Anthropic key, return local fallback immediately
   if (!anthropic) {
     return {
       content: 1,
-      key_ideas_extracted: ["Local mode - AI unavailable"],
-      key_ideas_present: ["Unable to analyze"],
-      key_ideas_missing: ["AI not configured"],
-      content_notes: 'Running in local fallback mode. Set ANTHROPIC_API_KEY for full grading.',
+      key_ideas_extracted: ["AI unavailable"],
+      key_ideas_present: ["Local mode"],
+      key_ideas_missing: ["Connect AI for full grading"],
+      content_notes: 'Local fallback mode.',
       grammar: { score: 1, spelling_errors: [], grammar_issues: [], has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false },
       vocabulary: 1,
       synonym_usage: 'none',
       smart_swaps_detected: [],
       compression_detected: false,
       compressed_items: [],
-      feedback: 'Server running in local mode. AI grading requires ANTHROPIC_API_KEY.',
+      feedback: 'Running in local mode. Set ANTHROPIC_API_KEY for AI grading.',
       mode: 'local'
     };
   }
 
-  const systemPrompt = `You are a PTE Academic examiner. Evaluate strictly on Key Idea Coverage.
+  const systemPrompt = `You are a PTE Academic examiner. Score based on Key Idea Coverage.
 
 CONTENT (0-3 points):
 Extract 3 Key Ideas from the passage:
-1. Main subject/entity (WHO/WHAT)
-2. Core conflict/characteristic/problem  
+1. Main subject/action (WHO/WHAT)
+2. Core conflict/problem/characteristic  
 3. Resolution/outcome/implication
 
 Scoring:
 - 3/3 = All 3 Key Ideas present (paraphrased or verbatim OK)
 - 2/3 = 2 Key Ideas present
 - 1/3 = 1 Key Idea present
-- 0/3 = Only "hook" captured OR no substantive content from passage
+- 0/3 = Only hook captured OR no substance
 
 Rules:
 - NOISE IS OK: Extra details don't penalize if Key Ideas present
@@ -183,37 +226,25 @@ Rules:
 - No factual errors (wrong numbers/names = 0 for that idea)
 
 VOCABULARY (0-2):
-2 = Appropriate word choice, meaning clear (verbatim nouns OK)
+2 = Appropriate word choice, meaning clear (verbatim OK)
 1 = Minor issues
 0 = Distorts meaning
 
 GRAMMAR (0-2):
-2 = Good control, correct connector (however/moreover/consequently), minor spelling OK
+2 = Good control, correct connector (however/moreover/consequently)
 1 = Missing connector OR 3+ spelling errors
 0 = Errors prevent understanding
 
-Return ONLY this JSON:
-{
-  "content": 0-3,
-  "key_ideas_extracted": ["idea1", "idea2", "idea3"],
-  "key_ideas_present": [],
-  "key_ideas_missing": [],
-  "content_notes": "explanation",
-  "grammar": {"score": 0-2, "has_connector": true/false, "connector_type": "contrast|addition|reason|none", "connector_logic_correct": true/false, "chained_connectors": true/false, "spelling_errors": [], "grammar_issues": []},
-  "vocabulary": 0-2,
-  "synonym_usage": "none|low|optimal",
-  "smart_swaps_detected": [],
-  "compression_detected": false,
-  "feedback": "MISSING: [ideas]. PRESENT: [ideas]. FIX: [suggestion]."
-}`;
+Return ONLY JSON:
+{"content":0-3,"key_ideas_extracted":[],"key_ideas_present":[],"key_ideas_missing":[],"content_notes":"","grammar":{"score":0-2,"has_connector":false,"connector_type":"none","connector_logic_correct":false,"chained_connectors":false,"spelling_errors":[],"grammar_issues":[]},"vocabulary":0-2,"synonym_usage":"none","smart_swaps_detected":[],"compression_detected":false,"feedback":""}`;
 
   const userPrompt = `PASSAGE: "${passageText}"
 
 STUDENT: "${text}"
 
-${firstPersonCheck.penalty ? 'NOTE: First-person trap detected. Student used I/my in narrative passage.' : ''}
+${firstPersonCheck.penalty ? 'NOTE: First-person penalty applies.' : ''}
 
-Analyze Key Ideas and return JSON only.`;
+Return JSON only.`;
 
   try {
     const response = await anthropic.messages.create({
@@ -221,7 +252,7 @@ Analyze Key Ideas and return JSON only.`;
       max_tokens: 1000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
-      temperature: 0.1 // More consistent
+      temperature: 0.1
     });
 
     const rawText = response.content[0].text;
@@ -235,19 +266,18 @@ Analyze Key Ideas and return JSON only.`;
 
   } catch (err) {
     console.error('AI Error:', err.message);
-    // Return fallback so server doesn't crash
     return {
       content: 1,
-      key_ideas_extracted: ["Error extracting"],
-      key_ideas_present: ["Check manual"],
-      key_ideas_missing: ["AI processing failed"],
-      content_notes: `AI Error: ${err.message}`,
+      key_ideas_extracted: ["Error"],
+      key_ideas_present: [],
+      key_ideas_missing: ["Processing failed"],
+      content_notes: `Error: ${err.message}`,
       grammar: { score: 1, has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false, spelling_errors: [], grammar_issues: [] },
       vocabulary: 1,
       synonym_usage: 'none',
       smart_swaps_detected: [],
       compression_detected: false,
-      feedback: `Grading error: ${err.message}. Please try again.`,
+      feedback: `Error: ${err.message}. Please try again.`,
       mode: 'error'
     };
   }
@@ -257,7 +287,7 @@ Analyze Key Ideas and return JSON only.`;
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    version: '6.0.1', 
+    version: '6.1.0', 
     anthropicConfigured: !!anthropic,
     timestamp: new Date().toISOString()
   });
@@ -278,7 +308,12 @@ app.post('/api/grade', async (req, res) => {
     if (formCheck.score === 0) {
       return res.json({
         trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
-        content_details: { key_ideas_extracted: [], key_ideas_present: [], key_ideas_missing: [], notes: 'Form invalid' },
+        content_details: { 
+          key_ideas_extracted: [], 
+          key_ideas_present: [], 
+          key_ideas_missing: [], 
+          notes: 'Form invalid - ' + formCheck.reason 
+        },
         grammar_details: { spelling_errors: [], grammar_issues: [], has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false },
         vocabulary_details: { synonym_usage: 'none', smart_swaps_detected: [], compression_detected: false, compressed_items: [] },
         overall_score: 10,
@@ -287,7 +322,7 @@ app.post('/api/grade', async (req, res) => {
         form_gate_triggered: true,
         form_reason: formCheck.reason,
         word_count: formCheck.wordCount,
-        feedback: `FORM ERROR: ${formCheck.reason}. Must be one complete sentence (5-75 words).`
+        feedback: `FORM ERROR: ${formCheck.reason}. Your summary must be one complete sentence (5-75 words) with a subject and main verb.`
       });
     }
 
@@ -300,6 +335,10 @@ app.post('/api/grade', async (req, res) => {
     const maxPossible = 8;
     const overallScore = Math.min(90, 10 + Math.round((rawScore / maxPossible) * 80));
 
+    // Determine which key ideas are present for frontend display
+    const keyIdeasPresent = result.key_ideas_present || [];
+    const keyIdeasMissing = result.key_ideas_missing || [];
+    
     res.json({
       trait_scores: {
         form: formCheck.score,
@@ -309,10 +348,14 @@ app.post('/api/grade', async (req, res) => {
       },
       content_details: {
         key_ideas_extracted: result.key_ideas_extracted || [],
-        key_ideas_present: result.key_ideas_present || [],
-        key_ideas_missing: result.key_ideas_missing || [],
+        key_ideas_present: keyIdeasPresent,
+        key_ideas_missing: keyIdeasMissing,
         first_person_penalty: firstPersonCheck.penalty || false,
-        notes: result.content_notes
+        notes: result.content_notes || '',
+        // For frontend display logic
+        has_topic: contentScore >= 1,
+        has_pivot: contentScore >= 2, 
+        has_conclusion: contentScore >= 3
       },
       grammar_details: result.grammar || {},
       vocabulary_details: {
@@ -335,14 +378,13 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server v6.0.1 running on port ${PORT}`);
-  console.log(`🤖 AI Mode: ${anthropic ? 'ACTIVE' : 'DISABLED (set ANTHROPIC_API_KEY)'}`);
-  console.log(`📝 Test: curl http://localhost:${PORT}/api/health`);
+  console.log(`✅ Server v6.1.0 running on port ${PORT}`);
+  console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'DISABLED'}`);
 });
