@@ -197,7 +197,7 @@ function calculateForm(text, type) {
 function checkPerspectiveShift(text, passageText) {
   if (!passageText) return { penalty: false, note: null };
   
-  const firstPersonIndicators = ['\bI\b', '\bmy\b', '\bme\b', "\bI've\b", "\bI'd\b", "\bI'm\b"];
+  const firstPersonIndicators = ['\\bI\\b', '\\bmy\\b', '\\bme\\b', "\\bI've\\b", "\\bI'd\\b", "\\bI'm\\b"];
   const iCount = firstPersonIndicators.reduce((count, pattern) => {
     const matches = passageText.match(new RegExp(pattern, 'gi'));
     return count + (matches ? matches.length : 0);
@@ -205,7 +205,7 @@ function checkPerspectiveShift(text, passageText) {
   
   const isFirstPersonPassage = iCount > 2;
   
-  if (isFirstPersonPassage && /^\s*(I|My|Me)\b/.test(text)) {
+  if (isFirstPersonPassage && /^\\s*(I|My|Me)\\b/.test(text)) {
     return { 
       penalty: true, 
       note: "Use 'The author' instead of 'I' for first-person passages" 
@@ -359,7 +359,7 @@ Analyze using the 3-key-idea framework (Topic + Pivot + Result). Be honest about
     });
 
     const rawText = response.content[0].text;
-    const match = rawText.match(/\{[\s\S]*\}/);
+    const match = rawText.match(/\\{[\\s\\S]*\\}/);
     if (!match) throw new Error('No JSON found');
 
     const result = JSON.parse(match[0]);
@@ -487,6 +487,9 @@ app.post('/api/grade', async (req, res) => {
     
     // Build honest feedback
     const feedback = buildFeedback(result, formCheck, connectorInfo, formCheck.wordCount, perspectiveCheck);
+    
+    // Word count feedback
+    const wordCountFeedback = formCheck.wordCount < 33 ? 'concise' : formCheck.wordCount <= 50 ? 'optimal' : formCheck.wordCount <= 65 ? 'safe' : 'maximum';
 
     res.json({
       trait_scores: {
@@ -497,52 +500,6 @@ app.post('/api/grade', async (req, res) => {
       },
       content_details: {
         key_ideas_extracted: result.key_ideas_extracted || [],
-        key_ideas_present: keyIdeasPresent,
-        key_ideas_missing: keyIdeasMissing,
-        perspective_shift_penalty: perspectiveCheck.penalty || false,
-        notes: result.content_notes || ''
-      },
-      grammar_details: {
-        ...result.grammar,
-        has_semicolon_before_connector: result.grammar?.has_semicolon_before_connector || connectorInfo.hasSemicolonBeforeConnector,
-        chained_connectors: result.grammar?.chained_connectors || connectorInfo.chainedConnectors
-      },
-      vocabulary_details: {
-        synonym_usage: result.synonym_usage || 'none',
-        smart_swaps_detected: result.smart_swaps_detected || [],
-        unsafe_swaps_detected: result.unsafe_swaps_detected || [],
-        compression_detected: result.compression_detected || false
-      },
-      overall_score: overallScore,
-      raw_score: rawScore,
-      band: BAND_MAP[Math.floor(rawScore)] || 'Band 5',
-      word_count: formCheck.wordCount,
-      feedback: feedback,
-      mode: result.mode,
-      key_ideas_status: {
-        topic: hasTopic,
-        pivot: hasPivot,
-        conclusion: hasConclusion
-      }
-    });
-
-  } catch (error) {
-    console.error('Route error:', error);
-    res.status(500).json({ error: 'Server error', details: error.message });
-  }
-});
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Grader v7.1.0 running on port ${PORT}`);
-  console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'DISABLED'}`);
-});
-racted || [],
         key_ideas_present: keyIdeasPresent,
         key_ideas_missing: keyIdeasMissing,
         perspective_shift_penalty: perspectiveCheck.penalty || false,
@@ -565,7 +522,7 @@ racted || [],
         verbatim_phrases: result.verbatim_phrases || [],
         compression_detected: result.compression_detected || false,
         compressed_items: result.compressed_items || []
-      },
+n      },
       overall_score: overallScore,
       raw_score: rawScore,
       band: BAND_MAP[Math.floor(rawScore)] || 'Band 5',
