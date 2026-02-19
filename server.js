@@ -3,7 +3,8 @@ const cors = require('cors');
 
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
-const OPENAI_API_KEY = process.env.ANTHROPIC_API_KEY;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -58,7 +59,7 @@ function validateForm(summary) {
 }
 
 async function aiGrade(summary, passage) {
-  if (!OPENAI_API_KEY) return null;
+  if (!ANTHROPIC_API_KEY) return null;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -69,7 +70,7 @@ async function aiGrade(summary, passage) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 800,
         temperature: 0,
         system: `You are a PTE Academic examiner. Grade summaries STRICTLY.
@@ -163,20 +164,37 @@ Grade and return:
 function localGrade(summary, passage, formCheck) {
   const sumLower = summary.toLowerCase();
 
+  // Extract meaningful keywords (ignore short/common words)
+  const STOP_WORDS = new Set([
+    'the','a','an','is','are','was','were','be','been','being','have','has','had',
+    'do','does','did','will','would','shall','should','may','might','must','can','could',
+    'i','you','he','she','it','we','they','me','him','her','us','them',
+    'in','on','at','to','for','of','with','by','from','as','into','about','above',
+    'after','against','along','among','around','before','behind','below','beside',
+    'between','beyond','during','except','inside','outside','until','within','without',
+    'and','or','nor','but','if','then','than','so','yet','both','either','neither',
+    'not','no','just','only','even','also','too','very','quite','rather','really',
+    'that','this','these','those','what','which','who','whom','whose','where','when',
+    'how','why','all','any','each','every','few','more','most','some','such','own',
+    'same','other','another','one','two','three','first','second','third','many','much'
+  ]);
+
   function extractKeywords(text) {
     if (!text) return [];
     return text.toLowerCase()
       .replace(/[^\w\s]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length >= 4);
+      .filter(w => w.length >= 4 && !STOP_WORDS.has(w));
   }
 
+  // Require stricter coverage: at least 40% of keywords matched, minimum 2
   function checkCoverage(keyText) {
     const keywords = extractKeywords(keyText);
     if (keywords.length === 0) return { captured: true, matches: 0, total: 0 };
     const matches = keywords.filter(w => sumLower.includes(w)).length;
+    const ratio = matches / keywords.length;
     return {
-      captured: matches >= 2 || (matches / keywords.length) >= 0.25,
+      captured: matches >= 2 && ratio >= 0.4,
       matches,
       total: keywords.length
     };
@@ -184,55 +202,52 @@ function localGrade(summary, passage, formCheck) {
 
   const topicCheck = checkCoverage(passage.keyElements?.topic);
 
+  // Pivot: require BOTH a contrast connector AND keyword match
   const pivotKeywords = extractKeywords(passage.keyElements?.pivot);
-  const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless'];
+  const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless', 'on the other hand', 'in contrast', 'conversely'];
   const hasContrast = contrastWords.some(w => sumLower.includes(w));
   const pivotMatches = pivotKeywords.filter(w => sumLower.includes(w)).length;
-  const pivotCaptured = (hasContrast && pivotMatches >= 1) || pivotMatches >= 2 || (pivotKeywords.length > 0 && (pivotMatches / pivotKeywords.length) >= 0.3);
+  const pivotRatio = pivotKeywords.length > 0 ? pivotMatches / pivotKeywords.length : 0;
+  // Pivot captured only if contrast word present AND meaningful keyword overlap
+  const pivotCaptured = hasContrast && (pivotMatches >= 2 || pivotRatio >= 0.4);
 
   const conclusionCheck = checkCoverage(passage.keyElements?.conclusion);
 
-  let contentValue = 3;
-  if (!topicCheck.captured) contentValue -= 1;
-  if (!pivotCaptured) contentValue -= 1;
-  if (!conclusionCheck.captured) contentValue -= 1;
-  contentValue = Math.max(0, contentValue);
+  let contentValue = 0;
+  if (topicCheck.captured) contentValue += 1;
+  if (pivotCaptured) contentValue += 1;
+  if (conclusionCheck.captured) contentValue += 1;
+  contentValue = Math.min(3, Math.max(0, contentValue));
 
+  // Connector detection
   const hasConnector = ALL_CONNECTORS.some(c => sumLower.includes(c.toLowerCase()));
   const connectorType = hasConnector ? ALL_CONNECTORS.find(c => sumLower.includes(c.toLowerCase())) : null;
 
-  const commonWords = new Set([
-    'the', 'a', 'an', 'some', 'any', 'this', 'that', 'these', 'those', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
-    'be', 'am', 'is', 'are', 'was', 'were', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'can', 'could',
-    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'us', 'them',
-    'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'into', 'onto', 'upon', 'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'during', 'except', 'inside', 'outside', 'until', 'within', 'without', 'toward', 'towards', 'through', 'under', 'via', 'per', 'like', 'unlike',
-    'and', 'or', 'nor', 'either', 'neither', 'both', 'whether', 'if', 'unless', 'because', 'since', 'when', 'once', 'than',
-    'not', 'no', 'just', 'only', 'even', 'also', 'too', 'very', 'quite', 'rather', 'really', 'truly', 'actually', 'certainly', 'definitely', 'probably', 'possibly', 'perhaps', 'maybe', 'simply', 'merely', 'barely', 'hardly', 'almost', 'nearly', 'exactly', 'particularly', 'especially', 'mainly', 'mostly', 'generally', 'usually', 'normally', 'typically', 'often', 'sometimes', 'occasionally', 'rarely', 'never', 'always', 'already', 'still', 'once', 'twice', 'again', 'further',
-    'say', 'says', 'said', 'tell', 'told', 'talk', 'talked', 'speak', 'spoke', 'state', 'stated', 'mention', 'mentioned', 'note', 'noted', 'report', 'reported', 'claim', 'claimed', 'suggest', 'suggested', 'propose', 'proposed', 'argue', 'argued', 'believe', 'believed', 'think', 'thought', 'consider', 'considered', 'feel', 'felt', 'know', 'knew', 'known', 'understand', 'understood', 'realize', 'realized', 'recognize', 'recognized', 'see', 'saw', 'seen', 'look', 'looked', 'watch', 'watched', 'find', 'found', 'discover', 'discovered', 'notice', 'noticed', 'observe', 'observed', 'use', 'used', 'make', 'made', 'come', 'came', 'go', 'went', 'gone', 'take', 'took', 'taken', 'give', 'gave', 'given', 'put', 'let', 'call', 'called', 'try', 'tried', 'need', 'needed', 'want', 'wanted', 'like', 'liked', 'help', 'helped', 'show', 'showed', 'shown', 'play', 'played', 'move', 'moved', 'live', 'lived', 'bring', 'brought', 'happen', 'happened', 'write', 'wrote', 'written', 'provide', 'provided', 'include', 'included', 'involve', 'involved',
-    'one', 'two', 'three', 'first', 'second', 'third', 'next', 'last', 'final', 'many', 'much', 'more', 'most', 'few', 'little', 'less', 'least', 'several', 'various', 'numerous', 'lot', 'lots', 'number', 'total', 'whole', 'entire', 'complete', 'full', 'part', 'half', 'piece', 'portion', 'section', 'aspect', 'side', 'area', 'field', 'domain', 'region', 'sector', 'share', 'percentage', 'proportion', 'degree', 'level', 'extent', 'scope', 'range', 'scale', 'size', 'volume', 'amount', 'sum', 'average', 'maximum', 'minimum', 'point', 'fact', 'case', 'instance', 'example', 'item', 'element', 'component', 'member', 'unit', 'entity', 'object', 'subject', 'topic', 'theme', 'matter', 'issue', 'question', 'problem', 'concern'
-  ]);
-
-  const words = summary.toLowerCase().match(/\b[a-z]+\b/g) || [];
-  const spellingErrors = words.filter(w => w.length > 3 && !commonWords.has(w)).slice(0, 5);
-
+  // Grammar: only flag clear grammar issues, not vocabulary words
   const grammarIssues = [];
-  if (/\b(is|are|was|were)\s+\w+ing\b/i.test(summary)) grammarIssues.push('Check verb tense');
-  if (/\b(a)\s+[aeiou]/gi.test(summary)) grammarIssues.push('Use "an" before vowels');
+  if (/\ba\s+[aeiou]/i.test(summary)) grammarIssues.push('Use "an" before vowel sounds');
+  if (/\s{2,}/.test(summary)) grammarIssues.push('Extra spaces detected');
+  if (/,\s*,/.test(summary)) grammarIssues.push('Double comma detected');
 
-  const grammarValue = spellingErrors.length > 0 ? 1 : (hasConnector ? 2 : 1);
+  // Grammar score: 2 = no issues + has connector, 1 = minor issues or no connector, 0 = major issues
+  let grammarValue = 2;
+  if (grammarIssues.length >= 2) grammarValue = 0;
+  else if (grammarIssues.length === 1 || !hasConnector) grammarValue = 1;
+
+  // Build feedback
+  const missing = [];
+  if (!topicCheck.captured) missing.push('topic');
+  if (!pivotCaptured) missing.push('pivot/contrast');
+  if (!conclusionCheck.captured) missing.push('conclusion');
 
   let feedback = '';
-  if (spellingErrors.length > 0) feedback += `Check: ${spellingErrors.join(', ')}. `;
-  if (contentValue >= 2) feedback += 'Excellent coverage!';
-  else if (contentValue === 1) {
-    const missing = [];
-    if (!topicCheck.captured) missing.push('topic');
-    if (!pivotCaptured) missing.push('pivot');
-    if (!conclusionCheck.captured) missing.push('conclusion');
-    feedback += missing.length > 0 ? `Good. Clarify ${missing.join(', ')}.` : 'Good.';
-  } else {
-    feedback += 'Key concepts missing.';
-  }
+  if (contentValue === 3) feedback = 'Excellent! All key elements covered.';
+  else if (contentValue === 2) feedback = `Good summary. Consider strengthening: ${missing.join(', ')}.`;
+  else if (contentValue === 1) feedback = `Partial coverage. Missing: ${missing.join(', ')}.`;
+  else feedback = 'Key concepts missing. Ensure topic, contrast/pivot, and conclusion are addressed.';
+
+  if (!hasConnector) feedback += ' Add a linking connector (e.g. however, although, therefore).';
+  if (grammarIssues.length > 0) feedback += ` Grammar: ${grammarIssues.join('; ')}.`;
 
   return {
     form: { value: 1, word_count: formCheck.wordCount, notes: 'Valid form' },
@@ -241,17 +256,17 @@ function localGrade(summary, passage, formCheck) {
       topic_captured: topicCheck.captured,
       pivot_captured: pivotCaptured,
       conclusion_captured: conclusionCheck.captured,
-      notes: `Topic:${topicCheck.matches}/${topicCheck.total}, Pivot:${pivotMatches}/${pivotKeywords.length}, Conclusion:${conclusionCheck.matches}/${conclusionCheck.total}`
+      notes: `Topic:${topicCheck.matches}/${topicCheck.total}, Pivot:${pivotMatches}/${pivotKeywords.length}(contrast:${hasContrast}), Conclusion:${conclusionCheck.matches}/${conclusionCheck.total}`
     },
     grammar: {
       value: grammarValue,
-      spelling_errors: spellingErrors,
+      spelling_errors: [],
       grammar_issues: grammarIssues,
       has_connector: hasConnector,
       connector_type: connectorType,
-      notes: hasConnector ? `Connector: ${connectorType}` : 'No connector'
+      notes: hasConnector ? `Connector found: "${connectorType}"` : 'No connector detected'
     },
-    vocabulary: { value: 2, notes: 'Verbatim & paraphrase OK' },
+    vocabulary: { value: 2, notes: 'Verbatim & paraphrase accepted' },
     feedback,
     scoring_mode: 'local'
   };
@@ -260,9 +275,10 @@ function localGrade(summary, passage, formCheck) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '3.0.0',
-    anthropicConfigured: !!OPENAI_API_KEY,
-    mode: OPENAI_API_KEY ? 'AI-primary' : 'local-only'
+    version: '3.1.0',
+    anthropicConfigured: !!ANTHROPIC_API_KEY,
+    openaiConfigured: !!OPENAI_API_KEY,
+    mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
   });
 });
 
@@ -297,13 +313,26 @@ app.post('/api/grade', async (req, res) => {
     let result = await aiGrade(summary, passage);
 
     if (!result) {
-      console.log('AI failed, using local grading');
+      console.log('AI unavailable, using local grading');
       result = localGrade(summary, passage, formCheck);
     }
 
     const rawScore = result.form.value + result.content.value + result.grammar.value + result.vocabulary.value;
+
+    // PTE-aligned band mapping (raw score 0-8)
+    const bands = [
+      'Band 5', // 0
+      'Band 5', // 1
+      'Band 5', // 2
+      'Band 6', // 3
+      'Band 6', // 4
+      'Band 7', // 5
+      'Band 7', // 6
+      'Band 8', // 7
+      'Band 9', // 8
+    ];
+
     const overallScore = Math.min(Math.round((rawScore / 8) * 90), 90);
-    const bands = ['Band 5', 'Band 5', 'Band 5', 'Band 6', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9'];
 
     res.json({
       trait_scores: {
@@ -323,7 +352,7 @@ app.post('/api/grade', async (req, res) => {
       },
       overall_score: overallScore,
       raw_score: rawScore,
-      band: bands[rawScore] || 'Band 5',
+      band: bands[Math.min(rawScore, 8)] || 'Band 5',
       feedback: result.feedback,
       scoring_mode: result.scoring_mode
     });
@@ -335,6 +364,6 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v3.0.0 on port ${PORT}`);
-  console.log(`${OPENAI_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
+  console.log(`✅ PTE API v3.1.0 on port ${PORT}`);
+  console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary (Anthropic)' : '⚙️ Local-only'} mode`);
 });
