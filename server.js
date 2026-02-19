@@ -21,7 +21,7 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 }
 
-// ─── BAND MAP (Updated for PTE SWT 0-7 scale) ────────────────────────────────
+// ─── BAND MAP (PTE SWT 0-7 scale) ────────────────────────────────────────────
 const BAND_MAP = {
   0: 'Band 5', 1: 'Band 5',
   2: 'Band 6',
@@ -32,7 +32,7 @@ const BAND_MAP = {
   7: 'Band 9'
 };
 
-// ─── CONNECTOR REFERENCE (From README Section 5.5) ───────────────────────────
+// ─── CONNECTOR REFERENCE ─────────────────────────────────────────────────────
 const CONNECTORS = {
   contrast: ['however', 'yet', 'although', 'while', 'but'],
   addition: ['moreover', 'furthermore', 'additionally', 'also'],
@@ -94,14 +94,12 @@ function isCompleteSentence(text) {
   const lastChar = trimmed.slice(-1);
   const lastWord = trimmed.split(/\s+/).pop().toLowerCase().replace(/[.!?;,]$/, '');
   
-  // Check for hanging words (prepositions, articles, conjunctions)
   const hangingWords = ['for', 'the', 'a', 'an', 'and', 'but', 'or', 'with', 'by', 'to', 'of', 'in', 'on', 'that', 'which', 'who', 'as', 'at', 'is', 'was', 'were'];
   
   if (hangingWords.includes(lastWord) && lastChar !== '.') {
     return { complete: false, reason: `Incomplete sentence (ends with "${lastWord}")` };
   }
   
-  // Must end with proper punctuation
   if (!/[.!?]$/.test(trimmed)) {
     return { complete: false, reason: 'Sentence must end with period, question mark, or exclamation' };
   }
@@ -115,25 +113,16 @@ function hasFiniteVerb(text) {
   
   const lowerText = text.toLowerCase();
   
-  // Pattern 1: Being verbs + complement
   const beingPattern = /\b(is|are|was|were|be|been|being)\s+\w+/i;
-  
-  // Pattern 2: Helping verbs + main verb
   const helpingPattern = /\b(has|have|had|do|does|did|will|would|could|should|may|might|must|shall|can)\s+\w+/i;
-  
-  // Pattern 3: Past tense verbs (comprehensive list)
   const pastVerbs = /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explained|emphasized|warned|revealed|acknowledged|demonstrated|indicated|suggested|argued|claimed|stated|identified|examined|credited|discussed|transformed|overtook|dominated|generated|acted|possessed|opted|created|allowed|improved|expressed|attempted|highlighted|resulted|ensured|remained|faced|bore|surged|dropped|required|offered|hoped|concluded|predicted|reduced|impacted|caused|affected|threatened|increased|decreased|showed|found|thought|believed|said|noted|mentioned|added|continued|started|wanted|needed|looked|worked|lived|called|tried|asked|moved|played|believed|brought|happened|stood|understood|wrote|spoke|spent|grew|opened|walked|watched|heard|let|began|knew|ate|ran|went|came|did|saw|got|had|did)\b/i;
-  
-  // Pattern 4: Present tense verbs (3rd person singular)
   const presentVerbs = /\b(threatens|affects|reduces|impacts|causes|creates|demonstrates|indicates|reveals|shows|explains|emphasizes|warns|claims|states|suggests|argues|acknowledges|discusses|provides|includes|requires|offers|makes|takes|becomes|finds|gives|tells|feels|leaves|puts|means|keeps|begins|seems|helps|writes|stands|loses|pays|continues|changes|leads|considers|appears|serves|sends|expects|builds|stays|falls|reaches|remains|raises|passes|reports|decides|acts|possesses|opts|demonstrates|indicates|reveals|discovers|challenges|advises|argues|claims|states|finds|identifies|examines|credits|discusses|transforms|overtakes|dominates|generates|acknowledges|opts|significantly impacts|creates|allows|improves|minimizes|expressed|attempts|discussed|explained|highlighted|suggested|results|ensures|remains|faces|bears|surges|drops|requires|offers|hopes|warns|emphasizes|reveals|concludes|predicts|indicates|saves|rewards|replaces|exchanges|persuades|develops|becomes|stays|runs|comes|goes|does|has|says|gets|makes|takes|sees|knows|thinks|looks|wants|needs|likes|uses|finds|gives|tells|asks|works|feels|tries|leaves|calls|keeps|brings|begins|helps|shows|hears|plays|runs|moves|lives|believes|brought|happened|stood|understood|wrote|spoke|spent|grew|opened|walked|watched)\b/i;
   
-  // Check all patterns
   if (beingPattern.test(lowerText)) return true;
   if (helpingPattern.test(lowerText)) return true;
   if (pastVerbs.test(lowerText)) return true;
   if (presentVerbs.test(lowerText)) return true;
   
-  // Fallback: Check for common verb endings (-s, -es, -ed, -ing)
   const words = lowerText.split(/\s+/);
   const verbEndingPattern = /(s|es|ed|ing|tion|sion)$/;
   const hasVerbEnding = words.some(word => {
@@ -145,7 +134,7 @@ function hasFiniteVerb(text) {
   return hasVerbEnding;
 }
 
-// ─── CONNECTOR DETECTION (NEW - Based on README Section 5.5) ─────────────────
+// ─── CONNECTOR DETECTION ─────────────────────────────────────────────────────
 function detectConnectors(text) {
   const lowerText = text.toLowerCase();
   const found = {
@@ -157,7 +146,6 @@ function detectConnectors(text) {
     chainedConnectors: false
   };
   
-  // Check for each connector type
   Object.keys(CONNECTORS).forEach(type => {
     CONNECTORS[type].forEach(connector => {
       const regex = new RegExp(`\\b${connector}\\b`, 'gi');
@@ -168,41 +156,35 @@ function detectConnectors(text) {
     });
   });
   
-  // Check for semicolon before connector (Band 9 style)
   const semicolonConnectorPattern = /;\s*(however|moreover|furthermore|consequently|therefore|thus|additionally)/gi;
   found.hasSemicolonBeforeConnector = semicolonConnectorPattern.test(text);
   
-  // Check for chained connectors (multiple semicolons with connectors)
   const chainedPattern = /;\s*\w+\s*,?.*;\s*\w+/;
   found.chainedConnectors = chainedPattern.test(text);
   
   return found;
 }
 
-// ─── FORM VALIDATION (Updated per README Section 3.2) ────────────────────────
+// ─── FORM VALIDATION ─────────────────────────────────────────────────────────
 function calculateForm(text, type) {
   const cleanInput = sanitizeInput(text);
   const words = cleanInput.trim().split(/\s+/).filter(w => w.length > 0);
   const wc = words.length;
 
   if (type === 'summarize-written-text') {
-    // Word count check first (5-75 words per README)
     if (wc < 5) return { score: 0, reason: 'Too short (minimum 5 words)', wordCount: wc };
     if (wc > 75) return { score: 0, reason: 'Too long (maximum 75 words)', wordCount: wc };
     
-    // Sentence count check - CRITICAL: Multiple sentences = automatic 0
     const cleanText = cleanInput.replace(/(?:Dr|Mr|Mrs|Ms|Prof|U\.K|U\.S|i\.e|e\.g|etc)\./gi, '##');
     const sentenceCount = (cleanText.match(/[.!?](\s|$)/g) || []).length;
     
     if (sentenceCount !== 1) return { score: 0, reason: 'Must be exactly one sentence', wordCount: wc };
     
-    // Completeness check
     const completeness = isCompleteSentence(cleanInput);
     if (!completeness.complete) return { score: 0, reason: completeness.reason, wordCount: wc };
     
-    // Finite verb check
     if (!hasFiniteVerb(cleanInput)) {
-      return { score: 0, reason: 'No finite verb detected - add a main verb like "threatens", "affects", "reduces"', wordCount: wc };
+      return { score: 0, reason: 'No finite verb detected - add a main verb', wordCount: wc };
     }
     
     return { score: 1, reason: 'Valid', wordCount: wc };
@@ -211,11 +193,10 @@ function calculateForm(text, type) {
   return { score: 0, reason: 'Invalid type', wordCount: wc };
 }
 
-// ─── FIRST PERSON / PERSPECTIVE SHIFT CHECK ──────────────────────────────────
+// ─── PERSPECTIVE SHIFT CHECK ─────────────────────────────────────────────────
 function checkPerspectiveShift(text, passageText) {
   if (!passageText) return { penalty: false, note: null };
   
-  // Check if passage uses first person
   const firstPersonIndicators = ['\bI\b', '\bmy\b', '\bme\b', "\bI've\b", "\bI'd\b", "\bI'm\b"];
   const iCount = firstPersonIndicators.reduce((count, pattern) => {
     const matches = passageText.match(new RegExp(pattern, 'gi'));
@@ -224,47 +205,63 @@ function checkPerspectiveShift(text, passageText) {
   
   const isFirstPersonPassage = iCount > 2;
   
-  // Check if response uses first person when it shouldn't
   if (isFirstPersonPassage && /^\s*(I|My|Me)\b/.test(text)) {
     return { 
       penalty: true, 
-      note: "Perspective shift needed: Use 'The author' instead of 'I' for first-person passages" 
+      note: "Use 'The author' instead of 'I' for first-person passages" 
     };
   }
   
   return { penalty: false, note: null };
 }
 
-// ─── WORD COUNT OPTIMALITY CHECK (NEW - Per README Section 8.2) ──────────────
-function getWordCountFeedback(wc) {
-  if (wc < 40) {
-    return { 
-      optimal: false, 
-      feedback: `Word count (${wc}) is below optimal range. Band 9 responses are typically 50-75 words. Aim higher to ensure comprehensive content coverage.` 
-    };
+// ─── BUILD HONEST FEEDBACK ───────────────────────────────────────────────────
+function buildFeedback(result, formCheck, connectorInfo, wordCount, perspectiveCheck) {
+  const parts = [];
+  const keyIdeasPresent = result.key_ideas_present || [];
+  const keyIdeasMissing = result.key_ideas_missing || [];
+  
+  // Content feedback - BE HONEST
+  if (keyIdeasMissing.length === 0 && keyIdeasPresent.length >= 3) {
+    parts.push("Excellent! You captured all key points from the passage.");
+  } else if (keyIdeasPresent.length >= 2) {
+    parts.push(`Good attempt. You captured ${keyIdeasPresent.length} out of 3 key points.`);
+    if (keyIdeasMissing.length > 0) {
+      parts.push(`Missing: ${keyIdeasMissing.join(', ')}`);
+    }
+  } else if (keyIdeasPresent.length === 1) {
+    parts.push(`You captured only 1 key point. Missing: ${keyIdeasMissing.join(', ')}`);
+  } else {
+    parts.push("Your summary is missing the main points from the passage.");
   }
-  if (wc >= 50 && wc <= 75) {
-    return { 
-      optimal: true, 
-      feedback: `Excellent word count (${wc})! This is the Band 9 sweet spot for comprehensive coverage.` 
-    };
+  
+  // Grammar feedback
+  const hasConnector = connectorInfo.contrast.length > 0 || connectorInfo.addition.length > 0 || connectorInfo.result.length > 0;
+  if (!hasConnector) {
+    parts.push("Add connectors (however, moreover, therefore) to improve grammar score.");
+  } else if (!connectorInfo.hasSemicolonBeforeConnector) {
+    parts.push("Use semicolons before connectors: '; however,' '; moreover,' '; therefore,'");
   }
-  if (wc > 40 && wc < 50) {
-    return { 
-      optimal: true, 
-      feedback: `Good word count (${wc}). Consider expanding to 50-75 words for maximum content coverage.` 
-    };
+  
+  // Vocabulary feedback
+  if (result.unsafe_swaps_detected && result.unsafe_swaps_detected.length > 0) {
+    parts.push(`Unsafe synonym swaps detected: ${result.unsafe_swaps_detected.join(', ')}. Keep original wording to preserve meaning.`);
   }
-  return { optimal: true, feedback: null };
+  
+  // Perspective feedback
+  if (perspectiveCheck.penalty) {
+    parts.push(perspectiveCheck.note);
+  }
+  
+  return parts.join(' ');
 }
 
-// ─── AI GRADING ENGINE (Updated per README Band 9 Insights) ──────────────────
+// ─── AI GRADING ENGINE ───────────────────────────────────────────────────────
 async function gradeResponse(text, type, passageText) {
   const cacheKey = (text + type + passageText).slice(0, 200);
   const cached = getCached(cacheKey);
   if (cached) return { ...cached, cached: true };
 
-  const perspectiveCheck = checkPerspectiveShift(text, passageText);
   const connectorInfo = detectConnectors(text);
 
   if (!anthropic) {
@@ -287,102 +284,75 @@ async function gradeResponse(text, type, passageText) {
       vocabulary: 1,
       synonym_usage: 'none',
       smart_swaps_detected: [],
-      compression_detected: false,
-      compressed_items: [],
-      verbatim_acceptable: true,
+      unsafe_swaps_detected: [],
       feedback: 'Running in local mode. Set ANTHROPIC_API_KEY for AI grading.',
       mode: 'local'
     };
   }
 
-  // Updated system prompt based on README Band 9 Insights
-  const systemPrompt = `You are a PTE Academic examiner specializing in Summarize Written Text (SWT). Score based on the official PTE criteria with Band 9 insights.
+  const systemPrompt = `You are a PTE Academic examiner for Summarize Written Text (SWT).
 
-=== BAND 9 INSIGHTS (CRITICAL) ===
-1. CONTENT COVERAGE TRUMPS CONCISENESS: Including extra details is OK. Missing key details hurts your score.
-2. VERBATIM IS ACCEPTABLE: 95% verbatim copying is perfectly fine. Do NOT penalize for copying key phrases.
-3. MEANING PRESERVATION IS CRITICAL: Accurate vocabulary that preserves meaning scores higher than sophisticated vocabulary that changes nuance.
-4. OPTIMAL WORD COUNT: 50-75 words is the sweet spot for Band 9.
+=== CORE PRINCIPLES ===
+1. VERBATIM COPYING IS ACCEPTABLE for capturing main ideas
+2. MEANING PRESERVATION is critical - don't penalize for keeping original wording
+3. CONTENT COVERAGE matters most - missing key points hurts more than extra words
+4. Any word count 5-75 is valid if all key points are captured
 
-=== SCORING CRITERIA ===
+=== EXTRACT 3 KEY IDEAS FROM THE PASSAGE ===
+1. TOPIC: Main subject/action (WHO/WHAT is this about?)
+2. PIVOT: Contrast/problem/shift (however, but, although)
+3. RESULT: Conclusion/outcome/solution
 
-CONTENT (0-2 points):
-- 2 points: Includes ALL main points and key supporting details from the passage
-- 1 point: Includes most main points but misses some supporting details  
-- 0 points: Misses main points or includes incorrect information
+=== CONTENT SCORING (0-2) ===
+- 2 points: ALL 3 key ideas present (verbatim OK)
+- 1 point: 2 key ideas present
+- 0 points: 0-1 key ideas present
 
-KEY INSIGHT: Use the "Scan Method" to identify:
-1. TOPIC (WHO/WHAT) - Main subject in first 1-2 sentences
-2. PIVOT - Contrast words (however, but, although) indicating a shift
-3. RESULT - Conclusion or final outcome in last 1-2 sentences
+=== GRAMMAR SCORING (0-2) ===
+- 2 points: Correct grammar WITH proper semicolon + connector usage
+- 1 point: Minor errors OR missing connector
+- 0 points: Major errors affecting comprehension
 
-FORM (0-1 point):
-- 1 point: Single sentence, 5-75 words
-- 0 points: Multiple sentences OR word count outside range
-CRITICAL: Multiple sentences = automatic 0 for Form
+=== VOCABULARY SCORING (0-2) ===
+- 2 points: Accurate word choice, meaning preserved
+- 1 point: Some awkward phrasing but meaning clear
+- 0 points: Wrong word choice that changes meaning
 
-GRAMMAR (0-2 points):
-- 2 points: Correct grammatical structure with proper semicolons + connectors (however/moreover/consequently)
-- 1 point: Minor errors that don't impede understanding OR missing proper connector
-- 0 points: Major errors that affect comprehension
-
-Band 9 Style: Use semicolons before connectors: "; however," "; moreover," "; therefore,"
-
-VOCABULARY (0-2 points):
-- 2 points: Appropriate word choice that preserves meaning (verbatim is OK!)
-- 1 point: Adequate vocabulary with some awkward phrasing
-- 0 points: Inappropriate word choice or altered meaning
-
-KEY INSIGHT: Simple but accurate > fancy but wrong. Don't force synonyms if they change nuance.
-
-=== CONNECTOR REFERENCE ===
-- Contrast: however, yet, although, while, but
-- Addition: moreover, furthermore, additionally
-- Result: consequently, therefore, thus
-
-=== PERSPECTIVE SHIFT ===
-If passage uses first person (I, my, me), response should use "The author" or "The narrator".
+=== DETECT UNSAFE SYNONYM SWAPS ===
+Flag words changed that alter meaning (e.g., "frustrated" -> "angry", "seduced" -> "tricked")
 
 Return ONLY JSON:
 {
   "content": 0-2,
-  "key_ideas_extracted": ["topic", "pivot", "result"],
-  "key_ideas_present": [],
-  "key_ideas_missing": [],
-  "content_notes": "",
+  "key_ideas_extracted": ["topic description", "pivot description", "result description"],
+  "key_ideas_present": ["which ideas student captured"],
+  "key_ideas_missing": ["which ideas student missed"],
+  "content_notes": "brief explanation",
   "grammar": {
     "score": 0-2,
     "has_connector": false,
     "connector_type": "none|contrast|addition|result",
     "connector_logic_correct": false,
-    "chained_connectors": false,
-    "has_semicolon_before_connector": false,
     "spelling_errors": [],
     "grammar_issues": []
   },
   "vocabulary": 0-2,
-  "synonym_usage": "none|minimal|moderate|extensive",
+  "synonym_usage": "none|minimal|moderate",
   "smart_swaps_detected": [],
   "unsafe_swaps_detected": [],
-  "compression_detected": false,
-  "verbatim_phrases": [],
-  "feedback": ""
+  "feedback": "honest, specific feedback"
 }`;
 
   const userPrompt = `PASSAGE: "${passageText}"
 
 STUDENT RESPONSE: "${text}"
 
-${perspectiveCheck.penalty ? 'NOTE: Perspective shift issue detected - student used first person for a first-person passage.' : ''}
-
-Analyze using the Scan Method (Topic + Pivot + Result). Remember: Verbatim copying is acceptable. Meaning preservation is critical. Content coverage trumps conciseness.
-
-Return JSON only.`;
+Analyze using the 3-key-idea framework (Topic + Pivot + Result). Be honest about what was captured vs missed. Verbatim is OK. Return JSON only.`;
 
   try {
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 1200,
+      max_tokens: 1000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
       temperature: 0.1
@@ -397,7 +367,7 @@ Return JSON only.`;
     // Add connector info from local detection
     if (!result.grammar) result.grammar = {};
     result.grammar.has_semicolon_before_connector = connectorInfo.hasSemicolonBeforeConnector;
-    result.grammar.chained_connectors = connectorInfo.chainedConnectors || result.grammar.chained_connectors;
+    result.grammar.chained_connectors = connectorInfo.chainedConnectors;
     
     const finalResult = { ...result, mode: 'ai' };
     setCache(cacheKey, finalResult);
@@ -425,8 +395,6 @@ Return JSON only.`;
       synonym_usage: 'none',
       smart_swaps_detected: [],
       unsafe_swaps_detected: [],
-      compression_detected: false,
-      verbatim_phrases: [],
       feedback: `Error: ${err.message}. Please try again.`,
       mode: 'error'
     };
@@ -437,7 +405,7 @@ Return JSON only.`;
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    version: '7.0.0', 
+    version: '7.1.0', 
     anthropicConfigured: !!anthropic,
     timestamp: new Date().toISOString()
   });
@@ -454,10 +422,9 @@ app.post('/api/grade', async (req, res) => {
     const cleanText = sanitizeInput(text);
     const formCheck = calculateForm(cleanText, type);
     const perspectiveCheck = checkPerspectiveShift(cleanText, prompt);
-    const wordCountFeedback = getWordCountFeedback(formCheck.wordCount);
     const connectorInfo = detectConnectors(cleanText);
 
-    // FORM GATE: If form is invalid, return immediately with 0 scores
+    // FORM GATE
     if (formCheck.score === 0) {
       return res.json({
         trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
@@ -465,7 +432,7 @@ app.post('/api/grade', async (req, res) => {
           key_ideas_extracted: [], 
           key_ideas_present: [], 
           key_ideas_missing: [], 
-          notes: 'Form invalid - ' + formCheck.reason 
+          notes: 'Form invalid'
         },
         grammar_details: { 
           spelling_errors: [], 
@@ -480,8 +447,7 @@ app.post('/api/grade', async (req, res) => {
           synonym_usage: 'none', 
           smart_swaps_detected: [], 
           unsafe_swaps_detected: [],
-          compression_detected: false, 
-          compressed_items: [] 
+          compression_detected: false
         },
         overall_score: 10,
         raw_score: 0,
@@ -489,19 +455,14 @@ app.post('/api/grade', async (req, res) => {
         form_gate_triggered: true,
         form_reason: formCheck.reason,
         word_count: formCheck.wordCount,
-        word_count_feedback: wordCountFeedback.feedback,
-        feedback: `FORM ERROR: ${formCheck.reason}. Your summary must be one complete sentence (5-75 words) with a subject and main verb. CRITICAL: Multiple sentences = automatic 0 for Form.`,
-        band_9_insights: {
-          verbatim_acceptable: true,
-          content_coverage_priority: true,
-          optimal_word_count: '50-75 words'
-        }
+        feedback: `FORM ERROR: ${formCheck.reason}. Your summary must be one complete sentence (5-75 words).`,
+        key_ideas_status: { topic: false, pivot: false, conclusion: false }
       });
     }
 
     const result = await gradeResponse(cleanText, type, prompt);
     
-    // Apply perspective shift penalty if needed
+    // Apply perspective shift penalty
     let contentScore = result.content || 0;
     if (perspectiveCheck.penalty) {
       contentScore = Math.max(0, contentScore - 0.5);
@@ -516,32 +477,16 @@ app.post('/api/grade', async (req, res) => {
     // Convert to PTE overall score (10-90 scale)
     const overallScore = Math.min(90, 10 + Math.round((rawScore / maxPossible) * 80));
 
-    // Determine which key ideas are present for frontend display
+    // Determine key ideas status for frontend
     const keyIdeasPresent = result.key_ideas_present || [];
     const keyIdeasMissing = result.key_ideas_missing || [];
     
-    // Build comprehensive feedback
-    let feedback = result.feedback || '';
+    const hasTopic = keyIdeasPresent.some(k => k.toLowerCase().includes('topic') || k.toLowerCase().includes('gdp') || k.toLowerCase().includes('economic') || k.toLowerCase().includes('climate'));
+    const hasPivot = keyIdeasPresent.some(k => k.toLowerCase().includes('pivot') || k.toLowerCase().includes('however') || k.toLowerCase().includes('but') || k.toLowerCase().includes('developing'));
+    const hasConclusion = keyIdeasPresent.some(k => k.toLowerCase().includes('result') || k.toLowerCase().includes('conclusion') || k.toLowerCase().includes('renewable') || k.toLowerCase().includes('solution'));
     
-    // Add word count feedback
-    if (wordCountFeedback.feedback) {
-      feedback += ` ${wordCountFeedback.feedback}`;
-    }
-    
-    // Add perspective shift note
-    if (perspectiveCheck.penalty) {
-      feedback += ` ${perspectiveCheck.note}`;
-    }
-    
-    // Add connector feedback
-    if (!result.grammar?.has_connector && !result.grammar?.has_semicolon_before_connector) {
-      feedback += ` Consider using semicolons with connectors (e.g., "; however," "; moreover," "; therefore,") for Band 9 grammar.`;
-    }
-    
-    // Add verbatim encouragement
-    if (result.synonym_usage === 'extensive' || (result.unsafe_swaps_detected && result.unsafe_swaps_detected.length > 0)) {
-      feedback += ` Band 9 insight: Verbatim copying is acceptable. Focus on meaning preservation over fancy synonyms.`;
-    }
+    // Build honest feedback
+    const feedback = buildFeedback(result, formCheck, connectorInfo, formCheck.wordCount, perspectiveCheck);
 
     res.json({
       trait_scores: {
@@ -552,6 +497,52 @@ app.post('/api/grade', async (req, res) => {
       },
       content_details: {
         key_ideas_extracted: result.key_ideas_extracted || [],
+        key_ideas_present: keyIdeasPresent,
+        key_ideas_missing: keyIdeasMissing,
+        perspective_shift_penalty: perspectiveCheck.penalty || false,
+        notes: result.content_notes || ''
+      },
+      grammar_details: {
+        ...result.grammar,
+        has_semicolon_before_connector: result.grammar?.has_semicolon_before_connector || connectorInfo.hasSemicolonBeforeConnector,
+        chained_connectors: result.grammar?.chained_connectors || connectorInfo.chainedConnectors
+      },
+      vocabulary_details: {
+        synonym_usage: result.synonym_usage || 'none',
+        smart_swaps_detected: result.smart_swaps_detected || [],
+        unsafe_swaps_detected: result.unsafe_swaps_detected || [],
+        compression_detected: result.compression_detected || false
+      },
+      overall_score: overallScore,
+      raw_score: rawScore,
+      band: BAND_MAP[Math.floor(rawScore)] || 'Band 5',
+      word_count: formCheck.wordCount,
+      feedback: feedback,
+      mode: result.mode,
+      key_ideas_status: {
+        topic: hasTopic,
+        pivot: hasPivot,
+        conclusion: hasConclusion
+      }
+    });
+
+  } catch (error) {
+    console.error('Route error:', error);
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+});
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ PTE SWT Grader v7.1.0 running on port ${PORT}`);
+  console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'DISABLED'}`);
+});
+racted || [],
         key_ideas_present: keyIdeasPresent,
         key_ideas_missing: keyIdeasMissing,
         perspective_shift_penalty: perspectiveCheck.penalty || false,
@@ -587,7 +578,7 @@ app.post('/api/grade', async (req, res) => {
         verbatim_acceptable: true,
         content_coverage_priority: true,
         meaning_preservation_critical: true,
-        optimal_word_count: '50-75 words',
+        word_count_flexibility: 'Any count within 5-75 words is valid - even 33 words can score Band 9',
         scan_method: 'Topic + Pivot + Result',
         connector_style: 'Use semicolons before connectors (e.g., "; however,")'
       }
