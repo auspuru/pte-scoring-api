@@ -520,12 +520,71 @@ function localGrade(summary, passage, formCheck) {
   };
 }
 
-// ─── AI GRADER ────────────────────────────────────────────────────────────────
+// ─── AI GRADER (Anthropic) ───────────────────────────────────────────────────
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
+
+  const systemPrompt = [
+    'You are a strict PTE Academic examiner grading "Summarize Written Text" responses.',
+    '',
+    'PASSAGE KEY ELEMENTS:',
+    '- TOPIC: ' + (passage.keyElements?.topic || 'N/A'),
+    '- PIVOT/CONTRAST: ' + (passage.keyElements?.pivot || 'N/A'),
+    '- CONCLUSION: ' + (passage.keyElements?.conclusion || 'N/A'),
+    '',
+    'SCORING CRITERIA:',
+    '',
+    'FORM (0-1):',
+    '  1 = single sentence, 5-75 words, ends with punctuation mark',
+    '  0 = any violation',
+    '',
+    'CONTENT (0-3) - Award 1 point per correctly captured element:',
+    '  TOPIC (1pt): Correct main subject identified with accurate meaning',
+    '  PIVOT (1pt): Contrast or shift shown with appropriate linking language (however, although, despite, etc.)',
+    '  CONCLUSION (1pt): Final point or implication correctly reflected',
+    '  Synonyms and paraphrasing are FINE if meaning is preserved',
+    '  Deduct if meaning is reversed, omitted, or heavily distorted',
+    '',
+    'GRAMMAR (0-2):',
+    '  2 = grammatically correct throughout + uses a linking connector',
+    '  1 = exactly 1 minor error OR grammatically correct but no connector',
+    '  0 = 2 or more errors, or any major error that impedes meaning',
+    '  List EVERY spelling error with correction',
+    '  List EVERY grammar issue with correction and rule name',
+    '',
+    'VOCABULARY (0-2):',
+    '  2 = vocabulary is appropriate and does not impede understanding',
+    '  1 = vocabulary errors affect clarity',
+    '  0 = vocabulary so poor meaning is lost',
+    '',
+    'Return ONLY valid JSON (no markdown fences, no extra text).',
+  ].join('\n');
+
+  const userPrompt = 'PASSAGE: "' + passage.text + '"\n\nSTUDENT SUMMARY: "' + summary + '"\n\n' +
+    'Return this exact JSON:\n' +
+    '{\n' +
+    '  "form": { "value": 0, "word_count": 0, "notes": "..." },\n' +
+    '  "content": {\n' +
+    '    "value": 0,\n' +
+    '    "topic_captured": false,\n' +
+    '    "pivot_captured": false,\n' +
+    '    "conclusion_captured": false,\n' +
+    '    "notes": "What was captured and what was missed, with brief explanation"\n' +
+    '  },\n' +
+    '  "grammar": {\n' +
+    '    "value": 0,\n' +
+    '    "spelling_errors": [{ "word": "misspelled", "suggestion": "correct" }],\n' +
+    '    "grammar_issues": [{ "issue": "quoted problem phrase", "suggestion": "corrected version", "rule": "rule name" }],\n' +
+    '    "has_connector": false,\n' +
+    '    "connector_type": "word used or null",\n' +
+    '    "notes": "..."\n' +
+    '  },\n' +
+    '  "vocabulary": { "value": 2, "notes": "..." },\n' +
+    '  "feedback": "2-3 sentence actionable feedback: mention missing content elements, list spelling/grammar corrections with fixes, note connector usage."\n' +
+    '}';
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -537,70 +596,11 @@ async function aiGrade(summary, passage) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001', // Confirmed valid: https://docs.claude.com/en/about-claude/models/overview
-        max_tokens: 1000,
+        model: 'claude-3-haiku-20240307',
         temperature: 0,
-        system: `You are a strict PTE Academic examiner grading "Summarize Written Text" responses.
-
-PASSAGE KEY ELEMENTS:
-- TOPIC: ${passage.keyElements?.topic || 'N/A'}
-- PIVOT/CONTRAST: ${passage.keyElements?.pivot || 'N/A'}
-- CONCLUSION: ${passage.keyElements?.conclusion || 'N/A'}
-
-SCORING CRITERIA:
-
-FORM (0-1):
-  1 = single sentence, 5–75 words, ends with punctuation mark
-  0 = any violation
-
-CONTENT (0-3) — Award 1 point per correctly captured element:
-  TOPIC (1pt): Correct main subject identified with accurate meaning
-  PIVOT (1pt): Contrast or shift shown with appropriate linking language (however, although, despite, etc.)
-  CONCLUSION (1pt): Final point or implication correctly reflected
-  → Synonyms and paraphrasing are FINE if meaning is preserved
-  → Deduct if meaning is reversed, omitted, or heavily distorted
-
-GRAMMAR (0-2):
-  2 = grammatically correct throughout + uses a linking connector
-  1 = exactly 1 minor error OR grammatically correct but no connector
-  0 = 2 or more errors, or any major error that impedes meaning
-  → List EVERY spelling error with correction
-  → List EVERY grammar issue with correction and rule name
-
-VOCABULARY (0-2):
-  2 = vocabulary is appropriate and does not impede understanding
-  1 = vocabulary errors affect clarity
-  0 = vocabulary so poor meaning is lost
-
-Return ONLY valid JSON (no markdown fences, no extra text):`,
-        messages: [{
-          role: 'user',
-          content: `PASSAGE: "${passage.text}"
-
-STUDENT SUMMARY: "${summary}"
-
-Return this exact JSON:
-{
-  "form": { "value": 0, "word_count": 0, "notes": "..." },
-  "content": {
-    "value": 0,
-    "topic_captured": false,
-    "pivot_captured": false,
-    "conclusion_captured": false,
-    "notes": "What was captured and what was missed, with brief explanation"
-  },
-  "grammar": {
-    "value": 0,
-    "spelling_errors": [{ "word": "misspelled", "suggestion": "correct" }],
-    "grammar_issues": [{ "issue": "quoted problem phrase", "suggestion": "corrected version", "rule": "rule name" }],
-    "has_connector": false,
-    "connector_type": "word used or null",
-    "notes": "..."
-  },
-  "vocabulary": { "value": 2, "notes": "..." },
-  "feedback": "2-3 sentence actionable feedback: mention missing content elements, list spelling/grammar corrections with fixes, note connector usage."
-}`
-        }]
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
       })
     });
 
@@ -614,7 +614,7 @@ Return this exact JSON:
     const data = await response.json();
     const text = data.content?.[0]?.text || '';
     const match = text.match(/\{[\s\S]*\}/);
-    if (!match) { console.log('No JSON found in AI response'); return null; }
+    if (!match) { console.log('No JSON found in Anthropic response'); return null; }
 
     const result = JSON.parse(match[0]);
     return { ...result, scoring_mode: 'ai' };
@@ -729,10 +729,10 @@ app.listen(PORT, "0.0.0.0", () => {
   if (!ANTHROPIC_API_KEY) {
     console.warn('⚠️  ANTHROPIC_API_KEY not set — running in local-only mode');
   } else if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
-    console.error('❌ ANTHROPIC_API_KEY looks wrong — Anthropic keys start with sk-ant-');
-    console.error('   Got prefix:', ANTHROPIC_API_KEY.slice(0, 8) + '... — you may have swapped your API keys.');
+    console.error('❌ ANTHROPIC_API_KEY looks wrong — expected format: sk-ant-...');
+    console.error('   Got prefix:', ANTHROPIC_API_KEY.slice(0, 8) + '... — you may have the wrong key set.');
   } else {
-    console.log(`🤖 AI-primary mode active | Key prefix: ${ANTHROPIC_API_KEY.slice(0, 12)}...`);
+    console.log(`🤖 AI-primary mode active (claude-3-haiku-20240307) | Key: ${ANTHROPIC_API_KEY.slice(0, 12)}...`);
   }
   if (OPENAI_API_KEY) console.log(`🔑 OpenAI key also present: ${OPENAI_API_KEY.slice(0, 8)}...`);
 });
