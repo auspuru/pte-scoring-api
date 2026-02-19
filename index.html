@@ -781,10 +781,23 @@
         formErrorBanner.style.display = 'none';
       }
       
+      // Calculate trait scores FIRST (force correct max values)
+      const traits = data.trait_scores || {};
+      const formScore = Math.min(1, traits.form || 0);
+      const contentScore = Math.min(2, traits.content || 0);  // Max is 2, not 3
+      const grammarScore = Math.min(2, traits.grammar || 0);
+      const vocabScore = Math.min(2, traits.vocabulary || 0);
+      
+      // Calculate derived values
+      const correctedRawScore = Math.min(7, formScore + contentScore + grammarScore + vocabScore);
+      const hasTopic = contentScore >= 1;
+      const hasPivot = contentScore >= 1.5;
+      const hasConclusion = contentScore >= 2;
+      
       // Score header
       document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
       document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
-      document.getElementById('rawDisplay').textContent = 'Raw: ' + (data.raw_score || 0) + '/7';
+      document.getElementById('rawDisplay').textContent = 'Raw: ' + correctedRawScore + '/7';
       
       // Mode display
       const modeDisplay = document.getElementById('modeDisplay');
@@ -808,11 +821,6 @@
       // Content elements
       const content = data.content_details || {};
       const extracted = content.key_ideas_extracted || [];
-      
-      // Determine captured status from backend response
-      const hasTopic = content.has_topic || data.trait_scores?.content >= 1;
-      const hasPivot = content.has_pivot || data.trait_scores?.content >= 1.5;
-      const hasConclusion = content.has_conclusion || data.trait_scores?.content >= 2;
       
       document.getElementById('elementsGrid').innerHTML = `
         <div class="element-card ${hasTopic ? 'captured' : 'missed'}">
@@ -945,13 +953,7 @@
         insightsSection.style.display = 'none';
       }
       
-      // Trait scores
-      const traits = data.trait_scores || {};
-      const formScore = traits.form || 0;
-      const contentScore = traits.content || 0;
-      const grammarScore = traits.grammar || 0;
-      const vocabScore = traits.vocabulary || 0;
-      
+      // Trait scores display (using already-calculated values)
       document.getElementById('traitsGrid').innerHTML = `
         <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
           <div class="trait-name">Form</div>
