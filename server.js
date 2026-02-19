@@ -233,7 +233,7 @@ async function gradeResponse(text, type, passageText) {
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-latest',  // ← Updated to latest alias
+      model: 'claude-3-5-sonnet-latest',  // ← FIXED: Was claude-3-5-sonnet-20241022
       max_tokens: 1200,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }]
@@ -280,8 +280,8 @@ async function gradeResponse(text, type, passageText) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '5.3.1',
-    model: 'claude-3-5-sonnet-latest',  // ← Updated here too
+    version: '5.3.2',
+    model: 'claude-3-5-sonnet-latest',  // ← FIXED: Updated here too
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     cacheSize: gradeCache.size,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-fallback'
@@ -376,7 +376,7 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log('✅ PTE Grading API v5.3.1 on port ' + PORT);
+  console.log('✅ PTE Grading API v5.3.2 on port ' + PORT);
   if (!ANTHROPIC_API_KEY) {
     console.warn('⚠️  ANTHROPIC_API_KEY not set — running in local fallback mode');
   } else if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
