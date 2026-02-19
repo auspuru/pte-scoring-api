@@ -235,7 +235,6 @@
 
     <div class="results" id="results">
       <div class="card">
-        <!-- Form Error Banner -->
         <div class="form-error-banner" id="formErrorBanner" style="display: none;">
           <div class="title">⚠️ Form Check Failed</div>
           <div class="reason" id="formErrorReason"></div>
@@ -245,47 +244,40 @@
           <div class="main-score" id="mainScore">0/90</div>
           <div class="score-info">
             <div class="band" id="bandDisplay">Band 5</div>
-            <div class="raw-score" id="rawDisplay">Raw: 0/8</div>
+            <div class="raw-score" id="rawDisplay">Raw: 0/7</div>
             <div class="mode-tag" id="modeDisplay">📊 Local</div>
           </div>
         </div>
         <div class="feedback-text" id="feedbackText"></div>
 
-        <!-- Content Elements -->
         <div class="elements-grid" id="elementsGrid"></div>
 
-        <!-- First Person Warning -->
         <div class="issues-section warning" id="firstPersonWarning" style="display: none;">
           <div class="issues-title">⚠️ First-Person Trap</div>
           <div id="firstPersonContent"></div>
         </div>
 
-        <!-- Spelling Issues -->
         <div class="issues-section spelling" id="spellCheckSection" style="display: none;">
           <div class="issues-title">🔤 Spelling Issues</div>
           <div id="spellCheckContent"></div>
         </div>
 
-        <!-- Grammar Issues -->
         <div class="issues-section grammar" id="grammarSection" style="display: none;">
           <div class="issues-title">✏️ Grammar Issues</div>
           <div id="grammarContent"></div>
           <div class="connector-info" id="connectorInfo"></div>
         </div>
 
-        <!-- Vocabulary Details -->
         <div class="issues-section vocab" id="vocabSection" style="display: none;">
           <div class="issues-title">📚 Vocabulary Analysis</div>
           <div id="vocabContent"></div>
         </div>
 
-        <!-- Band 9 Insights -->
         <div class="issues-section insights" id="insightsSection" style="display: none;">
           <div class="issues-title">🎯 Band 9 Insights</div>
           <div id="insightsContent"></div>
         </div>
 
-        <!-- Trait Scores -->
         <div class="traits-section">
           <div class="traits-header">📊 PTE TRAIT SCORES</div>
           <div class="traits-grid" id="traitsGrid"></div>
@@ -415,7 +407,6 @@
   </div>
 
   <script>
-    // API URL - set to your Railway endpoint
     const API_URL = 'https://pte-scoring-api-production.up.railway.app';
     
     const passages = [
@@ -781,15 +772,19 @@
         formErrorBanner.style.display = 'none';
       }
       
-      // Calculate trait scores FIRST (force correct max values)
+      // FIX: Normalize scores from backend (backend may return wrong max values)
       const traits = data.trait_scores || {};
       const formScore = Math.min(1, traits.form || 0);
-      const contentScore = Math.min(2, traits.content || 0);  // Max is 2, not 3
+      // Backend might return content as 0-3, normalize to 0-2
+      let contentScore = traits.content || 0;
+      if (contentScore > 2) contentScore = 2; // Cap at 2
       const grammarScore = Math.min(2, traits.grammar || 0);
       const vocabScore = Math.min(2, traits.vocabulary || 0);
       
-      // Calculate derived values
-      const correctedRawScore = Math.min(7, formScore + contentScore + grammarScore + vocabScore);
+      // Calculate correct raw score (max 7)
+      const correctedRawScore = formScore + contentScore + grammarScore + vocabScore;
+      
+      // Determine key elements based on content score
       const hasTopic = contentScore >= 1;
       const hasPivot = contentScore >= 1.5;
       const hasConclusion = contentScore >= 2;
@@ -818,7 +813,7 @@
       // Feedback
       document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
       
-      // Content elements
+      // Content elements - use calculated hasTopic/hasPivot/hasConclusion
       const content = data.content_details || {};
       const extracted = content.key_ideas_extracted || [];
       
@@ -871,7 +866,6 @@
       const grammarSection = document.getElementById('grammarSection');
       const grammarIssues = grammar.grammar_issues || [];
       
-      // Check for connector issues
       let connectorHtml = '';
       if (!grammar.has_connector) {
         connectorHtml = '<div class="issue-item">Add a connector (however, therefore, moreover) to improve grammar score</div>';
@@ -888,7 +882,7 @@
         grammarSection.style.display = 'none';
       }
       
-      // Connector info using connector_analysis from backend
+      // Connector info
       const connectorInfo = document.getElementById('connectorInfo');
       const connAnalysis = data.connector_analysis || {};
       if (grammar.has_connector) {
@@ -900,7 +894,6 @@
         const semicolon = grammar.has_semicolon_before_connector ? '' : ' | Missing semicolon!';
         connectorInfo.innerHTML = `<span class="type ${typeClass}">${grammar.connector_type}</span><span class="${logicClass}">${logicText}</span>${semicolon}`;
       } else if (connAnalysis.contrast?.length || connAnalysis.addition?.length || connAnalysis.result?.length) {
-        // Show detected connectors even if not properly used
         const types = [];
         if (connAnalysis.contrast?.length) types.push('<span class="type contrast">contrast</span>');
         if (connAnalysis.addition?.length) types.push('<span class="type addition">addition</span>');
@@ -910,14 +903,13 @@
         connectorInfo.innerHTML = '<span style="color: #888;">No connector detected</span>';
       }
       
-      // Vocabulary section - show verbatim acceptance
+      // Vocabulary section
       const vocab = data.vocabulary_details || {};
       const vocabSection = document.getElementById('vocabSection');
       if (vocab) {
         vocabSection.style.display = 'block';
         let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
         
-        // Show verbatim is OK message if no unsafe swaps
         if (!vocab.unsafe_swaps_detected || vocab.unsafe_swaps_detected.length === 0) {
           vocabHtml += '<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim copying is acceptable for PTE scoring</p>';
         }
@@ -936,7 +928,7 @@
         vocabSection.style.display = 'none';
       }
       
-      // Band 9 Insights section
+      // Band 9 Insights
       const insightsSection = document.getElementById('insightsSection');
       const insights = data.band_9_insights;
       if (insights) {
@@ -953,7 +945,7 @@
         insightsSection.style.display = 'none';
       }
       
-      // Trait scores display (using already-calculated values)
+      // Trait scores - use normalized values
       document.getElementById('traitsGrid').innerHTML = `
         <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
           <div class="trait-name">Form</div>
@@ -977,7 +969,6 @@
         </div>
       `;
       
-      // Scroll to results
       document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -1017,6 +1008,19 @@
       if (timerRunning) {
         seconds = 0;
         timerInterval = setInterval(() => {
+          seconds++;
+          const m = Math.floor(seconds / 60), s = seconds % 60;
+          document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        document.getElementById('timerText').textContent = 'Off';
+      }
+    }
+  </script>
+</body>
+</html>
+rval(() => {
           seconds++;
           const m = Math.floor(seconds / 60), s = seconds % 60;
           document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
