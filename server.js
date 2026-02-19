@@ -59,6 +59,7 @@ function checkKeyPoint(studentText, keyPointText) {
   const student = studentText.toLowerCase();
   const keyPoint = keyPointText.toLowerCase();
   
+  // Extract key concepts from expected answer
   const keyConcepts = extractConcepts(keyPointText);
   
   let matchedConcepts = 0;
@@ -74,17 +75,29 @@ function checkKeyPoint(studentText, keyPointText) {
   
   const matchRate = keyConcepts.length > 0 ? matchedConcepts / keyConcepts.length : 0;
   
-  // Critical keywords (numbers, proper nouns)
-  const criticalTerms = keyPoint.match(/\b\d+%?|\$\d+|\b(?:gdp|emissions|nuclear|renewable|climate|energy|cost|billion|trillion|million|reactor|waste|safety)\w*\b/gi) || [];
-  const hasCritical = criticalTerms.some(term => student.includes(term.toLowerCase()));
+  // Extract critical keywords from key point (numbers, unique terms)
+  const criticalTerms = keyPoint.match(/\b\d+%?|\$\d+|\b(?:nuclear|renewable|climate|energy|cost|billion|trillion|million|reactor|emissions|electricity|gdp|waste|safety|barrier|hope|reduce|construction|time|modular|smr)\w*\b/gi) || [];
+  const uniqueCriticalTerms = [...new Set(criticalTerms.map(t => t.toLowerCase()))];
   
-  const isPresent = matchRate >= 0.35 || hasCritical;
+  // Count how many critical terms are in student text
+  let matchedCritical = 0;
+  for (const term of uniqueCriticalTerms) {
+    if (student.includes(term)) matchedCritical++;
+  }
+  
+  const criticalRate = uniqueCriticalTerms.length > 0 ? matchedCritical / uniqueCriticalTerms.length : 0;
+  
+  // MORE LENIENT: Present if 25%+ concept match OR 30%+ critical terms match OR at least 2 critical terms
+  const isPresent = matchRate >= 0.25 || criticalRate >= 0.30 || matchedCritical >= 2;
   
   return {
     present: isPresent,
     matchRate: Math.round(matchRate * 100),
+    criticalRate: Math.round(criticalRate * 100),
     matchedConcepts: matched.slice(0, 5),
-    totalConcepts: keyConcepts.length
+    totalConcepts: keyConcepts.length,
+    matchedCritical: matchedCritical,
+    totalCritical: uniqueCriticalTerms.length
   };
 }
 
@@ -188,10 +201,25 @@ function checkGrammar(text) {
 
 // ─── VOCABULARY SCORING ──────────────────────────────────────────────────────
 function scoreVocabulary(verbatimRate) {
+  const paraphraseRate = 100 - verbatimRate;
+  
   if (verbatimRate > 90) {
-    return { score: 1, synonym_usage: 'excessive verbatim (>90%)', note: 'Try to paraphrase more' };
+    return { 
+      score: 1, 
+      synonym_usage: 'excessive verbatim (>90%)', 
+      note: 'Try to paraphrase more',
+      verbatim_rate: verbatimRate,
+      paraphrase_rate: paraphraseRate
+    };
   }
-  return { score: 2, synonym_usage: 'acceptable', note: 'Verbatim copying is OK for PTE' };
+  
+  return { 
+    score: 2, 
+    synonym_usage: 'acceptable', 
+    note: 'Verbatim copying is OK for PTE',
+    verbatim_rate: verbatimRate,
+    paraphrase_rate: paraphraseRate
+  };
 }
 
 // ─── GENERATE FEEDBACK ───────────────────────────────────────────────────────
@@ -210,7 +238,7 @@ function generateFeedback(coverage, grammar, verbatim) {
   else if (grammar.score === 1) feedback += `${grammar.grammar_issues[0]}. `;
   else feedback += 'Grammar errors. ';
   
-  if (verbatim.isVerbatim) feedback += 'Too much verbatim copying. ';
+  if (verbatim.isVerbatim) feedback += 'Excessive verbatim (>90%) - try paraphrasing. ';
   
   return feedback.trim();
 }
@@ -242,7 +270,7 @@ app.post('/api/grade', async (req, res) => {
           key_ideas_missing: ['topic', 'pivot', 'conclusion']
         },
         grammar_details: { score: 0, has_connector: false, grammar_issues: [] },
-        vocabulary_details: { synonym_usage: 'none', verbatim_rate: '0%' },
+        vocabulary_details: { synonym_usage: 'none', verbatim_rate: '0%', paraphrase_rate: '100%' },
         overall_score: 10,
         raw_score: 0,
         band: 'Band 5',
@@ -313,6 +341,7 @@ app.post('/api/grade', async (req, res) => {
       vocabulary_details: {
         synonym_usage: vocab.synonym_usage,
         verbatim_rate: verbatim.verbatimRate + '%',
+        paraphrase_rate: (100 - verbatim.verbatimRate) + '%',
         note: vocab.note
       },
       overall_score: overallScore,
