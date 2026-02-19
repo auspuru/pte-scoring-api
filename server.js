@@ -4,7 +4,6 @@ const cors = require('cors');
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -520,12 +519,9 @@ function localGrade(summary, passage, formCheck) {
   };
 }
 
-// ─── AI GRADER (Anthropic) ───────────────────────────────────────────────────
+// ─── AI GRADER (Anthropic SDK) ───────────────────────────────────────────────
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
 
   const systemPrompt = [
     'You are a strict PTE Academic examiner grading "Summarize Written Text" responses.',
@@ -587,32 +583,22 @@ async function aiGrade(summary, passage) {
     '}';
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
+    const Anthropic = require('@anthropic-ai/sdk');
+    const client = new Anthropic.Anthropic({ apiKey: ANTHROPIC_API_KEY });
+
+    const message = await Promise.race([
+      client.messages.create({
         model: 'claude-3-haiku-20240307',
-        temperature: 0,
         max_tokens: 1000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 8000)
+      )
+    ]);
 
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      console.log('Anthropic API error:', response.status, await response.text());
-      return null;
-    }
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    const text = message.content?.[0]?.text || '';
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) { console.log('No JSON found in Anthropic response'); return null; }
 
@@ -620,8 +606,7 @@ async function aiGrade(summary, passage) {
     return { ...result, scoring_mode: 'ai' };
 
   } catch (e) {
-    clearTimeout(timeout);
-    if (e.name === 'AbortError') {
+    if (e.message === 'timeout') {
       console.error('AI grading timed out after 8s — falling back to local grader');
     } else {
       console.error('AI grading error:', e.message);
@@ -645,7 +630,6 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     version: '4.2.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
-    openaiConfigured: !!OPENAI_API_KEY,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
   });
 });
@@ -734,5 +718,4 @@ app.listen(PORT, "0.0.0.0", () => {
   } else {
     console.log(`🤖 AI-primary mode active (claude-3-haiku-20240307) | Key: ${ANTHROPIC_API_KEY.slice(0, 12)}...`);
   }
-  if (OPENAI_API_KEY) console.log(`🔑 OpenAI key also present: ${OPENAI_API_KEY.slice(0, 8)}...`);
 });
