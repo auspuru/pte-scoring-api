@@ -1,13 +1,1121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PTE SWT Practice Portal</title>
-    <script type="module" crossorigin src="./assets/index-DiOees49.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DS4fkxEp.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTE SWT Practice Portal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo { font-size: 1.1rem; font-weight: 600; color: #333; }
+    .ai-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #e8f5e9; border-radius: 4px; font-size: 0.8rem; color: #388e3c; }
+    .ai-badge.offline { background: #ffebee; color: #c62828; }
+    .ai-badge.cached { background: #fff3e0; color: #e65100; }
+    .header-right { display: flex; gap: 8px; }
+    .btn-sm { padding: 6px 14px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .passage-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .nav-left { display: flex; align-items: center; gap: 12px; }
+    .nav-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .passage-counter { font-size: 0.9rem; color: #666; }
+    .mode-toggle { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #666; }
+    .toggle { width: 40px; height: 22px; background: #ccc; border-radius: 11px; position: relative; cursor: pointer; transition: background 0.2s; }
+    .toggle.active { background: #4caf50; }
+    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.2s; }
+    .toggle.active::after { transform: translateX(18px); }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .passage-meta { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tag { padding: 4px 10px; background: #e3f2fd; color: #1976d2; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+    .passage-title { font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 16px; }
+    .passage-text { line-height: 1.8; color: #444; font-size: 0.95rem; }
+    .key-points-btn { margin-top: 16px; padding: 8px 16px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #666; }
+    .key-points { display: none; margin-top: 16px; padding: 16px; background: #fff8e1; border-radius: 8px; }
+    .key-points.show { display: block; }
+    .key-point { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 0.9rem; }
+    .key-point:last-child { margin-bottom: 0; }
+    .kp-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+    .kp-icon.topic { background: #e3f2fd; color: #1976d2; }
+    .kp-icon.pivot { background: #fff3e0; color: #f57c00; }
+    .kp-icon.conclusion { background: #e8f5e9; color: #388e3c; }
+    .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .input-label { font-size: 0.9rem; color: #4caf50; font-weight: 500; }
+    .word-count { font-size: 0.9rem; color: #ff9800; }
+    .word-count.error { color: #f44336; }
+    .word-count.success { color: #4caf50; }
+    textarea { width: 100%; min-height: 100px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; }
+    textarea:focus { outline: none; border-color: #4caf50; }
+    .input-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+    .word-range { font-size: 0.8rem; color: #888; }
+    .btn-group { display: flex; gap: 10px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
+    .btn-secondary { background: #f5f5f5; color: #333; border: 1px solid #ddd; }
+    .btn-primary { background: #4caf50; color: white; }
+    .btn-primary:hover { background: #45a049; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .results { display: none; margin-top: 20px; }
+    .results.show { display: block; }
+    .score-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .main-score { font-size: 3rem; font-weight: 700; color: #1976d2; }
+    .score-info { display: flex; flex-direction: column; gap: 4px; }
+    .band { font-size: 1.2rem; font-weight: 600; color: #1976d2; }
+    .raw-score { font-size: 0.85rem; color: #666; }
+    .mode-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #1976d2; }
+    .feedback-text { background: #f5f5f5; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #555; line-height: 1.6; }
+    .elements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .element-card { padding: 16px; border-radius: 8px; border: 2px solid #e0e0e0; }
+    .element-card.captured { border-color: #4caf50; background: #f1f8e9; }
+    .element-card.missed { border-color: #f44336; background: #ffebee; }
+    .element-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .element-label { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+    .element-label.topic { background: #e3f2fd; color: #1976d2; }
+    .element-label.pivot { background: #fff3e0; color: #f57c00; }
+    .element-label.conclusion { background: #e8f5e9; color: #388e3c; }
+    .element-check { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+    .element-card.captured .element-check { background: #4caf50; color: white; }
+    .element-card.missed .element-check { background: #f44336; color: white; }
+    .element-text { font-size: 0.85rem; color: #555; line-height: 1.5; }
+    .traits-section { margin-top: 20px; }
+    .traits-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.85rem; color: #666; font-weight: 600; }
+    .traits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .trait-box { padding: 16px; border-radius: 8px; border: 2px solid #e0e0e0; }
+    .trait-box.good { border-color: #4caf50; background: #f1f8e9; }
+    .trait-box.medium { border-color: #ff9800; background: #fff8e1; }
+    .trait-box.poor { border-color: #f44336; background: #ffebee; }
+    .trait-name { font-size: 0.75rem; color: #666; margin-bottom: 4px; text-transform: uppercase; }
+    .trait-score { font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .trait-box.good .trait-score { color: #2e7d32; }
+    .trait-box.medium .trait-score { color: #ef6c00; }
+    .trait-box.poor .trait-score { color: #c62828; }
+    .trait-detail { font-size: 0.75rem; color: #888; }
+    .issues-section { margin-top: 16px; padding: 16px; border-radius: 8px; }
+    .issues-section.spelling { background: #fff3e0; }
+    .issues-section.grammar { background: #fce4ec; }
+    .issues-section.vocab { background: #e8f5e9; }
+    .issues-section.warning { background: #ffebee; }
+    .issues-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .issues-section.spelling .issues-title { color: #e65100; }
+    .issues-section.grammar .issues-title { color: #c2185b; }
+    .issues-section.vocab .issues-title { color: #2e7d32; }
+    .issues-section.warning .issues-title { color: #c62828; }
+    .issue-item { font-size: 0.85rem; padding: 6px 0; border-bottom: 1px dashed rgba(0,0,0,0.1); }
+    .issue-item:last-child { border-bottom: none; }
+    .issue-word { text-decoration: line-through; color: #d32f2f; }
+    .issue-arrow { margin: 0 8px; color: #666; }
+    .issue-fix { color: #388e3c; font-weight: 500; }
+    .issue-rule { color: #888; font-size: 0.75rem; margin-left: 8px; }
+    .vocab-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px; margin-bottom: 4px; }
+    .vocab-badge.swap { background: #e8f5e9; color: #2e7d32; }
+    .vocab-badge.compression { background: #e3f2fd; color: #1976d2; }
+    .progress-section { margin-top: 20px; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .progress-title { font-size: 0.95rem; font-weight: 600; color: #333; }
+    .progress-stats { font-size: 0.85rem; color: #666; }
+    .progress-stats strong { color: #4caf50; font-size: 1.2rem; }
+    .passage-dots { display: grid; grid-template-columns: repeat(20, 1fr); gap: 6px; }
+    .dot { aspect-ratio: 1; border-radius: 4px; background: #e0e0e0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; }
+    .dot:hover { background: #bdbdbd; }
+    .dot.active { background: #4caf50; color: white; }
+    .dot.attempted { background: #81c784; color: white; }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); align-items: center; justify-content: center; z-index: 1000; }
+    .loading-overlay.show { display: flex; }
+    .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: #4caf50; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { margin-top: 16px; color: #666; text-align: center; }
+    .form-error-banner { background: #ffebee; border: 2px solid #f44336; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .form-error-banner .title { color: #c62828; font-weight: 600; margin-bottom: 8px; }
+    .form-error-banner .reason { color: #666; font-size: 0.9rem; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 16px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalSlide 0.3s ease; }
+    @keyframes modalSlide { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px 16px 0 0; }
+    .modal-header h2 { font-size: 1.5rem; margin-bottom: 8px; }
+    .modal-header p { opacity: 0.9; font-size: 0.95rem; }
+    .modal-body { padding: 24px; }
+    .instruction-section { margin-bottom: 24px; }
+    .instruction-section:last-child { margin-bottom: 0; }
+    .instruction-title { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 12px; }
+    .instruction-title .icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .instruction-title .icon.blue { background: #e3f2fd; }
+    .instruction-title .icon.green { background: #e8f5e9; }
+    .instruction-title .icon.orange { background: #fff3e0; }
+    .instruction-title .icon.purple { background: #f3e5f5; }
+    .instruction-content { padding-left: 42px; }
+    .instruction-content p { color: #555; line-height: 1.7; margin-bottom: 10px; }
+    .instruction-content ul { margin-left: 20px; color: #555; line-height: 1.8; }
+    .instruction-content li { margin-bottom: 6px; }
+    .example-box { background: #f8f9fa; border-left: 4px solid #4caf50; padding: 16px; border-radius: 8px; margin: 12px 0; }
+    .example-box .label { font-size: 0.8rem; color: #4caf50; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; }
+    .example-box .text { color: #333; font-style: italic; }
+    .scoring-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+    .scoring-item { background: #f8f9fa; padding: 16px; border-radius: 10px; text-align: center; }
+    .scoring-item .name { font-size: 0.85rem; color: #666; margin-bottom: 4px; }
+    .scoring-item .score { font-size: 1.3rem; font-weight: 700; color: #333; }
+    .scoring-item .desc { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .tip-box { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-radius: 10px; padding: 16px; margin-top: 16px; }
+    .tip-box .tip-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #f57c00; margin-bottom: 8px; }
+    .tip-box ul { margin-left: 20px; color: #666; font-size: 0.9rem; line-height: 1.7; }
+    .modal-footer { padding: 16px 24px 24px; display: flex; justify-content: center; }
+    .btn-close { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 40px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-close:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+    .structure-visual { display: flex; align-items: center; gap: 8px; margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 10px; }
+    .structure-item { flex: 1; text-align: center; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
+    .structure-item.topic { background: #e3f2fd; color: #1976d2; }
+    .structure-item.pivot { background: #fff3e0; color: #f57c00; }
+    .structure-item.conclusion { background: #e8f5e9; color: #388e3c; }
+    .structure-arrow { color: #bbb; font-size: 1.2rem; }
+    .connector-info { margin-top: 8px; font-size: 0.8rem; }
+    .connector-info .type { display: inline-block; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
+    .connector-info .type.contrast { background: #fff3e0; color: #e65100; }
+    .connector-info .type.addition { background: #e3f2fd; color: #1976d2; }
+    .connector-info .type.reason { background: #e8f5e9; color: #388e3c; }
+    .connector-info .logic { color: #4caf50; }
+    .connector-info .logic.bad { color: #f44336; }
+  </style>
+<base target="_blank">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">PTE Academic - Summarize Written Text</div>
+        <div class="ai-badge" id="aiStatus"><span>●</span> Checking...</div>
+      </div>
+      <div class="header-right">
+        <button class="btn-sm" onclick="showInstructions()">Instructions</button>
+        <button class="btn-sm" onclick="toggleTimer()">Timer: <span id="timerText">Off</span></button>
+      </div>
+    </div>
+
+    <div class="passage-nav">
+      <div class="nav-left">
+        <button class="nav-btn" id="prevBtn" onclick="prevPassage()">← Previous</button>
+        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">40</span></span>
+        <button class="nav-btn" id="nextBtn" onclick="nextPassage()">Next →</button>
+      </div>
+      <div class="mode-toggle">
+        <span>Easy Mode</span>
+        <div class="toggle" id="easyToggle" onclick="toggleEasyMode()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="passage-meta">
+        <span class="tag" id="passageCategory">Category</span>
+      </div>
+      <div class="passage-title" id="passageTitle">Title</div>
+      <div class="passage-text" id="passageText">Loading...</div>
+      <button class="key-points-btn" id="kpBtn" onclick="toggleKeyPoints()">Click to show key points</button>
+      <div class="key-points" id="keyPoints"></div>
+    </div>
+
+    <div class="card">
+      <div class="input-header">
+        <span class="input-label">* Summarize in the box below (between 5 and 75 words)</span>
+        <span class="word-count" id="wordCount">0 words</span>
+      </div>
+      <textarea id="summaryInput" placeholder="Start typing..." oninput="updateWordCount()"></textarea>
+      <div class="input-footer">
+        <span class="word-range">5-75 words</span>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="jumpToPassage()">Jump to passage</button>
+          <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="card">
+        <!-- Form Error Banner -->
+        <div class="form-error-banner" id="formErrorBanner" style="display: none;">
+          <div class="title">⚠️ Form Check Failed</div>
+          <div class="reason" id="formErrorReason"></div>
+        </div>
+
+        <div class="score-header">
+          <div class="main-score" id="mainScore">0/90</div>
+          <div class="score-info">
+            <div class="band" id="bandDisplay">Band 5</div>
+            <div class="raw-score" id="rawDisplay">Raw: 0/8</div>
+            <div class="mode-tag" id="modeDisplay">📊 Local</div>
+          </div>
+        </div>
+        <div class="feedback-text" id="feedbackText"></div>
+        
+        <!-- Content Elements -->
+        <div class="elements-grid" id="elementsGrid"></div>
+        
+        <!-- First Person Warning -->
+        <div class="issues-section warning" id="firstPersonWarning" style="display: none;">
+          <div class="issues-title">⚠️ First-Person Trap</div>
+          <div id="firstPersonContent"></div>
+        </div>
+        
+        <!-- Spelling Issues -->
+        <div class="issues-section spelling" id="spellCheckSection" style="display: none;">
+          <div class="issues-title">🔤 Spelling Issues</div>
+          <div id="spellCheckContent"></div>
+        </div>
+        
+        <!-- Grammar Issues -->
+        <div class="issues-section grammar" id="grammarSection" style="display: none;">
+          <div class="issues-title">✏️ Grammar Issues</div>
+          <div id="grammarContent"></div>
+          <div class="connector-info" id="connectorInfo"></div>
+        </div>
+        
+        <!-- Vocabulary Details -->
+        <div class="issues-section vocab" id="vocabSection" style="display: none;">
+          <div class="issues-title">📚 Vocabulary Analysis</div>
+          <div id="vocabContent"></div>
+        </div>
+        
+        <!-- Trait Scores -->
+        <div class="traits-section">
+          <div class="traits-header">📊 PTE TRAIT SCORES</div>
+          <div class="traits-grid" id="traitsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card progress-section">
+      <div class="progress-header">
+        <div class="progress-title">PTE Academic Practice Portal</div>
+        <div class="progress-stats"><strong id="completedCount">0</strong> of 40 passages completed</div>
+      </div>
+      <div class="passage-dots" id="passageDots"></div>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div>
+      <div class="spinner"></div>
+      <div class="loading-text">Grading with AI...</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="instructionsModal" onclick="closeInstructions(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📚 How to Summarize Written Text</h2>
+        <p>Master the PTE Academic Summarize Written Text task with these guidelines</p>
+      </div>
+      <div class="modal-body">
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon blue">📝</span>
+            Task Overview
+          </div>
+          <div class="instruction-content">
+            <p>Read a passage of up to 300 words and write a <strong>ONE sentence summary</strong> in 5-75 words.</p>
+            <div class="example-box">
+              <div class="label">Example Summary</div>
+              <div class="text">"While remote work increases productivity, collaboration suffers without face-to-face interaction, so hybrid models offer the best balance."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon green">🎯</span>
+            The TOPIC-PIVOT-CONCLUSION Structure
+          </div>
+          <div class="instruction-content">
+            <p>Your summary must capture all three key elements from the passage:</p>
+            <div class="structure-visual">
+              <div class="structure-item topic">TOPIC<br><small>Main subject</small></div>
+              <span class="structure-arrow">→</span>
+              <div class="structure-item pivot">PIVOT<br><small>Contrast/Shift</small></div>
+              <span class="structure-arrow">→</span>
+              <div class="structure-item conclusion">CONCLUSION<br><small>Final point</small></div>
+            </div>
+            <ul>
+              <li><strong>Topic:</strong> The main idea or subject of the passage</li>
+              <li><strong>Pivot:</strong> A contrast, problem, or shift in perspective</li>
+              <li><strong>Conclusion:</strong> The final outcome, solution, or recommendation</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon orange">🔗</span>
+            Use Connectors
+          </div>
+          <div class="instruction-content">
+            <p>Connectors improve your grammar score:</p>
+            <div class="example-box">
+              <div class="label">Good Connectors</div>
+              <div class="text">however, although, while, but, therefore, consequently, ultimately</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon purple">📊</span>
+            Scoring Breakdown
+          </div>
+          <div class="instruction-content">
+            <div class="scoring-grid">
+              <div class="scoring-item">
+                <div class="name">Form</div>
+                <div class="score">0-1</div>
+                <div class="desc">5-75 words, one sentence</div>
+              </div>
+              <div class="scoring-item">
+                <div class="name">Content</div>
+                <div class="score">0-3</div>
+                <div class="desc">Topic, Pivot, Conclusion</div>
+              </div>
+              <div class="scoring-item">
+                <div class="name">Grammar</div>
+                <div class="score">0-2</div>
+                <div class="desc">Spelling, connectors</div>
+              </div>
+              <div class="scoring-item">
+                <div class="name">Vocabulary</div>
+                <div class="score">0-2</div>
+                <div class="desc">Appropriate word choice</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tip-box">
+          <div class="tip-title">💡 Pro Tips</div>
+          <ul>
+            <li>Use <strong>Easy Mode</strong> to see the key points before writing</li>
+            <li>Always end your summary with a <strong>period</strong></li>
+            <li>Paraphrase - don't copy exact phrases from the passage</li>
+            <li>Check word count before submitting (aim for 50-70 words)</li>
+            <li>Use a connector like "however" or "therefore"</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" onclick="closeInstructions()">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://pte-scoring-api-production.up.railway.app';
+    
+    const passages = [
+      {
+        id: 1,
+        title: "Adaptive Persistence and Success",
+        category: "Psychology/Social Sciences",
+        text: `"What if everything we thought we knew about success was wrong?" asks Dr. Angela Martinez, lead researcher at the Harvard Business School. "I spent fifteen years studying Fortune 500 CEOs, Olympic athletes, and Nobel laureates, and I discovered something shocking." Her research, published in the Journal of Applied Psychology, reveals that 78% of high achievers credit their success not to talent or intelligence, but to what she calls "adaptive persistence." "It is not about working harder," she explains. "It is about working smarter when things get tough." The study tracked 2,400 participants over a decade and found that those who viewed setbacks as learning opportunities were 3.4 times more likely to reach their goals. "Ask yourself this: when you fail, do you blame circumstances or do you ask what you can learn?" Dr. Martinez challenges. "Your answer determines your future." The data is clear - mindset matters more than natural ability. But how do we develop this adaptive persistence? "Start small," she advises. "When something goes wrong, pause and ask: what is this teaching me?" This simple practice, repeated daily, rewires the brain for resilience.`,
+        keyElements: { 
+          topic: "78% of high achievers credit success to adaptive persistence, not talent", 
+          pivot: "It is not about working harder, it is about working smarter when things get tough", 
+          conclusion: "When something goes wrong, pause and ask: what is this teaching me?" 
+        }
+      },
+      {
+        id: 2,
+        title: "Climate Change and Global Response",
+        category: "Environment/Science",
+        text: `Climate change represents one of the most pressing challenges of our era. Rising global temperatures have led to melting ice caps, extreme weather events, and disruptions to ecosystems worldwide. Scientists warn that without immediate action, the consequences will be catastrophic. While some nations have committed to reducing carbon emissions through international agreements like the Paris Accord, implementation remains inconsistent across countries. However, technological innovations in renewable energy offer promising solutions. Solar and wind power have become increasingly cost-competitive with fossil fuels. Ultimately, individual behavioral changes combined with comprehensive policy reforms are essential for meaningful progress in addressing this global crisis.`,
+        keyElements: { 
+          topic: "Climate change is a pressing challenge with rising temperatures and extreme weather", 
+          pivot: "While some nations committed to agreements, implementation remains inconsistent", 
+          conclusion: "Individual changes combined with policy reforms are essential for progress" 
+        }
+      },
+      {
+        id: 3,
+        title: "Artificial Intelligence Transformation",
+        category: "Technology",
+        text: `The rise of artificial intelligence is transforming industries across the globe. Machine learning algorithms now perform tasks once requiring human cognition, from medical diagnosis to financial analysis. Companies are investing billions in AI research and development. While these advancements boost efficiency and accuracy, concerns about job displacement persist among workers and policymakers. However, history suggests that technological revolutions create new employment categories even as they eliminate others. Therefore, proactive workforce retraining programs and educational initiatives are crucial for economic adaptation in the AI era.`,
+        keyElements: { 
+          topic: "AI is transforming industries with machine learning performing human tasks", 
+          pivot: "While advancements boost efficiency, job displacement concerns persist", 
+          conclusion: "Workforce retraining programs are crucial for economic adaptation" 
+        }
+      },
+      {
+        id: 4,
+        title: "Urbanization and Smart Cities",
+        category: "Urban Planning",
+        text: `Urbanization trends continue to reshape global demographics. By 2050, nearly 70% of the world's population is projected to live in cities, up from 55% today. This shift brings both opportunities and challenges. While urban centers drive economic growth and innovation, they also face significant problems including congestion, pollution, and inequality. However, smart city technologies offer potential solutions through data-driven resource management and improved infrastructure. Consequently, sustainable urban planning has become a priority for policymakers worldwide as they seek to balance development with livability.`,
+        keyElements: { 
+          topic: "By 2050, 70% of world population will live in cities", 
+          pivot: "While cities drive growth, they face congestion, pollution, and inequality", 
+          conclusion: "Sustainable urban planning is a priority for policymakers worldwide" 
+        }
+      },
+      {
+        id: 5,
+        title: "Higher Education Disruption",
+        category: "Education",
+        text: `The traditional model of higher education faces unprecedented disruption. Online learning platforms now offer courses from prestigious institutions at minimal cost, democratizing access to knowledge globally. Enrollment in virtual programs has surged dramatically. While critics question the quality and engagement of virtual instruction compared to in-person experiences, recent data suggests outcomes can be comparable. However, the value of credentials earned online remains debated among employers. Nevertheless, hybrid models combining digital and physical learning are likely to dominate future education landscapes as institutions adapt to changing student needs.`,
+        keyElements: { 
+          topic: "Online learning platforms democratize access to education", 
+          pivot: "While critics question quality, outcomes can be comparable", 
+          conclusion: "Hybrid models combining digital and physical learning will dominate" 
+        }
+      },
+      {
+        id: 6,
+        title: "Mental Health Awareness",
+        category: "Health/Psychology",
+        text: `Mental health awareness has grown substantially in recent decades. Public campaigns have reduced stigma and encouraged more people to seek professional help when experiencing psychological distress. Research continues to demonstrate the connection between mental and physical health. While increased awareness represents significant progress, mental health services remain inaccessible to many due to cost and availability constraints. However, digital therapeutics and telemedicine are expanding reach to underserved populations. Ultimately, integrating mental health care into primary healthcare systems is essential for achieving universal access and improving overall population health.`,
+        keyElements: { 
+          topic: "Mental health awareness has grown, reducing stigma", 
+          pivot: "While awareness increased, services remain inaccessible due to cost", 
+          conclusion: "Integrating mental health into primary healthcare is essential" 
+        }
+      },
+      {
+        id: 7,
+        title: "Supply Chain Resilience",
+        category: "Business/Economics",
+        text: `Global supply chains experienced severe disruptions during the pandemic. Factory closures, shipping delays, and labor shortages exposed vulnerabilities in just-in-time manufacturing systems that had been optimized for efficiency rather than resilience. Companies lost billions in revenue. While some companies are reshoring production to reduce dependency risks, complete independence remains economically impractical for most industries. However, diversification strategies and strategic stockpiling are becoming standard practices. Therefore, future supply chain design will balance efficiency with robustness to withstand future shocks.`,
+        keyElements: { 
+          topic: "Pandemic exposed vulnerabilities in just-in-time supply chains", 
+          pivot: "While some reshore production, complete independence is impractical", 
+          conclusion: "Future supply chains will balance efficiency with robustness" 
+        }
+      },
+      {
+        id: 8,
+        title: "The Gig Economy",
+        category: "Labor/Economics",
+        text: `The gig economy has fundamentally altered labor market dynamics. Platform-based work offers flexibility and supplemental income opportunities for millions of workers worldwide. Apps connect service providers directly with consumers. While this arrangement suits those seeking autonomy, it often lacks traditional employment protections including benefits, job security, and minimum wage guarantees. However, regulatory frameworks are slowly evolving to address these gaps in worker protection. Consequently, the future of work likely involves hybrid models combining gig flexibility with some traditional safeguards for workers.`,
+        keyElements: { 
+          topic: "Gig economy offers flexibility and income opportunities", 
+          pivot: "While it suits autonomy seekers, it lacks employment protections", 
+          conclusion: "Future work involves hybrid models with flexibility and safeguards" 
+        }
+      },
+      {
+        id: 9,
+        title: "Private Space Exploration",
+        category: "Science/Technology",
+        text: `Space exploration is entering a new era driven by private enterprise. Companies like SpaceX and Blue Origin are dramatically reducing launch costs through reusable rocket technology. This innovation is opening space to commercial activities. While government agencies pioneered space travel, commercial entities now dominate innovation in the sector. However, questions about regulation, space debris management, and resource exploitation remain unresolved by international agreements. Ultimately, international cooperation will be necessary to ensure sustainable development of space activities and prevent conflicts over celestial resources.`,
+        keyElements: { 
+          topic: "Private companies reducing launch costs with reusable rockets", 
+          pivot: "While government pioneered space travel, commercial entities dominate innovation", 
+          conclusion: "International cooperation necessary for sustainable space development" 
+        }
+      },
+      {
+        id: 10,
+        title: "Biodiversity Crisis",
+        category: "Environment",
+        text: `Biodiversity loss constitutes an ecological crisis of comparable magnitude to climate change. Species extinction rates are currently 100 to 1000 times higher than natural background rates, driven by habitat destruction, pollution, and invasive species. Ecosystems are collapsing worldwide. While conservation efforts have saved some species from extinction, overall trends remain alarming and continue to accelerate. However, ecosystem restoration projects are demonstrating that recovery is possible with sustained investment and protection. Therefore, protecting remaining habitats while restoring degraded ecosystems offers the best path forward for preserving Earth's biological heritage.`,
+        keyElements: { 
+          topic: "Species extinction rates 100-1000x higher than natural rates", 
+          pivot: "While conservation saved some species, trends remain alarming", 
+          conclusion: "Protecting habitats while restoring ecosystems offers best path forward" 
+        }
+      },
+      {
+        id: 11,
+        title: "Social Media Impact",
+        category: "Technology/Society",
+        text: `Social media platforms have revolutionized communication and information sharing. Billions of users worldwide connect, share content, and organize through these digital networks. The platforms have become integral to modern life. While these platforms enable unprecedented connectivity, concerns about misinformation spread, privacy violations, and mental health impacts have intensified in recent years. However, platform moderation policies and regulatory responses are evolving to address these challenges. Consequently, the future of social media likely involves greater accountability and user protection measures to balance free expression with societal well-being.`,
+        keyElements: { 
+          topic: "Social media revolutionized communication with billions of users", 
+          pivot: "While enabling connectivity, concerns about misinformation and privacy intensified", 
+          conclusion: "Future involves greater accountability and user protection measures" 
+        }
+      },
+      {
+        id: 12,
+        title: "Renewable Energy Transition",
+        category: "Energy/Environment",
+        text: `The transition to renewable energy is accelerating globally. Solar and wind power have become cost-competitive with fossil fuels in many markets, driving massive investment in clean energy infrastructure. Countries are setting ambitious renewable targets. While intermittency challenges persist for renewables, battery storage technology is advancing rapidly to address this limitation. However, fossil fuel subsidies and entrenched interests continue to slow the transition despite economic advantages. Nevertheless, economic fundamentals increasingly favor renewable sources, suggesting an irreversible shift in global energy systems toward sustainability.`,
+        keyElements: { 
+          topic: "Solar and wind power now cost-competitive with fossil fuels", 
+          pivot: "While intermittency challenges persist, battery technology advances rapidly", 
+          conclusion: "Economic fundamentals favor renewables, suggesting irreversible shift" 
+        }
+      },
+      {
+        id: 13,
+        title: "Remote Work Normalization",
+        category: "Work/Labor",
+        text: `Remote work has become normalized following pandemic-induced workplace changes. Many employees now expect flexible arrangements, and companies are adapting policies to attract and retain talent. Productivity studies show mixed results. While remote work offers benefits including reduced commuting and improved work-life balance, concerns about collaboration erosion and career development persist among managers. However, hybrid models are emerging as a compromise that offers flexibility while maintaining some in-person interaction. Ultimately, the most successful organizations will offer flexibility while maintaining strong culture and connection among employees.`,
+        keyElements: { 
+          topic: "Remote work normalized with employees expecting flexibility", 
+          pivot: "While offering benefits, concerns about collaboration erosion persist", 
+          conclusion: "Successful organizations offer flexibility while maintaining culture" 
+        }
+      },
+      {
+        id: 14,
+        title: "Antibiotic Resistance",
+        category: "Health/Medicine",
+        text: `Antibiotic resistance poses a growing threat to global health. Overuse of antibiotics in medicine and agriculture has accelerated the evolution of resistant bacteria, rendering some infections increasingly difficult to treat. Common infections may become deadly again. While new antibiotics are being developed, the pipeline remains insufficient to address emerging threats and resistant strains. However, stewardship programs promoting appropriate antibiotic use are showing positive results in reducing resistance rates. Therefore, combining conservation of existing drugs with investment in new treatments is essential for preserving antibiotic effectiveness for future generations.`,
+        keyElements: { 
+          topic: "Antibiotic resistance growing threat from overuse", 
+          pivot: "While new antibiotics developed, pipeline remains insufficient", 
+          conclusion: "Conservation plus investment essential for preserving effectiveness" 
+        }
+      },
+      {
+        id: 15,
+        title: "The Digital Divide",
+        category: "Technology/Society",
+        text: `The digital divide persists despite widespread internet adoption. Billions of people lack reliable access to digital technologies, creating disparities in education, employment, and civic participation. The gap is widening between connected and unconnected populations. While mobile connectivity has expanded access in developing regions, meaningful digital inclusion requires more than basic connectivity - it requires digital literacy and affordable devices. However, public-private partnerships are addressing infrastructure gaps in underserved areas. Consequently, achieving universal digital access remains a critical development priority for the coming decade to ensure equitable opportunities.`,
+        keyElements: { 
+          topic: "Billions lack reliable digital access creating disparities", 
+          pivot: "While mobile expanded access, meaningful inclusion requires more", 
+          conclusion: "Universal digital access remains critical development priority" 
+        }
+      },
+      {
+        id: 16,
+        title: "Precision Medicine",
+        category: "Health/Medicine",
+        text: `Precision medicine is transforming healthcare delivery. By analyzing genetic, environmental, and lifestyle factors, treatments can be tailored to individual patients rather than applying one-size-fits-all approaches. Cancer treatment is being revolutionized. While the potential is enormous, implementation challenges include data privacy concerns and healthcare cost implications for widespread adoption. However, technological advances are rapidly reducing testing costs and making personalized medicine more accessible. Ultimately, personalized medicine represents the future of effective, efficient healthcare that improves outcomes while reducing adverse effects from inappropriate treatments.`,
+        keyElements: { 
+          topic: "Precision medicine tailors treatments using genetic and lifestyle factors", 
+          pivot: "While potential enormous, privacy and cost challenges exist", 
+          conclusion: "Personalized medicine represents future of effective healthcare" 
+        }
+      },
+      {
+        id: 17,
+        title: "Ocean Pollution Crisis",
+        category: "Environment",
+        text: `Ocean pollution has reached crisis levels with devastating consequences for marine ecosystems. Plastic waste, chemical runoff, and oil spills contaminate waters worldwide, affecting wildlife and human communities dependent on marine resources. Marine life is dying at alarming rates. While international agreements address some pollution sources, enforcement remains weak and violations are common. However, innovative cleanup technologies and circular economy approaches offer hope for addressing accumulated pollution. Therefore, combining prevention strategies with remediation efforts is necessary to restore ocean health and protect the vital ecosystems that regulate our planet's climate.`,
+        keyElements: { 
+          topic: "Ocean pollution at crisis levels devastating marine ecosystems", 
+          pivot: "While agreements exist, enforcement remains weak", 
+          conclusion: "Combining prevention with remediation necessary to restore ocean health" 
+        }
+      },
+      {
+        id: 18,
+        title: "Modern Warfare Evolution",
+        category: "Security/Technology",
+        text: `The nature of warfare is evolving with technological advancement. Cyber attacks, drone warfare, and autonomous weapons systems are changing how conflicts are conducted. Traditional battlefields are disappearing. While traditional military capabilities remain relevant, asymmetric threats pose new challenges for defense planning and international security frameworks. However, international law struggles to keep pace with rapid technological change in warfare capabilities. Consequently, establishing ethical frameworks and regulations for emerging military technologies is an urgent priority to prevent uncontrolled escalation and protect civilian populations in future conflicts.`,
+        keyElements: { 
+          topic: "Cyber attacks and autonomous weapons changing warfare", 
+          pivot: "While traditional capabilities relevant, asymmetric threats pose new challenges", 
+          conclusion: "Establishing ethical frameworks for military tech is urgent priority" 
+        }
+      },
+      {
+        id: 19,
+        title: "Global Food Security",
+        category: "Agriculture/Economics",
+        text: `Food security remains a pressing global challenge despite agricultural advances. Climate change, conflict, and economic inequality leave hundreds of millions undernourished worldwide. Hunger is increasing in many regions. While technological innovations like genetically modified crops and precision agriculture boost yields significantly, distribution inequities persist and food waste remains high. However, sustainable farming practices are gaining traction among producers and consumers alike. Ultimately, ensuring food security requires addressing both production capacity and equitable access simultaneously to feed a growing global population sustainably.`,
+        keyElements: { 
+          topic: "Food security pressing challenge with millions undernourished", 
+          pivot: "While technology boosts yields, distribution inequities persist", 
+          conclusion: "Addressing production capacity and equitable access simultaneously needed" 
+        }
+      },
+      {
+        id: 20,
+        title: "Quantum Computing",
+        category: "Technology/Science",
+        text: `Quantum computing represents a paradigm shift in computational capability. Unlike classical computers using binary bits, quantum systems leverage quantum mechanical phenomena to process information in fundamentally different ways. Problems impossible for classical computers may become solvable. While practical applications remain limited by technical challenges including error rates, potential impacts on cryptography, drug discovery, and optimization problems are immense. However, significant engineering hurdles must be overcome before commercial viability. Nevertheless, progress in the field suggests transformative applications will emerge within the coming decades, revolutionizing multiple industries.`,
+        keyElements: { 
+          topic: "Quantum computing leverages quantum phenomena for processing", 
+          pivot: "While applications limited by technical challenges, potential impacts immense", 
+          conclusion: "Transformative applications will emerge within coming decades" 
+        }
+      },
+      {
+        id: 21,
+        title: "Aging Population Challenges",
+        category: "Demographics/Society",
+        text: `The aging population in developed nations presents economic and social challenges. Declining birth rates and increased longevity are shifting demographic structures, straining pension systems and healthcare infrastructure. The old-age dependency ratio is rising rapidly. While immigration can offset labor shortages, it remains politically contentious in many countries facing demographic decline. However, automation and productivity improvements may alleviate some workforce pressures in affected sectors. Therefore, comprehensive policy responses addressing retirement ages, healthcare delivery, and labor market flexibility are essential for sustainable economies with aging populations.`,
+        keyElements: { 
+          topic: "Aging population straining pension and healthcare systems", 
+          pivot: "While immigration can offset shortages, it remains politically contentious", 
+          conclusion: "Comprehensive policy responses addressing retirement and healthcare essential" 
+        }
+      },
+      {
+        id: 22,
+        title: "Cultural Preservation",
+        category: "Culture/Society",
+        text: `Cultural preservation faces new challenges in an increasingly globalized world. Traditional practices, languages, and knowledge systems are disappearing as younger generations adopt global norms. Indigenous cultures are under threat. While digital technologies enable documentation and dissemination of cultural heritage, they cannot fully replicate lived traditions and community practices. However, community-led initiatives are demonstrating effective preservation approaches that engage younger generations. Ultimately, supporting indigenous and local communities in maintaining their cultural practices is crucial for global diversity and preserving humanity's rich heritage for future generations.`,
+        keyElements: { 
+          topic: "Traditional practices and languages disappearing with globalization", 
+          pivot: "While digital enables documentation, it cannot replicate lived traditions", 
+          conclusion: "Supporting local communities maintaining practices crucial for diversity" 
+        }
+      },
+      {
+        id: 23,
+        title: "Water Scarcity",
+        category: "Environment/Resources",
+        text: `Water scarcity affects billions of people worldwide and is projected to worsen with climate change. Agriculture consumes the majority of freshwater resources, often inefficiently through flood irrigation. Competition for water is intensifying. While desalination and water recycling technologies offer solutions, they remain energy-intensive and expensive for widespread deployment. However, conservation measures and improved irrigation practices can significantly reduce demand with existing infrastructure. Consequently, integrated water management combining supply expansion and demand reduction is necessary for sustainable use in water-stressed regions facing growing populations.`,
+        keyElements: { 
+          topic: "Water scarcity affects billions and will worsen with climate change", 
+          pivot: "While desalination offers solutions, it remains energy-intensive", 
+          conclusion: "Integrated water management combining supply and demand necessary" 
+        }
+      },
+      {
+        id: 24,
+        title: "Streaming Entertainment",
+        category: "Media/Business",
+        text: `The entertainment industry has been transformed by streaming platforms. On-demand content access has disrupted traditional distribution models, giving consumers unprecedented choice in what, when, and how they watch. Cable subscriptions are declining rapidly. While this benefits audiences with convenience and variety, content creators face new challenges regarding fair compensation and content discoverability in crowded markets. However, data analytics are enabling more targeted content development that resonates with specific audiences. Therefore, the industry continues evolving toward personalized, platform-driven entertainment ecosystems that balance consumer preferences with creator sustainability.`,
+        keyElements: { 
+          topic: "Streaming transformed entertainment with on-demand access", 
+          pivot: "While benefiting audiences, creators face compensation challenges", 
+          conclusion: "Industry evolving toward personalized platform-driven ecosystems" 
+        }
+      },
+      {
+        id: 25,
+        title: "Genetic Engineering Ethics",
+        category: "Science/Ethics",
+        text: `Genetic engineering technologies like CRISPR offer unprecedented control over biological systems. Potential applications range from disease treatment to agricultural improvement and beyond. Gene editing is becoming routine in laboratories. While the scientific possibilities are exciting, ethical concerns about germline editing and unintended consequences require careful consideration and public debate. However, regulatory frameworks are developing to guide responsible use while enabling beneficial research. Ultimately, society must balance innovation benefits against potential risks through informed democratic deliberation to establish boundaries for acceptable genetic modifications.`,
+        keyElements: { 
+          topic: "CRISPR offers unprecedented control over biological systems", 
+          pivot: "While possibilities exciting, ethical concerns require careful consideration", 
+          conclusion: "Society must balance innovation benefits against potential risks" 
+        }
+      },
+      {
+        id: 26,
+        title: "Financial Technology",
+        category: "Finance/Technology",
+        text: `Financial technology is democratizing access to banking and investment services. Mobile payment systems, robo-advisors, and peer-to-peer lending platforms serve populations previously excluded from traditional finance. The unbanked are gaining access. While fintech innovation expands opportunity, consumer protection and systemic risk concerns have emerged with rapid growth. However, regulatory sandboxes are enabling innovation while managing risks in controlled environments. Consequently, the financial sector is becoming more inclusive and technologically sophisticated, though regulatory frameworks must evolve to keep pace with innovation.`,
+        keyElements: { 
+          topic: "Fintech democratizing access to banking and investment", 
+          pivot: "While expanding opportunity, consumer protection concerns emerged", 
+          conclusion: "Financial sector becoming more inclusive and technologically sophisticated" 
+        }
+      },
+      {
+        id: 27,
+        title: "Deforestation Crisis",
+        category: "Environment",
+        text: `Deforestation continues at alarming rates in critical ecosystems like the Amazon and Congo Basin. Agricultural expansion, logging, and infrastructure development drive forest loss, releasing carbon and destroying biodiversity. Primary forests are disappearing. While conservation commitments exist at national and international levels, implementation often falls short of targets due to economic pressures. However, payment for ecosystem services programs are providing economic alternatives that value standing forests. Therefore, aligning economic incentives with forest preservation is essential for effective conservation and maintaining the ecological services forests provide to humanity.`,
+        keyElements: { 
+          topic: "Deforestation at alarming rates in Amazon and Congo Basin", 
+          pivot: "While conservation commitments exist, implementation falls short", 
+          conclusion: "Aligning economic incentives with forest preservation essential" 
+        }
+      },
+      {
+        id: 28,
+        title: "Electric and Autonomous Vehicles",
+        category: "Transportation/Technology",
+        text: `The future of transportation is being reshaped by electric and autonomous vehicles. Battery technology improvements are making electric cars cost-competitive while reducing emissions significantly. The automotive industry is transforming. While autonomous driving technology advances rapidly, safety and liability questions remain unresolved by current legal frameworks. However, pilot programs are demonstrating feasibility in controlled environments like designated zones. Ultimately, widespread adoption of clean, autonomous transport will require infrastructure investment and regulatory clarity to realize the full benefits of these technologies for mobility and environment.`,
+        keyElements: { 
+          topic: "Electric vehicles becoming cost-competitive with battery improvements", 
+          pivot: "While autonomous tech advances, safety and liability questions remain", 
+          conclusion: "Widespread adoption requires infrastructure investment and regulatory clarity" 
+        }
+      },
+      {
+        id: 29,
+        title: "Journalism in Digital Age",
+        category: "Media/Society",
+        text: `Journalism faces an existential crisis in the digital age. Traditional business models based on advertising and subscriptions have collapsed for many outlets, while social media platforms capture most digital ad revenue. Newsrooms are shrinking. While citizen journalism expands coverage diversity, professional reporting standards are uneven across digital platforms. However, new funding models including memberships and philanthropy are emerging to support quality journalism. Consequently, the media landscape is fragmenting into diverse models with varying sustainability, challenging the traditional role of journalism as a public good and democratic watchdog.`,
+        keyElements: { 
+          topic: "Traditional journalism business models collapsed in digital age", 
+          pivot: "While citizen journalism expands, professional standards are uneven", 
+          conclusion: "Media landscape fragmenting into diverse models with varying sustainability" 
+        }
+      },
+      {
+        id: 30,
+        title: "Sleep and Health",
+        category: "Health/Science",
+        text: `Sleep research has revealed its critical importance for physical and mental health. Chronic sleep deprivation is linked to obesity, cardiovascular disease, cognitive impairment, and mood disorders. The costs of sleep loss are enormous. While modern lifestyles often prioritize productivity over rest, the biological need for adequate sleep is non-negotiable for optimal functioning. However, workplace cultures are slowly recognizing rest as performance-enhancing rather than lazy. Therefore, public health initiatives promoting sleep hygiene are gaining importance as society begins to understand that sleep is not a luxury but a biological necessity for health and productivity.`,
+        keyElements: { 
+          topic: "Sleep deprivation linked to obesity, heart disease, cognitive impairment", 
+          pivot: "While lifestyles prioritize productivity, biological need is non-negotiable", 
+          conclusion: "Public health initiatives promoting sleep hygiene gaining importance" 
+        }
+      },
+      {
+        id: 31,
+        title: "Circular Economy",
+        category: "Economics/Environment",
+        text: `The circular economy concept is gaining traction as an alternative to linear production models. Rather than extract-produce-dispose, circular systems design out waste and keep materials in use through recycling and reuse. Resource efficiency is improving. While transitioning requires significant business model innovation, economic and environmental benefits are substantial for companies that adopt circular approaches. However, consumer behavior changes and policy support are necessary enablers for widespread adoption. Ultimately, circular approaches will be essential for sustainable resource management as planetary boundaries are approached and raw material scarcity increases.`,
+        keyElements: { 
+          topic: "Circular economy designs out waste keeping materials in use", 
+          pivot: "While transition requires innovation, benefits are substantial", 
+          conclusion: "Circular approaches essential for sustainable resource management" 
+        }
+      },
+      {
+        id: 32,
+        title: "Neuroplasticity and Learning",
+        category: "Science/Education",
+        text: `Neuroplasticity research has transformed understanding of brain development. The brain continues changing throughout life in response to experience, challenging earlier assumptions about fixed adult capabilities. Learning is lifelong. While childhood remains a critical period for certain types of learning, adults retain substantial capacity for skill acquisition and cognitive improvement. However, optimal learning environments must account for developmental differences across life stages. Therefore, lifelong learning programs should be designed with neuroplasticity principles in mind to maximize effectiveness for learners of all ages in our rapidly changing world.`,
+        keyElements: { 
+          topic: "Brain continues changing throughout life through neuroplasticity", 
+          pivot: "While childhood critical, adults retain capacity for skill acquisition", 
+          conclusion: "Lifelong learning programs should use neuroplasticity principles" 
+        }
+      },
+      {
+        id: 33,
+        title: "Sustainable Tourism",
+        category: "Travel/Economics",
+        text: `Tourism significantly impacts destination communities and environments. While economic benefits are substantial, overtourism strains infrastructure and degrades natural and cultural attractions. Popular destinations are suffering. While sustainable tourism concepts are widely discussed, implementation often lags behind aspirations due to competing economic interests. However, community-based tourism models are showing positive outcomes for both visitors and host communities. Consequently, destination management must balance economic development with preservation and resident quality of life to ensure tourism remains viable and beneficial for all stakeholders.`,
+        keyElements: { 
+          topic: "Tourism impacts communities while providing economic benefits", 
+          pivot: "While sustainable tourism discussed, implementation often lags", 
+          conclusion: "Destination management must balance development with preservation" 
+        }
+      },
+      {
+        id: 34,
+        title: "Human Microbiome",
+        category: "Health/Science",
+        text: `The microbiome has emerged as a crucial factor in human health. Trillions of microorganisms inhabiting our bodies influence digestion, immunity, and even mental health through the gut-brain axis. Microbial balance matters. While research is still uncovering specific mechanisms, the importance of microbial balance for overall health is increasingly clear. However, modern lifestyles including antibiotic overuse and processed diets disrupt healthy microbiomes. Therefore, dietary and medical practices that support microbiome health are increasingly recommended by healthcare providers as part of holistic approaches to wellness and disease prevention.`,
+        keyElements: { 
+          topic: "Microbiome influences digestion, immunity, and mental health", 
+          pivot: "While research continues, importance of microbial balance is clear", 
+          conclusion: "Practices supporting microbiome health increasingly recommended" 
+        }
+      },
+      {
+        id: 35,
+        title: "Universal Basic Income",
+        category: "Economics/Society",
+        text: `Universal basic income has gained attention as a response to automation-driven job displacement. Proponents argue it provides security and enables entrepreneurship, while critics cite cost and work incentive concerns. The debate is intensifying. While pilot programs have shown mixed results regarding employment effects, definitive evidence remains limited by study duration and scale. However, the concept continues attracting interest across the political spectrum as technological disruption accelerates. Ultimately, any large-scale implementation would require careful design and substantial public investment to achieve intended outcomes without unintended negative consequences.`,
+        keyElements: { 
+          topic: "Universal basic income proposed for automation displacement", 
+          pivot: "While pilots show mixed results, definitive evidence limited", 
+          conclusion: "Large-scale implementation requires careful design and investment" 
+        }
+      },
+      {
+        id: 36,
+        title: "Language Extinction",
+        category: "Culture/Linguistics",
+        text: `Language extinction represents a significant loss of human knowledge and cultural diversity. Languages encode unique worldviews and traditional knowledge accumulated over generations. Indigenous knowledge is disappearing. While dominant languages spread globally, thousands of minority languages face disappearance within decades without intervention. However, documentation and revitalization efforts are intensifying with technology support and community engagement. Therefore, supporting language diversity through education and media is essential for preserving human heritage and the valuable knowledge embedded in linguistic diversity for future generations.`,
+        keyElements: { 
+          topic: "Language extinction represents loss of knowledge and diversity", 
+          pivot: "While dominant languages spread, thousands face disappearance", 
+          conclusion: "Supporting language diversity essential for preserving heritage" 
+        }
+      },
+      {
+        id: 37,
+        title: "Vertical Farming",
+        category: "Agriculture/Technology",
+        text: `Vertical farming offers potential solutions to urban food security challenges. Growing crops in controlled indoor environments reduces land and water requirements while enabling year-round production near consumers. Urban agriculture is scaling. While energy costs remain a significant challenge, renewable energy integration and LED efficiency improvements are addressing this limitation progressively. However, economic viability is still limited to high-value crops in most markets. Nevertheless, technological advances are expanding the range of feasible applications as costs decrease and efficiency improves, making vertical farming increasingly viable for diverse crops.`,
+        keyElements: { 
+          topic: "Vertical farming reduces land and water for urban food production", 
+          pivot: "While energy costs challenge, renewable integration addressing this", 
+          conclusion: "Technological advances expanding range of feasible applications" 
+        }
+      },
+      {
+        id: 38,
+        title: "Attention Economy",
+        category: "Technology/Psychology",
+        text: `The attention economy has created intense competition for human focus. Digital platforms use sophisticated techniques to capture and retain user attention, often at the expense of wellbeing. Screen time is increasing. While these systems deliver free services and connectivity, the societal costs include decreased productivity and mental health impacts particularly among young people. However, awareness of these dynamics is growing among users and policymakers alike. Consequently, both individual digital wellness practices and regulatory interventions are being explored to create healthier relationships with technology and protect vulnerable populations.`,
+        keyElements: { 
+          topic: "Attention economy creates competition for human focus", 
+          pivot: "While delivering free services, societal costs include mental health impacts", 
+          conclusion: "Digital wellness practices and regulatory interventions being explored" 
+        }
+      },
+      {
+        id: 39,
+        title: "Nuclear Fusion Energy",
+        category: "Energy/Science",
+        text: `Nuclear fusion research has achieved significant milestones toward practical energy generation. Replicating the process that powers stars could provide virtually limitless clean energy without long-lived radioactive waste. Clean energy is possible. While technical challenges including plasma confinement remain substantial, recent breakthroughs suggest commercial viability may be achievable within decades rather than centuries. However, substantial investment and international collaboration are required to accelerate development. Ultimately, fusion could transform global energy systems if development continues successfully, providing abundant clean power for humanity's future needs.`,
+        keyElements: { 
+          topic: "Fusion research achieved milestones toward practical energy", 
+          pivot: "While technical challenges remain, breakthroughs suggest viability", 
+          conclusion: "Fusion could transform global energy systems if successful" 
+        }
+      },
+      {
+        id: 40,
+        title: "Four-Day Work Week",
+        category: "Work/Economics",
+        text: `The four-day work week movement is gaining momentum globally. Trials in various countries have demonstrated that reduced hours can maintain or even improve productivity while enhancing employee wellbeing. The work-life balance is shifting. While not suitable for all industries, knowledge workers particularly benefit from focused, shorter weeks with maintained output. However, implementation challenges include client expectations and coordination across teams in global organizations. Nevertheless, the concept represents a fundamental rethinking of work-life balance norms that may become increasingly common as organizations compete for talent and prioritize employee wellbeing.`,
+        keyElements: { 
+          topic: "Four-day work week trials show maintained productivity", 
+          pivot: "While not suitable for all, knowledge workers benefit particularly", 
+          conclusion: "Concept may become increasingly common as organizations compete" 
+        }
+      }
+    ];
+
+    let currentId = 1, easyMode = false, attempted = new Set();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPassage(1);
+      renderDots();
+      checkAIStatus();
+    });
+
+    async function checkAIStatus() {
+      try {
+        const res = await fetch(API_URL + '/api/health');
+        const data = await res.json();
+        const el = document.getElementById('aiStatus');
+        if (data.anthropicConfigured) {
+          el.innerHTML = '<span>●</span> AI Ready';
+          el.classList.remove('offline');
+        } else {
+          el.innerHTML = '<span>●</span> Local Mode';
+          el.classList.add('offline');
+        }
+      } catch (e) {
+        document.getElementById('aiStatus').innerHTML = '<span>●</span> Offline';
+        document.getElementById('aiStatus').classList.add('offline');
+      }
+    }
+
+    function loadPassage(id) {
+      currentId = id;
+      const p = passages.find(x => x.id === id);
+      document.getElementById('currentNum').textContent = id;
+      document.getElementById('totalNum').textContent = passages.length;
+      document.getElementById('passageCategory').textContent = p.category;
+      document.getElementById('passageTitle').textContent = p.title;
+      document.getElementById('passageText').textContent = p.text;
+      const kp = document.getElementById('keyPoints');
+      kp.innerHTML = `<div class="key-point"><div class="kp-icon topic">T</div><div><strong>Topic:</strong> ${p.keyElements.topic}</div></div><div class="key-point"><div class="kp-icon pivot">P</div><div><strong>Pivot:</strong> ${p.keyElements.pivot}</div></div><div class="key-point"><div class="kp-icon conclusion">C</div><div><strong>Conclusion:</strong> ${p.keyElements.conclusion}</div></div>`;
+      kp.classList.toggle('show', easyMode);
+      document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
+      document.getElementById('prevBtn').disabled = id === 1;
+      document.getElementById('nextBtn').disabled = id === passages.length;
+      updateDots();
+      document.getElementById('summaryInput').value = '';
+      updateWordCount();
+      document.getElementById('results').classList.remove('show');
+    }
+
+    function prevPassage() { if (currentId > 1) loadPassage(currentId - 1); }
+    function nextPassage() { if (currentId < passages.length) loadPassage(currentId + 1); }
+
+    function toggleEasyMode() {
+      easyMode = !easyMode;
+      document.getElementById('easyToggle').classList.toggle('active', easyMode);
+      document.getElementById('keyPoints').classList.toggle('show', easyMode);
+      document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
+    }
+
+    function toggleKeyPoints() {
+      const kp = document.getElementById('keyPoints');
+      kp.classList.toggle('show');
+      document.getElementById('kpBtn').textContent = kp.classList.contains('show') ? 'Click to hide key points' : 'Click to show key points';
+    }
+
+    function jumpToPassage() {
+      const n = prompt('Enter passage (1-40):');
+      if (n >= 1 && n <= 40) loadPassage(parseInt(n));
+    }
+
+    function updateWordCount() {
+      const text = document.getElementById('summaryInput').value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const el = document.getElementById('wordCount');
+      el.textContent = words + ' words';
+      el.className = 'word-count';
+      if (words < 5 || words > 75) el.classList.add('error');
+      else el.classList.add('success');
+    }
+
+    async function verifySummary() {
+      const text = document.getElementById('summaryInput').value.trim();
+      const passage = passages.find(p => p.id === currentId);
+      if (!text) { alert('Please enter a summary'); return; }
+      const words = text.split(/\s+/).length;
+      if (words < 5 || words > 75) { alert('Summary must be 5-75 words'); return; }
+      
+      document.getElementById('loadingOverlay').classList.add('show');
+      
+      try {
+        const res = await fetch(API_URL + '/api/grade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            text: text, 
+            type: 'summarize-written-text', 
+            prompt: passage.text 
+          })
+        });
+        
+        if (!res.ok) throw new Error('Server error');
+        const data = await res.json();
+        showResults(data, passage);
+        attempted.add(currentId);
+        document.getElementById('completedCount').textContent = attempted.size;
+        updateDots();
+      } catch (e) {
+        alert('Error: ' + e.message);
+      } finally {
+        document.getElementById('loadingOverlay').classList.remove('show');
+      }
+    }
+
+    function showResults(data, passage) {
+      document.getElementById('results').classList.add('show');
+      
+      // Form error banner
+      const formErrorBanner = document.getElementById('formErrorBanner');
+      if (data.form_gate_triggered) {
+        formErrorBanner.style.display = 'block';
+        document.getElementById('formErrorReason').textContent = data.form_reason || 'Form validation failed';
+      } else {
+        formErrorBanner.style.display = 'none';
+      }
+      
+      document.getElementById('mainScore').textContent = data.overall_score + '/90';
+      document.getElementById('bandDisplay').textContent = data.band;
+      document.getElementById('rawDisplay').textContent = 'Raw: ' + data.raw_score + '/8';
+      
+      // Mode display
+      const modeDisplay = document.getElementById('modeDisplay');
+      if (data.scoring_mode === 'cached') {
+        modeDisplay.textContent = '⚡ Cached';
+        modeDisplay.className = 'mode-tag cached';
+      } else if (data.scoring_mode === 'ai') {
+        modeDisplay.textContent = '🤖 AI';
+        modeDisplay.className = 'mode-tag';
+      } else {
+        modeDisplay.textContent = '📊 Local';
+        modeDisplay.className = 'mode-tag';
+      }
+      
+      document.getElementById('feedbackText').textContent = data.feedback;
+      
+      // Content elements
+      const content = data.content_details;
+      document.getElementById('elementsGrid').innerHTML = `
+        <div class="element-card ${content.topic_captured ? 'captured' : 'missed'}"><div class="element-header"><span class="element-label topic">Topic</span><span class="element-check">${content.topic_captured ? '✓' : '✗'}</span></div><div class="element-text">${passage.keyElements.topic.substring(0, 60)}...</div></div>
+        <div class="element-card ${content.pivot_captured ? 'captured' : 'missed'}"><div class="element-header"><span class="element-label pivot">Pivot</span><span class="element-check">${content.pivot_captured ? '✓' : '✗'}</span></div><div class="element-text">${passage.keyElements.pivot.substring(0, 60)}...</div></div>
+        <div class="element-card ${content.conclusion_captured ? 'captured' : 'missed'}"><div class="element-header"><span class="element-label conclusion">Conclusion</span><span class="element-check">${content.conclusion_captured ? '✓' : '✗'}</span></div><div class="element-text">${passage.keyElements.conclusion.substring(0, 60)}...</div></div>
+      `;
+      
+      // First person warning
+      const firstPersonWarning = document.getElementById('firstPersonWarning');
+      if (content.first_person_penalty) {
+        firstPersonWarning.style.display = 'block';
+        document.getElementById('firstPersonContent').innerHTML = '<p>Your summary uses first-person ("I", "my") but the passage is a narrative. Change to "The author" or "The narrator".</p>';
+      } else {
+        firstPersonWarning.style.display = 'none';
+      }
+      
+      // Spelling issues
+      const grammar = data.grammar_details;
+      const spellSection = document.getElementById('spellCheckSection');
+      if (grammar.spelling_errors && grammar.spelling_errors.length > 0) {
+        spellSection.style.display = 'block';
+        document.getElementById('spellCheckContent').innerHTML = grammar.spelling_errors.map(e => 
+          `<div class="issue-item"><span class="issue-word">"${e.word}"</span><span class="issue-arrow">→</span><span class="issue-fix">"${e.suggestion}"</span></div>`
+        ).join('');
+      } else {
+        spellSection.style.display = 'none';
+      }
+      
+      // Grammar issues
+      const grammarSection = document.getElementById('grammarSection');
+      if (grammar.grammar_issues && grammar.grammar_issues.length > 0) {
+        grammarSection.style.display = 'block';
+        document.getElementById('grammarContent').innerHTML = grammar.grammar_issues.map(g => 
+          `<div class="issue-item"><span class="issue-word">${g.issue}</span><span class="issue-arrow">→</span><span class="issue-fix">${g.suggestion}</span><span class="issue-rule">[${g.rule}]</span></div>`
+        ).join('');
+      } else {
+        grammarSection.style.display = 'none';
+      }
+      
+      // Connector info
+      const connectorInfo = document.getElementById('connectorInfo');
+      if (grammar.has_connector) {
+        const typeClass = grammar.connector_type === 'contrast' ? 'contrast' : 
+                         grammar.connector_type === 'addition' ? 'addition' : 
+                         grammar.connector_type === 'reason' ? 'reason' : '';
+        const logicText = grammar.connector_logic_correct ? '✓ Logic correct' : '✗ Logic incorrect';
+        const logicClass = grammar.connector_logic_correct ? 'logic' : 'logic bad';
+        const chained = grammar.chained_connectors ? ' | Chained connectors detected!' : '';
+        connectorInfo.innerHTML = `<span class="type ${typeClass}">${grammar.connector_type}</span><span class="${logicClass}">${logicText}</span>${chained}`;
+      } else {
+        connectorInfo.innerHTML = '<span style="color: #888;">No connector detected</span>';
+      }
+      
+      // Vocabulary section
+      const vocab = data.vocabulary_details;
+      const vocabSection = document.getElementById('vocabSection');
+      if (vocab) {
+        vocabSection.style.display = 'block';
+        let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
+        if (vocab.smart_swaps_detected && vocab.smart_swaps_detected.length > 0) {
+          vocabHtml += '<p><strong>Smart swaps:</strong> ' + vocab.smart_swaps_detected.map(s => `<span class="vocab-badge swap">${s}</span>`).join('') + '</p>';
+        }
+        if (vocab.compression_detected && vocab.compressed_items) {
+          vocabHtml += '<p><strong>List compression:</strong> ' + vocab.compressed_items.map(c => `<span class="vocab-badge compression">${c}</span>`).join('') + '</p>';
+        }
+        document.getElementById('vocabContent').innerHTML = vocabHtml;
+      } else {
+        vocabSection.style.display = 'none';
+      }
+      
+      // Trait scores
+      const traits = data.trait_scores;
+      document.getElementById('traitsGrid').innerHTML = `
+        <div class="trait-box ${traits.form >= 1 ? 'good' : 'poor'}"><div class="trait-name">Form</div><div class="trait-score">${traits.form}/1</div><div class="trait-detail">${data.word_count} words</div></div>
+        <div class="trait-box ${traits.content >= 2 ? 'good' : traits.content >= 1 ? 'medium' : 'poor'}"><div class="trait-name">Content</div><div class="trait-score">${traits.content}/3</div><div class="trait-detail">T:${content.topic_captured ? '✓' : '✗'} P:${content.pivot_captured ? '✓' : '✗'} C:${content.conclusion_captured ? '✓' : '✗'}</div></div>
+        <div class="trait-box ${traits.grammar >= 2 ? 'good' : traits.grammar >= 1 ? 'medium' : 'poor'}"><div class="trait-name">Grammar</div><div class="trait-score">${traits.grammar}/2</div><div class="trait-detail">${grammar.has_connector ? '✓ ' + grammar.connector_type : 'No connector'}</div></div>
+        <div class="trait-box ${traits.vocabulary >= 2 ? 'good' : traits.vocabulary >= 1 ? 'medium' : 'poor'}"><div class="trait-name">Vocabulary</div><div class="trait-score">${traits.vocabulary}/2</div><div class="trait-detail">${vocab?.synonym_usage || 'N/A'}</div></div>
+      `;
+      
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderDots() {
+      document.getElementById('passageDots').innerHTML = passages.map((p, i) => `<div class="dot" data-id="${i+1}" onclick="loadPassage(${i+1})">${i+1}</div>`).join('');
+    }
+
+    function updateDots() {
+      document.querySelectorAll('.dot').forEach(d => {
+        const id = parseInt(d.dataset.id);
+        d.classList.toggle('active', id === currentId);
+        d.classList.toggle('attempted', attempted.has(id));
+      });
+    }
+
+    function showInstructions() {
+      document.getElementById('instructionsModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeInstructions(event) {
+      if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close')) {
+        document.getElementById('instructionsModal').classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeInstructions();
+    });
+
+    let timerRunning = false, timerInterval, seconds = 0;
+    function toggleTimer() {
+      timerRunning = !timerRunning;
+      document.getElementById('timerText').textContent = timerRunning ? 'On' : 'Off';
+      if (timerRunning) {
+        seconds = 0;
+        timerInterval = setInterval(() => {
+          seconds++;
+          const m = Math.floor(seconds / 60), s = seconds % 60;
+          document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        document.getElementById('timerText').textContent = 'Off';
+      }
+    }
+  </script>
+</body>
 </html>
