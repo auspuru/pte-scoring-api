@@ -477,13 +477,11 @@ app.post('/api/grade', async (req, res) => {
     // Convert to PTE overall score (10-90 scale)
     const overallScore = Math.min(90, 10 + Math.round((rawScore / maxPossible) * 80));
 
-    // Determine key ideas status for frontend
-    const keyIdeasPresent = result.key_ideas_present || [];
-    const keyIdeasMissing = result.key_ideas_missing || [];
-    
-    const hasTopic = keyIdeasPresent.some(k => k.toLowerCase().includes('topic') || k.toLowerCase().includes('gdp') || k.toLowerCase().includes('economic') || k.toLowerCase().includes('climate'));
-    const hasPivot = keyIdeasPresent.some(k => k.toLowerCase().includes('pivot') || k.toLowerCase().includes('however') || k.toLowerCase().includes('but') || k.toLowerCase().includes('developing'));
-    const hasConclusion = keyIdeasPresent.some(k => k.toLowerCase().includes('result') || k.toLowerCase().includes('conclusion') || k.toLowerCase().includes('renewable') || k.toLowerCase().includes('solution'));
+    // Determine key ideas status based on content score
+    // Content 0-2 scale: 0=none, 1=topic only, 1.5=topic+pivot, 2=all three
+    const hasTopic = contentScore >= 1;
+    const hasPivot = contentScore >= 1.5;
+    const hasConclusion = contentScore >= 2;
     
     // Build honest feedback
     const feedback = buildFeedback(result, formCheck, connectorInfo, formCheck.wordCount, perspectiveCheck);
@@ -500,15 +498,15 @@ app.post('/api/grade', async (req, res) => {
       },
       content_details: {
         key_ideas_extracted: result.key_ideas_extracted || [],
-        key_ideas_present: keyIdeasPresent,
-        key_ideas_missing: keyIdeasMissing,
+        key_ideas_present: result.key_ideas_present || [],
+        key_ideas_missing: result.key_ideas_missing || [],
         perspective_shift_penalty: perspectiveCheck.penalty || false,
         perspective_note: perspectiveCheck.note,
         notes: result.content_notes || '',
-        // For frontend display logic (Scan Method)
-        has_topic: contentScore >= 1,
-        has_pivot: contentScore >= 1.5, 
-        has_conclusion: contentScore >= 2
+        // Key ideas status for frontend
+        has_topic: hasTopic,
+        has_pivot: hasPivot,
+        has_conclusion: hasConclusion
       },
       grammar_details: {
         ...result.grammar,
@@ -554,7 +552,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Logic Grader v7.0.0 running on port ${PORT}`);
+  console.log(`✅ PTE SWT Logic Grader v7.1.0 running on port ${PORT}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'DISABLED'}`);
   console.log(`📚 Band 9 Insights: ENABLED`);
 });
