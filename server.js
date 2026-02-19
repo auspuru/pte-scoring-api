@@ -9,27 +9,17 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// ========== COMPLETE CONNECTOR LIST ==========
 const ALL_CONNECTORS = [
-  // Contrast/Concession (most common for PTE)
   'however', 'although', 'though', 'while', 'whereas', 'but', 'yet', 'nevertheless', 'nonetheless', 'notwithstanding', 'despite', 'in spite of', 'even though', 'even if', 'conversely', 'on the contrary', 'on the other hand', 'in contrast', 'alternatively', 'rather', 'instead', 'unlike', 'different from', 'as opposed to', 'compared to', 'in comparison', 'by contrast',
-  // Cause/Effect
   'because', 'since', 'as', 'due to', 'owing to', 'thanks to', 'on account of', 'as a result', 'therefore', 'thus', 'hence', 'consequently', 'accordingly', 'so', 'thereby', 'for this reason', 'that is why', 'this means', 'it follows that', 'leading to', 'resulting in', 'causing', 'bringing about',
-  // Addition
   'and', 'also', 'too', 'as well', 'as well as', 'in addition', 'furthermore', 'moreover', 'besides', 'what is more', 'not only', 'but also', 'both', 'equally', 'similarly', 'likewise', 'in the same way', 'along with', 'together with', 'coupled with', 'combined with', 'another', 'additionally',
-  // Sequence/Time
   'first', 'firstly', 'second', 'secondly', 'third', 'thirdly', 'finally', 'lastly', 'next', 'then', 'after', 'afterwards', 'subsequently', 'later', 'eventually', 'previously', 'before', 'meanwhile', 'at the same time', 'simultaneously', 'during', 'while', 'when', 'until', 'till', 'as soon as', 'once', 'immediately', 'initially', 'originally', 'currently', 'now', 'recently', 'lately', 'soon', 'shortly', 'in the meantime',
-  // Example/Illustration
   'for example', 'for instance', 'such as', 'like', 'including', 'particularly', 'especially', 'specifically', 'namely', 'that is', 'i.e.', 'e.g.', 'in particular', 'mainly', 'mostly', 'notably', 'chiefly', 'in other words', 'to illustrate',
-  // Emphasis
   'indeed', 'in fact', 'actually', 'certainly', 'definitely', 'clearly', 'obviously', 'apparently', 'evidently', 'undoubtedly', 'without doubt', 'naturally', 'of course', 'needless to say', 'above all', 'most importantly', 'significantly', 'notably', 'in particular', 'especially', 'primarily', 'essentially', 'basically', 'in essence',
-  // Condition
   'if', 'unless', 'provided that', 'providing that', 'as long as', 'on condition that', 'in case', 'whether', 'otherwise', 'or else', 'suppose', 'assuming that', 'given that',
-  // Summary/Conclusion
   'in conclusion', 'to conclude', 'in summary', 'to summarize', 'overall', 'all in all', 'in short', 'in brief', 'to put it briefly', 'finally', 'lastly', 'in the end', 'at last', 'ultimately', 'on the whole', 'by and large', 'for the most part', 'generally', 'generally speaking', 'broadly speaking', 'as a whole'
 ];
 
-// ========== FORM VALIDATION (LOCAL - FAST) ==========
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
     return { wordCount: 0, isValidForm: false, errors: ['Invalid input'] };
@@ -68,7 +58,6 @@ function validateForm(summary) {
   };
 }
 
-// ========== AI GRADING (PRIMARY) ==========
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
 
@@ -87,17 +76,17 @@ async function aiGrade(summary, passage) {
         system: `You are a PTE Academic examiner. Grade summaries STRICTLY.
 
 PASSAGE STRUCTURE:
-- TOPIC: ${passage.keyElements?.critical || 'N/A'}
-- PIVOT: ${passage.keyElements?.important || 'N/A'}
-- CONCLUSION: ${passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0] || 'N/A'}
+- TOPIC: ${passage.keyElements?.topic || 'N/A'}
+- PIVOT: ${passage.keyElements?.pivot || 'N/A'}
+- CONCLUSION: ${passage.keyElements?.conclusion || 'N/A'}
 
 STRICT MEANING DETECTION RULES:
 1. ACCEPT paraphrasing ONLY if meaning is EXACTLY preserved
 2. DEDUCT for:
-   - Synonyms that change nuance (e.g., "important" → "minor")
-   - Opposites/contradictions (e.g., "increases" → "decreases")
-   - Missing key qualifiers (e.g., "young people" → "people")
-   - Overgeneralization (e.g., "some" → "all")
+   - Synonyms that change nuance
+   - Opposites/contradictions
+   - Missing key qualifiers
+   - Overgeneralization
 3. Topic must capture the CORE subject accurately
 4. Pivot must show the CONTRAST/SHIFT correctly
 5. Conclusion must match the passage's final point
@@ -105,13 +94,12 @@ STRICT MEANING DETECTION RULES:
 SCORING:
 1. FORM (0-1): 1 if 5-75 words, one sentence, ends with punctuation
 2. CONTENT (0-3):
-   - 3 = ALL 3 elements captured with EXACT meaning preserved
+   - 3 = ALL 3 elements captured with EXACT meaning
    - 2 = 2 elements correct
    - 1 = 1 element correct
    - 0 = 0 elements OR major meaning errors
-   - DEDUCT 1 BAND for each missing element
-3. GRAMMAR (0-2): Check spelling, grammar, connectors
-   - 2 = no errors, uses connector (however/although/while/but)
+3. GRAMMAR (0-2):
+   - 2 = no errors, uses connector
    - 1 = minor errors OR no connector
    - 0 = major errors
 4. VOCABULARY (0-2): Always 2
@@ -135,10 +123,10 @@ Grade and return:
   },
   "grammar": {
     "value": 0-2,
-    "spelling_errors": ["word1", "word2"],
-    "grammar_issues": ["issue1"],
+    "spelling_errors": [],
+    "grammar_issues": [],
     "has_connector": true/false,
-    "connector_type": "however/although/etc or null",
+    "connector_type": "...",
     "notes": "..."
   },
   "vocabulary": { "value": 0-2, "notes": "..." },
@@ -173,7 +161,6 @@ Grade and return:
   }
 }
 
-// ========== LOCAL FALLBACK GRADING ==========
 function localGrade(summary, passage, formCheck) {
   const sumLower = summary.toLowerCase();
 
@@ -196,37 +183,34 @@ function localGrade(summary, passage, formCheck) {
     };
   }
 
-  const topicCheck = checkCoverage(passage.keyElements?.critical);
+  const topicCheck = checkCoverage(passage.keyElements?.topic);
 
-  const pivotKeywords = extractKeywords(passage.keyElements?.important);
+  const pivotKeywords = extractKeywords(passage.keyElements?.pivot);
   const contrastWords = ['however', 'although', 'while', 'but', 'yet', 'though', 'despite', 'whereas', 'nevertheless'];
   const hasContrast = contrastWords.some(w => sumLower.includes(w));
   const pivotMatches = pivotKeywords.filter(w => sumLower.includes(w)).length;
   const pivotCaptured = (hasContrast && pivotMatches >= 1) || pivotMatches >= 2 || (pivotKeywords.length > 0 && (pivotMatches / pivotKeywords.length) >= 0.3);
 
-  const conclusionCheck = checkCoverage(passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]);
+  const conclusionCheck = checkCoverage(passage.keyElements?.conclusion);
 
-  // Content scoring: 0-3 with -1 per missing element
   let contentValue = 3;
   if (!topicCheck.captured) contentValue -= 1;
   if (!pivotCaptured) contentValue -= 1;
   if (!conclusionCheck.captured) contentValue -= 1;
   contentValue = Math.max(0, contentValue);
 
-  // Use complete connector list
   const hasConnector = ALL_CONNECTORS.some(c => sumLower.includes(c.toLowerCase()));
   const connectorType = hasConnector ? ALL_CONNECTORS.find(c => sumLower.includes(c.toLowerCase())) : null;
 
   const commonWords = new Set([
     'the', 'a', 'an', 'some', 'any', 'this', 'that', 'these', 'those', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
     'be', 'am', 'is', 'are', 'was', 'were', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'can', 'could',
-    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'us', 'them', 'mine', 'yours', 'ours', 'theirs',
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'us', 'them',
     'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'into', 'onto', 'upon', 'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'during', 'except', 'inside', 'outside', 'until', 'within', 'without', 'toward', 'towards', 'through', 'under', 'via', 'per', 'like', 'unlike',
     'and', 'or', 'nor', 'either', 'neither', 'both', 'whether', 'if', 'unless', 'because', 'since', 'when', 'once', 'than',
-    'not', 'no', 'yes', 'just', 'only', 'even', 'also', 'too', 'very', 'quite', 'rather', 'really', 'truly', 'actually', 'certainly', 'definitely', 'probably', 'possibly', 'perhaps', 'maybe', 'simply', 'merely', 'barely', 'hardly', 'almost', 'nearly', 'exactly', 'particularly', 'especially', 'mainly', 'mostly', 'generally', 'usually', 'normally', 'typically', 'often', 'sometimes', 'occasionally', 'rarely', 'never', 'always', 'already', 'still', 'twice', 'again', 'further',
-    'say', 'says', 'said', 'tell', 'told', 'talk', 'talked', 'speak', 'spoke', 'state', 'stated', 'mention', 'mentioned', 'note', 'noted', 'report', 'reported', 'claim', 'claimed', 'suggest', 'suggested', 'propose', 'proposed', 'argue', 'argued', 'believe', 'believed', 'think', 'thought', 'consider', 'considered', 'feel', 'felt', 'know', 'knew', 'known', 'understand', 'understood', 'realize', 'realized', 'recognize', 'recognized', 'see', 'saw', 'seen', 'look', 'looked', 'watch', 'watched', 'find', 'found', 'discover', 'discovered', 'notice', 'noticed', 'observe', 'observed', 'perceive', 'perceived', 'use', 'used', 'make', 'made', 'come', 'came', 'go', 'went', 'gone', 'take', 'took', 'taken', 'give', 'gave', 'given', 'put', 'let', 'call', 'called', 'try', 'tried', 'need', 'needed', 'want', 'wanted', 'like', 'liked', 'help', 'helped', 'show', 'showed', 'shown', 'play', 'played', 'move', 'moved', 'live', 'lived', 'bring', 'brought', 'happen', 'happened', 'write', 'wrote', 'written', 'provide', 'provided', 'include', 'included', 'involve', 'involved',
-    'one', 'two', 'three', 'first', 'second', 'third', 'next', 'last', 'final', 'many', 'much', 'more', 'most', 'few', 'little', 'less', 'least', 'several', 'various', 'numerous', 'lot', 'lots', 'number', 'total', 'whole', 'entire', 'complete', 'full', 'part', 'half', 'piece', 'portion', 'section', 'aspect', 'side', 'area', 'field', 'domain', 'region', 'sector', 'share', 'percentage', 'proportion', 'degree', 'level', 'extent', 'scope', 'range', 'scale', 'size', 'volume', 'amount', 'sum', 'average', 'maximum', 'minimum', 'point', 'fact', 'case', 'instance', 'example', 'item', 'element', 'component', 'member', 'unit', 'entity', 'object', 'subject', 'topic', 'theme', 'matter', 'issue', 'question', 'problem', 'concern',
-    'regarding', 'concerning', 'respecting', 'pertaining', 'referring', 'relating', 'dealing', 'considering', 'discussing', 'examining', 'exploring', 'investigating', 'analyzing', 'evaluating', 'assessing', 'reviewing', 'observing', 'noting', 'pointing', 'indicating', 'suggesting', 'implying', 'demonstrating', 'showing', 'revealing', 'displaying', 'exhibiting', 'reflecting', 'representing', 'constituting', 'forming', 'serving', 'acting', 'functioning', 'operating', 'working', 'existing', 'remaining', 'continuing', 'following', 'preceding', 'leading', 'resulting', 'causing', 'allowing', 'enabling', 'permitting', 'letting', 'making', 'requiring', 'demanding', 'asking', 'requesting', 'wanting', 'wishing', 'hoping', 'expecting'
+    'not', 'no', 'just', 'only', 'even', 'also', 'too', 'very', 'quite', 'rather', 'really', 'truly', 'actually', 'certainly', 'definitely', 'probably', 'possibly', 'perhaps', 'maybe', 'simply', 'merely', 'barely', 'hardly', 'almost', 'nearly', 'exactly', 'particularly', 'especially', 'mainly', 'mostly', 'generally', 'usually', 'normally', 'typically', 'often', 'sometimes', 'occasionally', 'rarely', 'never', 'always', 'already', 'still', 'once', 'twice', 'again', 'further',
+    'say', 'says', 'said', 'tell', 'told', 'talk', 'talked', 'speak', 'spoke', 'state', 'stated', 'mention', 'mentioned', 'note', 'noted', 'report', 'reported', 'claim', 'claimed', 'suggest', 'suggested', 'propose', 'proposed', 'argue', 'argued', 'believe', 'believed', 'think', 'thought', 'consider', 'considered', 'feel', 'felt', 'know', 'knew', 'known', 'understand', 'understood', 'realize', 'realized', 'recognize', 'recognized', 'see', 'saw', 'seen', 'look', 'looked', 'watch', 'watched', 'find', 'found', 'discover', 'discovered', 'notice', 'noticed', 'observe', 'observed', 'use', 'used', 'make', 'made', 'come', 'came', 'go', 'went', 'gone', 'take', 'took', 'taken', 'give', 'gave', 'given', 'put', 'let', 'call', 'called', 'try', 'tried', 'need', 'needed', 'want', 'wanted', 'like', 'liked', 'help', 'helped', 'show', 'showed', 'shown', 'play', 'played', 'move', 'moved', 'live', 'lived', 'bring', 'brought', 'happen', 'happened', 'write', 'wrote', 'written', 'provide', 'provided', 'include', 'included', 'involve', 'involved',
+    'one', 'two', 'three', 'first', 'second', 'third', 'next', 'last', 'final', 'many', 'much', 'more', 'most', 'few', 'little', 'less', 'least', 'several', 'various', 'numerous', 'lot', 'lots', 'number', 'total', 'whole', 'entire', 'complete', 'full', 'part', 'half', 'piece', 'portion', 'section', 'aspect', 'side', 'area', 'field', 'domain', 'region', 'sector', 'share', 'percentage', 'proportion', 'degree', 'level', 'extent', 'scope', 'range', 'scale', 'size', 'volume', 'amount', 'sum', 'average', 'maximum', 'minimum', 'point', 'fact', 'case', 'instance', 'example', 'item', 'element', 'component', 'member', 'unit', 'entity', 'object', 'subject', 'topic', 'theme', 'matter', 'issue', 'question', 'problem', 'concern'
   ]);
 
   const words = summary.toLowerCase().match(/\b[a-z]+\b/g) || [];
@@ -274,8 +258,6 @@ function localGrade(summary, passage, formCheck) {
   };
 }
 
-// ========== API ENDPOINTS ==========
-
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -320,12 +302,10 @@ app.post('/api/grade', async (req, res) => {
       result = localGrade(summary, passage, formCheck);
     }
 
-    // Updated scoring: FORM(1) + CONTENT(3) + GRAMMAR(2) + VOCAB(2) = 8 max
     const rawScore = result.form.value + result.content.value + result.grammar.value + result.vocabulary.value;
     const overallScore = Math.min(Math.round((rawScore / 8) * 90), 90);
     const bands = ['Band 5', 'Band 5', 'Band 5', 'Band 6', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9'];
 
-    // Save to storage
     storage.saveAttempt({
       sessionId: req.body.sessionId || 'anonymous',
       passageId: req.body.passageId,
@@ -368,7 +348,6 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
-// Get user's history
 app.get('/api/history/:sessionId', (req, res) => {
   const history = storage.getUserHistory(req.params.sessionId);
   res.json(history);
