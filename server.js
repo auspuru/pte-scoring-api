@@ -205,7 +205,7 @@ function checkPerspectiveShift(text, passageText) {
   
   const isFirstPersonPassage = iCount > 2;
   
-  if (isFirstPersonPassage && /^\\s*(I|My|Me)\\b/.test(text)) {
+  if (isFirstPersonPassage && /^\s*(I|My|Me)\b/.test(text)) {
     return { 
       penalty: true, 
       note: "Use 'The author' instead of 'I' for first-person passages" 
@@ -359,7 +359,7 @@ Analyze using the 3-key-idea framework (Topic + Pivot + Result). Be honest about
     });
 
     const rawText = response.content[0].text;
-    const match = rawText.match(/\\{[\\s\\S]*\\}/);
+    const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) throw new Error('No JSON found');
 
     const result = JSON.parse(match[0]);
