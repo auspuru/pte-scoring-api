@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const storage = require('./storage');
 
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
@@ -261,7 +260,7 @@ function localGrade(summary, passage, formCheck) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '12.0.0',
+    version: '3.0.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
   });
@@ -306,19 +305,6 @@ app.post('/api/grade', async (req, res) => {
     const overallScore = Math.min(Math.round((rawScore / 8) * 90), 90);
     const bands = ['Band 5', 'Band 5', 'Band 5', 'Band 6', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9'];
 
-    storage.saveAttempt({
-      sessionId: req.body.sessionId || 'anonymous',
-      passageId: req.body.passageId,
-      summary: summary,
-      overallScore: overallScore,
-      rawScore: rawScore,
-      band: bands[rawScore] || 'Band 5',
-      topicCaptured: result.content.topic_captured,
-      pivotCaptured: result.content.pivot_captured,
-      conclusionCaptured: result.content.conclusion_captured,
-      feedback: result.feedback
-    });
-
     res.json({
       trait_scores: {
         form: result.form,
@@ -348,12 +334,7 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
-app.get('/api/history/:sessionId', (req, res) => {
-  const history = storage.getUserHistory(req.params.sessionId);
-  res.json(history);
-});
-
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v12.0.0 on port ${PORT}`);
+  console.log(`✅ PTE API v3.0.0 on port ${PORT}`);
   console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
 });
