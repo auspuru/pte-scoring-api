@@ -3,7 +3,7 @@ const cors = require('cors');
 
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -58,7 +58,7 @@ function validateForm(summary) {
 }
 
 async function aiGrade(summary, passage) {
-  if (!ANTHROPIC_API_KEY) return null;
+  if (!OPENAI_API_KEY) return null;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -261,8 +261,8 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     version: '3.0.0',
-    anthropicConfigured: !!ANTHROPIC_API_KEY,
-    mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
+    anthropicConfigured: !!OPENAI_API_KEY,
+    mode: OPENAI_API_KEY ? 'AI-primary' : 'local-only'
   });
 });
 
@@ -336,5 +336,5 @@ app.post('/api/grade', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ PTE API v3.0.0 on port ${PORT}`);
-  console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
+  console.log(`${OPENAI_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
 });
