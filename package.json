@@ -1,6 +1,6 @@
 {
   "name": "pte-scoring-api",
-  "version": "3.0.0",
+  "version": "4.2.0",
   "description": "PTE SWT Scoring API with Hybrid AI + Local Grading",
   "main": "server.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "dev": "node server.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "cors": "^2.8.5",
     "express": "^4.18.2"
   },
