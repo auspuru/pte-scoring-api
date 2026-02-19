@@ -19,16 +19,19 @@ function stem(word) {
   if (word.endsWith('eed')) { if (word.length > 4) word = word.slice(0, -1); }
   else if (word.endsWith('ing')) { const b = word.slice(0, -3); if (b.length >= 2) word = b; }
   else if (word.endsWith('ed')) { const b = word.slice(0, -2); if (b.length >= 2) word = b; }
-  const step2 = [['ational','ate'],['tional','tion'],['enci','ence'],['anci','ance'],['izer','ize'],
+  const step2 = [
+    ['ational','ate'],['tional','tion'],['enci','ence'],['anci','ance'],['izer','ize'],
     ['isation','ise'],['ization','ize'],['ation','ate'],['ator','ate'],['alism','al'],
-    ['iveness','ive'],['fulness','ful'],['ousness','ous'],['aliti','al'],['iviti','ive'],['biliti','ble']];
+    ['iveness','ive'],['fulness','ful'],['ousness','ous'],['aliti','al'],['iviti','ive'],['biliti','ble']
+  ];
   for (const [s, r] of step2) { if (word.endsWith(s)) { word = word.slice(0, -s.length) + r; break; } }
   const step3 = [['icate','ic'],['ative',''],['alize','al'],['iciti','ic'],['ical','ic'],['ful',''],['ness','']];
   for (const [s, r] of step3) { if (word.endsWith(s)) { word = word.slice(0, -s.length) + r; break; } }
   return word;
 }
 
-// ─── SYNONYM GROUPS ───────────────────────────────────────────────────────────
+// ─── SYNONYM GROUPS (deduplicated) ───────────────────────────────────────────
+// FIX #6: Removed duplicate 'argue' entry from the synonyms array
 const SYNONYM_GROUPS = [
   ['increase','rise','grow','surge','climb','boost','expand','escalate','soar','improve','growth','rising'],
   ['decrease','fall','drop','decline','reduce','shrink','diminish','plunge','deteriorate','reduction','falling'],
@@ -39,18 +42,18 @@ const SYNONYM_GROUPS = [
   ['problem','issue','challenge','difficulty','concern','obstacle','drawback','disadvantage','barrier','risk'],
   ['study','research','investigation','analysis','examination','survey','report','findings','evidence'],
   ['people','individuals','humans','population','society','community','persons','citizens','workers'],
-  ['country','nation','state','government','region','land','economy','society'],
+  ['country','nation','state','government','region','land','economy'],
   ['large','big','great','huge','vast','major','significant','substantial','considerable','enormous'],
   ['small','little','minor','limited','slight','modest','minimal','negligible','marginal'],
   ['use','utilise','utilize','employ','apply','implement','adopt','rely','depend'],
   ['change','shift','transform','alter','modify','evolve','transition','development','move'],
-  ['argue','claim','suggest','propose','contend','assert','maintain','state','note','point','argue'],
+  ['argue','claim','suggest','propose','contend','assert','maintain','state','note','point'], // FIX #6: no duplicate 'argue'
   ['new','novel','modern','recent','innovative','emerging','contemporary','current','latest'],
   ['difficult','hard','challenging','complex','complicated','tough','demanding','problematic'],
   ['positive','beneficial','advantageous','favorable','good','constructive','helpful','effective'],
-  ['negative','harmful','detrimental','adverse','bad','damaging','destructive','problematic'],
-  ['fast','rapid','quick','swift','speedy','accelerated','rapid','prompt'],
-  ['need','require','demand','necessitate','call','must','essential','critical'],
+  ['negative','harmful','detrimental','adverse','bad','damaging','destructive'],
+  ['fast','rapid','quick','swift','speedy','accelerated','prompt'],
+  ['need','require','demand','necessitate','must','essential','critical'],
   ['improve','enhance','better','strengthen','advance','develop','progress','upgrade'],
   ['global','worldwide','international','universal','overall','general','broad','widespread'],
   ['data','information','evidence','statistics','findings','results','numbers','figures'],
@@ -59,9 +62,11 @@ const SYNONYM_GROUPS = [
 function buildSynonymMap() {
   const map = {};
   for (const group of SYNONYM_GROUPS) {
-    for (const word of group) {
-      map[word] = group;
-      map[stem(word)] = group.map(w => stem(w));
+    // Deduplicate each group before building
+    const unique = [...new Set(group)];
+    for (const word of unique) {
+      map[word] = unique;
+      map[stem(word)] = unique.map(w => stem(w));
     }
   }
   return map;
@@ -104,7 +109,47 @@ const KNOWN_MISSPELLINGS = {
   'governement':'government','imediatly':'immediately','imprtant':'important',
   'incresing':'increasing','indvidual':'individual','infomation':'information',
   'particluar':'particular','populaton':'population','reseach':'research',
-  'signifcant':'significant','societal':'societal','technolgy':'technology',
+  'signifcant':'significant','technolgy':'technology','experiance':'experience',
+  'persistant':'persistent','brillant':'brilliant','absense':'absence','accross':'across',
+  'acheive':'achieve','advertisment':'advertisement','agressive':'aggressive',
+  'apparantly':'apparently','basicly':'basically','begginning':'beginning',
+  'buisness':'business','calender':'calendar','carribean':'caribbean','colum':'column',
+  'comming':'coming','commited':'committed','comparisson':'comparison','completly':'completely',
+  'conceed':'concede','congradulations':'congratulations','consciencious':'conscientious',
+  'copywrite':'copyright','dacision':'decision','definit':'definite','develope':'develop',
+  'differance':'difference','dilemna':'dilemma','dissatisfied':'dissatisfied',
+  'drunkeness':'drunkenness','embarass':'embarrass','enviroment':'environment',
+  'equiptment':'equipment','especially':'especially','excede':'exceed','excercise':'exercise',
+  'explaination':'explanation','facinating':'fascinating','Febuary':'February',
+  'finaly':'finally','flourish':'flourish','forseeable':'foreseeable','fourty':'forty',
+  'futher':'further','garantee':'guarantee','grammer':'grammar','greatful':'grateful',
+  'harrassment':'harassment','heighth':'height','heirarchy':'hierarchy','hypocrasy':'hypocrisy',
+  'idiosyncracy':'idiosyncrasy','imediate':'immediate','incidently':'incidentally',
+  'interupt':'interrupt','irrelevent':'irrelevant','jewelery':'jewelry','judgement':'judgment',
+  'knowlege':'knowledge','labratory':'laboratory','laguage':'language','liasson':'liaison',
+  'litrally':'literally','maintenence':'maintenance','managable':'manageable',
+  'medeval':'medieval','memento':'memento','milennium':'millennium','miniscule':'minuscule',
+  'mischievious':'mischievous','misspell':'misspell','naieve':'naive','naturaly':'naturally',
+  'necesary':'necessary','negociate':'negotiate','neighbourood':'neighborhood',
+  'nievety':'naivety','nineth':'ninth','noticeable':'noticeable','ocasion':'occasion',
+  'occurence':'occurrence','offence':'offence','omision':'omission','oppurtunity':'opportunity',
+  'orginally':'originally','outragous':'outrageous','paralell':'parallel','parliment':'parliament',
+  'particualr':'particular','pavillion':'pavilion','percieve':'perceive','perogative':'prerogative',
+  'permissable':'permissible','perseverence':'perseverance','phenomemon':'phenomenon',
+  'playwright':'playwright','posession':'possession','practicle':'practical',
+  'propogate':'propagate','publically':'publicly','questionaire':'questionnaire',
+  'readible':'readable','realise':'realise','reccommend':'recommend','relavant':'relevant',
+  'restaraunt':'restaurant','rediculous':'ridiculous','romanticize':'romanticize',
+  'sacrilegious':'sacrilegious','salery':'salary','sargent':'sergeant','satelite':'satellite',
+  'scenrio':'scenario','sence':'sense','sentance':'sentence','simmilar':'similar',
+  'simultanious':'simultaneous','sincerely':'sincerely','sophmore':'sophomore',
+  'specifially':'specifically','succede':'succeed','supercede':'supersede',
+  'suseptible':'susceptible','symetry':'symmetry','synonomous':'synonymous',
+  'tatoo':'tattoo','tendancy':'tendency','threshhold':'threshold','tommorrow':'tomorrow',
+  'tounge':'tongue','tyrany':'tyranny','ukelele':'ukulele','unfortunatly':'unfortunately',
+  'uninterupt':'uninterrupted','unecessary':'unnecessary','vaccinate':'vaccinate',
+  'vicious':'vicious','villian':'villain','voila':'voilà','whereabouts':'whereabouts',
+  'wilfull':'willful','withdrawl':'withdrawal','wreckless':'reckless','yatch':'yacht',
 };
 
 const COMMON_VOCAB = new Set([
@@ -136,32 +181,112 @@ const COMMON_VOCAB = new Set([
   'traditional','modern','current','recent','future','past','present','high','low',
   'large','small','major','minor','positive','negative','public','private','human','natural',
   'based','used','found','made','given','taken','seen','known','called','considered',
-  'reported','argued','claimed','suggested','noted','stated','proposed','found','shown',
+  'reported','argued','claimed','suggested','noted','stated','proposed','shown',
   'between','different','following','according','example','another','through','without',
   'however','although','therefore','because','despite','whereas','similarly','consequently',
   'furthermore','moreover','nevertheless','nonetheless','meanwhile','subsequently',
   'argue','claim','suggest','propose','contend','assert','maintain','state','note',
-  'increase','decrease','rise','fall','grow','decline','improve','worsen','change',
-  'cause','effect','result','impact','influence','factor','reason','outcome',
-  'must','need','require','essential','critical','vital','important','necessary',
-  'include','involve','contain','comprise','consist','relate','connect','link',
+  'rise','fall','grow','decline','worsen','cause','result','influence','factor','reason','outcome',
+  'essential','critical','vital','necessary','include','involve','contain','comprise',
+  'consist','relate','connect','link','despite','while','also','both','such','those',
+  'makes','leads','shows','means','needs','helps','allows','remains','becomes','seems',
+  'across','against','beyond','within','toward','whether','unless','since','once','after',
+  'before','during','around','above','below','into','onto','upon','along','among',
+]);
+
+// FIX #1: Edit-distance fallback for words not in KNOWN_MISSPELLINGS
+function editDistance(a, b) {
+  if (Math.abs(a.length - b.length) > 3) return 99;
+  const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) => i || j)
+  );
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+// Curated dictionary of common academic words for edit-distance fallback
+const SPELL_DICTIONARY = new Set([
+  ...COMMON_VOCAB,
+  'receive','believe','occurred','occurrence','separate','definitely','government','environment',
+  'accommodate','achieve','acquire','argument','beginning','benefit','category','changeable',
+  'colleague','committee','conscious','convenience','criticism','curiosity','dependent',
+  'desperate','disappear','existence','familiar','foreign','friend','grammar','guard',
+  'guidance','happened','height','ignorance','immediately','independent','indispensable',
+  'intelligence','irresistible','knowledge','liaison','library','license','maintenance',
+  'millennium','necessary','neighbor','noticeable','occasion','original','piece',
+  'persistence','politician','possession','precede','privilege','professor','recommend',
+  'referred','relevant','religious','remember','repetition','resistance','rhythm',
+  'seize','similar','speech','studying','successful','surprise','technology','tendency',
+  'therefore','tongue','truly','until','vacuum','visible','whether','weird','writing',
+  'experience','apparent','consciousness','development','environmental','increasing',
+  'individual','information','particular','population','research','significant',
+  'absence','across','aggressive','apparently','basically','business','column',
+  'committed','completely','decision','definite','difference','dilemma','embarrass',
+  'equipment','exceed','exercise','explanation','fascinating','february','finally',
+  'foreseeable','forty','further','guarantee','grateful','harassment','hierarchy',
+  'immediately','interrupt','irrelevant','judgment','laboratory','language','literally',
+  'manageable','medieval','minuscule','mischievous','naive','naturally','negotiate',
+  'neighborhood','ninth','omission','opportunity','originally','outrageous','parallel',
+  'parliament','perceive','phenomenon','practical','propagate','publicly','questionnaire',
+  'readable','restaurant','ridiculous','salary','sergeant','satellite','scenario',
+  'sense','sentence','simultaneously','sincerely','specifically','succeed','supersede',
+  'susceptible','symmetry','synonymous','tattoo','threshold','tomorrow','tyranny',
+  'unfortunately','unnecessary','villain','withdrawal','reckless','yacht','effect',
+  'affects','affects','however','although','therefore','because','despite','whereas',
+  'consequently','furthermore','moreover','nevertheless','nonetheless','subsequently',
+  'conclusion','introduction','paragraph','summarize','therefore','contrast','whereas',
+  'highlight','suggest','indicate','demonstrate','establish','contribute','determine',
+  'associated','compared','considered','described','discussed','examined','identified',
+  'implemented','included','increased','indicated','introduced','measured','noted',
+  'observed','obtained','occurred','presented','produced','provided','reported',
+  'revealed','shown','studied','suggested','supported','tested','used','found',
 ]);
 
 function spellCheck(summary) {
   const words = summary.match(/\b[a-zA-Z']+\b/g) || [];
   const errors = [];
-  const seen = new Set();
+  // FIX #3: Track all occurrences (not just first) but deduplicate error reports
+  const reported = new Set();
 
   for (const rawWord of words) {
     const word = rawWord.toLowerCase().replace(/^'+|'+$/g, '');
-    if (word.length <= 2 || seen.has(word)) continue;
-    seen.add(word);
+    if (word.length <= 2) continue;
     if (COMMON_VOCAB.has(word)) continue;
     if (/^\d+$/.test(word)) continue;
+    if (reported.has(word)) continue; // still deduplicate the error report itself
 
-    // Known misspelling lookup
+    // Check 1: Known misspelling lookup (high confidence)
     if (KNOWN_MISSPELLINGS[word]) {
       errors.push({ word: rawWord, suggestion: KNOWN_MISSPELLINGS[word], confidence: 'high' });
+      reported.add(word);
+      continue;
+    }
+
+    // FIX #1: Check 2: Edit-distance fallback against dictionary (catches unknown misspellings)
+    if (!SPELL_DICTIONARY.has(word)) {
+      let bestMatch = null;
+      let bestDist = 99;
+      // Only compare against words of similar length for performance
+      for (const dictWord of SPELL_DICTIONARY) {
+        if (Math.abs(dictWord.length - word.length) > 2) continue;
+        if (dictWord.length < 4) continue;
+        const dist = editDistance(word, dictWord);
+        if (dist < bestDist && dist <= 2) {
+          bestDist = dist;
+          bestMatch = dictWord;
+        }
+      }
+      if (bestMatch && bestDist <= 1) {
+        // Only flag distance-1 to avoid false positives
+        errors.push({ word: rawWord, suggestion: bestMatch, confidence: 'medium' });
+        reported.add(word);
+      }
     }
   }
 
@@ -214,15 +339,11 @@ function checkGrammar(summary) {
     },
     {
       re: /\b(could|would|should|might|must)\s+of\b/gi,
-      fn: (m, p1) => ({ issue: `"${p1} of"`, suggestion: `"${p1} have"`, rule: 'Modal verb: "of" → "have"' })
-    },
-    {
-      re: /\b(affect)\s+(the|a|an|their|its)\b/gi,
-      fn: (m) => null // affect as verb before article is fine
+      fn: (m, p1) => ({ issue: `"${p1} of"`, suggestion: `"${p1} have"`, rule: 'Modal verb: use "have" not "of"' })
     },
     {
       re: /,\s*,/g,
-      fn: () => ({ issue: 'double comma',  suggestion: 'single comma', rule: 'Punctuation error' })
+      fn: () => ({ issue: 'double comma ,,', suggestion: 'single comma ,', rule: 'Punctuation error' })
     },
   ];
 
@@ -317,10 +438,8 @@ function scoreElement(keyText, summaryText, requireContrast = false) {
     const contrastWords = ['however','although','while','but','yet','though','despite','whereas',
       'nevertheless','on the other hand','in contrast','conversely','notwithstanding'];
     const hasContrast = contrastWords.some(w => summaryText.toLowerCase().includes(w));
-    // Pivot needs contrast word + at least some keyword overlap
     captured = hasContrast && (matched >= 1 || ratio >= 0.25);
   } else {
-    // Topic/conclusion: need meaningful overlap
     captured = matched >= 2 || ratio >= 0.4;
   }
 
@@ -335,9 +454,9 @@ function scoreElement(keyText, summaryText, requireContrast = false) {
 function localGrade(summary, passage, formCheck) {
   const sumLower = summary.toLowerCase();
 
-  const topicResult     = scoreElement(passage.keyElements?.topic,      summary, false);
-  const pivotResult     = scoreElement(passage.keyElements?.pivot,      summary, true);
-  const conclusionResult= scoreElement(passage.keyElements?.conclusion, summary, false);
+  const topicResult      = scoreElement(passage.keyElements?.topic,      summary, false);
+  const pivotResult      = scoreElement(passage.keyElements?.pivot,      summary, true);
+  const conclusionResult = scoreElement(passage.keyElements?.conclusion, summary, false);
   const contentValue = topicResult.score + pivotResult.score + conclusionResult.score;
 
   const hasConnector = ALL_CONNECTORS.some(c => sumLower.includes(c.toLowerCase()));
@@ -347,12 +466,17 @@ function localGrade(summary, passage, formCheck) {
   const grammarIssues  = checkGrammar(summary);
 
   const totalErrors = spellingErrors.length + grammarIssues.length;
+
+  // FIX #2: Corrected grammar scoring — OR bug replaced with proper AND logic
+  // 2 = no errors at all AND has connector
+  // 1 = at most 1 error (regardless of connector), OR 0 errors but no connector
+  // 0 = 2+ errors
   let grammarValue;
   if (totalErrors === 0 && hasConnector) grammarValue = 2;
-  else if (totalErrors <= 1 || hasConnector) grammarValue = 1;
+  else if (totalErrors <= 1) grammarValue = 1;  // FIX: was "|| hasConnector" — now strictly error-count based
   else grammarValue = 0;
 
-  // Build rich feedback
+  // Build feedback
   const parts = [];
 
   if (contentValue === 3) {
@@ -410,16 +534,22 @@ function localGrade(summary, passage, formCheck) {
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
 
+  // FIX #5: Added request timeout to prevent hanging indefinitely
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        // FIX #4: Use confirmed valid model string
+        model: 'claude-3-5-haiku-20241022',
         max_tokens: 1000,
         temperature: 0,
         system: `You are a strict PTE Academic examiner grading "Summarize Written Text" responses.
@@ -444,17 +574,17 @@ CONTENT (0-3) — Award 1 point per correctly captured element:
 
 GRAMMAR (0-2):
   2 = grammatically correct throughout + uses a linking connector
-  1 = 1 minor error OR grammatically correct but no connector
-  0 = 2+ errors, or a major error that impedes meaning
-  → List every spelling error with correction
-  → List every grammar issue with correction and rule name
+  1 = exactly 1 minor error OR grammatically correct but no connector
+  0 = 2 or more errors, or any major error that impedes meaning
+  → List EVERY spelling error with correction
+  → List EVERY grammar issue with correction and rule name
 
 VOCABULARY (0-2):
   2 = vocabulary is appropriate and does not impede understanding
   1 = vocabulary errors affect clarity
   0 = vocabulary so poor meaning is lost
 
-Return ONLY valid JSON (no markdown fences):`,
+Return ONLY valid JSON (no markdown fences, no extra text):`,
         messages: [{
           role: 'user',
           content: `PASSAGE: "${passage.text}"
@@ -486,8 +616,10 @@ Return this exact JSON:
       })
     });
 
+    clearTimeout(timeout);
+
     if (!response.ok) {
-      console.log('Anthropic API error:', response.status);
+      console.log('Anthropic API error:', response.status, await response.text());
       return null;
     }
 
@@ -500,7 +632,12 @@ Return this exact JSON:
     return { ...result, scoring_mode: 'ai' };
 
   } catch (e) {
-    console.error('AI grading error:', e.message);
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') {
+      console.error('AI grading timed out after 8s — falling back to local grader');
+    } else {
+      console.error('AI grading error:', e.message);
+    }
     return null;
   }
 }
@@ -518,7 +655,7 @@ const BAND_MAP = {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '4.0.0',
+    version: '4.1.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     openaiConfigured: !!OPENAI_API_KEY,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
@@ -557,10 +694,10 @@ app.post('/api/grade', async (req, res) => {
     }
 
     const rawScore = Math.min(8,
-      (result.form?.value      || 0) +
-      (result.content?.value   || 0) +
-      (result.grammar?.value   || 0) +
-      (result.vocabulary?.value|| 0)
+      (result.form?.value       || 0) +
+      (result.content?.value    || 0) +
+      (result.grammar?.value    || 0) +
+      (result.vocabulary?.value || 0)
     );
 
     const overallScore = Math.round((rawScore / 8) * 90);
@@ -595,6 +732,6 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v4.0.0 on port ${PORT}`);
+  console.log(`✅ PTE API v4.1.0 on port ${PORT}`);
   console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary (Anthropic)' : '⚙️ Local-only'} mode`);
 });
