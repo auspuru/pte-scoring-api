@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const storage = require('./storage');
 
 const app = express();
 const PORT = parseInt(process.env.PORT) || 3001;
@@ -302,6 +303,20 @@ app.post('/api/grade', async (req, res) => {
     const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
     const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
 
+    // Save to storage
+    storage.saveAttempt({
+      sessionId: req.body.sessionId || 'anonymous',
+      passageId: req.body.passageId,
+      summary: summary,
+      overallScore: overallScore,
+      rawScore: rawScore,
+      band: bands[rawScore] || 'Band 5',
+      topicCaptured: result.content.topic_captured,
+      pivotCaptured: result.content.pivot_captured,
+      conclusionCaptured: result.content.conclusion_captured,
+      feedback: result.feedback
+    });
+
     res.json({
       trait_scores: {
         form: result.form,
@@ -329,6 +344,12 @@ app.post('/api/grade', async (req, res) => {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal error' });
   }
+});
+
+// Get user's history
+app.get('/api/history/:sessionId', (req, res) => {
+  const history = storage.getUserHistory(req.params.sessionId);
+  res.json(history);
 });
 
 app.listen(PORT, '0.0.0.0', () => {
