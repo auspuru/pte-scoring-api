@@ -772,22 +772,28 @@
         formErrorBanner.style.display = 'none';
       }
       
-      // FIX: Normalize scores from backend (backend may return wrong max values)
+      // FIX: Normalize scores from backend
       const traits = data.trait_scores || {};
       const formScore = Math.min(1, traits.form || 0);
-      // Backend might return content as 0-3, normalize to 0-2
       let contentScore = traits.content || 0;
-      if (contentScore > 2) contentScore = 2; // Cap at 2
+      if (contentScore > 2) contentScore = 2;
       const grammarScore = Math.min(2, traits.grammar || 0);
       const vocabScore = Math.min(2, traits.vocabulary || 0);
       
       // Calculate correct raw score (max 7)
       const correctedRawScore = formScore + contentScore + grammarScore + vocabScore;
       
-      // Determine key elements based on content score
-      const hasTopic = contentScore >= 1;
-      const hasPivot = contentScore >= 1.5;
-      const hasConclusion = contentScore >= 2;
+      // Get content details
+      const content = data.content_details || {};
+      const keyIdeasPresent = content.key_ideas_present || [];
+      const keyIdeasMissing = content.key_ideas_missing || [];
+      
+      // FIX: Use actual key ideas count, not score, for checkmarks
+      // Content score 2 means AI thinks all 3 are there, but verify with actual count
+      const actualKeyIdeasCount = keyIdeasPresent.length;
+      const hasTopic = actualKeyIdeasCount >= 1 || content.has_topic;
+      const hasPivot = actualKeyIdeasCount >= 2 || content.has_pivot;
+      const hasConclusion = actualKeyIdeasCount >= 3 || content.has_conclusion;
       
       // Score header
       document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
@@ -813,8 +819,7 @@
       // Feedback
       document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
       
-      // Content elements - use calculated hasTopic/hasPivot/hasConclusion
-      const content = data.content_details || {};
+      // Content elements - use already calculated hasTopic/hasPivot/hasConclusion
       const extracted = content.key_ideas_extracted || [];
       
       document.getElementById('elementsGrid').innerHTML = `
@@ -945,6 +950,9 @@
         insightsSection.style.display = 'none';
       }
       
+      // FIX: Adjust grammar score display if no connector (max should be 1 without connector)
+      const displayGrammarScore = grammar.has_connector ? grammarScore : Math.min(1, grammarScore);
+      
       // Trait scores - use normalized values
       document.getElementById('traitsGrid').innerHTML = `
         <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
@@ -957,9 +965,9 @@
           <div class="trait-score">${contentScore}/2</div>
           <div class="trait-detail">T:${hasTopic ? '✓' : '✗'} P:${hasPivot ? '✓' : '✗'} C:${hasConclusion ? '✓' : '✗'}</div>
         </div>
-        <div class="trait-box ${grammarScore >= 2 ? 'good' : grammarScore >= 1 ? 'medium' : 'poor'}">
+        <div class="trait-box ${displayGrammarScore >= 2 ? 'good' : displayGrammarScore >= 1 ? 'medium' : 'poor'}">
           <div class="trait-name">Grammar</div>
-          <div class="trait-score">${grammarScore}/2</div>
+          <div class="trait-score">${displayGrammarScore}/2</div>
           <div class="trait-detail">${grammar.has_connector ? (grammar.has_semicolon_before_connector ? '✓ connector' : '✓ no semi') : '✗ none'}</div>
         </div>
         <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
