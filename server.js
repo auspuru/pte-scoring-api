@@ -72,12 +72,31 @@ function sanitizeInput(text) {
     .slice(0, 2000);
 }
 
+// ─── SENTENCE COMPLETENESS CHECK (Prevents hanging prepositions) ─────────────
+function isCompleteSentence(text) {
+  const lastWord = text.trim().split(/\s+/).pop().toLowerCase().replace(/[.!?;,]$/, '');
+  const hangingWords = ['for', 'the', 'a', 'an', 'and', 'but', 'or', 'with', 'by', 'to', 'of', 'in', 'on', 'that', 'which', 'who', 'as', 'at', 'is', 'was'];
+  
+  if (hangingWords.includes(lastWord)) {
+    return { complete: false, reason: `Sentence ends with "${lastWord}" — incomplete thought` };
+  }
+  
+  // Check for opening without closing (parentheses, quotes)
+  const openParens = (text.match(/\(/g) || []).length;
+  const closeParens = (text.match(/\)/g) || []).length;
+  if (openParens !== closeParens) {
+    return { complete: false, reason: 'Unmatched parentheses — incomplete sentence' };
+  }
+  
+  return { complete: true };
+}
+
 // ─── FINITE VERB VALIDATOR (Prevents noun-list gaming) ───────────────────────
 function hasFiniteVerb(text) {
   const patterns = [
     /\b(is|are|was|were|be|been|being)\b/i,
     /\b(has|have|had|do|does|did|will|would|could|should|may|might|must)\s+\w+/i,
-    /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explains|persuaded|acknowledged|opted|demonstrates|indicates|reveals|discovered|challenges|advises|argues|claims|states|finds|identifies|examines|credit|discusses|transformed|overtook|dominates)\b/i
+    /\b(made|took|became|found|gave|told|felt|left|put|meant|kept|began|seemed|helped|showed|wrote|provided|stood|lost|paid|included|continued|changed|led|considered|appeared|served|sent|expected|built|stayed|fell|reached|remained|suggested|raised|passed|required|reported|decided|explains|persuaded|acknowledged|opted|demonstrates|indicates|reveals|discovered|challenges|advises|argues|claims|states|finds|identifies|examines|credit|discusses|transformed|overtook|dominates|generates|acts|possesses|acknowledged|opted|significantly impacted|created|allows|improved|minimizing|expressed|attempts)\b/i
   ];
   return patterns.some(p => p.test(text));
 }
@@ -92,6 +111,10 @@ function calculateForm(text, type) {
     const sentenceCount = (cleanText.match(/[.!?](\s|$)/g) || []).length;
 
     if (sentenceCount !== 1) return { score: 0, reason: 'Multiple sentences detected', wordCount: wc };
+    
+    const completeness = isCompleteSentence(cleanInput);
+    if (!completeness.complete) return { score: 0, reason: completeness.reason, wordCount: wc };
+    
     if (!hasFiniteVerb(cleanInput)) return { score: 0, reason: 'No finite verb — not a complete sentence', wordCount: wc };
     if (wc >= 5 && wc <= 80) return { score: 1, reason: 'Valid', wordCount: wc };
     return { score: 0, reason: wc < 5 ? 'Too short (min 5 words)' : 'Too long (max 75 words)', wordCount: wc };
@@ -135,64 +158,68 @@ async function gradeResponse(text, type, passageText) {
   const firstPersonCheck = checkFirstPersonTrap(text, passageText);
 
   const systemPrompt = [
-    'You are an elite PTE Academic Examiner. Evaluate ONLY against the passage provided.',
+    'You are an elite PTE Academic Examiner. Evaluate strictly against the passage provided.',
     '',
     '═══════════════════════════════════════════════════════',
-    'CONTENT — THE SWT TRINITY (0-3)',
+    'CONTENT (0-3) — KEY IDEA COVERAGE (NON-NEGOTIABLE)',
     '═══════════════════════════════════════════════════════',
-    'Award 1 point each for correctly capturing:',
-    '  TOPIC (1pt)      — Main subject introduced in first 1-2 sentences of passage.',
-    '  PIVOT (1pt)      — The contrast or turning point (markers: But, However, Yet, Although).',
-    '  CONCLUSION (1pt) — Final implication or resolution (last 1-2 sentences).',
+    'STEP 1: Extract 3-4 Key Ideas from the passage (the "Gold" content):',
+    '  - Key Idea 1: Main subject/action (what/who is this about?)',
+    '  - Key Idea 2: Core conflict/problem/characteristic',
+    '  - Key Idea 3: Resolution/outcome/implication',
+    '  - Key Idea 4: Important supporting detail (if present)',
     '',
-    'CONTENT RULES:',
-    '  VERBATIM OK:      Copying nouns and technical terms directly is ACCEPTABLE — full marks.',
-    '  MEANING ERROR:    Swapping meaning (advantage->disadvantage) = 0 for that element.',
-    '  FACTUAL ERROR:    Wrong numbers or names = 0 for that element.',
-    '    Example: passage says "3.4 times" — student writes "34 times" = FACTUAL ERROR = 0.',
-    '  VERBATIM MISTAKE: Miscopying passage words (found-members vs founder-members) = -1 content.',
-    '  MISSING PIVOT:    If passage has But/However and student ignores it entirely = max 2/3.',
-    '  FIRST-PERSON:     Already pre-checked — see user message for penalty status.',
+    'STEP 2: Check which Key Ideas appear in student summary (paraphrased OR verbatim OK):',
+    '  - Award 1 point per Key Idea captured accurately',
+    '  - If meaning is reversed (advantage→disadvantage): 0 for that idea',
+    '  - If specific numbers/names are wrong: 0 for that idea',
     '',
-    '═══════════════════════════════════════════════════════',
-    'VOCABULARY (0-2) — APPROPRIATENESS IS PRIMARY',
-    '═══════════════════════════════════════════════════════',
-    'CRITICAL: Band 9 responses can score 2/2 with minimal synonym swaps.',
-    'Proof: "became the founder-members...; however, progress was not smooth;',
-    '  moreover, the UK\'s financial hub has overtaken rivals..." = 2/2 vocabulary.',
+    'STEP 3: Content Score (STRICT):',
+    '  3/3 = 3 or 4 Key Ideas captured (comprehensive coverage)',
+    '  2/3 = 2 Key Ideas captured (partial coverage)',
+    '  1/3 = 1 Key Idea captured (poor coverage)',
+    '  0/3 = 0 Key Ideas OR only "hook" sentence copied without substance',
     '',
-    '  2 = Word choice is appropriate and meaning is clear.',
-    '      Verbatim copying of nouns/terms is fine for 2/2.',
-    '      Smart swaps are a BONUS — detect and praise but do not require for 2.',
-    '  1 = Minor word choice issues that slightly affect clarity.',
-    '  0 = Word choice so poor that meaning is distorted or lost.',
-    '',
-    'SMART SWAP DETECTION (bonus only — does not change score directly):',
-    '  frustrated->dissatisfied, large->substantial, made a choice->opted for,',
-    '  advantages->benefits, familiar with->acknowledged, long way from->far from,',
-    '  good idea->beneficial decision, list compressed to category noun.',
-    '  → synonym_usage: "optimal" if 2+ swaps, "low" if 1, "none" if none.',
-    '',
-    'LIST COMPRESSION (Band 9 bonus):',
-    '  If student compressed 3+ passage items into a single category noun = compression_detected: true.',
-    '  Example: "shop, listen to music and communicate" → "communication methods".',
-    '  Praise in feedback.',
+    'CRITICAL RULES:',
+    '  - NOISE IS OK: Including extra details (dates, examples, quotes) does not penalize if Key Ideas are present',
+    '  - MISSING MAIN = DOOMED: Missing Key Ideas is catastrophic even if grammar is perfect',
+    '  - Example: Copying only "Have you ever wondered..." (hook) = 0/3 even if Topic words present',
+    '  - Example: Missing the Pivot/Contrast when passage has "But/However" = max 2/3',
     '',
     '═══════════════════════════════════════════════════════',
-    'GRAMMAR (0-2) — Relaxed for minor spelling',
+    'VOCABULARY (0-2) — APPROPRIATENESS PRIMARY',
     '═══════════════════════════════════════════════════════',
-    '  2 = Good overall control. 1-2 minor spelling errors ACCEPTABLE if meaning is clear.',
-    '      Correct connector with semicolon ("; however," / "; moreover,") = 2.',
-    '      Chaining 2+ connectors correctly = Band 9 signal — reward in feedback.',
-    '  1 = 3+ spelling errors OR missing connector OR 1 serious grammar error.',
-    '  0 = Errors that prevent understanding OR connector used with wrong logic.',
+    '  2 = Appropriate word choice, meaning clear. Verbatim nouns/terms acceptable.',
+    '      Smart swaps are BONUS (frustrated→dissatisfied, large→substantial, etc.)',
+    '  1 = Minor word choice issues affecting clarity slightly',
+    '  0 = Word choice distorts meaning significantly',
     '',
-    'CONNECTOR LOGIC — wrong type = Grammar deduction:',
-    '  "however / yet / although / whereas"    → CONTRAST only.',
-    '  "moreover / furthermore / additionally"  → ADDITION only.',
-    '  "consequently / therefore / thus"        → CAUSE-EFFECT only.',
+    'Smart Swaps to detect (bonus praise):',
+    '  - made a choice → opted for / selected',
+    '  - familiar with → acknowledged / recognized',
+    '  - good idea → beneficial decision / advantageous choice',
+    '  - frustrated → dissatisfied / displeased',
+    '  - long way from → far from',
+    '  - large/substantial, many/numerous, advantages/benefits',
     '',
-    'Return ONLY valid JSON. No markdown. No text outside the JSON object.',
+    'List Compression (bonus):',
+    '  - 3+ items compressed to category noun (e.g., "shop, listen, communicate" → "communication methods")',
+    '',
+    '═══════════════════════════════════════════════════════',
+    'GRAMMAR (0-2)',
+    '═══════════════════════════════════════════════════════',
+    '  2 = Good control, correct connector usage, minor spelling OK',
+    '      - Semicolon + connector (; however, / ; moreover,) = Band 9 signal',
+    '      - Chained connectors (2+) = excellent',
+    '  1 = 3+ spelling errors OR missing connector OR 1 serious grammar error',
+    '  0 = Errors prevent understanding OR wrong connector logic',
+    '',
+    'Connector Logic:',
+    '  however/yet/although/whereas = CONTRAST only',
+    '  moreover/furthermore/additionally = ADDITION only', 
+    '  consequently/therefore/thus = CAUSE-EFFECT only',
+    '',
+    'Return ONLY valid JSON. No markdown.',
   ].join('\n');
 
   const userPrompt = [
@@ -204,37 +231,41 @@ async function gradeResponse(text, type, passageText) {
     '',
     'PRE-CHECK:',
     firstPersonCheck.penalty
-      ? 'FIRST-PERSON TRAP DETECTED — deduct 1 content point. ' + firstPersonCheck.note
+      ? 'FIRST-PERSON TRAP: Deduct 1 content point. ' + firstPersonCheck.note
       : 'No first-person trap.',
     '',
-    'Return this exact JSON:',
+    'TASK:',
+    '1. List the 3-4 Key Ideas from the passage',
+    '2. Check which appear in the student summary',
+    '3. Return JSON with exact structure:',
+    '',
     '{',
-    '  "content": 0,',
-    '  "topic_captured": false,',
-    '  "pivot_captured": false,',
-    '  "conclusion_captured": false,',
-    '  "content_notes": "Specific: which Trinity element was missed and exactly why.",',
+    '  "content": 0-3,',
+    '  "key_ideas_extracted": ["idea 1", "idea 2", "idea 3", "idea 4"],',
+    '  "key_ideas_present": ["idea 1", "idea 3"],',
+    '  "key_ideas_missing": ["idea 2", "idea 4"],',
+    '  "content_notes": "Specific: which ideas missing and why",',
     '  "grammar": {',
-    '    "score": 0,',
-    '    "spelling_errors": [{ "word": "misspelled", "suggestion": "correct" }],',
-    '    "grammar_issues": [{ "issue": "describe problem", "suggestion": "fix", "rule": "rule name" }],',
-    '    "has_connector": false,',
+    '    "score": 0-2,',
+    '    "spelling_errors": [{"word": "misspelled", "suggestion": "correct"}],',
+    '    "grammar_issues": [{"issue": "description", "suggestion": "fix"}],',
+    '    "has_connector": true/false,',
     '    "connector_type": "contrast|addition|reason|none",',
-    '    "connector_logic_correct": true,',
-    '    "chained_connectors": false',
+    '    "connector_logic_correct": true/false,',
+    '    "chained_connectors": true/false',
     '  },',
-    '  "vocabulary": 0,',
+    '  "vocabulary": 0-2,',
     '  "synonym_usage": "none|low|optimal",',
-    '  "smart_swaps_detected": ["e.g. frustrated->dissatisfied"],',
-    '  "compression_detected": false,',
-    '  "compressed_items": ["e.g. shop+music+communicate -> communication methods"],',
-    '  "feedback": "MISSING: [Topic/Pivot/Conclusion - exactly what was expected]. PRESENT: [what was captured well]. SWAPS: [list swaps found or none]. FIX: [one specific actionable suggestion]."',
-    '}',
+    '  "smart_swaps_detected": ["frustrated→dissatisfied"],',
+    '  "compression_detected": true/false,',
+    '  "compressed_items": ["shop+music+communicate→communication methods"],',
+    '  "feedback": "MISSING: [Key Ideas not captured]. PRESENT: [what was captured]. SWAPS: [synonyms found]. FIX: [actionable suggestion]."',
+    '}'
   ].join('\n');
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',  // ← REPLACED: Using Haiku instead of Sonnet
+      model: 'claude-3-haiku-20240307',
       max_tokens: 1200,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }]
@@ -253,9 +284,9 @@ async function gradeResponse(text, type, passageText) {
     console.error('AI Grading Error:', err.message);
     return {
       content: 0,
-      topic_captured: false,
-      pivot_captured: false,
-      conclusion_captured: false,
+      key_ideas_extracted: [],
+      key_ideas_present: [],
+      key_ideas_missing: [],
       content_notes: 'Local fallback — AI unavailable.',
       grammar: {
         score: 1,
@@ -271,7 +302,7 @@ async function gradeResponse(text, type, passageText) {
       smart_swaps_detected: [],
       compression_detected: false,
       compressed_items: [],
-      feedback: 'AI grading unavailable. Please ensure ANTHROPIC_API_KEY is set correctly.',
+      feedback: 'AI grading unavailable. Check ANTHROPIC_API_KEY.',
       mode: 'local'
     };
   }
@@ -281,8 +312,8 @@ async function gradeResponse(text, type, passageText) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '5.3.1-haiku',  // ← Updated version
-    model: 'claude-3-haiku-20240307',  // ← REPLACED
+    version: '6.0.0-key-ideas',  // Major version bump: Key Idea system
+    model: 'claude-3-haiku-20240307',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     cacheSize: gradeCache.size,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-fallback'
@@ -300,15 +331,20 @@ app.post('/api/grade', async (req, res) => {
     // Sanitize input
     const cleanText = sanitizeInput(text);
 
-    // Step 1: Form gate — validate before touching AI
+    // Step 1: Form gate
     const formCheck = calculateForm(cleanText, type);
     const firstPersonCheck = checkFirstPersonTrap(cleanText, prompt);
 
-    // Early return if form invalid — saves API cost
+    // Early return if form invalid
     if (formCheck.score === 0) {
       return res.json({
         trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
-        content_details: { topic_captured: false, pivot_captured: false, conclusion_captured: false, notes: 'Form invalid — not graded.' },
+        content_details: { 
+          key_ideas_extracted: [],
+          key_ideas_present: [],
+          key_ideas_missing: [],
+          notes: 'Form invalid — not graded.' 
+        },
         grammar_details: { spelling_errors: [], grammar_issues: [], has_connector: false, connector_type: 'none', connector_logic_correct: false, chained_connectors: false },
         vocabulary_details: { synonym_usage: 'none', smart_swaps_detected: [], compression_detected: false, compressed_items: [] },
         overall_score: 10,
@@ -317,7 +353,7 @@ app.post('/api/grade', async (req, res) => {
         form_gate_triggered: true,
         form_reason: formCheck.reason,
         word_count: formCheck.wordCount,
-        feedback: 'FORM ERROR: ' + formCheck.reason + '. Your response must be exactly one complete sentence (5-75 words) containing a subject and verb.',
+        feedback: 'FORM ERROR: ' + formCheck.reason + '. Must be one complete sentence (5-75 words).',
         scoring_mode: 'local'
       });
     }
@@ -325,7 +361,7 @@ app.post('/api/grade', async (req, res) => {
     // Step 2: AI grading
     const result = await gradeResponse(cleanText, type, prompt);
 
-    // Step 3: Apply first-person penalty to content score
+    // Step 3: Apply first-person penalty
     let contentScore = result.content || 0;
     if (firstPersonCheck.penalty) {
       contentScore = Math.max(0, contentScore - 1);
@@ -347,11 +383,11 @@ app.post('/api/grade', async (req, res) => {
         vocabulary: result.vocabulary
       },
       content_details: {
-        topic_captured:       result.topic_captured,
-        pivot_captured:       result.pivot_captured,
-        conclusion_captured:  result.conclusion_captured,
-        first_person_penalty: firstPersonCheck.penalty || false,
-        notes:                result.content_notes
+        key_ideas_extracted:   result.key_ideas_extracted || [],
+        key_ideas_present:     result.key_ideas_present || [],
+        key_ideas_missing:     result.key_ideas_missing || [],
+        first_person_penalty:  firstPersonCheck.penalty || false,
+        notes:                 result.content_notes
       },
       grammar_details: {
         spelling_errors:         result.grammar?.spelling_errors || [],
@@ -384,12 +420,12 @@ app.post('/api/grade', async (req, res) => {
 
 // ─── START ───────────────────────────────────────────────────────────────────
 app.listen(PORT, '0.0.0.0', () => {
-  console.log('✅ PTE Grading API v5.3.1-haiku on port ' + PORT);
+  console.log('✅ PTE Grading API v6.0.0-key-ideas on port ' + PORT);
   if (!ANTHROPIC_API_KEY) {
     console.warn('⚠️  ANTHROPIC_API_KEY not set — running in local fallback mode');
   } else if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
     console.error('❌ ANTHROPIC_API_KEY looks wrong — expected format: sk-ant-...');
   } else {
-    console.log('🤖 AI mode active — model: claude-3-haiku-20240307');  // ← REPLACED
+    console.log('🤖 AI mode active — Key Idea Extraction system');
   }
 });
