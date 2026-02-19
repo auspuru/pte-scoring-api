@@ -537,7 +537,7 @@ async function aiGrade(summary, passage) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-haiku-4-5-20251001', // Confirmed valid: https://docs.claude.com/en/about-claude/models/overview
         max_tokens: 1000,
         temperature: 0,
         system: `You are a strict PTE Academic examiner grading "Summarize Written Text" responses.
@@ -724,7 +724,15 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`✅ PTE API v4.2.0 on port ${PORT}`);
-  console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary (Anthropic)' : '⚙️ Local-only'} mode`);
+  if (!ANTHROPIC_API_KEY) {
+    console.warn('⚠️  ANTHROPIC_API_KEY not set — running in local-only mode');
+  } else if (!ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+    console.error('❌ ANTHROPIC_API_KEY looks wrong — Anthropic keys start with sk-ant-');
+    console.error('   Got prefix:', ANTHROPIC_API_KEY.slice(0, 8) + '... — you may have swapped your API keys.');
+  } else {
+    console.log(`🤖 AI-primary mode active | Key prefix: ${ANTHROPIC_API_KEY.slice(0, 12)}...`);
+  }
+  if (OPENAI_API_KEY) console.log(`🔑 OpenAI key also present: ${OPENAI_API_KEY.slice(0, 8)}...`);
 });
