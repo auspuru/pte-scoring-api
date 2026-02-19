@@ -917,7 +917,9 @@
         let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
         
         if (!vocab.unsafe_swaps_detected || vocab.unsafe_swaps_detected.length === 0) {
-          vocabHtml += '<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim copying is acceptable for PTE scoring</p>';
+     const verbatimRate = vocab.verbatim_rate || '0%';
+const paraphraseRate = vocab.paraphrase_rate || '100%';
+vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim: ${verbatimRate} | Paraphrased: ${paraphraseRate}</p>`;
         }
         
         if (vocab.smart_swaps_detected && vocab.smart_swaps_detected.length > 0) {
