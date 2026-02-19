@@ -9,6 +9,26 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
+// ========== COMPLETE CONNECTOR LIST ==========
+const ALL_CONNECTORS = [
+  // Contrast/Concession (most common for PTE)
+  'however', 'although', 'though', 'while', 'whereas', 'but', 'yet', 'nevertheless', 'nonetheless', 'notwithstanding', 'despite', 'in spite of', 'even though', 'even if', 'conversely', 'on the contrary', 'on the other hand', 'in contrast', 'alternatively', 'rather', 'instead', 'unlike', 'different from', 'as opposed to', 'compared to', 'in comparison', 'by contrast',
+  // Cause/Effect
+  'because', 'since', 'as', 'due to', 'owing to', 'thanks to', 'on account of', 'as a result', 'therefore', 'thus', 'hence', 'consequently', 'accordingly', 'so', 'thereby', 'for this reason', 'that is why', 'this means', 'it follows that', 'leading to', 'resulting in', 'causing', 'bringing about',
+  // Addition
+  'and', 'also', 'too', 'as well', 'as well as', 'in addition', 'furthermore', 'moreover', 'besides', 'what is more', 'not only', 'but also', 'both', 'equally', 'similarly', 'likewise', 'in the same way', 'along with', 'together with', 'coupled with', 'combined with', 'another', 'additionally',
+  // Sequence/Time
+  'first', 'firstly', 'second', 'secondly', 'third', 'thirdly', 'finally', 'lastly', 'next', 'then', 'after', 'afterwards', 'subsequently', 'later', 'eventually', 'previously', 'before', 'meanwhile', 'at the same time', 'simultaneously', 'during', 'while', 'when', 'until', 'till', 'as soon as', 'once', 'immediately', 'initially', 'originally', 'currently', 'now', 'recently', 'lately', 'soon', 'shortly', 'in the meantime',
+  // Example/Illustration
+  'for example', 'for instance', 'such as', 'like', 'including', 'particularly', 'especially', 'specifically', 'namely', 'that is', 'i.e.', 'e.g.', 'in particular', 'mainly', 'mostly', 'notably', 'chiefly', 'in other words', 'to illustrate',
+  // Emphasis
+  'indeed', 'in fact', 'actually', 'certainly', 'definitely', 'clearly', 'obviously', 'apparently', 'evidently', 'undoubtedly', 'without doubt', 'naturally', 'of course', 'needless to say', 'above all', 'most importantly', 'significantly', 'notably', 'in particular', 'especially', 'primarily', 'essentially', 'basically', 'in essence',
+  // Condition
+  'if', 'unless', 'provided that', 'providing that', 'as long as', 'on condition that', 'in case', 'whether', 'otherwise', 'or else', 'suppose', 'assuming that', 'given that',
+  // Summary/Conclusion
+  'in conclusion', 'to conclude', 'in summary', 'to summarize', 'overall', 'all in all', 'in short', 'in brief', 'to put it briefly', 'finally', 'lastly', 'in the end', 'at last', 'ultimately', 'on the whole', 'by and large', 'for the most part', 'generally', 'generally speaking', 'broadly speaking', 'as a whole'
+];
+
 // ========== FORM VALIDATION (LOCAL - FAST) ==========
 function validateForm(summary) {
   if (!summary || typeof summary !== 'string') {
@@ -84,10 +104,11 @@ STRICT MEANING DETECTION RULES:
 
 SCORING:
 1. FORM (0-1): 1 if 5-75 words, one sentence, ends with punctuation
-2. CONTENT (0-2):
-   - 2 = ALL 3 elements captured with EXACT meaning preserved
-   - 1 = 2 elements correct
-   - 0 = 0-1 elements OR major meaning errors
+2. CONTENT (0-3):
+   - 3 = ALL 3 elements captured with EXACT meaning preserved
+   - 2 = 2 elements correct
+   - 1 = 1 element correct
+   - 0 = 0 elements OR major meaning errors
    - DEDUCT 1 BAND for each missing element
 3. GRAMMAR (0-2): Check spelling, grammar, connectors
    - 2 = no errors, uses connector (however/although/while/but)
@@ -106,7 +127,7 @@ Grade and return:
 {
   "form": { "value": 0-1, "word_count": number, "notes": "..." },
   "content": {
-    "value": 0-2,
+    "value": 0-3,
     "topic_captured": true/false,
     "pivot_captured": true/false,
     "conclusion_captured": true/false,
@@ -185,27 +206,27 @@ function localGrade(summary, passage, formCheck) {
 
   const conclusionCheck = checkCoverage(passage.keyElements?.conclusion || passage.keyElements?.supplementary?.[0]);
 
-  let contentValue = 2;
+  // Content scoring: 0-3 with -1 per missing element
+  let contentValue = 3;
   if (!topicCheck.captured) contentValue -= 1;
-  if (!pivotCaptured) contentValue -= 0.5;
-  if (!conclusionCheck.captured) contentValue -= 0.3;
-  contentValue = Math.max(0, Math.round(contentValue));
+  if (!pivotCaptured) contentValue -= 1;
+  if (!conclusionCheck.captured) contentValue -= 1;
+  contentValue = Math.max(0, contentValue);
 
-  const connectors = ['however', 'although', 'while', 'but', 'yet', 'nevertheless', 'whereas', 'despite', 'though', 'moreover', 'furthermore', 'therefore', 'thus'];
-  const hasConnector = connectors.some(c => sumLower.includes(c));
-  const connectorType = hasConnector ? connectors.find(c => sumLower.includes(c)) : null;
+  // Use complete connector list
+  const hasConnector = ALL_CONNECTORS.some(c => sumLower.includes(c.toLowerCase()));
+  const connectorType = hasConnector ? ALL_CONNECTORS.find(c => sumLower.includes(c.toLowerCase())) : null;
 
   const commonWords = new Set([
     'the', 'a', 'an', 'some', 'any', 'this', 'that', 'these', 'those', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
     'be', 'am', 'is', 'are', 'was', 'were', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'can', 'could',
     'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'us', 'them', 'mine', 'yours', 'ours', 'theirs',
     'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'as', 'into', 'onto', 'upon', 'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'during', 'except', 'inside', 'outside', 'until', 'within', 'without', 'toward', 'towards', 'through', 'under', 'via', 'per', 'like', 'unlike',
-    'and', 'but', 'or', 'yet', 'so', 'nor', 'either', 'neither', 'both', 'whether', 'although', 'though', 'while', 'whereas', 'if', 'unless', 'because', 'since', 'before', 'when', 'until', 'once', 'than',
-    'not', 'no', 'yes', 'just', 'only', 'even', 'also', 'too', 'very', 'quite', 'rather', 'really', 'truly', 'actually', 'certainly', 'definitely', 'probably', 'possibly', 'perhaps', 'maybe', 'simply', 'merely', 'barely', 'hardly', 'almost', 'nearly', 'exactly', 'particularly', 'especially', 'mainly', 'mostly', 'generally', 'usually', 'normally', 'typically', 'often', 'sometimes', 'occasionally', 'rarely', 'never', 'always', 'already', 'still', 'once', 'twice', 'again', 'further', 'moreover', 'furthermore', 'besides', 'however', 'nevertheless', 'otherwise', 'instead', 'therefore', 'thus', 'hence', 'consequently', 'eventually', 'finally', 'overall', 'essentially', 'basically', 'primarily', 'initially', 'originally', 'currently', 'recently', 'previously', 'soon', 'later', 'meanwhile', 'immediately', 'directly',
+    'and', 'or', 'nor', 'either', 'neither', 'both', 'whether', 'if', 'unless', 'because', 'since', 'when', 'once', 'than',
+    'not', 'no', 'yes', 'just', 'only', 'even', 'also', 'too', 'very', 'quite', 'rather', 'really', 'truly', 'actually', 'certainly', 'definitely', 'probably', 'possibly', 'perhaps', 'maybe', 'simply', 'merely', 'barely', 'hardly', 'almost', 'nearly', 'exactly', 'particularly', 'especially', 'mainly', 'mostly', 'generally', 'usually', 'normally', 'typically', 'often', 'sometimes', 'occasionally', 'rarely', 'never', 'always', 'already', 'still', 'twice', 'again', 'further',
     'say', 'says', 'said', 'tell', 'told', 'talk', 'talked', 'speak', 'spoke', 'state', 'stated', 'mention', 'mentioned', 'note', 'noted', 'report', 'reported', 'claim', 'claimed', 'suggest', 'suggested', 'propose', 'proposed', 'argue', 'argued', 'believe', 'believed', 'think', 'thought', 'consider', 'considered', 'feel', 'felt', 'know', 'knew', 'known', 'understand', 'understood', 'realize', 'realized', 'recognize', 'recognized', 'see', 'saw', 'seen', 'look', 'looked', 'watch', 'watched', 'find', 'found', 'discover', 'discovered', 'notice', 'noticed', 'observe', 'observed', 'perceive', 'perceived', 'use', 'used', 'make', 'made', 'come', 'came', 'go', 'went', 'gone', 'take', 'took', 'taken', 'give', 'gave', 'given', 'put', 'let', 'call', 'called', 'try', 'tried', 'need', 'needed', 'want', 'wanted', 'like', 'liked', 'help', 'helped', 'show', 'showed', 'shown', 'play', 'played', 'move', 'moved', 'live', 'lived', 'bring', 'brought', 'happen', 'happened', 'write', 'wrote', 'written', 'provide', 'provided', 'include', 'included', 'involve', 'involved',
     'one', 'two', 'three', 'first', 'second', 'third', 'next', 'last', 'final', 'many', 'much', 'more', 'most', 'few', 'little', 'less', 'least', 'several', 'various', 'numerous', 'lot', 'lots', 'number', 'total', 'whole', 'entire', 'complete', 'full', 'part', 'half', 'piece', 'portion', 'section', 'aspect', 'side', 'area', 'field', 'domain', 'region', 'sector', 'share', 'percentage', 'proportion', 'degree', 'level', 'extent', 'scope', 'range', 'scale', 'size', 'volume', 'amount', 'sum', 'average', 'maximum', 'minimum', 'point', 'fact', 'case', 'instance', 'example', 'item', 'element', 'component', 'member', 'unit', 'entity', 'object', 'subject', 'topic', 'theme', 'matter', 'issue', 'question', 'problem', 'concern',
-    'regarding', 'concerning', 'respecting', 'pertaining', 'referring', 'relating', 'dealing', 'considering', 'discussing', 'examining', 'exploring', 'investigating', 'analyzing', 'evaluating', 'assessing', 'reviewing', 'observing', 'noting', 'pointing', 'indicating', 'suggesting', 'implying', 'demonstrating', 'showing', 'revealing', 'displaying', 'exhibiting', 'reflecting', 'representing', 'constituting', 'forming', 'serving', 'acting', 'functioning', 'operating', 'working', 'existing', 'remaining', 'continuing', 'following', 'preceding', 'leading', 'resulting', 'causing', 'allowing', 'enabling', 'permitting', 'letting', 'making', 'requiring', 'demanding', 'asking', 'requesting', 'wanting', 'wishing', 'hoping', 'expecting',
-    'additionally', 'conversely', 'similarly', 'likewise', 'alternatively', 'notwithstanding', 'regardless', 'whereby', 'thereby'
+    'regarding', 'concerning', 'respecting', 'pertaining', 'referring', 'relating', 'dealing', 'considering', 'discussing', 'examining', 'exploring', 'investigating', 'analyzing', 'evaluating', 'assessing', 'reviewing', 'observing', 'noting', 'pointing', 'indicating', 'suggesting', 'implying', 'demonstrating', 'showing', 'revealing', 'displaying', 'exhibiting', 'reflecting', 'representing', 'constituting', 'forming', 'serving', 'acting', 'functioning', 'operating', 'working', 'existing', 'remaining', 'continuing', 'following', 'preceding', 'leading', 'resulting', 'causing', 'allowing', 'enabling', 'permitting', 'letting', 'making', 'requiring', 'demanding', 'asking', 'requesting', 'wanting', 'wishing', 'hoping', 'expecting'
   ]);
 
   const words = summary.toLowerCase().match(/\b[a-z]+\b/g) || [];
@@ -258,7 +279,7 @@ function localGrade(summary, passage, formCheck) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '11.0.0',
+    version: '12.0.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
   });
@@ -299,9 +320,10 @@ app.post('/api/grade', async (req, res) => {
       result = localGrade(summary, passage, formCheck);
     }
 
+    // Updated scoring: FORM(1) + CONTENT(3) + GRAMMAR(2) + VOCAB(2) = 8 max
     const rawScore = result.form.value + result.content.value + result.grammar.value + result.vocabulary.value;
-    const overallScore = Math.min(Math.round((rawScore / 7) * 90), 90);
-    const bands = ['Band 5', 'Band 5', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9', 'Band 9'];
+    const overallScore = Math.min(Math.round((rawScore / 8) * 90), 90);
+    const bands = ['Band 5', 'Band 5', 'Band 5', 'Band 6', 'Band 6', 'Band 7', 'Band 8', 'Band 9', 'Band 9'];
 
     // Save to storage
     storage.saveAttempt({
@@ -353,6 +375,6 @@ app.get('/api/history/:sessionId', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v11.0.0 on port ${PORT}`);
+  console.log(`✅ PTE API v12.0.0 on port ${PORT}`);
   console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary' : '⚙️ Local-only'} mode`);
 });
