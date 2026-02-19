@@ -32,30 +32,44 @@ const BAND_MAP = {
   7: 'Band 9'
 };
 
-// ─── UNSAFE SWAPS DATABASE ───────────────────────────────────────────────────
-const UNSAFE_SWAPS = {
-  'frustrated': ['angry', 'mad', 'furious'],
-  'seduced': ['tricked', 'fooled', 'deceived'],
-  'controversial': ['wrong', 'bad', 'false'],
-  'argue': ['fight', 'disagree', 'yell'],
-  'claim': ['lie', 'pretend', 'say'],
-  'suggest': ['tell', 'command', 'force'],
-  'acknowledge': ['admit', 'confess', 'agree'],
-  'emphasize': ['say', 'tell', 'shout'],
-  'demonstrate': ['show', 'prove', 'display'],
-  'indicate': ['show', 'say', 'point'],
-  'significant': ['big', 'large', 'huge'],
-  'substantial': ['big', 'large', 'much'],
-  'approximately': ['about', 'around', 'maybe'],
-  'economic': ['money', 'cash', 'rich'],
-  'environmental': ['green', 'nature', 'tree'],
-  'infrastructure': ['buildings', 'roads', 'concrete'],
-  'sustainable': ['green', 'eco-friendly', 'recyclable'],
-  'consequently': ['so', 'then', 'thus'],
-  'furthermore': ['also', 'and', 'plus'],
-  'moreover': ['also', 'and', 'plus'],
-  'however': ['but', 'yet', 'though'],
-  'therefore': ['so', 'thus', 'hence']
+// ─── GRAMMAR ERROR PATTERNS ──────────────────────────────────────────────────
+const GRAMMAR_PATTERNS = {
+  // Major errors (affect comprehension) - Score 0
+  major: {
+    double_negatives: /\b(never\s+no|not\s+no|never\s+nothing|not\s+nothing|hardly\s+no|scarcely\s+no)\b/gi,
+    subject_verb_agreement: [
+      { pattern: /\b(people|they|we)\s+(was|is)\b/gi, fix: 'were/are' },
+      { pattern: /\b(he|she|it)\s+(were|are)\b/gi, fix: 'was/is' },
+      { pattern: /\b(the\s+\w+)\s+(are|were)\s+(a|an)\b/gi, fix: 'is/was' }
+    ],
+    fragments: /^\s*(Because|Although|While|Since|Unless|If|And|But)\s+/i,
+    run_ons: /[a-z]+,\s*[a-z]+\s+[a-z]+,/g, // Comma splice pattern
+    missing_verb: /^\s*(The|A|An)\s+\w+\s+(and|but|or)\s+/i // Missing verb after subject
+  },
+  
+  // Minor errors - Score 1
+  minor: {
+    article_errors: [
+      { pattern: /\b(a\s+[aeiou])/gi, type: 'article' }, // a apple → an apple
+      { pattern: /\b(an\s+[^aeiou\s])/gi, type: 'article' } // an cat → a cat
+    ],
+    preposition_errors: [
+      { pattern: /\b(depend\s+of|depend\s+from)\b/gi, fix: 'depend on' },
+      { pattern: /\b(interested\s+on|interested\s+of)\b/gi, fix: 'interested in' },
+      { pattern: /\b(responsible\s+of)\b/gi, fix: 'responsible for' },
+      { pattern: /\b(afraid\s+of)\b/gi, fix: 'afraid of' }
+    ],
+    plural_errors: /\b(many\s+\w+s|much\s+\w+[^s])\b/gi,
+    spelling_common: /\b(recieve|acheive|seperate|occured|definately|goverment|enviroment|wich|untill|beleive)\b/gi
+  }
+};
+
+// ─── CONNECTOR WORDS ─────────────────────────────────────────────────────────
+const CONNECTORS = {
+  contrast: ['however', 'yet', 'although', 'while', 'whereas', 'but', 'nevertheless', 'nonetheless', 'conversely', 'on the other hand', 'in contrast'],
+  addition: ['moreover', 'furthermore', 'additionally', 'also', 'besides', 'in addition', 'what is more'],
+  result: ['consequently', 'therefore', 'thus', 'hence', 'accordingly', 'as a result', 'so', 'ergo'],
+  example: ['for instance', 'specifically', 'such as', 'namely', 'in particular']
 };
 
 // ─── RATE LIMITER ────────────────────────────────────────────────────────────
@@ -104,197 +118,191 @@ function sanitizeInput(text) {
     .slice(0, 2000);
 }
 
-// ─── LOCAL KEY IDEA EXTRACTION (SMART FALLBACK) ──────────────────────────────
+// ─── LOCAL KEY IDEA EXTRACTION ───────────────────────────────────────────────
 function extractKeyIdeasLocal(passage) {
-  if (!passage) return { topic: null, pivot: null, result: null, topicKeywords: [], pivotKeywords: [], resultKeywords: [] };
+  if (!passage) return { topic: null, pivot: null, result: null };
   
-  const lowerPassage = passage.toLowerCase();
   const sentences = passage.match(/[^.!?]+[.!?]+/g) || [passage];
   const firstTwo = sentences.slice(0, 2).join(' ').toLowerCase();
   const lastTwo = sentences.slice(-2).join(' ').toLowerCase();
+  const lowerPassage = passage.toLowerCase();
   
-  // TOPIC extraction - look for main subject in first 1-2 sentences
-  let topic = null;
-  let topicKeywords = [];
+  let topic = null, pivot = null, result = null;
+  let topicKeywords = [], pivotKeywords = [], resultKeywords = [];
   
-  // Pattern: economic cost, GDP, climate change impact
-  if (lowerPassage.includes('gdp') || lowerPassage.includes('economic') || lowerPassage.includes('cost') || lowerPassage.includes('financial') || lowerPassage.includes('billion') || lowerPassage.includes('trillion') || lowerPassage.includes('loss') || lowerPassage.includes('damage')) {
-    topic = 'economic cost/climate impact';
-    topicKeywords = ['gdp', 'economic', 'cost', 'loss', 'damage', 'financial', 'billion', 'trillion', 'money', 'yield', 'agricultural', 'drop'];
-  } else if (lowerPassage.includes('climate change') || lowerPassage.includes('global warming')) {
-    topic = 'climate change';
-    topicKeywords = ['climate', 'warming', 'temperature', 'degree', 'weather'];
+  // TOPIC
+  if (lowerPassage.includes('gdp') || lowerPassage.includes('economic') || lowerPassage.includes('cost')) {
+    topic = 'economic impact';
+    topicKeywords = ['gdp', 'economic', 'cost', 'loss', 'billion', 'trillion', 'financial', 'money'];
+  } else if (lowerPassage.includes('climate') || lowerPassage.includes('environment')) {
+    topic = 'climate/environment';
+    topicKeywords = ['climate', 'environment', 'warming', 'temperature', 'weather', 'green'];
   } else {
-    // Generic topic extraction (first 5-6 words of first sentence)
-    const firstSentence = sentences[0] || '';
-    const words = firstSentence.split(' ').slice(0, 6);
-    topic = words.join(' ') + '...';
-    topicKeywords = words.map(w => w.toLowerCase().replace(/[^a-z]/g, '')).filter(w => w.length > 3);
+    topic = 'main subject';
+    topicKeywords = sentences[0]?.split(' ').slice(0, 4).map(w => w.toLowerCase().replace(/[^a-z]/g, '')).filter(w => w.length > 3) || [];
   }
   
-  // PIVOT extraction - look for contrast/problem/shift
-  let pivot = null;
-  let pivotKeywords = [];
-  
-  const contrastIndicators = ['however', 'but', 'although', 'though', 'while', 'whereas', 'yet', 'despite', 'nevertheless', 'nonetheless', 'in contrast', 'on the other hand'];
-  const problemIndicators = ['problem', 'challenge', 'issue', 'difficulty', 'crisis', 'decline', 'decrease', 'reduce', 'fall', 'drop', 'burden', 'risk', 'threat', 'danger', 'worry', 'concern', 'bear', 'burden'];
-  
-  for (const word of contrastIndicators) {
+  // PIVOT
+  const contrastWords = ['however', 'but', 'although', 'though', 'while', 'yet', 'despite', 'nevertheless'];
+  for (const word of contrastWords) {
     if (lowerPassage.includes(word)) {
       pivot = 'contrast/challenge';
-      pivotKeywords = [...contrastIndicators, ...problemIndicators];
+      pivotKeywords = [...contrastWords, 'problem', 'issue', 'difficulty', 'burden', 'risk'];
       break;
     }
   }
   
-  if (!pivot) {
-    for (const word of problemIndicators) {
-      if (lowerPassage.includes(word)) {
-        pivot = 'problem/challenge';
-        pivotKeywords = problemIndicators;
-        break;
-      }
-    }
-  }
-  
-  // RESULT extraction - look for solution/conclusion/outcome
-  let result = null;
-  let resultKeywords = [];
-  
-  const solutionIndicators = ['therefore', 'thus', 'consequently', 'as a result', 'solution', 'answer', 'remedy', 'fix', 'improve', 'better', 'future', 'hope', 'optimistic', 'positive', 'benefit', 'advantage', 'help', 'aid', 'assist'];
-  const actionIndicators = ['require', 'need', 'must', 'should', 'transition', 'shift', 'change', 'move', 'transform', 'convert', 'switch', 'investment', 'invest', 'scale', 'implement'];
-  
-  for (const word of solutionIndicators) {
+  // RESULT
+  const solutionWords = ['therefore', 'thus', 'consequently', 'solution', 'answer', 'hope', 'future', 'investment', 'transition'];
+  for (const word of solutionWords) {
     if (lastTwo.includes(word) || lowerPassage.includes(word)) {
       result = 'solution/conclusion';
-      resultKeywords = [...solutionIndicators, ...actionIndicators];
+      resultKeywords = solutionWords;
       break;
-    }
-  }
-  
-  if (!result) {
-    for (const word of actionIndicators) {
-      if (lastTwo.includes(word) || lowerPassage.includes(word)) {
-        result = 'action/transition';
-        resultKeywords = actionIndicators;
-        break;
-      }
     }
   }
   
   return { topic, pivot, result, topicKeywords, pivotKeywords, resultKeywords };
 }
 
-// ─── CHECK KEY IDEAS PRESENCE (LENIENT MATCHING) ─────────────────────────────
+// ─── CHECK KEY IDEAS PRESENCE ────────────────────────────────────────────────
 function checkKeyIdeasPresent(studentText, keyIdeas) {
   const lowerStudent = studentText.toLowerCase();
   const present = [];
   const missing = [];
   
-  // Check Topic (lenient - any keyword match or conceptually similar)
-  let hasTopic = false;
-  if (keyIdeas.topicKeywords && keyIdeas.topicKeywords.length > 0) {
-    const matches = keyIdeas.topicKeywords.filter(kw => lowerStudent.includes(kw));
-    if (matches.length >= 1) hasTopic = true;
-  }
-  
-  // Additional conceptual checks for topic
-  if (!hasTopic) {
-    if (lowerStudent.includes('gdp') || lowerStudent.includes('economic') || lowerStudent.includes('cost') || lowerStudent.includes('loss') || lowerStudent.includes('billion') || lowerStudent.includes('trillion') || lowerStudent.includes('yield')) {
-      hasTopic = true;
-    }
-  }
-  
+  // Check Topic
+  let hasTopic = keyIdeas.topicKeywords?.some(kw => lowerStudent.includes(kw)) || false;
   if (hasTopic) present.push('topic');
   else missing.push('topic');
   
-  // Check Pivot (look for contrast words OR the conceptual contrast)
-  let hasPivot = false;
-  if (keyIdeas.pivotKeywords && keyIdeas.pivotKeywords.length > 0) {
-    const matches = keyIdeas.pivotKeywords.filter(kw => lowerStudent.includes(kw));
-    if (matches.length >= 1) hasPivot = true;
-  }
-  
-  // Also check for conceptual pivot: "afford not to" vs "afford to"
-  if (!hasPivot && (lowerStudent.includes('afford') || lowerStudent.includes('question') || lowerStudent.includes('whether'))) {
-    hasPivot = true;
-  }
-  
+  // Check Pivot
+  let hasPivot = keyIdeas.pivotKeywords?.some(kw => lowerStudent.includes(kw)) || false;
+  if (!hasPivot && (lowerStudent.includes('afford') || lowerStudent.includes('whether'))) hasPivot = true;
   if (hasPivot) present.push('pivot');
   else missing.push('pivot');
   
-  // Check Result (look for solution/result words OR numbers/statistics showing solution)
-  let hasResult = false;
-  if (keyIdeas.resultKeywords && keyIdeas.resultKeywords.length > 0) {
-    const matches = keyIdeas.resultKeywords.filter(kw => lowerStudent.includes(kw));
-    if (matches.length >= 1) hasResult = true;
-  }
-  
-  // Also check for solution indicators: percentages, investment numbers, cost drops
-  if (!hasResult && (lowerStudent.includes('%') || lowerStudent.includes('percent') || lowerStudent.includes('solar') || lowerStudent.includes('renewable') || lowerStudent.includes('investment') || lowerStudent.includes('transition'))) {
-    hasResult = true;
-  }
-  
+  // Check Result
+  let hasResult = keyIdeas.resultKeywords?.some(kw => lowerStudent.includes(kw)) || false;
+  if (!hasResult && (lowerStudent.includes('%') || lowerStudent.includes('investment'))) hasResult = true;
   if (hasResult) present.push('result');
   else missing.push('result');
   
   return { present, missing, count: present.length };
 }
 
-// ─── DETECT UNSAFE SWAPS ─────────────────────────────────────────────────────
-function detectUnsafeSwaps(studentText, passageText) {
-  const unsafe = [];
-  const lowerStudent = studentText.toLowerCase();
+// ─── GRAMMAR ANALYSIS ENGINE ─────────────────────────────────────────────────
+function analyzeGrammar(text) {
+  const issues = [];
+  const lowerText = text.toLowerCase();
+  let score = 2; // Default perfect score
+  let severity = 'none'; // none, minor, major
   
-  if (!passageText) return unsafe;
-  const lowerPassage = passageText.toLowerCase();
+  // Check for connectors
+  const hasConnector = Object.values(CONNECTORS).some(list => 
+    list.some(conn => lowerText.includes(conn.toLowerCase()))
+  );
   
-  for (const [original, badSwaps] of Object.entries(UNSAFE_SWAPS)) {
-    if (lowerPassage.includes(original)) {
-      for (const swap of badSwaps) {
-        if (lowerStudent.includes(swap)) {
-          unsafe.push(`${swap} (should be: ${original})`);
-          break;
-        }
-      }
+  const hasSemicolon = /;\s*(however|moreover|furthermore|therefore|thus|consequently|additionally|hence)/i.test(text);
+  
+  // MAJOR ERRORS (Score 0)
+  
+  // 1. Double negatives
+  if (GRAMMAR_PATTERNS.major.double_negatives.test(text)) {
+    issues.push('Major error: Double negative detected');
+    score = 0;
+    severity = 'major';
+  }
+  
+  // 2. Subject-verb agreement
+  for (const rule of GRAMMAR_PATTERNS.major.subject_verb_agreement) {
+    if (rule.pattern.test(text)) {
+      issues.push(`Major error: Subject-verb agreement issue (suggestion: use "${rule.fix}")`);
+      score = 0;
+      severity = 'major';
     }
   }
   
-  return unsafe;
-}
-
-// ─── SENTENCE & FORM CHECKS ──────────────────────────────────────────────────
-function isCompleteSentence(text) {
-  if (!text || text.length < 5) return { complete: false, reason: 'Too short' };
-  
-  const trimmed = text.trim();
-  const lastChar = trimmed.slice(-1);
-  
-  if (!/[.!?]$/.test(trimmed)) {
-    return { complete: false, reason: 'Must end with period, question mark, or exclamation' };
+  // 3. Sentence fragments
+  if (GRAMMAR_PATTERNS.major.fragments.test(text)) {
+    issues.push('Major error: Sentence fragment detected');
+    score = 0;
+    severity = 'major';
   }
   
-  const lastWord = trimmed.split(/\s+/).pop().toLowerCase().replace(/[.!?;,]$/, '');
-  const hangingWords = ['for', 'the', 'a', 'an', 'and', 'but', 'or', 'with', 'by', 'to', 'of', 'in', 'on', 'that', 'which', 'who'];
+  // 4. Missing finite verb (incomplete sentence)
+  const words = text.trim().split(/\s+/);
+  const finiteVerbs = /\b(is|are|was|were|be|been|being|has|have|had|do|does|did|will|would|could|should|may|might|must|can|shall|threatens|reduces|impacts|causes|creates|shows|explains|demonstrates|indicates|reveals|suggests|argues|claims|states|acknowledges|discusses|provides|includes|requires|offers|makes|takes|becomes|finds|gives|tells|feels|leaves|puts|means|keeps|begins|seems|helps|writes|stands|loses|pays|continues|changes|leads|considers|appears|serves|sends|expects|builds|stays|falls|reaches|remains|raises|passes|reports|decides|acts|possesses|opts|improves|minimizes|expresses|attempts|highlights|results|ensures|faces|bears|surges|drops|hopes|warns|emphasizes|concludes|predicts|saves|rewards|replaces|exchanges|persuades|develops|resulted|ensured|remained|faced|bore|surged|dropped|required|offered|hoped|concluded|predicted|reduced|impacted|caused|affected|increased|decreased|transformed|generated|dominated|overtook|demonstrated|indicated|acknowledged|examined|credited|identified|challenged|advised|attempted|highlighted|showed|found|thought|believed|said|noted|mentioned|added|continued|started|wanted|needed|looked|worked|lived|called|tried|asked|moved|played|believed|brought|happened|understood|wrote|spoke|spent|grew|opened|walked|watched|heard|let|began|knew|ate|ran|went|came|did|saw|got|had)\b/i;
   
-  if (hangingWords.includes(lastWord)) {
-    return { complete: false, reason: `Incomplete sentence (ends with "${lastWord}")` };
+  if (!finiteVerbs.test(text) && words.length > 3) {
+    issues.push('Major error: No finite verb detected - incomplete sentence structure');
+    score = 0;
+    severity = 'major';
   }
   
-  return { complete: true };
-}
-
-function hasFiniteVerb(text) {
-  if (!text) return false;
-  const lowerText = text.toLowerCase();
+  // MINOR ERRORS (Score 1 if no major errors)
+  if (score === 2) {
+    // Article errors
+    for (const rule of GRAMMAR_PATTERNS.minor.article_errors) {
+      const matches = text.match(rule.pattern);
+      if (matches) {
+        matches.forEach(match => {
+          issues.push(`Minor error: Article usage "${match.trim()}"`);
+        });
+        if (score > 1) {
+          score = 1;
+          severity = 'minor';
+        }
+      }
+    }
+    
+    // Preposition errors
+    for (const rule of GRAMMAR_PATTERNS.minor.preposition_errors) {
+      if (rule.pattern.test(text)) {
+        issues.push(`Minor error: Preposition - should be "${rule.fix}"`);
+        if (score > 1) {
+          score = 1;
+          severity = 'minor';
+        }
+      }
+    }
+    
+    // Common spelling errors
+    if (GRAMMAR_PATTERNS.minor.spelling_common.test(text)) {
+      issues.push('Minor error: Possible spelling mistake detected');
+      if (score > 1) {
+        score = 1;
+        severity = 'minor';
+      }
+    }
+    
+    // Missing connector or semicolon (Band 9 style)
+    if (!hasConnector) {
+      issues.push('Minor issue: No connector detected (use however, therefore, moreover)');
+      if (score > 1) score = 1;
+    } else if (!hasSemicolon) {
+      issues.push('Minor issue: Use semicolon before connector for Band 9 style (e.g., "; however,")');
+      if (score > 1) score = 1;
+    }
+  }
   
-  const verbPatterns = [
-    /\b(is|are|was|were|be|been|being)\s+\w+/i,
-    /\b(has|have|had|do|does|did|will|would|could|should|may|might|must)\s+\w+/i,
-    /\b(threatens|reduces|impacts|causes|creates|shows|explains|demonstrates|indicates|reveals|suggests|argues|claims|states|acknowledges|discusses|provides|includes|requires|offers|makes|takes|becomes|finds|gives|tells|feels|leaves|puts|means|keeps|begins|seems|helps|writes|stands|loses|pays|continues|changes|leads|considers|appears|serves|sends|expects|builds|stays|falls|reaches|remains|raises|passes|reports|decides|acts|possesses|opts|improves|minimizes|expresses|attempts|highlights|results|ensures|faces|bears|surges|drops|hopes|warns|emphasizes|concludes|predicts|saves|rewards|replaces|exchanges|persuades|develops|resulted|ensured|remained|faced|bore|surged|dropped|required|offered|hoped|concluded|predicted|reduced|impacted|caused|affected|increased|decreased|transformed|generated|dominated|overtook|demonstrated|indicated|acknowledged|examined|credited|identified|challenged|advised|attempted|highlighted|showed|found|thought|believed|said|noted|mentioned|added|continued|started|wanted|needed|looked|worked|lived|called|tried|asked|moved|played|believed|brought|happened|understood|wrote|spoke|spent|grew|opened|walked|watched|heard|let|began|knew|ate|ran|went|came|did|saw|got|had)\b/i
-  ];
+  // Determine connector type
+  let connectorType = 'none';
+  if (CONNECTORS.contrast.some(c => lowerText.includes(c))) connectorType = 'contrast';
+  else if (CONNECTORS.result.some(c => lowerText.includes(c))) connectorType = 'result';
+  else if (CONNECTORS.addition.some(c => lowerText.includes(c))) connectorType = 'addition';
   
-  return verbPatterns.some(pattern => pattern.test(lowerText));
+  return {
+    score,
+    severity,
+    issues,
+    has_connector: hasConnector,
+    connector_type: connectorType,
+    has_semicolon_before_connector: hasSemicolon,
+    chained_connectors: /;\s*\w+\s*,?.*;\s*\w+/g.test(text),
+    spelling_errors: [],
+    grammar_issues: issues
+  };
 }
 
 // ─── FORM VALIDATION ─────────────────────────────────────────────────────────
@@ -312,31 +320,10 @@ function calculateForm(text, type) {
     
     if (sentenceCount !== 1) return { score: 0, reason: 'Must be exactly one sentence', wordCount: wc };
     
-    const completeness = isCompleteSentence(cleanInput);
-    if (!completeness.complete) return { score: 0, reason: completeness.reason, wordCount: wc };
-    
-    if (!hasFiniteVerb(cleanInput)) {
-      return { score: 0, reason: 'No finite verb detected', wordCount: wc };
-    }
-    
     return { score: 1, reason: 'Valid', wordCount: wc };
   }
   
   return { score: 0, reason: 'Invalid type', wordCount: wc };
-}
-
-// ─── CONNECTOR DETECTION ─────────────────────────────────────────────────────
-function detectConnectors(text) {
-  const lowerText = text.toLowerCase();
-  const found = {
-    contrast: ['however', 'yet', 'although', 'while', 'but', 'whereas', 'nevertheless', 'nonetheless'].filter(c => lowerText.includes(c)),
-    addition: ['moreover', 'furthermore', 'additionally', 'also'].filter(c => lowerText.includes(c)),
-    result: ['consequently', 'therefore', 'thus', 'hence', 'so', 'accordingly'].filter(c => lowerText.includes(c)),
-    hasSemicolonBeforeConnector: /;\s*(however|moreover|furthermore|consequently|therefore|thus|additionally|hence|yet|although)/gi.test(text),
-    chainedConnectors: /;\s*\w+\s*,?.*;\s*\w+/g.test(text)
-  };
-  
-  return found;
 }
 
 // ─── AI GRADING ENGINE ───────────────────────────────────────────────────────
@@ -345,103 +332,68 @@ async function gradeResponse(text, type, passageText, localKeyIdeas) {
   const cached = getCached(cacheKey);
   if (cached) return { ...cached, cached: true };
 
-  const connectorInfo = detectConnectors(text);
   const localCheck = checkKeyIdeasPresent(text, localKeyIdeas);
-  const unsafeSwaps = detectUnsafeSwaps(text, passageText);
+  const grammarAnalysis = analyzeGrammar(text);
 
   if (!anthropic) {
-    // LOCAL FALLBACK MODE
+    // LOCAL MODE with grammar detection
     let contentScore = 0;
     if (localCheck.count === 3) contentScore = 2;
     else if (localCheck.count === 2) contentScore = 1;
-    else contentScore = 0;
-    
-    let vocabScore = 2;
-    if (unsafeSwaps.length > 2) vocabScore = 0;
-    else if (unsafeSwaps.length > 0) vocabScore = 1;
-    
-    const hasConnector = connectorInfo.contrast.length > 0 || connectorInfo.addition.length > 0 || connectorInfo.result.length > 0;
-    let grammarScore = 1;
-    if (hasConnector && connectorInfo.hasSemicolonBeforeConnector) grammarScore = 2;
-    else if (hasConnector) grammarScore = 1;
     
     return {
       content: contentScore,
       key_ideas_extracted: [localKeyIdeas.topic, localKeyIdeas.pivot, localKeyIdeas.result].filter(Boolean),
       key_ideas_present: localCheck.present,
       key_ideas_missing: localCheck.missing,
-      content_notes: `Local mode: ${localCheck.count}/3 key ideas found`,
-      grammar: { 
-        score: grammarScore, 
-        has_connector: hasConnector,
-        connector_type: connectorInfo.contrast.length > 0 ? 'contrast' : connectorInfo.result.length > 0 ? 'result' : connectorInfo.addition.length > 0 ? 'addition' : 'none',
-        connector_logic_correct: hasConnector,
-        chained_connectors: connectorInfo.chainedConnectors,
-        has_semicolon_before_connector: connectorInfo.hasSemicolonBeforeConnector,
-        spelling_errors: [], 
-        grammar_issues: [] 
-      },
-      vocabulary: vocabScore,
-      synonym_usage: unsafeSwaps.length > 0 ? 'unsafe' : 'acceptable',
-      smart_swaps_detected: [],
-      unsafe_swaps_detected: unsafeSwaps,
-      feedback: `LOCAL MODE: ${localCheck.count}/3 key ideas found. ${unsafeSwaps.length > 0 ? 'Warning: Unsafe word choices.' : ''}`,
+      content_notes: `${localCheck.count}/3 key ideas found (Local mode)`,
+      grammar: grammarAnalysis,
+      vocabulary: 2, // Assume good unless obvious errors
+      synonym_usage: 'minimal',
+      unsafe_swaps_detected: [],
+      feedback: `${localCheck.count}/3 key ideas. ${grammarAnalysis.issues.join('; ') || 'No major grammar issues.'}`,
       mode: 'local'
     };
   }
 
-  const systemPrompt = `You are a PTE Academic examiner for Summarize Written Text (SWT).
+  const systemPrompt = `You are a strict PTE Academic examiner for Summarize Written Text (SWT).
 
-=== SCORING RULES ===
-1. CONTENT (0-2 points):
-   - Identify 3 key ideas: TOPIC (main subject), PIVOT (contrast/problem), RESULT (solution/outcome)
-   - 2 points = ALL 3 ideas present (verbatim copying is ACCEPTABLE and encouraged)
-   - 1 point = Exactly 2 ideas present  
-   - 0 points = 0-1 ideas present
-   
-2. GRAMMAR (0-2 points):
-   - 2 points = Correct grammar + semicolon + connector (e.g., "; however,")
-   - 1 point = Minor errors or missing semicolon
-   - 0 points = Major errors
-   
-3. VOCABULARY (0-2 points):
-   - 2 points = Meaning preserved (verbatim OK)
-   - 1 point = Minor awkward phrasing
-   - 0 points = Meaning changed by synonyms
+=== GRAMMAR DETECTION RULES ===
+Score 2: Perfect grammar + semicolon + connector (e.g., "; however,")
+Score 1: Minor errors (article, preposition) OR missing semicolon OR missing connector
+Score 0: Major errors (subject-verb agreement, double negatives, fragments, no finite verb)
 
-=== IMPORTANT ===
-- The student response in the PDF example captured GDP loss (topic), "whether we can afford not to" (pivot), and renewable solution (result) = ALL 3 IDEAS = 2 points
-- Do not penalize for copying phrases like "potential loss of 10% of global GDP" - this is GOOD
-- "Afford not to act" captures the pivot/contrast even if worded differently
+=== CONTENT RULES ===
+Score 2: ALL 3 key ideas (Topic + Pivot + Result) present
+Score 1: Exactly 2 key ideas present
+Score 0: 0-1 key ideas present
 
 Return ONLY JSON:
 {
   "content": 0-2,
   "key_ideas_extracted": ["topic: ...", "pivot: ...", "result: ..."],
-  "key_ideas_present": ["which ones student got"],
-  "key_ideas_missing": ["which ones student missed"],
-  "content_notes": "explanation",
+  "key_ideas_present": [],
+  "key_ideas_missing": [],
+  "content_notes": "...",
   "grammar": {
     "score": 0-2,
     "has_connector": boolean,
     "connector_type": "contrast|addition|result|none",
-    "connector_logic_correct": boolean,
-    "spelling_errors": [],
-    "grammar_issues": []
+    "has_semicolon_before_connector": boolean,
+    "grammar_issues": ["list specific issues"],
+    "severity": "none|minor|major"
   },
   "vocabulary": 0-2,
-  "synonym_usage": "none|minimal|moderate",
-  "unsafe_swaps_detected": [],
-  "feedback": "specific feedback"
+  "feedback": "..."
 }`;
 
   const userPrompt = `PASSAGE: "${passageText}"
 
 STUDENT RESPONSE: "${text}"
 
-LOCAL DETECTION SAYS: ${localCheck.count}/3 ideas present (${localCheck.present.join(', ') || 'none'})
+LOCAL GRAMMAR CHECK: ${grammarAnalysis.issues.length} issues found: ${grammarAnalysis.issues.join(', ')}
 
-Analyze carefully. If student captured the economic cost (GDP/trillion), the contrast (however/afford/burden), and solution (renewable/investment), give FULL MARKS (2/2) even if verbatim. Return JSON only.`;
+Analyze content and grammar strictly. If grammar has major errors (subject-verb disagreement, fragments), score 0. If minor (missing semicolon), score 1. Return JSON only.`;
 
   try {
     const response = await anthropic.messages.create({
@@ -458,39 +410,19 @@ Analyze carefully. If student captured the economic cost (GDP/trillion), the con
 
     const result = JSON.parse(match[0]);
     
-    // VALIDATION: Override AI if it's being too strict compared to local detection
-    let finalContent = result.content || 0;
-    
-    // If local detection finds 3 ideas but AI gives less than 2, trust local
-    if (localCheck.count === 3 && finalContent < 2) {
-      finalContent = 2;
-    }
-    // If local finds 2 ideas but AI gives 0 or less than 1, correct it
-    else if (localCheck.count === 2 && finalContent < 1) {
-      finalContent = 1;
-    }
-    // If local finds 0-1 ideas but AI gives high score, trust local (student missed key points)
-    else if (localCheck.count <= 1 && finalContent > 1) {
-      finalContent = localCheck.count === 1 ? 0 : 0; // 0-1 ideas = 0 points per rules
+    // Override with local grammar analysis if AI misses major errors
+    if (grammarAnalysis.severity === 'major' && result.grammar?.score > 0) {
+      result.grammar.score = 0;
+      result.grammar.severity = 'major';
+      result.grammar.grammar_issues = [...(result.grammar.grammar_issues || []), ...grammarAnalysis.issues];
     }
     
-    // Ensure grammar score is reasonable
-    let finalGrammar = result.grammar?.score || 0;
-    const hasConnector = connectorInfo.contrast.length > 0 || connectorInfo.addition.length > 0 || connectorInfo.result.length > 0;
-    if (hasConnector && finalGrammar === 0) finalGrammar = 1; // At least give 1 for trying
-    
-    // Update result with validated scores
-    result.content = finalContent;
-    if (result.grammar) result.grammar.score = finalGrammar;
-    
-    // Add connector info
-    if (!result.grammar) result.grammar = {};
-    result.grammar.has_semicolon_before_connector = connectorInfo.hasSemicolonBeforeConnector;
-    result.grammar.chained_connectors = connectorInfo.chainedConnectors;
-    
-    // Merge unsafe swaps from local detection
-    if (unsafeSwaps.length > 0 && (!result.unsafe_swaps_detected || result.unsafe_swaps_detected.length === 0)) {
-      result.unsafe_swaps_detected = unsafeSwaps;
+    // Ensure grammar object has all fields
+    if (!result.grammar) result.grammar = grammarAnalysis;
+    else {
+      result.grammar.has_semicolon_before_connector = grammarAnalysis.has_semicolon_before_connector;
+      result.grammar.has_connector = grammarAnalysis.has_connector;
+      result.grammar.connector_type = grammarAnalysis.connector_type;
     }
     
     const finalResult = { ...result, mode: 'ai' };
@@ -499,68 +431,49 @@ Analyze carefully. If student captured the economic cost (GDP/trillion), the con
 
   } catch (err) {
     console.error('AI Error:', err.message);
-    
-    // Failover to local grading
-    let contentScore = 0;
-    if (localCheck.count === 3) contentScore = 2;
-    else if (localCheck.count === 2) contentScore = 1;
-    
-    const hasConnector = connectorInfo.contrast.length > 0 || connectorInfo.addition.length > 0 || connectorInfo.result.length > 0;
-    let grammarScore = 1;
-    if (hasConnector && connectorInfo.hasSemicolonBeforeConnector) grammarScore = 2;
-    
     return {
-      content: contentScore,
+      content: localCheck.count >= 2 ? 1 : 0,
       key_ideas_extracted: [localKeyIdeas.topic, localKeyIdeas.pivot, localKeyIdeas.result].filter(Boolean),
       key_ideas_present: localCheck.present,
       key_ideas_missing: localCheck.missing,
-      content_notes: `AI Error - Local fallback: ${err.message}`,
-      grammar: { 
-        score: grammarScore, 
-        has_connector: hasConnector,
-        connector_type: connectorInfo.contrast.length > 0 ? 'contrast' : connectorInfo.result.length > 0 ? 'result' : connectorInfo.addition.length > 0 ? 'addition' : 'none',
-        connector_logic_correct: hasConnector,
-        chained_connectors: connectorInfo.chainedConnectors,
-        has_semicolon_before_connector: connectorInfo.hasSemicolonBeforeConnector,
-        spelling_errors: [], 
-        grammar_issues: [err.message] 
-      },
-      vocabulary: unsafeSwaps.length > 0 ? 1 : 2,
+      content_notes: `AI Error - using local detection`,
+      grammar: grammarAnalysis,
+      vocabulary: 1,
       synonym_usage: 'error',
-      smart_swaps_detected: [],
-      unsafe_swaps_detected: unsafeSwaps,
-      feedback: `AI Error: ${err.message}. Local scoring applied.`,
+      feedback: `AI Error. Local scoring: ${localCheck.count}/3 ideas, Grammar: ${grammarAnalysis.severity}`,
       mode: 'error-fallback'
     };
   }
 }
 
 // ─── BUILD FEEDBACK ──────────────────────────────────────────────────────────
-function buildFeedback(result, formCheck, connectorInfo, keyIdeaCheck) {
+function buildFeedback(result, formCheck, grammarAnalysis, keyIdeaCheck) {
   const parts = [];
   
   // Content feedback
   if (keyIdeaCheck.count === 0) {
-    parts.push("Critical: You missed all main points. Re-read the passage carefully.");
+    parts.push("Critical: You missed all main points from the passage.");
   } else if (keyIdeaCheck.count === 1) {
     parts.push(`Weak content: Only 1/3 key ideas captured. Missing: ${keyIdeaCheck.missing.join(', ')}`);
   } else if (keyIdeaCheck.count === 2) {
     parts.push(`Good: You captured 2/3 key ideas. Missing: ${keyIdeaCheck.missing.join(', ')}`);
   } else {
-    parts.push("Excellent: All 3 key ideas captured perfectly.");
+    parts.push("Excellent: All 3 key ideas captured.");
   }
   
-  // Grammar feedback
-  const hasConnector = connectorInfo.contrast.length > 0 || connectorInfo.addition.length > 0 || connectorInfo.result.length > 0;
-  if (!hasConnector) {
-    parts.push("Add connectors (however, therefore, moreover) for better grammar.");
-  } else if (!connectorInfo.hasSemicolonBeforeConnector) {
-    parts.push("Band 9 style: Use semicolons before connectors (e.g., '; however,')");
-  }
-  
-  // Vocabulary feedback
-  if (result.unsafe_swaps_detected?.length > 0) {
-    parts.push(`Warning: ${result.unsafe_swaps_detected.length} unsafe word choice(s) detected.`);
+  // Grammar feedback with specific issues
+  if (grammarAnalysis.severity === 'major') {
+    parts.push(`Major grammar issues: ${grammarAnalysis.issues.join('; ')}`);
+  } else if (grammarAnalysis.severity === 'minor') {
+    parts.push(`Minor issues: ${grammarAnalysis.issues.join('; ')}`);
+  } else {
+    if (!grammarAnalysis.has_connector) {
+      parts.push("Add connectors (however, therefore) to improve grammar score.");
+    } else if (!grammarAnalysis.has_semicolon_before_connector) {
+      parts.push("Band 9 style: Use semicolons before connectors (e.g., '; however,')");
+    } else {
+      parts.push("Grammar is excellent.");
+    }
   }
   
   return parts.join(' ');
@@ -570,7 +483,7 @@ function buildFeedback(result, formCheck, connectorInfo, keyIdeaCheck) {
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    version: '7.3.0', 
+    version: '7.4.0', 
     anthropicConfigured: !!anthropic,
     timestamp: new Date().toISOString()
   });
@@ -586,8 +499,6 @@ app.post('/api/grade', async (req, res) => {
 
     const cleanText = sanitizeInput(text);
     const formCheck = calculateForm(cleanText, type);
-    
-    // Extract key ideas locally first
     const localKeyIdeas = extractKeyIdeasLocal(prompt);
     
     // FORM GATE
@@ -607,7 +518,8 @@ app.post('/api/grade', async (req, res) => {
           has_semicolon_before_connector: false,
           chained_connectors: false,
           spelling_errors: [], 
-          grammar_issues: [] 
+          grammar_issues: ['Form validation failed'],
+          severity: 'major'
         },
         vocabulary_details: { 
           synonym_usage: 'none', 
@@ -627,32 +539,19 @@ app.post('/api/grade', async (req, res) => {
     }
 
     const result = await gradeResponse(cleanText, type, prompt, localKeyIdeas);
-    const connectorInfo = detectConnectors(cleanText);
+    const grammarAnalysis = analyzeGrammar(cleanText);
     const keyIdeaCheck = checkKeyIdeasPresent(cleanText, localKeyIdeas);
     
-    // Final validation: Trust local detection over AI for content count
-    let finalContentScore = result.content || 0;
+    // Final content scoring
+    let finalContentScore = 0;
+    if (keyIdeaCheck.count === 3) finalContentScore = 2;
+    else if (keyIdeaCheck.count === 2) finalContentScore = 1;
+    else finalContentScore = 0;
     
-    // Override logic to prevent AI hallucination
-    if (keyIdeaCheck.count === 3 && finalContentScore < 2) {
-      finalContentScore = 2; // Force correct score if all 3 present
-    } else if (keyIdeaCheck.count === 2 && finalContentScore < 1) {
-      finalContentScore = 1;
-    } else if (keyIdeaCheck.count <= 1 && finalContentScore > 1) {
-      finalContentScore = keyIdeaCheck.count === 1 ? 0 : 0;
-    }
+    // Grammar score from analysis
+    const grammarScore = result.grammar?.score !== undefined ? result.grammar.score : grammarAnalysis.score;
+    const vocabScore = result.vocabulary || 2;
     
-    // Strict rule enforcement per README
-    if (keyIdeaCheck.count === 0 || keyIdeaCheck.count === 1) {
-      finalContentScore = 0; // 0-1 ideas = 0 points
-    } else if (keyIdeaCheck.count === 2) {
-      finalContentScore = 1;
-    } else if (keyIdeaCheck.count === 3) {
-      finalContentScore = 2;
-    }
-    
-    const grammarScore = result.grammar?.score || 0;
-    const vocabScore = result.vocabulary || 0;
     const rawScore = formCheck.score + finalContentScore + grammarScore + vocabScore;
     const overallScore = Math.min(90, 10 + Math.round((rawScore / 7) * 80));
 
@@ -664,30 +563,31 @@ app.post('/api/grade', async (req, res) => {
         vocabulary: vocabScore
       },
       content_details: {
-        key_ideas_extracted: result.key_ideas_extracted || [localKeyIdeas.topic, localKeyIdeas.pivot, localKeyIdeas.result].filter(Boolean),
+        key_ideas_extracted: result.key_ideas_extracted || [],
         key_ideas_present: keyIdeaCheck.present,
         key_ideas_missing: keyIdeaCheck.missing,
-        notes: result.content_notes || `${keyIdeaCheck.count}/3 key ideas detected`
+        notes: result.content_notes || `${keyIdeaCheck.count}/3 key ideas`
       },
       grammar_details: {
         score: grammarScore,
-        has_connector: result.grammar?.has_connector || (connectorInfo.contrast.length + connectorInfo.addition.length + connectorInfo.result.length > 0),
-        connector_type: result.grammar?.connector_type || (connectorInfo.contrast.length > 0 ? 'contrast' : connectorInfo.result.length > 0 ? 'result' : connectorInfo.addition.length > 0 ? 'addition' : 'none'),
-        has_semicolon_before_connector: result.grammar?.has_semicolon_before_connector || connectorInfo.hasSemicolonBeforeConnector,
-        chained_connectors: result.grammar?.chained_connectors || connectorInfo.chainedConnectors,
+        has_connector: grammarAnalysis.has_connector,
+        connector_type: grammarAnalysis.connector_type,
+        has_semicolon_before_connector: grammarAnalysis.has_semicolon_before_connector,
+        chained_connectors: grammarAnalysis.chained_connectors,
         spelling_errors: result.grammar?.spelling_errors || [],
-        grammar_issues: result.grammar?.grammar_issues || []
+        grammar_issues: grammarAnalysis.issues,
+        severity: grammarAnalysis.severity
       },
       vocabulary_details: {
         synonym_usage: result.synonym_usage || 'minimal',
         smart_swaps_detected: result.smart_swaps_detected || [],
-        unsafe_swaps_detected: result.unsafe_swaps_detected || detectUnsafeSwaps(cleanText, prompt)
+        unsafe_swaps_detected: result.unsafe_swaps_detected || []
       },
       overall_score: overallScore,
       raw_score: rawScore,
       band: BAND_MAP[Math.floor(rawScore)] || 'Band 5',
       word_count: formCheck.wordCount,
-      feedback: buildFeedback(result, formCheck, connectorInfo, keyIdeaCheck),
+      feedback: buildFeedback(result, formCheck, grammarAnalysis, keyIdeaCheck),
       key_ideas_status: {
         topic: keyIdeaCheck.present.includes('topic'),
         pivot: keyIdeaCheck.present.includes('pivot'),
@@ -711,7 +611,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Logic Grader v7.3.0 running on port ${PORT}`);
+  console.log(`✅ PTE SWT Logic Grader v7.4.0 running on port ${PORT}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL MODE'}`);
-  console.log(`🛡️  Validation: ENABLED`);
+  console.log(`📝 Grammar Detection: ENABLED`);
 });
