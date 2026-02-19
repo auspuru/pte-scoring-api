@@ -522,7 +522,7 @@ app.post('/api/grade', async (req, res) => {
         verbatim_phrases: result.verbatim_phrases || [],
         compression_detected: result.compression_detected || false,
         compressed_items: result.compressed_items || []
-n      },
+      },
       overall_score: overallScore,
       raw_score: rawScore,
       band: BAND_MAP[Math.floor(rawScore)] || 'Band 5',
