@@ -1,4 +1,3 @@
-index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -416,6 +415,7 @@ index.html
   </div>
 
   <script>
+    // API URL - set to your Railway endpoint
     const API_URL = 'https://pte-scoring-api-production.up.railway.app';
     
     const passages = [
@@ -641,387 +641,389 @@ index.html
       }
     ];
 
-   let currentId = 1, easyMode = false, attempted = new Set();
-const API_URL = ''; // Set your API URL here
+    let currentId = 1, easyMode = false, attempted = new Set();
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadPassage(1);
-  renderDots();
-  checkAIStatus();
-});
-
-async function checkAIStatus() {
-  try {
-    const res = await fetch(API_URL + '/api/health');
-    const data = await res.json();
-    const el = document.getElementById('aiStatus');
-    if (data.anthropicConfigured) {
-      el.innerHTML = '<span style="color: #4caf50;">●</span> AI Ready';
-      el.classList.remove('offline');
-    } else {
-      el.innerHTML = '<span style="color: #ff9800;">●</span> Local Mode';
-      el.classList.add('offline');
-    }
-  } catch (e) {
-    document.getElementById('aiStatus').innerHTML = '<span style="color: #f44336;">●</span> Offline';
-    document.getElementById('aiStatus').classList.add('offline');
-  }
-}
-
-function loadPassage(id) {
-  currentId = id;
-  const p = passages.find(x => x.id === id);
-  if (!p) return;
-  
-  document.getElementById('currentNum').textContent = id;
-  document.getElementById('totalNum').textContent = passages.length;
-  document.getElementById('passageCategory').textContent = p.category;
-  document.getElementById('passageTitle').textContent = p.title;
-  document.getElementById('passageText').textContent = p.text;
-  
-  const kp = document.getElementById('keyPoints');
-  kp.innerHTML = `
-    <div class="key-point">
-      <div class="kp-icon topic">T</div>
-      <div><strong>Topic:</strong> ${p.keyElements?.topic || 'Main subject'}</div>
-    </div>
-    <div class="key-point">
-      <div class="kp-icon pivot">P</div>
-      <div><strong>Pivot:</strong> ${p.keyElements?.pivot || 'Contrast/shift'}</div>
-    </div>
-    <div class="key-point">
-      <div class="kp-icon conclusion">C</div>
-      <div><strong>Conclusion:</strong> ${p.keyElements?.conclusion || 'Outcome'}</div>
-    </div>
-  `;
-  kp.classList.toggle('show', easyMode);
-  document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
-  document.getElementById('prevBtn').disabled = id === 1;
-  document.getElementById('nextBtn').disabled = id === passages.length;
-  
-  updateDots();
-  document.getElementById('summaryInput').value = '';
-  updateWordCount();
-  document.getElementById('results').classList.remove('show');
-}
-
-function prevPassage() { if (currentId > 1) loadPassage(currentId - 1); }
-function nextPassage() { if (currentId < passages.length) loadPassage(currentId + 1); }
-
-function toggleEasyMode() {
-  easyMode = !easyMode;
-  document.getElementById('easyToggle').classList.toggle('active', easyMode);
-  document.getElementById('keyPoints').classList.toggle('show', easyMode);
-  document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
-}
-
-function toggleKeyPoints() {
-  const kp = document.getElementById('keyPoints');
-  kp.classList.toggle('show');
-  document.getElementById('kpBtn').textContent = kp.classList.contains('show') ? 'Click to hide key points' : 'Click to show key points';
-}
-
-function jumpToPassage() {
-  const n = prompt('Enter passage (1-' + passages.length + '):');
-  if (n >= 1 && n <= passages.length) loadPassage(parseInt(n));
-}
-
-function updateWordCount() {
-  const text = document.getElementById('summaryInput').value.trim();
-  const words = text ? text.split(/\s+/).length : 0;
-  const el = document.getElementById('wordCount');
-  el.textContent = words + ' words';
-  el.className = 'word-count';
-  if (words < 5 || words > 75) el.classList.add('error');
-  else if (words >= 5 && words <= 75) el.classList.add('success');
-}
-
-async function verifySummary() {
-  const text = document.getElementById('summaryInput').value.trim();
-  const passage = passages.find(p => p.id === currentId);
-  if (!text) { alert('Please enter a summary'); return; }
-  const words = text.split(/\s+/).length;
-  if (words < 5 || words > 75) { alert('Summary must be 5-75 words'); return; }
-  
-  document.getElementById('loadingOverlay').classList.add('show');
-  
-  try {
-    const res = await fetch(API_URL + '/api/grade', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        text: text, 
-        type: 'summarize-written-text', 
-        prompt: passage.text 
-      })
+    document.addEventListener('DOMContentLoaded', () => {
+      loadPassage(1);
+      renderDots();
+      checkAIStatus();
     });
-    
-    if (!res.ok) throw new Error('Server error ' + res.status);
-    const data = await res.json();
-    showResults(data, passage);
-    attempted.add(currentId);
-    document.getElementById('completedCount').textContent = attempted.size;
-    updateDots();
-  } catch (e) {
-    console.error(e);
-    alert('Error: ' + e.message);
-  } finally {
-    document.getElementById('loadingOverlay').classList.remove('show');
-  }
-}
 
-function showResults(data, passage) {
-  document.getElementById('results').classList.add('show');
-  
-  // Form error banner
-  const formErrorBanner = document.getElementById('formErrorBanner');
-  if (data.form_gate_triggered) {
-    formErrorBanner.style.display = 'block';
-    document.getElementById('formErrorReason').textContent = data.form_reason || 'Form validation failed';
-  } else {
-    formErrorBanner.style.display = 'none';
-  }
-  
-  // Score header
-  document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
-  document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
-  document.getElementById('rawDisplay').textContent = 'Raw: ' + (data.raw_score || 0) + '/7';
-  
-  // Mode display (backend sends 'mode', not 'scoring_mode')
-  const modeDisplay = document.getElementById('modeDisplay');
-  if (data.mode === 'cached') {
-    modeDisplay.innerHTML = '⚡ Cached';
-    modeDisplay.className = 'mode-tag cached';
-  } else if (data.mode === 'ai') {
-    modeDisplay.innerHTML = '🤖 AI';
-    modeDisplay.className = 'mode-tag';
-  } else if (data.mode === 'error') {
-    modeDisplay.innerHTML = '⚠️ Error';
-    modeDisplay.className = 'mode-tag offline';
-  } else {
-    modeDisplay.innerHTML = '📊 Local';
-    modeDisplay.className = 'mode-tag';
-  }
-  
-  // Feedback
-  document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
-  
-  // Content elements - backend sends has_topic/has_pivot/has_conclusion
-  const content = data.content_details || {};
-  const extracted = content.key_ideas_extracted || [];
-  
-  // Determine captured status from backend response
-  const hasTopic = content.has_topic || data.trait_scores?.content >= 1;
-  const hasPivot = content.has_pivot || data.trait_scores?.content >= 1.5;
-  const hasConclusion = content.has_conclusion || data.trait_scores?.content >= 2;
-  
-  document.getElementById('elementsGrid').innerHTML = `
-    <div class="element-card ${hasTopic ? 'captured' : 'missed'}">
-      <div class="element-header">
-        <span class="element-label topic">Topic</span>
-        <span class="element-check">${hasTopic ? '✓' : '✗'}</span>
-      </div>
-      <div class="element-text">${extracted[0] || (passage.keyElements?.topic || 'Main subject').substring(0, 60)}...</div>
-    </div>
-    <div class="element-card ${hasPivot ? 'captured' : 'missed'}">
-      <div class="element-header">
-        <span class="element-label pivot">Pivot</span>
-        <span class="element-check">${hasPivot ? '✓' : '✗'}</span>
-      </div>
-      <div class="element-text">${extracted[1] || (passage.keyElements?.pivot || 'Contrast/shift').substring(0, 60)}...</div>
-    </div>
-    <div class="element-card ${hasConclusion ? 'captured' : 'missed'}">
-      <div class="element-header">
-        <span class="element-label conclusion">Conclusion</span>
-        <span class="element-check">${hasConclusion ? '✓' : '✗'}</span>
-      </div>
-      <div class="element-text">${extracted[2] || (passage.keyElements?.conclusion || 'Outcome').substring(0, 60)}...</div>
-    </div>
-  `;
-  
-  // First person warning - backend sends perspective_shift_penalty
-  const firstPersonWarning = document.getElementById('firstPersonWarning');
-  if (content.perspective_shift_penalty) {
-    firstPersonWarning.style.display = 'block';
-    document.getElementById('firstPersonContent').innerHTML = '<p>' + (content.perspective_note || "Use 'The author' instead of 'I' for first-person passages") + '</p>';
-  } else {
-    firstPersonWarning.style.display = 'none';
-  }
-  
-  // Spelling issues
-  const grammar = data.grammar_details || {};
-  const spellSection = document.getElementById('spellCheckSection');
-  if (grammar.spelling_errors && grammar.spelling_errors.length > 0) {
-    spellSection.style.display = 'block';
-    document.getElementById('spellCheckContent').innerHTML = grammar.spelling_errors.map(e => 
-      `<div class="issue-item"><span class="issue-word">"${e.word || e}"</span>${e.suggestion ? `<span class="issue-arrow">→</span><span class="issue-fix">"${e.suggestion}"</span>` : ''}</div>`
-    ).join('');
-  } else {
-    spellSection.style.display = 'none';
-  }
-  
-  // Grammar issues
-  const grammarSection = document.getElementById('grammarSection');
-  const grammarIssues = grammar.grammar_issues || [];
-  
-  // Check for connector issues
-  let connectorHtml = '';
-  if (!grammar.has_connector) {
-    connectorHtml = '<div class="issue-item">Add a connector (however, therefore, moreover) to improve grammar score</div>';
-  } else if (!grammar.has_semicolon_before_connector) {
-    connectorHtml = '<div class="issue-item">Use semicolon before connector: <strong>"; however,"</strong> not <strong>" however,"</strong></div>';
-  }
-  
-  if (grammarIssues.length > 0 || connectorHtml) {
-    grammarSection.style.display = 'block';
-    document.getElementById('grammarContent').innerHTML = connectorHtml + grammarIssues.map(g => 
-      `<div class="issue-item">${g.issue || g}</div>`
-    ).join('');
-  } else {
-    grammarSection.style.display = 'none';
-  }
-  
-  // Connector info using connector_analysis from backend
-  const connectorInfo = document.getElementById('connectorInfo');
-  const connAnalysis = data.connector_analysis || {};
-  if (grammar.has_connector) {
-    const typeClass = grammar.connector_type === 'contrast' ? 'contrast' : 
-                     grammar.connector_type === 'addition' ? 'addition' : 
-                     grammar.connector_type === 'result' ? 'reason' : '';
-    const logicText = grammar.connector_logic_correct ? '✓ Logic correct' : '✗ Check logic';
-    const logicClass = grammar.connector_logic_correct ? 'logic' : 'logic bad';
-    const semicolon = grammar.has_semicolon_before_connector ? '' : ' | Missing semicolon!';
-    connectorInfo.innerHTML = `<span class="type ${typeClass}">${grammar.connector_type}</span><span class="${logicClass}">${logicText}</span>${semicolon}`;
-  } else if (connAnalysis.contrast?.length || connAnalysis.addition?.length || connAnalysis.result?.length) {
-    // Show detected connectors even if not properly used
-    const types = [];
-    if (connAnalysis.contrast?.length) types.push('<span class="type contrast">contrast</span>');
-    if (connAnalysis.addition?.length) types.push('<span class="type addition">addition</span>');
-    if (connAnalysis.result?.length) types.push('<span class="type reason">result</span>');
-    connectorInfo.innerHTML = types.join(' ') + ' <span class="logic bad">✗ Missing semicolon before connector</span>';
-  } else {
-    connectorInfo.innerHTML = '<span style="color: #888;">No connector detected</span>';
-  }
-  
-  // Vocabulary section - show verbatim acceptance
-  const vocab = data.vocabulary_details || {};
-  const vocabSection = document.getElementById('vocabSection');
-  if (vocab) {
-    vocabSection.style.display = 'block';
-    let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
-    
-    // Show verbatim is OK message if no unsafe swaps
-    if (!vocab.unsafe_swaps_detected || vocab.unsafe_swaps_detected.length === 0) {
-      vocabHtml += '<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim copying is acceptable for PTE scoring</p>';
+    async function checkAIStatus() {
+      try {
+        const res = await fetch(API_URL + '/api/health');
+        const data = await res.json();
+        const el = document.getElementById('aiStatus');
+        if (data.anthropicConfigured) {
+          el.innerHTML = '<span style="color: #4caf50;">●</span> AI Ready';
+          el.classList.remove('offline');
+        } else {
+          el.innerHTML = '<span style="color: #ff9800;">●</span> Local Mode';
+          el.classList.add('offline');
+        }
+      } catch (e) {
+        document.getElementById('aiStatus').innerHTML = '<span style="color: #f44336;">●</span> Offline';
+        document.getElementById('aiStatus').classList.add('offline');
+      }
     }
-    
-    if (vocab.smart_swaps_detected && vocab.smart_swaps_detected.length > 0) {
-      vocabHtml += '<p style="margin-top: 8px;"><strong>Good swaps:</strong> ' + vocab.smart_swaps_detected.map(s => `<span class="vocab-badge swap">${s}</span>`).join('') + '</p>';
+
+    function loadPassage(id) {
+      currentId = id;
+      const p = passages.find(x => x.id === id);
+      if (!p) return;
+      
+      document.getElementById('currentNum').textContent = id;
+      document.getElementById('totalNum').textContent = passages.length;
+      document.getElementById('passageCategory').textContent = p.category;
+      document.getElementById('passageTitle').textContent = p.title;
+      document.getElementById('passageText').textContent = p.text;
+      
+      const kp = document.getElementById('keyPoints');
+      kp.innerHTML = `
+        <div class="key-point">
+          <div class="kp-icon topic">T</div>
+          <div><strong>Topic:</strong> ${p.keyElements?.topic || 'Main subject'}</div>
+        </div>
+        <div class="key-point">
+          <div class="kp-icon pivot">P</div>
+          <div><strong>Pivot:</strong> ${p.keyElements?.pivot || 'Contrast/shift'}</div>
+        </div>
+        <div class="key-point">
+          <div class="kp-icon conclusion">C</div>
+          <div><strong>Conclusion:</strong> ${p.keyElements?.conclusion || 'Outcome'}</div>
+        </div>
+      `;
+      kp.classList.toggle('show', easyMode);
+      document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
+      document.getElementById('prevBtn').disabled = id === 1;
+      document.getElementById('nextBtn').disabled = id === passages.length;
+      
+      updateDots();
+      document.getElementById('summaryInput').value = '';
+      updateWordCount();
+      document.getElementById('results').classList.remove('show');
     }
-    if (vocab.unsafe_swaps_detected && vocab.unsafe_swaps_detected.length > 0) {
-      vocabHtml += '<p style="margin-top: 8px;"><strong>⚠️ Risky swaps:</strong> ' + vocab.unsafe_swaps_detected.map(s => `<span class="vocab-badge compression">${s}</span>`).join('') + '</p>';
+
+    function prevPassage() { if (currentId > 1) loadPassage(currentId - 1); }
+    function nextPassage() { if (currentId < passages.length) loadPassage(currentId + 1); }
+
+    function toggleEasyMode() {
+      easyMode = !easyMode;
+      document.getElementById('easyToggle').classList.toggle('active', easyMode);
+      document.getElementById('keyPoints').classList.toggle('show', easyMode);
+      document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
     }
-    if (vocab.verbatim_phrases && vocab.verbatim_phrases.length > 0) {
-      vocabHtml += '<p style="margin-top: 8px; font-size: 0.8rem; color: #666;"><strong>Verbatim phrases detected:</strong> ' + vocab.verbatim_phrases.slice(0, 3).join(', ') + (vocab.verbatim_phrases.length > 3 ? '...' : '') + '</p>';
+
+    function toggleKeyPoints() {
+      const kp = document.getElementById('keyPoints');
+      kp.classList.toggle('show');
+      document.getElementById('kpBtn').textContent = kp.classList.contains('show') ? 'Click to hide key points' : 'Click to show key points';
     }
-    document.getElementById('vocabContent').innerHTML = vocabHtml;
-  } else {
-    vocabSection.style.display = 'none';
-  }
-  
-  // NEW: Band 9 Insights section
-  const insightsSection = document.getElementById('insightsSection');
-  const insights = data.band_9_insights;
-  if (insights) {
-    insightsSection.style.display = 'block';
-    document.getElementById('insightsContent').innerHTML = `
-      <div style="background: rgba(25, 118, 210, 0.1); padding: 12px; border-radius: 6px; font-size: 0.85rem;">
-        <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.word_count_flexibility}</div>
-        <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.scan_method}</div>
-        <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.connector_style}</div>
-        <div><span style="color: #1976d2; font-weight: bold;">✓</span> Verbatim acceptable: ${insights.verbatim_acceptable ? 'Yes' : 'No'}</div>
-      </div>
-    `;
-  } else {
-    insightsSection.style.display = 'none';
-  }
-  
-  // Trait scores - backend uses 0-2 scale for content, not 0-3
-  const traits = data.trait_scores || {};
-  const formScore = traits.form || 0;
-  const contentScore = traits.content || 0;
-  const grammarScore = traits.grammar || 0;
-  const vocabScore = traits.vocabulary || 0;
-  
-  document.getElementById('traitsGrid').innerHTML = `
-    <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
-      <div class="trait-name">Form</div>
-      <div class="trait-score">${formScore}/1</div>
-      <div class="trait-detail">${data.word_count || 0} words</div>
-    </div>
-    <div class="trait-box ${contentScore >= 2 ? 'good' : contentScore >= 1 ? 'medium' : 'poor'}">
-      <div class="trait-name">Content</div>
-      <div class="trait-score">${contentScore}/2</div>
-      <div class="trait-detail">T:${hasTopic ? '✓' : '✗'} P:${hasPivot ? '✓' : '✗'} C:${hasConclusion ? '✓' : '✗'}</div>
-    </div>
-    <div class="trait-box ${grammarScore >= 2 ? 'good' : grammarScore >= 1 ? 'medium' : 'poor'}">
-      <div class="trait-name">Grammar</div>
-      <div class="trait-score">${grammarScore}/2</div>
-      <div class="trait-detail">${grammar.has_connector ? (grammar.has_semicolon_before_connector ? '✓ connector' : '✓ no semi') : '✗ none'}</div>
-    </div>
-    <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
-      <div class="trait-name">Vocabulary</div>
-      <div class="trait-score">${vocabScore}/2</div>
-      <div class="trait-detail">${vocab.synonym_usage || 'N/A'}</div>
-    </div>
-  `;
-  
-  // Scroll to results
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-}
 
-function renderDots() {
-  document.getElementById('passageDots').innerHTML = passages.map((p, i) => 
-    `<div class="dot" data-id="${i+1}" onclick="loadPassage(${i+1})">${i+1}</div>`
-  ).join('');
-}
+    function jumpToPassage() {
+      const n = prompt('Enter passage (1-' + passages.length + '):');
+      if (n >= 1 && n <= passages.length) loadPassage(parseInt(n));
+    }
 
-function updateDots() {
-  document.querySelectorAll('.dot').forEach(d => {
-    const id = parseInt(d.dataset.id);
-    d.classList.toggle('active', id === currentId);
-    d.classList.toggle('attempted', attempted.has(id));
-  });
-}
+    function updateWordCount() {
+      const text = document.getElementById('summaryInput').value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const el = document.getElementById('wordCount');
+      el.textContent = words + ' words';
+      el.className = 'word-count';
+      if (words < 5 || words > 75) el.classList.add('error');
+      else if (words >= 5 && words <= 75) el.classList.add('success');
+    }
 
-function showInstructions() {
-  document.getElementById('instructionsModal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-}
+    async function verifySummary() {
+      const text = document.getElementById('summaryInput').value.trim();
+      const passage = passages.find(p => p.id === currentId);
+      if (!text) { alert('Please enter a summary'); return; }
+      const words = text.split(/\s+/).length;
+      if (words < 5 || words > 75) { alert('Summary must be 5-75 words'); return; }
+      
+      document.getElementById('loadingOverlay').classList.add('show');
+      
+      try {
+        const res = await fetch(API_URL + '/api/grade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            text: text, 
+            type: 'summarize-written-text', 
+            prompt: passage.text 
+          })
+        });
+        
+        if (!res.ok) throw new Error('Server error ' + res.status);
+        const data = await res.json();
+        showResults(data, passage);
+        attempted.add(currentId);
+        document.getElementById('completedCount').textContent = attempted.size;
+        updateDots();
+      } catch (e) {
+        console.error(e);
+        alert('Error: ' + e.message);
+      } finally {
+        document.getElementById('loadingOverlay').classList.remove('show');
+      }
+    }
 
-function closeInstructions(event) {
-  if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close')) {
-    document.getElementById('instructionsModal').classList.remove('show');
-    document.body.style.overflow = '';
-  }
-}
+    function showResults(data, passage) {
+      document.getElementById('results').classList.add('show');
+      
+      // Form error banner
+      const formErrorBanner = document.getElementById('formErrorBanner');
+      if (data.form_gate_triggered) {
+        formErrorBanner.style.display = 'block';
+        document.getElementById('formErrorReason').textContent = data.form_reason || 'Form validation failed';
+      } else {
+        formErrorBanner.style.display = 'none';
+      }
+      
+      // Score header
+      document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
+      document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
+      document.getElementById('rawDisplay').textContent = 'Raw: ' + (data.raw_score || 0) + '/7';
+      
+      // Mode display
+      const modeDisplay = document.getElementById('modeDisplay');
+      if (data.mode === 'cached') {
+        modeDisplay.innerHTML = '⚡ Cached';
+        modeDisplay.className = 'mode-tag cached';
+      } else if (data.mode === 'ai') {
+        modeDisplay.innerHTML = '🤖 AI';
+        modeDisplay.className = 'mode-tag';
+      } else if (data.mode === 'error') {
+        modeDisplay.innerHTML = '⚠️ Error';
+        modeDisplay.className = 'mode-tag offline';
+      } else {
+        modeDisplay.innerHTML = '📊 Local';
+        modeDisplay.className = 'mode-tag';
+      }
+      
+      // Feedback
+      document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
+      
+      // Content elements
+      const content = data.content_details || {};
+      const extracted = content.key_ideas_extracted || [];
+      
+      // Determine captured status from backend response
+      const hasTopic = content.has_topic || data.trait_scores?.content >= 1;
+      const hasPivot = content.has_pivot || data.trait_scores?.content >= 1.5;
+      const hasConclusion = content.has_conclusion || data.trait_scores?.content >= 2;
+      
+      document.getElementById('elementsGrid').innerHTML = `
+        <div class="element-card ${hasTopic ? 'captured' : 'missed'}">
+          <div class="element-header">
+            <span class="element-label topic">Topic</span>
+            <span class="element-check">${hasTopic ? '✓' : '✗'}</span>
+          </div>
+          <div class="element-text">${extracted[0] || (passage.keyElements?.topic || 'Main subject').substring(0, 60)}...</div>
+        </div>
+        <div class="element-card ${hasPivot ? 'captured' : 'missed'}">
+          <div class="element-header">
+            <span class="element-label pivot">Pivot</span>
+            <span class="element-check">${hasPivot ? '✓' : '✗'}</span>
+          </div>
+          <div class="element-text">${extracted[1] || (passage.keyElements?.pivot || 'Contrast/shift').substring(0, 60)}...</div>
+        </div>
+        <div class="element-card ${hasConclusion ? 'captured' : 'missed'}">
+          <div class="element-header">
+            <span class="element-label conclusion">Conclusion</span>
+            <span class="element-check">${hasConclusion ? '✓' : '✗'}</span>
+          </div>
+          <div class="element-text">${extracted[2] || (passage.keyElements?.conclusion || 'Outcome').substring(0, 60)}...</div>
+        </div>
+      `;
+      
+      // First person warning
+      const firstPersonWarning = document.getElementById('firstPersonWarning');
+      if (content.perspective_shift_penalty) {
+        firstPersonWarning.style.display = 'block';
+        document.getElementById('firstPersonContent').innerHTML = '<p>' + (content.perspective_note || "Use 'The author' instead of 'I' for first-person passages") + '</p>';
+      } else {
+        firstPersonWarning.style.display = 'none';
+      }
+      
+      // Spelling issues
+      const grammar = data.grammar_details || {};
+      const spellSection = document.getElementById('spellCheckSection');
+      if (grammar.spelling_errors && grammar.spelling_errors.length > 0) {
+        spellSection.style.display = 'block';
+        document.getElementById('spellCheckContent').innerHTML = grammar.spelling_errors.map(e => 
+          `<div class="issue-item"><span class="issue-word">"${e.word || e}"</span>${e.suggestion ? `<span class="issue-arrow">→</span><span class="issue-fix">"${e.suggestion}"</span>` : ''}</div>`
+        ).join('');
+      } else {
+        spellSection.style.display = 'none';
+      }
+      
+      // Grammar issues
+      const grammarSection = document.getElementById('grammarSection');
+      const grammarIssues = grammar.grammar_issues || [];
+      
+      // Check for connector issues
+      let connectorHtml = '';
+      if (!grammar.has_connector) {
+        connectorHtml = '<div class="issue-item">Add a connector (however, therefore, moreover) to improve grammar score</div>';
+      } else if (!grammar.has_semicolon_before_connector) {
+        connectorHtml = '<div class="issue-item">Use semicolon before connector: <strong>"; however,"</strong> not <strong>" however,"</strong></div>';
+      }
+      
+      if (grammarIssues.length > 0 || connectorHtml) {
+        grammarSection.style.display = 'block';
+        document.getElementById('grammarContent').innerHTML = connectorHtml + grammarIssues.map(g => 
+          `<div class="issue-item">${g.issue || g}</div>`
+        ).join('');
+      } else {
+        grammarSection.style.display = 'none';
+      }
+      
+      // Connector info using connector_analysis from backend
+      const connectorInfo = document.getElementById('connectorInfo');
+      const connAnalysis = data.connector_analysis || {};
+      if (grammar.has_connector) {
+        const typeClass = grammar.connector_type === 'contrast' ? 'contrast' : 
+                         grammar.connector_type === 'addition' ? 'addition' : 
+                         grammar.connector_type === 'result' ? 'reason' : '';
+        const logicText = grammar.connector_logic_correct ? '✓ Logic correct' : '✗ Check logic';
+        const logicClass = grammar.connector_logic_correct ? 'logic' : 'logic bad';
+        const semicolon = grammar.has_semicolon_before_connector ? '' : ' | Missing semicolon!';
+        connectorInfo.innerHTML = `<span class="type ${typeClass}">${grammar.connector_type}</span><span class="${logicClass}">${logicText}</span>${semicolon}`;
+      } else if (connAnalysis.contrast?.length || connAnalysis.addition?.length || connAnalysis.result?.length) {
+        // Show detected connectors even if not properly used
+        const types = [];
+        if (connAnalysis.contrast?.length) types.push('<span class="type contrast">contrast</span>');
+        if (connAnalysis.addition?.length) types.push('<span class="type addition">addition</span>');
+        if (connAnalysis.result?.length) types.push('<span class="type reason">result</span>');
+        connectorInfo.innerHTML = types.join(' ') + ' <span class="logic bad">✗ Missing semicolon before connector</span>';
+      } else {
+        connectorInfo.innerHTML = '<span style="color: #888;">No connector detected</span>';
+      }
+      
+      // Vocabulary section - show verbatim acceptance
+      const vocab = data.vocabulary_details || {};
+      const vocabSection = document.getElementById('vocabSection');
+      if (vocab) {
+        vocabSection.style.display = 'block';
+        let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
+        
+        // Show verbatim is OK message if no unsafe swaps
+        if (!vocab.unsafe_swaps_detected || vocab.unsafe_swaps_detected.length === 0) {
+          vocabHtml += '<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim copying is acceptable for PTE scoring</p>';
+        }
+        
+        if (vocab.smart_swaps_detected && vocab.smart_swaps_detected.length > 0) {
+          vocabHtml += '<p style="margin-top: 8px;"><strong>Good swaps:</strong> ' + vocab.smart_swaps_detected.map(s => `<span class="vocab-badge swap">${s}</span>`).join('') + '</p>';
+        }
+        if (vocab.unsafe_swaps_detected && vocab.unsafe_swaps_detected.length > 0) {
+          vocabHtml += '<p style="margin-top: 8px;"><strong>⚠️ Risky swaps:</strong> ' + vocab.unsafe_swaps_detected.map(s => `<span class="vocab-badge compression">${s}</span>`).join('') + '</p>';
+        }
+        if (vocab.verbatim_phrases && vocab.verbatim_phrases.length > 0) {
+          vocabHtml += '<p style="margin-top: 8px; font-size: 0.8rem; color: #666;"><strong>Verbatim phrases detected:</strong> ' + vocab.verbatim_phrases.slice(0, 3).join(', ') + (vocab.verbatim_phrases.length > 3 ? '...' : '') + '</p>';
+        }
+        document.getElementById('vocabContent').innerHTML = vocabHtml;
+      } else {
+        vocabSection.style.display = 'none';
+      }
+      
+      // Band 9 Insights section
+      const insightsSection = document.getElementById('insightsSection');
+      const insights = data.band_9_insights;
+      if (insights) {
+        insightsSection.style.display = 'block';
+        document.getElementById('insightsContent').innerHTML = `
+          <div style="background: rgba(25, 118, 210, 0.1); padding: 12px; border-radius: 6px; font-size: 0.85rem;">
+            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.word_count_flexibility}</div>
+            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.scan_method}</div>
+            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.connector_style}</div>
+            <div><span style="color: #1976d2; font-weight: bold;">✓</span> Verbatim acceptable: ${insights.verbatim_acceptable ? 'Yes' : 'No'}</div>
+          </div>
+        `;
+      } else {
+        insightsSection.style.display = 'none';
+      }
+      
+      // Trait scores
+      const traits = data.trait_scores || {};
+      const formScore = traits.form || 0;
+      const contentScore = traits.content || 0;
+      const grammarScore = traits.grammar || 0;
+      const vocabScore = traits.vocabulary || 0;
+      
+      document.getElementById('traitsGrid').innerHTML = `
+        <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
+          <div class="trait-name">Form</div>
+          <div class="trait-score">${formScore}/1</div>
+          <div class="trait-detail">${data.word_count || 0} words</div>
+        </div>
+        <div class="trait-box ${contentScore >= 2 ? 'good' : contentScore >= 1 ? 'medium' : 'poor'}">
+          <div class="trait-name">Content</div>
+          <div class="trait-score">${contentScore}/2</div>
+          <div class="trait-detail">T:${hasTopic ? '✓' : '✗'} P:${hasPivot ? '✓' : '✗'} C:${hasConclusion ? '✓' : '✗'}</div>
+        </div>
+        <div class="trait-box ${grammarScore >= 2 ? 'good' : grammarScore >= 1 ? 'medium' : 'poor'}">
+          <div class="trait-name">Grammar</div>
+          <div class="trait-score">${grammarScore}/2</div>
+          <div class="trait-detail">${grammar.has_connector ? (grammar.has_semicolon_before_connector ? '✓ connector' : '✓ no semi') : '✗ none'}</div>
+        </div>
+        <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
+          <div class="trait-name">Vocabulary</div>
+          <div class="trait-score">${vocabScore}/2</div>
+          <div class="trait-detail">${vocab.synonym_usage || 'N/A'}</div>
+        </div>
+      `;
+      
+      // Scroll to results
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeInstructions();
-});
+    function renderDots() {
+      document.getElementById('passageDots').innerHTML = passages.map((p, i) => 
+        `<div class="dot" data-id="${i+1}" onclick="loadPassage(${i+1})">${i+1}</div>`
+      ).join('');
+    }
 
-let timerRunning = false, timerInterval, seconds = 0;
-function toggleTimer() {
-  timerRunning = !timerRunning;
-  if (timerRunning) {
-    seconds = 0;
-    timerInterval = setInterval(() => {
-      seconds++;
-      const m = Math.floor(seconds / 60), s = seconds % 60;
-      document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
-    }, 1000);
-  } else {
-    clearInterval(timerInterval);
-    document.getElementById('timerText').textContent = 'Off';
-  }
-}
+    function updateDots() {
+      document.querySelectorAll('.dot').forEach(d => {
+        const id = parseInt(d.dataset.id);
+        d.classList.toggle('active', id === currentId);
+        d.classList.toggle('attempted', attempted.has(id));
+      });
+    }
+
+    function showInstructions() {
+      document.getElementById('instructionsModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeInstructions(event) {
+      if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close')) {
+        document.getElementById('instructionsModal').classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeInstructions();
+    });
+
+    let timerRunning = false, timerInterval, seconds = 0;
+    function toggleTimer() {
+      timerRunning = !timerRunning;
+      if (timerRunning) {
+        seconds = 0;
+        timerInterval = setInterval(() => {
+          seconds++;
+          const m = Math.floor(seconds / 60), s = seconds % 60;
+          document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
+        }, 1000);
+      } else {
+        clearInterval(timerInterval);
+        document.getElementById('timerText').textContent = 'Off';
+      }
+    }
+  </script>
+</body>
+</html>
