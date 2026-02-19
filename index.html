@@ -740,10 +740,11 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            text: text, 
-            type: 'summarize-written-text', 
-            prompt: passage.text 
-          })
+  text: text, 
+  type: 'summarize-written-text', 
+  prompt: passage.text,
+  keyPoints: passage.keyElements
+})
         });
         
         if (!res.ok) throw new Error('Server error ' + res.status);
