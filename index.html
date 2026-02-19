@@ -176,6 +176,7 @@
     .connector-info .logic.bad { color: #f44336; }
   </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
   <div class="container">
@@ -193,7 +194,7 @@
     <div class="passage-nav">
       <div class="nav-left">
         <button class="nav-btn" id="prevBtn" onclick="prevPassage()">← Previous</button>
-        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">40</span></span>
+        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">20</span></span>
         <button class="nav-btn" id="nextBtn" onclick="nextPassage()">Next →</button>
       </div>
       <div class="mode-toggle">
@@ -284,7 +285,7 @@
     <div class="card progress-section">
       <div class="progress-header">
         <div class="progress-title">PTE Academic Practice Portal</div>
-        <div class="progress-stats"><strong id="completedCount">0</strong> of 40 passages completed</div>
+        <div class="progress-stats"><strong id="completedCount">0</strong> of 20 passages completed</div>
       </div>
       <div class="passage-dots" id="passageDots"></div>
     </div>
@@ -408,442 +409,222 @@
     const passages = [
       {
         id: 1,
-        title: "Adaptive Persistence and Success",
-        category: "Psychology/Social Sciences",
-        text: `"What if everything we thought we knew about success was wrong?" asks Dr. Angela Martinez, lead researcher at the Harvard Business School. "I spent fifteen years studying Fortune 500 CEOs, Olympic athletes, and Nobel laureates, and I discovered something shocking." Her research, published in the Journal of Applied Psychology, reveals that 78% of high achievers credit their success not to talent or intelligence, but to what she calls "adaptive persistence." "It is not about working harder," she explains. "It is about working smarter when things get tough." The study tracked 2,400 participants over a decade and found that those who viewed setbacks as learning opportunities were 3.4 times more likely to reach their goals. "Ask yourself this: when you fail, do you blame circumstances or do you ask what you can learn?" Dr. Martinez challenges. "Your answer determines your future." The data is clear - mindset matters more than natural ability. But how do we develop this adaptive persistence? "Start small," she advises. "When something goes wrong, pause and ask: what is this teaching me?" This simple practice, repeated daily, rewires the brain for resilience.`,
+        title: "Climate Change Economics",
+        category: "Environment/Economics",
+        text: `Have you ever wondered what the true economic cost of climate change really is? "We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act," warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. "The question is not whether we can afford to address climate change," Chen emphasizes, "but whether we can afford not to?" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. "Every degree of warming matters," states the report. "At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%." The insurance industry reports that climate-related claims have surged by 340% in the past decade. "Is this sustainable?" asks Michael Torres, CEO of Global Insurance Partners. "Absolutely not." Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. "Where is the justice in that?" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. "We have seen solar costs drop by 89% and wind by 70% since 2010," reports the International Energy Agency. "Can we scale fast enough?" The answer, according to their models, requires $4 trillion in annual investment. "Is that a lot?" asks Chen. "It's less than 5% of global military spending."`,
         keyElements: { 
-          topic: "78% of high achievers credit success to adaptive persistence, not talent", 
-          pivot: "It is not about working harder, it is about working smarter when things get tough", 
-          conclusion: "When something goes wrong, pause and ask: what is this teaching me?" 
+          topic: "Potential 10% global GDP loss by 2050 without climate action", 
+          pivot: "Developing nations bear 75% of costs despite minimal emissions", 
+          conclusion: "Renewable transition requires $4 trillion annual investment" 
         }
       },
       {
         id: 2,
-        title: "Climate Change and Global Response",
-        category: "Environment/Science",
-        text: `Climate change represents one of the most pressing challenges of our era. Rising global temperatures have led to melting ice caps, extreme weather events, and disruptions to ecosystems worldwide. Scientists warn that without immediate action, the consequences will be catastrophic. While some nations have committed to reducing carbon emissions through international agreements like the Paris Accord, implementation remains inconsistent across countries. However, technological innovations in renewable energy offer promising solutions. Solar and wind power have become increasingly cost-competitive with fossil fuels. Ultimately, individual behavioral changes combined with comprehensive policy reforms are essential for meaningful progress in addressing this global crisis.`,
+        title: "Artificial Intelligence in Healthcare",
+        category: "Technology/Health",
+        text: `"AI will transform medicine more dramatically than any technology since the discovery of antibiotics," declares Dr. James Whitmore, Chief of Medical Innovation at Johns Hopkins. But what does the data actually show? A comprehensive study of 2.3 million patient records reveals that AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers, compared to 86.3% for human specialists alone. "The question is not whether AI is better," Whitmore clarifies, "but how we combine human judgment with machine precision?" The implementation has been rapid: 67% of major hospitals now use AI for radiology, and surgical robots assisted in over 1.2 million procedures last year. "Are we moving too fast?" asks Dr. Elena Vasquez, medical ethicist. "We've seen 23 documented cases of AI-related diagnostic errors in the past year alone." The economic implications are staggering. "AI could reduce healthcare costs by $150 billion annually in the US alone," reports the Healthcare Economics Institute. But who benefits? "Hospitals save money, but are patients seeing lower bills?" questions Senator Maria Gonzalez. Workforce disruption is another concern. "Will radiologists become obsolete?" asks Dr. Whitmore. "Not if they adapt. AI handles routine cases; humans focus on complex ones." The technology also raises profound questions about privacy. "We're feeding millions of patient records into algorithms," warns privacy advocate Thomas Reid. "Who owns that data? Who controls it?" Despite concerns, patient acceptance is growing: 58% now trust AI-assisted diagnoses, up from just 23% five years ago. "What changed?" asks Reid. "People saw it work."`,
         keyElements: { 
-          topic: "Climate change is a pressing challenge with rising temperatures and extreme weather", 
-          pivot: "While some nations committed to agreements, implementation remains inconsistent", 
-          conclusion: "Individual changes combined with policy reforms are essential for progress" 
+          topic: "AI diagnostic tools achieved 94.7% accuracy vs 86.3% for human specialists", 
+          pivot: "67% of major hospitals use AI but 23 diagnostic errors occurred", 
+          conclusion: "AI could reduce healthcare costs by $150 billion annually in US" 
         }
       },
       {
         id: 3,
-        title: "Artificial Intelligence Transformation",
-        category: "Technology",
-        text: `The rise of artificial intelligence is transforming industries across the globe. Machine learning algorithms now perform tasks once requiring human cognition, from medical diagnosis to financial analysis. Companies are investing billions in AI research and development. While these advancements boost efficiency and accuracy, concerns about job displacement persist among workers and policymakers. However, history suggests that technological revolutions create new employment categories even as they eliminate others. Therefore, proactive workforce retraining programs and educational initiatives are crucial for economic adaptation in the AI era.`,
+        title: "The Future of Work",
+        category: "Business/Labor",
+        text: `"The nine-to-five office job is dead," announces workplace analyst Patricia Okonkwo. "The question is: what replaces it?" Her research across 45 countries reveals that 73% of knowledge workers now work remotely at least part-time, up from just 16% before 2020. "Is this a temporary shift?" she asks. "Our data says no." Companies report mixed results: productivity increased by 13% on average, but collaboration scores dropped by 22%. "What are we sacrificing for efficiency?" questions Dr. Robert Kim, organizational psychologist. The real estate market has been upended. "Commercial vacancy rates in major cities have hit 19%," reports Global Property Analytics. "That's $450 billion in stranded assets." Meanwhile, suburban home prices surged 34% as workers sought more space. "Who wins and who loses?" asks Okonkwo. "Urban service workers face longer commutes to fewer jobs." The skills gap is widening dramatically. "By 2027, 44% of core worker skills will have changed," warns the World Economic Forum. "Are our education systems keeping pace?" Automation threatens 85 million jobs globally by 2025, but could create 97 million new ones. "Is this just creative destruction?" asks Dr. Kim. "Tell that to the displaced worker." Mental health has emerged as a critical concern. "Remote workers report 67% higher rates of isolation and burnout," states a major study. "How do we build connection in distributed teams?" The four-day workweek experiment shows promise: 92% of trial companies reported maintained or improved productivity. "Will this become standard?" asks Okonkwo. "The data suggests it should."`,
         keyElements: { 
-          topic: "AI is transforming industries with machine learning performing human tasks", 
-          pivot: "While advancements boost efficiency, job displacement concerns persist", 
-          conclusion: "Workforce retraining programs are crucial for economic adaptation" 
+          topic: "73% of knowledge workers now work remotely at least part-time", 
+          pivot: "Productivity increased 13% but collaboration scores dropped 22%", 
+          conclusion: "Four-day workweek shows 92% of companies maintained productivity" 
         }
       },
       {
         id: 4,
-        title: "Urbanization and Smart Cities",
-        category: "Urban Planning",
-        text: `Urbanization trends continue to reshape global demographics. By 2050, nearly 70% of the world's population is projected to live in cities, up from 55% today. This shift brings both opportunities and challenges. While urban centers drive economic growth and innovation, they also face significant problems including congestion, pollution, and inequality. However, smart city technologies offer potential solutions through data-driven resource management and improved infrastructure. Consequently, sustainable urban planning has become a priority for policymakers worldwide as they seek to balance development with livability.`,
+        title: "Education Transformation",
+        category: "Education",
+        text: `"Our education system was designed for the industrial age, not the information age," argues Dr. Fatima Al-Rashid, education reform advocate. "The question is: why are we still using it?" Standardized test scores have remained flat for three decades despite a 287% increase in per-student spending. "Where is the money going?" asks Al-Rashid. "Administrative costs have ballooned while teacher salaries stagnate." The skills mismatch is alarming: 87% of employers report difficulty finding candidates with adequate critical thinking skills, yet only 23% of curricula emphasize these competencies. "What are we actually teaching?" she demands. Technology integration shows promise but uneven results. "Schools with 1:1 device programs see 34% better engagement," reports the Digital Education Institute, "but test scores improve only when devices are paired with teacher training." The pandemic accelerated online learning adoption by an estimated five years. "Did we learn anything?" asks Dr. Marcus Webb, education researcher. "Hybrid models that combine flexibility with human connection show the best outcomes." Student debt has reached crisis levels: $1.7 trillion in the US alone, with average graduates owing $37,000. "Is higher education still worth it?" asks Webb. "For STEM and professional fields, yes. For others, the ROI is questionable." Alternative credentials are gaining traction. "Micro-credentials and bootcamps grew by 340% since 2019," reports the Credential Innovation Lab. "Are degrees becoming obsolete?" asks Al-Rashid. "Not yet, but the monopoly is ending."`,
         keyElements: { 
-          topic: "By 2050, 70% of world population will live in cities", 
-          pivot: "While cities drive growth, they face congestion, pollution, and inequality", 
-          conclusion: "Sustainable urban planning is a priority for policymakers worldwide" 
+          topic: "Test scores flat for 30 years despite 287% increase in per-student spending", 
+          pivot: "87% of employers report difficulty finding critical thinking skills", 
+          conclusion: "Micro-credentials and bootcamps grew by 340% since 2019" 
         }
       },
       {
         id: 5,
-        title: "Higher Education Disruption",
-        category: "Education",
-        text: `The traditional model of higher education faces unprecedented disruption. Online learning platforms now offer courses from prestigious institutions at minimal cost, democratizing access to knowledge globally. Enrollment in virtual programs has surged dramatically. While critics question the quality and engagement of virtual instruction compared to in-person experiences, recent data suggests outcomes can be comparable. However, the value of credentials earned online remains debated among employers. Nevertheless, hybrid models combining digital and physical learning are likely to dominate future education landscapes as institutions adapt to changing student needs.`,
+        title: "Global Food Security",
+        category: "Agriculture/Economics",
+        text: `"We are facing the greatest food crisis in human history," warns Dr. Priya Sharma, agricultural economist. "The question is not if famine will spread, but where and when?" The numbers are devastating: 828 million people go hungry every night, an increase of 150 million since 2019. "What changed?" asks Sharma. "Conflict, climate, and COVID created a perfect storm." Crop yields in key regions have declined sharply: wheat production in the Black Sea region dropped 23%, while corn yields in the US Midwest fell 18% due to drought. "Can technology save us?" asks Dr. Kenji Tanaka, plant geneticist. "GMO crops could increase yields by 25%, but face regulatory barriers in 67% of countries." Food waste compounds the crisis: one-third of all food produced is lost or wasted, representing $940 billion annually. "Why do we tolerate this?" demands Sharma. "In developed nations, it's consumer waste. In developing nations, it's infrastructure." The cost of basic staples has skyrocketed: rice prices increased 45%, wheat 38%, and corn 52% in the past two years. "Who suffers most?" asks Tanaka. "The poorest spend 70% of income on food. A price spike means starvation." Vertical farming and alternative proteins offer hope. "Lab-grown meat production costs dropped 99% in a decade," reports the Food Innovation Institute. "When will it scale?" Aquaculture now provides 52% of global fish consumption. "Can we farm our way out of this?" asks Sharma. "Only if we act now."`,
         keyElements: { 
-          topic: "Online learning platforms democratize access to education", 
-          pivot: "While critics question quality, outcomes can be comparable", 
-          conclusion: "Hybrid models combining digital and physical learning will dominate" 
+          topic: "828 million people go hungry, up 150 million since 2019", 
+          pivot: "One-third of food produced is wasted, costing $940 billion annually", 
+          conclusion: "Aquaculture provides 52% of global fish consumption" 
         }
       },
       {
         id: 6,
-        title: "Mental Health Awareness",
+        title: "Mental Health Crisis",
         category: "Health/Psychology",
-        text: `Mental health awareness has grown substantially in recent decades. Public campaigns have reduced stigma and encouraged more people to seek professional help when experiencing psychological distress. Research continues to demonstrate the connection between mental and physical health. While increased awareness represents significant progress, mental health services remain inaccessible to many due to cost and availability constraints. However, digital therapeutics and telemedicine are expanding reach to underserved populations. Ultimately, integrating mental health care into primary healthcare systems is essential for achieving universal access and improving overall population health.`,
+        text: `"We are in the midst of a global mental health pandemic," declares Dr. Lisa Wong, psychiatrist and public health researcher. "The question is: why aren't we treating it with the same urgency as COVID-19?" The statistics are staggering: depression affects 280 million people worldwide, anxiety disorders impact 301 million, and suicide claims 700,000 lives annually. "What has changed?" asks Wong. "Social media, economic insecurity, and social isolation have created unprecedented stress." Among teenagers, the crisis is acute: 44% report persistent feelings of sadness or hopelessness, up from 26% in 2009. "Are screens to blame?" asks Dr. Ahmed Hassan, adolescent psychologist. "The correlation is strong: teens spending 5+ hours daily on social media are 71% more likely to show suicidal ideation." Treatment access remains woefully inadequate. "Two-thirds of people with mental health conditions receive no treatment," reports the WHO. "Why? Stigma, cost, and provider shortages." The economic cost is enormous: $1 trillion annually in lost productivity. "Can we afford to ignore this?" asks Wong. "Absolutely not." New treatments offer hope. "Psychedelic-assisted therapy shows 67% efficacy for treatment-resistant depression," reports the Psychiatric Research Institute. "When will it be widely available?" Workplace mental health programs demonstrate ROI: every $1 invested returns $4 in improved productivity. "Why aren't more companies investing?" asks Hassan. "Short-term thinking."`,
         keyElements: { 
-          topic: "Mental health awareness has grown, reducing stigma", 
-          pivot: "While awareness increased, services remain inaccessible due to cost", 
-          conclusion: "Integrating mental health into primary healthcare is essential" 
+          topic: "Depression affects 280 million people worldwide", 
+          pivot: "Two-thirds of people with mental health conditions receive no treatment", 
+          conclusion: "Every $1 invested in workplace mental health returns $4 in productivity" 
         }
       },
       {
         id: 7,
-        title: "Supply Chain Resilience",
-        category: "Business/Economics",
-        text: `Global supply chains experienced severe disruptions during the pandemic. Factory closures, shipping delays, and labor shortages exposed vulnerabilities in just-in-time manufacturing systems that had been optimized for efficiency rather than resilience. Companies lost billions in revenue. While some companies are reshoring production to reduce dependency risks, complete independence remains economically impractical for most industries. However, diversification strategies and strategic stockpiling are becoming standard practices. Therefore, future supply chain design will balance efficiency with robustness to withstand future shocks.`,
+        title: "Urbanization Challenges",
+        category: "Urban Planning",
+        text: `"By 2050, 68% of humanity will live in cities," announces urban planner Diego Martinez. "The question is: are our cities ready?" The scale of urban growth is unprecedented: 2.5 billion people will move to cities in the next three decades. "Where will they live?" asks Martinez. "We need to build the equivalent of a new city of 1.5 million people every week for the next 30 years." Infrastructure is already failing. "Traffic congestion costs the US economy $87 billion annually in lost productivity," reports the Transportation Institute. "In Lagos, commuters spend an average of 3 hours daily in traffic. Is that a life?" Affordable housing has become a crisis in virtually every major city. "In London, the median home costs 13 times median income," states the Global Housing Observatory. "In Mumbai, 60% of residents live in informal settlements. What does that say about our priorities?" Air pollution claims 4.2 million lives annually, with 91% of urban populations breathing unsafe air. "Are we literally killing our citizens?" demands Dr. Sarah Johnson, environmental health specialist. Smart city technologies offer partial solutions. "Barcelona saved $75 million annually through IoT-enabled resource management," reports the Smart Cities Alliance. "Can technology solve everything?" asks Martinez. "No. We need political will and inclusive planning." Green spaces are disappearing: cities lost 35% of their tree cover since 1990. "What are we leaving for future generations?"`,
         keyElements: { 
-          topic: "Pandemic exposed vulnerabilities in just-in-time supply chains", 
-          pivot: "While some reshore production, complete independence is impractical", 
-          conclusion: "Future supply chains will balance efficiency with robustness" 
+          topic: "By 2050, 68% of humanity will live in cities", 
+          pivot: "Traffic congestion costs US economy $87 billion annually", 
+          conclusion: "Barcelona saved $75 million annually through smart city technology" 
         }
       },
       {
         id: 8,
-        title: "The Gig Economy",
-        category: "Labor/Economics",
-        text: `The gig economy has fundamentally altered labor market dynamics. Platform-based work offers flexibility and supplemental income opportunities for millions of workers worldwide. Apps connect service providers directly with consumers. While this arrangement suits those seeking autonomy, it often lacks traditional employment protections including benefits, job security, and minimum wage guarantees. However, regulatory frameworks are slowly evolving to address these gaps in worker protection. Consequently, the future of work likely involves hybrid models combining gig flexibility with some traditional safeguards for workers.`,
+        title: "Renewable Energy Revolution",
+        category: "Energy/Environment",
+        text: `"The energy transition is happening faster than anyone predicted," declares Dr. Anna Petrov, energy systems analyst. "The question is: can we accelerate it even more?" Renewable energy capacity grew by 295 gigawatts in 2022, the largest increase in history. "Solar alone added 191 gigawatts," Petrov reports. "That's equivalent to 95 large nuclear plants." The cost reductions have been dramatic. "Solar photovoltaic costs fell 89% since 2010, onshore wind by 70%, and batteries by 87%," states the International Renewable Energy Agency. "What does this mean?" asks Petrov. "Renewables are now the cheapest source of new electricity in 90% of the world." Investment is flowing: $1.8 trillion was invested in clean energy in 2023, surpassing fossil fuel investment for the first time. "Is this enough?" asks Dr. Michael Chen, climate scientist. "We need $4 trillion annually to stay below 1.5°C of warming." Grid integration presents challenges. "Intermittency requires storage and flexibility," explains Chen. "Battery storage capacity grew 67% in 2022, but we need 20 times more by 2030." Fossil fuel subsidies remain a major obstacle: governments spent $7 trillion propping up oil, gas, and coal in 2022. "Why are we paying to destroy the planet?" demands Petrov. Electric vehicles are gaining ground: 14% of new car sales globally were electric in 2022, up from 4% in 2020. "When will ICE vehicles become obsolete?" asks Chen. "Sooner than automakers think."`,
         keyElements: { 
-          topic: "Gig economy offers flexibility and income opportunities", 
-          pivot: "While it suits autonomy seekers, it lacks employment protections", 
-          conclusion: "Future work involves hybrid models with flexibility and safeguards" 
+          topic: "Renewable energy capacity grew by 295 gigawatts in 2022", 
+          pivot: "$1.8 trillion invested in clean energy, surpassing fossil fuels", 
+          conclusion: "14% of new car sales were electric in 2022, up from 4% in 2020" 
         }
       },
       {
         id: 9,
-        title: "Private Space Exploration",
-        category: "Science/Technology",
-        text: `Space exploration is entering a new era driven by private enterprise. Companies like SpaceX and Blue Origin are dramatically reducing launch costs through reusable rocket technology. This innovation is opening space to commercial activities. While government agencies pioneered space travel, commercial entities now dominate innovation in the sector. However, questions about regulation, space debris management, and resource exploitation remain unresolved by international agreements. Ultimately, international cooperation will be necessary to ensure sustainable development of space activities and prevent conflicts over celestial resources.`,
+        title: "Digital Privacy Concerns",
+        category: "Technology/Society",
+        text: `"We have built a surveillance economy," warns privacy advocate Rebecca Torres. "The question is: do we want to live in it?" Data collection has reached unprecedented levels. "The average person's data is collected 747 times daily," reports the Digital Privacy Institute. "By whom? Hundreds of companies you've never heard of." Social media platforms are the worst offenders. "Meta collects an average of 2,300 data points per user," Torres reveals. "What do they know about us? More than our closest friends." The consequences are real. "78% of companies now use social media data in hiring decisions," states the Employment Practices Survey. "Is this fair?" asks Torres. "A photo from college can follow you forever." Data breaches are epidemic: 1,800 breaches exposed 422 million records in 2022. "How secure is our information?" asks cybersecurity expert David Kim. "Not very. The average company takes 277 days to identify a breach." Government surveillance has expanded dramatically. "The NSA collects 200 billion communications daily," reports the Surveillance Studies Center. "Is this legal?" asks Torres. "Courts are still deciding." The EU's GDPR has shown that regulation works: privacy complaints dropped 18% in regulated jurisdictions. "Will other regions follow?" asks Kim. "They must." Consumer awareness is growing: 67% of users have changed privacy settings in the past year. "Are people waking up?" asks Torres. "Finally."`,
         keyElements: { 
-          topic: "Private companies reducing launch costs with reusable rockets", 
-          pivot: "While government pioneered space travel, commercial entities dominate innovation", 
-          conclusion: "International cooperation necessary for sustainable space development" 
+          topic: "Average person's data is collected 747 times daily", 
+          pivot: "1,800 data breaches exposed 422 million records in 2022", 
+          conclusion: "Privacy complaints dropped 18% in GDPR-regulated jurisdictions" 
         }
       },
       {
         id: 10,
-        title: "Biodiversity Crisis",
-        category: "Environment",
-        text: `Biodiversity loss constitutes an ecological crisis of comparable magnitude to climate change. Species extinction rates are currently 100 to 1000 times higher than natural background rates, driven by habitat destruction, pollution, and invasive species. Ecosystems are collapsing worldwide. While conservation efforts have saved some species from extinction, overall trends remain alarming and continue to accelerate. However, ecosystem restoration projects are demonstrating that recovery is possible with sustained investment and protection. Therefore, protecting remaining habitats while restoring degraded ecosystems offers the best path forward for preserving Earth's biological heritage.`,
+        title: "Space Exploration Economics",
+        category: "Science/Technology",
+        text: `"Space is becoming big business," declares aerospace analyst Jennifer Walsh. "The question is: who profits?" The global space economy reached $469 billion in 2022, growing at 8% annually. "Satellites dominate: 77% of revenue comes from satellite services," Walsh reports. "But launch is where the action is." SpaceX has revolutionized the industry. "Reusable rockets reduced launch costs by 80%," states the Space Economics Institute. "What does this mean?" asks Walsh. "Access to space is now 10 times cheaper than a decade ago." The satellite internet market is exploding. "Starlink has 1.5 million subscribers and aims for 20 million by 2025," reports the Telecom Satellite Association. "Is this sustainable?" asks Dr. Robert Park, space policy expert. "The night sky is already cluttered: 8,000 satellites orbit Earth, up from 2,000 in 2019." Space debris poses a growing threat. "NASA tracks 47,000 objects larger than 10cm, but millions of smaller pieces go untracked," warns Park. "One collision could cascade into thousands more." Lunar and Mars missions are accelerating. "NASA's Artemis program will cost $93 billion through 2025," reports the Congressional Budget Office. "Is this worth it?" asks Walsh. "The moon contains resources worth trillions." Private investment is surging: $15.4 billion flowed to space startups in 2021. "Are we in a bubble?" asks Park. "Time will tell."`,
         keyElements: { 
-          topic: "Species extinction rates 100-1000x higher than natural rates", 
-          pivot: "While conservation saved some species, trends remain alarming", 
-          conclusion: "Protecting habitats while restoring ecosystems offers best path forward" 
+          topic: "Global space economy reached $469 billion in 2022", 
+          pivot: "Reusable rockets reduced launch costs by 80%", 
+          conclusion: "Private investment of $15.4 billion flowed to space startups in 2021" 
         }
       },
       {
         id: 11,
-        title: "Social Media Impact",
-        category: "Technology/Society",
-        text: `Social media platforms have revolutionized communication and information sharing. Billions of users worldwide connect, share content, and organize through these digital networks. The platforms have become integral to modern life. While these platforms enable unprecedented connectivity, concerns about misinformation spread, privacy violations, and mental health impacts have intensified in recent years. However, platform moderation policies and regulatory responses are evolving to address these challenges. Consequently, the future of social media likely involves greater accountability and user protection measures to balance free expression with societal well-being.`,
+        title: "Ocean Conservation Crisis",
+        category: "Environment",
+        text: `"Our oceans are dying, and we're watching it happen," warns marine biologist Dr. Carlos Mendez. "The question is: will we act before it's too late?" Ocean temperatures have risen 0.6°C since 1900, triggering mass coral bleaching. "We've lost 50% of coral reefs already," Mendez reports. "At 1.5°C warming, we lose 70%. At 2°C, 99%. What will marine ecosystems look like then?" Overfishing has depleted fish stocks dramatically. "34% of fish populations are overfished," states the Marine Conservation Institute. "Can they recover?" asks Mendez. "Not at current exploitation rates." Plastic pollution chokes marine life. "8 million tons of plastic enter oceans annually," reports the Ocean Cleanup Foundation. "That's a garbage truck every minute. Is this acceptable?" Dead zones are expanding: 700 areas worldwide now experience hypoxia, up from 50 in 1950. "What kills the fish?" asks Dr. Sarah Liu, ocean chemist. "Agricultural runoff creates algal blooms that consume all oxygen." Ocean acidification threatens shell-forming organisms. "pH has dropped 0.1 units, representing a 30% increase in acidity," Liu reports. "What does this mean for food chains?" asks Mendez. "Collapse from the bottom up." Protected areas offer hope. "Marine reserves show 400% recovery in fish biomass," reports the Protected Seas Initiative. "Are we protecting enough?" asks Liu. "Only 7.7% of oceans are protected. We need 30% by 2030."`,
         keyElements: { 
-          topic: "Social media revolutionized communication with billions of users", 
-          pivot: "While enabling connectivity, concerns about misinformation and privacy intensified", 
-          conclusion: "Future involves greater accountability and user protection measures" 
+          topic: "Ocean temperatures rose 0.6°C, 50% of coral reefs lost", 
+          pivot: "34% of fish populations are overfished", 
+          conclusion: "Marine reserves show 400% recovery in fish biomass" 
         }
       },
       {
         id: 12,
-        title: "Renewable Energy Transition",
-        category: "Energy/Environment",
-        text: `The transition to renewable energy is accelerating globally. Solar and wind power have become cost-competitive with fossil fuels in many markets, driving massive investment in clean energy infrastructure. Countries are setting ambitious renewable targets. While intermittency challenges persist for renewables, battery storage technology is advancing rapidly to address this limitation. However, fossil fuel subsidies and entrenched interests continue to slow the transition despite economic advantages. Nevertheless, economic fundamentals increasingly favor renewable sources, suggesting an irreversible shift in global energy systems toward sustainability.`,
+        title: "Cryptocurrency Impact",
+        category: "Finance/Technology",
+        text: `"Cryptocurrency has created both fortunes and disasters," observes financial analyst Thomas Wright. "The question is: what comes next?" The market has been volatile: Bitcoin peaked at $69,000 in 2021, then crashed below $16,000 in 2022. "Who lost money?" asks Wright. "Retail investors who bought at the top. 52% of crypto buyers lost money overall." Institutional adoption is growing despite volatility. "MicroStrategy holds 140,000 Bitcoin worth billions," reports the Crypto Investment Review. "Is this wise?" asks Dr. Angela Foster, financial economist. "It's speculation, not investment." Energy consumption remains controversial. "Bitcoin mining uses 127 terawatt-hours annually, more than Argentina," states the Energy Blockchain Institute. "Can this be sustainable?" asks Wright. "Proof-of-stake alternatives use 99% less energy." Regulation is tightening globally. "The SEC filed 46 enforcement actions against crypto in 2022," reports the Regulatory Watch Group. "Is this the end of wild west crypto?" asks Foster. "Hopefully." DeFi (decentralized finance) has exploded. "$50 billion is locked in DeFi protocols," Wright notes. "But hacks stole $3.8 billion in 2022. Is your money safe?" Central bank digital currencies are emerging. "87 countries are exploring CBDCs," reports the Digital Currency Observatory. "Will this replace crypto?" asks Foster. "It will certainly compete."`,
         keyElements: { 
-          topic: "Solar and wind power now cost-competitive with fossil fuels", 
-          pivot: "While intermittency challenges persist, battery technology advances rapidly", 
-          conclusion: "Economic fundamentals favor renewables, suggesting irreversible shift" 
+          topic: "Bitcoin peaked at $69,000 then crashed below $16,000", 
+          pivot: "52% of crypto buyers lost money overall", 
+          conclusion: "87 countries are exploring central bank digital currencies" 
         }
       },
       {
         id: 13,
-        title: "Remote Work Normalization",
-        category: "Work/Labor",
-        text: `Remote work has become normalized following pandemic-induced workplace changes. Many employees now expect flexible arrangements, and companies are adapting policies to attract and retain talent. Productivity studies show mixed results. While remote work offers benefits including reduced commuting and improved work-life balance, concerns about collaboration erosion and career development persist among managers. However, hybrid models are emerging as a compromise that offers flexibility while maintaining some in-person interaction. Ultimately, the most successful organizations will offer flexibility while maintaining strong culture and connection among employees.`,
+        title: "Aging Population Challenges",
+        category: "Demographics/Society",
+        text: `"The world is getting older fast," declares demographer Dr. Yuki Tanaka. "The question is: are we prepared?" By 2050, the global population aged 60+ will double to 2.1 billion. "In Japan, 29% are already over 65," Tanaka reports. "Who will care for them?" The dependency ratio is shifting dramatically. "In 1950, there were 12 workers per retiree. By 2050, there will be 4," states the Global Aging Institute. "Can pension systems survive?" asks Tanaka. "Most are fundamentally insolvent." Healthcare costs are exploding. "Dementia care alone will cost $2 trillion annually by 2030," reports the Alzheimer's Research Foundation. "Where will this money come from?" asks Dr. Maria Santos, geriatric specialist. "Families are already struggling. 53 million Americans provide unpaid elder care." Labor shortages are emerging. "Germany faces a 5 million worker shortfall by 2035," Tanaka notes. "Will immigration fill the gap?" Automation offers partial solutions. "Elder care robots could address 40% of assistance needs," reports the Robotics Care Alliance. "Can robots replace human connection?" asks Santos. "Never completely." Silver economies present opportunities. "The 60+ market will control $15 trillion in spending by 2030," states the Senior Consumer Institute. "Are businesses adapting?" asks Tanaka. "Too slowly."`,
         keyElements: { 
-          topic: "Remote work normalized with employees expecting flexibility", 
-          pivot: "While offering benefits, concerns about collaboration erosion persist", 
-          conclusion: "Successful organizations offer flexibility while maintaining culture" 
+          topic: "By 2050, global population aged 60+ will double to 2.1 billion", 
+          pivot: "Dementia care will cost $2 trillion annually by 2030", 
+          conclusion: "60+ market will control $15 trillion in spending by 2030" 
         }
       },
       {
         id: 14,
-        title: "Antibiotic Resistance",
-        category: "Health/Medicine",
-        text: `Antibiotic resistance poses a growing threat to global health. Overuse of antibiotics in medicine and agriculture has accelerated the evolution of resistant bacteria, rendering some infections increasingly difficult to treat. Common infections may become deadly again. While new antibiotics are being developed, the pipeline remains insufficient to address emerging threats and resistant strains. However, stewardship programs promoting appropriate antibiotic use are showing positive results in reducing resistance rates. Therefore, combining conservation of existing drugs with investment in new treatments is essential for preserving antibiotic effectiveness for future generations.`,
+        title: "Biodiversity Loss",
+        category: "Environment",
+        text: `"We are in the sixth mass extinction," warns conservation biologist Dr. Rachel Green. "The question is: do we understand what's at stake?" Species are disappearing at 1,000 times the natural rate. "We've lost 68% of wildlife populations since 1970," Green reports. "What does this mean for ecosystems?" asks Dr. James Okonkwo, ecosystem scientist. "Collapse. Every species plays a role." Habitat destruction drives the crisis. "We've converted 75% of ice-free land for human use," states the Biodiversity Monitoring Center. "Is this reversible?" asks Green. "Not at current rates. We lose 10 million hectares of forest annually." Insect populations are crashing. "Flying insects declined 76% in protected areas over 27 years," reports the Entomological Research Institute. "Why does this matter?" asks Okonkwo. "80% of wild plants depend on insect pollination." Freshwater species are most at risk. "Wetland species populations fell 83%," Green notes. "What are we doing to our waterways?" asks Okonkwo. "Poisoning them with agricultural runoff and plastic." The economic value of biodiversity is enormous. "Ecosystem services provide $125 trillion annually," reports the Natural Capital Coalition. "Can we afford to lose this?" asks Green. "Absolutely not." Conservation works when funded. "Protected areas reduced species decline by 40%," states the Conservation Effectiveness Lab. "Are we investing enough?" asks Okonkwo. "We spend 10 times more on fossil fuel subsidies than conservation."`,
         keyElements: { 
-          topic: "Antibiotic resistance growing threat from overuse", 
-          pivot: "While new antibiotics developed, pipeline remains insufficient", 
-          conclusion: "Conservation plus investment essential for preserving effectiveness" 
+          topic: "Species disappearing at 1,000 times natural rate, 68% of wildlife lost", 
+          pivot: "75% of ice-free land converted for human use", 
+          conclusion: "Protected areas reduced species decline by 40%" 
         }
       },
       {
         id: 15,
-        title: "The Digital Divide",
-        category: "Technology/Society",
-        text: `The digital divide persists despite widespread internet adoption. Billions of people lack reliable access to digital technologies, creating disparities in education, employment, and civic participation. The gap is widening between connected and unconnected populations. While mobile connectivity has expanded access in developing regions, meaningful digital inclusion requires more than basic connectivity - it requires digital literacy and affordable devices. However, public-private partnerships are addressing infrastructure gaps in underserved areas. Consequently, achieving universal digital access remains a critical development priority for the coming decade to ensure equitable opportunities.`,
+        title: "Water Scarcity Crisis",
+        category: "Environment/Resources",
+        text: `"Water will be the oil of the 21st century," predicts resource economist Dr. Amara Diallo. "The question is: who controls it?" 2.3 billion people already live in water-stressed countries. "By 2025, two-thirds of the world's population will face shortages," Diallo reports. "Where will they go?" Agriculture consumes 70% of freshwater withdrawals. "It takes 1,800 gallons to produce one pound of beef," states the Water Footprint Network. "Is this sustainable?" asks Dr. Peter Schmidt, hydrologist. "Not with current diets and population growth." Groundwater is being depleted rapidly. "21 of the world's 37 largest aquifers are receding," reports the Groundwater Monitoring Consortium. "Can they recharge?" asks Diallo. "Some take thousands of years. We're mining fossil water." Climate change intensifies scarcity. "Drought frequency has increased 29% since 2000," Schmidt notes. "What happens to farming?" asks Diallo. "In California's Central Valley, land has sunk 28 feet due to over-pumping." Water infrastructure is crumbling. "The US loses 6 billion gallons of treated water daily to leaks," reports the Infrastructure Assessment Group. "Is this acceptable?" asks Schmidt. "It's criminal negligence." Desalination offers partial relief. "Capacity grew 57% in the past decade," Diallo reports. "But energy costs remain high. Can renewables bridge the gap?" Water markets are emerging. "Australia's water trading saved $2 billion during drought," states the Water Economics Institute. "Will markets solve scarcity?" asks Diallo. "They'll help, but equity remains a concern."`,
         keyElements: { 
-          topic: "Billions lack reliable digital access creating disparities", 
-          pivot: "While mobile expanded access, meaningful inclusion requires more", 
-          conclusion: "Universal digital access remains critical development priority" 
+          topic: "2.3 billion people live in water-stressed countries", 
+          pivot: "Agriculture consumes 70% of freshwater withdrawals", 
+          conclusion: "Australia's water trading saved $2 billion during drought" 
         }
       },
       {
         id: 16,
-        title: "Precision Medicine",
-        category: "Health/Medicine",
-        text: `Precision medicine is transforming healthcare delivery. By analyzing genetic, environmental, and lifestyle factors, treatments can be tailored to individual patients rather than applying one-size-fits-all approaches. Cancer treatment is being revolutionized. While the potential is enormous, implementation challenges include data privacy concerns and healthcare cost implications for widespread adoption. However, technological advances are rapidly reducing testing costs and making personalized medicine more accessible. Ultimately, personalized medicine represents the future of effective, efficient healthcare that improves outcomes while reducing adverse effects from inappropriate treatments.`,
+        title: "Gender Equality Progress",
+        category: "Social/Economics",
+        text: `"We've made progress, but the gap remains vast," acknowledges gender economist Dr. Priya Nair. "The question is: why is change so slow?" The global gender pay gap stands at 20%, meaning women earn 80 cents for every dollar men earn. "At current rates, parity won't be achieved until 2158," Nair reports. "Will our great-great-granddaughters see equality?" asks Dr. Lisa Wong, workplace researcher. "Not without intervention." Boardroom representation is improving but inadequate. "Women hold 23% of board seats globally, up from 15% in 2015," states the Corporate Diversity Index. "Is this enough?" asks Nair. "Companies with 30%+ women on boards outperform peers by 48%." Unpaid care work falls disproportionately on women. "Women perform 76% of unpaid care work globally," reports the Care Economy Research Center. "What does this cost?" asks Wong. "$10.8 trillion in lost economic output annually." Education gaps are narrowing. "Girls now outnumber boys in tertiary education in 97 countries," Nair notes. "Why doesn't this translate to workplace equality?" asks Wong. "Discrimination, bias, and structural barriers." Political representation lags. "Women hold just 26% of parliamentary seats globally," reports the Parliamentary Union. "Does representation matter?" asks Nair. "Countries with more women in parliament invest more in health and education." Violence remains epidemic. "1 in 3 women experience physical or sexual violence," states the Gender Violence Observatory. "Is this being addressed?" asks Wong. "Laws exist in 155 countries, but enforcement is weak."`,
         keyElements: { 
-          topic: "Precision medicine tailors treatments using genetic and lifestyle factors", 
-          pivot: "While potential enormous, privacy and cost challenges exist", 
-          conclusion: "Personalized medicine represents future of effective healthcare" 
+          topic: "Global gender pay gap stands at 20%", 
+          pivot: "Women perform 76% of unpaid care work globally", 
+          conclusion: "Countries with more women in parliament invest more in health and education" 
         }
       },
       {
         id: 17,
-        title: "Ocean Pollution Crisis",
-        category: "Environment",
-        text: `Ocean pollution has reached crisis levels with devastating consequences for marine ecosystems. Plastic waste, chemical runoff, and oil spills contaminate waters worldwide, affecting wildlife and human communities dependent on marine resources. Marine life is dying at alarming rates. While international agreements address some pollution sources, enforcement remains weak and violations are common. However, innovative cleanup technologies and circular economy approaches offer hope for addressing accumulated pollution. Therefore, combining prevention strategies with remediation efforts is necessary to restore ocean health and protect the vital ecosystems that regulate our planet's climate.`,
+        title: "Antibiotic Resistance Threat",
+        category: "Health/Medicine",
+        text: `"We are heading toward a post-antibiotic era," warns infectious disease specialist Dr. Robert Chen. "The question is: will we act in time?" Antibiotic-resistant infections kill 1.27 million people annually, more than HIV/AIDS or malaria. "By 2050, this could rise to 10 million deaths per year," Chen reports. "What will medicine look like?" asks Dr. Sarah Johnson, microbiologist. "Routine surgeries become life-threatening. Cancer chemotherapy becomes impossible." Overuse drives resistance. "70% of antibiotics sold in the US go to livestock," states the Antibiotic Stewardship Institute. "Is this necessary?" asks Chen. "It's profitable for agribusiness, but devastating for public health." New antibiotic development has stalled. "Only 43 new antibiotics are in development, compared to thousands of cancer drugs," reports the Pharmaceutical Innovation Center. "Why the disparity?" asks Johnson. "Antibiotics are unprofitable. You take them for a week; cancer drugs for years." Healthcare-acquired infections are rising. "2.8 million resistant infections occur in US hospitals annually," Chen notes. "Are hospitals doing enough?" asks Johnson. "Infection control varies dramatically." Alternative approaches show promise. "Phage therapy achieved 92% success in drug-resistant infections," reports the Bacteriophage Research Lab. "Can this scale?" asks Chen. "Regulatory frameworks need updating." Global coordination is lacking. "Only 42% of countries have national action plans," states the Global Health Security Index. "Is this sufficient?" asks Johnson. "Not even close."`,
         keyElements: { 
-          topic: "Ocean pollution at crisis levels devastating marine ecosystems", 
-          pivot: "While agreements exist, enforcement remains weak", 
-          conclusion: "Combining prevention with remediation necessary to restore ocean health" 
+          topic: "Antibiotic-resistant infections kill 1.27 million people annually", 
+          pivot: "70% of antibiotics sold in US go to livestock", 
+          conclusion: "Phage therapy achieved 92% success in drug-resistant infections" 
         }
       },
       {
         id: 18,
-        title: "Modern Warfare Evolution",
-        category: "Security/Technology",
-        text: `The nature of warfare is evolving with technological advancement. Cyber attacks, drone warfare, and autonomous weapons systems are changing how conflicts are conducted. Traditional battlefields are disappearing. While traditional military capabilities remain relevant, asymmetric threats pose new challenges for defense planning and international security frameworks. However, international law struggles to keep pace with rapid technological change in warfare capabilities. Consequently, establishing ethical frameworks and regulations for emerging military technologies is an urgent priority to prevent uncontrolled escalation and protect civilian populations in future conflicts.`,
+        title: "Supply Chain Vulnerabilities",
+        category: "Business/Economics",
+        text: `"The pandemic exposed how fragile our supply chains are," observes logistics analyst David Park. "The question is: have we learned?" Supply chain disruptions cost companies an average of $184 million annually. "During COVID-19, 94% of Fortune 1000 companies experienced supply chain disruptions," Park reports. "What went wrong?" asks Dr. Elena Rodriguez, supply chain researcher. "We optimized for efficiency, not resilience." Just-in-time manufacturing created systemic risk. "Inventory levels dropped 45% over two decades," states the Supply Chain Resilience Institute. "Is this changing?" asks Park. "Companies are rebuilding buffers, but slowly." Geographic concentration is dangerous. "80% of semiconductor manufacturing is in Asia," Rodriguez notes. "What happens if Taiwan is disrupted?" asks Park. "The global economy stalls. One factory produces 92% of advanced chips." Shipping costs have stabilized but remain volatile. "Container rates spiked 500% in 2021," reports the Maritime Economics Center. "Are we prepared for the next shock?" asks Rodriguez. "Climate change threatens 40% of ports with flooding by 2050." Nearshoring is accelerating. "67% of companies are diversifying supply sources," Park reports. "Is this enough?" asks Rodriguez. "It takes 2-3 years to qualify new suppliers." Technology offers solutions. "AI-powered forecasting reduced stockouts by 35%," states the Digital Supply Chain Lab. "Can technology solve everything?" asks Park. "Not without human judgment."`,
         keyElements: { 
-          topic: "Cyber attacks and autonomous weapons changing warfare", 
-          pivot: "While traditional capabilities relevant, asymmetric threats pose new challenges", 
-          conclusion: "Establishing ethical frameworks for military tech is urgent priority" 
+          topic: "Supply chain disruptions cost companies average $184 million annually", 
+          pivot: "94% of Fortune 1000 companies experienced disruptions during COVID-19", 
+          conclusion: "AI-powered forecasting reduced stockouts by 35%" 
         }
       },
       {
         id: 19,
-        title: "Global Food Security",
-        category: "Agriculture/Economics",
-        text: `Food security remains a pressing global challenge despite agricultural advances. Climate change, conflict, and economic inequality leave hundreds of millions undernourished worldwide. Hunger is increasing in many regions. While technological innovations like genetically modified crops and precision agriculture boost yields significantly, distribution inequities persist and food waste remains high. However, sustainable farming practices are gaining traction among producers and consumers alike. Ultimately, ensuring food security requires addressing both production capacity and equitable access simultaneously to feed a growing global population sustainably.`,
+        title: "Social Media and Democracy",
+        category: "Technology/Society",
+        text: `"Social media is reshaping democracy itself," declares political scientist Dr. Michael Torres. "The question is: for better or worse?" Disinformation spreads faster than truth. "False news is 70% more likely to be retweeted than true stories," reports the Digital Democracy Institute. "Why?" asks Torres. "It triggers stronger emotional responses." Political polarization has intensified. "Users in echo chambers are 67% more likely to hold extreme views," states the Political Polarization Lab. "Is this intentional?" asks Dr. Sarah Kim, media researcher. "Algorithms maximize engagement, and outrage engages." Election interference is escalating. "Foreign actors reached 126 million Americans on Facebook in 2016," Torres reports. "Has this improved?" asks Kim. "Platforms removed 6.5 billion fake accounts in 2021, but detection remains imperfect." Youth political engagement is transforming. "18-29 year olds who use social media are 47% more likely to vote," states the Civic Engagement Center. "Is this positive?" asks Torres. "Participation is up, but so is misinformation exposure." Platform power is unprecedented. "Facebook's algorithm shapes what 2.9 billion people see daily," Kim notes. "Should private companies control public discourse?" asks Torres. "Democracy requires transparency they're not providing." Regulatory responses are emerging. "EU's Digital Services Act imposes new accountability," reports the Tech Policy Observatory. "Will it work?" asks Kim. "It's a start, but enforcement will be challenging."`,
         keyElements: { 
-          topic: "Food security pressing challenge with millions undernourished", 
-          pivot: "While technology boosts yields, distribution inequities persist", 
-          conclusion: "Addressing production capacity and equitable access simultaneously needed" 
+          topic: "False news is 70% more likely to be retweeted than true stories", 
+          pivot: "Foreign actors reached 126 million Americans on Facebook in 2016", 
+          conclusion: "EU's Digital Services Act imposes new accountability on platforms" 
         }
       },
       {
         id: 20,
-        title: "Quantum Computing",
-        category: "Technology/Science",
-        text: `Quantum computing represents a paradigm shift in computational capability. Unlike classical computers using binary bits, quantum systems leverage quantum mechanical phenomena to process information in fundamentally different ways. Problems impossible for classical computers may become solvable. While practical applications remain limited by technical challenges including error rates, potential impacts on cryptography, drug discovery, and optimization problems are immense. However, significant engineering hurdles must be overcome before commercial viability. Nevertheless, progress in the field suggests transformative applications will emerge within the coming decades, revolutionizing multiple industries.`,
-        keyElements: { 
-          topic: "Quantum computing leverages quantum phenomena for processing", 
-          pivot: "While applications limited by technical challenges, potential impacts immense", 
-          conclusion: "Transformative applications will emerge within coming decades" 
-        }
-      },
-      {
-        id: 21,
-        title: "Aging Population Challenges",
-        category: "Demographics/Society",
-        text: `The aging population in developed nations presents economic and social challenges. Declining birth rates and increased longevity are shifting demographic structures, straining pension systems and healthcare infrastructure. The old-age dependency ratio is rising rapidly. While immigration can offset labor shortages, it remains politically contentious in many countries facing demographic decline. However, automation and productivity improvements may alleviate some workforce pressures in affected sectors. Therefore, comprehensive policy responses addressing retirement ages, healthcare delivery, and labor market flexibility are essential for sustainable economies with aging populations.`,
-        keyElements: { 
-          topic: "Aging population straining pension and healthcare systems", 
-          pivot: "While immigration can offset shortages, it remains politically contentious", 
-          conclusion: "Comprehensive policy responses addressing retirement and healthcare essential" 
-        }
-      },
-      {
-        id: 22,
-        title: "Cultural Preservation",
-        category: "Culture/Society",
-        text: `Cultural preservation faces new challenges in an increasingly globalized world. Traditional practices, languages, and knowledge systems are disappearing as younger generations adopt global norms. Indigenous cultures are under threat. While digital technologies enable documentation and dissemination of cultural heritage, they cannot fully replicate lived traditions and community practices. However, community-led initiatives are demonstrating effective preservation approaches that engage younger generations. Ultimately, supporting indigenous and local communities in maintaining their cultural practices is crucial for global diversity and preserving humanity's rich heritage for future generations.`,
-        keyElements: { 
-          topic: "Traditional practices and languages disappearing with globalization", 
-          pivot: "While digital enables documentation, it cannot replicate lived traditions", 
-          conclusion: "Supporting local communities maintaining practices crucial for diversity" 
-        }
-      },
-      {
-        id: 23,
-        title: "Water Scarcity",
-        category: "Environment/Resources",
-        text: `Water scarcity affects billions of people worldwide and is projected to worsen with climate change. Agriculture consumes the majority of freshwater resources, often inefficiently through flood irrigation. Competition for water is intensifying. While desalination and water recycling technologies offer solutions, they remain energy-intensive and expensive for widespread deployment. However, conservation measures and improved irrigation practices can significantly reduce demand with existing infrastructure. Consequently, integrated water management combining supply expansion and demand reduction is necessary for sustainable use in water-stressed regions facing growing populations.`,
-        keyElements: { 
-          topic: "Water scarcity affects billions and will worsen with climate change", 
-          pivot: "While desalination offers solutions, it remains energy-intensive", 
-          conclusion: "Integrated water management combining supply and demand necessary" 
-        }
-      },
-      {
-        id: 24,
-        title: "Streaming Entertainment",
-        category: "Media/Business",
-        text: `The entertainment industry has been transformed by streaming platforms. On-demand content access has disrupted traditional distribution models, giving consumers unprecedented choice in what, when, and how they watch. Cable subscriptions are declining rapidly. While this benefits audiences with convenience and variety, content creators face new challenges regarding fair compensation and content discoverability in crowded markets. However, data analytics are enabling more targeted content development that resonates with specific audiences. Therefore, the industry continues evolving toward personalized, platform-driven entertainment ecosystems that balance consumer preferences with creator sustainability.`,
-        keyElements: { 
-          topic: "Streaming transformed entertainment with on-demand access", 
-          pivot: "While benefiting audiences, creators face compensation challenges", 
-          conclusion: "Industry evolving toward personalized platform-driven ecosystems" 
-        }
-      },
-      {
-        id: 25,
-        title: "Genetic Engineering Ethics",
-        category: "Science/Ethics",
-        text: `Genetic engineering technologies like CRISPR offer unprecedented control over biological systems. Potential applications range from disease treatment to agricultural improvement and beyond. Gene editing is becoming routine in laboratories. While the scientific possibilities are exciting, ethical concerns about germline editing and unintended consequences require careful consideration and public debate. However, regulatory frameworks are developing to guide responsible use while enabling beneficial research. Ultimately, society must balance innovation benefits against potential risks through informed democratic deliberation to establish boundaries for acceptable genetic modifications.`,
-        keyElements: { 
-          topic: "CRISPR offers unprecedented control over biological systems", 
-          pivot: "While possibilities exciting, ethical concerns require careful consideration", 
-          conclusion: "Society must balance innovation benefits against potential risks" 
-        }
-      },
-      {
-        id: 26,
-        title: "Financial Technology",
-        category: "Finance/Technology",
-        text: `Financial technology is democratizing access to banking and investment services. Mobile payment systems, robo-advisors, and peer-to-peer lending platforms serve populations previously excluded from traditional finance. The unbanked are gaining access. While fintech innovation expands opportunity, consumer protection and systemic risk concerns have emerged with rapid growth. However, regulatory sandboxes are enabling innovation while managing risks in controlled environments. Consequently, the financial sector is becoming more inclusive and technologically sophisticated, though regulatory frameworks must evolve to keep pace with innovation.`,
-        keyElements: { 
-          topic: "Fintech democratizing access to banking and investment", 
-          pivot: "While expanding opportunity, consumer protection concerns emerged", 
-          conclusion: "Financial sector becoming more inclusive and technologically sophisticated" 
-        }
-      },
-      {
-        id: 27,
-        title: "Deforestation Crisis",
-        category: "Environment",
-        text: `Deforestation continues at alarming rates in critical ecosystems like the Amazon and Congo Basin. Agricultural expansion, logging, and infrastructure development drive forest loss, releasing carbon and destroying biodiversity. Primary forests are disappearing. While conservation commitments exist at national and international levels, implementation often falls short of targets due to economic pressures. However, payment for ecosystem services programs are providing economic alternatives that value standing forests. Therefore, aligning economic incentives with forest preservation is essential for effective conservation and maintaining the ecological services forests provide to humanity.`,
-        keyElements: { 
-          topic: "Deforestation at alarming rates in Amazon and Congo Basin", 
-          pivot: "While conservation commitments exist, implementation falls short", 
-          conclusion: "Aligning economic incentives with forest preservation essential" 
-        }
-      },
-      {
-        id: 28,
-        title: "Electric and Autonomous Vehicles",
-        category: "Transportation/Technology",
-        text: `The future of transportation is being reshaped by electric and autonomous vehicles. Battery technology improvements are making electric cars cost-competitive while reducing emissions significantly. The automotive industry is transforming. While autonomous driving technology advances rapidly, safety and liability questions remain unresolved by current legal frameworks. However, pilot programs are demonstrating feasibility in controlled environments like designated zones. Ultimately, widespread adoption of clean, autonomous transport will require infrastructure investment and regulatory clarity to realize the full benefits of these technologies for mobility and environment.`,
-        keyElements: { 
-          topic: "Electric vehicles becoming cost-competitive with battery improvements", 
-          pivot: "While autonomous tech advances, safety and liability questions remain", 
-          conclusion: "Widespread adoption requires infrastructure investment and regulatory clarity" 
-        }
-      },
-      {
-        id: 29,
-        title: "Journalism in Digital Age",
-        category: "Media/Society",
-        text: `Journalism faces an existential crisis in the digital age. Traditional business models based on advertising and subscriptions have collapsed for many outlets, while social media platforms capture most digital ad revenue. Newsrooms are shrinking. While citizen journalism expands coverage diversity, professional reporting standards are uneven across digital platforms. However, new funding models including memberships and philanthropy are emerging to support quality journalism. Consequently, the media landscape is fragmenting into diverse models with varying sustainability, challenging the traditional role of journalism as a public good and democratic watchdog.`,
-        keyElements: { 
-          topic: "Traditional journalism business models collapsed in digital age", 
-          pivot: "While citizen journalism expands, professional standards are uneven", 
-          conclusion: "Media landscape fragmenting into diverse models with varying sustainability" 
-        }
-      },
-      {
-        id: 30,
-        title: "Sleep and Health",
-        category: "Health/Science",
-        text: `Sleep research has revealed its critical importance for physical and mental health. Chronic sleep deprivation is linked to obesity, cardiovascular disease, cognitive impairment, and mood disorders. The costs of sleep loss are enormous. While modern lifestyles often prioritize productivity over rest, the biological need for adequate sleep is non-negotiable for optimal functioning. However, workplace cultures are slowly recognizing rest as performance-enhancing rather than lazy. Therefore, public health initiatives promoting sleep hygiene are gaining importance as society begins to understand that sleep is not a luxury but a biological necessity for health and productivity.`,
-        keyElements: { 
-          topic: "Sleep deprivation linked to obesity, heart disease, cognitive impairment", 
-          pivot: "While lifestyles prioritize productivity, biological need is non-negotiable", 
-          conclusion: "Public health initiatives promoting sleep hygiene gaining importance" 
-        }
-      },
-      {
-        id: 31,
-        title: "Circular Economy",
-        category: "Economics/Environment",
-        text: `The circular economy concept is gaining traction as an alternative to linear production models. Rather than extract-produce-dispose, circular systems design out waste and keep materials in use through recycling and reuse. Resource efficiency is improving. While transitioning requires significant business model innovation, economic and environmental benefits are substantial for companies that adopt circular approaches. However, consumer behavior changes and policy support are necessary enablers for widespread adoption. Ultimately, circular approaches will be essential for sustainable resource management as planetary boundaries are approached and raw material scarcity increases.`,
-        keyElements: { 
-          topic: "Circular economy designs out waste keeping materials in use", 
-          pivot: "While transition requires innovation, benefits are substantial", 
-          conclusion: "Circular approaches essential for sustainable resource management" 
-        }
-      },
-      {
-        id: 32,
-        title: "Neuroplasticity and Learning",
-        category: "Science/Education",
-        text: `Neuroplasticity research has transformed understanding of brain development. The brain continues changing throughout life in response to experience, challenging earlier assumptions about fixed adult capabilities. Learning is lifelong. While childhood remains a critical period for certain types of learning, adults retain substantial capacity for skill acquisition and cognitive improvement. However, optimal learning environments must account for developmental differences across life stages. Therefore, lifelong learning programs should be designed with neuroplasticity principles in mind to maximize effectiveness for learners of all ages in our rapidly changing world.`,
-        keyElements: { 
-          topic: "Brain continues changing throughout life through neuroplasticity", 
-          pivot: "While childhood critical, adults retain capacity for skill acquisition", 
-          conclusion: "Lifelong learning programs should use neuroplasticity principles" 
-        }
-      },
-      {
-        id: 33,
-        title: "Sustainable Tourism",
-        category: "Travel/Economics",
-        text: `Tourism significantly impacts destination communities and environments. While economic benefits are substantial, overtourism strains infrastructure and degrades natural and cultural attractions. Popular destinations are suffering. While sustainable tourism concepts are widely discussed, implementation often lags behind aspirations due to competing economic interests. However, community-based tourism models are showing positive outcomes for both visitors and host communities. Consequently, destination management must balance economic development with preservation and resident quality of life to ensure tourism remains viable and beneficial for all stakeholders.`,
-        keyElements: { 
-          topic: "Tourism impacts communities while providing economic benefits", 
-          pivot: "While sustainable tourism discussed, implementation often lags", 
-          conclusion: "Destination management must balance development with preservation" 
-        }
-      },
-      {
-        id: 34,
-        title: "Human Microbiome",
-        category: "Health/Science",
-        text: `The microbiome has emerged as a crucial factor in human health. Trillions of microorganisms inhabiting our bodies influence digestion, immunity, and even mental health through the gut-brain axis. Microbial balance matters. While research is still uncovering specific mechanisms, the importance of microbial balance for overall health is increasingly clear. However, modern lifestyles including antibiotic overuse and processed diets disrupt healthy microbiomes. Therefore, dietary and medical practices that support microbiome health are increasingly recommended by healthcare providers as part of holistic approaches to wellness and disease prevention.`,
-        keyElements: { 
-          topic: "Microbiome influences digestion, immunity, and mental health", 
-          pivot: "While research continues, importance of microbial balance is clear", 
-          conclusion: "Practices supporting microbiome health increasingly recommended" 
-        }
-      },
-      {
-        id: 35,
-        title: "Universal Basic Income",
-        category: "Economics/Society",
-        text: `Universal basic income has gained attention as a response to automation-driven job displacement. Proponents argue it provides security and enables entrepreneurship, while critics cite cost and work incentive concerns. The debate is intensifying. While pilot programs have shown mixed results regarding employment effects, definitive evidence remains limited by study duration and scale. However, the concept continues attracting interest across the political spectrum as technological disruption accelerates. Ultimately, any large-scale implementation would require careful design and substantial public investment to achieve intended outcomes without unintended negative consequences.`,
-        keyElements: { 
-          topic: "Universal basic income proposed for automation displacement", 
-          pivot: "While pilots show mixed results, definitive evidence limited", 
-          conclusion: "Large-scale implementation requires careful design and investment" 
-        }
-      },
-      {
-        id: 36,
-        title: "Language Extinction",
-        category: "Culture/Linguistics",
-        text: `Language extinction represents a significant loss of human knowledge and cultural diversity. Languages encode unique worldviews and traditional knowledge accumulated over generations. Indigenous knowledge is disappearing. While dominant languages spread globally, thousands of minority languages face disappearance within decades without intervention. However, documentation and revitalization efforts are intensifying with technology support and community engagement. Therefore, supporting language diversity through education and media is essential for preserving human heritage and the valuable knowledge embedded in linguistic diversity for future generations.`,
-        keyElements: { 
-          topic: "Language extinction represents loss of knowledge and diversity", 
-          pivot: "While dominant languages spread, thousands face disappearance", 
-          conclusion: "Supporting language diversity essential for preserving heritage" 
-        }
-      },
-      {
-        id: 37,
-        title: "Vertical Farming",
-        category: "Agriculture/Technology",
-        text: `Vertical farming offers potential solutions to urban food security challenges. Growing crops in controlled indoor environments reduces land and water requirements while enabling year-round production near consumers. Urban agriculture is scaling. While energy costs remain a significant challenge, renewable energy integration and LED efficiency improvements are addressing this limitation progressively. However, economic viability is still limited to high-value crops in most markets. Nevertheless, technological advances are expanding the range of feasible applications as costs decrease and efficiency improves, making vertical farming increasingly viable for diverse crops.`,
-        keyElements: { 
-          topic: "Vertical farming reduces land and water for urban food production", 
-          pivot: "While energy costs challenge, renewable integration addressing this", 
-          conclusion: "Technological advances expanding range of feasible applications" 
-        }
-      },
-      {
-        id: 38,
-        title: "Attention Economy",
-        category: "Technology/Psychology",
-        text: `The attention economy has created intense competition for human focus. Digital platforms use sophisticated techniques to capture and retain user attention, often at the expense of wellbeing. Screen time is increasing. While these systems deliver free services and connectivity, the societal costs include decreased productivity and mental health impacts particularly among young people. However, awareness of these dynamics is growing among users and policymakers alike. Consequently, both individual digital wellness practices and regulatory interventions are being explored to create healthier relationships with technology and protect vulnerable populations.`,
-        keyElements: { 
-          topic: "Attention economy creates competition for human focus", 
-          pivot: "While delivering free services, societal costs include mental health impacts", 
-          conclusion: "Digital wellness practices and regulatory interventions being explored" 
-        }
-      },
-      {
-        id: 39,
-        title: "Nuclear Fusion Energy",
+        title: "Nuclear Energy Debate",
         category: "Energy/Science",
-        text: `Nuclear fusion research has achieved significant milestones toward practical energy generation. Replicating the process that powers stars could provide virtually limitless clean energy without long-lived radioactive waste. Clean energy is possible. While technical challenges including plasma confinement remain substantial, recent breakthroughs suggest commercial viability may be achievable within decades rather than centuries. However, substantial investment and international collaboration are required to accelerate development. Ultimately, fusion could transform global energy systems if development continues successfully, providing abundant clean power for humanity's future needs.`,
+        text: `"Nuclear power is our best tool against climate change," argues energy policy expert Dr. Jennifer Walsh. "The question is: can we overcome public fear?" Nuclear provides 10% of global electricity with near-zero emissions. "France's grid is 70% nuclear, with emissions 80% below Germany's," Walsh reports. "Why isn't everyone following?" asks Dr. Ahmed Hassan, energy economist. "Chernobyl and Fukushima created lasting trauma." Safety has improved dramatically. "Generation III+ reactors have 1 in 10 million year meltdown probability," states the Nuclear Safety Institute. "Is this acceptable?" asks Walsh. "Far safer than fossil fuels, which kill 8 million annually from air pollution." Waste remains contentious. "All US nuclear waste would fit on a single football field, 10 meters deep," Hassan notes. "But what do we do with it?" asks Walsh. "Finland's deep geological repository shows a viable path." Costs are the real barrier. "Nuclear plants cost $6-9 billion and take 10 years to build," reports the Energy Economics Center. "Can we afford this?" asks Hassan. "We can't afford not to. The social cost of carbon is $185 per ton." Small modular reactors offer hope. "SMRs could reduce costs by 50% and construction time by 60%," Walsh reports. "When will they deploy?" asks Hassan. "First commercial units expected by 2030." Public opinion is shifting. "Support for nuclear reached 51% in the US, up from 37% in 2016," states the Energy Opinion Tracker. "Is this enough?" asks Walsh. "Policy must follow public acceptance."`,
         keyElements: { 
-          topic: "Fusion research achieved milestones toward practical energy", 
-          pivot: "While technical challenges remain, breakthroughs suggest viability", 
-          conclusion: "Fusion could transform global energy systems if successful" 
-        }
-      },
-      {
-        id: 40,
-        title: "Four-Day Work Week",
-        category: "Work/Economics",
-        text: `The four-day work week movement is gaining momentum globally. Trials in various countries have demonstrated that reduced hours can maintain or even improve productivity while enhancing employee wellbeing. The work-life balance is shifting. While not suitable for all industries, knowledge workers particularly benefit from focused, shorter weeks with maintained output. However, implementation challenges include client expectations and coordination across teams in global organizations. Nevertheless, the concept represents a fundamental rethinking of work-life balance norms that may become increasingly common as organizations compete for talent and prioritize employee wellbeing.`,
-        keyElements: { 
-          topic: "Four-day work week trials show maintained productivity", 
-          pivot: "While not suitable for all, knowledge workers benefit particularly", 
-          conclusion: "Concept may become increasingly common as organizations compete" 
+          topic: "Nuclear provides 10% of global electricity with near-zero emissions", 
+          pivot: "Nuclear plants cost $6-9 billion and take 10 years to build", 
+          conclusion: "Small modular reactors could reduce costs by 50% and construction time by 60%" 
         }
       }
     ];
@@ -911,8 +692,8 @@
     }
 
     function jumpToPassage() {
-      const n = prompt('Enter passage (1-40):');
-      if (n >= 1 && n <= 40) loadPassage(parseInt(n));
+      const n = prompt('Enter passage (1-20):');
+      if (n >= 1 && n <= 20) loadPassage(parseInt(n));
     }
 
     function updateWordCount() {
