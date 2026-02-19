@@ -30,8 +30,7 @@ function stem(word) {
   return word;
 }
 
-// ─── SYNONYM GROUPS (deduplicated) ───────────────────────────────────────────
-// FIX #6: Removed duplicate 'argue' entry from the synonyms array
+// ─── SYNONYM GROUPS ───────────────────────────────────────────────────────────
 const SYNONYM_GROUPS = [
   ['increase','rise','grow','surge','climb','boost','expand','escalate','soar','improve','growth','rising'],
   ['decrease','fall','drop','decline','reduce','shrink','diminish','plunge','deteriorate','reduction','falling'],
@@ -47,7 +46,7 @@ const SYNONYM_GROUPS = [
   ['small','little','minor','limited','slight','modest','minimal','negligible','marginal'],
   ['use','utilise','utilize','employ','apply','implement','adopt','rely','depend'],
   ['change','shift','transform','alter','modify','evolve','transition','development','move'],
-  ['argue','claim','suggest','propose','contend','assert','maintain','state','note','point'], // FIX #6: no duplicate 'argue'
+  ['argue','claim','suggest','propose','contend','assert','maintain','state','note','point'],
   ['new','novel','modern','recent','innovative','emerging','contemporary','current','latest'],
   ['difficult','hard','challenging','complex','complicated','tough','demanding','problematic'],
   ['positive','beneficial','advantageous','favorable','good','constructive','helpful','effective'],
@@ -62,7 +61,6 @@ const SYNONYM_GROUPS = [
 function buildSynonymMap() {
   const map = {};
   for (const group of SYNONYM_GROUPS) {
-    // Deduplicate each group before building
     const unique = [...new Set(group)];
     for (const word of unique) {
       map[word] = unique;
@@ -111,44 +109,40 @@ const KNOWN_MISSPELLINGS = {
   'particluar':'particular','populaton':'population','reseach':'research',
   'signifcant':'significant','technolgy':'technology','experiance':'experience',
   'persistant':'persistent','brillant':'brilliant','absense':'absence','accross':'across',
-  'acheive':'achieve','advertisment':'advertisement','agressive':'aggressive',
-  'apparantly':'apparently','basicly':'basically','begginning':'beginning',
-  'buisness':'business','calender':'calendar','carribean':'caribbean','colum':'column',
-  'comming':'coming','commited':'committed','comparisson':'comparison','completly':'completely',
-  'conceed':'concede','congradulations':'congratulations','consciencious':'conscientious',
-  'copywrite':'copyright','dacision':'decision','definit':'definite','develope':'develop',
-  'differance':'difference','dilemna':'dilemma','dissatisfied':'dissatisfied',
-  'drunkeness':'drunkenness','embarass':'embarrass','enviroment':'environment',
-  'equiptment':'equipment','especially':'especially','excede':'exceed','excercise':'exercise',
+  'advertisment':'advertisement','agressive':'aggressive','apparantly':'apparently',
+  'basicly':'basically','begginning':'beginning','buisness':'business','calender':'calendar',
+  'carribean':'caribbean','colum':'column','comming':'coming','commited':'committed',
+  'comparisson':'comparison','completly':'completely','conceed':'concede',
+  'congradulations':'congratulations','consciencious':'conscientious','copywrite':'copyright',
+  'dacision':'decision','definit':'definite','develope':'develop','differance':'difference',
+  'dilemna':'dilemma','drunkeness':'drunkenness','embarass':'embarrass',
+  'equiptment':'equipment','excede':'exceed','excercise':'exercise',
   'explaination':'explanation','facinating':'fascinating','Febuary':'February',
-  'finaly':'finally','flourish':'flourish','forseeable':'foreseeable','fourty':'forty',
-  'futher':'further','garantee':'guarantee','grammer':'grammar','greatful':'grateful',
-  'harrassment':'harassment','heighth':'height','heirarchy':'hierarchy','hypocrasy':'hypocrisy',
+  'finaly':'finally','forseeable':'foreseeable','fourty':'forty','futher':'further',
+  'garantee':'guarantee','greatful':'grateful','harrassment':'harassment',
+  'heighth':'height','heirarchy':'hierarchy','hypocrasy':'hypocrisy',
   'idiosyncracy':'idiosyncrasy','imediate':'immediate','incidently':'incidentally',
   'interupt':'interrupt','irrelevent':'irrelevant','jewelery':'jewelry','judgement':'judgment',
   'knowlege':'knowledge','labratory':'laboratory','laguage':'language','liasson':'liaison',
-  'litrally':'literally','maintenence':'maintenance','managable':'manageable',
-  'medeval':'medieval','memento':'memento','milennium':'millennium','miniscule':'minuscule',
-  'mischievious':'mischievous','misspell':'misspell','naieve':'naive','naturaly':'naturally',
+  'litrally':'literally','managable':'manageable','medeval':'medieval','milennium':'millennium',
+  'miniscule':'minuscule','mischievious':'mischievous','naieve':'naive','naturaly':'naturally',
   'necesary':'necessary','negociate':'negotiate','neighbourood':'neighborhood',
-  'nievety':'naivety','nineth':'ninth','noticeable':'noticeable','ocasion':'occasion',
-  'occurence':'occurrence','offence':'offence','omision':'omission','oppurtunity':'opportunity',
-  'orginally':'originally','outragous':'outrageous','paralell':'parallel','parliment':'parliament',
-  'particualr':'particular','pavillion':'pavilion','percieve':'perceive','perogative':'prerogative',
-  'permissable':'permissible','perseverence':'perseverance','phenomemon':'phenomenon',
-  'playwright':'playwright','posession':'possession','practicle':'practical',
-  'propogate':'propagate','publically':'publicly','questionaire':'questionnaire',
-  'readible':'readable','realise':'realise','reccommend':'recommend','relavant':'relevant',
-  'restaraunt':'restaurant','rediculous':'ridiculous','romanticize':'romanticize',
-  'sacrilegious':'sacrilegious','salery':'salary','sargent':'sergeant','satelite':'satellite',
-  'scenrio':'scenario','sence':'sense','sentance':'sentence','simmilar':'similar',
-  'simultanious':'simultaneous','sincerely':'sincerely','sophmore':'sophomore',
-  'specifially':'specifically','succede':'succeed','supercede':'supersede',
-  'suseptible':'susceptible','symetry':'symmetry','synonomous':'synonymous',
-  'tatoo':'tattoo','tendancy':'tendency','threshhold':'threshold','tommorrow':'tomorrow',
-  'tounge':'tongue','tyrany':'tyranny','ukelele':'ukulele','unfortunatly':'unfortunately',
-  'uninterupt':'uninterrupted','unecessary':'unnecessary','vaccinate':'vaccinate',
-  'vicious':'vicious','villian':'villain','voila':'voilà','whereabouts':'whereabouts',
+  'nievety':'naivety','nineth':'ninth','ocasion':'occasion','occurence':'occurrence',
+  'omision':'omission','oppurtunity':'opportunity','orginally':'originally',
+  'outragous':'outrageous','paralell':'parallel','parliment':'parliament',
+  'particualr':'particular','pavillion':'pavilion','percieve':'perceive',
+  'perogative':'prerogative','permissable':'permissible','perseverence':'perseverance',
+  'phenomemon':'phenomenon','practicle':'practical','propogate':'propagate',
+  'publically':'publicly','questionaire':'questionnaire','readible':'readable',
+  'reccommend':'recommend','relavant':'relevant','restaraunt':'restaurant',
+  'rediculous':'ridiculous','sacrilegious':'sacrilegious','salery':'salary',
+  'sargent':'sergeant','satelite':'satellite','scenrio':'scenario','sence':'sense',
+  'sentance':'sentence','simmilar':'similar','simultanious':'simultaneous',
+  'sophmore':'sophomore','specifially':'specifically','succede':'succeed',
+  'supercede':'supersede','suseptible':'susceptible','symetry':'symmetry',
+  'synonomous':'synonymous','tatoo':'tattoo','threshhold':'threshold','tommorrow':'tomorrow',
+  'tyrany':'tyranny','ukelele':'ukulele','unfortunatly':'unfortunately',
+  'unecessary':'unnecessary','villian':'villain','whereabouts':'whereabouts',
   'wilfull':'willful','withdrawl':'withdrawal','wreckless':'reckless','yatch':'yacht',
 };
 
@@ -194,7 +188,7 @@ const COMMON_VOCAB = new Set([
   'before','during','around','above','below','into','onto','upon','along','among',
 ]);
 
-// FIX #1: Edit-distance fallback for words not in KNOWN_MISSPELLINGS
+// Edit-distance for spell-check fallback
 function editDistance(a, b) {
   if (Math.abs(a.length - b.length) > 3) return 99;
   const dp = Array.from({ length: a.length + 1 }, (_, i) =>
@@ -210,7 +204,7 @@ function editDistance(a, b) {
   return dp[a.length][b.length];
 }
 
-// Curated dictionary of common academic words for edit-distance fallback
+// FIX: Removed duplicate 'affects' entry
 const SPELL_DICTIONARY = new Set([
   ...COMMON_VOCAB,
   'receive','believe','occurred','occurrence','separate','definitely','government','environment',
@@ -230,7 +224,7 @@ const SPELL_DICTIONARY = new Set([
   'committed','completely','decision','definite','difference','dilemma','embarrass',
   'equipment','exceed','exercise','explanation','fascinating','february','finally',
   'foreseeable','forty','further','guarantee','grateful','harassment','hierarchy',
-  'immediately','interrupt','irrelevant','judgment','laboratory','language','literally',
+  'interrupt','irrelevant','judgment','laboratory','language','literally',
   'manageable','medieval','minuscule','mischievous','naive','naturally','negotiate',
   'neighborhood','ninth','omission','opportunity','originally','outrageous','parallel',
   'parliament','perceive','phenomenon','practical','propagate','publicly','questionnaire',
@@ -238,20 +232,19 @@ const SPELL_DICTIONARY = new Set([
   'sense','sentence','simultaneously','sincerely','specifically','succeed','supersede',
   'susceptible','symmetry','synonymous','tattoo','threshold','tomorrow','tyranny',
   'unfortunately','unnecessary','villain','withdrawal','reckless','yacht','effect',
-  'affects','affects','however','although','therefore','because','despite','whereas',
-  'consequently','furthermore','moreover','nevertheless','nonetheless','subsequently',
-  'conclusion','introduction','paragraph','summarize','therefore','contrast','whereas',
-  'highlight','suggest','indicate','demonstrate','establish','contribute','determine',
+  'affects',  // FIX: only once now
+  'however','although','therefore','because','despite','whereas','consequently',
+  'furthermore','moreover','nevertheless','nonetheless','subsequently',
+  'conclusion','introduction','paragraph','summarize','contrast',
+  'highlight','indicate','demonstrate','establish','contribute','determine',
   'associated','compared','considered','described','discussed','examined','identified',
   'implemented','included','increased','indicated','introduced','measured','noted',
-  'observed','obtained','occurred','presented','produced','provided','reported',
-  'revealed','shown','studied','suggested','supported','tested','used','found',
+  'observed','obtained','presented','produced','provided','revealed','studied','supported',
 ]);
 
 function spellCheck(summary) {
   const words = summary.match(/\b[a-zA-Z']+\b/g) || [];
   const errors = [];
-  // FIX #3: Track all occurrences (not just first) but deduplicate error reports
   const reported = new Set();
 
   for (const rawWord of words) {
@@ -259,7 +252,7 @@ function spellCheck(summary) {
     if (word.length <= 2) continue;
     if (COMMON_VOCAB.has(word)) continue;
     if (/^\d+$/.test(word)) continue;
-    if (reported.has(word)) continue; // still deduplicate the error report itself
+    if (reported.has(word)) continue;
 
     // Check 1: Known misspelling lookup (high confidence)
     if (KNOWN_MISSPELLINGS[word]) {
@@ -268,22 +261,20 @@ function spellCheck(summary) {
       continue;
     }
 
-    // FIX #1: Check 2: Edit-distance fallback against dictionary (catches unknown misspellings)
+    // Check 2: Edit-distance fallback — only flag distance-1 matches to avoid false positives
     if (!SPELL_DICTIONARY.has(word)) {
       let bestMatch = null;
       let bestDist = 99;
-      // Only compare against words of similar length for performance
       for (const dictWord of SPELL_DICTIONARY) {
         if (Math.abs(dictWord.length - word.length) > 2) continue;
         if (dictWord.length < 4) continue;
         const dist = editDistance(word, dictWord);
-        if (dist < bestDist && dist <= 2) {
+        if (dist < bestDist && dist <= 1) {
           bestDist = dist;
           bestMatch = dictWord;
         }
       }
-      if (bestMatch && bestDist <= 1) {
-        // Only flag distance-1 to avoid false positives
+      if (bestMatch) {
         errors.push({ word: rawWord, suggestion: bestMatch, confidence: 'medium' });
         reported.add(word);
       }
@@ -464,16 +455,15 @@ function localGrade(summary, passage, formCheck) {
 
   const spellingErrors = spellCheck(summary);
   const grammarIssues  = checkGrammar(summary);
+  const totalErrors    = spellingErrors.length + grammarIssues.length;
 
-  const totalErrors = spellingErrors.length + grammarIssues.length;
-
-  // FIX #2: Corrected grammar scoring — OR bug replaced with proper AND logic
-  // 2 = no errors at all AND has connector
-  // 1 = at most 1 error (regardless of connector), OR 0 errors but no connector
+  // Grammar scoring:
+  // 2 = zero errors AND has connector
+  // 1 = at most 1 error (connector status doesn't rescue a multi-error response)
   // 0 = 2+ errors
   let grammarValue;
   if (totalErrors === 0 && hasConnector) grammarValue = 2;
-  else if (totalErrors <= 1) grammarValue = 1;  // FIX: was "|| hasConnector" — now strictly error-count based
+  else if (totalErrors <= 1) grammarValue = 1;
   else grammarValue = 0;
 
   // Build feedback
@@ -534,7 +524,6 @@ function localGrade(summary, passage, formCheck) {
 async function aiGrade(summary, passage) {
   if (!ANTHROPIC_API_KEY) return null;
 
-  // FIX #5: Added request timeout to prevent hanging indefinitely
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
@@ -548,8 +537,7 @@ async function aiGrade(summary, passage) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        // FIX #4: Use confirmed valid model string
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         temperature: 0,
         system: `You are a strict PTE Academic examiner grading "Summarize Written Text" responses.
@@ -655,7 +643,7 @@ const BAND_MAP = {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '4.1.0',
+    version: '4.2.0',
     anthropicConfigured: !!ANTHROPIC_API_KEY,
     openaiConfigured: !!OPENAI_API_KEY,
     mode: ANTHROPIC_API_KEY ? 'AI-primary' : 'local-only'
@@ -666,6 +654,11 @@ app.post('/api/grade', async (req, res) => {
   try {
     const { summary, passage } = req.body;
     if (!summary || !passage) return res.status(400).json({ error: 'Missing summary or passage' });
+
+    // FIX: Input length guard — prevents oversized strings reaching the AI
+    if (typeof summary !== 'string' || summary.length > 2000) {
+      return res.status(400).json({ error: 'Summary must be a string under 2000 characters' });
+    }
 
     const formCheck = validateForm(summary);
 
@@ -732,6 +725,6 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE API v4.1.0 on port ${PORT}`);
+  console.log(`✅ PTE API v4.2.0 on port ${PORT}`);
   console.log(`${ANTHROPIC_API_KEY ? '🤖 AI-primary (Anthropic)' : '⚙️ Local-only'} mode`);
 });
