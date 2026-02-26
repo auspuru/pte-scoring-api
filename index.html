@@ -116,7 +116,7 @@
     .progress-title { font-size: 0.95rem; font-weight: 600; color: #333; }
     .progress-stats { font-size: 0.85rem; color: #666; }
     .progress-stats strong { color: #4caf50; font-size: 1.2rem; }
-    .passage-dots { display: grid; grid-template-columns: repeat(21, 1fr); gap: 6px; }
+    .passage-dots { display: grid; grid-template-columns: repeat(auto-fill, minmax(32px, 1fr)); gap: 6px; }
     .dot { aspect-ratio: 1; border-radius: 4px; background: #e0e0e0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; }
     .dot:hover { background: #bdbdbd; }
     .dot.active { background: #4caf50; color: white; }
@@ -181,7 +181,6 @@
     .insight-item:last-child { margin-bottom: 0; }
     .insight-icon { color: #1976d2; font-weight: bold; }
   </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -289,17 +288,25 @@
     <div class="card progress-section">
       <div class="progress-header">
         <div class="progress-title">PTE Academic Practice Portal</div>
-        <div class="progress-stats"><strong id="completedCount">0</strong> of 21 passages completed</div>
+        <div class="progress-stats"><strong id="completedCount">0</strong> of <span id="totalProgress">21</span> passages completed</div>
       </div>
       <div class="passage-dots" id="passageDots"></div>
     </div>
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">
-    <div>
+    <div style="text-align: center;">
       <div class="spinner"></div>
-      <div class="loading-text">Grading with AI...</div>
+      <div class="loading-text" id="loadingText">Grading with AI...</div>
+      <div id="loadingSubtext" style="font-size:0.8rem; color:#888; margin-top:6px;"></div>
+      <button id="loadingCancel" onclick="cancelRequest()" style="display:none; margin-top:16px; padding:8px 20px; border:1px solid #ccc; background:white; border-radius:6px; cursor:pointer; font-size:0.85rem;">Cancel</button>
     </div>
+  </div>
+
+  <!-- Error toast -->
+  <div id="errorToast" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#323232; color:white; padding:14px 24px; border-radius:8px; font-size:0.9rem; z-index:9999; max-width:420px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
+    <span id="errorToastMsg"></span>
+    <button onclick="document.getElementById('errorToast').style.display='none'" style="margin-left:12px; background:none; border:none; color:#80cbc4; cursor:pointer; font-size:0.85rem;">Dismiss</button>
   </div>
 
   <div class="modal-overlay" id="instructionsModal" onclick="closeInstructions(event)">
@@ -647,28 +654,102 @@
     let currentId = 1, easyMode = false, attempted = new Set();
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalNum').textContent = passages.length;
       document.getElementById('totalProgress').textContent = passages.length;
-  document.getElementById('totalNum').textContent = passages.length;
       loadPassage(1);
       renderDots();
       checkAIStatus();
     });
 
+    let currentAbortController = null;
+
+    function showToast(msg, duration = 5000) {
+      const toast = document.getElementById('errorToast');
+      document.getElementById('errorToastMsg').textContent = msg;
+      toast.style.display = 'block';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.style.display = 'none', duration);
+    }
+
+    function cancelRequest() {
+      if (currentAbortController) {
+        currentAbortController.abort();
+        currentAbortController = null;
+      }
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    function setLoadingState(text, subtext, showCancel = false) {
+      document.getElementById('loadingText').textContent = text;
+      document.getElementById('loadingSubtext').textContent = subtext;
+      document.getElementById('loadingCancel').style.display = showCancel ? 'inline-block' : 'none';
+    }
+
+    async function fetchWithRetry(url, options, maxRetries = 3) {
+      const delays = [0, 8000, 15000]; // immediate, 8s, 15s
+      let lastError;
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        if (attempt > 0) {
+          setLoadingState(
+            attempt === 1 ? 'Server warming up...' : 'Retrying...',
+            `Attempt ${attempt + 1} of ${maxRetries} — this may take a moment`,
+            true
+          );
+          await new Promise(res => setTimeout(res, delays[attempt]));
+        }
+
+        currentAbortController = new AbortController();
+        const timeoutId = setTimeout(() => currentAbortController.abort(), 30000);
+
+        try {
+          const res = await fetch(url, { ...options, signal: currentAbortController.signal });
+          clearTimeout(timeoutId);
+          if (!res.ok) {
+            const errText = await res.text().catch(() => '');
+            throw new Error(`Server error ${res.status}${errText ? ': ' + errText : ''}`);
+          }
+          return res;
+        } catch (e) {
+          clearTimeout(timeoutId);
+          lastError = e;
+          if (e.name === 'AbortError' && attempt < maxRetries - 1) continue;
+          if (e.name === 'AbortError' && currentAbortController === null) throw new Error('Cancelled');
+          if (attempt < maxRetries - 1) continue;
+        }
+      }
+      throw lastError;
+    }
+
     async function checkAIStatus() {
+      const el = document.getElementById('aiStatus');
+      el.innerHTML = '<span>●</span> Checking...';
       try {
-        const res = await fetch(API_URL + '/api/health');
+        const res = await fetch(API_URL + '/api/health', { signal: AbortSignal.timeout(10000) });
         const data = await res.json();
-        const el = document.getElementById('aiStatus');
         if (data.anthropicConfigured) {
           el.innerHTML = '<span style="color: #4caf50;">●</span> AI Ready';
           el.classList.remove('offline');
         } else {
           el.innerHTML = '<span style="color: #ff9800;">●</span> Local Mode';
-          el.classList.add('offline');
+          el.classList.add('cached');
         }
       } catch (e) {
-        document.getElementById('aiStatus').innerHTML = '<span style="color: #f44336;">●</span> Offline';
-        document.getElementById('aiStatus').classList.add('offline');
+        el.innerHTML = '<span style="color: #f44336;">●</span> Offline — retrying...';
+        el.classList.add('offline');
+        // Retry health check after 10s (server may be cold-starting)
+        setTimeout(async () => {
+          try {
+            const res = await fetch(API_URL + '/api/health', { signal: AbortSignal.timeout(15000) });
+            const data = await res.json();
+            el.innerHTML = data.anthropicConfigured
+              ? '<span style="color: #4caf50;">●</span> AI Ready'
+              : '<span style="color: #ff9800;">●</span> Local Mode';
+            el.classList.remove('offline');
+          } catch {
+            el.innerHTML = '<span style="color: #f44336;">●</span> Offline';
+          }
+        }, 10000);
       }
     }
 
@@ -726,8 +807,8 @@
     }
 
     function jumpToPassage() {
-      const n = prompt('Enter passage (1-' + passages.length + '):');
-      if (n >= 1 && n <= passages.length) loadPassage(parseInt(n));
+      const n = parseInt(prompt('Enter passage (1-' + passages.length + '):'));
+      if (!isNaN(n) && n >= 1 && n <= passages.length) loadPassage(n);
     }
 
     function updateWordCount() {
@@ -743,25 +824,26 @@
     async function verifySummary() {
       const text = document.getElementById('summaryInput').value.trim();
       const passage = passages.find(p => p.id === currentId);
-      if (!text) { alert('Please enter a summary'); return; }
+      if (!text) { showToast('Please enter a summary before verifying.'); return; }
       const words = text.split(/\s+/).length;
-      if (words < 5 || words > 75) { alert('Summary must be 5-75 words'); return; }
-      
+      if (words < 5) { showToast('Your summary is too short — minimum 5 words.'); return; }
+      if (words > 75) { showToast('Your summary is too long — maximum 75 words.'); return; }
+
       document.getElementById('loadingOverlay').classList.add('show');
-      
+      setLoadingState('Grading with AI...', 'This usually takes 5–10 seconds', true);
+
       try {
-        const res = await fetch(API_URL + '/api/grade', {
+        const res = await fetchWithRetry(API_URL + '/api/grade', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-  text: text, 
-  type: 'summarize-written-text', 
-  prompt: passage.text,
-  keyPoints: passage.keyElements
-})
+          body: JSON.stringify({
+            text: text,
+            type: 'summarize-written-text',
+            prompt: passage.text,
+            keyPoints: passage.keyElements
+          })
         });
-        
-        if (!res.ok) throw new Error('Server error ' + res.status);
+
         const data = await res.json();
         showResults(data, passage);
         attempted.add(currentId);
@@ -769,8 +851,19 @@
         updateDots();
       } catch (e) {
         console.error(e);
-        alert('Error: ' + e.message);
+        if (e.message === 'Cancelled') {
+          // user cancelled, no toast needed
+        } else if (e.name === 'AbortError' || e.message.includes('fetch')) {
+          showToast('Could not reach the grading server. Please check your connection and try again.', 8000);
+          // Downgrade AI badge
+          const el = document.getElementById('aiStatus');
+          el.innerHTML = '<span style="color: #f44336;">●</span> Offline';
+          el.className = 'ai-badge offline';
+        } else {
+          showToast('Grading failed: ' + e.message, 8000);
+        }
       } finally {
+        currentAbortController = null;
         document.getElementById('loadingOverlay').classList.remove('show');
       }
     }
@@ -1029,7 +1122,6 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
     function toggleTimer() {
       timerRunning = !timerRunning;
       if (timerRunning) {
-        seconds = 0;
         timerInterval = setInterval(() => {
           seconds++;
           const m = Math.floor(seconds / 60), s = seconds % 60;
@@ -1037,12 +1129,10 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
         }, 1000);
       } else {
         clearInterval(timerInterval);
+        seconds = 0;
         document.getElementById('timerText').textContent = 'Off';
       }
     }
-  </script>
-</body>
-</html>
   </script>
 </body>
 </html>
