@@ -288,7 +288,7 @@
     <div class="card progress-section">
       <div class="progress-header">
         <div class="progress-title">PTE Academic Practice Portal</div>
-        <div class="progress-stats"><strong id="completedCount">0</strong> of 21 passages completed</div>
+        <div class="progress-stats"><strong id="completedCount">0</strong> of <span id="progressTotal">21</span> passages completed</div>
       </div>
       <div class="passage-dots" id="passageDots"></div>
     </div>
@@ -636,9 +636,9 @@
         category: "Education/Quality Management",
         text: `The effective implementation of Total Quality Management (TQM) within educational institutions necessitates a multifaceted approach that integrates continuous improvement methodologies with stakeholder-centric service delivery frameworks (Crosby, 1979; Deming, 1986). Firstly, leadership commitment must transcend mere administrative endorsement, instead manifesting as active participation in quality audits and strategic alignment of institutional objectives with measurable performance indicators (Oakland, 2014). Secondly, faculty development programmes should incorporate competency-based training modules that emphasize both pedagogical innovation and adherence to standardized assessment protocols, thereby ensuring consistency in educational outcomes across diverse learner demographics. Furthermore, the establishment of robust feedback mechanisms—encompassing student satisfaction surveys, peer review systems, and external accreditation benchmarks—enables data-driven decision-making that identifies systemic inefficiencies while promoting a culture of accountability (Parasuraman et al., 1988). Consequently, institutions that successfully embed these quality dimensions into their operational DNA not only enhance their competitive positioning in global education markets but also demonstrate measurable improvements in student retention rates and graduate employability metrics.`,
         keyElements: {
-          topic: "The effective implementation of Total Quality Management (TQM) within educational institutions necessitates a multifaceted approach that integrates continuous improvement methodologies with stakeholder-centric service delivery frameworks",
-          pivot: "Leadership commitment must manifest as active participation in quality audits, faculty development programmes should incorporate competency-based training modules, and robust feedback mechanisms enable data-driven decision-making",
-          conclusion: "Institutions that successfully embed these quality dimensions enhance their competitive positioning in global education markets and demonstrate measurable improvements in student retention rates and graduate employability metrics"
+          "topic": "Total Quality Management implementation necessitates integrating continuous improvement with stakeholder-centric frameworks",
+    "pivot": "Leadership commitment must transcend administrative endorsement through active participation in quality audits and faculty development requires competency-based training modules",
+    "conclusion": "Institutions embedding these quality dimensions enhance their competitive positioning in global education markets and demonstrate measurable improvements in student retention rates and graduate employability metrics"
         }
       }
     ];
@@ -646,8 +646,8 @@
     let currentId = 1, easyMode = false, attempted = new Set();
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('totalProgress').textContent = passages.length;
-  document.getElementById('totalNum').textContent = passages.length;
+      document.getElementById('totalNum').textContent = passages.length;
+      document.getElementById('progressTotal').textContent = passages.length;
       loadPassage(1);
       renderDots();
       checkAIStatus();
@@ -1041,9 +1041,6 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
         document.getElementById('timerText').textContent = 'Off';
       }
     }
-  </script>
-</body>
-</html>
   </script>
 </body>
 </html>
