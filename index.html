@@ -199,7 +199,7 @@
     <div class="passage-nav">
       <div class="nav-left">
         <button class="nav-btn" id="prevBtn" onclick="prevPassage()">← Previous</button>
-        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">20</span></span>
+        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">21</span></span>
         <button class="nav-btn" id="nextBtn" onclick="nextPassage()">Next →</button>
       </div>
       <div class="mode-toggle">
@@ -1042,16 +1042,6 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
   </script>
 </body>
 </html>
-rval(() => {
-          seconds++;
-          const m = Math.floor(seconds / 60), s = seconds % 60;
-          document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
-        }, 1000);
-      } else {
-        clearInterval(timerInterval);
-        document.getElementById('timerText').textContent = 'Off';
-      }
-    }
   </script>
 </body>
 </html>
