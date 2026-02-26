@@ -646,6 +646,8 @@
     let currentId = 1, easyMode = false, attempted = new Set();
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalProgress').textContent = passages.length;
+  document.getElementById('totalNum').textContent = passages.length;
       loadPassage(1);
       renderDots();
       checkAIStatus();
