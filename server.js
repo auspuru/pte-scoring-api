@@ -32,100 +32,90 @@ const BAND_MAP = {
 // ─── EXTRACT KEY CONCEPTS FROM TEXT ─────────────────────────────────────────
 function extractConcepts(text) {
   if (!text) return [];
-  const lower = text.toLowerCase();
-  
+
   const concepts = [];
-  
-  // Numbers with units
-  const numbers = text.match(/\d+%?|\$\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion))?/gi) || [];
-  concepts.push(...numbers);
-  
-  // Key terms - filter out stop words
-  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'it', 'they', 'them', 'their', 'there', 'then', 'than', 'as', 'so', 'also', 'about', 'up', 'out', 'down', 'off', 'over', 'under', 'again', 'here', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'too', 'very', 'just', 'because', 'while', 'through', 'during', 'before', 'after', 'above', 'below']);
-  
-  const words = lower
+
+  // Numbers with optional units (e.g. $4 trillion, 75%, 2050)
+  const numbers = text.match(/\$?\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion))?%?/gi) || [];
+  concepts.push(...numbers.map(n => n.toLowerCase().trim()).filter(n => n.length > 0));
+
+  // Key terms - broad stop word filter
+  const stopWords = new Set([
+    'the','a','an','and','or','but','in','on','at','to','for','of','with','by',
+    'is','are','was','were','be','been','have','has','had','will','would','could',
+    'should','may','might','can','this','that','these','those','it','they','them',
+    'their','there','then','than','as','so','also','about','up','out','down','off',
+    'over','under','again','here','why','how','all','any','both','each','few',
+    'more','most','other','some','such','no','nor','not','only','own','same','too',
+    'very','just','because','while','through','during','before','after','above',
+    'below','despite','without','within','between','into','from','its','our','we'
+  ]);
+
+  const words = text.toLowerCase()
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
     .filter(w => w.length > 2 && !stopWords.has(w));
-  
-  const uniqueWords = [...new Set(words)].slice(0, 15);
-  concepts.push(...uniqueWords);
-  
+
+  // No arbitrary slice - keep ALL meaningful words
+  concepts.push(...new Set(words));
+
   return [...new Set(concepts)];
 }
 
 // ─── CHECK IF KEY POINT IS PRESENT ──────────────────────────────────────────
 function checkKeyPoint(studentText, keyPointText) {
-  if (!keyPointText || keyPointText.trim().length === 0) {
-    return { present: false, matchRate: 0, phraseMatchRate: 0, matched: [], totalConcepts: 0 };
-  }
-  
-  const student = studentText.toLowerCase().replace(/[^\w\s]/g, ' ');
-  const keyPoint = keyPointText.toLowerCase().replace(/[^\w\s]/g, ' ');
-  
-  const studentWords = student.split(/\s+/).filter(w => w.length > 0);
-  const keyWords = keyPoint.split(/\s+/).filter(w => w.length > 0);
-  
-  // Filter out common stop words for meaningful comparison
-  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'this', 'that', 'these', 'those', 'it', 'they', 'them', 'their', 'there', 'then', 'than', 'as', 'so', 'also', 'about', 'up', 'out', 'down', 'off', 'over', 'under', 'again', 'here', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'too', 'very', 'just', 'because', 'while', 'through', 'during', 'before', 'after', 'above', 'below', 'into', 'onto', 'upon', 'within', 'without']);
-  
-  // Get meaningful words (4+ chars, not stop words) from key point
-  const meaningfulKeyWords = [...new Set(keyWords.filter(w => w.length >= 4 && !stopWords.has(w)))];
-  
-  if (meaningfulKeyWords.length === 0) {
-    return { present: false, matchRate: 0, phraseMatchRate: 0, matched: [], totalConcepts: 0 };
-  }
-  
-  // Count how many meaningful words from key point appear in student text
-  let matchedWords = 0;
+  const student = studentText.toLowerCase().replace(/[^\w\s$%]/g, ' ');
+  const keyPoint = keyPointText.toLowerCase();
+
+  // All concepts from the expected key point
+  const keyConcepts = extractConcepts(keyPointText);
+
+  let matchedConcepts = 0;
   const matched = [];
-  
-  for (const word of meaningfulKeyWords) {
-    if (student.includes(word)) {
-      matchedWords++;
-      matched.push(word);
+  for (const concept of keyConcepts) {
+    if (student.includes(concept.toLowerCase())) {
+      matchedConcepts++;
+      matched.push(concept);
     }
   }
-  
-  const wordMatchRate = matchedWords / meaningfulKeyWords.length;
-  
-  // Check for phrase matches (3+ word sequences) - more reliable indicator
-  const keyPhrases = [];
-  for (let i = 0; i < keyWords.length - 2; i++) {
-    const phrase3 = keyWords.slice(i, i + 3).join(' ');
-    const phrase4 = keyWords.slice(i, i + 4).join(' ');
-    if (i <= keyWords.length - 4) {
-      keyPhrases.push(phrase4);
-    }
-    keyPhrases.push(phrase3);
+  const matchRate = keyConcepts.length > 0 ? matchedConcepts / keyConcepts.length : 0;
+
+  // Critical terms = numbers + words 5+ chars (topic-agnostic, no hardcoded list)
+  const numberTerms = (keyPoint.match(/\$?\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion))?%?/gi) || [])
+    .map(t => t.toLowerCase().trim());
+  const longWords = keyPoint
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 5)
+    .map(w => w.toLowerCase());
+  const uniqueCriticalTerms = [...new Set([...numberTerms, ...longWords])].filter(t => t.length > 0);
+
+  let matchedCritical = 0;
+  for (const term of uniqueCriticalTerms) {
+    if (student.includes(term)) matchedCritical++;
   }
-  
-  let matchedPhrases = 0;
-  const matchedPhraseList = [];
-  for (const phrase of keyPhrases) {
-    if (student.includes(phrase)) {
-      matchedPhrases++;
-      matchedPhraseList.push(phrase);
-    }
-  }
-  
-  const phraseMatchRate = keyPhrases.length > 0 ? matchedPhrases / keyPhrases.length : 0;
-  
-  // STRICT CRITERIA: Must have either:
-  // - 60%+ word match AND at least 1 phrase match, OR
-  // - 40%+ phrase match rate (strong indicator of the actual sentence)
-  const hasStrongWordMatch = wordMatchRate >= 0.60 && matchedPhrases >= 1;
-  const hasStrongPhraseMatch = phraseMatchRate >= 0.40;
-  
-  const isPresent = hasStrongWordMatch || hasStrongPhraseMatch;
-  
+  const criticalRate = uniqueCriticalTerms.length > 0 ? matchedCritical / uniqueCriticalTerms.length : 0;
+
+  // If the key point contains specific numbers/statistics, require at least one number to match
+  // (prevents vague generic answers from getting false credit)
+  const keyPointNumbers = (keyPoint.match(/\d+/g) || []);
+  const studentNumbers = (student.match(/\d+/g) || []);
+  const hasNumbers = keyPointNumbers.length > 0;
+  const matchedAnyNumber = hasNumbers
+    ? keyPointNumbers.some(n => studentNumbers.includes(n))
+    : true;
+
+  // Present if: number requirement met AND (25%+ concept match OR 35%+ critical match OR 2+ critical terms)
+  const isPresent = matchedAnyNumber && (matchRate >= 0.25 || criticalRate >= 0.35 || matchedCritical >= 2);
+
   return {
     present: isPresent,
-    matchRate: Math.round(wordMatchRate * 100),
-    phraseMatchRate: Math.round(phraseMatchRate * 100),
-    matched: matched.slice(0, 5),
-    totalConcepts: meaningfulKeyWords.length,
-    matchedPhrases: matchedPhraseList.slice(0, 3)
+    matchRate: Math.round(matchRate * 100),
+    criticalRate: Math.round(criticalRate * 100),
+    matchedConcepts: matched.slice(0, 5),
+    totalConcepts: keyConcepts.length,
+    matchedCritical,
+    totalCritical: uniqueCriticalTerms.length
   };
 }
 
@@ -138,7 +128,7 @@ function detectVerbatim(studentText, passageText) {
   
   if (studentWords.length === 0) return { verbatimRate: 0, isVerbatim: false };
   
-  // Track which words have been matched (to avoid double counting)
+  // Track which word indices have been matched (to avoid double counting)
   const matchedWords = new Set();
   const verbatimPhrases = [];
   
@@ -153,14 +143,14 @@ function detectVerbatim(studentText, passageText) {
         matchedWords.add(j);
       }
       verbatimPhrases.push(phrase4);
-      i += 3; // Skip ahead
+      i += 3;
     } else if (passage.includes(phrase3)) {
       // Mark these 3 words as matched
       for (let j = i; j < i + 3 && j < studentWords.length; j++) {
         matchedWords.add(j);
       }
       verbatimPhrases.push(phrase3);
-      i += 2; // Skip ahead
+      i += 2;
     }
   }
   
@@ -204,20 +194,16 @@ function checkGrammar(text) {
   let score = 2;
   const issues = [];
   
-  const connectors = ['however', 'therefore', 'moreover', 'furthermore', 'consequently', 'thus', 'although', 'though', 'while', 'whereas', 'because', 'since'];
+  const connectors = ['however', 'therefore', 'moreover', 'furthermore', 'consequently', 'thus', 'although', 'though', 'while', 'whereas'];
   const hasConnector = connectors.some(c => lower.includes(c));
-  
-  // Check for proper connector usage (semicolon OR comma acceptable)
-  const hasSemicolonConnector = /;\s*(however|therefore|moreover|furthermore|consequently|thus|although|though)/i.test(text);
-  const hasCommaConnector = /,\s*(however|therefore|moreover|furthermore|consequently|thus|although|though)/i.test(text);
+  const hasSemicolon = /;\s*(however|therefore|moreover|furthermore|consequently|thus|although|though)/i.test(text);
   
   if (!hasConnector) {
     issues.push('No connector detected - use however, therefore, etc.');
     score = 1;
-  } else if (!hasSemicolonConnector && !hasCommaConnector) {
-    issues.push('Add comma or semicolon before connector');
-    // Don't penalize as heavily - just a minor issue
-    score = 2;
+  } else if (!hasSemicolon) {
+    issues.push('Missing semicolon before connector');
+    score = 1;
   }
   
   if (!/^[A-Z]/.test(text.trim())) {
@@ -233,7 +219,7 @@ function checkGrammar(text) {
   return {
     score,
     has_connector: hasConnector,
-    has_semicolon_before_connector: hasSemicolonConnector,
+    has_semicolon_before_connector: hasSemicolon,
     connector_type: lower.includes('however') ? 'contrast' : lower.includes('therefore') ? 'result' : 'none',
     grammar_issues: issues
   };
@@ -275,7 +261,7 @@ function generateFeedback(coverage, grammar, verbatim) {
   else feedback = 'Critical: No key ideas found. Include topic, pivot, and conclusion. ';
   
   if (grammar.score === 2) feedback += 'Grammar excellent. ';
-  else if (grammar.score === 1) feedback += `${grammar.grammar_issues[0] || 'Minor grammar issue'}. `;
+  else if (grammar.score === 1) feedback += `${grammar.grammar_issues[0]}. `;
   else feedback += 'Grammar errors. ';
   
   if (verbatim.isVerbatim) feedback += 'Excessive verbatim (>90%) - try paraphrasing. ';
@@ -284,8 +270,17 @@ function generateFeedback(coverage, grammar, verbatim) {
 }
 
 // ─── ROUTES ──────────────────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'PTE SWT Scoring API v12.0.0',
+    endpoints: ['/api/health', '/api/grade'],
+    anthropicConfigured: !!anthropic 
+  });
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '10.1.0', anthropicConfigured: !!anthropic });
+  res.json({ status: 'ok', version: '12.0.0', anthropicConfigured: !!anthropic });
 });
 
 app.post('/api/grade', async (req, res) => {
@@ -329,14 +324,14 @@ app.post('/api/grade', async (req, res) => {
     const conclusionCheck = checkKeyPoint(text, conclusionText);
     
     const coverage = [
-      { type: 'topic', present: topicCheck.present, details: topicCheck },
-      { type: 'pivot', present: pivotCheck.present, details: pivotCheck },
-      { type: 'conclusion', present: conclusionCheck.present, details: conclusionCheck }
+      { type: 'topic', present: topicCheck.present },
+      { type: 'pivot', present: pivotCheck.present },
+      { type: 'conclusion', present: conclusionCheck.present }
     ];
     
-    // Content scoring
+    // Content scoring — 1 idea = 1pt (partial), 2-3 ideas = 2pts (full)
     const presentCount = coverage.filter(c => c.present).length;
-    let contentScore = presentCount === 3 ? 2 : presentCount === 2 ? 1 : 0;
+    let contentScore = presentCount >= 2 ? 2 : presentCount === 1 ? 1 : 0;
     
     // Verbatim detection
     const verbatim = detectVerbatim(text, prompt);
@@ -363,16 +358,13 @@ app.post('/api/grade', async (req, res) => {
       },
       content_details: {
         key_ideas_extracted: [
-          topicText.substring(0, 80) + (topicText.length > 80 ? '...' : ''),
-          pivotText.substring(0, 80) + (pivotText.length > 80 ? '...' : ''),
-          conclusionText.substring(0, 80) + (conclusionText.length > 80 ? '...' : '')
+          topicText.substring(0, 60) + '...',
+          pivotText.substring(0, 60) + '...',
+          conclusionText.substring(0, 60) + '...'
         ],
         key_ideas_present: coverage.filter(c => c.present).map(c => c.type),
         key_ideas_missing: coverage.filter(c => !c.present).map(c => c.type),
-        notes: `${presentCount}/3 key ideas present`,
-        topic_match: { wordRate: topicCheck.matchRate, phraseRate: topicCheck.phraseMatchRate, matched: topicCheck.matched },
-        pivot_match: { wordRate: pivotCheck.matchRate, phraseRate: pivotCheck.phraseMatchRate, matched: pivotCheck.matched },
-        conclusion_match: { wordRate: conclusionCheck.matchRate, phraseRate: conclusionCheck.phraseMatchRate, matched: conclusionCheck.matched }
+        notes: `${presentCount}/3 key ideas present`
       },
       grammar_details: {
         score: grammar.score,
@@ -407,6 +399,6 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Grader v10.1.0 on port ${PORT}`);
+  console.log(`✅ PTE SWT Grader v12.0.0 on port ${PORT}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
 });
