@@ -229,7 +229,7 @@ function detectVerbatim(studentText, passageText) {
   
   return {
     verbatimRate: Math.round(verbatimRate),
-    isVerbatim: verbatimRate > 90,
+    isVerbatim: verbatimRate > 95,
     phrases: [...new Set(verbatimPhrases)].slice(0, 5)
   };
 }
@@ -301,10 +301,10 @@ function checkGrammar(text) {
 function scoreVocabulary(verbatimRate) {
   const paraphraseRate = 100 - verbatimRate;
   
-  if (verbatimRate > 90) {
+  if (verbatimRate > 95) {
     return {
       score: 1,
-      synonym_usage: 'excessive verbatim (>90%)',
+      synonym_usage: 'excessive verbatim (>95%)',
       note: 'Try to paraphrase more',
       verbatim_rate: verbatimRate,
       paraphrase_rate: paraphraseRate
