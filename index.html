@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="storage.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PTE SWT Practice Portal</title>
@@ -9,14 +8,16 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 20px; }
     .container { max-width: 900px; margin: 0 auto; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
     .header-left { display: flex; align-items: center; gap: 12px; }
     .logo { font-size: 1.1rem; font-weight: 600; color: #333; }
     .ai-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #e8f5e9; border-radius: 4px; font-size: 0.8rem; color: #388e3c; }
     .ai-badge.offline { background: #ffebee; color: #c62828; }
     .ai-badge.cached { background: #fff3e0; color: #e65100; }
-    .header-right { display: flex; gap: 8px; }
+    .header-right { display: flex; gap: 8px; align-items: center; }
     .btn-sm { padding: 6px 14px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .user-id-display { font-size: 0.8rem; color: #666; background: #f5f5f5; padding: 4px 10px; border-radius: 4px; }
+    
     .passage-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .nav-left { display: flex; align-items: center; gap: 12px; }
     .nav-btn { padding: 6px 12px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
@@ -27,9 +28,11 @@
     .toggle.active { background: #4caf50; }
     .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: transform 0.2s; }
     .toggle.active::after { transform: translateX(18px); }
+    
     .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .passage-meta { display: flex; gap: 8px; margin-bottom: 12px; }
+    .passage-meta { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .tag { padding: 4px 10px; background: #e3f2fd; color: #1976d2; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+    .tag.saved { background: #e8f5e9; color: #388e3c; }
     .passage-title { font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 16px; }
     .passage-text { line-height: 1.8; color: #444; font-size: 0.95rem; }
     .key-points-btn { margin-top: 16px; padding: 8px 16px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #666; }
@@ -41,6 +44,7 @@
     .kp-icon.topic { background: #e3f2fd; color: #1976d2; }
     .kp-icon.pivot { background: #fff3e0; color: #f57c00; }
     .kp-icon.conclusion { background: #e8f5e9; color: #388e3c; }
+    
     .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .input-label { font-size: 0.9rem; color: #4caf50; font-weight: 500; }
     .word-count { font-size: 0.9rem; color: #ff9800; }
@@ -48,14 +52,24 @@
     .word-count.success { color: #4caf50; }
     textarea { width: 100%; min-height: 100px; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; }
     textarea:focus { outline: none; border-color: #4caf50; }
-    .input-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+    textarea.has-saved { border-left: 4px solid #4caf50; }
+    .input-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; flex-wrap: wrap; gap: 10px; }
     .word-range { font-size: 0.8rem; color: #888; }
+    .saved-indicator { font-size: 0.8rem; color: #4caf50; display: none; }
+    .saved-indicator.show { display: block; }
     .btn-group { display: flex; gap: 10px; }
     .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
     .btn-secondary { background: #f5f5f5; color: #333; border: 1px solid #ddd; }
     .btn-primary { background: #4caf50; color: white; }
     .btn-primary:hover { background: #45a049; }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-top: 16px; }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 1.8rem; font-weight: 700; }
+    .stat-label { font-size: 0.8rem; opacity: 0.9; margin-top: 4px; }
+    
     .results { display: none; margin-top: 20px; }
     .results.show { display: block; }
     .score-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
@@ -122,6 +136,7 @@
     .dot:hover { background: #bdbdbd; }
     .dot.active { background: #4caf50; color: white; }
     .dot.attempted { background: #81c784; color: white; }
+    .dot.attempted.active { background: #2e7d32; }
     .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); align-items: center; justify-content: center; z-index: 1000; }
     .loading-overlay.show { display: flex; }
     .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: #4caf50; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -170,18 +185,19 @@
     .structure-item.pivot { background: #fff3e0; color: #f57c00; }
     .structure-item.conclusion { background: #e8f5e9; color: #388e3c; }
     .structure-arrow { color: #bbb; font-size: 1.2rem; }
-    .connector-info { margin-top: 8px; font-size: 0.8rem; }
-    .connector-info .type { display: inline-block; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
-    .connector-info .type.contrast { background: #fff3e0; color: #e65100; }
-    .connector-info .type.addition { background: #e3f2fd; color: #1976d2; }
-    .connector-info .type.reason { background: #e8f5e9; color: #388e3c; }
-    .connector-info .logic { color: #4caf50; }
-    .connector-info .logic.bad { color: #f44336; }
-    .insight-box { margin-top: 12px; padding: 12px; background: rgba(25, 118, 210, 0.1); border-radius: 6px; font-size: 0.85rem; }
-    .insight-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
-    .insight-item:last-child { margin-bottom: 0; }
-    .insight-icon { color: #1976d2; font-weight: bold; }
+    
+    .history-item { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #4caf50; }
+    .history-score { font-weight: 700; color: #1976d2; }
+    .history-date { font-size: 0.75rem; color: #888; }
+    
+    @media (max-width: 600px) {
+      .elements-grid { grid-template-columns: 1fr; }
+      .traits-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .header { flex-direction: column; align-items: flex-start; }
+    }
   </style>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -192,6 +208,8 @@
         <div class="ai-badge" id="aiStatus"><span>●</span> Checking...</div>
       </div>
       <div class="header-right">
+        <div class="user-id-display" id="userIdDisplay" style="display: none;"></div>
+        <button class="btn-sm" onclick="showUserModal()">👤 Profile</button>
         <button class="btn-sm" onclick="showInstructions()">Instructions</button>
         <button class="btn-sm" onclick="toggleTimer()">Timer: <span id="timerText">Off</span></button>
       </div>
@@ -200,7 +218,7 @@
     <div class="passage-nav">
       <div class="nav-left">
         <button class="nav-btn" id="prevBtn" onclick="prevPassage()">← Previous</button>
-        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">21</span></span>
+        <span class="passage-counter">Passage <span id="currentNum">1</span> of <span id="totalNum">36</span></span>
         <button class="nav-btn" id="nextBtn" onclick="nextPassage()">Next →</button>
       </div>
       <div class="mode-toggle">
@@ -209,9 +227,32 @@
       </div>
     </div>
 
+    <div class="card stats-card" id="statsCard" style="display: none;">
+      <div style="font-weight: 600; margin-bottom: 8px;">📊 Your Progress</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="statCompleted">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statAverage">0</div>
+          <div class="stat-label">Avg Score</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statBand">-</div>
+          <div class="stat-label">Best Band</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="statProgress">0%</div>
+          <div class="stat-label">Progress</div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="passage-meta">
         <span class="tag" id="passageCategory">Category</span>
+        <span class="tag saved" id="savedTag" style="display: none;">💾 Saved</span>
       </div>
       <div class="passage-title" id="passageTitle">Title</div>
       <div class="passage-text" id="passageText">Loading...</div>
@@ -227,8 +268,10 @@
       <textarea id="summaryInput" placeholder="Start typing..." oninput="updateWordCount()"></textarea>
       <div class="input-footer">
         <span class="word-range">5-75 words</span>
+        <span class="saved-indicator" id="savedIndicator">✓ Previously saved</span>
         <div class="btn-group">
-          <button class="btn btn-secondary" onclick="jumpToPassage()">Jump to passage</button>
+          <button class="btn btn-secondary" onclick="clearSummary()">Clear</button>
+          <button class="btn btn-secondary" onclick="jumpToPassage()">Jump</button>
           <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
         </div>
       </div>
@@ -266,7 +309,7 @@
         <div class="issues-section grammar" id="grammarSection" style="display: none;">
           <div class="issues-title">✏️ Grammar Issues</div>
           <div id="grammarContent"></div>
-          <div class="connector-info" id="connectorInfo"></div>
+          <div class="connector-info" id="connectorInfo" style="margin-top: 8px; font-size: 0.8rem;"></div>
         </div>
 
         <div class="issues-section vocab" id="vocabSection" style="display: none;">
@@ -289,7 +332,7 @@
     <div class="card progress-section">
       <div class="progress-header">
         <div class="progress-title">PTE Academic Practice Portal</div>
-        <div class="progress-stats"><strong id="completedCount">0</strong> of <span id="totalProgress">21</span> passages completed</div>
+        <div class="progress-stats"><strong id="completedCount">0</strong> of <span id="totalProgress">36</span> passages completed</div>
       </div>
       <div class="passage-dots" id="passageDots"></div>
     </div>
@@ -304,7 +347,6 @@
     </div>
   </div>
 
-  <!-- Error toast -->
   <div id="errorToast" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#323232; color:white; padding:14px 24px; border-radius:8px; font-size:0.9rem; z-index:9999; max-width:420px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <span id="errorToastMsg"></span>
     <button onclick="document.getElementById('errorToast').style.display='none'" style="margin-left:12px; background:none; border:none; color:#80cbc4; cursor:pointer; font-size:0.85rem;">Dismiss</button>
@@ -415,9 +457,84 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="userModal" onclick="closeUserModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2>👤 User Profile</h2>
+        <p>Manage your progress and data</p>
+      </div>
+      <div class="modal-body">
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon blue">🆔</span>
+            Your ID
+          </div>
+          <div class="instruction-content">
+            <input type="text" id="userIdInput" placeholder="Enter your name or ID" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
+            <p style="font-size: 0.85rem; color: #666; margin-top: 8px;">This ID is used to save your progress to the server.</p>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon green">💾</span>
+            Local Backup
+          </div>
+          <div class="instruction-content">
+            <p style="margin-bottom: 10px;">Export your progress to a file or import previously saved data.</p>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary" onclick="exportData()" style="flex: 1;">Export Data</button>
+              <label class="btn btn-secondary" style="flex: 1; text-align: center; cursor: pointer;">
+                Import Data
+                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(this)">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon orange">📊</span>
+            Session Stats
+          </div>
+          <div class="instruction-content">
+            <div id="userStatsContent">Loading...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close" onclick="saveUserId()">Save & Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_URL = 'https://pte-scoring-api-production.up.railway.app';
     
+    // Storage Keys
+    const STORAGE_KEYS = {
+      USER_ID: 'pte_user_id',
+      ATTEMPTED: 'pte_attempted_passages',
+      SCORES: 'pte_passage_scores',
+      SUMMARIES: 'pte_user_summaries'
+    };
+
+    // LocalStorage Wrapper
+    const LocalStore = {
+      get(key) {
+        try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+      },
+      set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      },
+      getUserId() {
+        return localStorage.getItem(STORAGE_KEYS.USER_ID) || '';
+      },
+      setUserId(id) {
+        localStorage.setItem(STORAGE_KEYS.USER_ID, id);
+      }
+    };
+
     const passages = [
       {
         id: 1,
@@ -628,195 +745,257 @@
           conclusion: "EU's Digital Services Act imposes new accountability on platforms" 
         }
       },
-     {
-  "id": 21,
-  "title": "Total Quality Management in Educational Institutions",
-  "category": "Education/Quality Management",
-  "text": "The effective implementation of Total Quality Management (TQM) within educational institutions necessitates a multifaceted approach that integrates continuous improvement methodologies with stakeholder-centric service delivery frameworks (Crosby, 1979; Deming, 1986). Firstly, leadership commitment must transcend mere administrative endorsement, instead manifesting as active participation in quality audits and strategic alignment of institutional objectives with measurable performance indicators (Oakland, 2014). Secondly, faculty development programmes should incorporate competency-based training modules that emphasize both pedagogical innovation and adherence to standardized assessment protocols, thereby ensuring consistency in educational outcomes across diverse learner demographics. Furthermore, the establishment of robust feedback mechanisms—encompassing student satisfaction surveys, peer review systems, and external accreditation benchmarks—enables data-driven decision-making that identifies systemic inefficiencies while promoting a culture of accountability (Parasuraman et al., 1988). Consequently, institutions that successfully embed these quality dimensions into their operational DNA not only enhance their competitive positioning in global education markets but also demonstrate measurable improvements in student retention rates and graduate employability metrics.",
-  "keyElements": {
-    "topic": "TQM implementation requires integrating continuous improvement with stakeholder service frameworks",
-    "pivot": "Leadership audits, competency training, and feedback mechanisms ensure quality standards",
-    "conclusion": "Embedding these dimensions enhances competitive positioning and graduate employability metrics"
-  }
-},
-{
-  "id": 22,
-  "title": "Sustainable Urban Development Strategies",
-  "category": "Urban Planning/Sustainability",
-  "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
-  "keyElements": {
-    "topic": "Sustainable urban development requires reconciling economic growth with environmental stewardship",
-    "pivot": "Compact cities, green infrastructure, and participatory governance foster social cohesion",
-    "conclusion": "Institutionalizing sustainability pillars cultivates resilient urban ecosystems"
-  }
-},
-{
-  "id": 23,
-  "title": "Digital Transformation in Healthcare Delivery",
-  "category": "Healthcare/Technology",
-  "text": "The digitization of healthcare delivery systems necessitates a comprehensive reconfiguration of clinical workflows, data governance protocols, and patient engagement strategies (Bates & Gawande, 2003; Topol, 2019). Firstly, healthcare administrators must implement interoperable electronic health record systems that enable seamless information exchange across multidisciplinary care teams while maintaining stringent cybersecurity standards and patient privacy protections. Secondly, clinical staff require continuous digital literacy training to effectively utilize telemedicine platforms, artificial intelligence diagnostic tools, and predictive analytics for population health management. Furthermore, patient-centered design principles—emphasizing user-friendly portals, mobile health applications, and remote monitoring devices—empower individuals to actively participate in preventive care and chronic disease self-management (Omberg et al., 2015). Consequently, medical institutions that successfully integrate these technological innovations demonstrate enhanced diagnostic accuracy, reduced hospital readmission rates, and improved patient satisfaction scores across diverse socioeconomic demographics.",
-  "keyElements": {
-    "topic": "Healthcare digitization requires reconfiguration of workflows and patient engagement strategies",
-    "pivot": "Interoperable records, digital literacy training, and patient-centered design empower individuals",
-    "conclusion": "Technological integration enhances diagnostic accuracy and patient satisfaction scores"
-  }
-},
-{
-  "id": 24,
-  "title": "Strategic Human Resource Management",
-  "category": "Business/Management",
-  "text": "The evolution of strategic human resource management demands a paradigm shift from administrative personnel functions to proactive talent optimization frameworks aligned with organizational competitive advantage (Barney, 1991; Boxall & Purcell, 2011). Firstly, executive leadership must cultivate employer branding initiatives that articulate compelling value propositions to attract high-potential candidates in increasingly competitive labor markets. Secondly, performance management systems should transcend annual appraisal rituals, instead employing continuous feedback loops, 360-degree evaluation matrices, and competency-based progression pathways that align individual contributions with corporate strategic objectives. Furthermore, diversity and inclusion protocols—encompassing unconscious bias training, equitable compensation audits, and multicultural mentorship programmes—create psychological safety while leveraging cognitive diversity for innovation (Cox, 1993). Consequently, organizations that institutionalize these human capital practices achieve superior employee retention metrics, enhanced organizational commitment levels, and sustainable profitability in volatile market conditions.",
-  "keyElements": {
-    "topic": "Strategic HRM demands shift from administrative functions to talent optimization frameworks",
-    "pivot": "Employer branding, continuous feedback, and diversity protocols create psychological safety",
-    "conclusion": "Human capital practices achieve retention and sustainable profitability"
-  }
-},
-{
-  "id": 25,
-  "title": "Curriculum Design for 21st Century Skills",
-  "category": "Education/Pedagogy",
-  "text": "The reconceptualization of educational curricula for contemporary workforce demands requires a deliberate integration of critical thinking frameworks, digital fluency competencies, and socio-emotional learning outcomes (Trilling & Fadel, 2009; Wagner, 2008). Firstly, instructional designers must scaffold problem-based learning experiences that simulate authentic industry challenges, thereby cultivating adaptive expertise rather than static content mastery. Secondly, assessment architectures should incorporate performance-based evaluations, digital portfolios, and collaborative project metrics that capture complex skill demonstrations beyond standardized testing paradigms. Furthermore, cross-curricular integration—blending disciplinary boundaries between sciences, humanities, and technical arts—mirrors real-world knowledge application while fostering creative synthesis capabilities essential for innovation economies (Beane, 1997). Consequently, educational institutions that embed these pedagogical dimensions produce graduates demonstrating enhanced employability trajectories, entrepreneurial mindsets, and civic engagement capacities requisite for addressing complex global challenges.",
-  "keyElements": {
-    "topic": "Curriculum design requires integration of critical thinking and digital fluency competencies",
-    "pivot": "Problem-based learning, performance assessments, and cross-curricular integration foster creativity",
-    "conclusion": "Pedagogical embedding produces graduates with employability and entrepreneurial mindsets"
-  }
-},
-{
-  "id": 26,
-  "title": "Supply Chain Resilience and Risk Management",
-  "category": "Operations/Logistics",
-  "text": "The construction of resilient supply chain networks necessitates a strategic transition from cost-centric efficiency models to adaptive systems capable of withstanding geopolitical disruptions, natural catastrophes, and demand volatility (Christopher & Peck, 2004; Sheffi & Rice, 2005). Firstly, procurement strategists must diversify supplier portfolios across geographic regions and establish strategic buffer inventories of critical components to mitigate single-point failure vulnerabilities. Secondly, organizations should invest in real-time visibility technologies—including blockchain tracking systems, Internet of Things sensors, and predictive analytics platforms—that enable proactive disruption detection and rapid response coordination. Furthermore, collaborative risk-sharing partnerships—characterized by transparent information sharing, joint business continuity planning, and aligned incentive structures—transform transactional supplier relationships into strategic alliances capable of collective resilience (Spekman et al., 1998). Consequently, enterprises that institutionalize these risk management protocols demonstrate superior operational continuity during crisis events, reduced recovery time objectives, and sustained customer loyalty despite market turbulence.",
-  "keyElements": {
-    "topic": "Resilient supply chains require transition from cost-centric to adaptive systems",
-    "pivot": "Supplier diversification, visibility technologies, and risk-sharing partnerships enable resilience",
-    "conclusion": "Risk protocols ensure operational continuity and sustained customer loyalty"
-  }
-},
-{
-  "id": 27,
-  "title": "Scientific Research Protocol",
-  "category": "Research Methods",
-  "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid, reliable outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions addressing specific knowledge gaps identified through comprehensive literature reviews. Secondly, study designs require appropriate control groups and randomization techniques to minimize confounding variables. Thirdly, data collection protocols necessitate standardized measurement instruments with established validity and inter-rater reliability checks. Fourthly, statistical analyses should employ suitable significance testing alongside effect size calculations rather than relying solely on p-values. Fifthly, peer review processes ensure methodological transparency and identification of potential bias sources before publication. Sixthly, knowledge translation strategies facilitate practical application of findings in clinical or policy contexts. Consequently, investigations adhering to these methodological standards yield credible evidence that advances disciplinary knowledge.",
-  "keyElements": {
-    "topic": "Rigorous scientific inquiry demands systematic empirical protocols",
-    "pivot": "Research questions, control groups, standardized instruments, and statistical testing",
-    "conclusion": "Methodological standards yield credible evidence advancing knowledge"
-  }
-},
-{
-  "id": 28,
-  "title": "Disaster Risk Management",
-  "category": "Emergency Management",
-  "text": "Comprehensive disaster risk reduction necessitates multi-layered frameworks integrating structural and non-structural mitigation strategies (UNDRR, 2015; Wisner et al., 2004). Firstly, hazard mapping exercises must identify vulnerability hotspots utilizing geospatial technologies and historical incidence data analysis. Secondly, building codes should mandate seismic-resistant designs and flood-proofing standards for critical infrastructure systems. Thirdly, early warning systems require multi-channel communication networks capable of reaching marginalized populations effectively. Fourthly, community education campaigns enhance household preparedness and evacuation coordination capabilities at local levels. Fifthly, post-disaster damage assessments inform resilient reconstruction planning and urban development policies. Sixthly, financial mechanisms including insurance and contingency funds provide protection against catastrophic economic losses. Consequently, jurisdictions implementing these integrated strategies demonstrate reduced mortality rates and accelerated recovery trajectories.",
-  "keyElements": {
-    "topic": "Disaster risk reduction necessitates multi-layered mitigation frameworks",
-    "pivot": "Hazard mapping, building codes, early warning systems, and community education",
-    "conclusion": "Integrated strategies demonstrate reduced mortality and accelerated recovery"
-  }
-},
-{
-  "id": 29,
-  "title": "Microbiome Analysis Methods",
-  "category": "Biotechnology",
-  "text": "Understanding human microbiome function requires integrated analytical approaches combining molecular techniques with clinical monitoring (Sender et al., 2016; Knight et al., 2017). Firstly, sterile sampling protocols must ensure contamination-free collection of fecal, oral, or skin specimens. Secondly, DNA sequencing technologies identify bacterial diversity and functional gene pathways within microbial communities. Thirdly, dietary tracking systems correlate nutrient intake patterns with microbiome composition fluctuations. Fourthly, biomarker assays measure inflammatory responses linked to dysbiosis and pathological conditions. Fifthly, probiotic interventions test causality between specific strains and health outcome improvements. Sixthly, computational algorithms analyze complex datasets to predict disease susceptibility based on microbial diversity indices. Consequently, integrated microbiome profiling enables targeted therapeutic interventions restoring homeostatic balance.",
-  "keyElements": {
-    "topic": "Understanding microbiome function requires integrated analytical approaches",
-    "pivot": "Sterile sampling, DNA sequencing, dietary tracking, and biomarker assays",
-    "conclusion": "Profiling enables targeted therapeutic interventions restoring homeostatic balance"
-  }
-},
-{
-  "id": 30,
-  "title": "Circular Economy Transition",
-  "category": "Sustainability/Economics",
-  "text": "Transitioning to circular economic models demands systemic redesign of production, consumption, and waste systems (Geissdoerfer et al., 2017; Ellen MacArthur Foundation, 2013). Firstly, product designers must prioritize modularity facilitating component reuse and remanufacturing processes. Secondly, industrial symbiosis networks enable waste exchanges between facilities creating closed-loop material flows. Thirdly, sharing platforms extend asset utilization through collaborative consumption models. Fourthly, advanced recycling technologies require sophisticated sorting and chemical processing for material recovery. Fifthly, producer responsibility legislation mandates sustainable end-of-life collection and disposal accountability. Sixthly, consumer education promotes repair culture and conscious purchasing decisions reducing obsolescence. Consequently, circular economies achieve decoupled resource consumption from GDP growth while minimizing environmental degradation.",
-  "keyElements": {
-    "topic": "Circular economic models demand systemic redesign of production systems",
-    "pivot": "Design modularity, industrial symbiosis, sharing platforms, and recycling technologies",
-    "conclusion": "Circular economies achieve decoupled resource consumption from GDP growth"
-  }
-},
-{
-  "id": 31,
-  "title": "Farm Cottage",
-  "category": "Lifestyle/Personal Narrative",
-  "text": "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
-  "keyElements": {
-    "topic": "Author exchanged city terrace for farm cottage based on prior experience",
-    "pivot": "Familiar with rural disadvantages but aware of lifestyle advantages",
-    "conclusion": "Convinced wife to accept windswept cottage on lower income"
-  }
-},
-{
-  "id": 32,
-  "title": "London Financial Hub",
-  "category": "Economics/History",
-  "text": "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
-  "keyElements": {
-    "topic": "London stockbrokers from 1698 founded the world's leading financial capital",
-    "pivot": "Survived Bubble bursts and fires to overtake New York and Tokyo",
-    "conclusion": "Despite high costs and transport problems, London remains the prime finance location"
-  }
-},
-{
-  "id": 33,
-  "title": "Nobel Prize and Climate Science",
-  "category": "Science/Politics",
-  "text": "This year's Nobel peace prize justly rewards the thousands of scientists of the United Nations climate change panel (the IPCC). These scientists are engaged in excellent, painstaking work that establishes exactly what the world should expect from climate change. The other award winner, former US vice-president Al Gore, has spent much more time telling us what to fear, while the IPCC's estimates and conclusions are grounded in careful study. Gore doesn't seem to be similarly restrained. Gore told the world in his Academy Award-winning movie (recently labelled \"one-sided\" and said to contain \"scientific errors\" by a British judge) to expect five-metre sea-level rises over this century. But his Nobel co-winners, the IPCC, conclude that sea levels will rise between only twelve and fifty centimetres over this century, with their best expectation being about twenty-five centimetres - similar to what the world experienced over the past 150 years. Likewise, Gore agonises over the accelerated melting of ice in Greenland, but overlooks the IPCC's conclusion that, if sustained, the current rate of melting would add just eight centimetres to the sea level rise by the end of the century. Gore also takes no notice of research showing that Greenland's temperatures were higher in 1941 than they are today. Gore also frets over a predicted rise in heat-related deaths, without mentioning that rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat. The best study shows that by 2050, heat will claim 400,000 more lives, but 1.8 million fewer will die because of cold. Indeed, global warming will actually save lives.",
-  "keyElements": {
-    "topic": "Nobel Prize rewards IPCC scientists for careful study versus Gore's fear focus",
-    "pivot": "Sea level predictions differ, Greenland melting overstated, heat versus cold mortality",
-    "conclusion": "Global warming will actually save lives through reduced cold-related deaths"
-  }
-},
-{
-  "id": 34,
-  "title": "Travel and Tourism Economic Impact",
-  "category": "Economics/Tourism",
-  "text": "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
-  "keyElements": {
-    "topic": "Travel and tourism generates substantial GDP and employment worldwide",
-    "pivot": "Jobs for women and minorities, conservation catalyst, environmental improvement",
-    "conclusion": "Low start-up costs provide comparative advantage over other industries"
-  }
-},
-{
-  "id": 35,
-  "title": "Sir Tim Berners-Lee and the World Wide Web",
-  "category": "Technology/History",
-  "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. \"It is amazing how far we've come,\" he says. \"But you're always wondering what's the next crazy idea, and working to make sure the Web stays one web and that the internet stays open. There isn't much time to sit back and reflect.\" He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
-  "keyElements": {
-    "topic": "Sir Tim Berners-Lee revolutionized how people think and live",
-    "pivot": "Web transformed global communication and shopping across all sectors",
-    "conclusion": "Invented Web due to frustration with scattered information access"
-  }
-},
-{
-  "id": 36,
-  "title": "Economic Forecasting Limitations",
-  "category": "Economics/Business",
-  "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
-  "keyElements": {
-    "topic": "Economic forecasting is a key function but far from precise science",
-    "pivot": "Assumptions vary widely with poor record for volatile statistics",
-    "conclusion": "Widely varying assumptions produce unreliable predictions for interest rates"
-  }
-}
+      {
+        id: 20,
+        title: "Nuclear Energy Debate",
+        category: "Energy/Environment",
+        text: `"Nuclear power is our best hope to combat climate change," argues energy policy expert Dr. Richard Zhang. "Or is it too dangerous and expensive?" The debate has intensified as countries seek low-carbon alternatives. Nuclear provides 10% of global electricity with minimal emissions, yet faces strong opposition. "Construction costs have ballooned," notes Dr. Emily Watson, energy economist. "The UK's Hinkley Point C plant will cost £30 billion, triple original estimates." Safety concerns persist despite improved technology. "Fukushima displaced 154,000 people," Watson emphasizes. "Can we risk another accident?" However, nuclear's safety record compares favorably to fossil fuels. "Air pollution from coal kills 200,000 annually in the US alone," Zhang counters. "Nuclear has caused fewer than 100 deaths in 60 years." New designs promise improvements. "Small modular reactors could reduce costs by 50%," reports the Advanced Nuclear Institute. "When will they be ready?" asks Watson. "Not until the 2030s." Waste storage remains unresolved. "The US has 85,000 metric tons of spent fuel with no permanent repository," Watson notes. "France recycles waste successfully," Zhang responds. "Politics, not technology, blocks solutions." Public opinion is shifting. "Support has risen from 43% to 59% in the US since 2020," reports the Energy Opinion Monitor. "Does this matter?" asks Watson. "Without public acceptance, plants won't be built."`,
+        keyElements: { 
+          topic: "Nuclear provides 10% of global electricity with minimal emissions", 
+          pivot: "Construction costs tripled and Fukushima displaced 154,000 people", 
+          conclusion: "Public support rose from 43% to 59% in the US since 2020" 
+        }
+      },
+      {
+        id: 21,
+        title: "Total Quality Management in Educational Institutions",
+        category: "Education/Quality Management",
+        text: "The effective implementation of Total Quality Management (TQM) within educational institutions necessitates a multifaceted approach that integrates continuous improvement methodologies with stakeholder-centric service delivery frameworks (Crosby, 1979; Deming, 1986). Firstly, leadership commitment must transcend mere administrative endorsement, instead manifesting as active participation in quality audits and strategic alignment of institutional objectives with measurable performance indicators (Oakland, 2014). Secondly, faculty development programmes should incorporate competency-based training modules that emphasize both pedagogical innovation and adherence to standardized assessment protocols, thereby ensuring consistency in educational outcomes across diverse learner demographics. Furthermore, the establishment of robust feedback mechanisms—encompassing student satisfaction surveys, peer review systems, and external accreditation benchmarks—enables data-driven decision-making that identifies systemic inefficiencies while promoting a culture of accountability (Parasuraman et al., 1988). Consequently, institutions that successfully embed these quality dimensions into their operational DNA not only enhance their competitive positioning in global education markets but also demonstrate measurable improvements in student retention rates and graduate employability metrics.",
+        keyElements: {
+          topic: "TQM implementation requires integrating continuous improvement with stakeholder service frameworks",
+          pivot: "Leadership audits, competency training, and feedback mechanisms ensure quality standards",
+          conclusion: "Embedding these dimensions enhances competitive positioning and graduate employability metrics"
+        }
+      },
+      {
+        id: 22,
+        title: "Sustainable Urban Development Strategies",
+        category: "Urban Planning/Sustainability",
+        text: "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
+        keyElements: {
+          topic: "Sustainable urban development requires reconciling economic growth with environmental stewardship",
+          pivot: "Compact cities, green infrastructure, and participatory governance foster social cohesion",
+          conclusion: "Institutionalizing sustainability pillars cultivates resilient urban ecosystems"
+        }
+      },
+      {
+        id: 23,
+        title: "Digital Transformation in Healthcare Delivery",
+        category: "Healthcare/Technology",
+        text: "The digitization of healthcare delivery systems necessitates a comprehensive reconfiguration of clinical workflows, data governance protocols, and patient engagement strategies (Bates & Gawande, 2003; Topol, 2019). Firstly, healthcare administrators must implement interoperable electronic health record systems that enable seamless information exchange across multidisciplinary care teams while maintaining stringent cybersecurity standards and patient privacy protections. Secondly, clinical staff require continuous digital literacy training to effectively utilize telemedicine platforms, artificial intelligence diagnostic tools, and predictive analytics for population health management. Furthermore, patient-centered design principles—emphasizing user-friendly portals, mobile health applications, and remote monitoring devices—empower individuals to actively participate in preventive care and chronic disease self-management (Omberg et al., 2015). Consequently, medical institutions that successfully integrate these technological innovations demonstrate enhanced diagnostic accuracy, reduced hospital readmission rates, and improved patient satisfaction scores across diverse socioeconomic demographics.",
+        keyElements: {
+          topic: "Healthcare digitization requires reconfiguration of workflows and patient engagement strategies",
+          pivot: "Interoperable records, digital literacy training, and patient-centered design empower individuals",
+          conclusion: "Technological integration enhances diagnostic accuracy and patient satisfaction scores"
+        }
+      },
+      {
+        id: 24,
+        title: "Strategic Human Resource Management",
+        category: "Business/Management",
+        text: "The evolution of strategic human resource management demands a paradigm shift from administrative personnel functions to proactive talent optimization frameworks aligned with organizational competitive advantage (Barney, 1991; Boxall & Purcell, 2011). Firstly, executive leadership must cultivate employer branding initiatives that articulate compelling value propositions to attract high-potential candidates in increasingly competitive labor markets. Secondly, performance management systems should transcend annual appraisal rituals, instead employing continuous feedback loops, 360-degree evaluation matrices, and competency-based progression pathways that align individual contributions with corporate strategic objectives. Furthermore, diversity and inclusion protocols—encompassing unconscious bias training, equitable compensation audits, and multicultural mentorship programmes—create psychological safety while leveraging cognitive diversity for innovation (Cox, 1993). Consequently, organizations that institutionalize these human capital practices achieve superior employee retention metrics, enhanced organizational commitment levels, and sustainable profitability in volatile market conditions.",
+        keyElements: {
+          topic: "Strategic HRM demands shift from administrative functions to talent optimization frameworks",
+          pivot: "Employer branding, continuous feedback, and diversity protocols create psychological safety",
+          conclusion: "Human capital practices achieve retention and sustainable profitability"
+        }
+      },
+      {
+        id: 25,
+        title: "Curriculum Design for 21st Century Skills",
+        category: "Education/Pedagogy",
+        text: "The reconceptualization of educational curricula for contemporary workforce demands requires a deliberate integration of critical thinking frameworks, digital fluency competencies, and socio-emotional learning outcomes (Trilling & Fadel, 2009; Wagner, 2008). Firstly, instructional designers must scaffold problem-based learning experiences that simulate authentic industry challenges, thereby cultivating adaptive expertise rather than static content mastery. Secondly, assessment architectures should incorporate performance-based evaluations, digital portfolios, and collaborative project metrics that capture complex skill demonstrations beyond standardized testing paradigms. Furthermore, cross-curricular integration—blending disciplinary boundaries between sciences, humanities, and technical arts—mirrors real-world knowledge application while fostering creative synthesis capabilities essential for innovation economies (Beane, 1997). Consequently, educational institutions that embed these pedagogical dimensions produce graduates demonstrating enhanced employability trajectories, entrepreneurial mindsets, and civic engagement capacities requisite for addressing complex global challenges.",
+        keyElements: {
+          topic: "Curriculum design requires integration of critical thinking and digital fluency competencies",
+          pivot: "Problem-based learning, performance assessments, and cross-curricular integration foster creativity",
+          conclusion: "Pedagogical embedding produces graduates with employability and entrepreneurial mindsets"
+        }
+      },
+      {
+        id: 26,
+        title: "Supply Chain Resilience and Risk Management",
+        category: "Operations/Logistics",
+        text: "The construction of resilient supply chain networks necessitates a strategic transition from cost-centric efficiency models to adaptive systems capable of withstanding geopolitical disruptions, natural catastrophes, and demand volatility (Christopher & Peck, 2004; Sheffi & Rice, 2005). Firstly, procurement strategists must diversify supplier portfolios across geographic regions and establish strategic buffer inventories of critical components to mitigate single-point failure vulnerabilities. Secondly, organizations should invest in real-time visibility technologies—including blockchain tracking systems, Internet of Things sensors, and predictive analytics platforms—that enable proactive disruption detection and rapid response coordination. Furthermore, collaborative risk-sharing partnerships—characterized by transparent information sharing, joint business continuity planning, and aligned incentive structures—transform transactional supplier relationships into strategic alliances capable of collective resilience (Spekman et al., 1998). Consequently, enterprises that institutionalize these risk management protocols demonstrate superior operational continuity during crisis events, reduced recovery time objectives, and sustained customer loyalty despite market turbulence.",
+        keyElements: {
+          topic: "Resilient supply chains require transition from cost-centric to adaptive systems",
+          pivot: "Supplier diversification, visibility technologies, and risk-sharing partnerships enable resilience",
+          conclusion: "Risk protocols ensure operational continuity and sustained customer loyalty"
+        }
+      },
+      {
+        id: 27,
+        title: "Scientific Research Protocol",
+        category: "Research Methods",
+        text: "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid, reliable outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions addressing specific knowledge gaps identified through comprehensive literature reviews. Secondly, study designs require appropriate control groups and randomization techniques to minimize confounding variables. Thirdly, data collection protocols necessitate standardized measurement instruments with established validity and inter-rater reliability checks. Fourthly, statistical analyses should employ suitable significance testing alongside effect size calculations rather than relying solely on p-values. Fifthly, peer review processes ensure methodological transparency and identification of potential bias sources before publication. Sixthly, knowledge translation strategies facilitate practical application of findings in clinical or policy contexts. Consequently, investigations adhering to these methodological standards yield credible evidence that advances disciplinary knowledge.",
+        keyElements: {
+          topic: "Rigorous scientific inquiry demands systematic empirical protocols",
+          pivot: "Research questions, control groups, standardized instruments, and statistical testing",
+          conclusion: "Methodological standards yield credible evidence advancing knowledge"
+        }
+      },
+      {
+        id: 28,
+        title: "Disaster Risk Management",
+        category: "Emergency Management",
+        text: "Comprehensive disaster risk reduction necessitates multi-layered frameworks integrating structural and non-structural mitigation strategies (UNDRR, 2015; Wisner et al., 2004). Firstly, hazard mapping exercises must identify vulnerability hotspots utilizing geospatial technologies and historical incidence data analysis. Secondly, building codes should mandate seismic-resistant designs and flood-proofing standards for critical infrastructure systems. Thirdly, early warning systems require multi-channel communication networks capable of reaching marginalized populations effectively. Fourthly, community education campaigns enhance household preparedness and evacuation coordination capabilities at local levels. Fifthly, post-disaster damage assessments inform resilient reconstruction planning and urban development policies. Sixthly, financial mechanisms including insurance and contingency funds provide protection against catastrophic economic losses. Consequently, jurisdictions implementing these integrated strategies demonstrate reduced mortality rates and accelerated recovery trajectories.",
+        keyElements: {
+          topic: "Disaster risk reduction necessitates multi-layered mitigation frameworks",
+          pivot: "Hazard mapping, building codes, early warning systems, and community education",
+          conclusion: "Integrated strategies demonstrate reduced mortality and accelerated recovery"
+        }
+      },
+      {
+        id: 29,
+        title: "Microbiome Analysis Methods",
+        category: "Biotechnology",
+        text: "Understanding human microbiome function requires integrated analytical approaches combining molecular techniques with clinical monitoring (Sender et al., 2016; Knight et al., 2017). Firstly, sterile sampling protocols must ensure contamination-free collection of fecal, oral, or skin specimens. Secondly, DNA sequencing technologies identify bacterial diversity and functional gene pathways within microbial communities. Thirdly, dietary tracking systems correlate nutrient intake patterns with microbiome composition fluctuations. Fourthly, biomarker assays measure inflammatory responses linked to dysbiosis and pathological conditions. Fifthly, probiotic interventions test causality between specific strains and health outcome improvements. Sixthly, computational algorithms analyze complex datasets to predict disease susceptibility based on microbial diversity indices. Consequently, integrated microbiome profiling enables targeted therapeutic interventions restoring homeostatic balance.",
+        keyElements: {
+          topic: "Understanding microbiome function requires integrated analytical approaches",
+          pivot: "Sterile sampling, DNA sequencing, dietary tracking, and biomarker assays",
+          conclusion: "Profiling enables targeted therapeutic interventions restoring homeostatic balance"
+        }
+      },
+      {
+        id: 30,
+        title: "Circular Economy Transition",
+        category: "Sustainability/Economics",
+        text: "Transitioning to circular economic models demands systemic redesign of production, consumption, and waste systems (Geissdoerfer et al., 2017; Ellen MacArthur Foundation, 2013). Firstly, product designers must prioritize modularity facilitating component reuse and remanufacturing processes. Secondly, industrial symbiosis networks enable waste exchanges between facilities creating closed-loop material flows. Thirdly, sharing platforms extend asset utilization through collaborative consumption models. Fourthly, advanced recycling technologies require sophisticated sorting and chemical processing for material recovery. Fifthly, producer responsibility legislation mandates sustainable end-of-life collection and disposal accountability. Sixthly, consumer education promotes repair culture and conscious purchasing decisions reducing obsolescence. Consequently, circular economies achieve decoupled resource consumption from GDP growth while minimizing environmental degradation.",
+        keyElements: {
+          topic: "Circular economic models demand systemic redesign of production systems",
+          pivot: "Design modularity, industrial symbiosis, sharing platforms, and recycling technologies",
+          conclusion: "Circular economies achieve decoupled resource consumption from GDP growth"
+        }
+      },
+      {
+        id: 31,
+        title: "Farm Cottage",
+        category: "Lifestyle/Personal Narrative",
+        text: "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
+        keyElements: {
+          topic: "Author exchanged city terrace for farm cottage based on prior experience",
+          pivot: "Familiar with rural disadvantages but aware of lifestyle advantages",
+          conclusion: "Convinced wife to accept windswept cottage on lower income"
+        }
+      },
+      {
+        id: 32,
+        title: "London Financial Hub",
+        category: "Economics/History",
+        text: "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
+        keyElements: {
+          topic: "London stockbrokers from 1698 founded the world's leading financial capital",
+          pivot: "Survived Bubble bursts and fires to overtake New York and Tokyo",
+          conclusion: "Despite high costs and transport problems, London remains the prime finance location"
+        }
+      },
+      {
+        id: 33,
+        title: "Nobel Prize and Climate Science",
+        category: "Science/Politics",
+        text: "This year's Nobel peace prize justly rewards the thousands of scientists of the United Nations climate change panel (the IPCC). These scientists are engaged in excellent, painstaking work that establishes exactly what the world should expect from climate change. The other award winner, former US vice-president Al Gore, has spent much more time telling us what to fear, while the IPCC's estimates and conclusions are grounded in careful study. Gore doesn't seem to be similarly restrained. Gore told the world in his Academy Award-winning movie (recently labelled \"one-sided\" and said to contain \"scientific errors\" by a British judge) to expect five-metre sea-level rises over this century. But his Nobel co-winners, the IPCC, conclude that sea levels will rise between only twelve and fifty centimetres over this century, with their best expectation being about twenty-five centimetres - similar to what the world experienced over the past 150 years. Likewise, Gore agonises over the accelerated melting of ice in Greenland, but overlooks the IPCC's conclusion that, if sustained, the current rate of melting would add just eight centimetres to the sea level rise by the end of the century. Gore also takes no notice of research showing that Greenland's temperatures were higher in 1941 than they are today. Gore also frets over a predicted rise in heat-related deaths, without mentioning that rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat. The best study shows that by 2050, heat will claim 400,000 more lives, but 1.8 million fewer will die because of cold. Indeed, global warming will actually save lives.",
+        keyElements: {
+          topic: "Nobel Prize rewards IPCC scientists for careful study versus Gore's fear focus",
+          pivot: "Sea level predictions differ, Greenland melting overstated, heat versus cold mortality",
+          conclusion: "Global warming will actually save lives through reduced cold-related deaths"
+        }
+      },
+      {
+        id: 34,
+        title: "Travel and Tourism Economic Impact",
+        category: "Economics/Tourism",
+        text: "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
+        keyElements: {
+          topic: "Travel and tourism generates substantial GDP and employment worldwide",
+          pivot: "Jobs for women and minorities, conservation catalyst, environmental improvement",
+          conclusion: "Low start-up costs provide comparative advantage over other industries"
+        }
+      },
+      {
+        id: 35,
+        title: "Sir Tim Berners-Lee and the World Wide Web",
+        category: "Technology/History",
+        text: "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. \"It is amazing how far we've come,\" he says. \"But you're always wondering what's the next crazy idea, and working to make sure the Web stays one web and that the internet stays open. There isn't much time to sit back and reflect.\" He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+        keyElements: {
+          topic: "Sir Tim Berners-Lee revolutionized how people think and live",
+          pivot: "Web transformed global communication and shopping across all sectors",
+          conclusion: "Invented Web due to frustration with scattered information access"
+        }
+      },
+      {
+        id: 36,
+        title: "Economic Forecasting Limitations",
+        category: "Economics/Business",
+        text: "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
+        keyElements: {
+          topic: "Economic forecasting is a key function but far from precise science",
+          pivot: "Assumptions vary widely with poor record for volatile statistics",
+          conclusion: "Widely varying assumptions produce unreliable predictions for interest rates"
+        }
+      }
     ];
 
     let currentId = 1, easyMode = false, attempted = new Set();
+    let currentAbortController = null;
+    let currentUserId = '';
 
+    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+      currentUserId = LocalStore.getUserId();
+      updateUserDisplay();
+      
       document.getElementById('totalNum').textContent = passages.length;
       document.getElementById('totalProgress').textContent = passages.length;
+      document.getElementById('userIdInput').value = currentUserId;
+      
+      loadStoredData();
       loadPassage(1);
       renderDots();
       checkAIStatus();
+      updateStats();
     });
 
-    let currentAbortController = null;
+    function updateUserDisplay() {
+      const display = document.getElementById('userIdDisplay');
+      if (currentUserId) {
+        display.textContent = `👤 ${currentUserId}`;
+        display.style.display = 'block';
+      } else {
+        display.style.display = 'none';
+      }
+    }
+
+    function loadStoredData() {
+      // Load attempted from localStorage
+      const storedAttempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+      storedAttempted.forEach(id => attempted.add(id));
+      document.getElementById('completedCount').textContent = attempted.size;
+    }
+
+    function updateStats() {
+      const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+      
+      if (Object.keys(scores).length > 0) {
+        document.getElementById('statsCard').style.display = 'block';
+        
+        const totalScore = Object.values(scores).reduce((sum, s) => sum + (s.overall_score || 0), 0);
+        const avgScore = Math.round(totalScore / Object.keys(scores).length);
+        
+        document.getElementById('statCompleted').textContent = attempted.size;
+        document.getElementById('statAverage').textContent = avgScore;
+        document.getElementById('statProgress').textContent = Math.round((attempted.size / passages.length) * 100) + '%';
+        
+        // Find best band
+        const bandOrder = ['Band 5', 'Band 6', 'Band 6.5', 'Band 7', 'Band 7.5', 'Band 8', 'Band 9'];
+        let bestBand = 'Band 5';
+        Object.values(scores).forEach(s => {
+          if (s.band && bandOrder.indexOf(s.band) > bandOrder.indexOf(bestBand)) {
+            bestBand = s.band;
+          }
+        });
+        document.getElementById('statBand').textContent = bestBand;
+      }
+    }
 
     function showToast(msg, duration = 5000) {
       const toast = document.getElementById('errorToast');
@@ -841,7 +1020,7 @@
     }
 
     async function fetchWithRetry(url, options, maxRetries = 3) {
-      const delays = [0, 8000, 15000]; // immediate, 8s, 15s
+      const delays = [0, 8000, 15000];
       let lastError;
 
       for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -890,9 +1069,8 @@
           el.classList.add('cached');
         }
       } catch (e) {
-        el.innerHTML = '<span style="color: #f44336;">●</span> Offline — retrying...';
+        el.innerHTML = '<span style="color: #f44336;">●</span> Offline';
         el.classList.add('offline');
-        // Retry health check after 10s (server may be cold-starting)
         setTimeout(async () => {
           try {
             const res = await fetch(API_URL + '/api/health', { signal: AbortSignal.timeout(15000) });
@@ -914,7 +1092,6 @@
       if (!p) return;
       
       document.getElementById('currentNum').textContent = id;
-      document.getElementById('totalNum').textContent = passages.length;
       document.getElementById('passageCategory').textContent = p.category;
       document.getElementById('passageTitle').textContent = p.title;
       document.getElementById('passageText').textContent = p.text;
@@ -939,10 +1116,36 @@
       document.getElementById('prevBtn').disabled = id === 1;
       document.getElementById('nextBtn').disabled = id === passages.length;
       
+      // Check for saved summary
+      loadPreviousAttempt();
       updateDots();
+      document.getElementById('results').classList.remove('show');
+    }
+
+    function loadPreviousAttempt() {
+      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+      const savedTag = document.getElementById('savedTag');
+      const indicator = document.getElementById('savedIndicator');
+      const textarea = document.getElementById('summaryInput');
+      
+      if (summaries[currentId]) {
+        document.getElementById('summaryInput').value = summaries[currentId].text;
+        updateWordCount();
+        savedTag.style.display = 'inline-block';
+        indicator.classList.add('show');
+        textarea.classList.add('has-saved');
+      } else {
+        document.getElementById('summaryInput').value = '';
+        updateWordCount();
+        savedTag.style.display = 'none';
+        indicator.classList.remove('show');
+        textarea.classList.remove('has-saved');
+      }
+    }
+
+    function clearSummary() {
       document.getElementById('summaryInput').value = '';
       updateWordCount();
-      document.getElementById('results').classList.remove('show');
     }
 
     function prevPassage() { if (currentId > 1) loadPassage(currentId - 1); }
@@ -979,6 +1182,7 @@
     async function verifySummary() {
       const text = document.getElementById('summaryInput').value.trim();
       const passage = passages.find(p => p.id === currentId);
+      
       if (!text) { showToast('Please enter a summary before verifying.'); return; }
       const words = text.split(/\s+/).length;
       if (words < 5) { showToast('Your summary is too short — minimum 5 words.'); return; }
@@ -988,45 +1192,89 @@
       setLoadingState('Grading with AI...', 'This usually takes 5–10 seconds', true);
 
       try {
+        const payload = {
+          text: text,
+          type: 'summarize-written-text',
+          prompt: passage.text,
+          keyPoints: passage.keyElements
+        };
+
+        // Add user ID if available for server-side storage
+        if (currentUserId) {
+          payload.userId = currentUserId;
+          payload.passageId = currentId;
+        }
+
         const res = await fetchWithRetry(API_URL + '/api/grade', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: text,
-            type: 'summarize-written-text',
-            prompt: passage.text,
-            keyPoints: passage.keyElements
-          })
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();
+        
+        // Save to localStorage (always)
+        saveToLocalStorage(currentId, text, data);
+        
+        // Also try to save to server if we have userId
+        if (currentUserId) {
+          try {
+            await fetch(`${API_URL}/api/progress/${currentUserId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                passageId: currentId,
+                summary: text,
+                scoreData: data
+              })
+            });
+          } catch (e) {
+            console.log('Server storage failed, keeping local copy');
+          }
+        }
+        
         showResults(data, passage);
         attempted.add(currentId);
         document.getElementById('completedCount').textContent = attempted.size;
         updateDots();
+        updateStats();
+        
       } catch (e) {
         console.error(e);
-        if (e.message === 'Cancelled') {
-          // user cancelled, no toast needed
-        } else if (e.name === 'AbortError' || e.message.includes('fetch')) {
-          showToast('Could not reach the grading server. Please check your connection and try again.', 8000);
-          // Downgrade AI badge
-          const el = document.getElementById('aiStatus');
-          el.innerHTML = '<span style="color: #f44336;">●</span> Offline';
-          el.className = 'ai-badge offline';
-        } else {
-          showToast('Grading failed: ' + e.message, 8000);
-        }
+        if (e.message === 'Cancelled') return;
+        showToast('Grading failed: ' + e.message, 8000);
       } finally {
         currentAbortController = null;
         document.getElementById('loadingOverlay').classList.remove('show');
       }
     }
 
+    function saveToLocalStorage(passageId, text, data) {
+      // Update attempted
+      const attempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+      if (!attempted.includes(passageId)) {
+        attempted.push(passageId);
+        LocalStore.set(STORAGE_KEYS.ATTEMPTED, attempted);
+      }
+      
+      // Save summary
+      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+      summaries[passageId] = {
+        text: text,
+        timestamp: new Date().toISOString(),
+        score: data.overall_score || 0
+      };
+      LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
+      
+      // Save detailed score
+      const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+      scores[passageId] = data;
+      LocalStore.set(STORAGE_KEYS.SCORES, scores);
+    }
+
     function showResults(data, passage) {
       document.getElementById('results').classList.add('show');
       
-      // Form error banner
       const formErrorBanner = document.getElementById('formErrorBanner');
       if (data.form_gate_triggered) {
         formErrorBanner.style.display = 'block';
@@ -1035,7 +1283,6 @@
         formErrorBanner.style.display = 'none';
       }
       
-      // FIX: Normalize scores from backend
       const traits = data.trait_scores || {};
       const formScore = Math.min(1, traits.form || 0);
       let contentScore = traits.content || 0;
@@ -1043,25 +1290,19 @@
       const grammarScore = Math.min(2, traits.grammar || 0);
       const vocabScore = Math.min(2, traits.vocabulary || 0);
       
-      // Calculate correct raw score (max 7)
       const correctedRawScore = formScore + contentScore + grammarScore + vocabScore;
       
-      // Get content details
       const content = data.content_details || {};
       const keyIdeasPresent = content.key_ideas_present || [];
-      const keyIdeasMissing = content.key_ideas_missing || [];
       
-      // Use key_ideas_present array which contains actual types like ['topic', 'conclusion']
       const hasTopic = keyIdeasPresent.includes('topic');
       const hasPivot = keyIdeasPresent.includes('pivot');
       const hasConclusion = keyIdeasPresent.includes('conclusion');
       
-      // Score header
       document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
       document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
       document.getElementById('rawDisplay').textContent = 'Raw: ' + correctedRawScore + '/7';
       
-      // Mode display
       const modeDisplay = document.getElementById('modeDisplay');
       if (data.mode === 'cached') {
         modeDisplay.innerHTML = '⚡ Cached';
@@ -1069,18 +1310,13 @@
       } else if (data.mode === 'ai') {
         modeDisplay.innerHTML = '🤖 AI';
         modeDisplay.className = 'mode-tag';
-      } else if (data.mode === 'error') {
-        modeDisplay.innerHTML = '⚠️ Error';
-        modeDisplay.className = 'mode-tag offline';
       } else {
         modeDisplay.innerHTML = '📊 Local';
         modeDisplay.className = 'mode-tag';
       }
       
-      // Feedback
       document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
       
-      // Content elements - use already calculated hasTopic/hasPivot/hasConclusion
       const extracted = content.key_ideas_extracted || [];
       
       document.getElementById('elementsGrid').innerHTML = `
@@ -1107,116 +1343,9 @@
         </div>
       `;
       
-      // First person warning
-      const firstPersonWarning = document.getElementById('firstPersonWarning');
-      if (content.perspective_shift_penalty) {
-        firstPersonWarning.style.display = 'block';
-        document.getElementById('firstPersonContent').innerHTML = '<p>' + (content.perspective_note || "Use 'The author' instead of 'I' for first-person passages") + '</p>';
-      } else {
-        firstPersonWarning.style.display = 'none';
-      }
-      
-      // Spelling issues
       const grammar = data.grammar_details || {};
-      const spellSection = document.getElementById('spellCheckSection');
-      if (grammar.spelling_errors && grammar.spelling_errors.length > 0) {
-        spellSection.style.display = 'block';
-        document.getElementById('spellCheckContent').innerHTML = grammar.spelling_errors.map(e => 
-          `<div class="issue-item"><span class="issue-word">"${e.word || e}"</span>${e.suggestion ? `<span class="issue-arrow">→</span><span class="issue-fix">"${e.suggestion}"</span>` : ''}</div>`
-        ).join('');
-      } else {
-        spellSection.style.display = 'none';
-      }
-      
-      // Grammar issues
-      const grammarSection = document.getElementById('grammarSection');
-      const grammarIssues = grammar.grammar_issues || [];
-      
-      let connectorHtml = '';
-      if (!grammar.has_connector) {
-        connectorHtml = '<div class="issue-item">Add a connector (however, therefore, moreover) to improve grammar score</div>';
-      } else if (!grammar.has_semicolon_before_connector) {
-        connectorHtml = '<div class="issue-item">Use semicolon before connector: <strong>"; however,"</strong> not <strong>" however,"</strong></div>';
-      }
-      
-      if (grammarIssues.length > 0 || connectorHtml) {
-        grammarSection.style.display = 'block';
-        document.getElementById('grammarContent').innerHTML = connectorHtml + grammarIssues.map(g => 
-          `<div class="issue-item">${g.issue || g}</div>`
-        ).join('');
-      } else {
-        grammarSection.style.display = 'none';
-      }
-      
-      // Connector info
-      const connectorInfo = document.getElementById('connectorInfo');
-      const connAnalysis = data.connector_analysis || {};
-      if (grammar.has_connector) {
-        const typeClass = grammar.connector_type === 'contrast' ? 'contrast' : 
-                         grammar.connector_type === 'addition' ? 'addition' : 
-                         grammar.connector_type === 'result' ? 'reason' : '';
-        const logicText = grammar.connector_logic_correct ? '✓ Logic correct' : '✗ Check logic';
-        const logicClass = grammar.connector_logic_correct ? 'logic' : 'logic bad';
-        const semicolon = grammar.has_semicolon_before_connector ? '' : ' | Missing semicolon!';
-        connectorInfo.innerHTML = `<span class="type ${typeClass}">${grammar.connector_type}</span><span class="${logicClass}">${logicText}</span>${semicolon}`;
-      } else if (connAnalysis.contrast?.length || connAnalysis.addition?.length || connAnalysis.result?.length) {
-        const types = [];
-        if (connAnalysis.contrast?.length) types.push('<span class="type contrast">contrast</span>');
-        if (connAnalysis.addition?.length) types.push('<span class="type addition">addition</span>');
-        if (connAnalysis.result?.length) types.push('<span class="type reason">result</span>');
-        connectorInfo.innerHTML = types.join(' ') + ' <span class="logic bad">✗ Missing semicolon before connector</span>';
-      } else {
-        connectorInfo.innerHTML = '<span style="color: #888;">No connector detected</span>';
-      }
-      
-      // Vocabulary section
-      const vocab = data.vocabulary_details || {};
-      const vocabSection = document.getElementById('vocabSection');
-      if (vocab) {
-        vocabSection.style.display = 'block';
-        let vocabHtml = `<p><strong>Synonym usage:</strong> ${vocab.synonym_usage || 'none'}</p>`;
-        
-        if (!vocab.unsafe_swaps_detected || vocab.unsafe_swaps_detected.length === 0) {
-     const verbatimRate = vocab.verbatim_rate || '0%';
-const paraphraseRate = vocab.paraphrase_rate || '100%';
-vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">✓ Verbatim: ${verbatimRate} | Paraphrased: ${paraphraseRate}</p>`;
-        }
-        
-        if (vocab.smart_swaps_detected && vocab.smart_swaps_detected.length > 0) {
-          vocabHtml += '<p style="margin-top: 8px;"><strong>Good swaps:</strong> ' + vocab.smart_swaps_detected.map(s => `<span class="vocab-badge swap">${s}</span>`).join('') + '</p>';
-        }
-        if (vocab.unsafe_swaps_detected && vocab.unsafe_swaps_detected.length > 0) {
-          vocabHtml += '<p style="margin-top: 8px;"><strong>⚠️ Risky swaps:</strong> ' + vocab.unsafe_swaps_detected.map(s => `<span class="vocab-badge compression">${s}</span>`).join('') + '</p>';
-        }
-        if (vocab.verbatim_phrases && vocab.verbatim_phrases.length > 0) {
-          vocabHtml += '<p style="margin-top: 8px; font-size: 0.8rem; color: #666;"><strong>Verbatim phrases detected:</strong> ' + vocab.verbatim_phrases.slice(0, 3).join(', ') + (vocab.verbatim_phrases.length > 3 ? '...' : '') + '</p>';
-        }
-        document.getElementById('vocabContent').innerHTML = vocabHtml;
-      } else {
-        vocabSection.style.display = 'none';
-      }
-      
-      // Band 9 Insights
-      const insightsSection = document.getElementById('insightsSection');
-      const insights = data.band_9_insights;
-      if (insights) {
-        insightsSection.style.display = 'block';
-        document.getElementById('insightsContent').innerHTML = `
-          <div style="background: rgba(25, 118, 210, 0.1); padding: 12px; border-radius: 6px; font-size: 0.85rem;">
-            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.word_count_flexibility}</div>
-            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.scan_method}</div>
-            <div style="margin-bottom: 6px;"><span style="color: #1976d2; font-weight: bold;">✓</span> ${insights.connector_style}</div>
-            <div><span style="color: #1976d2; font-weight: bold;">✓</span> Verbatim acceptable: ${insights.verbatim_acceptable ? 'Yes' : 'No'}</div>
-          </div>
-        `;
-      } else {
-        insightsSection.style.display = 'none';
-      }
-      
-      // FIX: Adjust grammar score display if no connector (max should be 1 without connector)
       const displayGrammarScore = grammar.has_connector ? grammarScore : Math.min(1, grammarScore);
       
-      // Trait scores - use normalized values
       document.getElementById('traitsGrid').innerHTML = `
         <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
           <div class="trait-name">Form</div>
@@ -1231,12 +1360,12 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
         <div class="trait-box ${displayGrammarScore >= 2 ? 'good' : displayGrammarScore >= 1 ? 'medium' : 'poor'}">
           <div class="trait-name">Grammar</div>
           <div class="trait-score">${displayGrammarScore}/2</div>
-          <div class="trait-detail">${grammar.has_connector ? (grammar.has_semicolon_before_connector ? '✓ connector' : '✓ no semi') : '✗ none'}</div>
+          <div class="trait-detail">${grammar.has_connector ? '✓ connector' : '✗ none'}</div>
         </div>
         <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
           <div class="trait-name">Vocabulary</div>
           <div class="trait-score">${vocabScore}/2</div>
-          <div class="trait-detail">${vocab.synonym_usage || 'N/A'}</div>
+          <div class="trait-detail">synonyms</div>
         </div>
       `;
       
@@ -1269,9 +1398,124 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
       }
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeInstructions();
-    });
+    // User Modal Functions
+    function showUserModal() {
+      document.getElementById('userModal').classList.add('show');
+      updateUserStats();
+    }
+
+    function closeUserModal(event) {
+      if (!event || event.target.id === 'userModal' || event.target.classList.contains('btn-close')) {
+        document.getElementById('userModal').classList.remove('show');
+      }
+    }
+
+    function saveUserId() {
+      const newId = document.getElementById('userIdInput').value.trim();
+      if (newId) {
+        currentUserId = newId;
+        LocalStore.setUserId(newId);
+        updateUserDisplay();
+        closeUserModal();
+        showToast('User ID saved!');
+      } else {
+        showToast('Please enter a valid ID');
+      }
+    }
+
+    function updateUserStats() {
+      const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+      const attempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+      
+      let html = '<p>No data yet. Complete some passages to see your stats!</p>';
+      
+      if (attempted.length > 0) {
+        const totalScore = Object.values(scores).reduce((sum, s) => sum + (s.overall_score || 0), 0);
+        const avgScore = Math.round(totalScore / Object.keys(scores).length);
+        
+        html = `
+          <div style="margin-bottom: 16px;">
+            <strong>Passages completed:</strong> ${attempted.length}<br>
+            <strong>Average score:</strong> ${avgScore}/90<br>
+            <strong>Storage:</strong> ${Object.keys(summaries).length} summaries saved locally
+          </div>
+        `;
+        
+        // Show recent history
+        html += '<div style="max-height: 200px; overflow-y: auto;"><strong>Recent attempts:</strong>';
+        const recent = attempted.slice(-5).reverse();
+        recent.forEach(id => {
+          const summary = summaries[id];
+          if (summary) {
+            html += `
+              <div class="history-item">
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Passage ${id}</span>
+                  <span class="history-score">${summary.score}/90</span>
+                </div>
+                <div class="history-date">${new Date(summary.timestamp).toLocaleDateString()}</div>
+              </div>
+            `;
+          }
+        });
+        html += '</div>';
+      }
+      
+      document.getElementById('userStatsContent').innerHTML = html;
+    }
+
+    function exportData() {
+      const data = {
+        userId: currentUserId,
+        attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
+        summaries: LocalStore.get(STORAGE_KEYS.SUMMARIES) || {},
+        scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
+        exportedAt: new Date().toISOString()
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pte_progress_${currentUserId || 'backup'}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Data exported successfully!');
+    }
+
+    function importData(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, data.attempted);
+          if (data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, data.summaries);
+          if (data.scores) LocalStore.set(STORAGE_KEYS.SCORES, data.scores);
+          if (data.userId) {
+            currentUserId = data.userId;
+            LocalStore.setUserId(data.userId);
+            document.getElementById('userIdInput').value = data.userId;
+            updateUserDisplay();
+          }
+          
+          loadStoredData();
+          updateDots();
+          updateStats();
+          updateUserStats();
+          showToast('Data imported successfully!');
+        } catch (err) {
+          showToast('Error importing file: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      input.value = '';
+    }
 
     let timerRunning = false, timerInterval, seconds = 0;
     function toggleTimer() {
@@ -1288,6 +1532,13 @@ vocabHtml += `<p style="color: #388e3c; font-size: 0.85rem; margin-top: 8px;">�
         document.getElementById('timerText').textContent = 'Off';
       }
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeInstructions();
+        closeUserModal();
+      }
+    });
   </script>
 </body>
 </html>
