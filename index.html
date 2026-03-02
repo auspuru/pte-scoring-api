@@ -15,8 +15,17 @@
     .ai-badge.offline { background: #ffebee; color: #c62828; }
     .ai-badge.cached { background: #fff3e0; color: #e65100; }
     .header-right { display: flex; gap: 8px; align-items: center; }
-    .btn-sm { padding: 6px 14px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-    .user-id-display { font-size: 0.8rem; color: #666; background: #f5f5f5; padding: 4px 10px; border-radius: 4px; }
+    .btn-sm { padding: 6px 14px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+    .btn-sm:hover { background: #f5f5f5; }
+    .user-id-display { font-size: 0.8rem; color: #666; background: #f5f5f5; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+    .user-id-display:hover { background: #e3f2fd; border-color: #1976d2; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; color: white; margin-right: 8px; cursor: pointer; transition: transform 0.2s; }
+    .user-avatar:hover { transform: scale(1.1); }
+    
+    .user-bar { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #e0e0e0; cursor: pointer; transition: all 0.2s; }
+    .user-bar:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-color: #1976d2; }
+    .user-bar .name { font-weight: 600; font-size: 0.85rem; color: #333; }
+    .user-bar .id { font-size: 0.75rem; color: #888; font-family: monospace; }
     
     .passage-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .nav-left { display: flex; align-items: center; gap: 12px; }
@@ -67,6 +76,8 @@
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-warning { background: #ff9800; color: white; }
     .btn-warning:hover { background: #f57c00; }
+    .btn-danger { background: #f44336; color: white; }
+    .btn-danger:hover { background: #d32f2f; }
     
     .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-top: 16px; }
@@ -183,7 +194,7 @@
     .tip-box { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-radius: 10px; padding: 16px; margin-top: 16px; }
     .tip-box .tip-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #f57c00; margin-bottom: 8px; }
     .tip-box ul { margin-left: 20px; color: #666; font-size: 0.9rem; line-height: 1.7; }
-    .modal-footer { padding: 16px 24px 24px; display: flex; justify-content: center; }
+    .modal-footer { padding: 16px 24px 24px; display: flex; justify-content: center; gap: 12px; }
     .structure-visual { display: flex; align-items: center; gap: 8px; margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 10px; }
     .structure-item { flex: 1; text-align: center; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
     .structure-item.topic { background: #e3f2fd; color: #1976d2; }
@@ -202,6 +213,10 @@
     .empty-state { text-align: center; padding: 40px; color: #888; }
     .empty-state-icon { font-size: 3rem; margin-bottom: 16px; }
     
+    .id-display-box { background: #f5f5f5; border: 2px dashed #ccc; border-radius: 8px; padding: 12px; text-align: center; margin: 16px 0; }
+    .id-display-box .label { font-size: 0.8rem; color: #666; margin-bottom: 4px; }
+    .id-display-box .value { font-family: monospace; font-size: 1.2rem; color: #333; font-weight: bold; word-break: break-all; }
+    
     @media (max-width: 600px) {
       .elements-grid { grid-template-columns: 1fr; }
       .traits-grid { grid-template-columns: repeat(2, 1fr); }
@@ -209,10 +224,10 @@
       .header { flex-direction: column; align-items: flex-start; }
       .btn-group { width: 100%; justify-content: stretch; }
       .btn-group .btn { flex: 1; }
+      .user-bar { width: 100%; justify-content: space-between; }
     }
   </style>
   <base target="_blank">
-<base target="_blank">
 </head>
 <body>
   <div class="container">
@@ -222,8 +237,14 @@
         <div class="ai-badge" id="aiStatus"><span>●</span> Checking...</div>
       </div>
       <div class="header-right">
-        <div class="user-id-display" id="userIdDisplay" style="display: none;"></div>
-        <button class="btn-sm" onclick="showUserModal()">👤 Profile</button>
+        <!-- New User Bar -->
+        <div class="user-bar" onclick="showUserModal()" id="userBar" style="display: none;">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="name" id="userNameDisplay">User</span>
+            <span class="id" id="userIdShort">ID: ----</span>
+          </div>
+        </div>
         <button class="btn-sm" onclick="showInstructions()">Instructions</button>
         <button class="btn-sm" onclick="toggleTimer()" id="timerBtn">Timer: <span id="timerText">Off</span></button>
       </div>
@@ -497,31 +518,52 @@
     <div class="modal" onclick="event.stopPropagation()" style="max-width: 500px;">
       <div class="modal-header">
         <h2>👤 User Profile</h2>
-        <p>Manage your progress and data</p>
+        <p>Manage your unique ID and progress</p>
       </div>
       <div class="modal-body">
         <div class="instruction-section">
           <div class="instruction-title">
             <span class="icon blue">🆔</span>
-            Your ID
+            Your Unique ID
           </div>
           <div class="instruction-content">
-            <input type="text" id="userIdInput" placeholder="Enter your name or ID" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;">
-            <p style="font-size: 0.85rem; color: #666; margin-top: 8px;">This ID is used to save your progress to the server.</p>
+            <div class="id-display-box">
+              <div class="label">Current User ID</div>
+              <div class="value" id="displayUserId">Loading...</div>
+            </div>
+            <p style="font-size: 0.85rem; color: #666; margin: 8px 0;">
+              This ID is automatically generated and saved on this device. 
+              <strong>Write it down!</strong> You'll need it to recover your progress if you clear your browser data.
+            </p>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+              <button class="btn btn-secondary" onclick="copyUserId()" style="flex: 1;">📋 Copy ID</button>
+              <button class="btn btn-danger" onclick="resetUserId()" style="flex: 1;">🔄 New ID</button>
+            </div>
           </div>
         </div>
 
         <div class="instruction-section">
           <div class="instruction-title">
-            <span class="icon green">💾</span>
-            Local Backup
+            <span class="icon green">✏️</span>
+            Change Display Name
           </div>
           <div class="instruction-content">
-            <p style="margin-bottom: 10px;">Export your progress to a file or import previously saved data.</p>
+            <input type="text" id="userIdInput" placeholder="Enter your name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; margin-bottom: 8px;">
+            <p style="font-size: 0.85rem; color: #666;">This name appears in the header bar. Your unique ID remains unchanged.</p>
+          </div>
+        </div>
+
+        <div class="instruction-section">
+          <div class="instruction-title">
+            <span class="icon orange">💾</span>
+            Data Management
+          </div>
+          <div class="instruction-content">
+            <p style="margin-bottom: 10px;">Export your progress to transfer to another device, or import previously saved data.</p>
             <div style="display: flex; gap: 10px;">
-              <button class="btn btn-secondary" onclick="exportData()" style="flex: 1;">Export Data</button>
+              <button class="btn btn-secondary" onclick="exportData()" style="flex: 1;">📤 Export Data</button>
               <label class="btn btn-secondary" style="flex: 1; text-align: center; cursor: pointer;">
-                Import Data
+                📥 Import Data
                 <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(this)">
               </label>
             </div>
@@ -530,8 +572,8 @@
 
         <div class="instruction-section">
           <div class="instruction-title">
-            <span class="icon orange">📊</span>
-            Session Stats
+            <span class="icon purple">📊</span>
+            Session Statistics
           </div>
           <div class="instruction-content">
             <div id="userStatsContent">Loading...</div>
@@ -539,7 +581,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-close-modal" onclick="saveUserId()">Save & Close</button>
+        <button class="btn-close-modal" onclick="saveUserProfile()">Save & Close</button>
       </div>
     </div>
   </div>
@@ -550,10 +592,11 @@
     // Storage Keys
     const STORAGE_KEYS = {
       USER_ID: 'pte_user_id',
+      USER_NAME: 'pte_user_name',
       ATTEMPTED: 'pte_attempted_passages',
       SCORES: 'pte_passage_scores',
       SUMMARIES: 'pte_user_summaries',
-      HISTORY: 'pte_passage_history' // New: stores array of all attempts
+      HISTORY: 'pte_passage_history'
     };
 
     // XSS Protection Utility
@@ -562,6 +605,36 @@
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Generate a unique ID (format: PTE-XXXX-XXXX)
+    function generateUniqueId() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let id = 'PTE-';
+      for (let i = 0; i < 4; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      id += '-';
+      for (let i = 0; i < 4; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    }
+
+    // Get color based on string (for avatar)
+    function getAvatarColor(str) {
+      const colors = ['#1976d2', '#388e3c', '#f57c00', '#7b1fa2', '#c62828', '#00695c', '#1565c0', '#6a1b9a'];
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    // Get initials from name
+    function getInitials(name) {
+      if (!name) return '?';
+      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     }
 
     // LocalStorage Wrapper with Error Handling
@@ -590,7 +663,13 @@
         }
       },
       getUserId() {
-        return localStorage.getItem(STORAGE_KEYS.USER_ID) || '';
+        let id = localStorage.getItem(STORAGE_KEYS.USER_ID);
+        if (!id) {
+          id = generateUniqueId();
+          localStorage.setItem(STORAGE_KEYS.USER_ID, id);
+          console.log('Generated new User ID:', id);
+        }
+        return id;
       },
       setUserId(id) {
         try {
@@ -600,6 +679,12 @@
           showToast('Failed to save User ID', 3000);
           return false;
         }
+      },
+      getUserName() {
+        return localStorage.getItem(STORAGE_KEYS.USER_NAME) || 'Guest';
+      },
+      setUserName(name) {
+        localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
       }
     };
 
@@ -1005,16 +1090,21 @@
     let currentId = 1, easyMode = false, attempted = new Set();
     let currentAbortController = null;
     let currentUserId = '';
+    let currentUserName = '';
     let timerRunning = false, timerInterval, timerSeconds = 0;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+      // Initialize user ID (auto-generated if not exists)
       currentUserId = LocalStore.getUserId();
+      currentUserName = LocalStore.getUserName();
+      
+      // Update UI with user info
       updateUserDisplay();
       
       document.getElementById('totalNum').textContent = passages.length;
       document.getElementById('totalProgress').textContent = passages.length;
-      document.getElementById('userIdInput').value = currentUserId;
+      document.getElementById('userIdInput').value = currentUserName;
       
       loadStoredData();
       loadPassage(1);
@@ -1024,13 +1114,23 @@
     });
 
     function updateUserDisplay() {
-      const display = document.getElementById('userIdDisplay');
-      if (currentUserId) {
-        display.textContent = `👤 ${escapeHtml(currentUserId)}`;
-        display.style.display = 'block';
-      } else {
-        display.style.display = 'none';
-      }
+      const userBar = document.getElementById('userBar');
+      const avatar = document.getElementById('userAvatar');
+      const nameDisplay = document.getElementById('userNameDisplay');
+      const idShort = document.getElementById('userIdShort');
+      
+      // Set avatar
+      avatar.textContent = getInitials(currentUserName);
+      avatar.style.backgroundColor = getAvatarColor(currentUserId);
+      
+      // Set name
+      nameDisplay.textContent = currentUserName;
+      
+      // Show shortened ID (last 4 chars)
+      idShort.textContent = `ID: ...${currentUserId.slice(-4)}`;
+      
+      // Show the bar
+      userBar.style.display = 'flex';
     }
 
     function loadStoredData() {
@@ -1231,723 +1331,4 @@
       kp.classList.toggle('show', easyMode);
       document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
       document.getElementById('prevBtn').disabled = id === 1;
-      document.getElementById('nextBtn').disabled = id === passages.length;
-      
-      // Check for saved summary and update History button visibility
-      loadPreviousAttempt();
-      updateHistoryButton();
-      updateDots();
-      document.getElementById('results').classList.remove('show');
-    }
-
-    function updateHistoryButton() {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      const hasHistory = history[currentId] && history[currentId].length > 0;
-      
-      const historyBtn = document.getElementById('historyBtn');
-      const historyTag = document.getElementById('historyTag');
-      
-      if (hasHistory) {
-        historyBtn.style.display = 'inline-block';
-        historyTag.style.display = 'inline-block';
-        historyTag.textContent = `📜 ${history[currentId].length} attempt${history[currentId].length > 1 ? 's' : ''}`;
-      } else {
-        historyBtn.style.display = 'none';
-        historyTag.style.display = 'none';
-      }
-    }
-
-    function loadPreviousAttempt() {
-      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-      const savedTag = document.getElementById('savedTag');
-      const indicator = document.getElementById('savedIndicator');
-      const textarea = document.getElementById('summaryInput');
-      
-      if (summaries[currentId]) {
-        document.getElementById('summaryInput').value = summaries[currentId].text || '';
-        updateWordCount();
-        savedTag.style.display = 'inline-block';
-        indicator.classList.add('show');
-        textarea.classList.add('has-saved');
-      } else {
-        document.getElementById('summaryInput').value = '';
-        updateWordCount();
-        savedTag.style.display = 'none';
-        indicator.classList.remove('show');
-        textarea.classList.remove('has-saved');
-      }
-    }
-
-    function clearSummary() {
-      document.getElementById('summaryInput').value = '';
-      updateWordCount();
-    }
-
-    function prevPassage() { if (currentId > 1) loadPassage(currentId - 1); }
-    function nextPassage() { if (currentId < passages.length) loadPassage(currentId + 1); }
-
-    function toggleEasyMode() {
-      easyMode = !easyMode;
-      document.getElementById('easyToggle').classList.toggle('active', easyMode);
-      document.getElementById('keyPoints').classList.toggle('show', easyMode);
-      document.getElementById('kpBtn').textContent = easyMode ? 'Click to hide key points' : 'Click to show key points';
-    }
-
-    function toggleKeyPoints() {
-      const kp = document.getElementById('keyPoints');
-      kp.classList.toggle('show');
-      document.getElementById('kpBtn').textContent = kp.classList.contains('show') ? 'Click to hide key points' : 'Click to show key points';
-    }
-
-    function jumpToPassage() {
-      const input = prompt('Enter passage (1-' + passages.length + '):');
-      if (!input) return;
-      const n = parseInt(input);
-      if (!isNaN(n) && n >= 1 && n <= passages.length) {
-        loadPassage(n);
-      } else {
-        showToast('Invalid passage number. Please enter between 1 and ' + passages.length);
-      }
-    }
-
-    function updateWordCount() {
-      const text = document.getElementById('summaryInput').value || '';
-      // Fix: Filter empty strings from multiple spaces/tabs/newlines
-      const words = text.trim() ? text.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
-      const el = document.getElementById('wordCount');
-      el.textContent = words + ' words';
-      el.className = 'word-count';
-      if (words < 5 || words > 75) el.classList.add('error');
-      else if (words >= 5 && words <= 75) el.classList.add('success');
-    }
-
-    async function verifySummary() {
-      const text = document.getElementById('summaryInput').value || '';
-      const passage = passages.find(p => p.id === currentId);
-      
-      if (!text.trim()) { showToast('Please enter a summary before verifying.'); return; }
-      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-      if (words < 5) { showToast('Your summary is too short — minimum 5 words.'); return; }
-      if (words > 75) { showToast('Your summary is too long — maximum 75 words.'); return; }
-
-      document.getElementById('loadingOverlay').classList.add('show');
-      setLoadingState('Grading with AI...', 'This usually takes 5–10 seconds', true);
-
-      try {
-        const payload = {
-          text: text,
-          type: 'summarize-written-text',
-          prompt: passage.text,
-          keyPoints: passage.keyElements
-        };
-
-        // Add user ID if available for server-side storage
-        if (currentUserId) {
-          payload.userId = currentUserId;
-          payload.passageId = currentId;
-        }
-
-        const res = await fetchWithRetry(API_URL + '/api/grade', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-        
-        // Save to localStorage (always)
-        saveToLocalStorage(currentId, text, data);
-        
-        // Also try to save to server if we have userId
-        if (currentUserId) {
-          try {
-            await fetch(`${API_URL}/api/progress/${encodeURIComponent(currentUserId)}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                passageId: currentId,
-                summary: text,
-                scoreData: data
-              })
-            });
-          } catch (e) {
-            console.log('Server storage failed, keeping local copy');
-          }
-        }
-        
-        showResults(data, passage);
-        attempted.add(currentId);
-        document.getElementById('completedCount').textContent = attempted.size;
-        updateDots();
-        updateStats();
-        updateHistoryButton(); // Update the history button
-        
-      } catch (e) {
-        console.error(e);
-        if (e.message === 'Cancelled') return;
-        showToast('Grading failed: ' + e.message, 8000);
-      } finally {
-        currentAbortController = null;
-        document.getElementById('loadingOverlay').classList.remove('show');
-      }
-    }
-
-    function saveToLocalStorage(passageId, text, data) {
-      const timestamp = new Date().toISOString();
-      
-      // Update attempted set (for backward compatibility)
-      const attempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
-      if (!attempted.includes(passageId)) {
-        attempted.push(passageId);
-        LocalStore.set(STORAGE_KEYS.ATTEMPTED, attempted);
-      }
-      
-      // Save summary (latest only, for backward compatibility)
-      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-      summaries[passageId] = {
-        text: text,
-        timestamp: timestamp,
-        score: data.overall_score || 0
-      };
-      LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
-      
-      // Save detailed score (backward compatibility)
-      const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-      scores[passageId] = data;
-      LocalStore.set(STORAGE_KEYS.SCORES, scores);
-      
-      // NEW: Save to history array (keeps all attempts)
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      if (!history[passageId]) {
-        history[passageId] = [];
-      }
-      
-      // Add new attempt to beginning of array (newest first)
-      history[passageId].unshift({
-        text: text,
-        timestamp: timestamp,
-        overall_score: data.overall_score || 0,
-        band: data.band || 'Band 5',
-        trait_scores: data.trait_scores || {},
-        word_count: data.word_count || 0,
-        feedback: data.feedback || '',
-        content_details: data.content_details || {}
-      });
-      
-      // Keep only last 10 attempts to prevent storage issues
-      if (history[passageId].length > 10) {
-        history[passageId] = history[passageId].slice(0, 10);
-      }
-      
-      LocalStore.set(STORAGE_KEYS.HISTORY, history);
-    }
-
-    function showResults(data, passage) {
-      document.getElementById('results').classList.add('show');
-      
-      const formErrorBanner = document.getElementById('formErrorBanner');
-      if (data.form_gate_triggered) {
-        formErrorBanner.style.display = 'block';
-        document.getElementById('formErrorReason').textContent = data.form_reason || 'Form validation failed';
-      } else {
-        formErrorBanner.style.display = 'none';
-      }
-      
-      const traits = data.trait_scores || {};
-      const formScore = Math.min(1, traits.form || 0);
-      let contentScore = traits.content || 0;
-      if (contentScore > 2) contentScore = 2;
-      let grammarScore = Math.min(2, traits.grammar || 0);
-      
-      // Fix: Consistent grammar score calculation for display and total
-      const grammarDetails = data.grammar_details || {};
-      const displayGrammarScore = grammarDetails.has_connector ? grammarScore : Math.min(1, grammarScore);
-      
-      const vocabScore = Math.min(2, traits.vocabulary || 0);
-      
-      // Fix: Use consistent score for total calculation
-      const correctedRawScore = formScore + contentScore + displayGrammarScore + vocabScore;
-      
-      const content = data.content_details || {};
-      const keyIdeasPresent = content.key_ideas_present || [];
-      
-      const hasTopic = keyIdeasPresent.includes('topic');
-      const hasPivot = keyIdeasPresent.includes('pivot');
-      const hasConclusion = keyIdeasPresent.includes('conclusion');
-      
-      document.getElementById('mainScore').textContent = (data.overall_score || 0) + '/90';
-      document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
-      document.getElementById('rawDisplay').textContent = 'Raw: ' + correctedRawScore + '/7';
-      
-      const modeDisplay = document.getElementById('modeDisplay');
-      if (data.mode === 'cached') {
-        modeDisplay.innerHTML = '⚡ Cached';
-        modeDisplay.className = 'mode-tag cached';
-      } else if (data.mode === 'ai') {
-        modeDisplay.innerHTML = '🤖 AI';
-        modeDisplay.className = 'mode-tag';
-      } else {
-        modeDisplay.innerHTML = '📊 Local';
-        modeDisplay.className = 'mode-tag';
-      }
-      
-      document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
-      
-      // Fix: Safely map extracted key ideas to correct labels
-      const extracted = content.key_ideas_extracted || [];
-      const topicText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.topic.substring(0, 20).toLowerCase())) || passage.keyElements.topic;
-      const pivotText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.pivot.substring(0, 20).toLowerCase())) || passage.keyElements.pivot;
-      const conclusionText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.conclusion.substring(0, 20).toLowerCase())) || passage.keyElements.conclusion;
-      
-      document.getElementById('elementsGrid').innerHTML = `
-        <div class="element-card ${hasTopic ? 'captured' : 'missed'}">
-          <div class="element-header">
-            <span class="element-label topic">Topic</span>
-            <span class="element-check">${hasTopic ? '✓' : '✗'}</span>
-          </div>
-          <div class="element-text">${escapeHtml((topicText || passage.keyElements?.topic || 'Main subject').substring(0, 60))}...</div>
-        </div>
-        <div class="element-card ${hasPivot ? 'captured' : 'missed'}">
-          <div class="element-header">
-            <span class="element-label pivot">Pivot</span>
-            <span class="element-check">${hasPivot ? '✓' : '✗'}</span>
-          </div>
-          <div class="element-text">${escapeHtml((pivotText || passage.keyElements?.pivot || 'Contrast/shift').substring(0, 60))}...</div>
-        </div>
-        <div class="element-card ${hasConclusion ? 'captured' : 'missed'}">
-          <div class="element-header">
-            <span class="element-label conclusion">Conclusion</span>
-            <span class="element-check">${hasConclusion ? '✓' : '✗'}</span>
-          </div>
-          <div class="element-text">${escapeHtml((conclusionText || passage.keyElements?.conclusion || 'Outcome').substring(0, 60))}...</div>
-        </div>
-      `;
-      
-      // Fix: Populate missing sections if data available
-      // First Person Warning
-      const firstPersonSection = document.getElementById('firstPersonWarning');
-      if (data.first_person_detected) {
-        firstPersonSection.style.display = 'block';
-        document.getElementById('firstPersonContent').textContent = 
-          'Avoid using "I", "my", "we", or "our". PTE Academic requires objective academic writing.';
-      } else {
-        firstPersonSection.style.display = 'none';
-      }
-      
-      // Connector Info
-      const connectorInfo = document.getElementById('connectorInfo');
-      if (grammarDetails.has_connector) {
-        connectorInfo.textContent = `✓ Found connector: "${grammarDetails.connector_used || 'however/therefore'}"`;
-        connectorInfo.style.color = '#2e7d32';
-      } else {
-        connectorInfo.textContent = 'Tip: Use semicolons before connectors (e.g., "; however," or "; therefore,")';
-        connectorInfo.style.color = '#e65100';
-      }
-      
-      // Spelling Section
-      const spellSection = document.getElementById('spellCheckSection');
-      const spellContent = document.getElementById('spellCheckContent');
-      if (data.spelling_errors && data.spelling_errors.length > 0) {
-        spellSection.style.display = 'block';
-        spellContent.innerHTML = data.spelling_errors.map(err => 
-          `<div class="issue-item">
-            <span class="issue-word">${escapeHtml(err.word)}</span>
-            <span class="issue-arrow">→</span>
-            <span class="issue-fix">${escapeHtml(err.suggestion || 'Check spelling')}</span>
-          </div>`
-        ).join('');
-      } else {
-        spellSection.style.display = 'none';
-      }
-      
-      // Grammar Section
-      const grammarSection = document.getElementById('grammarSection');
-      const grammarContent = document.getElementById('grammarContent');
-      if (data.grammar_errors && data.grammar_errors.length > 0) {
-        grammarSection.style.display = 'block';
-        grammarContent.innerHTML = data.grammar_errors.map(err => 
-          `<div class="issue-item">
-            <span class="issue-word">${escapeHtml(err.text || 'Error')}</span>
-            <span class="issue-arrow">→</span>
-            <span class="issue-fix">${escapeHtml(err.message || 'Review grammar')}</span>
-            ${err.rule ? `<span class="issue-rule">(${escapeHtml(err.rule)})</span>` : ''}
-          </div>`
-        ).join('');
-      } else {
-        grammarSection.style.display = 'none';
-      }
-      
-      // Vocabulary Section
-      const vocabSection = document.getElementById('vocabSection');
-      const vocabContent = document.getElementById('vocabContent');
-      if (data.vocabulary_suggestions && data.vocabulary_suggestions.length > 0) {
-        vocabSection.style.display = 'block';
-        vocabContent.innerHTML = data.vocabulary_suggestions.map(sugg => 
-          `<span class="vocab-badge ${sugg.type || 'swap'}">${escapeHtml(sugg.word)} → ${escapeHtml(sugg.alternative)}</span>`
-        ).join('');
-      } else {
-        vocabSection.style.display = 'none';
-      }
-      
-      // Insights Section
-      const insightsSection = document.getElementById('insightsSection');
-      if (data.band_9_example || data.improvement_tips) {
-        insightsSection.style.display = 'block';
-        document.getElementById('insightsContent').innerHTML = `
-          ${data.band_9_example ? `<div style="margin-bottom: 10px;"><strong>Band 9 Example:</strong> ${escapeHtml(data.band_9_example)}</div>` : ''}
-          ${data.improvement_tips ? `<div><strong>Tips:</strong> ${escapeHtml(data.improvement_tips)}</div>` : ''}
-        `;
-      } else {
-        insightsSection.style.display = 'none';
-      }
-      
-      document.getElementById('traitsGrid').innerHTML = `
-        <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
-          <div class="trait-name">Form</div>
-          <div class="trait-score">${formScore}/1</div>
-          <div class="trait-detail">${data.word_count || 0} words</div>
-        </div>
-        <div class="trait-box ${contentScore >= 2 ? 'good' : contentScore >= 1 ? 'medium' : 'poor'}">
-          <div class="trait-name">Content</div>
-          <div class="trait-score">${contentScore}/2</div>
-          <div class="trait-detail">T:${hasTopic ? '✓' : '✗'} P:${hasPivot ? '✓' : '✗'} C:${hasConclusion ? '✓' : '✗'}</div>
-        </div>
-        <div class="trait-box ${displayGrammarScore >= 2 ? 'good' : displayGrammarScore >= 1 ? 'medium' : 'poor'}">
-          <div class="trait-name">Grammar</div>
-          <div class="trait-score">${displayGrammarScore}/2</div>
-          <div class="trait-detail">${grammarDetails.has_connector ? '✓ connector' : '✗ no connector'}</div>
-        </div>
-        <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
-          <div class="trait-name">Vocabulary</div>
-          <div class="trait-score">${vocabScore}/2</div>
-          <div class="trait-detail">word choice</div>
-        </div>
-      `;
-      
-      document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // NEW: Show passage history modal
-    function showPassageHistory(passageId) {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      const attempts = history[passageId] || [];
-      const passage = passages.find(p => p.id === passageId);
-      
-      const modal = document.getElementById('historyModal');
-      const body = document.getElementById('historyModalBody');
-      const subtitle = document.getElementById('historyModalSubtitle');
-      
-      subtitle.textContent = `Passage ${passageId}: ${passage ? passage.title : 'Unknown'}`;
-      
-      if (attempts.length === 0) {
-        body.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📝</div>
-            <p>No attempts yet for this passage.</p>
-            <p style="font-size: 0.9rem; margin-top: 8px;">Submit your first summary to see it here!</p>
-          </div>
-        `;
-      } else {
-        body.innerHTML = `
-          <div style="margin-bottom: 16px; padding: 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.9rem;">
-            <strong>${attempts.length}</strong> attempt${attempts.length > 1 ? 's' : ''} saved locally. 
-            Click any attempt to load it into the editor.
-          </div>
-          <div id="historyList">
-            ${attempts.map((attempt, index) => `
-              <div class="history-item" onclick="loadHistoryAttempt(${passageId}, ${index})">
-                <div class="history-header">
-                  <span class="history-score">${attempt.overall_score}/90 (${attempt.band})</span>
-                  <span class="history-date">${new Date(attempt.timestamp).toLocaleString()}</span>
-                </div>
-                <div class="history-meta">
-                  <span>Words: ${attempt.word_count}</span>
-                  <span>Content: ${attempt.content_details?.key_ideas_present?.length || 0}/3</span>
-                  <span>Grammar: ${attempt.trait_scores?.grammar || 0}/2</span>
-                </div>
-                <div class="history-text">"${escapeHtml(attempt.text)}"</div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-      
-      modal.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-
-    // NEW: Load a specific history attempt into the editor
-    function loadHistoryAttempt(passageId, index) {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      const attempts = history[passageId] || [];
-      
-      if (attempts[index]) {
-        const attempt = attempts[index];
-        
-        // Load the text
-        document.getElementById('summaryInput').value = attempt.text;
-        updateWordCount();
-        
-        // Show feedback toast
-        showToast(`Loaded attempt from ${new Date(attempt.timestamp).toLocaleDateString()} - Score: ${attempt.overall_score}/90`, 3000);
-        
-        // Close modal
-        closeHistoryModal();
-        
-        // Scroll to input
-        document.getElementById('summaryInput').scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    function closeHistoryModal(event) {
-      if (!event || event.target.id === 'historyModal' || event.target.classList.contains('btn-close-modal')) {
-        document.getElementById('historyModal').classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    }
-
-    function renderDots() {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      document.getElementById('passageDots').innerHTML = passages.map((p, i) => {
-        const id = i + 1;
-        const attempts = history[id] || [];
-        const attemptCount = attempts.length;
-        
-        return `
-          <div class="dot" data-id="${id}" onclick="handleDotClick(${id})">
-            ${id}
-            ${attemptCount > 0 ? `<span class="attempt-count">${attemptCount}</span>` : ''}
-          </div>
-        `;
-      }).join('');
-    }
-
-    function handleDotClick(id) {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      const hasHistory = history[id] && history[id].length > 0;
-      
-      if (hasHistory && id !== currentId) {
-        // If has history and not current, show confirmation
-        if (confirm(`Passage ${id} has ${history[id].length} saved attempt(s).\n\nClick OK to view history first, or Cancel to just navigate.`)) {
-          loadPassage(id);
-          showPassageHistory(id);
-          return;
-        }
-      }
-      loadPassage(id);
-    }
-
-    function updateDots() {
-      document.querySelectorAll('.dot').forEach(d => {
-        const id = parseInt(d.dataset.id);
-        d.classList.toggle('active', id === currentId);
-        d.classList.toggle('attempted', attempted.has(id));
-      });
-    }
-
-    function showInstructions() {
-      document.getElementById('instructionsModal').classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeInstructions(event) {
-      if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close-modal')) {
-        document.getElementById('instructionsModal').classList.remove('show');
-        document.body.style.overflow = '';
-      }
-    }
-
-    // User Modal Functions
-    function showUserModal() {
-      document.getElementById('userModal').classList.add('show');
-      updateUserStats();
-    }
-
-    function closeUserModal(event) {
-      if (!event || event.target.id === 'userModal' || event.target.classList.contains('btn-close-modal')) {
-        document.getElementById('userModal').classList.remove('show');
-      }
-    }
-
-    function saveUserId() {
-      const newId = document.getElementById('userIdInput').value.trim();
-      if (newId) {
-        currentUserId = newId;
-        if (LocalStore.setUserId(newId)) {
-          updateUserDisplay();
-          closeUserModal();
-          showToast('User ID saved!');
-        }
-      } else {
-        showToast('Please enter a valid ID');
-      }
-    }
-
-    function updateUserStats() {
-      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-      const attemptedArr = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
-      
-      // Calculate total attempts from history
-      let totalAttempts = 0;
-      Object.values(history).forEach(attempts => {
-        if (Array.isArray(attempts)) totalAttempts += attempts.length;
-      });
-      
-      let html = '<p>No data yet. Complete some passages to see your stats!</p>';
-      
-      if (totalAttempts > 0 || attemptedArr.length > 0) {
-        // Calculate average from history
-        let totalScore = 0;
-        let count = 0;
-        Object.values(history).forEach(attempts => {
-          if (Array.isArray(attempts)) {
-            attempts.forEach(a => {
-              totalScore += (a.overall_score || 0);
-              count++;
-            });
-          }
-        });
-        
-        const avgScore = count > 0 ? Math.round(totalScore / count) : 0;
-        
-        html = `
-          <div style="margin-bottom: 16px;">
-            <strong>Unique passages completed:</strong> ${attempted.size}<br>
-            <strong>Total attempts:</strong> ${totalAttempts || attemptedArr.length}<br>
-            <strong>Average score:</strong> ${avgScore}/90<br>
-            <strong>Storage:</strong> ${Object.keys(summaries).length} summaries saved
-          </div>
-        `;
-        
-        // Show recent history across all passages
-        html += '<div style="max-height: 200px; overflow-y: auto;"><strong>Recent attempts (all passages):</strong>';
-        const allAttempts = [];
-        Object.entries(history).forEach(([pid, attempts]) => {
-          if (Array.isArray(attempts)) {
-            attempts.forEach(a => {
-              allAttempts.push({...a, passageId: pid});
-            });
-          }
-        });
-        
-        // Sort by timestamp desc
-        allAttempts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        const recent = allAttempts.slice(0, 5);
-        recent.forEach(attempt => {
-          html += `
-            <div class="history-item" style="margin-bottom: 8px; padding: 8px;">
-              <div style="display: flex; justify-content: space-between;">
-                <span>Passage ${attempt.passageId}</span>
-                <span class="history-score">${attempt.overall_score}/90</span>
-              </div>
-              <div class="history-date">${new Date(attempt.timestamp).toLocaleString()}</div>
-            </div>
-          `;
-        });
-        html += '</div>';
-      }
-      
-      document.getElementById('userStatsContent').innerHTML = html;
-    }
-
-    function exportData() {
-      const data = {
-        userId: currentUserId,
-        attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
-        summaries: LocalStore.get(STORAGE_KEYS.SUMMARIES) || {},
-        scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
-        history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}, // Include full history
-        exportedAt: new Date().toISOString()
-      };
-      
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const safeName = (currentUserId || 'backup').replace(/[^a-z0-9]/gi, '_');
-      a.download = `pte_progress_${safeName}_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('Data exported successfully!');
-    }
-
-    function importData(input) {
-      const file = input.files[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          
-          // Validation
-          if (!data || typeof data !== 'object') throw new Error('Invalid file format');
-          
-          if (data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, data.attempted);
-          if (data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, data.summaries);
-          if (data.scores) LocalStore.set(STORAGE_KEYS.SCORES, data.scores);
-          if (data.history) LocalStore.set(STORAGE_KEYS.HISTORY, data.history); // Import history
-          if (data.userId) {
-            currentUserId = data.userId;
-            LocalStore.setUserId(data.userId);
-            document.getElementById('userIdInput').value = data.userId;
-            updateUserDisplay();
-          }
-          
-          loadStoredData();
-          renderDots(); // Re-render to show attempt counts
-          updateStats();
-          updateUserStats();
-          updateHistoryButton();
-          showToast('Data imported successfully!');
-        } catch (err) {
-          showToast('Error importing file: ' + err.message);
-        }
-      };
-      reader.onerror = () => showToast('Error reading file');
-      reader.readAsText(file);
-      input.value = '';
-    }
-
-    function toggleTimer() {
-      const btn = document.getElementById('timerBtn');
-      if (!timerRunning) {
-        // Start timer
-        timerRunning = true;
-        btn.style.background = '#e8f5e9';
-        btn.style.color = '#2e7d32';
-        timerInterval = setInterval(() => {
-          timerSeconds++;
-          const m = Math.floor(timerSeconds / 60), s = timerSeconds % 60;
-          document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
-        }, 1000);
-      } else {
-        // Stop timer (don't reset immediately - let user see final time)
-        clearInterval(timerInterval);
-        timerRunning = false;
-        btn.style.background = '';
-        btn.style.color = '';
-        // Keep the time displayed until next start, or reset after 3 seconds
-        setTimeout(() => {
-          if (!timerRunning) {
-            timerSeconds = 0;
-            document.getElementById('timerText').textContent = 'Off';
-          }
-        }, 3000);
-      }
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeInstructions();
-        closeUserModal();
-        closeHistoryModal();
-      }
-    });
-  </script>
-</body>
-</html>
+      document.getElementById('nextBtn').disabled
