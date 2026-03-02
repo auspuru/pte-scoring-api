@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
+const fs = require('fs').promises;
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +21,81 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 }
 
+// ─── STORAGE SETUP ───────────────────────────────────────────────────────────
+// Railway uses ephemeral filesystem at /tmp, local dev uses ./data
+const DATA_DIR = process.env.NODE_ENV === 'production' ? '/tmp' : './data';
+const STORAGE_FILE = path.join(DATA_DIR, 'pte_data.json');
+
+async function ensureDataDir() {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+  } catch (e) {
+    console.error('Data directory error:', e);
+  }
+}
+
+const StorageAPI = {
+  async readData() {
+    try {
+      const data = await fs.readFile(STORAGE_FILE, 'utf8');
+      return JSON.parse(data);
+    } catch {
+      return { users: {}, passages: {}, global: { totalAttempts: 0 } };
+    }
+  },
+
+  async writeData(data) {
+    await ensureDataDir();
+    await fs.writeFile(STORAGE_FILE, JSON.stringify(data, null, 2));
+  },
+
+  async saveProgress(userId, passageId, summary, scoreData) {
+    const data = await this.readData();
+    
+    // Initialize user if not exists
+    if (!data.users[userId]) {
+      data.users[userId] = { attempts: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    }
+    
+    // Save attempt
+    data.users[userId].attempts[passageId] = {
+      summary,
+      score: scoreData,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Update user stats
+    const attempts = Object.values(data.users[userId].attempts);
+    data.users[userId].stats.totalAttempts = attempts.length;
+    const totalScore = attempts.reduce((sum, a) => sum + (a.score?.overall_score || 0), 0);
+    data.users[userId].stats.averageScore = Math.round(totalScore / attempts.length);
+    
+    // Update global stats
+    data.global.totalAttempts++;
+    
+    await this.writeData(data);
+    return { success: true, userStats: data.users[userId].stats };
+  },
+
+  async getProgress(userId) {
+    const data = await this.readData();
+    return data.users[userId] || { attempts: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+  },
+
+  async getLeaderboard(limit = 10) {
+    const data = await this.readData();
+    const users = Object.entries(data.users)
+      .map(([id, user]) => ({
+        userId: id,
+        averageScore: user.stats.averageScore,
+        totalAttempts: user.stats.totalAttempts
+      }))
+      .sort((a, b) => b.averageScore - a.averageScore)
+      .slice(0, limit);
+    return users;
+  }
+};
+
 const BAND_MAP = {
   0: 'Band 5', 1: 'Band 5',
   2: 'Band 6',
@@ -30,9 +107,6 @@ const BAND_MAP = {
 };
 
 // ─── NUMBER WORD NORMALISATION ───────────────────────────────────────────────
-// Converts written numbers in student text to digits before matching.
-// e.g. "fifty percent" -> "50", "half" -> "50"
-// This prevents false failures when students paraphrase statistics.
 const NUMBER_WORD_MAP = {
   'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
   'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9',
@@ -52,7 +126,7 @@ function normaliseNumbers(text) {
   return t;
 }
 
-// ─── HTML STRIP (safety: frontend may pass unsanitised key point strings) ────
+// ─── HTML STRIP ──────────────────────────────────────────────────────────────
 function stripHtml(text) {
   return (text || '')
     .replace(/<[^>]*>/g, '')
@@ -63,17 +137,14 @@ function stripHtml(text) {
     .trim();
 }
 
-// ─── EXTRACT KEY CONCEPTS FROM TEXT ─────────────────────────────────────────
+// ─── EXTRACT KEY CONCEPTS ────────────────────────────────────────────────────
 function extractConcepts(text) {
   if (!text) return [];
 
   const concepts = [];
-
-  // Numbers with optional units (e.g. $4 trillion, 75%, 2050)
   const numbers = text.match(/\$?\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion))?%?/gi) || [];
   concepts.push(...numbers.map(n => n.toLowerCase().trim()).filter(n => n.length > 0));
 
-  // Key terms — broad stop word filter
   const stopWords = new Set([
     'the','a','an','and','or','but','in','on','at','to','for','of','with','by',
     'is','are','was','were','be','been','have','has','had','will','would','could',
@@ -95,14 +166,9 @@ function extractConcepts(text) {
   return [...new Set(concepts)];
 }
 
-// ─── PLURAL NORMALISATION ────────────────────────────────────────────────────
-// Simple s-stripping ("classes"→"classe") causes more false negatives than it
-// fixes. Removed in v15 — normaliseNumbers() + fuzzy matching cover the real
-// edge cases. A proper stemmer can be added later if needed.
-function deplural(word) { return word; }  // identity — effectively disabled
+function deplural(word) { return word; }
 
 // ─── FUZZY NUMBER MATCH ──────────────────────────────────────────────────────
-// "50.0" matches "50"; allows ±1 unit tolerance for minor formatting differences.
 function fuzzyNumberMatch(keyPointNumbers, studentNumbers) {
   for (const kn of keyPointNumbers) {
     const kVal = parseFloat(kn);
@@ -114,25 +180,23 @@ function fuzzyNumberMatch(keyPointNumbers, studentNumbers) {
   return false;
 }
 
-// ─── CHECK IF KEY POINT IS PRESENT ──────────────────────────────────────────
+// ─── CHECK KEY POINT ─────────────────────────────────────────────────────────
 function checkKeyPoint(studentText, keyPointText) {
   const cleanStudent  = stripHtml(studentText);
   const cleanKeyPoint = stripHtml(keyPointText);
 
   const student     = cleanStudent.toLowerCase().replace(/[^\w\s$%]/g, ' ');
-  const studentNorm = normaliseNumbers(student);   // "fifty percent" -> "50"
+  const studentNorm = normaliseNumbers(student);
   const keyPoint    = cleanKeyPoint.toLowerCase();
 
   const keyConcepts = extractConcepts(normaliseNumbers(cleanKeyPoint));
 
-  // Adaptive thresholds: long key points lower both bars
   const isLong = keyConcepts.length > 15;
   const thresholds = {
     concept:  isLong ? 0.20 : 0.25,
     critical: isLong ? 0.30 : 0.35
   };
 
-  // Concept matching with plural normalisation
   let matchedConcepts = 0;
   const matched = [];
   for (const concept of keyConcepts) {
@@ -144,7 +208,6 @@ function checkKeyPoint(studentText, keyPointText) {
   }
   const matchRate = keyConcepts.length > 0 ? matchedConcepts / keyConcepts.length : 0;
 
-  // Critical terms: numbers + long words, with plural normalisation
   const numberTerms = (keyPoint.match(/\$?\d+(?:\.\d+)?(?:\s*(?:billion|million|trillion))?%?/gi) || [])
     .map(t => t.toLowerCase().trim());
   const longWords = keyPoint
@@ -160,7 +223,6 @@ function checkKeyPoint(studentText, keyPointText) {
   }
   const criticalRate = uniqueCriticalTerms.length > 0 ? matchedCritical / uniqueCriticalTerms.length : 0;
 
-  // Number gate: fuzzy ±1 match + written-number normalisation + strong-concept fallback
   const keyPointNumbers = (keyPoint.match(/\d+(?:\.\d+)?/g) || []);
   const studentNumbers  = (studentNorm.match(/\d+(?:\.\d+)?/g) || []);
   const hasNumbers      = keyPointNumbers.length > 0;
@@ -189,7 +251,7 @@ function checkKeyPoint(studentText, keyPointText) {
   };
 }
 
-// ─── VERBATIM DETECTION ─────────────────────────────────────────────────────
+// ─── VERBATIM DETECTION ──────────────────────────────────────────────────────
 function detectVerbatim(studentText, passageText) {
   const student = studentText.toLowerCase().replace(/[^\w\s]/g, '');
   const passage = passageText.toLowerCase().replace(/[^\w\s]/g, '');
@@ -198,11 +260,9 @@ function detectVerbatim(studentText, passageText) {
   
   if (studentWords.length === 0) return { verbatimRate: 0, isVerbatim: false };
   
-  // Track matched word indices to avoid double-counting
   const matchedWords = new Set();
   const verbatimPhrases = [];
   
-  // 4-word phrases first, then 3-word
   for (let i = 0; i < studentWords.length - 2; i++) {
     const phrase4 = studentWords.slice(i, i + 4).join(' ');
     const phrase3 = studentWords.slice(i, i + 3).join(' ');
@@ -218,7 +278,6 @@ function detectVerbatim(studentText, passageText) {
     }
   }
   
-  // Individual words (4+ chars) not yet matched
   for (let i = 0; i < studentWords.length; i++) {
     if (!matchedWords.has(i) && studentWords[i].length >= 4 && passage.includes(studentWords[i])) {
       matchedWords.add(i);
@@ -234,7 +293,7 @@ function detectVerbatim(studentText, passageText) {
   };
 }
 
-// ─── FORM VALIDATION ────────────────────────────────────────────────────────
+// ─── FORM VALIDATION ─────────────────────────────────────────────────────────
 function validateForm(text) {
   const words = text.trim().split(/\s+/).filter(w => w.length > 0);
   const wc = words.length;
@@ -243,7 +302,6 @@ function validateForm(text) {
   if (wc > 75) return { valid: false, score: 0, reason: 'Too long (max 75 words)', wc };
   if (!/[.!?]$/.test(text.trim())) return { valid: false, score: 0, reason: 'Must end with period', wc };
   
-  // Mask known abbreviations so they don't trigger false sentence splits
   const clean = text.replace(/(?:Dr|Mr|Mrs|Ms|Prof|U\.K|U\.S|i\.e|e\.g|etc)\./gi, '##');
   const sentences = (clean.match(/[.!?](\s|$)/g) || []).length;
   
@@ -345,19 +403,58 @@ function generateFeedback(coverage, grammar, verbatim) {
 app.get('/', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'PTE SWT Scoring API v15.0.0',
-    endpoints: ['/api/health', '/api/grade'],
+    message: 'PTE SWT Scoring API v16.0.0 (with Storage)',
+    endpoints: ['/api/health', '/api/grade', '/api/progress/:userId'],
     anthropicConfigured: !!anthropic
   });
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '15.0.0', anthropicConfigured: !!anthropic });
+  res.json({ 
+    status: 'ok', 
+    version: '16.0.0', 
+    anthropicConfigured: !!anthropic,
+    storage: 'file-based'
+  });
 });
 
+// ─── STORAGE ROUTES ──────────────────────────────────────────────────────────
+app.post('/api/progress/:userId', async (req, res) => {
+  try {
+    const { passageId, summary, scoreData } = req.body;
+    const result = await StorageAPI.saveProgress(req.params.userId, passageId, summary, scoreData);
+    res.json(result);
+  } catch (error) {
+    console.error('Storage error:', error);
+    res.status(500).json({ error: 'Failed to save progress' });
+  }
+});
+
+app.get('/api/progress/:userId', async (req, res) => {
+  try {
+    const progress = await StorageAPI.getProgress(req.params.userId);
+    res.json(progress);
+  } catch (error) {
+    console.error('Storage error:', error);
+    res.status(500).json({ error: 'Failed to get progress' });
+  }
+});
+
+app.get('/api/leaderboard', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const leaderboard = await StorageAPI.getLeaderboard(limit);
+    res.json(leaderboard);
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    res.status(500).json({ error: 'Failed to get leaderboard' });
+  }
+});
+
+// ─── GRADING ROUTE ───────────────────────────────────────────────────────────
 app.post('/api/grade', async (req, res) => {
   try {
-    const { text, type, prompt, keyPoints } = req.body;
+    const { text, type, prompt, keyPoints, userId } = req.body;
     
     if (!text || !type || !prompt) {
       return res.status(400).json({ error: 'Missing fields: text, type, and prompt are required' });
@@ -365,7 +462,6 @@ app.post('/api/grade', async (req, res) => {
 
     const form = validateForm(text);
 
-    // Strip HTML from key point strings defensively
     const topicText      = stripHtml(keyPoints?.topic      || '');
     const pivotText      = stripHtml(keyPoints?.pivot      || '');
     const conclusionText = stripHtml(keyPoints?.conclusion || '');
@@ -392,7 +488,6 @@ app.post('/api/grade', async (req, res) => {
       });
     }
 
-    // Check each key point independently
     const topicCheck      = checkKeyPoint(text, topicText);
     const pivotCheck      = checkKeyPoint(text, pivotText);
     const conclusionCheck = checkKeyPoint(text, conclusionText);
@@ -414,7 +509,7 @@ app.post('/api/grade', async (req, res) => {
     const overallScore = Math.min(90, 10 + Math.round((rawScore / 7) * 80));
     const feedback     = generateFeedback(coverage, grammar, verbatim);
 
-    res.json({
+    const result = {
       trait_scores: {
         form: 1,
         content: contentScore,
@@ -422,7 +517,6 @@ app.post('/api/grade', async (req, res) => {
         vocabulary: vocab.score
       },
       content_details: {
-        // Safe truncation — no trailing '...' if text is short enough
         key_ideas_extracted: [
           topicText.length      > 60 ? topicText.substring(0, 60)      + '...' : topicText,
           pivotText.length      > 60 ? pivotText.substring(0, 60)      + '...' : pivotText,
@@ -431,7 +525,6 @@ app.post('/api/grade', async (req, res) => {
         key_ideas_present: coverage.filter(c =>  c.present).map(c => c.type),
         key_ideas_missing: coverage.filter(c => !c.present).map(c => c.type),
         notes: `${presentCount}/3 key ideas present`,
-        // Full per-key-point debug detail for diagnosing edge cases
         key_point_details: {
           topic: {
             present:               topicCheck.present,
@@ -486,14 +579,26 @@ app.post('/api/grade', async (req, res) => {
       band: BAND_MAP[Math.min(7, Math.floor(rawScore))] || 'Band 5',
       word_count: form.wc,
       feedback,
-      // IMPORTANT: Frontend must read these by NAME, not by array index
       key_ideas_status: {
         topic:      topicCheck.present,
         pivot:      pivotCheck.present,
         conclusion: conclusionCheck.present
       },
       mode: 'local'
-    });
+    };
+
+    // Auto-save to storage if userId provided
+    if (userId && req.body.passageId) {
+      try {
+        await StorageAPI.saveProgress(userId, req.body.passageId, text, result);
+        result.saved = true;
+      } catch (e) {
+        console.error('Auto-save failed:', e);
+        result.saved = false;
+      }
+    }
+
+    res.json(result);
 
   } catch (error) {
     console.error('Error:', error);
@@ -502,6 +607,7 @@ app.post('/api/grade', async (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Grader v15.0.0 on port ${PORT}`);
+  console.log(`✅ PTE SWT Grader v16.0.0 on port ${PORT}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
+  console.log(`💾 Storage: ${DATA_DIR}/pte_data.json`);
 });
