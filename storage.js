@@ -4,6 +4,15 @@
  * Auth keys (password hash, secret question) are separate from data keys.
  */
 
+// ── HTTPS guard ───────────────────────────────────────────────────────────────
+function requireCrypto() {
+  if (!window.crypto || !window.crypto.subtle) {
+    const msg = 'Secure password hashing is not available.\n\nThis app must be opened over HTTPS (not http:// or file://).';
+    alert(msg);
+    throw new Error('crypto.subtle unavailable — HTTPS required');
+  }
+}
+
 // ── Auth key helpers (mirrors index_v2.html) ─────────────────────────────────
 const AuthKeys = {
   password:   u => 'pte_auth_'  + u.toLowerCase().trim(),
@@ -180,31 +189,51 @@ const Storage = {
     catch { return {}; }
   },
 
-  // ── Export / Import ─────────────────────────────────────────────────────────
+  // ── Export ──────────────────────────────────────────────────────────────────
   exportData() {
     this._requireUser();
     return JSON.stringify({
-      userId:    this._userId,
-      attempted: this.getAttempted(),
-      summaries: this.getSummaries(),
-      scores:    this.getScores(),
-      history:   this.getHistory(),
+      userId:     this._userId,
+      attempted:  this.getAttempted(),
+      summaries:  this.getSummaries(),
+      scores:     this.getScores(),
+      history:    this.getHistory(),
       exportedAt: new Date().toISOString()
     }, null, 2);
   },
 
+  // ── Import (with validation) ─────────────────────────────────────────────────
   importData(jsonString) {
     this._requireUser();
     try {
       const data = JSON.parse(jsonString);
+
+      // Structural validation — reject corrupted or unrelated files
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid file format.');
+      }
+      if (!Array.isArray(data.attempted) && !data.history && !data.summaries) {
+        throw new Error('File does not appear to be a PTE backup. No recognizable data found.');
+      }
+      if (data.attempted && !Array.isArray(data.attempted)) {
+        throw new Error('Corrupted backup: "attempted" field is not an array.');
+      }
+      if (data.history && typeof data.history !== 'object') {
+        throw new Error('Corrupted backup: "history" field is invalid.');
+      }
+      if (data.summaries && typeof data.summaries !== 'object') {
+        throw new Error('Corrupted backup: "summaries" field is invalid.');
+      }
+
       if (data.attempted) localStorage.setItem(this._keys.ATTEMPTED, JSON.stringify(data.attempted));
       if (data.summaries) localStorage.setItem(this._keys.SUMMARIES, JSON.stringify(data.summaries));
       if (data.scores)    localStorage.setItem(this._keys.SCORES,    JSON.stringify(data.scores));
       if (data.history)   localStorage.setItem(this._keys.HISTORY,   JSON.stringify(data.history));
-      return true;
+
+      return { success: true };
     } catch (e) {
       console.error('Import failed:', e);
-      return false;
+      return { success: false, error: e.message };
     }
   },
 
@@ -218,6 +247,7 @@ const Storage = {
   // ── Auth helpers (static — no user context needed) ──────────────────────────
   auth: {
     async _hash(str) {
+      requireCrypto();
       const enc = new TextEncoder().encode(str);
       const buf = await crypto.subtle.digest('SHA-256', enc);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
