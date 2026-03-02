@@ -33,6 +33,8 @@
     .passage-meta { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .tag { padding: 4px 10px; background: #e3f2fd; color: #1976d2; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
     .tag.saved { background: #e8f5e9; color: #388e3c; }
+    .tag.history { background: #fff3e0; color: #e65100; cursor: pointer; }
+    .tag.history:hover { background: #ffe0b2; }
     .passage-title { font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 16px; }
     .passage-text { line-height: 1.8; color: #444; font-size: 0.95rem; }
     .key-points-btn { margin-top: 16px; padding: 8px 16px; background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #666; }
@@ -57,12 +59,14 @@
     .word-range { font-size: 0.8rem; color: #888; }
     .saved-indicator { font-size: 0.8rem; color: #4caf50; display: none; }
     .saved-indicator.show { display: block; }
-    .btn-group { display: flex; gap: 10px; }
+    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
     .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; }
     .btn-secondary { background: #f5f5f5; color: #333; border: 1px solid #ddd; }
     .btn-primary { background: #4caf50; color: white; }
     .btn-primary:hover { background: #45a049; }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-warning { background: #ff9800; color: white; }
+    .btn-warning:hover { background: #f57c00; }
     
     .stats-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-top: 16px; }
@@ -133,11 +137,12 @@
     .progress-stats { font-size: 0.85rem; color: #666; }
     .progress-stats strong { color: #4caf50; font-size: 1.2rem; }
     .passage-dots { display: grid; grid-template-columns: repeat(auto-fill, minmax(32px, 1fr)); gap: 6px; }
-    .dot { aspect-ratio: 1; border-radius: 4px; background: #e0e0e0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; }
+    .dot { aspect-ratio: 1; border-radius: 4px; background: #e0e0e0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; position: relative; }
     .dot:hover { background: #bdbdbd; }
     .dot.active { background: #4caf50; color: white; }
     .dot.attempted { background: #81c784; color: white; }
     .dot.attempted.active { background: #2e7d32; }
+    .dot .attempt-count { position: absolute; top: -4px; right: -4px; background: #ff5722; color: white; font-size: 0.6rem; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); align-items: center; justify-content: center; z-index: 1000; }
     .loading-overlay.show { display: flex; }
     .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: #4caf50; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -149,6 +154,7 @@
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
     .modal-overlay.show { display: flex; }
     .modal { background: white; border-radius: 16px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalSlide 0.3s ease; }
+    .modal.wide { max-width: 900px; }
     @keyframes modalSlide { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     .modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px 16px 0 0; }
     .modal-header h2 { font-size: 1.5rem; margin-bottom: 8px; }
@@ -185,18 +191,28 @@
     .structure-item.conclusion { background: #e8f5e9; color: #388e3c; }
     .structure-arrow { color: #bbb; font-size: 1.2rem; }
     
-    .history-item { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #4caf50; }
-    .history-score { font-weight: 700; color: #1976d2; }
-    .history-date { font-size: 0.75rem; color: #888; }
+    .history-item { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid #4caf50; cursor: pointer; transition: all 0.2s; }
+    .history-item:hover { background: #e8f5e9; transform: translateX(4px); }
+    .history-item.selected { background: #e3f2fd; border-left-color: #1976d2; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .history-score { font-weight: 700; color: #1976d2; font-size: 1.1rem; }
+    .history-date { font-size: 0.8rem; color: #666; }
+    .history-text { font-size: 0.9rem; color: #444; line-height: 1.5; font-style: italic; margin-top: 8px; padding: 8px; background: white; border-radius: 4px; border: 1px solid #e0e0e0; }
+    .history-meta { display: flex; gap: 12px; font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .empty-state { text-align: center; padding: 40px; color: #888; }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 16px; }
     
     @media (max-width: 600px) {
       .elements-grid { grid-template-columns: 1fr; }
       .traits-grid { grid-template-columns: repeat(2, 1fr); }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .header { flex-direction: column; align-items: flex-start; }
+      .btn-group { width: 100%; justify-content: stretch; }
+      .btn-group .btn { flex: 1; }
     }
   </style>
   <base target="_blank">
+<base target="_blank">
 </head>
 <body>
   <div class="container">
@@ -251,6 +267,7 @@
       <div class="passage-meta">
         <span class="tag" id="passageCategory">Category</span>
         <span class="tag saved" id="savedTag" style="display: none;">💾 Saved</span>
+        <span class="tag history" id="historyTag" style="display: none;" onclick="showPassageHistory(currentId)">📜 History</span>
       </div>
       <div class="passage-title" id="passageTitle">Title</div>
       <div class="passage-text" id="passageText">Loading...</div>
@@ -270,6 +287,7 @@
         <div class="btn-group">
           <button class="btn btn-secondary" onclick="clearSummary()">Clear</button>
           <button class="btn btn-secondary" onclick="jumpToPassage()">Jump</button>
+          <button class="btn btn-warning" id="historyBtn" onclick="showPassageHistory(currentId)" style="display: none;">📜 History</button>
           <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
         </div>
       </div>
@@ -348,6 +366,26 @@
   <div id="errorToast" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#323232; color:white; padding:14px 24px; border-radius:8px; font-size:0.9rem; z-index:9999; max-width:420px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <span id="errorToastMsg"></span>
     <button onclick="hideToast()" style="margin-left:12px; background:none; border:none; color:#80cbc4; cursor:pointer; font-size:0.85rem;">Dismiss</button>
+  </div>
+
+  <!-- Passage History Modal -->
+  <div class="modal-overlay" id="historyModal" onclick="closeHistoryModal(event)">
+    <div class="modal wide" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📜 Response History</h2>
+        <p id="historyModalSubtitle">View your previous attempts for this passage</p>
+      </div>
+      <div class="modal-body" id="historyModalBody">
+        <div class="empty-state">
+          <div class="empty-state-icon">📝</div>
+          <p>No attempts yet for this passage.</p>
+          <p style="font-size: 0.9rem; margin-top: 8px;">Submit your first summary to see it here!</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-close-modal" onclick="closeHistoryModal()">Close</button>
+      </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="instructionsModal" onclick="closeInstructions(event)">
@@ -514,7 +552,8 @@
       USER_ID: 'pte_user_id',
       ATTEMPTED: 'pte_attempted_passages',
       SCORES: 'pte_passage_scores',
-      SUMMARIES: 'pte_user_summaries'
+      SUMMARIES: 'pte_user_summaries',
+      HISTORY: 'pte_passage_history' // New: stores array of all attempts
     };
 
     // XSS Protection Utility
@@ -995,34 +1034,78 @@
     }
 
     function loadStoredData() {
-      // Load attempted from localStorage
+      // Load attempted from localStorage (for backward compatibility)
       const storedAttempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
       storedAttempted.forEach(id => attempted.add(id));
+      
+      // Also check new history structure
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      Object.keys(history).forEach(id => {
+        if (history[id] && history[id].length > 0) {
+          attempted.add(parseInt(id));
+        }
+      });
+      
       document.getElementById('completedCount').textContent = attempted.size;
     }
 
     function updateStats() {
       const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-      const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
       
-      if (Object.keys(scores).length > 0) {
+      // Calculate stats from history (more accurate)
+      let totalScore = 0;
+      let count = 0;
+      Object.values(history).forEach(attempts => {
+        if (Array.isArray(attempts)) {
+          attempts.forEach(attempt => {
+            if (attempt.overall_score !== undefined) {
+              totalScore += attempt.overall_score;
+              count++;
+            }
+          });
+        }
+      });
+      
+      // Fallback to old scores if no history
+      if (count === 0 && Object.keys(scores).length > 0) {
+        Object.values(scores).forEach(s => {
+          totalScore += (s.overall_score || 0);
+          count++;
+        });
+      }
+      
+      if (count > 0) {
         document.getElementById('statsCard').style.display = 'block';
-        
-        const totalScore = Object.values(scores).reduce((sum, s) => sum + (s.overall_score || 0), 0);
-        const avgScore = Math.round(totalScore / Object.keys(scores).length);
+        const avgScore = Math.round(totalScore / count);
         
         document.getElementById('statCompleted').textContent = attempted.size;
         document.getElementById('statAverage').textContent = avgScore;
         document.getElementById('statProgress').textContent = Math.round((attempted.size / passages.length) * 100) + '%';
         
-        // Find best band
+        // Find best band from history
         const bandOrder = ['Band 5', 'Band 6', 'Band 6.5', 'Band 7', 'Band 7.5', 'Band 8', 'Band 9'];
         let bestBand = 'Band 5';
-        Object.values(scores).forEach(s => {
-          if (s.band && bandOrder.indexOf(s.band) > bandOrder.indexOf(bestBand)) {
-            bestBand = s.band;
+        
+        Object.values(history).forEach(attempts => {
+          if (Array.isArray(attempts)) {
+            attempts.forEach(attempt => {
+              if (attempt.band && bandOrder.indexOf(attempt.band) > bandOrder.indexOf(bestBand)) {
+                bestBand = attempt.band;
+              }
+            });
           }
         });
+        
+        // Fallback to old scores
+        if (bestBand === 'Band 5') {
+          Object.values(scores).forEach(s => {
+            if (s.band && bandOrder.indexOf(s.band) > bandOrder.indexOf(bestBand)) {
+              bestBand = s.band;
+            }
+          });
+        }
+        
         document.getElementById('statBand').textContent = bestBand;
       }
     }
@@ -1131,7 +1214,6 @@
       document.getElementById('passageText').textContent = p.text;
       
       const kp = document.getElementById('keyPoints');
-      // Use textContent for safe insertion, building DOM nodes instead of HTML strings where possible
       kp.innerHTML = `
         <div class="key-point">
           <div class="kp-icon topic">T</div>
@@ -1151,10 +1233,28 @@
       document.getElementById('prevBtn').disabled = id === 1;
       document.getElementById('nextBtn').disabled = id === passages.length;
       
-      // Check for saved summary
+      // Check for saved summary and update History button visibility
       loadPreviousAttempt();
+      updateHistoryButton();
       updateDots();
       document.getElementById('results').classList.remove('show');
+    }
+
+    function updateHistoryButton() {
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      const hasHistory = history[currentId] && history[currentId].length > 0;
+      
+      const historyBtn = document.getElementById('historyBtn');
+      const historyTag = document.getElementById('historyTag');
+      
+      if (hasHistory) {
+        historyBtn.style.display = 'inline-block';
+        historyTag.style.display = 'inline-block';
+        historyTag.textContent = `📜 ${history[currentId].length} attempt${history[currentId].length > 1 ? 's' : ''}`;
+      } else {
+        historyBtn.style.display = 'none';
+        historyTag.style.display = 'none';
+      }
     }
 
     function loadPreviousAttempt() {
@@ -1280,6 +1380,7 @@
         document.getElementById('completedCount').textContent = attempted.size;
         updateDots();
         updateStats();
+        updateHistoryButton(); // Update the history button
         
       } catch (e) {
         console.error(e);
@@ -1292,26 +1393,53 @@
     }
 
     function saveToLocalStorage(passageId, text, data) {
-      // Update attempted
+      const timestamp = new Date().toISOString();
+      
+      // Update attempted set (for backward compatibility)
       const attempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
       if (!attempted.includes(passageId)) {
         attempted.push(passageId);
         LocalStore.set(STORAGE_KEYS.ATTEMPTED, attempted);
       }
       
-      // Save summary
+      // Save summary (latest only, for backward compatibility)
       const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
       summaries[passageId] = {
         text: text,
-        timestamp: new Date().toISOString(),
+        timestamp: timestamp,
         score: data.overall_score || 0
       };
       LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
       
-      // Save detailed score
+      // Save detailed score (backward compatibility)
       const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
       scores[passageId] = data;
       LocalStore.set(STORAGE_KEYS.SCORES, scores);
+      
+      // NEW: Save to history array (keeps all attempts)
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      if (!history[passageId]) {
+        history[passageId] = [];
+      }
+      
+      // Add new attempt to beginning of array (newest first)
+      history[passageId].unshift({
+        text: text,
+        timestamp: timestamp,
+        overall_score: data.overall_score || 0,
+        band: data.band || 'Band 5',
+        trait_scores: data.trait_scores || {},
+        word_count: data.word_count || 0,
+        feedback: data.feedback || '',
+        content_details: data.content_details || {}
+      });
+      
+      // Keep only last 10 attempts to prevent storage issues
+      if (history[passageId].length > 10) {
+        history[passageId] = history[passageId].slice(0, 10);
+      }
+      
+      LocalStore.set(STORAGE_KEYS.HISTORY, history);
     }
 
     function showResults(data, passage) {
@@ -1366,7 +1494,6 @@
       document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
       
       // Fix: Safely map extracted key ideas to correct labels
-      // API might return array in any order, so we map by checking content or use passage keyElements as fallback
       const extracted = content.key_ideas_extracted || [];
       const topicText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.topic.substring(0, 20).toLowerCase())) || passage.keyElements.topic;
       const pivotText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.pivot.substring(0, 20).toLowerCase())) || passage.keyElements.pivot;
@@ -1500,10 +1627,114 @@
       document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
 
+    // NEW: Show passage history modal
+    function showPassageHistory(passageId) {
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      const attempts = history[passageId] || [];
+      const passage = passages.find(p => p.id === passageId);
+      
+      const modal = document.getElementById('historyModal');
+      const body = document.getElementById('historyModalBody');
+      const subtitle = document.getElementById('historyModalSubtitle');
+      
+      subtitle.textContent = `Passage ${passageId}: ${passage ? passage.title : 'Unknown'}`;
+      
+      if (attempts.length === 0) {
+        body.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <p>No attempts yet for this passage.</p>
+            <p style="font-size: 0.9rem; margin-top: 8px;">Submit your first summary to see it here!</p>
+          </div>
+        `;
+      } else {
+        body.innerHTML = `
+          <div style="margin-bottom: 16px; padding: 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.9rem;">
+            <strong>${attempts.length}</strong> attempt${attempts.length > 1 ? 's' : ''} saved locally. 
+            Click any attempt to load it into the editor.
+          </div>
+          <div id="historyList">
+            ${attempts.map((attempt, index) => `
+              <div class="history-item" onclick="loadHistoryAttempt(${passageId}, ${index})">
+                <div class="history-header">
+                  <span class="history-score">${attempt.overall_score}/90 (${attempt.band})</span>
+                  <span class="history-date">${new Date(attempt.timestamp).toLocaleString()}</span>
+                </div>
+                <div class="history-meta">
+                  <span>Words: ${attempt.word_count}</span>
+                  <span>Content: ${attempt.content_details?.key_ideas_present?.length || 0}/3</span>
+                  <span>Grammar: ${attempt.trait_scores?.grammar || 0}/2</span>
+                </div>
+                <div class="history-text">"${escapeHtml(attempt.text)}"</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // NEW: Load a specific history attempt into the editor
+    function loadHistoryAttempt(passageId, index) {
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      const attempts = history[passageId] || [];
+      
+      if (attempts[index]) {
+        const attempt = attempts[index];
+        
+        // Load the text
+        document.getElementById('summaryInput').value = attempt.text;
+        updateWordCount();
+        
+        // Show feedback toast
+        showToast(`Loaded attempt from ${new Date(attempt.timestamp).toLocaleDateString()} - Score: ${attempt.overall_score}/90`, 3000);
+        
+        // Close modal
+        closeHistoryModal();
+        
+        // Scroll to input
+        document.getElementById('summaryInput').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function closeHistoryModal(event) {
+      if (!event || event.target.id === 'historyModal' || event.target.classList.contains('btn-close-modal')) {
+        document.getElementById('historyModal').classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
     function renderDots() {
-      document.getElementById('passageDots').innerHTML = passages.map((p, i) => 
-        `<div class="dot" data-id="${i+1}" onclick="loadPassage(${i+1})">${i+1}</div>`
-      ).join('');
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      document.getElementById('passageDots').innerHTML = passages.map((p, i) => {
+        const id = i + 1;
+        const attempts = history[id] || [];
+        const attemptCount = attempts.length;
+        
+        return `
+          <div class="dot" data-id="${id}" onclick="handleDotClick(${id})">
+            ${id}
+            ${attemptCount > 0 ? `<span class="attempt-count">${attemptCount}</span>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleDotClick(id) {
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+      const hasHistory = history[id] && history[id].length > 0;
+      
+      if (hasHistory && id !== currentId) {
+        // If has history and not current, show confirmation
+        if (confirm(`Passage ${id} has ${history[id].length} saved attempt(s).\n\nClick OK to view history first, or Cancel to just navigate.`)) {
+          loadPassage(id);
+          showPassageHistory(id);
+          return;
+        }
+      }
+      loadPassage(id);
     }
 
     function updateDots() {
@@ -1553,40 +1784,67 @@
     }
 
     function updateUserStats() {
-      const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+      const history = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
       const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
       const attemptedArr = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
       
+      // Calculate total attempts from history
+      let totalAttempts = 0;
+      Object.values(history).forEach(attempts => {
+        if (Array.isArray(attempts)) totalAttempts += attempts.length;
+      });
+      
       let html = '<p>No data yet. Complete some passages to see your stats!</p>';
       
-      if (attemptedArr.length > 0) {
-        const totalScore = Object.values(scores).reduce((sum, s) => sum + (s.overall_score || 0), 0);
-        const avgScore = Math.round(totalScore / Object.keys(scores).length);
+      if (totalAttempts > 0 || attemptedArr.length > 0) {
+        // Calculate average from history
+        let totalScore = 0;
+        let count = 0;
+        Object.values(history).forEach(attempts => {
+          if (Array.isArray(attempts)) {
+            attempts.forEach(a => {
+              totalScore += (a.overall_score || 0);
+              count++;
+            });
+          }
+        });
+        
+        const avgScore = count > 0 ? Math.round(totalScore / count) : 0;
         
         html = `
           <div style="margin-bottom: 16px;">
-            <strong>Passages completed:</strong> ${attemptedArr.length}<br>
+            <strong>Unique passages completed:</strong> ${attempted.size}<br>
+            <strong>Total attempts:</strong> ${totalAttempts || attemptedArr.length}<br>
             <strong>Average score:</strong> ${avgScore}/90<br>
-            <strong>Storage:</strong> ${Object.keys(summaries).length} summaries saved locally
+            <strong>Storage:</strong> ${Object.keys(summaries).length} summaries saved
           </div>
         `;
         
-        // Show recent history
-        html += '<div style="max-height: 200px; overflow-y: auto;"><strong>Recent attempts:</strong>';
-        const recent = attemptedArr.slice(-5).reverse();
-        recent.forEach(id => {
-          const summary = summaries[id];
-          if (summary) {
-            html += `
-              <div class="history-item">
-                <div style="display: flex; justify-content: space-between;">
-                  <span>Passage ${id}</span>
-                  <span class="history-score">${summary.score}/90</span>
-                </div>
-                <div class="history-date">${new Date(summary.timestamp).toLocaleDateString()}</div>
-              </div>
-            `;
+        // Show recent history across all passages
+        html += '<div style="max-height: 200px; overflow-y: auto;"><strong>Recent attempts (all passages):</strong>';
+        const allAttempts = [];
+        Object.entries(history).forEach(([pid, attempts]) => {
+          if (Array.isArray(attempts)) {
+            attempts.forEach(a => {
+              allAttempts.push({...a, passageId: pid});
+            });
           }
+        });
+        
+        // Sort by timestamp desc
+        allAttempts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        const recent = allAttempts.slice(0, 5);
+        recent.forEach(attempt => {
+          html += `
+            <div class="history-item" style="margin-bottom: 8px; padding: 8px;">
+              <div style="display: flex; justify-content: space-between;">
+                <span>Passage ${attempt.passageId}</span>
+                <span class="history-score">${attempt.overall_score}/90</span>
+              </div>
+              <div class="history-date">${new Date(attempt.timestamp).toLocaleString()}</div>
+            </div>
+          `;
         });
         html += '</div>';
       }
@@ -1600,6 +1858,7 @@
         attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
         summaries: LocalStore.get(STORAGE_KEYS.SUMMARIES) || {},
         scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
+        history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}, // Include full history
         exportedAt: new Date().toISOString()
       };
       
@@ -1627,13 +1886,11 @@
           
           // Validation
           if (!data || typeof data !== 'object') throw new Error('Invalid file format');
-          if (!Array.isArray(data.attempted)) throw new Error('Invalid data structure: attempted missing');
-          if (typeof data.summaries !== 'object') throw new Error('Invalid data structure: summaries missing');
-          if (typeof data.scores !== 'object') throw new Error('Invalid data structure: scores missing');
           
           if (data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, data.attempted);
           if (data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, data.summaries);
           if (data.scores) LocalStore.set(STORAGE_KEYS.SCORES, data.scores);
+          if (data.history) LocalStore.set(STORAGE_KEYS.HISTORY, data.history); // Import history
           if (data.userId) {
             currentUserId = data.userId;
             LocalStore.setUserId(data.userId);
@@ -1642,9 +1899,10 @@
           }
           
           loadStoredData();
-          updateDots();
+          renderDots(); // Re-render to show attempt counts
           updateStats();
           updateUserStats();
+          updateHistoryButton();
           showToast('Data imported successfully!');
         } catch (err) {
           showToast('Error importing file: ' + err.message);
@@ -1687,6 +1945,7 @@
       if (e.key === 'Escape') {
         closeInstructions();
         closeUserModal();
+        closeHistoryModal();
       }
     });
   </script>
