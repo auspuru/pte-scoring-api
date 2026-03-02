@@ -126,6 +126,7 @@
     .vocab-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px; margin-bottom: 4px; }
     .vocab-badge.swap { background: #e8f5e9; color: #2e7d32; }
     .vocab-badge.compression { background: #e3f2fd; color: #1976d2; }
+    .connector-info { margin-top: 8px; font-size: 0.8rem; color: #666; font-style: italic; }
     .progress-section { margin-top: 20px; }
     .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .progress-title { font-size: 0.95rem; font-weight: 600; color: #333; }
@@ -142,9 +143,9 @@
     .spinner { width: 50px; height: 50px; border: 4px solid #e0e0e0; border-top-color: #4caf50; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-text { margin-top: 16px; color: #666; text-align: center; }
-    .form-error-banner { background: #ffebee; border: 2px solid #f44336; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
-    .form-error-banner .title { color: #c62828; font-weight: 600; margin-bottom: 8px; }
-    .form-error-banner .reason { color: #666; font-size: 0.9rem; }
+    #loadingSubtext { font-size:0.8rem; color:#888; margin-top:6px; }
+    .btn-close-modal { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 40px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-close-modal:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
     .modal-overlay.show { display: flex; }
     .modal { background: white; border-radius: 16px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalSlide 0.3s ease; }
@@ -177,8 +178,6 @@
     .tip-box .tip-title { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #f57c00; margin-bottom: 8px; }
     .tip-box ul { margin-left: 20px; color: #666; font-size: 0.9rem; line-height: 1.7; }
     .modal-footer { padding: 16px 24px 24px; display: flex; justify-content: center; }
-    .btn-close { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 40px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
-    .btn-close:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
     .structure-visual { display: flex; align-items: center; gap: 8px; margin: 16px 0; padding: 16px; background: #f8f9fa; border-radius: 10px; }
     .structure-item { flex: 1; text-align: center; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; }
     .structure-item.topic { background: #e3f2fd; color: #1976d2; }
@@ -197,8 +196,7 @@
       .header { flex-direction: column; align-items: flex-start; }
     }
   </style>
-<base target="_blank">
-<base target="_blank">
+  <base target="_blank">
 </head>
 <body>
   <div class="container">
@@ -211,7 +209,7 @@
         <div class="user-id-display" id="userIdDisplay" style="display: none;"></div>
         <button class="btn-sm" onclick="showUserModal()">👤 Profile</button>
         <button class="btn-sm" onclick="showInstructions()">Instructions</button>
-        <button class="btn-sm" onclick="toggleTimer()">Timer: <span id="timerText">Off</span></button>
+        <button class="btn-sm" onclick="toggleTimer()" id="timerBtn">Timer: <span id="timerText">Off</span></button>
       </div>
     </div>
 
@@ -279,9 +277,9 @@
 
     <div class="results" id="results">
       <div class="card">
-        <div class="form-error-banner" id="formErrorBanner" style="display: none;">
-          <div class="title">⚠️ Form Check Failed</div>
-          <div class="reason" id="formErrorReason"></div>
+        <div class="form-error-banner" id="formErrorBanner" style="display: none; background: #ffebee; border: 2px solid #f44336; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <div class="title" style="color: #c62828; font-weight: 600; margin-bottom: 8px;">⚠️ Form Check Failed</div>
+          <div class="reason" id="formErrorReason" style="color: #666; font-size: 0.9rem;"></div>
         </div>
 
         <div class="score-header">
@@ -297,7 +295,7 @@
         <div class="elements-grid" id="elementsGrid"></div>
 
         <div class="issues-section warning" id="firstPersonWarning" style="display: none;">
-          <div class="issues-title">⚠️ First-Person Trap</div>
+          <div class="issues-title">⚠️ First-Person Language Detected</div>
           <div id="firstPersonContent"></div>
         </div>
 
@@ -309,11 +307,11 @@
         <div class="issues-section grammar" id="grammarSection" style="display: none;">
           <div class="issues-title">✏️ Grammar Issues</div>
           <div id="grammarContent"></div>
-          <div class="connector-info" id="connectorInfo" style="margin-top: 8px; font-size: 0.8rem;"></div>
+          <div class="connector-info" id="connectorInfo"></div>
         </div>
 
         <div class="issues-section vocab" id="vocabSection" style="display: none;">
-          <div class="issues-title">📚 Vocabulary Analysis</div>
+          <div class="issues-title">📚 Vocabulary Suggestions</div>
           <div id="vocabContent"></div>
         </div>
 
@@ -349,7 +347,7 @@
 
   <div id="errorToast" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#323232; color:white; padding:14px 24px; border-radius:8px; font-size:0.9rem; z-index:9999; max-width:420px; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,0.3);">
     <span id="errorToastMsg"></span>
-    <button onclick="document.getElementById('errorToast').style.display='none'" style="margin-left:12px; background:none; border:none; color:#80cbc4; cursor:pointer; font-size:0.85rem;">Dismiss</button>
+    <button onclick="hideToast()" style="margin-left:12px; background:none; border:none; color:#80cbc4; cursor:pointer; font-size:0.85rem;">Dismiss</button>
   </div>
 
   <div class="modal-overlay" id="instructionsModal" onclick="closeInstructions(event)">
@@ -452,7 +450,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-close" onclick="closeInstructions()">Got it!</button>
+        <button class="btn-close-modal" onclick="closeInstructions()">Got it!</button>
       </div>
     </div>
   </div>
@@ -503,7 +501,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-close" onclick="saveUserId()">Save & Close</button>
+        <button class="btn-close-modal" onclick="saveUserId()">Save & Close</button>
       </div>
     </div>
   </div>
@@ -519,19 +517,50 @@
       SUMMARIES: 'pte_user_summaries'
     };
 
-    // LocalStorage Wrapper
+    // XSS Protection Utility
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // LocalStorage Wrapper with Error Handling
     const LocalStore = {
       get(key) {
-        try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+        try { 
+          const item = localStorage.getItem(key);
+          return item ? JSON.parse(item) : null; 
+        } catch (e) { 
+          console.error('LocalStorage get error:', e);
+          return null; 
+        }
       },
       set(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+        try { 
+          localStorage.setItem(key, JSON.stringify(value)); 
+          return true;
+        } catch (e) { 
+          console.error('LocalStorage set error:', e);
+          if (e.name === 'QuotaExceededError') {
+            showToast('Storage full! Please export and clear your data.', 8000);
+          } else {
+            showToast('Failed to save data locally.', 5000);
+          }
+          return false;
+        }
       },
       getUserId() {
         return localStorage.getItem(STORAGE_KEYS.USER_ID) || '';
       },
       setUserId(id) {
-        localStorage.setItem(STORAGE_KEYS.USER_ID, id);
+        try {
+          localStorage.setItem(STORAGE_KEYS.USER_ID, id);
+          return true;
+        } catch (e) {
+          showToast('Failed to save User ID', 3000);
+          return false;
+        }
       }
     };
 
@@ -937,6 +966,7 @@
     let currentId = 1, easyMode = false, attempted = new Set();
     let currentAbortController = null;
     let currentUserId = '';
+    let timerRunning = false, timerInterval, timerSeconds = 0;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
@@ -957,7 +987,7 @@
     function updateUserDisplay() {
       const display = document.getElementById('userIdDisplay');
       if (currentUserId) {
-        display.textContent = `👤 ${currentUserId}`;
+        display.textContent = `👤 ${escapeHtml(currentUserId)}`;
         display.style.display = 'block';
       } else {
         display.style.display = 'none';
@@ -997,12 +1027,16 @@
       }
     }
 
+    function hideToast() {
+      document.getElementById('errorToast').style.display = 'none';
+    }
+
     function showToast(msg, duration = 5000) {
       const toast = document.getElementById('errorToast');
       document.getElementById('errorToastMsg').textContent = msg;
       toast.style.display = 'block';
       clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => toast.style.display = 'none', duration);
+      toast._timer = setTimeout(() => hideToast(), duration);
     }
 
     function cancelRequest() {
@@ -1092,23 +1126,24 @@
       if (!p) return;
       
       document.getElementById('currentNum').textContent = id;
-      document.getElementById('passageCategory').textContent = p.category;
-      document.getElementById('passageTitle').textContent = p.title;
+      document.getElementById('passageCategory').textContent = escapeHtml(p.category);
+      document.getElementById('passageTitle').textContent = escapeHtml(p.title);
       document.getElementById('passageText').textContent = p.text;
       
       const kp = document.getElementById('keyPoints');
+      // Use textContent for safe insertion, building DOM nodes instead of HTML strings where possible
       kp.innerHTML = `
         <div class="key-point">
           <div class="kp-icon topic">T</div>
-          <div><strong>Topic:</strong> ${p.keyElements?.topic || 'Main subject'}</div>
+          <div><strong>Topic:</strong> ${escapeHtml(p.keyElements?.topic || 'Main subject')}</div>
         </div>
         <div class="key-point">
           <div class="kp-icon pivot">P</div>
-          <div><strong>Pivot:</strong> ${p.keyElements?.pivot || 'Contrast/shift'}</div>
+          <div><strong>Pivot:</strong> ${escapeHtml(p.keyElements?.pivot || 'Contrast/shift')}</div>
         </div>
         <div class="key-point">
           <div class="kp-icon conclusion">C</div>
-          <div><strong>Conclusion:</strong> ${p.keyElements?.conclusion || 'Outcome'}</div>
+          <div><strong>Conclusion:</strong> ${escapeHtml(p.keyElements?.conclusion || 'Outcome')}</div>
         </div>
       `;
       kp.classList.toggle('show', easyMode);
@@ -1129,7 +1164,7 @@
       const textarea = document.getElementById('summaryInput');
       
       if (summaries[currentId]) {
-        document.getElementById('summaryInput').value = summaries[currentId].text;
+        document.getElementById('summaryInput').value = summaries[currentId].text || '';
         updateWordCount();
         savedTag.style.display = 'inline-block';
         indicator.classList.add('show');
@@ -1165,13 +1200,20 @@
     }
 
     function jumpToPassage() {
-      const n = parseInt(prompt('Enter passage (1-' + passages.length + '):'));
-      if (!isNaN(n) && n >= 1 && n <= passages.length) loadPassage(n);
+      const input = prompt('Enter passage (1-' + passages.length + '):');
+      if (!input) return;
+      const n = parseInt(input);
+      if (!isNaN(n) && n >= 1 && n <= passages.length) {
+        loadPassage(n);
+      } else {
+        showToast('Invalid passage number. Please enter between 1 and ' + passages.length);
+      }
     }
 
     function updateWordCount() {
-      const text = document.getElementById('summaryInput').value.trim();
-      const words = text ? text.split(/\s+/).length : 0;
+      const text = document.getElementById('summaryInput').value || '';
+      // Fix: Filter empty strings from multiple spaces/tabs/newlines
+      const words = text.trim() ? text.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
       const el = document.getElementById('wordCount');
       el.textContent = words + ' words';
       el.className = 'word-count';
@@ -1180,11 +1222,11 @@
     }
 
     async function verifySummary() {
-      const text = document.getElementById('summaryInput').value.trim();
+      const text = document.getElementById('summaryInput').value || '';
       const passage = passages.find(p => p.id === currentId);
       
-      if (!text) { showToast('Please enter a summary before verifying.'); return; }
-      const words = text.split(/\s+/).length;
+      if (!text.trim()) { showToast('Please enter a summary before verifying.'); return; }
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
       if (words < 5) { showToast('Your summary is too short — minimum 5 words.'); return; }
       if (words > 75) { showToast('Your summary is too long — maximum 75 words.'); return; }
 
@@ -1219,7 +1261,7 @@
         // Also try to save to server if we have userId
         if (currentUserId) {
           try {
-            await fetch(`${API_URL}/api/progress/${currentUserId}`, {
+            await fetch(`${API_URL}/api/progress/${encodeURIComponent(currentUserId)}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -1287,10 +1329,16 @@
       const formScore = Math.min(1, traits.form || 0);
       let contentScore = traits.content || 0;
       if (contentScore > 2) contentScore = 2;
-      const grammarScore = Math.min(2, traits.grammar || 0);
+      let grammarScore = Math.min(2, traits.grammar || 0);
+      
+      // Fix: Consistent grammar score calculation for display and total
+      const grammarDetails = data.grammar_details || {};
+      const displayGrammarScore = grammarDetails.has_connector ? grammarScore : Math.min(1, grammarScore);
+      
       const vocabScore = Math.min(2, traits.vocabulary || 0);
       
-      const correctedRawScore = formScore + contentScore + grammarScore + vocabScore;
+      // Fix: Use consistent score for total calculation
+      const correctedRawScore = formScore + contentScore + displayGrammarScore + vocabScore;
       
       const content = data.content_details || {};
       const keyIdeasPresent = content.key_ideas_present || [];
@@ -1317,7 +1365,12 @@
       
       document.getElementById('feedbackText').textContent = data.feedback || 'No feedback available';
       
+      // Fix: Safely map extracted key ideas to correct labels
+      // API might return array in any order, so we map by checking content or use passage keyElements as fallback
       const extracted = content.key_ideas_extracted || [];
+      const topicText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.topic.substring(0, 20).toLowerCase())) || passage.keyElements.topic;
+      const pivotText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.pivot.substring(0, 20).toLowerCase())) || passage.keyElements.pivot;
+      const conclusionText = extracted.find(t => t && t.toLowerCase().includes(passage.keyElements.conclusion.substring(0, 20).toLowerCase())) || passage.keyElements.conclusion;
       
       document.getElementById('elementsGrid').innerHTML = `
         <div class="element-card ${hasTopic ? 'captured' : 'missed'}">
@@ -1325,26 +1378,101 @@
             <span class="element-label topic">Topic</span>
             <span class="element-check">${hasTopic ? '✓' : '✗'}</span>
           </div>
-          <div class="element-text">${extracted[0] || (passage.keyElements?.topic || 'Main subject').substring(0, 60)}...</div>
+          <div class="element-text">${escapeHtml((topicText || passage.keyElements?.topic || 'Main subject').substring(0, 60))}...</div>
         </div>
         <div class="element-card ${hasPivot ? 'captured' : 'missed'}">
           <div class="element-header">
             <span class="element-label pivot">Pivot</span>
             <span class="element-check">${hasPivot ? '✓' : '✗'}</span>
           </div>
-          <div class="element-text">${extracted[1] || (passage.keyElements?.pivot || 'Contrast/shift').substring(0, 60)}...</div>
+          <div class="element-text">${escapeHtml((pivotText || passage.keyElements?.pivot || 'Contrast/shift').substring(0, 60))}...</div>
         </div>
         <div class="element-card ${hasConclusion ? 'captured' : 'missed'}">
           <div class="element-header">
             <span class="element-label conclusion">Conclusion</span>
             <span class="element-check">${hasConclusion ? '✓' : '✗'}</span>
           </div>
-          <div class="element-text">${extracted[2] || (passage.keyElements?.conclusion || 'Outcome').substring(0, 60)}...</div>
+          <div class="element-text">${escapeHtml((conclusionText || passage.keyElements?.conclusion || 'Outcome').substring(0, 60))}...</div>
         </div>
       `;
       
-      const grammar = data.grammar_details || {};
-      const displayGrammarScore = grammar.has_connector ? grammarScore : Math.min(1, grammarScore);
+      // Fix: Populate missing sections if data available
+      // First Person Warning
+      const firstPersonSection = document.getElementById('firstPersonWarning');
+      if (data.first_person_detected) {
+        firstPersonSection.style.display = 'block';
+        document.getElementById('firstPersonContent').textContent = 
+          'Avoid using "I", "my", "we", or "our". PTE Academic requires objective academic writing.';
+      } else {
+        firstPersonSection.style.display = 'none';
+      }
+      
+      // Connector Info
+      const connectorInfo = document.getElementById('connectorInfo');
+      if (grammarDetails.has_connector) {
+        connectorInfo.textContent = `✓ Found connector: "${grammarDetails.connector_used || 'however/therefore'}"`;
+        connectorInfo.style.color = '#2e7d32';
+      } else {
+        connectorInfo.textContent = 'Tip: Use semicolons before connectors (e.g., "; however," or "; therefore,")';
+        connectorInfo.style.color = '#e65100';
+      }
+      
+      // Spelling Section
+      const spellSection = document.getElementById('spellCheckSection');
+      const spellContent = document.getElementById('spellCheckContent');
+      if (data.spelling_errors && data.spelling_errors.length > 0) {
+        spellSection.style.display = 'block';
+        spellContent.innerHTML = data.spelling_errors.map(err => 
+          `<div class="issue-item">
+            <span class="issue-word">${escapeHtml(err.word)}</span>
+            <span class="issue-arrow">→</span>
+            <span class="issue-fix">${escapeHtml(err.suggestion || 'Check spelling')}</span>
+          </div>`
+        ).join('');
+      } else {
+        spellSection.style.display = 'none';
+      }
+      
+      // Grammar Section
+      const grammarSection = document.getElementById('grammarSection');
+      const grammarContent = document.getElementById('grammarContent');
+      if (data.grammar_errors && data.grammar_errors.length > 0) {
+        grammarSection.style.display = 'block';
+        grammarContent.innerHTML = data.grammar_errors.map(err => 
+          `<div class="issue-item">
+            <span class="issue-word">${escapeHtml(err.text || 'Error')}</span>
+            <span class="issue-arrow">→</span>
+            <span class="issue-fix">${escapeHtml(err.message || 'Review grammar')}</span>
+            ${err.rule ? `<span class="issue-rule">(${escapeHtml(err.rule)})</span>` : ''}
+          </div>`
+        ).join('');
+      } else {
+        grammarSection.style.display = 'none';
+      }
+      
+      // Vocabulary Section
+      const vocabSection = document.getElementById('vocabSection');
+      const vocabContent = document.getElementById('vocabContent');
+      if (data.vocabulary_suggestions && data.vocabulary_suggestions.length > 0) {
+        vocabSection.style.display = 'block';
+        vocabContent.innerHTML = data.vocabulary_suggestions.map(sugg => 
+          `<span class="vocab-badge ${sugg.type || 'swap'}">${escapeHtml(sugg.word)} → ${escapeHtml(sugg.alternative)}</span>`
+        ).join('');
+      } else {
+        vocabSection.style.display = 'none';
+      }
+      
+      // Insights Section
+      const insightsSection = document.getElementById('insightsSection');
+      if (data.band_9_example || data.improvement_tips) {
+        insightsSection.style.display = 'block';
+        document.getElementById('insightsContent').innerHTML = `
+          ${data.band_9_example ? `<div style="margin-bottom: 10px;"><strong>Band 9 Example:</strong> ${escapeHtml(data.band_9_example)}</div>` : ''}
+          ${data.improvement_tips ? `<div><strong>Tips:</strong> ${escapeHtml(data.improvement_tips)}</div>` : ''}
+        `;
+      } else {
+        insightsSection.style.display = 'none';
+      }
       
       document.getElementById('traitsGrid').innerHTML = `
         <div class="trait-box ${formScore >= 1 ? 'good' : 'poor'}">
@@ -1360,12 +1488,12 @@
         <div class="trait-box ${displayGrammarScore >= 2 ? 'good' : displayGrammarScore >= 1 ? 'medium' : 'poor'}">
           <div class="trait-name">Grammar</div>
           <div class="trait-score">${displayGrammarScore}/2</div>
-          <div class="trait-detail">${grammar.has_connector ? '✓ connector' : '✗ none'}</div>
+          <div class="trait-detail">${grammarDetails.has_connector ? '✓ connector' : '✗ no connector'}</div>
         </div>
         <div class="trait-box ${vocabScore >= 2 ? 'good' : vocabScore >= 1 ? 'medium' : 'poor'}">
           <div class="trait-name">Vocabulary</div>
           <div class="trait-score">${vocabScore}/2</div>
-          <div class="trait-detail">synonyms</div>
+          <div class="trait-detail">word choice</div>
         </div>
       `;
       
@@ -1392,7 +1520,7 @@
     }
 
     function closeInstructions(event) {
-      if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close')) {
+      if (!event || event.target.id === 'instructionsModal' || event.target.classList.contains('btn-close-modal')) {
         document.getElementById('instructionsModal').classList.remove('show');
         document.body.style.overflow = '';
       }
@@ -1405,7 +1533,7 @@
     }
 
     function closeUserModal(event) {
-      if (!event || event.target.id === 'userModal' || event.target.classList.contains('btn-close')) {
+      if (!event || event.target.id === 'userModal' || event.target.classList.contains('btn-close-modal')) {
         document.getElementById('userModal').classList.remove('show');
       }
     }
@@ -1414,10 +1542,11 @@
       const newId = document.getElementById('userIdInput').value.trim();
       if (newId) {
         currentUserId = newId;
-        LocalStore.setUserId(newId);
-        updateUserDisplay();
-        closeUserModal();
-        showToast('User ID saved!');
+        if (LocalStore.setUserId(newId)) {
+          updateUserDisplay();
+          closeUserModal();
+          showToast('User ID saved!');
+        }
       } else {
         showToast('Please enter a valid ID');
       }
@@ -1426,17 +1555,17 @@
     function updateUserStats() {
       const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
       const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-      const attempted = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+      const attemptedArr = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
       
       let html = '<p>No data yet. Complete some passages to see your stats!</p>';
       
-      if (attempted.length > 0) {
+      if (attemptedArr.length > 0) {
         const totalScore = Object.values(scores).reduce((sum, s) => sum + (s.overall_score || 0), 0);
         const avgScore = Math.round(totalScore / Object.keys(scores).length);
         
         html = `
           <div style="margin-bottom: 16px;">
-            <strong>Passages completed:</strong> ${attempted.length}<br>
+            <strong>Passages completed:</strong> ${attemptedArr.length}<br>
             <strong>Average score:</strong> ${avgScore}/90<br>
             <strong>Storage:</strong> ${Object.keys(summaries).length} summaries saved locally
           </div>
@@ -1444,7 +1573,7 @@
         
         // Show recent history
         html += '<div style="max-height: 200px; overflow-y: auto;"><strong>Recent attempts:</strong>';
-        const recent = attempted.slice(-5).reverse();
+        const recent = attemptedArr.slice(-5).reverse();
         recent.forEach(id => {
           const summary = summaries[id];
           if (summary) {
@@ -1478,7 +1607,8 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `pte_progress_${currentUserId || 'backup'}_${new Date().toISOString().split('T')[0]}.json`;
+      const safeName = (currentUserId || 'backup').replace(/[^a-z0-9]/gi, '_');
+      a.download = `pte_progress_${safeName}_${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1494,6 +1624,13 @@
       reader.onload = (e) => {
         try {
           const data = JSON.parse(e.target.result);
+          
+          // Validation
+          if (!data || typeof data !== 'object') throw new Error('Invalid file format');
+          if (!Array.isArray(data.attempted)) throw new Error('Invalid data structure: attempted missing');
+          if (typeof data.summaries !== 'object') throw new Error('Invalid data structure: summaries missing');
+          if (typeof data.scores !== 'object') throw new Error('Invalid data structure: scores missing');
+          
           if (data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, data.attempted);
           if (data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, data.summaries);
           if (data.scores) LocalStore.set(STORAGE_KEYS.SCORES, data.scores);
@@ -1513,23 +1650,36 @@
           showToast('Error importing file: ' + err.message);
         }
       };
+      reader.onerror = () => showToast('Error reading file');
       reader.readAsText(file);
       input.value = '';
     }
 
-    let timerRunning = false, timerInterval, seconds = 0;
     function toggleTimer() {
-      timerRunning = !timerRunning;
-      if (timerRunning) {
+      const btn = document.getElementById('timerBtn');
+      if (!timerRunning) {
+        // Start timer
+        timerRunning = true;
+        btn.style.background = '#e8f5e9';
+        btn.style.color = '#2e7d32';
         timerInterval = setInterval(() => {
-          seconds++;
-          const m = Math.floor(seconds / 60), s = seconds % 60;
+          timerSeconds++;
+          const m = Math.floor(timerSeconds / 60), s = timerSeconds % 60;
           document.getElementById('timerText').textContent = m + ':' + s.toString().padStart(2, '0');
         }, 1000);
       } else {
+        // Stop timer (don't reset immediately - let user see final time)
         clearInterval(timerInterval);
-        seconds = 0;
-        document.getElementById('timerText').textContent = 'Off';
+        timerRunning = false;
+        btn.style.background = '';
+        btn.style.color = '';
+        // Keep the time displayed until next start, or reset after 3 seconds
+        setTimeout(() => {
+          if (!timerRunning) {
+            timerSeconds = 0;
+            document.getElementById('timerText').textContent = 'Off';
+          }
+        }, 3000);
       }
     }
 
