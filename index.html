@@ -1153,14 +1153,24 @@
 
     // ── Auth helpers ──────────────────────────────────────────────────────────
     // ── Auth helpers ──────────────────────────────────────────────────────────
+    // ── HTTPS guard ────────────────────────────────────────────────────────────
+    function requireCrypto() {
+      if (!window.crypto || !window.crypto.subtle) {
+        const msg = 'Secure password hashing is not available.\n\nThis app must be opened over HTTPS (not http:// or file://).';
+        alert(msg);
+        throw new Error('crypto.subtle unavailable — HTTPS required');
+      }
+    }
+
     async function hashPassword(password) {
+      requireCrypto();
       const enc = new TextEncoder().encode(password.toLowerCase().trim());
       const buf = await crypto.subtle.digest('SHA-256', enc);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
     }
 
     async function hashRaw(str) {
-      // Hash without lowercasing (for passwords)
+      requireCrypto();
       const enc = new TextEncoder().encode(str);
       const buf = await crypto.subtle.digest('SHA-256', enc);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -2339,8 +2349,17 @@
         try {
           const data = JSON.parse(e.target.result);
           
-          // Validation
+          // Validation — reject anything that doesn't look like a PTE backup
           if (!data || typeof data !== 'object') throw new Error('Invalid file format');
+          if (!Array.isArray(data.attempted) && !data.history && !data.summaries) {
+            throw new Error('File does not appear to be a PTE backup. No recognizable data found.');
+          }
+          if (data.attempted && !Array.isArray(data.attempted)) {
+            throw new Error('Corrupted backup: "attempted" field is not an array.');
+          }
+          if (data.history && typeof data.history !== 'object') {
+            throw new Error('Corrupted backup: "history" field is invalid.');
+          }
           
           if (data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, data.attempted);
           if (data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, data.summaries);
