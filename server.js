@@ -778,18 +778,19 @@ app.post('/api/grade', async (req, res) => {
       },
       vocabulary_details: {
         score: vocab.score, verbatim_rate: vocab.verbatim_rate + '%',
-        safe_swaps: vocab.safe_swaps, dangerous_swaps: vocab.dangerous_swaps,
-        safe_swap_count: vocab.total_paraphrase_credit, dangerous_swap_count: vocab.dangerous_swap_count,
+        safe_swaps: vocab.safe_swaps, structural_changes: vocab.structural_changes || [], dangerous_swaps: vocab.dangerous_swaps,
+        safe_swap_count: vocab.total_paraphrase_credit, structural_count: vocab.structural_count || 0,
+        dangerous_swap_count: vocab.dangerous_swap_count,
         meaning_changed: vocab.meaning_changed,
         academic_words: vocab.academic_words, perspective_shifted: vocab.perspective_shifted,
         notes: vocab.notes, suggestion: vocab.suggestion, breakdown: vocab.breakdown
       },
       paraphrase_analysis: {
-        quality: swaps.safeSwapCount >= 4 ? 100 : Math.round((swaps.safeSwapCount / 4) * 100),
-        rating: swaps.safeSwapCount >= 4 ? 'strong' : swaps.safeSwapCount >= 2 ? 'moderate' : 'weak',
+        quality: swaps.totalParaphraseCredit >= 4 ? 100 : Math.round((swaps.totalParaphraseCredit / 4) * 100),
+        rating: swaps.totalParaphraseCredit >= 4 ? 'strong' : swaps.totalParaphraseCredit >= 2 ? 'moderate' : 'weak',
         swaps: swaps.safeSwaps, dangerous: swaps.dangerousSwaps,
         academic_words: swaps.academicWordsUsed, novel_words: swaps.novelWords,
-        novel_word_rate: swaps.novelWordRate + '%', safeSwapCount: swaps.safeSwapCount, dangerousSwapCount: swaps.dangerousSwapCount
+        novel_word_rate: swaps.novelWordRate + '%', safeSwapCount: swaps.safeSwapCount, structuralCount: swaps.structuralCount, totalCredit: swaps.totalParaphraseCredit, dangerousSwapCount: swaps.dangerousSwapCount
       },
       verbatim_analysis: { rate: verbatim.verbatimRate + '%', is_verbatim: verbatim.isVerbatim, longest_run: verbatim.longestRun },
       first_person_detected: firstPerson.detected, first_person_problematic: firstPerson.isProblematic,

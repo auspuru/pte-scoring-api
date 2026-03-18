@@ -76,23 +76,23 @@
     
     .results { display: none; margin-top: 20px; }
     .results.show { display: block; }
-    .score-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
-    .main-score { font-size: 3rem; font-weight: 700; color: #1976d2; }
+    .score-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; padding: 20px; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 12px; }
+    .main-score { font-size: 3.2rem; font-weight: 800; color: #1565c0; line-height: 1; }
     .score-info { display: flex; flex-direction: column; gap: 4px; }
-    .band { font-size: 1.2rem; font-weight: 600; color: #1976d2; }
+    .band { font-size: 1.3rem; font-weight: 700; color: #1565c0; }
     .raw-score { font-size: 0.85rem; color: #666; }
-    .mode-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: #e3f2fd; border-radius: 4px; font-size: 0.75rem; color: #1976d2; }
+    .mode-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: white; border-radius: 4px; font-size: 0.75rem; color: #1976d2; border: 1px solid #bbdefb; }
     .feedback-text { background: #f5f5f5; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #555; line-height: 1.6; }
 
     /* ── NEW: Skill Contribution Badges ── */
     .skill-contributions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .skill-badge { padding: 16px; border-radius: 10px; border: 2px solid; text-align: center; }
-    .skill-badge.reading { border-color: #ff9800; background: #fff8e1; }
-    .skill-badge.writing { border-color: #2196f3; background: #e3f2fd; }
+    .skill-badge { padding: 16px; border-radius: 12px; border: none; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .skill-badge.reading { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); }
+    .skill-badge.writing { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); }
     .skill-badge .skill-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
     .skill-badge.reading .skill-label { color: #e65100; }
     .skill-badge.writing .skill-label { color: #1565c0; }
-    .skill-badge .skill-score { font-size: 1.8rem; font-weight: 700; }
+    .skill-badge .skill-score { font-size: 2rem; font-weight: 800; }
     .skill-badge.reading .skill-score { color: #f57c00; }
     .skill-badge.writing .skill-score { color: #1976d2; }
     .skill-badge .skill-note { font-size: 0.75rem; color: #666; margin-top: 4px; }
@@ -113,39 +113,39 @@
     .element-match { font-size: 0.7rem; color: #888; margin-top: 6px; }
 
     /* ── NEW: Paraphrase Quality Bar ── */
-    .paraphrase-section { margin-bottom: 20px; padding: 16px; border-radius: 10px; background: #f3e5f5; border: 2px solid #ce93d8; }
+    .paraphrase-section { margin-bottom: 20px; padding: 18px; border-radius: 12px; background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%); border: none; box-shadow: 0 2px 8px rgba(106,27,154,0.08); }
     .paraphrase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .paraphrase-title { font-size: 0.85rem; font-weight: 600; color: #7b1fa2; }
-    .paraphrase-rating { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-    .paraphrase-rating.strong { background: #e8f5e9; color: #2e7d32; }
-    .paraphrase-rating.moderate { background: #fff3e0; color: #e65100; }
-    .paraphrase-rating.weak { background: #ffebee; color: #c62828; }
-    .paraphrase-bar-bg { height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
-    .paraphrase-bar { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-    .paraphrase-bar.strong { background: linear-gradient(90deg, #66bb6a, #43a047); }
-    .paraphrase-bar.moderate { background: linear-gradient(90deg, #ffa726, #f57c00); }
+    .paraphrase-title { font-size: 0.9rem; font-weight: 700; color: #6a1b9a; }
+    .paraphrase-rating { padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+    .paraphrase-rating.strong { background: #c8e6c9; color: #2e7d32; }
+    .paraphrase-rating.moderate { background: #ffe0b2; color: #e65100; }
+    .paraphrase-rating.weak { background: #ffcdd2; color: #c62828; }
+    .paraphrase-bar-bg { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; margin-bottom: 12px; }
+    .paraphrase-bar { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+    .paraphrase-bar.strong { background: linear-gradient(90deg, #66bb6a, #2e7d32); }
+    .paraphrase-bar.moderate { background: linear-gradient(90deg, #ffb74d, #f57c00); }
     .paraphrase-bar.weak { background: linear-gradient(90deg, #ef5350, #c62828); }
     .paraphrase-details { display: flex; flex-wrap: wrap; gap: 6px; }
-    .paraphrase-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
-    .paraphrase-chip.swap { background: #e8f5e9; color: #2e7d32; }
-    .paraphrase-chip.academic { background: #e3f2fd; color: #1565c0; }
-    .paraphrase-chip.perspective { background: #fce4ec; color: #c2185b; }
-    .paraphrase-chip.novel { background: #f3e5f5; color: #7b1fa2; }
+    .paraphrase-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 500; }
+    .paraphrase-chip.swap { background: #c8e6c9; color: #2e7d32; }
+    .paraphrase-chip.academic { background: #bbdefb; color: #1565c0; }
+    .paraphrase-chip.perspective { background: #f8bbd0; color: #c2185b; }
+    .paraphrase-chip.novel { background: #e1bee7; color: #6a1b9a; }
 
-    .traits-section { margin-top: 20px; }
-    .traits-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.85rem; color: #666; font-weight: 600; }
-    .traits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .trait-box { padding: 16px; border-radius: 8px; border: 2px solid #e0e0e0; }
-    .trait-box.good { border-color: #4caf50; background: #f1f8e9; }
-    .trait-box.medium { border-color: #ff9800; background: #fff8e1; }
-    .trait-box.poor { border-color: #f44336; background: #ffebee; }
-    .trait-name { font-size: 0.75rem; color: #666; margin-bottom: 4px; text-transform: uppercase; }
-    .trait-score { font-size: 1.5rem; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .traits-section { margin-top: 24px; }
+    .traits-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.9rem; color: #555; font-weight: 700; }
+    .traits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .trait-box { padding: 16px; border-radius: 10px; border: none; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .trait-box.good { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); }
+    .trait-box.medium { background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%); }
+    .trait-box.poor { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); }
+    .trait-name { font-size: 0.72rem; color: #555; margin-bottom: 6px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.03em; }
+    .trait-score { font-size: 1.6rem; font-weight: 800; color: #333; margin-bottom: 4px; }
     .trait-box.good .trait-score { color: #2e7d32; }
     .trait-box.medium .trait-score { color: #ef6c00; }
     .trait-box.poor .trait-score { color: #c62828; }
-    .trait-detail { font-size: 0.75rem; color: #888; }
-    .issues-section { margin-top: 16px; padding: 16px; border-radius: 8px; }
+    .trait-detail { font-size: 0.73rem; color: #777; }
+    .issues-section { margin-top: 16px; padding: 16px; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
     .issues-section.spelling { background: #fff3e0; }
     .issues-section.grammar { background: #fce4ec; }
     .issues-section.vocab { background: #e8f5e9; }
@@ -1079,9 +1079,8 @@
         const quality = para.quality || 0;
         const safeCount = para.safeSwapCount || 0;
         const dangerCount = para.dangerousSwapCount || 0;
-        // Total = word swaps + structural (from vocabulary_details)
-        const structCount = data.vocabulary_details?.structural_count || 0;
-        const totalCredit = safeCount + structCount;
+        const structCount = para.structuralCount || 0;
+        const totalCredit = para.totalCredit || 0;
         const rating = dangerCount > 0 ? 'weak' : (totalCredit >= 4 ? 'strong' : totalCredit >= 2 ? 'moderate' : 'weak');
         
         document.getElementById('paraphraseRating').textContent = dangerCount > 0 ? '⚠ MEANING CHANGED' : `${totalCredit}/4 CREDITS — ${rating.toUpperCase()}`;
