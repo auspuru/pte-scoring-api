@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
+const crypto = require('crypto');
 const fsSync = require('fs');
 const fs = require('fs').promises;
 const path = require('path');
@@ -140,8 +141,216 @@ const StorageAPI = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SCORING CONSTANTS
+// SERVER-SIDE AUTH
 // ═══════════════════════════════════════════════════════════════════════════════
+const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123'; // Set in Railway env vars
+
+function hashPw(pw) { return crypto.createHash('sha256').update(pw.toLowerCase().trim()).digest('hex'); }
+
+const AuthAPI = {
+  async readAccounts() {
+    const data = await StorageAPI.readData();
+    if (!data.accounts) data.accounts = {};
+    return data;
+  },
+  async register(username, password, secretQ, secretA) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    if (data.accounts[uid]) return { success: false, error: 'Username taken' };
+    if (password.length < 4) return { success: false, error: 'Password min 4 chars' };
+    data.accounts[uid] = {
+      username: uid, passwordHash: hashPw(password),
+      secretQ: secretQ || '', secretAHash: secretA ? hashPw(secretA) : '',
+      createdAt: new Date().toISOString(), lastLogin: null,
+      blocked: false, role: 'user'
+    };
+    if (!data.users[uid]) data.users[uid] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    await StorageAPI.writeData(data);
+    return { success: true, user: { username: uid, role: 'user' } };
+  },
+  async login(username, password) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    const acct = data.accounts[uid];
+    if (!acct) return { success: false, error: 'User not found' };
+    if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
+    if (acct.passwordHash !== hashPw(password)) return { success: false, error: 'Wrong password' };
+    acct.lastLogin = new Date().toISOString();
+    await StorageAPI.writeData(data);
+    return { success: true, user: { username: uid, role: acct.role || 'user' } };
+  },
+  async changePassword(username, oldPw, newPw) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    const acct = data.accounts[uid];
+    if (!acct) return { success: false, error: 'User not found' };
+    if (acct.passwordHash !== hashPw(oldPw)) return { success: false, error: 'Wrong current password' };
+    if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
+    acct.passwordHash = hashPw(newPw);
+    await StorageAPI.writeData(data);
+    return { success: true };
+  },
+  async resetPassword(username, secretA, newPw) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    const acct = data.accounts[uid];
+    if (!acct) return { success: false, error: 'User not found' };
+    if (!acct.secretAHash || acct.secretAHash !== hashPw(secretA)) return { success: false, error: 'Wrong answer' };
+    if (newPw && newPw.length >= 4) { acct.passwordHash = hashPw(newPw); await StorageAPI.writeData(data); return { success: true }; }
+    return { success: true, verified: true, secretQ: acct.secretQ };
+  },
+  async getSecretQ(username) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    const acct = data.accounts[uid];
+    if (!acct || !acct.secretQ) return { success: false, error: 'No secret question set' };
+    return { success: true, secretQ: acct.secretQ };
+  },
+  // ── Admin functions ──
+  async listUsers() {
+    const data = await this.readAccounts();
+    return Object.values(data.accounts).map(a => ({
+      username: a.username, createdAt: a.createdAt, lastLogin: a.lastLogin,
+      blocked: a.blocked || false, role: a.role || 'user',
+      stats: (data.users[a.username] || {}).stats || { totalAttempts: 0, averageScore: 0 }
+    }));
+  },
+  async deleteUser(username) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    if (!data.accounts[uid]) return { success: false, error: 'User not found' };
+    delete data.accounts[uid];
+    delete data.users[uid];
+    await StorageAPI.writeData(data);
+    return { success: true };
+  },
+  async blockUser(username, blocked) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    if (!data.accounts[uid]) return { success: false, error: 'User not found' };
+    data.accounts[uid].blocked = blocked;
+    await StorageAPI.writeData(data);
+    return { success: true, blocked };
+  },
+  async adminResetPassword(username, newPw) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    if (!data.accounts[uid]) return { success: false, error: 'User not found' };
+    data.accounts[uid].passwordHash = hashPw(newPw);
+    await StorageAPI.writeData(data);
+    return { success: true };
+  },
+  async getUserData(username) {
+    const data = await this.readAccounts();
+    const uid = username.toLowerCase().trim();
+    return { account: data.accounts[uid] || null, progress: data.users[uid] || null };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPELL CHECKER — Edit distance approach
+// Only flags words that look like typos of passage words (1-2 chars off)
+// This avoids false positives on valid English words not in a dictionary
+// ═══════════════════════════════════════════════════════════════════════════════
+function editDistance(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 3; // Quick reject
+  const m = a.length, n = b.length;
+  const dp = Array.from({length: m + 1}, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+// Common short words that should never be flagged
+const SAFE_SHORT = new Set('a an the and or but if in on at to of is it be as by we he she do no so up my am me us are was has had his her its our who not all can had from that this with have will been they them than more most over also into very just some such when where what which would could should about after other their first these those being going there still even since each much many both well last long down made make like back know take come good said part need used every must get set way may new old big put run let few own too any yet how man did day its got saw may nor per off due via ago saw yes out'.split(' '));
+
+function checkSpelling(studentText, passageText) {
+  // Build passage word set (the source of truth)
+  const passageLower = passageText.toLowerCase().replace(/[^\w\s'-]/g, '');
+  const passageWords = new Set(passageLower.split(/\s+/).filter(w => w.length > 2));
+  
+  // Also add common forms of passage words
+  const passageExpanded = new Set(passageWords);
+  for (const w of passageWords) {
+    // Add common suffixes
+    passageExpanded.add(w + 's');
+    passageExpanded.add(w + 'ed');
+    passageExpanded.add(w + 'ing');
+    passageExpanded.add(w + 'ly');
+    passageExpanded.add(w + 'er');
+    passageExpanded.add(w + 'est');
+    passageExpanded.add(w + 'tion');
+    passageExpanded.add(w + 'ment');
+    passageExpanded.add(w + 'ness');
+    passageExpanded.add(w + 'ity');
+    passageExpanded.add(w + 'ive');
+    passageExpanded.add(w + 'ful');
+    passageExpanded.add(w + 'less');
+    passageExpanded.add(w + 'ous');
+    passageExpanded.add(w + 'al');
+    passageExpanded.add(w + 'ial');
+    passageExpanded.add(w + 'able');
+    passageExpanded.add(w + 'ible');
+    // Remove common suffixes to get stems
+    if (w.endsWith('ing')) passageExpanded.add(w.slice(0, -3));
+    if (w.endsWith('ed')) passageExpanded.add(w.slice(0, -2));
+    if (w.endsWith('s') && w.length > 3) passageExpanded.add(w.slice(0, -1));
+    if (w.endsWith('ly')) passageExpanded.add(w.slice(0, -2));
+    if (w.endsWith('tion')) passageExpanded.add(w.slice(0, -4) + 'te');
+    if (w.endsWith('ment')) passageExpanded.add(w.slice(0, -4));
+    if (w.endsWith('ness')) passageExpanded.add(w.slice(0, -4));
+  }
+  
+  const studentWords = studentText.replace(/[^\w\s'-]/g, '').split(/\s+/).filter(w => w.length > 2);
+  const errors = [];
+  const checked = new Set();
+
+  for (const word of studentWords) {
+    const lower = word.toLowerCase();
+    if (checked.has(lower)) continue;
+    checked.add(lower);
+    
+    // Skip if exact match in passage
+    if (passageExpanded.has(lower)) continue;
+    // Skip short safe words
+    if (SAFE_SHORT.has(lower)) continue;
+    // Skip numbers and abbreviations
+    if (/^\d/.test(word) || /^[A-Z]{2,}$/.test(word)) continue;
+    // Skip words with apostrophes
+    if (word.includes("'")) continue;
+    // Skip very short words (3 chars or less) — too many valid short words
+    if (lower.length <= 3) continue;
+    
+    // Check if this word is close to ANY passage word (edit distance 1-2)
+    // If it's close, it's likely a typo of that passage word → flag it
+    let isTypo = false;
+    let closestWord = '';
+    for (const pw of passageWords) {
+      // Skip if one is a substring of the other (not a typo, just a related word)
+      if (pw.includes(lower) || lower.includes(pw)) continue;
+      if (Math.abs(pw.length - lower.length) > 2) continue;
+      const dist = editDistance(lower, pw);
+      if (dist === 1 || (dist === 2 && lower.length >= 7)) {
+        isTypo = true;
+        closestWord = pw;
+        break;
+      }
+    }
+    
+    if (isTypo) {
+      errors.push({ word, suggestion: closestWord });
+    }
+  }
+
+  return { 
+    errors: errors.map(e => e.word), 
+    suggestions: errors.map(e => ({ misspelled: e.word, suggestion: e.suggestion })),
+    count: errors.length 
+  };
+}
 const BAND_MAP = { 0:'Band 5',1:'Band 5',2:'Band 6',3:'Band 6.5',4:'Band 7',5:'Band 7.5',6:'Band 8',7:'Band 9' };
 const RAW_TO_PTE = { 0:10,1:15,2:28,3:38,4:50,5:62,6:76,7:90 };
 
@@ -814,6 +1023,90 @@ app.post('/api/sync/:userId', async (req, res) => {
   catch (e) { res.status(500).json({ error: 'Sync push failed' }); }
 });
 
+// ═══ AUTH ROUTES ═══
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { username, password, secretQ, secretA } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+    res.json(await AuthAPI.register(username, password, secretQ, secretA));
+  } catch (e) { res.status(500).json({ error: 'Registration failed' }); }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+    res.json(await AuthAPI.login(username, password));
+  } catch (e) { res.status(500).json({ error: 'Login failed' }); }
+});
+
+app.post('/api/auth/change-password', async (req, res) => {
+  try {
+    const { username, oldPassword, newPassword } = req.body;
+    res.json(await AuthAPI.changePassword(username, oldPassword, newPassword));
+  } catch (e) { res.status(500).json({ error: 'Password change failed' }); }
+});
+
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { username, secretAnswer, newPassword } = req.body;
+    res.json(await AuthAPI.resetPassword(username, secretAnswer, newPassword));
+  } catch (e) { res.status(500).json({ error: 'Reset failed' }); }
+});
+
+app.get('/api/auth/secret-question/:username', async (req, res) => {
+  try { res.json(await AuthAPI.getSecretQ(req.params.username)); }
+  catch (e) { res.status(500).json({ error: 'Failed' }); }
+});
+
+app.get('/api/auth/check/:username', async (req, res) => {
+  try {
+    const data = await StorageAPI.readData();
+    const exists = !!(data.accounts && data.accounts[req.params.username.toLowerCase().trim()]);
+    res.json({ exists });
+  } catch (e) { res.json({ exists: false }); }
+});
+
+// ═══ ADMIN ROUTES (require ADMIN_KEY) ═══
+function requireAdmin(req, res, next) {
+  const key = req.headers['x-admin-key'] || req.query.key;
+  if (key !== ADMIN_KEY) return res.status(403).json({ error: 'Invalid admin key' });
+  next();
+}
+
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.listUsers()); }
+  catch (e) { res.status(500).json({ error: 'Failed to list users' }); }
+});
+
+app.post('/api/admin/delete-user', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.deleteUser(req.body.username)); }
+  catch (e) { res.status(500).json({ error: 'Delete failed' }); }
+});
+
+app.post('/api/admin/block-user', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.blockUser(req.body.username, req.body.blocked)); }
+  catch (e) { res.status(500).json({ error: 'Block failed' }); }
+});
+
+app.post('/api/admin/reset-password', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.adminResetPassword(req.body.username, req.body.newPassword)); }
+  catch (e) { res.status(500).json({ error: 'Reset failed' }); }
+});
+
+app.get('/api/admin/user-data/:username', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.getUserData(req.params.username)); }
+  catch (e) { res.status(500).json({ error: 'Failed' }); }
+});
+
+app.get('/api/admin/impersonate/:username', requireAdmin, async (req, res) => {
+  try {
+    const uid = req.params.username.toLowerCase().trim();
+    const userData = await StorageAPI.getUserData(uid);
+    res.json({ success: true, username: uid, data: userData });
+  } catch (e) { res.status(500).json({ error: 'Impersonate failed' }); }
+});
+
 // ═══ GRADING ROUTE ═══
 app.post('/api/grade', async (req, res) => {
   try {
@@ -852,16 +1145,25 @@ app.post('/api/grade', async (req, res) => {
     const firstPerson = detectFirstPerson(text, prompt);
     const grammar = checkGrammar(text, prompt);
     const vocab = scoreVocabulary(verbatim, swaps, firstPerson);
+    const spelling = checkSpelling(text, prompt);
 
-    const rawScore = 1 + contentScore + grammar.score + vocab.score;
+    // Deduct grammar for spelling errors: any spelling error = -1 grammar
+    let grammarScore = grammar.score;
+    if (spelling.count >= 1) {
+      grammarScore = Math.max(0, grammarScore - 1);
+      const hints = spelling.suggestions.slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
+      grammar.grammar_issues.push(`Spelling errors: ${hints}`);
+    }
+
+    const rawScore = 1 + contentScore + grammarScore + vocab.score;
     const overallScore = RAW_TO_PTE[Math.min(7, rawScore)] || 10;
     const band = BAND_MAP[Math.min(7, rawScore)] || 'Band 5';
-    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammar.score, vocab.score);
+    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score);
     const feedback = generateFeedback(coverage, grammar, vocab, firstPerson);
-    const improvementTips = generateImprovementTips(rawScore, contentScore, grammar.score, vocab.score, grammar, vocab);
+    const improvementTips = generateImprovementTips(rawScore, contentScore, grammarScore, vocab.score, grammar, vocab);
 
     const result = {
-      trait_scores: { form: 1, content: contentScore, grammar: grammar.score, vocabulary: vocab.score },
+      trait_scores: { form: 1, content: contentScore, grammar: grammarScore, vocabulary: vocab.score },
       content_details: {
         key_ideas_extracted: [topicText.substring(0,60), pivotText.substring(0,60), conclusionText.substring(0,60)],
         key_ideas_present: coverage.filter(c => c.present).map(c => c.type),
@@ -870,10 +1172,11 @@ app.post('/api/grade', async (req, res) => {
         key_point_details: { topic: tc, pivot: pc, conclusion: cc }
       },
       grammar_details: {
-        score: grammar.score, has_connector: grammar.has_connector, connector_used: grammar.connector_used,
+        score: grammarScore, has_connector: grammar.has_connector, connector_used: grammar.connector_used,
         connector_type: grammar.connector_type, connector_quality: grammar.connector_quality,
         has_semicolon_before_connector: grammar.has_semicolon_before_connector,
-        grammar_issues: grammar.grammar_issues, first_person: grammar.first_person
+        grammar_issues: grammar.grammar_issues, first_person: grammar.first_person,
+        spelling_errors: spelling.errors, spelling_suggestions: spelling.suggestions, spelling_count: spelling.count
       },
       vocabulary_details: {
         score: vocab.score, verbatim_rate: vocab.verbatim_rate + '%',
@@ -922,6 +1225,9 @@ app.get('*', (req, res) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ PTE SWT Grader v18.0.0 on port ${PORT}`);
   console.log(`🌐 Frontend: http://localhost:${PORT}`);
+  console.log(`🔑 Admin: http://localhost:${PORT}/admin.html (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
+  console.log(`🤖 Anthropic: ${anthropic ? 'configured' : 'not configured'}`);
+  console.log(`💾 Storage: ${DATA_DIR}/pte_data.json`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
   console.log(`💾 Storage: ${DATA_DIR}/pte_data.json`);
 });

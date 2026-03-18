@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTE Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf9f6;--surface:#fff;--surface-dim:#f5f3ef;--ink:#1a1a1a;--ink-muted:#6b6b6b;--ink-faint:#a3a3a3;--border:#e8e5df;--accent:#0d9488;--accent-light:#ccfbf1;--accent-dark:#0f766e;--red:#dc2626;--red-light:#fef2f2;--amber:#d97706;--amber-light:#fffbeb;--green:#16a34a;--green-light:#f0fdf4;--blue:#2563eb;--blue-light:#eff6ff;--radius:12px;--radius-sm:8px;--shadow:0 2px 8px rgba(0,0,0,0.06);--font:'DM Sans',sans-serif;--font-d:'Fraunces',Georgia,serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;padding:20px;}
+.container{max-width:900px;margin:0 auto;}
+h1{font-family:var(--font-d);font-size:1.5rem;color:var(--ink);margin-bottom:4px;}
+.subtitle{color:var(--ink-muted);font-size:0.9rem;margin-bottom:24px;}
+
+/* Auth */
+.auth-card{max-width:400px;margin:80px auto;background:var(--surface);padding:32px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);}
+.auth-card h2{font-family:var(--font-d);margin-bottom:16px;}
+.auth-card input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:0.95rem;font-family:var(--font);margin-bottom:12px;}
+.auth-card input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.auth-card button{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:0.95rem;font-weight:600;cursor:pointer;font-family:var(--font);}
+.auth-card button:hover{background:var(--accent-dark);}
+.auth-error{color:var(--red);font-size:0.85rem;margin-bottom:8px;display:none;}
+
+/* Dashboard */
+.dashboard{display:none;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.stat-row{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+.stat-box{flex:1;min-width:120px;background:var(--surface);padding:16px;border-radius:var(--radius);border:1px solid var(--border);text-align:center;}
+.stat-box .val{font-family:var(--font-d);font-size:1.8rem;font-weight:700;color:var(--accent-dark);}
+.stat-box .lbl{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--ink-muted);font-weight:600;}
+
+/* Table */
+.table-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.table-header h3{font-size:1rem;font-weight:600;}
+.search-input{padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.85rem;font-family:var(--font);width:200px;}
+.search-input:focus{outline:none;border-color:var(--accent);}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+th{text-align:left;padding:10px 16px;background:var(--surface-dim);color:var(--ink-muted);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;border-bottom:1px solid var(--border);}
+td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--ink-muted);}
+tr:hover td{background:var(--surface-dim);}
+.username-cell{font-weight:600;color:var(--ink);}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:600;}
+.badge.active{background:var(--green-light);color:var(--green);}
+.badge.blocked{background:var(--red-light);color:var(--red);}
+.actions{display:flex;gap:4px;flex-wrap:wrap;}
+.btn-action{padding:4px 10px;border:1px solid var(--border);background:var(--surface);border-radius:6px;font-size:0.75rem;cursor:pointer;font-family:var(--font);font-weight:500;color:var(--ink-muted);transition:all 0.2s;}
+.btn-action:hover{background:var(--surface-dim);border-color:var(--accent);color:var(--accent-dark);}
+.btn-action.danger{color:var(--red);border-color:var(--red);}
+.btn-action.danger:hover{background:var(--red-light);}
+.btn-action.warn{color:var(--amber);border-color:var(--amber);}
+.btn-action.warn:hover{background:var(--amber-light);}
+.btn-sm{padding:6px 14px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-sm);cursor:pointer;font-size:0.8rem;font-weight:500;color:var(--ink-muted);font-family:var(--font);}
+.btn-sm:hover{background:var(--surface-dim);}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-accent:hover{background:var(--accent-dark);}
+
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal.show{display:flex;}
+.modal-box{background:var(--surface);border-radius:var(--radius);max-width:500px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.1);padding:24px;}
+.modal-box h3{font-family:var(--font-d);margin-bottom:16px;}
+.modal-box label{display:block;font-size:0.8rem;font-weight:600;color:var(--ink-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.03em;}
+.modal-box input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:0.9rem;font-family:var(--font);margin-bottom:12px;}
+.modal-box input:focus{outline:none;border-color:var(--accent);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+.modal-msg{font-size:0.85rem;margin-top:8px;padding:8px;border-radius:var(--radius-sm);}
+.modal-msg.ok{background:var(--green-light);color:var(--green);}
+.modal-msg.err{background:var(--red-light);color:var(--red);}
+
+/* User detail */
+.detail-section{margin-top:16px;padding:16px;background:var(--surface-dim);border-radius:var(--radius-sm);border:1px solid var(--border);}
+.detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem;}
+.detail-row:last-child{border-bottom:none;}
+.detail-label{color:var(--ink-muted);font-weight:500;}
+.detail-value{color:var(--ink);font-weight:600;}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 20px;border-radius:var(--radius-sm);font-size:0.85rem;font-weight:500;z-index:2000;opacity:0;transition:all 0.3s;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+@media(max-width:640px){
+  body{padding:12px;}
+  .stat-row{flex-direction:column;}
+  table{font-size:0.78rem;}
+  th,td{padding:8px 10px;}
+  .actions{flex-direction:column;}
+  .search-input{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-card" id="authCard">
+  <h2>Admin Login</h2>
+  <div class="auth-error" id="authError"></div>
+  <input type="password" id="adminKeyInput" placeholder="Admin key" onkeydown="if(event.key==='Enter')adminLogin()">
+  <button onclick="adminLogin()">Sign In</button>
+</div>
+
+<div class="container dashboard" id="dashboard">
+  <div class="top-bar">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <div class="subtitle">PTE SWT Practice Portal — User Management</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-sm" onclick="loadUsers()">Refresh</button>
+      <button class="btn-sm" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="stat-row" id="statsRow">
+    <div class="stat-box"><div class="val" id="statTotal">-</div><div class="lbl">Total Users</div></div>
+    <div class="stat-box"><div class="val" id="statActive">-</div><div class="lbl">Active</div></div>
+    <div class="stat-box"><div class="val" id="statBlocked">-</div><div class="lbl">Blocked</div></div>
+    <div class="stat-box"><div class="val" id="statAttempts">-</div><div class="lbl">Total Attempts</div></div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <h3>Users</h3>
+      <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers(this.value)">
+    </div>
+    <table>
+      <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>Attempts</th><th>Avg Score</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal" id="resetModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <h3>Reset Password</h3>
+    <p style="font-size:0.85rem;color:var(--ink-muted);margin-bottom:16px;">User: <strong id="resetUser"></strong></p>
+    <label>New Password</label>
+    <input type="text" id="resetPwInput" placeholder="Min 4 characters">
+    <div class="modal-msg" id="resetMsg" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="document.getElementById('resetModal').classList.remove('show')">Cancel</button>
+      <button class="btn-sm btn-accent" onclick="doResetPassword()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal" id="detailModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <h3 id="detailTitle">User Details</h3>
+    <div id="detailContent"></div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="document.getElementById('detailModal').classList.remove('show')">Close</button>
+      <button class="btn-sm btn-accent" id="impersonateBtn" onclick="">Open Portal as User</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.origin;
+let adminKey = '';
+let allUsers = [];
+
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function escH(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function fmtDate(d){if(!d)return '—';const dt=new Date(d);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'2-digit'});}
+
+function adminLogin(){
+  adminKey=document.getElementById('adminKeyInput').value.trim();
+  if(!adminKey){document.getElementById('authError').style.display='block';document.getElementById('authError').textContent='Enter admin key';return;}
+  fetch(API+'/api/admin/users',{headers:{'x-admin-key':adminKey}})
+    .then(r=>{if(!r.ok)throw new Error('Invalid key');return r.json();})
+    .then(users=>{
+      document.getElementById('authCard').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      sessionStorage.setItem('adminKey',adminKey);
+      allUsers=users;
+      renderUsers(users);
+    })
+    .catch(e=>{document.getElementById('authError').style.display='block';document.getElementById('authError').textContent='Invalid admin key';});
+}
+
+function adminLogout(){adminKey='';sessionStorage.removeItem('adminKey');location.reload();}
+
+function loadUsers(){
+  fetch(API+'/api/admin/users',{headers:{'x-admin-key':adminKey}})
+    .then(r=>r.json()).then(users=>{allUsers=users;renderUsers(users);toast('Refreshed');})
+    .catch(()=>toast('Failed to load'));
+}
+
+function renderUsers(users){
+  const stats={total:users.length,active:users.filter(u=>!u.blocked).length,blocked:users.filter(u=>u.blocked).length,attempts:users.reduce((s,u)=>(s+(u.stats?.totalAttempts||0)),0)};
+  document.getElementById('statTotal').textContent=stats.total;
+  document.getElementById('statActive').textContent=stats.active;
+  document.getElementById('statBlocked').textContent=stats.blocked;
+  document.getElementById('statAttempts').textContent=stats.attempts;
+
+  const body=document.getElementById('usersBody');
+  body.innerHTML=users.map(u=>`
+    <tr>
+      <td class="username-cell">${escH(u.username)}</td>
+      <td>${fmtDate(u.createdAt)}</td>
+      <td>${fmtDate(u.lastLogin)}</td>
+      <td>${u.stats?.totalAttempts||0}</td>
+      <td>${u.stats?.averageScore||0}/90</td>
+      <td><span class="badge ${u.blocked?'blocked':'active'}">${u.blocked?'Blocked':'Active'}</span></td>
+      <td class="actions">
+        <button class="btn-action" onclick="viewUser('${escH(u.username)}')">View</button>
+        <button class="btn-action" onclick="showResetModal('${escH(u.username)}')">Reset PW</button>
+        <button class="btn-action warn" onclick="toggleBlock('${escH(u.username)}',${!u.blocked})">${u.blocked?'Unblock':'Block'}</button>
+        <button class="btn-action danger" onclick="deleteUser('${escH(u.username)}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterUsers(q){
+  const term=q.toLowerCase();
+  renderUsers(allUsers.filter(u=>u.username.toLowerCase().includes(term)));
+}
+
+function showResetModal(username){
+  document.getElementById('resetUser').textContent=username;
+  document.getElementById('resetPwInput').value='';
+  document.getElementById('resetMsg').style.display='none';
+  document.getElementById('resetModal').classList.add('show');
+}
+
+function doResetPassword(){
+  const username=document.getElementById('resetUser').textContent;
+  const newPw=document.getElementById('resetPwInput').value;
+  if(!newPw||newPw.length<4){const m=document.getElementById('resetMsg');m.style.display='block';m.className='modal-msg err';m.textContent='Min 4 characters';return;}
+  fetch(API+'/api/admin/reset-password',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({username,newPassword:newPw})})
+    .then(r=>r.json()).then(d=>{
+      const m=document.getElementById('resetMsg');m.style.display='block';
+      if(d.success){m.className='modal-msg ok';m.textContent='Password reset!';}
+      else{m.className='modal-msg err';m.textContent=d.error||'Failed';}
+    });
+}
+
+function toggleBlock(username,block){
+  if(!confirm(`${block?'Block':'Unblock'} ${username}?`))return;
+  fetch(API+'/api/admin/block-user',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({username,blocked:block})})
+    .then(r=>r.json()).then(()=>{toast(block?'Blocked':'Unblocked');loadUsers();});
+}
+
+function deleteUser(username){
+  if(!confirm(`DELETE ${username}? This removes all their data permanently.`))return;
+  if(!confirm(`Are you absolutely sure? This cannot be undone.`))return;
+  fetch(API+'/api/admin/delete-user',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({username})})
+    .then(r=>r.json()).then(()=>{toast('Deleted');loadUsers();});
+}
+
+function viewUser(username){
+  fetch(API+'/api/admin/user-data/'+encodeURIComponent(username),{headers:{'x-admin-key':adminKey}})
+    .then(r=>r.json()).then(data=>{
+      const acct=data.account||{};
+      const prog=data.progress||{};
+      const stats=prog.stats||{};
+      const attempted=(prog.attempted||[]).length;
+      const history=prog.history||{};
+      let totalAttempts=0;
+      Object.values(history).forEach(a=>{if(Array.isArray(a))totalAttempts+=a.length;});
+
+      document.getElementById('detailTitle').textContent=username;
+      document.getElementById('impersonateBtn').onclick=()=>{window.open('/?user='+encodeURIComponent(username),'_blank');};
+      
+      let html=`
+        <div class="detail-section">
+          <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${fmtDate(acct.createdAt)}</span></div>
+          <div class="detail-row"><span class="detail-label">Last Login</span><span class="detail-value">${fmtDate(acct.lastLogin)}</span></div>
+          <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${acct.blocked?'<span style="color:var(--red)">Blocked</span>':'<span style="color:var(--green)">Active</span>'}</span></div>
+          <div class="detail-row"><span class="detail-label">Passages Attempted</span><span class="detail-value">${attempted}</span></div>
+          <div class="detail-row"><span class="detail-label">Total Attempts</span><span class="detail-value">${totalAttempts}</span></div>
+          <div class="detail-row"><span class="detail-label">Average Score</span><span class="detail-value">${stats.averageScore||0}/90</span></div>
+        </div>
+      `;
+      
+      if(totalAttempts>0){
+        html+='<h4 style="margin-top:16px;font-size:0.85rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.05em;">Recent Activity</h4>';
+        const recent=[];
+        Object.entries(history).forEach(([pid,attempts])=>{
+          if(Array.isArray(attempts))attempts.forEach(a=>recent.push({pid,...a}));
+        });
+        recent.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+        html+='<div style="margin-top:8px;">'+recent.slice(0,10).map(r=>`
+          <div style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;font-size:0.82rem;">
+            <div style="display:flex;justify-content:space-between;"><strong>P${r.pid}</strong><span style="color:var(--ink-faint)">${fmtDate(r.timestamp)}</span></div>
+            <div style="color:var(--accent-dark);font-weight:600;">${r.overall_score||0}/90 · ${r.band||''}</div>
+          </div>
+        `).join('')+'</div>';
+      }
+
+      document.getElementById('detailContent').innerHTML=html;
+      document.getElementById('detailModal').classList.add('show');
+    });
+}
+
+// Auto-login if key in session
+const savedKey=sessionStorage.getItem('adminKey');
+if(savedKey){document.getElementById('adminKeyInput').value=savedKey;adminLogin();}
+</script>
+</body>
+</html>
