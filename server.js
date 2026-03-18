@@ -248,12 +248,11 @@ const AuthAPI = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SPELL CHECKER — Edit distance approach
-// Only flags words that look like typos of passage words (1-2 chars off)
-// This avoids false positives on valid English words not in a dictionary
+// ═══════════════════════════════════════════════════════════════════════════════
+// SPELL CHECKER — Edit distance only (no dictionary file needed)
 // ═══════════════════════════════════════════════════════════════════════════════
 function editDistance(a, b) {
-  if (Math.abs(a.length - b.length) > 2) return 3; // Quick reject
+  if (Math.abs(a.length - b.length) > 2) return 3;
   const m = a.length, n = b.length;
   const dp = Array.from({length: m + 1}, () => Array(n + 1).fill(0));
   for (let i = 0; i <= m; i++) dp[i][0] = i;
@@ -264,93 +263,71 @@ function editDistance(a, b) {
   return dp[m][n];
 }
 
-// Common short words that should never be flagged
-const SAFE_SHORT = new Set('a an the and or but if in on at to of is it be as by we he she do no so up my am me us are was has had his her its our who not all can had from that this with have will been they them than more most over also into very just some such when where what which would could should about after other their first these those being going there still even since each much many both well last long down made make like back know take come good said part need used every must get set way may new old big put run let few own too any yet how man did day its got saw may nor per off due via ago saw yes out'.split(' '));
-
 function checkSpelling(studentText, passageText) {
-  // Build passage word set (the source of truth)
   const passageLower = passageText.toLowerCase().replace(/[^\w\s'-]/g, '');
   const passageWords = new Set(passageLower.split(/\s+/).filter(w => w.length > 2));
-  
-  // Also add common forms of passage words
   const passageExpanded = new Set(passageWords);
   for (const w of passageWords) {
-    // Add common suffixes
-    passageExpanded.add(w + 's');
-    passageExpanded.add(w + 'ed');
-    passageExpanded.add(w + 'ing');
-    passageExpanded.add(w + 'ly');
-    passageExpanded.add(w + 'er');
-    passageExpanded.add(w + 'est');
-    passageExpanded.add(w + 'tion');
-    passageExpanded.add(w + 'ment');
-    passageExpanded.add(w + 'ness');
-    passageExpanded.add(w + 'ity');
-    passageExpanded.add(w + 'ive');
-    passageExpanded.add(w + 'ful');
-    passageExpanded.add(w + 'less');
-    passageExpanded.add(w + 'ous');
-    passageExpanded.add(w + 'al');
-    passageExpanded.add(w + 'ial');
-    passageExpanded.add(w + 'able');
-    passageExpanded.add(w + 'ible');
-    // Remove common suffixes to get stems
+    for (const suf of ['s','ed','ing','ly','er','est','tion','ment','ness','ity','ive','ful','less','ous','al','ial','able','ible']) passageExpanded.add(w + suf);
     if (w.endsWith('ing')) passageExpanded.add(w.slice(0, -3));
     if (w.endsWith('ed')) passageExpanded.add(w.slice(0, -2));
     if (w.endsWith('s') && w.length > 3) passageExpanded.add(w.slice(0, -1));
     if (w.endsWith('ly')) passageExpanded.add(w.slice(0, -2));
-    if (w.endsWith('tion')) passageExpanded.add(w.slice(0, -4) + 'te');
-    if (w.endsWith('ment')) passageExpanded.add(w.slice(0, -4));
-    if (w.endsWith('ness')) passageExpanded.add(w.slice(0, -4));
+    if (w.endsWith('e')) { passageExpanded.add(w.slice(0,-1)+'ing'); passageExpanded.add(w.slice(0,-1)+'ed'); passageExpanded.add(w.slice(0,-1)+'ation'); }
+    if (w.endsWith('y') && w.length>=4) { const stem=w.slice(0,-1); passageExpanded.add(stem+'ies'); passageExpanded.add(stem+'ied'); passageExpanded.add(stem+'ily'); }
+    // British/American variants
+    if (w.endsWith('ize')) passageExpanded.add(w.replace(/ize$/, 'ise'));
+    if (w.endsWith('ise')) passageExpanded.add(w.replace(/ise$/, 'ize'));
+    if (w.endsWith('ization')) passageExpanded.add(w.replace(/ization$/, 'isation'));
+    if (w.endsWith('isation')) passageExpanded.add(w.replace(/isation$/, 'ization'));
+    if (w.endsWith('ized')) passageExpanded.add(w.replace(/ized$/, 'ised'));
+    if (w.endsWith('ised')) passageExpanded.add(w.replace(/ised$/, 'ized'));
+    // Also handle z↔s anywhere in word
+    if (w.includes('z')) passageExpanded.add(w.replace(/z/g, 's'));
+    if (w.includes('s') && w.length > 5) passageExpanded.add(w.replace(/s(?=ation|ise|ised)/g, 'z'));
   }
+  // Add de-hyphenated forms from passage
+  const hyphenated = passageText.match(/\w+-\w+/g) || [];
+  hyphenated.forEach(h => passageExpanded.add(h.replace(/-/g, '').toLowerCase()));
+  // Common function words that are never typos
+  const SAFE = new Set(['though','although','through','throughout','therefore','however','moreover','furthermore','nevertheless','consequently','additionally','whereas','whereby','thereby','therein','thereof','nonetheless','meanwhile','otherwise','likewise','similarly','accordingly','subsequently','alternatively','simultaneously','approximately','predominantly','significantly','substantially','considerably','particularly','specifically','essentially','fundamentally','traditionally','potentially','previously','currently','recently','apparently','ultimately','worldwide','nationwide','otherwise']);
   
   const studentWords = studentText.replace(/[^\w\s'-]/g, '').split(/\s+/).filter(w => w.length > 2);
   const errors = [];
   const checked = new Set();
-
   for (const word of studentWords) {
     const lower = word.toLowerCase();
     if (checked.has(lower)) continue;
     checked.add(lower);
-    
-    // Skip if exact match in passage
     if (passageExpanded.has(lower)) continue;
-    // Skip short safe words
-    if (SAFE_SHORT.has(lower)) continue;
-    // Skip numbers and abbreviations
-    if (/^\d/.test(word) || /^[A-Z]{2,}$/.test(word)) continue;
-    // Skip words with apostrophes
-    if (word.includes("'")) continue;
-    // Skip very short words (3 chars or less) — too many valid short words
-    if (lower.length <= 3) continue;
-    
-    // Check if this word is close to ANY passage word (edit distance 1-2)
-    // If it's close, it's likely a typo of that passage word → flag it
-    let isTypo = false;
-    let closestWord = '';
+    if (SAFE.has(lower)) continue;
+    if (/^\d/.test(word) || /^[A-Z]{2,}$/.test(word) || word.includes("'")) continue;
+    if (lower.length <= 5) continue;
+    // Only flag edit distance EXACTLY 1 from a passage word (very tight — catches real typos only)
+    // But skip if the word is a valid derived form (suffix/prefix of a passage word)
+    let isTypo = false, closestWord = '';
+    let isDerived = false;
     for (const pw of passageWords) {
-      // Skip if one is a substring of the other (not a typo, just a related word)
-      if (pw.includes(lower) || lower.includes(pw)) continue;
-      if (Math.abs(pw.length - lower.length) > 2) continue;
-      const dist = editDistance(lower, pw);
-      if (dist === 1 || (dist === 2 && lower.length >= 7)) {
-        isTypo = true;
-        closestWord = pw;
-        break;
+      // Skip if one contains the other (derived form, not a typo)
+      if (pw.includes(lower) || lower.includes(pw)) { isDerived = true; break; }
+      // Skip if they share a stem of 4+ chars (e.g., "enhance" vs "enhances" vs "enhanced")
+      const minLen = Math.min(pw.length, lower.length);
+      if (minLen >= 5) {
+        const sharedPrefix = pw.substring(0, minLen-2) === lower.substring(0, minLen-2);
+        if (sharedPrefix) { isDerived = true; break; }
       }
     }
-    
-    if (isTypo) {
-      errors.push({ word, suggestion: closestWord });
+    if (isDerived) continue;
+    for (const pw of passageWords) {
+      if (Math.abs(pw.length - lower.length) > 1) continue;
+      const dist = editDistance(lower, pw);
+      if (dist === 1) { isTypo = true; closestWord = pw; break; }
     }
+    if (isTypo) errors.push({ word, suggestion: closestWord });
   }
-
-  return { 
-    errors: errors.map(e => e.word), 
-    suggestions: errors.map(e => ({ misspelled: e.word, suggestion: e.suggestion })),
-    count: errors.length 
-  };
+  return { errors: errors.map(e => e.word), suggestions: errors.map(e => ({ misspelled: e.word, suggestion: e.suggestion })), count: errors.length };
 }
+
 const BAND_MAP = { 0:'Band 5',1:'Band 5',2:'Band 6',3:'Band 6.5',4:'Band 7',5:'Band 7.5',6:'Band 8',7:'Band 9' };
 const RAW_TO_PTE = { 0:10,1:15,2:28,3:38,4:50,5:62,6:76,7:90 };
 
