@@ -1,10 +1,11 @@
 {
   "name": "pte-scoring-api",
-  "version": "15.0.0",
-  "description": "PTE SWT Scoring API",
+  "version": "18.0.0",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
