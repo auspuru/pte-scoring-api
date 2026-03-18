@@ -14,10 +14,6 @@
     .ai-badge { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #e8f5e9; border-radius: 4px; font-size: 0.8rem; color: #388e3c; }
     .ai-badge.offline { background: #ffebee; color: #c62828; }
     .ai-badge.cached { background: #fff3e0; color: #e65100; }
-    .sync-status { display: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
-    .sync-status.pending { background: #fff3e0; color: #e65100; }
-    .sync-status.ok { background: #e8f5e9; color: #2e7d32; }
-    .sync-status.err { background: #ffebee; color: #c62828; }
     .header-right { display: flex; gap: 8px; align-items: center; }
     .btn-sm { padding: 6px 14px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
     .user-id-display { font-size: 0.8rem; color: #666; background: #f5f5f5; padding: 4px 10px; border-radius: 4px; }
@@ -332,7 +328,6 @@
       <div class="header-left">
         <div class="logo">PTE Academic - Summarize Written Text</div>
         <div class="ai-badge" id="aiStatus"><span>●</span> Checking...</div>
-        <div class="sync-status" id="syncStatus" style="display:none;"></div>
       </div>
       <div class="header-right">
         <div class="user-id-display" id="userIdDisplay" style="display: none;"></div>
@@ -1022,19 +1017,16 @@
     // ═══ SERVER SYNC ═══
     function getLocalUserData(){return{attempted:LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[],summaries:LocalStore.get(STORAGE_KEYS.SUMMARIES)||{},scores:LocalStore.get(STORAGE_KEYS.SCORES)||{},history:LocalStore.get(STORAGE_KEYS.HISTORY)||{}};}
     function setLocalUserData(d){if(d.attempted)LocalStore.set(STORAGE_KEYS.ATTEMPTED,d.attempted);if(d.summaries)LocalStore.set(STORAGE_KEYS.SUMMARIES,d.summaries);if(d.scores)LocalStore.set(STORAGE_KEYS.SCORES,d.scores);if(d.history)LocalStore.set(STORAGE_KEYS.HISTORY,d.history);}
-    function showSyncStatus(msg,type){const el=document.getElementById('syncStatus');if(!el)return;el.textContent=msg;el.className='sync-status '+(type||'');el.style.display='inline-block';if(type==='ok')setTimeout(()=>{el.style.display='none';},3000);}
 
     async function pullFromServer(){
       if(!currentUserId||!API_URL)return;
       try{
-        showSyncStatus('⟳ Syncing...','pending');
-        const res=await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId));
-        if(!res.ok)throw new Error('Server unreachable');
+        const res=await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{signal:AbortSignal.timeout(5000)});
+        if(!res.ok)return;
         const json=await res.json();
         if(!json.success||!json.data)return;
         const server=json.data;
         const local=getLocalUserData();
-        // Merge: combine histories per passage, deduplicate by timestamp
         const mergedHistory={};
         const allPids=new Set([...Object.keys(local.history||{}),...Object.keys(server.history||{})]);
         for(const pid of allPids){
@@ -1046,24 +1038,21 @@
           merged.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
           mergedHistory[pid]=merged.slice(0,10);
         }
-        // Merge attempted
         const mergedAttempted=[...new Set([...(local.attempted||[]),...(server.attempted||[])])];
-        // Merge summaries (latest wins)
         const mergedSummaries={...(server.summaries||{}),...(local.summaries||{})};
-        // Merge scores (local wins — most recent)
         const mergedScores={...(server.scores||{}),...(local.scores||{})};
         setLocalUserData({attempted:mergedAttempted,summaries:mergedSummaries,scores:mergedScores,history:mergedHistory});
         loadStoredData();renderDots();updateDots();updateStats();
-        showSyncStatus('✓ Synced','ok');
-      }catch(e){showSyncStatus('⚠ Offline','err');console.log('Sync pull failed:',e.message);}
+        
+      }catch(e){/* Silent fail — sync is optional */}
     }
 
     async function pushToServer(){
       if(!currentUserId||!API_URL)return;
       try{
         const d=getLocalUserData();
-        await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
-      }catch(e){console.log('Sync push failed:',e.message);}
+        await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d),signal:AbortSignal.timeout(5000)});
+      }catch(e){/* Silent fail */}
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

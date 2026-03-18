@@ -660,72 +660,42 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
   const { verbatimRate } = verbatimData;
   const { safeSwaps, structuralChanges, dangerousSwaps, safeSwapCount, structuralCount, totalParaphraseCredit, dangerousSwapCount, academicWordsUsed } = swapData;
   const perspectiveShifted = firstPersonData.hasPerspectiveShift;
+  const effectiveCredit = safeSwapCount + structuralCount;
 
-  // ── Discount structural credits when verbatim is high ──
-  // Structural "paraphrasing" (combining, condensing) only counts if the student
-  // actually rewrote things. At 80%+ verbatim, they just stitched copied phrases.
-  const effectiveStructural = verbatimRate < 80 ? structuralCount : 0;
-  const effectiveCredit = safeSwapCount + effectiveStructural;
-
-  let score = 2;
+  let score = 2; // Default: copy-paste is FINE
   let notes = [];
   let suggestion = null;
   let meaningChanged = false;
 
-  // ── Rule 1: Meaning-changing swaps → HARD PENALTY ──
+  // ── ONLY penalty 1: Meaning-changing swaps → V:0 ──
   if (dangerousSwapCount > 0) {
     meaningChanged = true; score = 0;
     notes.push(`⚠ MEANING CHANGED: ${dangerousSwaps.map(s => `"${s.original}" → "${s.replacement}" reverses meaning`).join('; ')}`);
     suggestion = 'Your synonym changed the meaning. "minor" → "small" (OK), "minor" → "major" (WRONG).';
   }
-  // ── Rule 2: 4+ effective credits → excellent ──
-  else if (effectiveCredit >= 4) {
-    score = 2;
-    const parts = [];
-    if (safeSwapCount > 0) parts.push(`${safeSwapCount} synonym swap${safeSwapCount > 1 ? 's' : ''}`);
-    if (effectiveStructural > 0) parts.push(`${effectiveStructural} structural change${effectiveStructural > 1 ? 's' : ''}`);
-    notes.push(`✓ ${effectiveCredit} paraphrasing credits (${parts.join(' + ')}) — excellent vocabulary`);
-  }
-  // ── Rule 3: 2-3 effective credits → good ──
-  else if (effectiveCredit >= 2) {
-    score = 2;
-    notes.push(`${effectiveCredit} paraphrasing credits — good vocabulary`);
-  }
-  // ── Rule 4: 1 credit → depends on verbatim ──
-  else if (effectiveCredit === 1) {
-    if (verbatimRate > 85) {
-      score = 1;
-      notes.push('Only 1 paraphrasing credit with high verbatim');
-      suggestion = 'Replace more verbs/adjectives with synonyms to boost vocabulary score.';
-    } else {
-      score = 2;
-      notes.push('1 paraphrasing credit with moderate paraphrasing');
-    }
-  }
-  // ── Rule 5: 0 credits → verbatim determines score ──
-  else {
-    if (verbatimRate > 80) {
-      score = 1;
-      notes.push('No paraphrasing detected — mostly verbatim copying');
-      suggestion = 'Replace 4+ verbs/adjectives with synonyms. E.g., "made" → "opted", "good" → "beneficial".';
-    } else {
-      score = 2;
-      notes.push('Low verbatim — natural paraphrasing detected');
-    }
-  }
 
-  // ── Rule 6: First-person penalty ──
+  // ── ONLY penalty 2: First-person copy without shift → cap V:1 ──
   if (!meaningChanged && firstPersonData.isProblematic && score > 1) {
     score = 1;
     notes.push('⚠ First-person copied — shift to "The author/narrator"');
-    suggestion = suggestion || 'Change "I made" → "The author opted", "my wife" → "his wife"';
+    suggestion = 'Change "I made" → "The author opted", "my wife" → "his wife"';
   }
 
-  // ── Recognition badges ──
+  // ── Recognition notes (informational, no score impact) ──
+  if (effectiveCredit >= 4) notes.push(`✓ ${effectiveCredit} paraphrasing credits — excellent vocabulary`);
+  else if (effectiveCredit >= 2) notes.push(`${effectiveCredit} paraphrasing credits — good vocabulary`);
+  else if (effectiveCredit === 1) notes.push('1 paraphrasing credit detected');
+  else if (!meaningChanged) notes.push('Verbatim response accepted — add synonym swaps for even better scores');
+
   if (perspectiveShifted) notes.push('✓ Perspective shift to third-person');
   if (academicWordsUsed.length >= 2) notes.push(`✓ Academic: ${academicWordsUsed.slice(0, 3).join(', ')}`);
   if (safeSwaps.length > 0 && !meaningChanged) notes.push(`✓ Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
-  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}${verbatimRate >= 80 ? ' (discounted — high verbatim)' : ''}`);
+  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
+
+  // Suggestion for improvement (no score penalty)
+  if (!meaningChanged && !suggestion && effectiveCredit < 4) {
+    suggestion = 'Tip: Replace verbs/adjectives with synonyms (made→opted, good→beneficial) for stronger vocabulary demonstration.';
+  }
 
   return {
     score, verbatim_rate: verbatimRate,
@@ -735,7 +705,7 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
     dangerous_swap_count: dangerousSwapCount, meaning_changed: meaningChanged,
     academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
     notes, suggestion,
-    breakdown: { verbatim_penalty: verbatimRate > 85 ? 'severe' : verbatimRate > 80 ? 'moderate' : 'none', swap_status: effectiveCredit >= 4 ? 'excellent' : effectiveCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
+    breakdown: { verbatim_penalty: 'none', swap_status: effectiveCredit >= 4 ? 'excellent' : effectiveCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
   };
 }
 
