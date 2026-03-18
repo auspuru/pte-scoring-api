@@ -25,7 +25,8 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
 }
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
-const DATA_DIR = process.env.NODE_ENV === 'production' ? '/tmp' : './data';
+// Data storage: Railway volume > local ./data > /tmp fallback
+const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || (process.env.NODE_ENV === 'production' ? '/app/data' : './data');
 const STORAGE_FILE = path.join(DATA_DIR, 'pte_data.json');
 
 async function ensureDataDir() {
@@ -38,25 +39,102 @@ const StorageAPI = {
     catch { return { users: {}, global: { totalAttempts: 0 } }; }
   },
   async writeData(data) { await ensureDataDir(); await fs.writeFile(STORAGE_FILE, JSON.stringify(data, null, 2)); },
+  
+  // Save individual attempt (called after each verify)
   async saveProgress(userId, passageId, summary, scoreData) {
     const data = await this.readData();
-    if (!data.users[userId]) data.users[userId] = { attempts: {}, stats: { totalAttempts: 0, averageScore: 0 } };
-    data.users[userId].attempts[passageId] = { summary, score: scoreData, timestamp: new Date().toISOString() };
-    const att = Object.values(data.users[userId].attempts);
-    data.users[userId].stats.totalAttempts = att.length;
-    data.users[userId].stats.averageScore = Math.round(att.reduce((s, a) => s + (a.score?.overall_score || 0), 0) / att.length);
+    if (!data.users[userId]) data.users[userId] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    const u = data.users[userId];
+    
+    // Update attempted
+    if (!u.attempted) u.attempted = [];
+    if (!u.attempted.includes(passageId)) u.attempted.push(passageId);
+    
+    // Update summaries (latest only)
+    if (!u.summaries) u.summaries = {};
+    u.summaries[passageId] = { text: summary, timestamp: new Date().toISOString(), score: scoreData?.overall_score || 0 };
+    
+    // Update scores
+    if (!u.scores) u.scores = {};
+    u.scores[passageId] = scoreData;
+    
+    // Update history (newest first, max 10 per passage)
+    if (!u.history) u.history = {};
+    if (!u.history[passageId]) u.history[passageId] = [];
+    u.history[passageId].unshift({
+      text: summary, timestamp: new Date().toISOString(),
+      overall_score: scoreData?.overall_score || 0, band: scoreData?.band || 'Band 5',
+      trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
+      feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
+      skill_contributions: scoreData?.skill_contributions || null,
+      scoring_version: scoreData?.scoring_version || 'unknown'
+    });
+    if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
+    
+    // Update stats
+    let total = 0, count = 0;
+    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+    
     data.global.totalAttempts++;
     await this.writeData(data);
-    return { success: true, userStats: data.users[userId].stats };
+    return { success: true, userStats: u.stats };
   },
-  async getProgress(userId) {
+  
+  // Get full user data (for sync on login)
+  async getUserData(userId) {
     const data = await this.readData();
-    return data.users[userId] || { attempts: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    const u = data.users[userId];
+    if (!u) return { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    return { attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {} };
   },
+  
+  // Push full user data from client (for bulk sync)
+  async setUserData(userId, userData) {
+    const data = await this.readData();
+    if (!data.users[userId]) data.users[userId] = {};
+    const u = data.users[userId];
+    
+    // Merge: keep server data if newer, accept client data if newer
+    const clientHistory = userData.history || {};
+    const serverHistory = u.history || {};
+    
+    // Merge histories per passage — combine and deduplicate by timestamp
+    const mergedHistory = {};
+    const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
+    for (const pid of allPassageIds) {
+      const clientAttempts = clientHistory[pid] || [];
+      const serverAttempts = serverHistory[pid] || [];
+      const all = [...clientAttempts, ...serverAttempts];
+      // Deduplicate by timestamp
+      const seen = new Set();
+      const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
+      // Sort newest first, keep max 10
+      merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      mergedHistory[pid] = merged.slice(0, 10);
+    }
+    
+    // Use client's latest summaries (they're the most recent by definition)
+    u.attempted = [...new Set([...(u.attempted || []), ...(userData.attempted || [])])];
+    u.summaries = { ...(u.summaries || {}), ...(userData.summaries || {}) };
+    u.scores = { ...(u.scores || {}), ...(userData.scores || {}) };
+    u.history = mergedHistory;
+    
+    // Recalculate stats
+    let total = 0, count = 0;
+    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+    
+    await this.writeData(data);
+    return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count };
+  },
+  
+  async getProgress(userId) { return this.getUserData(userId); },
+  
   async getLeaderboard(limit = 10) {
     const data = await this.readData();
     return Object.entries(data.users)
-      .map(([id, u]) => ({ userId: id, averageScore: u.stats.averageScore, totalAttempts: u.stats.totalAttempts }))
+      .map(([id, u]) => ({ userId: id, averageScore: (u.stats||{}).averageScore||0, totalAttempts: (u.stats||{}).totalAttempts||0 }))
       .sort((a, b) => b.averageScore - a.averageScore).slice(0, limit);
   }
 };
@@ -120,6 +198,35 @@ const SAFE_SYNONYMS = {
   'help':['assist','facilitate','enable','support','contribute'],
   'change':['shift','transition','transformation','alteration','modification'],
   'grow':['expand','develop','increase','rise','flourish'],
+  // Academic vocabulary — bidirectional
+  'enhance':['improve','strengthen','bolster','augment','elevate'],
+  'ensure':['guarantee','safeguard','secure','verify','confirm'],
+  'promote':['foster','encourage','advance','champion','facilitate'],
+  'develop':['cultivate','advance','evolve','progress','mature'],
+  'address':['tackle','resolve','confront','handle','manage'],
+  'require':['necessitate','demand','mandate','entail','warrant'],
+  'maintain':['sustain','preserve','uphold','retain','continue'],
+  'implement':['execute','deploy','carry','enact','operationalise'],
+  'demonstrate':['illustrate','show','reveal','exhibit','display'],
+  'achieve':['attain','accomplish','realize','secure','obtain'],
+  'integrate':['combine','incorporate','merge','unify','blend'],
+  'establish':['create','found','institute','set','build'],
+  'enable':['facilitate','empower','allow','permit','equip'],
+  'transform':['convert','restructure','reshape','revolutionise','overhaul'],
+  'embed':['incorporate','integrate','instil','ingrain','entrench'],
+  'cultivate':['foster','nurture','develop','encourage','promote'],
+  'encompass':['include','comprise','incorporate','cover','embrace'],
+  'facilitate':['enable','assist','expedite','streamline','simplify'],
+  'adopt':['embrace','implement','employ','utilise','accept'],
+  'align':['harmonise','coordinate','synchronise','reconcile','calibrate'],
+  'leverage':['utilise','exploit','harness','capitalise','maximise'],
+  'mitigate':['reduce','alleviate','diminish','lessen','curtail'],
+  'necessitate':['require','demand','mandate','compel','warrant'],
+  'optimise':['improve','enhance','refine','maximise','streamline'],
+  'prioritise':['emphasise','focus','highlight','favour','concentrate'],
+  'yield':['produce','generate','deliver','furnish','provide'],
+  'characterise':['define','describe','distinguish','typify','denote'],
+  'transcend':['surpass','exceed','go beyond','outstrip','eclipse'],
   'need':['require','necessitate','demand'],
   'use':['utilize','employ','apply','leverage'],
   'show':['demonstrate','reveal','indicate','display','exhibit'],
@@ -554,52 +661,60 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
   const { safeSwaps, structuralChanges, dangerousSwaps, safeSwapCount, structuralCount, totalParaphraseCredit, dangerousSwapCount, academicWordsUsed } = swapData;
   const perspectiveShifted = firstPersonData.hasPerspectiveShift;
 
+  // ── Discount structural credits when verbatim is high ──
+  // Structural "paraphrasing" (combining, condensing) only counts if the student
+  // actually rewrote things. At 80%+ verbatim, they just stitched copied phrases.
+  const effectiveStructural = verbatimRate < 80 ? structuralCount : 0;
+  const effectiveCredit = safeSwapCount + effectiveStructural;
+
   let score = 2;
   let notes = [];
   let suggestion = null;
   let meaningChanged = false;
 
-  // ── Rule 3: Meaning-changing swaps → HARD PENALTY ──
+  // ── Rule 1: Meaning-changing swaps → HARD PENALTY ──
   if (dangerousSwapCount > 0) {
     meaningChanged = true; score = 0;
     notes.push(`⚠ MEANING CHANGED: ${dangerousSwaps.map(s => `"${s.original}" → "${s.replacement}" reverses meaning`).join('; ')}`);
     suggestion = 'Your synonym changed the meaning. "minor" → "small" (OK), "minor" → "major" (WRONG).';
   }
-  // ── Rule 1 & 2: Check TOTAL paraphrase credit (word swaps + structural) ──
-  else if (totalParaphraseCredit >= 4) {
+  // ── Rule 2: 4+ effective credits → excellent ──
+  else if (effectiveCredit >= 4) {
     score = 2;
     const parts = [];
     if (safeSwapCount > 0) parts.push(`${safeSwapCount} synonym swap${safeSwapCount > 1 ? 's' : ''}`);
-    if (structuralCount > 0) parts.push(`${structuralCount} structural change${structuralCount > 1 ? 's' : ''}`);
-    notes.push(`✓ ${totalParaphraseCredit} paraphrasing credits (${parts.join(' + ')}) — excellent vocabulary`);
+    if (effectiveStructural > 0) parts.push(`${effectiveStructural} structural change${effectiveStructural > 1 ? 's' : ''}`);
+    notes.push(`✓ ${effectiveCredit} paraphrasing credits (${parts.join(' + ')}) — excellent vocabulary`);
   }
-  else if (totalParaphraseCredit >= 2) {
-    // 2-3 credits with structural changes — shows genuine comprehension
+  // ── Rule 3: 2-3 effective credits → good ──
+  else if (effectiveCredit >= 2) {
     score = 2;
-    notes.push(`${totalParaphraseCredit} paraphrasing credit${totalParaphraseCredit > 1 ? 's' : ''} — good vocabulary and restructuring`);
+    notes.push(`${effectiveCredit} paraphrasing credits — good vocabulary`);
   }
-  else if (totalParaphraseCredit === 1) {
-    if (verbatimRate > 93) {
+  // ── Rule 4: 1 credit → depends on verbatim ──
+  else if (effectiveCredit === 1) {
+    if (verbatimRate > 85) {
       score = 1;
-      notes.push('Only 1 paraphrasing credit with very high verbatim (>93%)');
-      suggestion = 'Add more synonym swaps or restructure passage sentences.';
+      notes.push('Only 1 paraphrasing credit with high verbatim');
+      suggestion = 'Replace more verbs/adjectives with synonyms to boost vocabulary score.';
     } else {
       score = 2;
-      notes.push('1 paraphrasing credit with moderate verbatim');
+      notes.push('1 paraphrasing credit with moderate paraphrasing');
     }
   }
-  else if (totalParaphraseCredit === 0) {
-    if (verbatimRate > 90) {
+  // ── Rule 5: 0 credits → verbatim determines score ──
+  else {
+    if (verbatimRate > 80) {
       score = 1;
-      notes.push('No paraphrasing detected with very high verbatim copying');
-      suggestion = 'Replace 4+ verbs/adjectives with synonyms OR restructure passage sentences.';
+      notes.push('No paraphrasing detected — mostly verbatim copying');
+      suggestion = 'Replace 4+ verbs/adjectives with synonyms. E.g., "made" → "opted", "good" → "beneficial".';
     } else {
       score = 2;
-      notes.push('Acceptable vocabulary — natural paraphrasing detected');
+      notes.push('Low verbatim — natural paraphrasing detected');
     }
   }
 
-  // ── Rule 4: First-person penalty ──
+  // ── Rule 6: First-person penalty ──
   if (!meaningChanged && firstPersonData.isProblematic && score > 1) {
     score = 1;
     notes.push('⚠ First-person copied — shift to "The author/narrator"');
@@ -610,16 +725,17 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
   if (perspectiveShifted) notes.push('✓ Perspective shift to third-person');
   if (academicWordsUsed.length >= 2) notes.push(`✓ Academic: ${academicWordsUsed.slice(0, 3).join(', ')}`);
   if (safeSwaps.length > 0 && !meaningChanged) notes.push(`✓ Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
-  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
+  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}${verbatimRate >= 80 ? ' (discounted — high verbatim)' : ''}`);
 
   return {
     score, verbatim_rate: verbatimRate,
     safe_swaps: safeSwaps, structural_changes: structuralChanges, dangerous_swaps: dangerousSwaps,
     safe_swap_count: safeSwapCount, structural_count: structuralCount,
-    total_paraphrase_credit: totalParaphraseCredit, dangerous_swap_count: dangerousSwapCount,
-    meaning_changed: meaningChanged, academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
+    effective_credit: effectiveCredit, total_paraphrase_credit: effectiveCredit,
+    dangerous_swap_count: dangerousSwapCount, meaning_changed: meaningChanged,
+    academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
     notes, suggestion,
-    breakdown: { verbatim_penalty: verbatimRate > 95 ? 'severe' : verbatimRate > 90 ? 'moderate' : 'none', swap_status: totalParaphraseCredit >= 4 ? 'excellent' : totalParaphraseCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
+    breakdown: { verbatim_penalty: verbatimRate > 85 ? 'severe' : verbatimRate > 80 ? 'moderate' : 'none', swap_status: effectiveCredit >= 4 ? 'excellent' : effectiveCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
   };
 }
 
@@ -695,7 +811,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '18.0.0', anthropicConfigured: !!anthropic, storage: 'file-based' });
+  res.json({ status: 'ok', version: '18.0.0', anthropicConfigured: !!anthropic, storage: DATA_DIR, sync: true });
 });
 
 app.post('/api/progress/:userId', async (req, res) => {
@@ -713,6 +829,19 @@ app.get('/api/progress/:userId', async (req, res) => {
 app.get('/api/leaderboard', async (req, res) => {
   try { res.json(await StorageAPI.getLeaderboard(parseInt(req.query.limit) || 10)); }
   catch (e) { res.status(500).json({ error: 'Failed to get leaderboard' }); }
+});
+
+// ═══ SYNC ENDPOINTS ═══
+// Pull: get full user data from server (called on login)
+app.get('/api/sync/:userId', async (req, res) => {
+  try { res.json({ success: true, data: await StorageAPI.getUserData(req.params.userId) }); }
+  catch (e) { res.status(500).json({ error: 'Sync pull failed' }); }
+});
+
+// Push: send full user data to server (called on login + after verify)
+app.post('/api/sync/:userId', async (req, res) => {
+  try { res.json(await StorageAPI.setUserData(req.params.userId, req.body)); }
+  catch (e) { res.status(500).json({ error: 'Sync push failed' }); }
 });
 
 // ═══ GRADING ROUTE ═══
@@ -746,7 +875,7 @@ app.post('/api/grade', async (req, res) => {
     const cc = checkKeyPoint(text, conclusionText);
     const coverage = [{ type:'topic', present:tc.present },{ type:'pivot', present:pc.present },{ type:'conclusion', present:cc.present }];
     const presentCount = coverage.filter(c => c.present).length;
-    const contentScore = presentCount >= 2 ? 2 : presentCount === 1 ? 1 : 0;
+    const contentScore = presentCount >= 3 ? 2 : presentCount >= 1 ? 1 : 0;
 
     const verbatim = detectVerbatim(text, prompt);
     const swaps = analyzeSwaps(text, prompt);
