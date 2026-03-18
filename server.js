@@ -203,7 +203,7 @@ const MEANING_DANGER = {
   'advantages':['disadvantages','drawbacks','problems','negatives','downsides','flaws'],
   'disadvantages':['advantages','benefits','positives','strengths','merits','assets'],
   'smooth':['rough','turbulent','difficult','troubled','rocky','bumpy'],
-  'increase':['decrease','decline','drop','fall','reduction','loss','shrinkage','contraction'],
+  'increase':['decrease','decline','drop','fall','reduction','shrinkage','contraction'],
   'decrease':['increase','rise','growth','surge','gain','expansion','improvement'],
   'high':['low','minimal','reduced','negligible'],
   'low':['high','elevated','substantial','significant','considerable'],
@@ -223,10 +223,10 @@ const MEANING_DANGER = {
   'small':['large','huge','enormous','vast','massive'],
   'fast':['slow','gradual','sluggish','leisurely'],
   'slow':['fast','rapid','swift','quick','accelerated'],
-  'growth':['decline','contraction','shrinkage','recession','stagnation','loss','reduction','decrease'],
+  'growth':['decline','contraction','shrinkage','recession','stagnation','reduction','decrease'],
   'decline':['growth','expansion','rise','increase','boom'],
   'profit':['loss','deficit','debt'],
-  'loss':['profit','gain','surplus','revenue','increase','growth','rise','improvement','benefit'],
+  'loss':['profit','gain','surplus','revenue','growth','rise','improvement','benefit'],
   'safe':['dangerous','risky','hazardous','unsafe','perilous'],
   'dangerous':['safe','secure','harmless','benign'],
   'accept':['reject','refuse','decline','deny'],
@@ -318,16 +318,26 @@ function checkKeyPoint(studentText, keyPointText) {
   const keyNums = keyPoint.match(/\d+(?:\.\d+)?/g) || [];
   const studentNums = studentNorm.match(/\d+(?:\.\d+)?/g) || [];
   const numberMatched = keyNums.length > 0 ? fuzzyNumberMatch(keyNums, studentNums) : true;
-  const strongConcept = matchRate >= 0.35;
-  const numberGatePassed = numberMatched || strongConcept;
 
-  const isPresent = numberGatePassed && (matchRate >= thresholds.concept || criticalRate >= thresholds.critical || matchedCritical >= 2);
+  // PRESENCE DECISION — numbers are a bonus signal, NOT a hard gate
+  // A key idea is present if:
+  //   Path A: concept match >= threshold OR critical match >= threshold OR 2+ critical terms
+  //   Path B: numbers matched (bonus — boosts confidence but absence doesn't block)
+  // Old logic had numberGate as hard blocker — this caused false negatives
+  // when student captured the idea without specific numbers
+  const conceptPass = matchRate >= thresholds.concept;
+  const criticalPass = criticalRate >= thresholds.critical;
+  const minCritical = matchedCritical >= 2;
+  const strongConcept = matchRate >= 0.35;
+  
+  const isPresent = (conceptPass || criticalPass || minCritical) && 
+                    (numberMatched || strongConcept || matchRate >= 0.25);
 
   return {
     present: isPresent, matchRate: Math.round(matchRate * 100), criticalRate: Math.round(criticalRate * 100),
     matchedConcepts: matched.slice(0, 8), totalConcepts: keyConcepts.length,
     matchedCritical, matchedCriticalTerms: matchedCriticalTerms.slice(0, 8), totalCritical: criticalTerms.length,
-    numberMatched, strongConceptFallback: strongConcept, numberGatePassed, thresholdUsed: thresholds
+    numberMatched, strongConceptFallback: strongConcept, thresholdUsed: thresholds
   };
 }
 
@@ -401,73 +411,71 @@ function detectFirstPerson(studentText, passageText) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SYNONYM SWAP ANALYSIS — NEW LOGIC:
-// 1. Detect which passage words the student replaced with synonyms
-// 2. Check if replacements are MEANING-SAFE (from SAFE_SYNONYMS map)
-// 3. Check if any replacements are MEANING-DANGEROUS (from MEANING_DANGER map)
-// 4. Count valid swaps (meaning-safe) and dangerous swaps (meaning-changing)
+// ═══════════════════════════════════════════════════════════════════════════════
+// PARAPHRASING ANALYSIS (word swaps + structural changes + vocab suggestions)
 // ═══════════════════════════════════════════════════════════════════════════════
 function analyzeSwaps(studentText, passageText) {
   const studentWords = studentText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 2);
   const passageWordSet = new Set(passageText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 2));
   const studentWordSet = new Set(studentWords);
-
-  // Words in student that are NOT in the passage (candidate replacements)
   const novelWords = studentWords.filter(w => !passageWordSet.has(w) && !STOP_WORDS.has(w) && w.length >= 3);
 
-  // Detect meaning-safe swaps: student used a synonym of a passage word
   const safeSwaps = [];
   for (const [original, synonyms] of Object.entries(SAFE_SYNONYMS)) {
     if (passageWordSet.has(original)) {
       for (const syn of synonyms) {
-        if (studentWordSet.has(syn) && !passageWordSet.has(syn)) {
-          safeSwaps.push({ original, replacement: syn, type: 'safe' });
-        }
+        if (studentWordSet.has(syn) && !passageWordSet.has(syn)) safeSwaps.push({ original, replacement: syn, type: 'safe' });
       }
     }
   }
 
-  // Detect meaning-dangerous swaps: student used an antonym/meaning-changer
-  // CRITICAL: Only flag if the student REMOVED the original word AND added the antonym
-  // E.g., passage has "minor disadvantages", student writes "major disadvantages" → flag
-  // But passage has "minor disadvantages", student writes "minor...significant change" → NOT a flag
+  const structuralChanges = [];
+  const passageSentences = passageText.split(/[.!?]+/).filter(s => s.trim().length > 20);
+  const studentLower = studentText.toLowerCase();
+  let ideasCombined = 0;
+  for (const sent of passageSentences) {
+    const kw = sent.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(w => w.length >= 5 && !STOP_WORDS.has(w)).slice(0, 3);
+    if (kw.length >= 2 && kw.some(k => studentLower.includes(k))) ideasCombined++;
+  }
+  if (ideasCombined >= 3) structuralChanges.push({ type: 'combining', detail: 'Combined ' + ideasCombined + ' passage ideas into one sentence' });
+
+  const pCW = passageText.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(w => w.length > 3 && !STOP_WORDS.has(w));
+  const sCW = studentText.toLowerCase().replace(/[^\w\s]/g,'').split(/\s+/).filter(w => w.length > 3 && !STOP_WORDS.has(w));
+  if (sCW.length / Math.max(1, pCW.length) < 0.40) structuralChanges.push({ type: 'condensing', detail: 'Condensed to ' + Math.round((sCW.length / Math.max(1, pCW.length))*100) + '% of passage' });
+
+  const uniqueNovel = [...new Set(novelWords)];
+  if (uniqueNovel.length >= 3) structuralChanges.push({ type: 'novel_phrasing', detail: uniqueNovel.length + ' novel words introduced' });
+
+  const totalParaphraseCredit = safeSwaps.length + structuralChanges.length;
+
   const dangerousSwaps = [];
   for (const [original, antonyms] of Object.entries(MEANING_DANGER)) {
     if (passageWordSet.has(original) && !studentWordSet.has(original)) {
-      // Original word was REMOVED by student — check if replaced with antonym
       for (const ant of antonyms) {
-        if (studentWordSet.has(ant) && !passageWordSet.has(ant)) {
-          dangerousSwaps.push({ original, replacement: ant, type: 'dangerous' });
-        }
+        if (studentWordSet.has(ant) && !passageWordSet.has(ant)) dangerousSwaps.push({ original, replacement: ant, type: 'dangerous' });
       }
     }
   }
 
-  // Academic vocabulary used
-  const ACADEMIC = new Set([
-    'consequently','furthermore','moreover','nevertheless','predominantly','significantly',
-    'substantially','fundamentally','paradigm','phenomenon','discourse','implications',
-    'framework','methodology','synthesis','analysis','correlation','demonstrated','facilitated',
-    'implemented','necessitate','acknowledges','encompasses','illustrates','transition',
-    'transformation','evolution','proliferation','emergence','contemporary','comprehensive',
-    'opted','acknowledged','advocated','cultivated','elucidated','emphasized','exemplified',
-    'highlighted','posited','contended','beneficial','detrimental','pivotal','instrumental',
-    'paramount','imperative','multifaceted'
-  ]);
+  const ACADEMIC = new Set(['consequently','furthermore','moreover','nevertheless','predominantly','significantly','substantially','fundamentally','paradigm','phenomenon','discourse','implications','framework','methodology','synthesis','analysis','correlation','demonstrated','facilitated','implemented','necessitate','acknowledges','encompasses','illustrates','transition','transformation','evolution','proliferation','emergence','contemporary','comprehensive','opted','acknowledged','advocated','cultivated','elucidated','emphasized','exemplified','highlighted','posited','contended','beneficial','detrimental','pivotal','instrumental','paramount','imperative','multifaceted']);
   const academicWordsUsed = [...new Set(studentWords.filter(w => ACADEMIC.has(w)))];
 
-  return {
-    safeSwaps,                        // [{original, replacement, type:'safe'}]
-    dangerousSwaps,                   // [{original, replacement, type:'dangerous'}]
-    safeSwapCount: safeSwaps.length,
-    dangerousSwapCount: dangerousSwaps.length,
-    academicWordsUsed,
-    novelWords: [...new Set(novelWords)].slice(0, 10),
-    novelWordRate: Math.round((new Set(novelWords).size / Math.max(1, studentWords.length)) * 100)
-  };
+  return { safeSwaps, structuralChanges, dangerousSwaps, safeSwapCount: safeSwaps.length, structuralCount: structuralChanges.length, totalParaphraseCredit, dangerousSwapCount: dangerousSwaps.length, academicWordsUsed, novelWords: uniqueNovel.slice(0, 10), novelWordRate: Math.round((uniqueNovel.length / Math.max(1, studentWords.length)) * 100) };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
+const VOCAB_UPGRADES = {'good':['beneficial','advantageous','favorable'],'bad':['detrimental','adverse','harmful'],'big':['substantial','significant','considerable'],'small':['minimal','marginal','modest'],'important':['crucial','pivotal','paramount'],'problem':['challenge','impediment','obstacle'],'problems':['challenges','impediments','obstacles'],'change':['transformation','transition','evolution'],'changes':['transformations','transitions','developments'],'use':['utilize','employ','leverage'],'show':['demonstrate','illustrate','reveal'],'shows':['demonstrates','illustrates','reveals'],'help':['facilitate','enable','bolster'],'helps':['facilitates','enables','promotes'],'need':['necessitate','require','demand'],'think':['contend','posit','argue'],'make':['generate','produce','establish'],'get':['obtain','acquire','attain'],'give':['provide','furnish','yield'],'said':['stated','asserted','articulated'],'told':['informed','conveyed','communicated'],'asked':['inquired','questioned','probed'],'many':['numerous','myriad','abundant'],'lot':['considerable amount','substantial quantity','abundance'],'very':['exceedingly','remarkably','substantially'],'really':['genuinely','fundamentally','considerably'],'also':['furthermore','additionally','moreover'],'but':['however','nevertheless','conversely'],'because':['owing to','due to','attributable to'],'so':['consequently','therefore','hence'],'about':['approximately','regarding','concerning'],'like':['such as','including','analogous to'],'enough':['sufficient','adequate','ample'],'old':['longstanding','established','time-honored'],'new':['novel','innovative','cutting-edge'],'fast':['rapid','expeditious','swift'],'slow':['gradual','incremental','protracted'],'hard':['challenging','arduous','formidable'],'easy':['straightforward','feasible','manageable'],'wrong':['erroneous','flawed','fallacious'],'start':['commence','initiate','embark upon'],'end':['conclude','terminate','culminate'],'stop':['cease','discontinue','curtail'],'grow':['escalate','proliferate','expand'],'growing':['escalating','proliferating','intensifying'],'fall':['decline','diminish','plummet'],'rise':['surge','escalate','soar'],'cause':['trigger','precipitate','engender'],'causes':['triggers','precipitates','catalyzes'],'affect':['impact','influence','alter'],'affects':['impacts','influences','alters'],'people':['individuals','citizens','populace'],'country':['nation','sovereign state','jurisdiction'],'world':['globe','international arena','global landscape'],'money':['capital','financial resources','revenue'],'work':['employment','occupation','labor'],'place':['location','domain','environment'],'way':['approach','methodology','mechanism'],'part':['component','facet','dimension'],'area':['domain','sphere','sector'],'clear':['evident','apparent','manifest'],'keep':['maintain','sustain','preserve'],'lead':['catalyze','precipitate','engender'],'leads':['catalyzes','precipitates','gives rise to'],'different':['diverse','disparate','distinct'],'same':['identical','equivalent','analogous'],'main':['primary','principal','predominant'],'increase':['escalation','surge','amplification'],'decrease':['reduction','decline','contraction'],'happen':['occur','transpire','materialize'],'try':['endeavor','strive','undertake'],'lack':['deficiency','dearth','paucity'],'spread':['disseminate','propagate','proliferate'],'improve':['enhance','ameliorate','augment'],'reduce':['mitigate','diminish','alleviate'],'support':['substantiate','corroborate','bolster'],'create':['establish','engender','cultivate'],'result':['consequence','outcome','ramification'],'results':['consequences','outcomes','ramifications']};
+
+function generateVocabSuggestions(studentText) {
+  const words = studentText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+  const suggestions = []; const seen = new Set();
+  for (const word of words) {
+    if (VOCAB_UPGRADES[word] && !seen.has(word)) { seen.add(word); suggestions.push({ original: word, upgrades: VOCAB_UPGRADES[word] }); }
+  }
+  return suggestions.slice(0, 8);
+}
+
+
+
 // FORM VALIDATION
 // ═══════════════════════════════════════════════════════════════════════════════
 function validateForm(text) {
@@ -543,7 +551,7 @@ function checkGrammar(text, passageText) {
 // ═══════════════════════════════════════════════════════════════════════════════
 function scoreVocabulary(verbatimData, swapData, firstPersonData) {
   const { verbatimRate } = verbatimData;
-  const { safeSwaps, dangerousSwaps, safeSwapCount, dangerousSwapCount, academicWordsUsed } = swapData;
+  const { safeSwaps, structuralChanges, dangerousSwaps, safeSwapCount, structuralCount, totalParaphraseCredit, dangerousSwapCount, academicWordsUsed } = swapData;
   const perspectiveShifted = firstPersonData.hasPerspectiveShift;
 
   let score = 2;
@@ -551,70 +559,67 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
   let suggestion = null;
   let meaningChanged = false;
 
-  // ── Rule 3: Meaning-changing swaps detected → HARD PENALTY ──
+  // ── Rule 3: Meaning-changing swaps → HARD PENALTY ──
   if (dangerousSwapCount > 0) {
-    meaningChanged = true;
-    score = 0;
-    notes.push(`⚠ MEANING CHANGED: ${dangerousSwaps.map(s => `"${s.original}" was replaced with "${s.replacement}" which reverses/alters the meaning`).join('; ')}`);
-    suggestion = 'Your synonym changed the meaning of the original text. Use synonyms that preserve the same idea. E.g., "minor" → "small" (OK), but "minor" → "major" (changes meaning)';
+    meaningChanged = true; score = 0;
+    notes.push(`⚠ MEANING CHANGED: ${dangerousSwaps.map(s => `"${s.original}" → "${s.replacement}" reverses meaning`).join('; ')}`);
+    suggestion = 'Your synonym changed the meaning. "minor" → "small" (OK), "minor" → "major" (WRONG).';
   }
-  // ── Rule 1 & 2: Check safe swap count ──
-  else if (safeSwapCount >= 4) {
-    // 4+ safe swaps — full vocab score regardless of verbatim rate
+  // ── Rule 1 & 2: Check TOTAL paraphrase credit (word swaps + structural) ──
+  else if (totalParaphraseCredit >= 4) {
     score = 2;
-    notes.push(`✓ ${safeSwapCount} meaning-safe synonym swaps detected — excellent vocabulary`);
+    const parts = [];
+    if (safeSwapCount > 0) parts.push(`${safeSwapCount} synonym swap${safeSwapCount > 1 ? 's' : ''}`);
+    if (structuralCount > 0) parts.push(`${structuralCount} structural change${structuralCount > 1 ? 's' : ''}`);
+    notes.push(`✓ ${totalParaphraseCredit} paraphrasing credits (${parts.join(' + ')}) — excellent vocabulary`);
   }
-  else if (safeSwapCount >= 1 && safeSwapCount < 4) {
-    // Some effort but not enough
-    if (verbatimRate > 90) {
+  else if (totalParaphraseCredit >= 2) {
+    // 2-3 credits with structural changes — shows genuine comprehension
+    score = 2;
+    notes.push(`${totalParaphraseCredit} paraphrasing credit${totalParaphraseCredit > 1 ? 's' : ''} — good vocabulary and restructuring`);
+  }
+  else if (totalParaphraseCredit === 1) {
+    if (verbatimRate > 93) {
       score = 1;
-      notes.push(`Only ${safeSwapCount} synonym swap${safeSwapCount > 1 ? 's' : ''} found (need 4+) with high verbatim`);
-      suggestion = `You need at least 4 synonym swaps for full vocabulary marks. Replace more verbs/adjectives.`;
+      notes.push('Only 1 paraphrasing credit with very high verbatim (>93%)');
+      suggestion = 'Add more synonym swaps or restructure passage sentences.';
     } else {
-      // Lower verbatim compensates for fewer explicit swaps
       score = 2;
-      notes.push(`${safeSwapCount} synonym swap${safeSwapCount > 1 ? 's' : ''} with moderate paraphrasing`);
+      notes.push('1 paraphrasing credit with moderate verbatim');
     }
   }
-  else if (safeSwapCount === 0) {
+  else if (totalParaphraseCredit === 0) {
     if (verbatimRate > 90) {
-      // Pure copy with zero effort
       score = 1;
-      notes.push('No synonym swaps detected with very high verbatim copying');
-      suggestion = 'Replace at least 4 verbs or adjectives with synonyms. E.g., "made a choice" → "opted for a decision"';
+      notes.push('No paraphrasing detected with very high verbatim copying');
+      suggestion = 'Replace 4+ verbs/adjectives with synonyms OR restructure passage sentences.';
     } else {
-      // Low verbatim even without detected swaps — natural paraphrasing
       score = 2;
-      notes.push('Acceptable vocabulary range — natural paraphrasing detected');
+      notes.push('Acceptable vocabulary — natural paraphrasing detected');
     }
   }
 
   // ── Rule 4: First-person penalty ──
   if (!meaningChanged && firstPersonData.isProblematic && score > 1) {
     score = 1;
-    notes.push('⚠ First-person copied from passage — shift to "The author/narrator"');
+    notes.push('⚠ First-person copied — shift to "The author/narrator"');
     suggestion = suggestion || 'Change "I made" → "The author opted", "my wife" → "his wife"';
   }
 
   // ── Recognition badges ──
-  if (perspectiveShifted) notes.push('✓ Proper perspective shift to third-person');
-  if (academicWordsUsed.length >= 2) notes.push(`✓ Academic vocabulary: ${academicWordsUsed.slice(0, 3).join(', ')}`);
-  if (safeSwaps.length > 0 && !meaningChanged) {
-    notes.push(`✓ Smart swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
-  }
+  if (perspectiveShifted) notes.push('✓ Perspective shift to third-person');
+  if (academicWordsUsed.length >= 2) notes.push(`✓ Academic: ${academicWordsUsed.slice(0, 3).join(', ')}`);
+  if (safeSwaps.length > 0 && !meaningChanged) notes.push(`✓ Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
+  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
 
   return {
     score, verbatim_rate: verbatimRate,
-    safe_swaps: safeSwaps, dangerous_swaps: dangerousSwaps,
-    safe_swap_count: safeSwapCount, dangerous_swap_count: dangerousSwapCount,
-    meaning_changed: meaningChanged,
-    academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
+    safe_swaps: safeSwaps, structural_changes: structuralChanges, dangerous_swaps: dangerousSwaps,
+    safe_swap_count: safeSwapCount, structural_count: structuralCount,
+    total_paraphrase_credit: totalParaphraseCredit, dangerous_swap_count: dangerousSwapCount,
+    meaning_changed: meaningChanged, academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
     notes, suggestion,
-    breakdown: {
-      verbatim_penalty: verbatimRate > 95 ? 'severe' : verbatimRate > 90 ? 'moderate' : 'none',
-      swap_status: safeSwapCount >= 4 ? 'excellent' : safeSwapCount >= 1 ? 'partial' : 'none',
-      meaning_danger: dangerousSwapCount > 0
-    }
+    breakdown: { verbatim_penalty: verbatimRate > 95 ? 'severe' : verbatimRate > 90 ? 'moderate' : 'none', swap_status: totalParaphraseCredit >= 4 ? 'excellent' : totalParaphraseCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
   };
 }
 
@@ -656,8 +661,8 @@ function generateFeedback(coverage, grammar, vocab, firstPerson) {
   else parts.push(grammar.grammar_issues[0] || 'Minor grammar issue.');
 
   if (vocab.meaning_changed) parts.push('⚠️ CRITICAL: Your synonyms changed the meaning of the passage!');
-  else if (vocab.score === 2) parts.push(`Vocabulary excellent (${vocab.safe_swap_count} safe synonym swaps).`);
-  else if (vocab.safe_swap_count < 4) parts.push(`Need ${4 - vocab.safe_swap_count} more synonym swaps for full vocab marks.`);
+  else if (vocab.score === 2) parts.push(`Vocabulary excellent (${vocab.total_paraphrase_credit} safe synonym swaps).`);
+  else if (vocab.total_paraphrase_credit < 4) parts.push(`Need ${4 - vocab.total_paraphrase_credit} more synonym swaps for full vocab marks.`);
 
   if (firstPerson.isProblematic) parts.push('⚠️ First-person language — shift to "The author/narrator".');
 
@@ -673,8 +678,8 @@ function generateImprovementTips(rawScore, contentScore, grammarScore, vocabScor
   }
   if (vocab.meaning_changed) {
     tips.push('VOCABULARY: Your synonym CHANGED the meaning! "minor"→"small" is OK, "minor"→"major" is WRONG. Always check the synonym preserves the original idea.');
-  } else if (vocabScore < 2 && vocab.safe_swap_count < 4) {
-    tips.push(`VOCABULARY: Need ${4 - vocab.safe_swap_count} more synonym swaps. Replace verbs (made→opted, knew→acknowledged) and adjectives (good→beneficial, many→numerous) but keep nouns.`);
+  } else if (vocabScore < 2 && vocab.total_paraphrase_credit < 4) {
+    tips.push(`VOCABULARY: Need ${4 - vocab.total_paraphrase_credit} more synonym swaps. Replace verbs (made→opted, knew→acknowledged) and adjectives (good→beneficial, many→numerous) but keep nouns.`);
   }
   if (rawScore >= 6 && rawScore < 7) tips.push('ALMOST BAND 9: One small fix could push you to 90.');
   return tips.join(' | ');
@@ -774,7 +779,7 @@ app.post('/api/grade', async (req, res) => {
       vocabulary_details: {
         score: vocab.score, verbatim_rate: vocab.verbatim_rate + '%',
         safe_swaps: vocab.safe_swaps, dangerous_swaps: vocab.dangerous_swaps,
-        safe_swap_count: vocab.safe_swap_count, dangerous_swap_count: vocab.dangerous_swap_count,
+        safe_swap_count: vocab.total_paraphrase_credit, dangerous_swap_count: vocab.dangerous_swap_count,
         meaning_changed: vocab.meaning_changed,
         academic_words: vocab.academic_words, perspective_shifted: vocab.perspective_shifted,
         notes: vocab.notes, suggestion: vocab.suggestion, breakdown: vocab.breakdown
@@ -793,7 +798,8 @@ app.post('/api/grade', async (req, res) => {
       overall_score: overallScore, raw_score: rawScore, band, word_count: form.wc,
       feedback, improvement_tips: improvementTips,
       key_ideas_status: { topic: tc.present, pivot: pc.present, conclusion: cc.present },
-      scoring_version: '18.0.0', mode: 'local'
+      scoring_version: '18.0.0', mode: 'local',
+      vocabulary_suggestions: generateVocabSuggestions(text)
     };
 
     if (userId && req.body.passageId) {
