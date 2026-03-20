@@ -1017,6 +1017,80 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ─── SPELL CHECK — Datamuse sp= (general English dictionary) ─────────────────
+// Complements the passage-relative checkSpelling() which only catches
+// words within edit-distance-1 of a passage word. This catches misspellings
+// of synonym words the student introduces themselves.
+
+const spellCache = new Map();
+const SPELL_CACHE_MAX = 1000;
+
+// Returns top suggestion for a misspelled word, or null if word looks correct
+async function datamouseSpellCheck(word) {
+  const key = word.toLowerCase().trim();
+  if (spellCache.has(key)) return spellCache.get(key);
+  try {
+    // sp= returns words spelled similarly; if the exact word comes back top-ranked it's correct
+    const url = `https://api.datamuse.com/words?sp=${encodeURIComponent(key)}&max=5`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return null;
+    const results = await res.json();
+    if (!results.length) { spellCache.set(key, null); return null; }
+    // If the top result exactly matches the query, the word is spelled correctly
+    if (results[0].word === key) { spellCache.set(key, null); return null; }
+    const suggestions = results.map(r => r.word).filter(w => w !== key).slice(0, 4);
+    const result = suggestions.length ? suggestions : null;
+    if (spellCache.size >= SPELL_CACHE_MAX) spellCache.delete(spellCache.keys().next().value);
+    spellCache.set(key, result);
+    return result;
+  } catch { return null; }
+}
+
+// Tokenise text into unique candidate words worth spell-checking
+function spellCheckCandidates(text) {
+  const words = text.replace(/[^\w\s'-]/g, ' ').split(/\s+/);
+  const seen = new Set();
+  return words.filter(w => {
+    const lower = w.toLowerCase();
+    if (w.length < 4) return false;                       // too short to bother
+    if (/^\d/.test(w)) return false;                      // numbers
+    if (/^[A-Z]{2,}$/.test(w)) return false;              // acronyms
+    if (w.includes("'")) return false;                     // contractions
+    if (seen.has(lower)) return false;                     // deduplicate
+    seen.add(lower);
+    return true;
+  });
+}
+
+app.post('/api/spellcheck', async (req, res) => {
+  const { text, passageText } = req.body || {};
+  if (!text || typeof text !== 'string') return res.status(400).json({ error: 'Missing text' });
+
+  // Run the fast passage-relative check first (synchronous)
+  const passageResult = passageText ? checkSpelling(text, passageText) : { suggestions: [] };
+  const passageFlagged = new Set(passageResult.suggestions.map(s => s.misspelled.toLowerCase()));
+
+  // Then run Datamuse on words NOT already flagged by the passage checker
+  const candidates = spellCheckCandidates(text).filter(w => !passageFlagged.has(w.toLowerCase()));
+  const datamouseErrors = [];
+
+  // Limit parallel calls to 8 words to avoid flooding Datamuse
+  const toCheck = candidates.slice(0, 8);
+  const checkResults = await Promise.all(toCheck.map(async w => ({ word: w, suggestions: await datamouseSpellCheck(w) })));
+
+  for (const { word, suggestions } of checkResults) {
+    if (suggestions) datamouseErrors.push({ misspelled: word, suggestions });
+  }
+
+  // Merge: passage-relative errors (single suggestion) + Datamuse errors (multiple suggestions)
+  const allErrors = [
+    ...passageResult.suggestions.map(s => ({ misspelled: s.misspelled, suggestions: [s.suggestion], source: 'passage' })),
+    ...datamouseErrors.map(e => ({ misspelled: e.misspelled, suggestions: e.suggestions, source: 'dictionary' }))
+  ];
+
+  res.json({ errors: allErrors, count: allErrors.length });
+});
+
 // ─── THESAURUS LOOKUP (proxies Datamuse — cached server-side) ────────────────
 app.get('/api/thesaurus/:word', async (req, res) => {
   const word = (req.params.word || '').toLowerCase().replace(/[^a-z'-]/g, '').slice(0, 30);
@@ -1242,7 +1316,13 @@ app.post('/api/grade', async (req, res) => {
       feedback, improvement_tips: improvementTips,
       key_ideas_status: { topic: tc.present, pivot: pc.present, conclusion: cc.present },
       scoring_version: '18.0.0', mode: 'local',
-      vocabulary_suggestions: generateVocabSuggestions(text)
+      vocabulary_suggestions: generateVocabSuggestions(text),
+      // Spelling — passage-relative (fast, sync). For full dictionary check call /api/spellcheck
+      spelling_details: {
+        count: spelling.count,
+        errors: spelling.suggestions.map(s => ({ misspelled: s.misspelled, suggestion: s.suggestion, source: 'passage' })),
+        note: spelling.count > 0 ? `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} detected` : null
+      }
     };
 
     if (userId && req.body.passageId) {

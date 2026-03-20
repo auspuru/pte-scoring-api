@@ -6,6 +6,19 @@
   
   <title>PTE SWT Practice Portal</title>
   <style>
+    /* ═══ SPELL CHECKER ═══ */
+    .spell-error-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); flex-wrap: wrap; }
+    .spell-error-row:last-child { border-bottom: none; }
+    .spell-misspelled { font-weight: 700; color: #c62828; text-decoration: underline wavy #e53935; font-size: 0.9rem; min-width: 110px; background: #ffebee; padding: 2px 7px; border-radius: 4px; }
+    .spell-sugg-chip { padding: 3px 10px; background: #e8f5e9; color: #1b5e20; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all 0.15s; }
+    .spell-sugg-chip:hover { background: #2e7d32; color: #fff; transform: translateY(-1px); }
+    .spell-source-tag { font-size: 0.7rem; color: var(--ink-4); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 10px; white-space: nowrap; }
+    .spell-check-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; background: #fff3e0; color: #e65100; border: 1.5px solid #ffb74d; border-radius: var(--r-sm); font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s; }
+    .spell-check-btn:hover { background: #ffe0b2; transform: translateY(-1px); }
+    .spell-check-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+    .spell-check-btn.clean { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+    .spell-inline-error { background: #ffcdd2; border-bottom: 2px solid #e53935; border-radius: 2px; cursor: help; }
+
     /* ═══ THESAURUS SECTION ═══ */
     .thesaurus-word-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); flex-wrap: wrap; }
     .thesaurus-word-row:last-child { border-bottom: none; }
@@ -501,13 +514,14 @@
         <span class="input-label">* Summarize in the box below (between 5 and 75 words)</span>
         <span class="word-count" id="wordCount">0 words</span>
       </div>
-      <textarea id="summaryInput" placeholder="Start typing..." oninput="updateWordCount()"></textarea>
+      <textarea id="summaryInput" placeholder="Start typing..." oninput="updateWordCount()" spellcheck="true"></textarea>
       <div class="input-footer">
         <span class="word-range">5-75 words</span>
         <span class="saved-indicator" id="savedIndicator">✓ Previously saved</span>
         <div class="btn-group">
           <button class="btn btn-secondary" onclick="clearSummary()">Clear</button>
           <button class="btn btn-secondary" onclick="jumpToPassage()">Jump</button>
+          <button class="spell-check-btn" id="spellCheckBtn" onclick="runSpellCheck()" title="Check spelling against the English dictionary">🔤 Spell Check</button>
           <button class="btn btn-warning" id="historyBtn" onclick="showPassageHistory(currentId)" style="display: none;">📜 History</button>
           <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
         </div>
@@ -581,6 +595,12 @@
         <div class="issues-section" id="vocabSuggestSection" style="display: none; background: #e8eaf6; border: 2px solid #5c6bc0;">
           <div class="issues-title" style="color: #283593;">💎 Advanced Vocabulary Suggestions</div>
           <div id="vocabSuggestContent"></div>
+        </div>
+
+        <!-- Spelling Errors -->
+        <div class="issues-section" id="spellingSection" style="display: none; background: #fff8e1; border: 2px solid #ffb300;">
+          <div class="issues-title" style="color: #e65100;">🔤 Spelling Errors</div>
+          <div id="spellingContent"></div>
         </div>
 
         <!-- Thesaurus Swap Suggestions (Datamuse) -->
@@ -1387,6 +1407,28 @@
         thSection.style.display = thCandidates.length === 0 && (data.paraphrase_analysis?.totalCredit || 0) >= 4 ? 'none' : 'none';
       }
 
+      // ── Spelling Errors (from passage-relative check — deep check via 🔤 button) ──
+      const spd = data.spelling_details || {};
+      const spellSec = document.getElementById('spellingSection');
+      if (spd.count > 0 && spd.errors && spd.errors.length > 0) {
+        spellSec.style.display = 'block';
+        const currentText = document.getElementById('summaryInput').value;
+        document.getElementById('spellingContent').innerHTML =
+          `<div style="font-size:0.82rem;color:#795548;margin-bottom:10px;">Found <strong>${spd.count}</strong> likely spelling error${spd.count > 1 ? 's' : ''} (passage-matched). Click a suggestion to fix it in your summary.</div>` +
+          spd.errors.map(e => `
+            <div class="spell-error-row">
+              <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
+              <span style="color:#aaa;font-size:0.8rem;">→</span>
+              <span class="thesaurus-syns">
+                <span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(e.suggestion)}')" title="Click to replace in your summary">${escapeHtml(e.suggestion)}</span>
+              </span>
+              <span class="spell-source-tag">passage match</span>
+            </div>
+          `).join('');
+      } else {
+        spellSec.style.display = 'none';
+      }
+
       // ── Improvement Tips ──
       const tips = data.improvement_tips;
       const tipsSec = document.getElementById('tipsSection');
@@ -1441,6 +1483,78 @@
     function exportData(){const d={userId:currentUserId,attempted:LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[],summaries:LocalStore.get(STORAGE_KEYS.SUMMARIES)||{},scores:LocalStore.get(STORAGE_KEYS.SCORES)||{},history:LocalStore.get(STORAGE_KEYS.HISTORY)||{},exportedAt:new Date().toISOString()};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`pte_${(currentUserId||'backup').replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().split('T')[0]}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('Exported!');}
     function importData(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.attempted)LocalStore.set(STORAGE_KEYS.ATTEMPTED,d.attempted);if(d.summaries)LocalStore.set(STORAGE_KEYS.SUMMARIES,d.summaries);if(d.scores)LocalStore.set(STORAGE_KEYS.SCORES,d.scores);if(d.history)LocalStore.set(STORAGE_KEYS.HISTORY,d.history);loadStoredData();renderDots();updateStats();pushToServer();showToast('Imported & synced!');}catch(err){showToast('Import error: '+err.message);}};r.readAsText(f);input.value='';}
     function toggleTimer(){const btn=document.getElementById('timerBtn');const txt=document.getElementById('timerText');if(!timerRunning){timerRunning=true;timerSeconds=600;btn.style.background='#e8f5e9';txt.textContent='10:00';timerInterval=setInterval(()=>{timerSeconds--;if(timerSeconds<=0){clearInterval(timerInterval);timerRunning=false;btn.style.background='';txt.textContent='Off';showToast('⏰ Time is up! Auto-submitting...',3000);setTimeout(()=>{const text=document.getElementById('summaryInput').value||'';if(text.trim().length>0){verifySummary();}else{showToast('Timer expired but no text to submit.',5000);}},500);return;}const m=Math.floor(timerSeconds/60),s=timerSeconds%60;txt.textContent=m+':'+s.toString().padStart(2,'0');if(timerSeconds<=60){btn.style.background='#ffebee';txt.style.color='#c62828';}else if(timerSeconds<=120){btn.style.background='#fff3e0';txt.style.color='#e65100';}else{txt.style.color='';}},1000);}else{clearInterval(timerInterval);timerRunning=false;timerSeconds=600;btn.style.background='';txt.style.color='';txt.textContent='Off';}}
+    // ═══ SPELL CHECKER — on-demand via /api/spellcheck (Datamuse + passage-relative) ═══
+    async function runSpellCheck() {
+      const text = document.getElementById('summaryInput').value || '';
+      if (!text.trim()) { showToast('Type something first.'); return; }
+      const passage = passages.find(p => p.id === currentId);
+      const btn = document.getElementById('spellCheckBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Checking…';
+      try {
+        const res = await fetch(API_URL + '/api/spellcheck', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, passageText: passage?.text || '' }),
+          signal: AbortSignal.timeout(8000)
+        });
+        const data = await res.json();
+        if (data.errors && data.errors.length > 0) {
+          btn.textContent = `🔤 ${data.errors.length} error${data.errors.length > 1 ? 's' : ''}`;
+          btn.className = 'spell-check-btn'; // orange
+          renderLiveSpellResults(data.errors);
+        } else {
+          btn.textContent = '✓ No errors';
+          btn.className = 'spell-check-btn clean';
+          const spellSec = document.getElementById('spellingSection');
+          spellSec.style.display = 'block';
+          document.getElementById('spellingContent').innerHTML =
+            '<div style="font-size:0.85rem;color:#2e7d32;padding:6px 0;">✅ No spelling errors detected.</div>';
+        }
+        setTimeout(() => { btn.textContent = '🔤 Spell Check'; btn.className = 'spell-check-btn'; btn.disabled = false; }, 4000);
+      } catch (e) {
+        btn.textContent = '🔤 Spell Check';
+        btn.className = 'spell-check-btn';
+        btn.disabled = false;
+        showToast('Spell check failed — check your connection.', 4000);
+      }
+    }
+
+    function renderLiveSpellResults(errors) {
+      const spellSec = document.getElementById('spellingSection');
+      spellSec.style.display = 'block';
+      spellSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      document.getElementById('spellingContent').innerHTML =
+        `<div style="font-size:0.82rem;color:#795548;margin-bottom:10px;">Found <strong>${errors.length}</strong> spelling error${errors.length > 1 ? 's' : ''}. Click a suggestion to fix it in your summary.</div>` +
+        errors.map(e => `
+          <div class="spell-error-row">
+            <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
+            <span style="color:#aaa;font-size:0.8rem;">→</span>
+            <div class="thesaurus-syns">
+              ${(e.suggestions || [e.suggestion]).filter(Boolean).map(s =>
+                `<span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(s)}')" title="Click to replace in your summary">${escapeHtml(s)}</span>`
+              ).join('')}
+            </div>
+            <span class="spell-source-tag">${e.source === 'dictionary' ? '📚 dictionary' : '📄 passage'}</span>
+          </div>
+        `).join('');
+    }
+
+    function fixSpelling(misspelled, correction) {
+      const ta = document.getElementById('summaryInput');
+      // Case-aware replace: if the original was capitalised, capitalise the correction
+      const regex = new RegExp('\\b' + misspelled.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+      ta.value = ta.value.replace(regex, match => {
+        if (match[0] === match[0].toUpperCase()) return correction.charAt(0).toUpperCase() + correction.slice(1);
+        return correction;
+      });
+      updateWordCount();
+      // Dim the fixed row
+      const chips = document.querySelectorAll('.spell-sugg-chip');
+      chips.forEach(c => { if (c.textContent === correction) { c.textContent = '✓ fixed'; c.style.opacity = '0.5'; c.style.pointerEvents = 'none'; } });
+      showToast(`Replaced "${misspelled}" → "${correction}"`, 2000);
+    }
+
     // ═══ THESAURUS — lazy-load from Datamuse via server proxy ═══
     async function loadThesaurus(word, btn) {
       const container = document.getElementById('th-syns-' + word);
