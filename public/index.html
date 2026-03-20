@@ -468,6 +468,7 @@
       <div class="header-right">
         <div class="user-id-display" id="userIdDisplay" style="display: none;"></div>
         <button class="btn-sm" onclick="showUserModal()">👤 Profile</button>
+        <a href="swt-study.html" class="btn-sm" style="text-decoration:none;background:linear-gradient(135deg,rgba(13,148,136,0.12),rgba(13,148,136,0.06));border-color:rgba(13,148,136,0.25);color:var(--teal-700);font-weight:700;" title="Study Guide, Study Plan & Progress Tracker">📖 Study Hub</a>
         <button class="btn-sm" onclick="showInstructions()">Instructions</button>
         <button class="btn-sm" onclick="toggleTimer()" id="timerBtn" title="10-minute countdown. Auto-submits when time runs out.">Timer: <span id="timerText">Off</span></button>
       </div>
@@ -521,7 +522,6 @@
         <div class="btn-group">
           <button class="btn btn-secondary" onclick="clearSummary()">Clear</button>
           <button class="btn btn-secondary" onclick="jumpToPassage()">Jump</button>
-          <button class="spell-check-btn" id="spellCheckBtn" onclick="runSpellCheck()" title="Check spelling against the English dictionary">🔤 Spell Check</button>
           <button class="btn btn-warning" id="historyBtn" onclick="showPassageHistory(currentId)" style="display: none;">📜 History</button>
           <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
         </div>
@@ -1175,7 +1175,59 @@
     function jumpToPassage(){const n=parseInt(prompt('Enter passage (1-'+passages.length+'):'));if(!isNaN(n)&&n>=1&&n<=passages.length)loadPassage(n);else showToast('Invalid passage number');}
     function updateWordCount(){const t=document.getElementById('summaryInput').value||'';const w=t.trim()?t.trim().split(/\s+/).filter(x=>x.length>0).length:0;const el=document.getElementById('wordCount');el.textContent=w+' words';el.className='word-count';if(w<5||w>75)el.classList.add('error');else el.classList.add('success');}
 
-    async function verifySummary(){const text=document.getElementById('summaryInput').value||'';const passage=passages.find(p=>p.id===currentId);if(!text.trim()){showToast('Enter a summary first.');return;}const words=text.trim().split(/\s+/).filter(w=>w.length>0).length;if(words<5){showToast('Too short — min 5 words.');return;}if(words>75){showToast('Too long — max 75 words.');return;}document.getElementById('loadingOverlay').classList.add('show');setLoadingState('Grading with AI...','5-10 seconds',true);try{const payload={text,type:'summarize-written-text',prompt:passage.text,keyPoints:passage.keyElements};if(currentUserId){payload.userId=currentUserId;payload.passageId=currentId;}const res=await fetchWithRetry(API_URL+'/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();saveToLocalStorage(currentId,text,data);showResults(data,passage);resetTimer();attempted.add(currentId);document.getElementById('completedCount').textContent=attempted.size;updateDots();updateStats();updateHistoryButton();}catch(e){if(e.message==='Cancelled')return;showToast('Grading failed: '+e.message,8000);}finally{currentAbortController=null;document.getElementById('loadingOverlay').classList.remove('show');}}
+    async function verifySummary(){
+      const text = document.getElementById('summaryInput').value || '';
+      const passage = passages.find(p => p.id === currentId);
+      if (!text.trim()) { showToast('Enter a summary first.'); return; }
+      const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+      if (words < 5) { showToast('Too short — min 5 words.'); return; }
+      if (words > 75) { showToast('Too long — max 75 words.'); return; }
+
+      document.getElementById('loadingOverlay').classList.add('show');
+      setLoadingState('Grading with AI...', '5-10 seconds', true);
+
+      try {
+        const payload = { text, type: 'summarize-written-text', prompt: passage.text, keyPoints: passage.keyElements };
+        if (currentUserId) { payload.userId = currentUserId; payload.passageId = currentId; }
+
+        // ── Run grading + spell check in parallel ──
+        const [gradeRes, spellRes] = await Promise.allSettled([
+          fetchWithRetry(API_URL + '/api/grade', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }),
+          fetch(API_URL + '/api/spellcheck', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, passageText: passage.text }),
+            signal: AbortSignal.timeout(8000)
+          })
+        ]);
+
+        if (gradeRes.status === 'rejected') throw new Error(gradeRes.reason?.message || 'Grading failed');
+
+        const data = await gradeRes.value.json();
+
+        // Spell check is optional — never block if it fails
+        let spellData = null;
+        if (spellRes.status === 'fulfilled' && spellRes.value.ok) {
+          try { spellData = await spellRes.value.json(); } catch { spellData = null; }
+        }
+
+        saveToLocalStorage(currentId, text, data);
+        showResults(data, passage, spellData);
+        resetTimer();
+        attempted.add(currentId);
+        document.getElementById('completedCount').textContent = attempted.size;
+        updateDots(); updateStats(); updateHistoryButton();
+
+      } catch(e) {
+        if (e.message === 'Cancelled') return;
+        showToast('Grading failed: ' + e.message, 8000);
+      } finally {
+        currentAbortController = null;
+        document.getElementById('loadingOverlay').classList.remove('show');
+      }
+    }
 
     function saveToLocalStorage(pid,text,data){const ts=new Date().toISOString();const att=LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[];if(!att.includes(pid)){att.push(pid);LocalStore.set(STORAGE_KEYS.ATTEMPTED,att);}const sum=LocalStore.get(STORAGE_KEYS.SUMMARIES)||{};sum[pid]={text,timestamp:ts,score:data.overall_score||0};LocalStore.set(STORAGE_KEYS.SUMMARIES,sum);const sc=LocalStore.get(STORAGE_KEYS.SCORES)||{};sc[pid]=data;LocalStore.set(STORAGE_KEYS.SCORES,sc);const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};if(!h[pid])h[pid]=[];h[pid].unshift({text,timestamp:ts,overall_score:data.overall_score||0,band:data.band||'Band 5',trait_scores:data.trait_scores||{},word_count:data.word_count||0,feedback:data.feedback||'',content_details:data.content_details||{},skill_contributions:data.skill_contributions||null,paraphrase_analysis:data.paraphrase_analysis||null,vocabulary_details:data.vocabulary_details||null,first_person_detected:data.first_person_detected||false,improvement_tips:data.improvement_tips||'',scoring_version:data.scoring_version||'unknown'});if(h[pid].length>10)h[pid]=h[pid].slice(0,10);LocalStore.set(STORAGE_KEYS.HISTORY,h);pushToServer();}
 
@@ -1223,7 +1275,7 @@
     // ═══════════════════════════════════════════════════════════════════════════
     // SHOW RESULTS — UPGRADED to display new v17 scoring data
     // ═══════════════════════════════════════════════════════════════════════════
-    function showResults(data, passage) {
+    function showResults(data, passage, spellData) {
       document.getElementById('results').classList.add('show');
       
       // Form error
@@ -1407,25 +1459,63 @@
         thSection.style.display = thCandidates.length === 0 && (data.paraphrase_analysis?.totalCredit || 0) >= 4 ? 'none' : 'none';
       }
 
-      // ── Spelling Errors (from passage-relative check — deep check via 🔤 button) ──
-      const spd = data.spelling_details || {};
+      // ── Spelling Errors — full dictionary check runs in parallel with Verify ──
       const spellSec = document.getElementById('spellingSection');
-      if (spd.count > 0 && spd.errors && spd.errors.length > 0) {
+      const spellContent = document.getElementById('spellingContent');
+
+      // Merge: spellData (from /api/spellcheck, dictionary + passage) takes priority.
+      // Fall back to passage-only spelling_details if spellcheck call failed.
+      const mergedErrors = (() => {
+        if (spellData && Array.isArray(spellData.errors)) return spellData.errors;
+        const spd = data.spelling_details || {};
+        if (spd.count > 0 && spd.errors) return spd.errors.map(e => ({ misspelled: e.misspelled, suggestions: [e.suggestion], source: 'passage' }));
+        return [];
+      })();
+
+      if (mergedErrors.length > 0) {
         spellSec.style.display = 'block';
-        const currentText = document.getElementById('summaryInput').value;
-        document.getElementById('spellingContent').innerHTML =
-          `<div style="font-size:0.82rem;color:#795548;margin-bottom:10px;">Found <strong>${spd.count}</strong> likely spelling error${spd.count > 1 ? 's' : ''} (passage-matched). Click a suggestion to fix it in your summary.</div>` +
-          spd.errors.map(e => `
-            <div class="spell-error-row">
-              <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
-              <span style="color:#aaa;font-size:0.8rem;">→</span>
-              <span class="thesaurus-syns">
-                <span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(e.suggestion)}')" title="Click to replace in your summary">${escapeHtml(e.suggestion)}</span>
-              </span>
-              <span class="spell-source-tag">passage match</span>
-            </div>
-          `).join('');
+
+        // ── Conversational AI feedback message ──
+        const errorList = mergedErrors.map(e => `"${e.misspelled}"`).join(', ');
+        const plural = mergedErrors.length > 1;
+        const headline = plural
+          ? `You made <strong>${mergedErrors.length} spelling mistakes</strong> in your summary: ${errorList}.`
+          : `You made <strong>1 spelling mistake</strong> in your summary: ${errorList}.`;
+        const advice = `Spelling errors reduce your Grammar score. Click a suggestion below to fix ${plural ? 'each one' : 'it'} directly in your summary before re-submitting.`;
+
+        spellContent.innerHTML =
+          `<div style="font-size:0.86rem;color:#5d4037;margin-bottom:12px;line-height:1.6;padding:10px 12px;background:rgba(255,255,255,0.55);border-radius:8px;border-left:3px solid #ff8f00;">
+            🤖 ${headline}<br><span style="color:#795548;">${advice}</span>
+          </div>` +
+          mergedErrors.map(e => {
+            const suggs = Array.isArray(e.suggestions) ? e.suggestions : (e.suggestion ? [e.suggestion] : []);
+            return `
+              <div class="spell-error-row">
+                <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
+                <span style="color:#bbb;font-size:0.8rem;flex-shrink:0;">→</span>
+                <div class="thesaurus-syns">
+                  ${suggs.length
+                    ? suggs.map(s => `<span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(s)}')" title="Click to replace in your summary">${escapeHtml(s)}</span>`).join('')
+                    : '<span style="font-size:0.78rem;color:var(--ink-4);font-style:italic;">No suggestion found</span>'
+                  }
+                </div>
+                <span class="spell-source-tag">${e.source === 'dictionary' ? '📚 dictionary' : '📄 passage'}</span>
+              </div>`;
+          }).join('') +
+          `<div style="margin-top:10px;text-align:right;">
+            <button class="spell-check-btn" style="padding:5px 12px;font-size:0.75rem;" onclick="runSpellCheck()">↺ Re-check spelling</button>
+          </div>`;
+
+      } else if (spellData !== null) {
+        // Spell check ran and found nothing — show clean confirmation
+        spellSec.style.display = 'block';
+        spellContent.innerHTML = `
+          <div style="font-size:0.86rem;color:#2e7d32;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">✅</span>
+            <span>No spelling errors detected in your summary. Good work!</span>
+          </div>`;
       } else {
+        // Spell check did not run (network error) — hide section, don't show stale data
         spellSec.style.display = 'none';
       }
 
@@ -1483,14 +1573,11 @@
     function exportData(){const d={userId:currentUserId,attempted:LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[],summaries:LocalStore.get(STORAGE_KEYS.SUMMARIES)||{},scores:LocalStore.get(STORAGE_KEYS.SCORES)||{},history:LocalStore.get(STORAGE_KEYS.HISTORY)||{},exportedAt:new Date().toISOString()};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`pte_${(currentUserId||'backup').replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().split('T')[0]}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('Exported!');}
     function importData(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.attempted)LocalStore.set(STORAGE_KEYS.ATTEMPTED,d.attempted);if(d.summaries)LocalStore.set(STORAGE_KEYS.SUMMARIES,d.summaries);if(d.scores)LocalStore.set(STORAGE_KEYS.SCORES,d.scores);if(d.history)LocalStore.set(STORAGE_KEYS.HISTORY,d.history);loadStoredData();renderDots();updateStats();pushToServer();showToast('Imported & synced!');}catch(err){showToast('Import error: '+err.message);}};r.readAsText(f);input.value='';}
     function toggleTimer(){const btn=document.getElementById('timerBtn');const txt=document.getElementById('timerText');if(!timerRunning){timerRunning=true;timerSeconds=600;btn.style.background='#e8f5e9';txt.textContent='10:00';timerInterval=setInterval(()=>{timerSeconds--;if(timerSeconds<=0){clearInterval(timerInterval);timerRunning=false;btn.style.background='';txt.textContent='Off';showToast('⏰ Time is up! Auto-submitting...',3000);setTimeout(()=>{const text=document.getElementById('summaryInput').value||'';if(text.trim().length>0){verifySummary();}else{showToast('Timer expired but no text to submit.',5000);}},500);return;}const m=Math.floor(timerSeconds/60),s=timerSeconds%60;txt.textContent=m+':'+s.toString().padStart(2,'0');if(timerSeconds<=60){btn.style.background='#ffebee';txt.style.color='#c62828';}else if(timerSeconds<=120){btn.style.background='#fff3e0';txt.style.color='#e65100';}else{txt.style.color='';}},1000);}else{clearInterval(timerInterval);timerRunning=false;timerSeconds=600;btn.style.background='';txt.style.color='';txt.textContent='Off';}}
-    // ═══ SPELL CHECKER — on-demand via /api/spellcheck (Datamuse + passage-relative) ═══
+    // ═══ SPELL CHECKER — on-demand re-check (also called automatically by verifySummary) ═══
     async function runSpellCheck() {
       const text = document.getElementById('summaryInput').value || '';
       if (!text.trim()) { showToast('Type something first.'); return; }
       const passage = passages.find(p => p.id === currentId);
-      const btn = document.getElementById('spellCheckBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Checking…';
       try {
         const res = await fetch(API_URL + '/api/spellcheck', {
           method: 'POST',
@@ -1499,45 +1586,49 @@
           signal: AbortSignal.timeout(8000)
         });
         const data = await res.json();
-        if (data.errors && data.errors.length > 0) {
-          btn.textContent = `🔤 ${data.errors.length} error${data.errors.length > 1 ? 's' : ''}`;
-          btn.className = 'spell-check-btn'; // orange
-          renderLiveSpellResults(data.errors);
-        } else {
-          btn.textContent = '✓ No errors';
-          btn.className = 'spell-check-btn clean';
-          const spellSec = document.getElementById('spellingSection');
-          spellSec.style.display = 'block';
-          document.getElementById('spellingContent').innerHTML =
-            '<div style="font-size:0.85rem;color:#2e7d32;padding:6px 0;">✅ No spelling errors detected.</div>';
-        }
-        setTimeout(() => { btn.textContent = '🔤 Spell Check'; btn.className = 'spell-check-btn'; btn.disabled = false; }, 4000);
+        renderLiveSpellResults(data.errors || []);
       } catch (e) {
-        btn.textContent = '🔤 Spell Check';
-        btn.className = 'spell-check-btn';
-        btn.disabled = false;
-        showToast('Spell check failed — check your connection.', 4000);
+        showToast('Spell re-check failed — check your connection.', 4000);
       }
     }
 
     function renderLiveSpellResults(errors) {
       const spellSec = document.getElementById('spellingSection');
+      const spellContent = document.getElementById('spellingContent');
       spellSec.style.display = 'block';
       spellSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      document.getElementById('spellingContent').innerHTML =
-        `<div style="font-size:0.82rem;color:#795548;margin-bottom:10px;">Found <strong>${errors.length}</strong> spelling error${errors.length > 1 ? 's' : ''}. Click a suggestion to fix it in your summary.</div>` +
-        errors.map(e => `
-          <div class="spell-error-row">
-            <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
-            <span style="color:#aaa;font-size:0.8rem;">→</span>
-            <div class="thesaurus-syns">
-              ${(e.suggestions || [e.suggestion]).filter(Boolean).map(s =>
-                `<span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(s)}')" title="Click to replace in your summary">${escapeHtml(s)}</span>`
-              ).join('')}
-            </div>
-            <span class="spell-source-tag">${e.source === 'dictionary' ? '📚 dictionary' : '📄 passage'}</span>
-          </div>
-        `).join('');
+
+      if (!errors || errors.length === 0) {
+        spellContent.innerHTML = `
+          <div style="font-size:0.86rem;color:#2e7d32;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;">✅</span>
+            <span>No spelling errors detected in your updated summary.</span>
+          </div>`;
+        return;
+      }
+
+      const plural = errors.length > 1;
+      const errorList = errors.map(e => `"${escapeHtml(e.misspelled)}"`).join(', ');
+      spellContent.innerHTML =
+        `<div style="font-size:0.86rem;color:#5d4037;margin-bottom:12px;line-height:1.6;padding:10px 12px;background:rgba(255,255,255,0.55);border-radius:8px;border-left:3px solid #ff8f00;">
+          🤖 You ${plural ? `have <strong>${errors.length} spelling mistakes</strong>` : `have <strong>1 spelling mistake</strong>`} in your summary: ${errorList}.<br>
+          <span style="color:#795548;">Click a suggestion to fix ${plural ? 'each one' : 'it'} in your summary.</span>
+        </div>` +
+        errors.map(e => {
+          const suggs = Array.isArray(e.suggestions) ? e.suggestions : (e.suggestion ? [e.suggestion] : []);
+          return `
+            <div class="spell-error-row">
+              <span class="spell-misspelled">${escapeHtml(e.misspelled)}</span>
+              <span style="color:#bbb;font-size:0.8rem;flex-shrink:0;">→</span>
+              <div class="thesaurus-syns">
+                ${suggs.length
+                  ? suggs.map(s => `<span class="spell-sugg-chip" onclick="fixSpelling('${escapeHtml(e.misspelled)}','${escapeHtml(s)}')">${escapeHtml(s)}</span>`).join('')
+                  : '<span style="font-size:0.78rem;color:var(--ink-4);font-style:italic;">No suggestion</span>'
+                }
+              </div>
+              <span class="spell-source-tag">${e.source === 'dictionary' ? '📚 dictionary' : '📄 passage'}</span>
+            </div>`;
+        }).join('');
     }
 
     function fixSpelling(misspelled, correction) {
