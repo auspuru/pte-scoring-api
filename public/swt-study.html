@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWT Study Hub — PTE Practice Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --glass: rgba(255,255,255,0.72);
+  --glass-strong: rgba(255,255,255,0.88);
+  --glass-border: rgba(255,255,255,0.45);
+  --glass-blur: 16px;
+  --ink: #0f172a; --ink-2: #334155; --ink-3: #64748b; --ink-4: #94a3b8;
+  --teal: #0d9488; --teal-50: #f0fdfa; --teal-100: #ccfbf1; --teal-600: #0d9488; --teal-700: #0f766e;
+  --violet: #7c3aed; --violet-50: #f5f3ff; --violet-100: #ede9fe;
+  --rose: #e11d48; --rose-50: #fff1f2; --rose-100: #ffe4e6;
+  --amber: #d97706; --amber-50: #fffbeb; --amber-100: #fef3c7;
+  --emerald: #059669; --emerald-50: #ecfdf5; --emerald-100: #d1fae5;
+  --sky: #0284c7; --sky-50: #f0f9ff; --sky-100: #e0f2fe;
+  --r: 16px; --r-sm: 10px; --r-lg: 20px; --r-xl: 24px;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --display: 'Playfair Display', serif;
+  --ease: cubic-bezier(0.4,0,0.2,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font); color: var(--ink); min-height: 100vh;
+  background: #e8e0f0;
+  background-image:
+    radial-gradient(at 20% 20%, rgba(13,148,136,0.15) 0, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(124,58,237,0.12) 0, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(14,165,233,0.1) 0, transparent 50%);
+  background-attachment: fixed;
+  font-size: 14px; line-height: 1.6;
+}
+.glass { background: var(--glass); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); box-shadow: 0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6); }
+
+/* ── LAYOUT ── */
+.container { max-width: 900px; margin: 0 auto; padding: 16px 20px 80px; }
+
+/* ── HEADER ── */
+.header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-radius: var(--r-lg); margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.header-title { display:flex; align-items:center; gap:12px; }
+.header-title .logo { font-family: var(--display); font-size:1.3rem; color:var(--ink); }
+.header-title .badge { padding:3px 10px; background:var(--teal-100); color:var(--teal-700); border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; }
+.back-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.08); border-radius:var(--r-sm); font-size:0.82rem; font-weight:600; color:var(--ink-2); text-decoration:none; transition:all 0.2s; cursor:pointer; }
+.back-btn:hover { background:#fff; transform:translateY(-1px); }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; }
+.tab { padding:9px 20px; border-radius:var(--r-sm); font-size:0.82rem; font-weight:700; cursor:pointer; border:none; font-family:var(--font); transition:all 0.2s var(--ease); background:rgba(255,255,255,0.5); color:var(--ink-3); border:1px solid rgba(255,255,255,0.4); }
+.tab.active { background:var(--glass-strong); color:var(--teal-700); box-shadow:0 2px 12px rgba(13,148,136,0.15); border-color:rgba(13,148,136,0.2); }
+.tab:hover:not(.active) { background:rgba(255,255,255,0.65); color:var(--ink-2); }
+.tab-pane { display:none; animation: fadeIn 0.3s var(--ease); }
+.tab-pane.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── CARDS ── */
+.card { border-radius:var(--r-lg); padding:20px; margin-bottom:14px; }
+.card-title { font-size:0.8rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-3); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.card-title .icon { font-size:1rem; }
+.section-title { font-family: var(--display); font-size:1.2rem; color:var(--ink); margin-bottom:4px; }
+.section-sub { color:var(--ink-3); font-size:0.85rem; margin-bottom:16px; }
+
+/* ── TOPIC FRAMEWORK ── */
+.topic-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:16px; }
+@media(max-width:600px){ .topic-grid { grid-template-columns:repeat(2,1fr); } }
+.topic-card { border-radius:var(--r); padding:14px 12px; text-align:center; transition:transform 0.2s; }
+.topic-card:hover { transform:translateY(-3px); }
+.topic-letter { font-family:var(--display); font-size:2rem; font-weight:800; line-height:1; margin-bottom:6px; }
+.topic-name { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px; }
+.topic-q { font-size:0.72rem; color:var(--ink-3); font-style:italic; }
+.t-t { background:linear-gradient(135deg,#ecfdf5,#d1fae5); } .t-t .topic-letter{color:#059669;}
+.t-o { background:linear-gradient(135deg,#f0f9ff,#e0f2fe); } .t-o .topic-letter{color:#0284c7;}
+.t-p { background:linear-gradient(135deg,#fdf4ff,#fae8ff); } .t-p .topic-letter{color:#9333ea;}
+.t-i { background:linear-gradient(135deg,#fff7ed,#fed7aa); } .t-i .topic-letter{color:#ea580c;}
+.t-c { background:linear-gradient(135deg,#fff1f2,#ffe4e6); } .t-c .topic-letter{color:#e11d48;}
+
+/* ── INCLUDE/EXCLUDE ── */
+.ie-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:500px){ .ie-grid { grid-template-columns:1fr; } }
+.ie-box { border-radius:var(--r); padding:14px; }
+.ie-box.include { background:var(--emerald-50); border:1.5px solid #a7f3d0; }
+.ie-box.exclude { background:var(--rose-50); border:1.5px solid #fecdd3; }
+.ie-box h4 { font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px; }
+.ie-box.include h4 { color:var(--emerald); }
+.ie-box.exclude h4 { color:var(--rose); }
+.ie-item { display:flex; align-items:flex-start; gap:7px; font-size:0.82rem; color:var(--ink-2); margin-bottom:7px; line-height:1.4; }
+.ie-icon { flex-shrink:0; margin-top:1px; font-size:0.85rem; }
+
+/* ── DO/DONT TABLE ── */
+.rules-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:500px){ .rules-grid { grid-template-columns:1fr; } }
+.rule-list { list-style:none; }
+.rule-item { display:flex; align-items:flex-start; gap:8px; padding:8px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-size:0.82rem; color:var(--ink-2); line-height:1.4; }
+.rule-item:last-child { border-bottom:none; }
+.rule-num { flex-shrink:0; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:800; }
+.do .rule-num { background:var(--emerald-100); color:var(--emerald); }
+.dont .rule-num { background:var(--rose-100); color:var(--rose); }
+
+/* ── CONNECTOR TABLE ── */
+.conn-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.conn-table th { background:rgba(13,148,136,0.08); padding:8px 12px; text-align:left; font-weight:700; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--teal-700); border-bottom:2px solid rgba(13,148,136,0.15); }
+.conn-table td { padding:8px 12px; border-bottom:1px solid rgba(0,0,0,0.05); color:var(--ink-2); }
+.conn-table tr:hover td { background:rgba(13,148,136,0.04); }
+.conn-badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:700; }
+.conn-contrast { background:#fef3c7; color:#92400e; }
+.conn-result { background:#d1fae5; color:#065f46; }
+.conn-addition { background:#dbeafe; color:#1e40af; }
+.informal-tag { color:var(--rose); text-decoration:line-through; }
+.formal-tag { color:var(--emerald); font-weight:600; }
+
+/* ── TEMPLATES ── */
+.template-box { background:rgba(255,255,255,0.55); border:1px solid rgba(0,0,0,0.06); border-radius:var(--r); padding:14px; margin-bottom:10px; }
+.template-box h4 { font-size:0.78rem; font-weight:800; color:var(--violet); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+.template-text { font-family:monospace; font-size:0.8rem; color:var(--ink-2); line-height:1.8; background:rgba(124,58,237,0.04); border-radius:6px; padding:10px; border-left:3px solid var(--violet); }
+.template-key { color:var(--violet); font-weight:700; }
+
+/* ── STUDY PLAN ── */
+.week-card { border-radius:var(--r); margin-bottom:10px; overflow:hidden; }
+.week-header { display:flex; align-items:center; gap:12px; padding:12px 16px; cursor:pointer; user-select:none; transition:background 0.2s; }
+.week-header:hover { filter:brightness(0.97); }
+.week-num { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0; }
+.week-title { font-weight:700; font-size:0.9rem; flex:1; }
+.week-goal { font-size:0.75rem; opacity:0.8; }
+.week-arrow { font-size:0.7rem; transition:transform 0.2s; }
+.week-header.open .week-arrow { transform:rotate(180deg); }
+.week-body { display:none; padding:0 16px 14px; }
+.week-body.open { display:block; }
+.day-item { display:flex; align-items:flex-start; gap:10px; padding:6px 0; border-bottom:1px solid rgba(0,0,0,0.05); font-size:0.82rem; }
+.day-item:last-child { border-bottom:none; }
+.day-label { font-weight:700; color:var(--ink-3); min-width:28px; flex-shrink:0; }
+.day-task { color:var(--ink-2); line-height:1.4; flex:1; }
+.day-tag { padding:2px 8px; border-radius:10px; font-size:0.65rem; font-weight:700; flex-shrink:0; }
+.tag-practice { background:var(--teal-100); color:var(--teal-700); }
+.tag-review { background:var(--amber-100); color:var(--amber); }
+.tag-test { background:var(--violet-100); color:var(--violet); }
+.tag-rest { background:rgba(0,0,0,0.05); color:var(--ink-3); }
+
+.w1 .week-num { background:#d1fae5; color:#065f46; }
+.w1 .week-header { background:linear-gradient(135deg,#f0fdf4,#ecfdf5); }
+.w2 .week-num { background:#dbeafe; color:#1e40af; }
+.w2 .week-header { background:linear-gradient(135deg,#eff6ff,#dbeafe); }
+.w3 .week-num { background:#fde8ff; color:#7e22ce; }
+.w3 .week-header { background:linear-gradient(135deg,#faf5ff,#fde8ff); }
+.w4 .week-num { background:#fee2e2; color:#991b1b; }
+.w4 .week-header { background:linear-gradient(135deg,#fff5f5,#fee2e2); }
+
+/* ── PROGRESS TRACKER ── */
+.tracker-form { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+@media(max-width:500px){ .tracker-form { grid-template-columns:1fr; } }
+.form-group label { display:block; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-3); margin-bottom:5px; }
+.form-group input, .form-group select, .form-group textarea {
+  width:100%; padding:9px 12px; border:2px solid rgba(0,0,0,0.07); border-radius:var(--r-sm);
+  font-size:0.85rem; font-family:var(--font); background:rgba(255,255,255,0.7); color:var(--ink);
+  transition:all 0.2s; resize:vertical;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline:none; border-color:var(--teal); box-shadow:0 0 0 4px rgba(13,148,136,0.1); background:#fff;
+}
+.form-group.full { grid-column:1/-1; }
+.btn-add { width:100%; padding:11px; background:linear-gradient(135deg,var(--teal-600),var(--teal-700)); color:#fff; border:none; border-radius:var(--r-sm); font-size:0.88rem; font-weight:700; font-family:var(--font); cursor:pointer; transition:all 0.2s; }
+.btn-add:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(13,148,136,0.25); }
+
+/* ── SCORE CHART ── */
+.chart-wrap { position:relative; height:180px; margin-bottom:8px; }
+.chart-svg { width:100%; height:100%; }
+.chart-label { font-size:0.65rem; fill:var(--ink-3); }
+.chart-grid { stroke:rgba(0,0,0,0.06); stroke-width:1; }
+.chart-line { fill:none; stroke:var(--teal); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.chart-area { fill:url(#areaGrad); }
+.chart-dot { fill:var(--teal); stroke:#fff; stroke-width:2; cursor:pointer; transition:r 0.15s; }
+.chart-dot:hover { r:6; }
+.chart-no-data { display:flex; align-items:center; justify-content:center; height:180px; color:var(--ink-4); font-size:0.85rem; }
+
+/* ── ATTEMPT LOG ── */
+.attempt-log { max-height:320px; overflow-y:auto; }
+.attempt-entry { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05); }
+.attempt-entry:last-child { border-bottom:none; }
+.attempt-score-bubble { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0; border:2px solid; }
+.attempt-meta { flex:1; min-width:0; }
+.attempt-date { font-size:0.7rem; color:var(--ink-4); }
+.attempt-summary { font-size:0.8rem; color:var(--ink-2); margin-top:2px; line-height:1.4; font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:400px; }
+.attempt-tags { display:flex; gap:5px; margin-top:5px; flex-wrap:wrap; }
+.attempt-tag { padding:2px 7px; border-radius:10px; font-size:0.65rem; font-weight:700; }
+.attempt-notes { font-size:0.75rem; color:var(--ink-3); margin-top:3px; }
+.attempt-del { padding:4px 10px; border:1px solid rgba(225,29,72,0.2); border-radius:8px; background:var(--rose-50); color:var(--rose); font-size:0.7rem; font-weight:700; cursor:pointer; flex-shrink:0; font-family:var(--font); transition:all 0.15s; }
+.attempt-del:hover { background:var(--rose-100); }
+
+/* score bubble colors */
+.score-low { border-color:#fca5a5; background:#fff1f2; color:#c62828; }
+.score-mid { border-color:#fcd34d; background:#fffbeb; color:#92400e; }
+.score-good { border-color:#6ee7b7; background:#ecfdf5; color:#065f46; }
+.score-great { border-color:#5eead4; background:#f0fdfa; color:#0f766e; }
+
+/* ── STATS ROW ── */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+@media(max-width:500px){ .stats-row { grid-template-columns:repeat(2,1fr); } }
+.stat-box { border-radius:var(--r); padding:12px; text-align:center; }
+.stat-val { font-family:var(--display); font-size:1.5rem; font-weight:800; color:var(--teal-700); }
+.stat-lbl { font-size:0.68rem; color:var(--ink-3); text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin-top:2px; }
+
+/* ── CHECKLIST ── */
+.checklist { display:flex; flex-direction:column; gap:6px; }
+.check-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:var(--r-sm); background:rgba(255,255,255,0.5); cursor:pointer; transition:all 0.15s; font-size:0.84rem; color:var(--ink-2); user-select:none; border:1.5px solid transparent; }
+.check-item:hover { background:rgba(255,255,255,0.8); }
+.check-item.checked { background:var(--emerald-50); border-color:rgba(5,150,105,0.2); color:var(--emerald); text-decoration:line-through; opacity:0.7; }
+.check-box { width:18px; height:18px; border-radius:5px; border:2px solid var(--ink-4); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.check-item.checked .check-box { background:var(--emerald); border-color:var(--emerald); }
+.check-tick { color:#fff; font-size:0.7rem; display:none; }
+.check-item.checked .check-tick { display:block; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:24px; right:24px; background:#1e293b; color:#fff; padding:10px 18px; border-radius:var(--r-sm); font-size:0.82rem; font-weight:600; z-index:9999; transform:translateY(60px); opacity:0; transition:all 0.3s; pointer-events:none; }
+.toast.show { transform:translateY(0); opacity:1; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); border-radius:10px; }
+
+/* ── QUICK REF BADGE ── */
+.qr-tip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; margin:2px 3px 2px 0; }
+.qr-green { background:var(--emerald-100); color:var(--emerald); }
+.qr-red { background:var(--rose-100); color:var(--rose); }
+.qr-blue { background:var(--sky-100); color:var(--sky); }
+.qr-amber { background:var(--amber-100); color:var(--amber); }
+
+.example-box { background:rgba(255,255,255,0.55); border-radius:var(--r-sm); padding:10px 14px; border-left:3px solid var(--teal); font-size:0.82rem; color:var(--ink-2); line-height:1.6; margin-top:8px; font-style:italic; }
+.example-box strong { color:var(--teal-700); font-style:normal; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header glass">
+    <div class="header-title">
+      <div>
+        <div class="logo">SWT Study Hub</div>
+        <div style="font-size:0.72rem;color:var(--ink-3);margin-top:1px;">Summarise Written Text · PTE Academic</div>
+      </div>
+      <span class="badge">Based on Attempts 1–10</span>
+    </div>
+    <a href="index.html" class="back-btn">← Back to Portal</a>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('guide',this)">📖 Study Guide</button>
+    <button class="tab" onclick="showTab('plan',this)">📅 Study Plan</button>
+    <button class="tab" onclick="showTab('tracker',this)">📈 Progress Tracker</button>
+    <button class="tab" onclick="showTab('checklist',this)">✅ Pre-Submit Checklist</button>
+  </div>
+
+  <!-- ════════════════════ TAB 1: STUDY GUIDE ════════════════════ -->
+  <div class="tab-pane active" id="tab-guide">
+
+    <!-- T.O.P.I.C Framework -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">🏗️</span>The T.O.P.I.C. Framework</div>
+      <div class="section-sub">Every high-scoring SWT summary follows this 5-element structure. Cover all 5 in one sentence.</div>
+      <div class="topic-grid">
+        <div class="topic-card t-t"><div class="topic-letter">T</div><div class="topic-name">Topic</div><div class="topic-q">What is this about?</div></div>
+        <div class="topic-card t-o"><div class="topic-letter">O</div><div class="topic-name">Opinion</div><div class="topic-q">What does the author believe?</div></div>
+        <div class="topic-card t-p"><div class="topic-letter">P</div><div class="topic-name">Positives</div><div class="topic-q">What supports the argument?</div></div>
+        <div class="topic-card t-i"><div class="topic-letter">I</div><div class="topic-name">Issues</div><div class="topic-q">What challenges exist?</div></div>
+        <div class="topic-card t-c"><div class="topic-letter">C</div><div class="topic-name">Conclusion</div><div class="topic-q">What's the final point?</div></div>
+      </div>
+      <div class="example-box">
+        <strong>Attempt 10 — SWT 1 (Score: 86 Writing):</strong><br>
+        "The author made a lifestyle <em>decision</em> [T] to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past [O]; <strong>however</strong>, he was <em>aware</em> of the minor <em>downsides</em> of country living [I]; <strong>moreover</strong>, there were several <em>benefits</em> [P]; <strong>therefore</strong>, he tried to <em>convince</em> his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea [C]."
+      </div>
+    </div>
+
+    <!-- Include / Exclude -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">⚖️</span>Inclusion & Exclusion Criteria</div>
+      <div class="ie-grid">
+        <div class="ie-box include">
+          <h4>✅ Always Include</h4>
+          <div class="ie-item"><span class="ie-icon">✓</span>Main topic / subject (first 1-2 sentences of passage)</div>
+          <div class="ie-item"><span class="ie-icon">✓</span>Author's position or main argument</div>
+          <div class="ie-item"><span class="ie-icon">✓</span>2–3 key supporting points (evidence/facts)</div>
+          <div class="ie-item"><span class="ie-icon">✓</span>Conclusion / final outcome</div>
+          <div class="ie-item"><span class="ie-icon">✓</span>Essential cause-effect relationships</div>
+        </div>
+        <div class="ie-box exclude">
+          <h4>❌ Always Exclude</h4>
+          <div class="ie-item"><span class="ie-icon">✗</span>Specific examples, anecdotes, stories</div>
+          <div class="ie-item"><span class="ie-icon">✗</span>Repetitive or redundant information</div>
+          <div class="ie-item"><span class="ie-icon">✗</span>Minor adjectives & background detail</div>
+          <div class="ie-item"><span class="ie-icon">✗</span>Personal opinions or emotional language</div>
+          <div class="ie-item"><span class="ie-icon">✗</span>Specific dates / names (unless essential)</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--amber-50);border-radius:var(--r-sm);border-left:3px solid var(--amber);font-size:0.82rem;color:var(--ink-2);">
+        <strong style="color:var(--amber);">Generalise, don't remove.</strong> "uncertain water supply, absence of central heating, single-track road blocked by snow…" → <strong>"minor disadvantages of country living"</strong>
+      </div>
+    </div>
+
+    <!-- Connectors -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">🔗</span>Connector Strategy — Use 3–4 Per Summary</div>
+      <table class="conn-table">
+        <thead><tr><th>Connector</th><th>Type</th><th>Position</th><th>Usage Note</th></tr></thead>
+        <tbody>
+          <tr><td><strong>; However,</strong></td><td><span class="conn-badge conn-contrast">Contrast</span></td><td>After main idea</td><td>Introduce challenge / counterpoint</td></tr>
+          <tr><td><strong>; Moreover,</strong></td><td><span class="conn-badge conn-addition">Addition</span></td><td>Middle</td><td>Add supporting point</td></tr>
+          <tr><td><strong>; Furthermore,</strong></td><td><span class="conn-badge conn-addition">Addition</span></td><td>Middle</td><td>Add second supporting point</td></tr>
+          <tr><td><strong>; Therefore,</strong></td><td><span class="conn-badge conn-result">Result</span></td><td>End</td><td>Introduce conclusion</td></tr>
+          <tr><td><strong>; Consequently,</strong></td><td><span class="conn-badge conn-result">Result</span></td><td>End</td><td>Show cause-effect outcome</td></tr>
+          <tr><td><strong>; Nevertheless,</strong></td><td><span class="conn-badge conn-contrast">Contrast</span></td><td>Middle/End</td><td>Concede then assert</td></tr>
+          <tr><td><strong>and despite…,</strong></td><td><span class="conn-badge conn-contrast">Contrast</span></td><td>End clause</td><td>No semicolon needed before "and"</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+        <span style="font-size:0.78rem;font-weight:700;color:var(--rose);">❌ Informal → Avoid:</span>
+        <span class="qr-red">but</span><span class="qr-red">also</span><span class="qr-red">so</span><span class="qr-red">besides</span><span class="qr-red">anyway</span>
+        <span style="font-size:0.78rem;font-weight:700;color:var(--emerald);margin-left:4px;">✓ Formal → Use:</span>
+        <span class="qr-green">however</span><span class="qr-green">moreover</span><span class="qr-green">therefore</span><span class="qr-green">consequently</span>
+      </div>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--sky-50);border-radius:var(--r-sm);border-left:3px solid var(--sky);font-size:0.8rem;color:var(--ink-2);">
+        <strong style="color:var(--sky);">PTE Convention:</strong> Capitalise after semicolons — <code>"; However,"</code> and <code>"; Moreover,"</code> — this is unique to PTE SWT and differs from standard English grammar.
+      </div>
+    </div>
+
+    <!-- Synonyms -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">💬</span>Synonym Strategy — Hit the Sweet Spot of 3–5</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+        <div style="text-align:center;padding:10px;background:var(--rose-50);border-radius:var(--r-sm);border:1.5px solid #fecdd3;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">😟</div>
+          <div style="font-weight:800;color:var(--rose);font-size:0.8rem;">0–2 Swaps</div>
+          <div style="font-size:0.72rem;color:var(--ink-3);">Low vocabulary score</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:var(--emerald-50);border-radius:var(--r-sm);border:2px solid #6ee7b7;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">🏆</div>
+          <div style="font-weight:800;color:var(--emerald);font-size:0.8rem;">3–5 Swaps</div>
+          <div style="font-size:0.72rem;color:var(--ink-3);">Maximum vocab score</div>
+        </div>
+        <div style="text-align:center;padding:10px;background:var(--amber-50);border-radius:var(--r-sm);border:1.5px solid #fcd34d;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">⚠️</div>
+          <div style="font-weight:800;color:var(--amber);font-size:0.8rem;">6+ Swaps</div>
+          <div style="font-size:0.72rem;color:var(--ink-3);">Risk meaning change</div>
+        </div>
+      </div>
+      <table class="conn-table">
+        <thead><tr><th>Original Word</th><th>Synonym Used</th><th>Why it Works</th></tr></thead>
+        <tbody>
+          <tr><td>choice</td><td><strong>decision</strong></td><td>More formal register</td></tr>
+          <tr><td>persuade</td><td><strong>convince</strong></td><td>Stronger verb, same meaning</td></tr>
+          <tr><td>familiar with</td><td><strong>aware of</strong></td><td>Academic tone</td></tr>
+          <tr><td>disadvantages</td><td><strong>downsides</strong></td><td>Natural alternative</td></tr>
+          <tr><td>advantages / many</td><td><strong>benefits / several</strong></td><td>Avoids repetition</td></tr>
+          <tr><td>overtaken</td><td><strong>surpassed</strong></td><td>Academic vocabulary</td></tr>
+          <tr><td>knew (1st person)</td><td><strong>he knew / the author knew</strong></td><td>Shifts to 3rd person ✓</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--rose-50);border-radius:var(--r-sm);border-left:3px solid var(--rose);font-size:0.8rem;color:var(--ink-2);">
+        <strong style="color:var(--rose);">⚠️ Never reverse meaning:</strong> "minor" → "small" ✓ (OK) · "minor" → "major" ✗ (WRONG — changes the passage's actual message, Vocab score = 0)
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">📋</span>Templates by Passage Type</div>
+      <div class="template-box">
+        <h4>Type 1 — Argumentative / Opinion</h4>
+        <div class="template-text">[The author/subject] <span class="template-key">argues/believes</span> that [main argument], and [supporting point];<br><strong>; However,</strong> [counterpoint/challenge];<br><strong>; Moreover,</strong> [additional point];<br><strong>; Therefore,</strong> [conclusion].</div>
+      </div>
+      <div class="template-box">
+        <h4>Type 2 — Descriptive / Informational</h4>
+        <div class="template-text">[The subject] <span class="template-key">is/are</span> [description], and [characteristic 1];<br><strong>; Moreover,</strong> [characteristic 2];<br><strong>; Furthermore,</strong> [characteristic 3];<br><strong>; Therefore,</strong> [significance/conclusion].</div>
+      </div>
+      <div class="template-box">
+        <h4>Type 3 — Process / Cause-Effect</h4>
+        <div class="template-text">[The process/event] <span class="template-key">results from</span> [cause], and [effect 1];<br><strong>; Consequently,</strong> [effect 2];<br><strong>; Moreover,</strong> [additional effect];<br><strong>; Therefore,</strong> [final outcome].</div>
+      </div>
+      <div class="template-box">
+        <h4>Type 4 — Historical / Development</h4>
+        <div class="template-text">[The subject] <span class="template-key">originated/began as</span> [origin], and [early development];<br><strong>; However,</strong> [challenge/setback];<br><strong>; Moreover,</strong> [current status];<br><strong>and despite</strong> [obstacle], [conclusion].</div>
+      </div>
+    </div>
+
+    <!-- 7 Do's & 8 Don'ts -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">📏</span>7 Do's & 8 Don'ts</div>
+      <div class="rules-grid">
+        <div>
+          <div style="font-size:0.75rem;font-weight:800;color:var(--emerald);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">✅ Do These</div>
+          <ul class="rule-list do">
+            <li class="rule-item"><span class="rule-num">1</span><span>Write exactly <strong>one sentence</strong> — form score is 2 points; two sentences = zero</span></li>
+            <li class="rule-item"><span class="rule-num">2</span><span>Stay between <strong>5–75 words</strong> — target 40–65 for a safe buffer</span></li>
+            <li class="rule-item"><span class="rule-num">3</span><span>Use <strong>3–4 formal connectors</strong> joined by semicolons</span></li>
+            <li class="rule-item"><span class="rule-num">4</span><span>Include <strong>3–5 synonym swaps</strong> — not zero, not too many</span></li>
+            <li class="rule-item"><span class="rule-num">5</span><span><strong>Capitalise after semicolons</strong> — "; However," "; Moreover,"</span></li>
+            <li class="rule-item"><span class="rule-num">6</span><span><strong>Maintain original meaning</strong> — never change what the author says</span></li>
+            <li class="rule-item"><span class="rule-num">7</span><span><strong>Start with the main subject</strong> — "The author…" or "The [topic]…"</span></li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:800;color:var(--rose);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">❌ Avoid These</div>
+          <ul class="rule-list dont">
+            <li class="rule-item"><span class="rule-num">1</span><span>Don't <strong>copy entire sentences</strong> verbatim from the passage</span></li>
+            <li class="rule-item"><span class="rule-num">2</span><span>Don't use <strong>bullet points or numbered lists</strong></span></li>
+            <li class="rule-item"><span class="rule-num">3</span><span>Don't include <strong>your own opinion</strong> — use "The author argues…"</span></li>
+            <li class="rule-item"><span class="rule-num">4</span><span>Don't change <strong>technical terms</strong> — generalise around them</span></li>
+            <li class="rule-item"><span class="rule-num">5</span><span>Don't use <strong>informal connectors</strong> — but, also, so, besides</span></li>
+            <li class="rule-item"><span class="rule-num">6</span><span>Don't write <strong>multiple sentences</strong> — use semicolons instead</span></li>
+            <li class="rule-item"><span class="rule-num">7</span><span>Don't include <strong>every specific detail</strong> — generalise them</span></li>
+            <li class="rule-item"><span class="rule-num">8</span><span>Don't <strong>exceed 75 words</strong> — instant zero for Form score</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-guide -->
+
+
+  <!-- ════════════════════ TAB 2: STUDY PLAN ════════════════════ -->
+  <div class="tab-pane" id="tab-plan">
+
+    <div class="card glass" style="margin-bottom:14px;">
+      <div class="card-title"><span class="icon">🎯</span>4-Week SWT Mastery Plan</div>
+      <div class="section-sub">Based on the progression from Attempt 1 (Writing 73) → Attempt 10 (Writing 86). Each week targets a specific weakness identified in the attempt log.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="qr-green">🏋️ Practice = write a full SWT</span>
+        <span class="qr-amber">🔍 Review = analyse feedback</span>
+        <span class="qr-blue">📝 Test = timed 10-min attempt</span>
+        <span style="background:rgba(0,0,0,0.05);color:var(--ink-3);" class="qr-tip">😴 Rest</span>
+      </div>
+    </div>
+
+    <div class="week-card glass w1">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-num">1</div>
+        <div><div class="week-title">Form & Structure Foundations</div><div class="week-goal">Goal: Zero form errors — nail the single sentence, connectors & word count</div></div>
+        <div class="week-arrow">▼</div>
+      </div>
+      <div class="week-body">
+        <div class="day-item"><span class="day-label">Mon</span><span class="day-task">Study T.O.P.I.C. framework. Read Attempt 10 SWT 1 & 2 analyses. Identify all 5 elements in each.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Tue</span><span class="day-task">Practice connector-only exercise: take any passage, write 1 sentence using only semicolons + formal connectors (no synonyms yet). Check: exactly 1 sentence, ends with period.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Wed</span><span class="day-task">Attempt 2 passages on portal (untimed). Focus solely on form: 1 sentence, 5–75 words, ending with period. Don't worry about vocab yet.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Thu</span><span class="day-task">Review your attempts. Check: Did you use "; However," "; Moreover," etc.? Did you capitalise after semicolons? Fix any form errors and rewrite.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Fri</span><span class="day-task">Timed test: 2 passages in 20 min (10 min each). Target 40–60 words. Log scores in Progress Tracker.</span><span class="day-tag tag-test">Test</span></div>
+        <div class="day-item"><span class="day-label">Sat</span><span class="day-task">Write 3 SWT summaries using different passage types (argumentative, informational, historical). Practice the 4 templates.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Sun</span><span class="day-task">Rest and passive review — read through the T.O.P.I.C. framework and Do's & Don'ts once.</span><span class="day-tag tag-rest">Rest</span></div>
+      </div>
+    </div>
+
+    <div class="week-card glass w2">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-num">2</div>
+        <div><div class="week-title">Synonym Mastery & Vocabulary</div><div class="week-goal">Goal: Consistently land 3–5 safe synonym swaps without changing meaning</div></div>
+        <div class="week-arrow">▼</div>
+      </div>
+      <div class="week-body">
+        <div class="day-item"><span class="day-label">Mon</span><span class="day-task">Study the Synonym Strategy section. Memorise the safe swap pairs from Attempt 10 (choice→decision, persuade→convince, familiar→aware, etc.).</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Tue</span><span class="day-task">Synonym drill: take 5 passage sentences, underline all verbs & adjectives, then replace each with a synonym. Check meaning is preserved.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Wed</span><span class="day-task">Write 2 full SWT summaries. After writing, circle every word that came directly from the passage — aim for no more than 60% verbatim rate.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Thu</span><span class="day-task">Use the portal's thesaurus feature. For each passage word, look up 3 synonyms. Build your personal synonym vocabulary list in a notebook.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Fri</span><span class="day-task">Timed test: 2 passages, 10 min each. This time focus on vocabulary — try to include 4+ safe swaps. Log in Progress Tracker, note synonym count.</span><span class="day-tag tag-test">Test</span></div>
+        <div class="day-item"><span class="day-label">Sat</span><span class="day-task">Compare Attempt 1 (No synonyms, Writing 73) vs Attempt 2 (With synonyms). Identify exactly which swaps made the difference.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Sun</span><span class="day-task">Rest. Optional: spend 15 min reading academic articles — passive vocabulary building.</span><span class="day-tag tag-rest">Rest</span></div>
+      </div>
+    </div>
+
+    <div class="week-card glass w3">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-num">3</div>
+        <div><div class="week-title">Content Detection & Idea Selection</div><div class="week-goal">Goal: Always capture Topic, Pivot (contrast) and Conclusion — 3/3 key ideas</div></div>
+        <div class="week-arrow">▼</div>
+      </div>
+      <div class="week-body">
+        <div class="day-item"><span class="day-label">Mon</span><span class="day-task">Study the Inclusion/Exclusion criteria. Take 3 portal passages — before writing, highlight: Topic sentence, contrast signal word (but/however), conclusion signal (therefore/thus).</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Tue</span><span class="day-task">Practice the "10-second topic identification": read only the first sentence of 5 passages, write the topic in 5 words or fewer. Speed and accuracy.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Wed</span><span class="day-task">Write 3 SWT summaries. After each, fill in the T.O.P.I.C. breakdown table manually — identify which element each clause covers. Verify all 5 present.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Thu</span><span class="day-task">Analyse Attempt 9 student error (score: Writing 78 despite 90 overall). Identify: what key ideas were missing or too detailed? What should have been generalised?</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Fri</span><span class="day-task">Full timed mock: 2 passages back-to-back (20 min total). Check all 3 key ideas detected by portal. Log scores. Target: 2/3 or 3/3 key ideas.</span><span class="day-tag tag-test">Test</span></div>
+        <div class="day-item"><span class="day-label">Sat</span><span class="day-task">Practice "generalisation" — take 5 specific detail lists from passages and rewrite each as a single general phrase (like "minor disadvantages of country living").</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Sun</span><span class="day-task">Rest. Review your Progress Tracker — are scores improving week-on-week?</span><span class="day-tag tag-rest">Rest</span></div>
+      </div>
+    </div>
+
+    <div class="week-card glass w4">
+      <div class="week-header" onclick="toggleWeek(this)">
+        <div class="week-num">4</div>
+        <div><div class="week-title">Speed, Consolidation & Mock Tests</div><div class="week-goal">Goal: Consistent 76+ Writing under real exam conditions (10-min timer)</div></div>
+        <div class="week-arrow">▼</div>
+      </div>
+      <div class="week-body">
+        <div class="day-item"><span class="day-label">Mon</span><span class="day-task">Timed revision: write 3 SWT summaries in 30 min (10 min each, strict). For each passage: 1 min reading & highlighting, 7 min writing, 2 min review.</span><span class="day-tag tag-test">Test</span></div>
+        <div class="day-item"><span class="day-label">Tue</span><span class="day-task">Error analysis: take your 3 worst portal scores and identify the specific rule that cost points. Write the corrected version of each.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Wed</span><span class="day-task">Speed drill: read a passage for 90 seconds, then write from memory in 5 minutes. Forces you to identify and retain only the key ideas.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Thu</span><span class="day-task">Full mock test simulation: 2 SWT passages + 1 essay, timed as in the real exam. Use the Pre-Submit Checklist before hitting Verify each time.</span><span class="day-tag tag-test">Test</span></div>
+        <div class="day-item"><span class="day-label">Fri</span><span class="day-task">Review all logged attempts in Progress Tracker. Identify your best-performing passage types and your weakest. Plan which to practice more.</span><span class="day-tag tag-review">Review</span></div>
+        <div class="day-item"><span class="day-label">Sat</span><span class="day-task">Final consolidation: write 5 SWT summaries without feedback first, then verify each. Aim for 76+ on all five.</span><span class="day-tag tag-practice">Practice</span></div>
+        <div class="day-item"><span class="day-label">Sun</span><span class="day-task">Complete rest before exam week. Re-read Quick Reference only — no new practice.</span><span class="day-tag tag-rest">Rest</span></div>
+      </div>
+    </div>
+
+    <!-- Score targets -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">🎯</span>Score Progression Targets</div>
+      <table class="conn-table">
+        <thead><tr><th>Week</th><th>Writing Target</th><th>Key Focus</th><th>Based On</th></tr></thead>
+        <tbody>
+          <tr><td>Baseline (Attempt 1)</td><td><strong>73</strong></td><td>Form only, no synonyms</td><td>Attempt 1 result</td></tr>
+          <tr><td>Week 1</td><td><strong>73–75</strong></td><td>Consistent form, add connectors</td><td>Attempts 2–3</td></tr>
+          <tr><td>Week 2</td><td><strong>75–78</strong></td><td>3–5 synonyms, vocabulary score</td><td>Attempts 4–7</td></tr>
+          <tr><td>Week 3</td><td><strong>78–82</strong></td><td>3/3 key ideas, content score</td><td>Attempts 7–9</td></tr>
+          <tr><td>Week 4</td><td><strong>82–90</strong></td><td>All traits combined, speed</td><td>Attempt 10 (86)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /tab-plan -->
+
+
+  <!-- ════════════════════ TAB 3: PROGRESS TRACKER ════════════════════ -->
+  <div class="tab-pane" id="tab-tracker">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-box glass"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Attempts Logged</div></div>
+      <div class="stat-box glass"><div class="stat-val" id="statAvg">—</div><div class="stat-lbl">Average Score</div></div>
+      <div class="stat-box glass"><div class="stat-val" id="statBest">—</div><div class="stat-lbl">Best Score</div></div>
+      <div class="stat-box glass"><div class="stat-val" id="statTrend">—</div><div class="stat-lbl">Last 3 Trend</div></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card glass" style="margin-bottom:14px;">
+      <div class="card-title"><span class="icon">📈</span>Writing Score Over Time</div>
+      <div class="chart-wrap" id="chartWrap">
+        <div class="chart-no-data" id="chartNoData">Log your first attempt to see your progress chart</div>
+        <svg class="chart-svg" id="chartSvg" style="display:none;" viewBox="0 0 800 180" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0d9488" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#0d9488" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <g id="chartGridLines"></g>
+          <g id="chartGridLabels"></g>
+          <path id="chartAreaPath" class="chart-area"/>
+          <path id="chartLinePath" class="chart-line"/>
+          <g id="chartDots"></g>
+        </svg>
+      </div>
+      <div id="chartTooltip" style="text-align:center;font-size:0.75rem;color:var(--ink-3);margin-top:4px;min-height:16px;"></div>
+    </div>
+
+    <!-- Log form -->
+    <div class="card glass" style="margin-bottom:14px;">
+      <div class="card-title"><span class="icon">✏️</span>Log a New Attempt</div>
+      <div class="tracker-form">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="logDate">
+        </div>
+        <div class="form-group">
+          <label>Writing Score (0–90)</label>
+          <input type="number" id="logScore" min="0" max="90" placeholder="e.g. 76">
+        </div>
+        <div class="form-group">
+          <label>Passage Type</label>
+          <select id="logType">
+            <option value="">— Select —</option>
+            <option>Argumentative / Opinion</option>
+            <option>Descriptive / Informational</option>
+            <option>Process / Cause-Effect</option>
+            <option>Historical / Development</option>
+            <option>Personal Narrative</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Connector Used</label>
+          <select id="logConnector">
+            <option value="">— Select —</option>
+            <option>however + moreover + therefore</option>
+            <option>however + furthermore + despite</option>
+            <option>moreover + consequently</option>
+            <option>nevertheless + moreover</option>
+            <option>other combination</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Synonym Swaps Made (#)</label>
+          <input type="number" id="logSynonyms" min="0" max="15" placeholder="e.g. 4">
+        </div>
+        <div class="form-group">
+          <label>Word Count</label>
+          <input type="number" id="logWords" min="0" max="75" placeholder="e.g. 52">
+        </div>
+        <div class="form-group full">
+          <label>Your Summary Text (optional)</label>
+          <textarea id="logSummary" rows="2" placeholder="Paste your summary here for reference…"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Key Weakness / Notes</label>
+          <input type="text" id="logNotes" placeholder="e.g. Missed conclusion, forgot semicolon before however…">
+        </div>
+      </div>
+      <button class="btn-add" onclick="logAttempt()">➕ Log This Attempt</button>
+    </div>
+
+    <!-- Attempt log -->
+    <div class="card glass">
+      <div class="card-title"><span class="icon">🗒️</span>Attempt History</div>
+      <div class="attempt-log" id="attemptLog">
+        <div style="text-align:center;padding:30px;color:var(--ink-4);font-size:0.85rem;">No attempts logged yet. Add your first one above.</div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button onclick="exportLog()" style="padding:7px 14px;background:rgba(13,148,136,0.08);color:var(--teal-700);border:1px solid rgba(13,148,136,0.2);border-radius:var(--r-sm);font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font);">📥 Export JSON</button>
+        <label style="padding:7px 14px;background:rgba(0,0,0,0.04);color:var(--ink-3);border:1px solid rgba(0,0,0,0.08);border-radius:var(--r-sm);font-size:0.78rem;font-weight:700;cursor:pointer;">📤 Import JSON<input type="file" accept=".json" style="display:none" onchange="importLog(this)"></label>
+        <button onclick="if(confirm('Clear all logged attempts?'))clearLog()" style="padding:7px 14px;background:var(--rose-50);color:var(--rose);border:1px solid rgba(225,29,72,0.15);border-radius:var(--r-sm);font-size:0.78rem;font-weight:700;cursor:pointer;font-family:var(--font);margin-left:auto;">🗑️ Clear All</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-tracker -->
+
+
+  <!-- ════════════════════ TAB 4: CHECKLIST ════════════════════ -->
+  <div class="tab-pane" id="tab-checklist">
+
+    <div class="card glass" style="background:var(--glass-strong);">
+      <div class="card-title"><span class="icon">✅</span>Pre-Submit Checklist — Run This Before Every Verify</div>
+      <div class="section-sub">Tick each item off before you hit Verify. This takes under 30 seconds and will catch most common mistakes.</div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--emerald);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Form (2 pts)</div>
+      <div class="checklist" id="checklist-form">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>My summary is exactly ONE sentence (no full stops except at the very end)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>Word count is between 5 and 75 words (target: 40–65)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>The summary ends with a period (.)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>The first word is capitalised</div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--sky);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;">Connectors & Grammar (2 pts)</div>
+      <div class="checklist" id="checklist-grammar">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>I have used at least one formal connector (however, moreover, therefore, furthermore…)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>Every connector is preceded by a semicolon ("; However," not "However,")</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>The word after the semicolon is capitalised ("; Moreover," ✓ "; moreover," ✗)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>No subject-verb agreement errors (they is → they are)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>No repeated words next to each other</div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--violet);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;">Vocabulary (2 pts)</div>
+      <div class="checklist" id="checklist-vocab">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>I have swapped at least 3–5 words with meaning-safe synonyms</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>None of my synonyms reverse or change the meaning (minor → small ✓, minor → major ✗)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>No first-person language ("I", "my", "we") unless it was in the passage AND I've shifted to third-person ("The author…")</div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;">Content (2 pts)</div>
+      <div class="checklist" id="checklist-content">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>My summary includes the TOPIC (main subject — what the passage is about)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>My summary includes the PIVOT / contrast (the "however" moment)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>My summary includes the CONCLUSION (the "so what" — final outcome or argument)</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>I have NOT included specific dates, names, or minor examples</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>I have NOT included my own opinion</div>
+      </div>
+
+      <div style="font-size:0.75rem;font-weight:800;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;">Final Check</div>
+      <div class="checklist">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>I have read the summary aloud (in my head) — it makes sense as a single sentence</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>The summary starts with the main subject ("The author…" / "The study…" / "The passage…")</div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div>No spelling errors (I used the Spell Check button on the portal)</div>
+      </div>
+
+      <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div id="checkScore" style="font-size:0.85rem;color:var(--ink-2);font-weight:600;"></div>
+        <button onclick="resetChecklist()" style="padding:8px 18px;background:rgba(0,0,0,0.05);color:var(--ink-3);border:1px solid rgba(0,0,0,0.08);border-radius:var(--r-sm);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:var(--font);">↺ Reset All</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-checklist -->
+
+</div><!-- /container -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── TABS ──
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── WEEKS ──
+function toggleWeek(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+
+// ── CHECKLIST ──
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  updateCheckScore();
+}
+function updateCheckScore() {
+  const all = document.querySelectorAll('.check-item');
+  const done = document.querySelectorAll('.check-item.checked').length;
+  const pct = Math.round((done / all.length) * 100);
+  const el = document.getElementById('checkScore');
+  if (done === all.length) {
+    el.innerHTML = '🎉 All checks passed — you\'re ready to submit!';
+    el.style.color = 'var(--emerald)';
+  } else {
+    el.innerHTML = `${done}/${all.length} checks done (${pct}%)`;
+    el.style.color = pct >= 80 ? 'var(--teal-700)' : 'var(--ink-3)';
+  }
+}
+function resetChecklist() {
+  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('checked'));
+  document.getElementById('checkScore').innerHTML = '';
+}
+
+// ── STORAGE ──
+const STORE_KEY = 'swt_study_log_v1';
+function loadLog() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+}
+function saveLog(log) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(log));
+}
+
+// ── LOG ATTEMPT ──
+function logAttempt() {
+  const score = parseInt(document.getElementById('logScore').value);
+  const date = document.getElementById('logDate').value;
+  if (!date) { showToast('Please select a date.'); return; }
+  if (isNaN(score) || score < 0 || score > 90) { showToast('Please enter a valid score (0–90).'); return; }
+
+  const entry = {
+    id: Date.now(),
+    date,
+    score,
+    type: document.getElementById('logType').value,
+    connector: document.getElementById('logConnector').value,
+    synonyms: parseInt(document.getElementById('logSynonyms').value) || null,
+    words: parseInt(document.getElementById('logWords').value) || null,
+    summary: document.getElementById('logSummary').value.trim(),
+    notes: document.getElementById('logNotes').value.trim()
+  };
+
+  const log = loadLog();
+  log.push(entry);
+  log.sort((a, b) => a.date.localeCompare(b.date));
+  saveLog(log);
+  renderLog();
+  renderChart();
+  renderStats();
+
+  // Clear form
+  ['logScore','logSynonyms','logWords','logSummary','logNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('logType').value = '';
+  document.getElementById('logConnector').value = '';
+  showToast('Attempt logged! 🎯');
+}
+
+function deleteEntry(id) {
+  const log = loadLog().filter(e => e.id !== id);
+  saveLog(log);
+  renderLog(); renderChart(); renderStats();
+  showToast('Deleted.');
+}
+
+function clearLog() {
+  saveLog([]);
+  renderLog(); renderChart(); renderStats();
+}
+
+// ── RENDER LOG ──
+function renderLog() {
+  const log = loadLog().slice().reverse();
+  const el = document.getElementById('attemptLog');
+  if (!log.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-4);font-size:0.85rem;">No attempts logged yet.</div>';
+    return;
+  }
+  el.innerHTML = log.map((e, i) => {
+    const cls = e.score >= 85 ? 'score-great' : e.score >= 76 ? 'score-good' : e.score >= 65 ? 'score-mid' : 'score-low';
+    const tags = [
+      e.type ? `<span class="attempt-tag" style="background:#e0f2f1;color:#00695c;">${e.type}</span>` : '',
+      e.synonyms != null ? `<span class="attempt-tag" style="background:#ede9fe;color:#5b21b6;">${e.synonyms} synonyms</span>` : '',
+      e.words ? `<span class="attempt-tag" style="background:#fef3c7;color:#92400e;">${e.words}w</span>` : '',
+      e.connector ? `<span class="attempt-tag" style="background:#e0f2fe;color:#0369a1;">${e.connector.split(' + ')[0]}</span>` : ''
+    ].filter(Boolean).join('');
+    return `
+      <div class="attempt-entry">
+        <div class="attempt-score-bubble ${cls}">${e.score}</div>
+        <div class="attempt-meta">
+          <div class="attempt-date">${formatDate(e.date)} · Attempt #${log.length - i}</div>
+          ${e.summary ? `<div class="attempt-summary">"${escHtml(e.summary)}"</div>` : ''}
+          ${tags ? `<div class="attempt-tags">${tags}</div>` : ''}
+          ${e.notes ? `<div class="attempt-notes">📝 ${escHtml(e.notes)}</div>` : ''}
+        </div>
+        <button class="attempt-del" onclick="deleteEntry(${e.id})">Delete</button>
+      </div>`;
+  }).join('');
+}
+
+// ── STATS ──
+function renderStats() {
+  const log = loadLog();
+  document.getElementById('statTotal').textContent = log.length;
+  if (!log.length) {
+    ['statAvg','statBest','statTrend'].forEach(id => document.getElementById(id).textContent = '—');
+    return;
+  }
+  const scores = log.map(e => e.score);
+  document.getElementById('statAvg').textContent = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  document.getElementById('statBest').textContent = Math.max(...scores);
+  if (log.length >= 3) {
+    const last3 = scores.slice(-3);
+    const trend = last3[2] - last3[0];
+    document.getElementById('statTrend').textContent = (trend > 0 ? '↑+' : trend < 0 ? '↓' : '→') + Math.abs(trend);
+    document.getElementById('statTrend').style.color = trend > 0 ? 'var(--emerald)' : trend < 0 ? 'var(--rose)' : 'var(--ink-3)';
+  } else {
+    document.getElementById('statTrend').textContent = 'Need 3+';
+  }
+}
+
+// ── CHART ──
+function renderChart() {
+  const log = loadLog();
+  const noData = document.getElementById('chartNoData');
+  const svg = document.getElementById('chartSvg');
+
+  if (log.length < 2) {
+    noData.style.display = 'flex';
+    svg.style.display = 'none';
+    return;
+  }
+  noData.style.display = 'none';
+  svg.style.display = 'block';
+
+  const W = 800, H = 180, PAD = { t:10, r:20, b:28, l:36 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+  const minS = Math.max(0, Math.min(...log.map(e=>e.score)) - 5);
+  const maxS = Math.min(90, Math.max(...log.map(e=>e.score)) + 5);
+
+  const xOf = (i) => PAD.l + (i / (log.length - 1)) * cW;
+  const yOf = (s) => PAD.t + cH - ((s - minS) / (maxS - minS)) * cH;
+
+  // Grid
+  const grids = [minS, Math.round((minS+maxS)/2), maxS];
+  document.getElementById('chartGridLines').innerHTML = grids.map(v => 
+    `<line class="chart-grid" x1="${PAD.l}" y1="${yOf(v)}" x2="${PAD.l+cW}" y2="${yOf(v)}"/>`
+  ).join('');
+  document.getElementById('chartGridLabels').innerHTML = grids.map(v =>
+    `<text class="chart-label" x="${PAD.l-4}" y="${yOf(v)+4}" text-anchor="end">${v}</text>`
+  ).join('');
+
+  const pts = log.map((e,i) => [xOf(i), yOf(e.score)]);
+  const lineD = pts.map((p,i) => (i===0?`M`:' L') + p[0]+' '+p[1]).join('');
+  const areaD = lineD + ` L${pts[pts.length-1][0]} ${yOf(minS)} L${pts[0][0]} ${yOf(minS)} Z`;
+
+  document.getElementById('chartLinePath').setAttribute('d', lineD);
+  document.getElementById('chartAreaPath').setAttribute('d', areaD);
+
+  document.getElementById('chartDots').innerHTML = log.map((e,i) => {
+    const cls = e.score >= 85 ? '#059669' : e.score >= 76 ? '#0d9488' : e.score >= 65 ? '#d97706' : '#e11d48';
+    return `<circle class="chart-dot" cx="${pts[i][0]}" cy="${pts[i][1]}" r="4" fill="${cls}"
+      onmouseenter="document.getElementById('chartTooltip').textContent='Attempt ${i+1} · ${formatDate(e.date)} · Score: ${e.score}'"
+      onmouseleave="document.getElementById('chartTooltip').textContent=''"/>`;
+  }).join('');
+}
+
+// ── EXPORT / IMPORT ──
+function exportLog() {
+  const log = loadLog();
+  if (!log.length) { showToast('Nothing to export.'); return; }
+  const b = new Blob([JSON.stringify(log, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+  a.download = `swt_progress_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showToast('Exported!');
+}
+
+function importLog(input) {
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('Invalid format');
+      saveLog(data); renderLog(); renderChart(); renderStats();
+      showToast(`Imported ${data.length} attempts.`);
+    } catch { showToast('Import failed — invalid file.'); }
+  };
+  r.readAsText(f); input.value = '';
+}
+
+// ── HELPERS ──
+function formatDate(d) {
+  if (!d) return ''; const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+renderLog(); renderChart(); renderStats();
+</script>
+</body>
+</html>
