@@ -6,6 +6,19 @@
   
   <title>PTE SWT Practice Portal</title>
   <style>
+    /* ═══ THESAURUS SECTION ═══ */
+    .thesaurus-word-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); flex-wrap: wrap; }
+    .thesaurus-word-row:last-child { border-bottom: none; }
+    .thesaurus-original { font-weight: 600; color: #c62828; text-decoration: line-through; font-size: 0.9rem; min-width: 90px; }
+    .thesaurus-arrow { color: var(--ink-4); font-size: 0.85rem; }
+    .thesaurus-syns { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
+    .thesaurus-syn-chip { padding: 3px 10px; background: var(--emerald-100); color: #1b5e20; border-radius: 20px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+    .thesaurus-syn-chip:hover { background: #059669; color: #fff; transform: translateY(-1px); }
+    .thesaurus-load-btn { padding: 4px 12px; border: 1px dashed var(--teal); color: var(--teal); border-radius: 20px; font-size: 0.78rem; background: none; cursor: pointer; font-family: var(--font); transition: all 0.15s; }
+    .thesaurus-load-btn:hover { background: var(--teal-50); }
+    .thesaurus-load-btn:disabled { opacity: 0.5; cursor: default; }
+    .thesaurus-empty { font-size: 0.8rem; color: var(--ink-4); font-style: italic; }
+
     /* ═══ GLASSMORPHISM DESIGN SYSTEM ═══ */
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
@@ -568,6 +581,12 @@
         <div class="issues-section" id="vocabSuggestSection" style="display: none; background: #e8eaf6; border: 2px solid #5c6bc0;">
           <div class="issues-title" style="color: #283593;">💎 Advanced Vocabulary Suggestions</div>
           <div id="vocabSuggestContent"></div>
+        </div>
+
+        <!-- Thesaurus Swap Suggestions (Datamuse) -->
+        <div class="issues-section" id="thesaurusSection" style="display: none; background: #e0f2f1; border: 2px solid #00897b;">
+          <div class="issues-title" style="color: #00695c;">📖 Thesaurus — Swap These Verbatim Words</div>
+          <div id="thesaurusContent"></div>
         </div>
 
         <!-- Improvement Tips -->
@@ -1348,6 +1367,26 @@
           ).join('');
       } else { vocabSugSec.style.display = 'none'; }
 
+      // ── Thesaurus Swap Suggestions (Datamuse — on-demand) ──
+      const thCandidates = data.thesaurus_candidates || [];
+      const thSection = document.getElementById('thesaurusSection');
+      if (thCandidates.length > 0) {
+        thSection.style.display = 'block';
+        document.getElementById('thesaurusContent').innerHTML =
+          '<div style="font-size:0.82rem;color:#546e7a;margin-bottom:10px;">These words appear verbatim from the passage. Click <strong>Get synonyms</strong> to swap them for a better vocabulary score.</div>' +
+          thCandidates.map(word => `
+            <div class="thesaurus-word-row" id="th-row-${escapeHtml(word)}">
+              <span class="thesaurus-original">${escapeHtml(word)}</span>
+              <span class="thesaurus-arrow">→</span>
+              <div class="thesaurus-syns" id="th-syns-${escapeHtml(word)}">
+                <button class="thesaurus-load-btn" onclick="loadThesaurus('${escapeHtml(word)}', this)">Get synonyms</button>
+              </div>
+            </div>
+          `).join('');
+      } else {
+        thSection.style.display = thCandidates.length === 0 && (data.paraphrase_analysis?.totalCredit || 0) >= 4 ? 'none' : 'none';
+      }
+
       // ── Improvement Tips ──
       const tips = data.improvement_tips;
       const tipsSec = document.getElementById('tipsSection');
@@ -1402,6 +1441,27 @@
     function exportData(){const d={userId:currentUserId,attempted:LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[],summaries:LocalStore.get(STORAGE_KEYS.SUMMARIES)||{},scores:LocalStore.get(STORAGE_KEYS.SCORES)||{},history:LocalStore.get(STORAGE_KEYS.HISTORY)||{},exportedAt:new Date().toISOString()};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`pte_${(currentUserId||'backup').replace(/[^a-z0-9]/gi,'_')}_${new Date().toISOString().split('T')[0]}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);showToast('Exported!');}
     function importData(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.attempted)LocalStore.set(STORAGE_KEYS.ATTEMPTED,d.attempted);if(d.summaries)LocalStore.set(STORAGE_KEYS.SUMMARIES,d.summaries);if(d.scores)LocalStore.set(STORAGE_KEYS.SCORES,d.scores);if(d.history)LocalStore.set(STORAGE_KEYS.HISTORY,d.history);loadStoredData();renderDots();updateStats();pushToServer();showToast('Imported & synced!');}catch(err){showToast('Import error: '+err.message);}};r.readAsText(f);input.value='';}
     function toggleTimer(){const btn=document.getElementById('timerBtn');const txt=document.getElementById('timerText');if(!timerRunning){timerRunning=true;timerSeconds=600;btn.style.background='#e8f5e9';txt.textContent='10:00';timerInterval=setInterval(()=>{timerSeconds--;if(timerSeconds<=0){clearInterval(timerInterval);timerRunning=false;btn.style.background='';txt.textContent='Off';showToast('⏰ Time is up! Auto-submitting...',3000);setTimeout(()=>{const text=document.getElementById('summaryInput').value||'';if(text.trim().length>0){verifySummary();}else{showToast('Timer expired but no text to submit.',5000);}},500);return;}const m=Math.floor(timerSeconds/60),s=timerSeconds%60;txt.textContent=m+':'+s.toString().padStart(2,'0');if(timerSeconds<=60){btn.style.background='#ffebee';txt.style.color='#c62828';}else if(timerSeconds<=120){btn.style.background='#fff3e0';txt.style.color='#e65100';}else{txt.style.color='';}},1000);}else{clearInterval(timerInterval);timerRunning=false;timerSeconds=600;btn.style.background='';txt.style.color='';txt.textContent='Off';}}
+    // ═══ THESAURUS — lazy-load from Datamuse via server proxy ═══
+    async function loadThesaurus(word, btn) {
+      const container = document.getElementById('th-syns-' + word);
+      if (!container) return;
+      btn.disabled = true;
+      btn.textContent = 'Loading…';
+      try {
+        const res = await fetch(API_URL + '/api/thesaurus/' + encodeURIComponent(word), { signal: AbortSignal.timeout(5000) });
+        const data = await res.json();
+        if (!data.synonyms || data.synonyms.length === 0) {
+          container.innerHTML = '<span class="thesaurus-empty">No synonyms found</span>';
+          return;
+        }
+        container.innerHTML = data.synonyms.map(syn =>
+          `<span class="thesaurus-syn-chip" title="Click to copy" onclick="navigator.clipboard?.writeText('${syn}');this.textContent='✓ copied';setTimeout(()=>this.textContent='${syn}',1500)">${syn}</span>`
+        ).join('');
+      } catch (e) {
+        container.innerHTML = '<span class="thesaurus-empty">Could not load — check connection</span>';
+      }
+    }
+
     document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeInstructions();closeUserModal();closeHistoryModal();}});
   </script>
 </body>

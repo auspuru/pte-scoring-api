@@ -545,6 +545,57 @@ const MEANING_DANGER = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// THESAURUS — Datamuse API (free, no key required)
+// Docs: https://www.datamuse.com/api/
+// ═══════════════════════════════════════════════════════════════════════════════
+const thesaurusCache = new Map();
+const THESAURUS_CACHE_MAX = 500;
+
+async function fetchDatamuseSynonyms(word) {
+  const key = word.toLowerCase().trim();
+  if (thesaurusCache.has(key)) return thesaurusCache.get(key);
+  try {
+    const url = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(key)}&max=10`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    // Keep only single clean words, filter out the original
+    const synonyms = data
+      .filter(w => w.word !== key && w.word.length >= 3 && /^[a-z]+(-[a-z]+)?$/.test(w.word))
+      .map(w => w.word)
+      .slice(0, 7);
+    thesaurusCache.set(key, synonyms);
+    if (thesaurusCache.size > THESAURUS_CACHE_MAX) {
+      thesaurusCache.delete(thesaurusCache.keys().next().value);
+    }
+    return synonyms;
+  } catch { return []; }
+}
+
+// Identify verbatim passage words in student text that would benefit from swapping
+function identifySwapCandidates(studentText, passageText, alreadySwapped = []) {
+  const swappedSet = new Set(alreadySwapped.map(w => w.toLowerCase()));
+  const passageWords = passageText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length >= 5 && !STOP_WORDS.has(w));
+  const passageSet = new Set(passageWords);
+  const studentWords = studentText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+  
+  // Score each candidate: prefer longer words, content-rich words
+  const seen = new Set();
+  const candidates = [];
+  for (const word of studentWords) {
+    if (word.length < 5) continue;
+    if (STOP_WORDS.has(word)) continue;
+    if (swappedSet.has(word)) continue;
+    if (seen.has(word)) continue;
+    if (!passageSet.has(word)) continue;
+    seen.add(word);
+    candidates.push(word);
+    if (candidates.length >= 6) break;
+  }
+  return candidates;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 function normaliseNumbers(text) {
@@ -966,6 +1017,18 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ─── THESAURUS LOOKUP (proxies Datamuse — cached server-side) ────────────────
+app.get('/api/thesaurus/:word', async (req, res) => {
+  const word = (req.params.word || '').toLowerCase().replace(/[^a-z'-]/g, '').slice(0, 30);
+  if (!word || word.length < 2) return res.status(400).json({ error: 'Invalid word' });
+  try {
+    const synonyms = await fetchDatamuseSynonyms(word);
+    res.json({ word, synonyms });
+  } catch (e) {
+    res.status(500).json({ error: 'Thesaurus lookup failed' });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', version: '18.0.0', anthropicConfigured: !!anthropic, storage: DATA_DIR, sync: true });
 });
@@ -1186,6 +1249,10 @@ app.post('/api/grade', async (req, res) => {
       try { await StorageAPI.saveProgress(userId, req.body.passageId, text, result); result.saved = true; }
       catch (e) { result.saved = false; }
     }
+
+    // ── Thesaurus swap candidates (words to swap, synonyms fetched on-demand by frontend) ──
+    const alreadySwapped = (result.paraphrase_analysis?.swaps || []).map(s => s.original);
+    result.thesaurus_candidates = identifySwapCandidates(text, prompt, alreadySwapped);
 
     res.json(result);
   } catch (error) {
