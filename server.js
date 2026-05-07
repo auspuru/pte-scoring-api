@@ -1366,7 +1366,7 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
 
-  const prompt = `You are a strict but fair PTE Academic Summarize Written Text scorer. Score this one-sentence summary across three dimensions.
+  const prompt = `You are a strict but fair PTE Academic Summarize Written Text scorer. Score this one-sentence summary across three dimensions AND suggest context-appropriate vocabulary swaps.
 
 PASSAGE:
 ${passageText}
@@ -1390,6 +1390,29 @@ SCORING GUIDANCE:
 - synonym_appropriateness "no_swaps": pure verbatim with zero substitution (still acceptable).
 - academic_register: true if the summary uses 2+ recognisably academic/formal words (e.g., consequently, substantial, demonstrate, comprehensive).
 
+VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT:
+Identify up to 4 common, non-academic words in the STUDENT SUMMARY that could be replaced with academic synonyms to lift Reading skill score. The CONTEXT MUST FIT — re-read the sentence with each suggested synonym mentally and only include synonyms that read fluently and preserve meaning exactly.
+
+Rules for each suggested word:
+- It MUST appear verbatim from the passage (a word the student copied)
+- It MUST be a common, non-academic word (skip proper nouns, dates, numbers, technical terms, words already academic like "consequently"/"substantial")
+- Each suggested synonym MUST fit the EXACT context of the sentence
+- Skip the word entirely if no synonym fits cleanly — better to suggest nothing than something awkward
+
+GOOD examples (context-appropriate):
+- "made a lifestyle choice" → word: "made", synonyms: ["opted for", "chose"] ✓
+- "wanted information in one place" → word: "wanted", synonyms: ["sought", "needed"] ✓
+- "many advantages" → word: "many", synonyms: ["numerous", "several"] ✓
+- "good idea" → word: "good", synonyms: ["beneficial", "sound"] ✓
+
+BAD examples to AVOID:
+- "wanted information" → DO NOT suggest ["hot", "cherished", "treasured", "loved"] — wrong register and meaning
+- "make a choice" → DO NOT suggest ["create"] for "make" — different sense
+- DO NOT suggest synonyms for content words the student already paraphrased
+- DO NOT suggest synonyms that are too rare or jarring in academic English
+
+If no swap candidates fit cleanly, return an empty array — that is a valid answer.
+
 Respond ONLY with valid JSON, no other text:
 {
   "content_score": 0,
@@ -1400,13 +1423,16 @@ Respond ONLY with valid JSON, no other text:
   "synonym_issues": [],
   "cohesion": "strong",
   "academic_register": false,
-  "feedback_note": "one short sentence of actionable feedback"
+  "feedback_note": "one short sentence of actionable feedback",
+  "recommended_swaps": [
+    { "word": "made", "context": "made a lifestyle choice", "synonyms": ["opted for", "decided on"], "rationale": "Academic register lifts Reading skill" }
+  ]
 }`;
 
   try {
     const callPromise = anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 600,
+      max_tokens: 900,
       messages: [{ role: 'user', content: prompt }]
     });
     const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
@@ -1931,9 +1957,33 @@ app.post('/api/grade', async (req, res) => {
       catch (e) { result.saved = false; }
     }
 
-    // Thesaurus swap candidates (for the frontend to fetch synonyms on demand)
-    const alreadySwapped = (result.paraphrase_analysis?.swaps || []).map(s => s.original);
-    result.thesaurus_candidates = identifySwapCandidates(text, prompt, alreadySwapped);
+    // ── Vocabulary swap suggestions ──
+    // Prefer Claude's context-aware recommendations (no Datamuse out-of-context noise).
+    // The legacy thesaurus_candidates field is preserved for backward compat but only
+    // populated when Claude is unavailable (and even then we don't render it in UI v19).
+    if (llmJudgment && Array.isArray(llmJudgment.recommended_swaps)) {
+      // Filter out anything where the word doesn't actually appear in the student text
+      // (Claude occasionally suggests swaps for words that aren't present)
+      const studentLower = text.toLowerCase();
+      result.vocabulary_swap_suggestions = llmJudgment.recommended_swaps
+        .filter(s => s && typeof s.word === 'string' && s.word.length > 0
+                  && Array.isArray(s.synonyms) && s.synonyms.length > 0
+                  && studentLower.includes(s.word.toLowerCase()))
+        .slice(0, 4)
+        .map(s => ({
+          word: s.word,
+          context: s.context || '',
+          synonyms: s.synonyms.slice(0, 3).filter(x => typeof x === 'string' && x.length > 0),
+          rationale: s.rationale || ''
+        }))
+        .filter(s => s.synonyms.length > 0);
+      result.swap_source = 'claude';
+    } else {
+      result.vocabulary_swap_suggestions = [];
+      result.swap_source = 'none';
+    }
+    // Keep legacy field empty in v19 — frontend no longer reads it
+    result.thesaurus_candidates = [];
 
     res.json(result);
   } catch (error) {
