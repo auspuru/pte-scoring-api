@@ -1782,7 +1782,7 @@
       showToast(`✓ Swapped "${original}" → "${replacement}"`);
     }
 
-
+    function renderFeedbackCard(card, fallbackText, fullData) {
       const el = document.getElementById('feedbackCardV3');
       if (!el) return;
       if (!card) {
