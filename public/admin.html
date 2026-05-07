@@ -88,6 +88,56 @@ tr:hover td{background:var(--surface-dim);}
   .actions{flex-direction:column;}
   .search-input{width:100%;}
 }
+
+/* ═══ Tabs ═══════════════════════════════════════════════════════════ */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--border);}
+.tab{padding:10px 18px;border:none;background:none;cursor:pointer;font-size:0.9rem;font-weight:600;color:var(--ink-muted);font-family:var(--font);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
+.tab:hover{color:var(--ink);}
+.tab.active{color:var(--accent-dark);border-bottom-color:var(--accent);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ═══ Passage editor ═════════════════════════════════════════════════ */
+.passage-list{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.passage-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);transition:all 0.15s;}
+.passage-row:hover{border-color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.passage-row .pid{font-family:var(--font-d);font-weight:700;color:var(--accent-dark);font-size:1.1rem;min-width:32px;}
+.passage-row .pinfo{flex:1;min-width:0;}
+.passage-row .pinfo .ptitle{font-weight:600;color:var(--ink);font-size:0.92rem;}
+.passage-row .pinfo .pcat{font-size:0.75rem;color:var(--ink-muted);margin-top:2px;}
+.passage-row .pmeta{font-size:0.72rem;color:var(--ink-faint);margin-right:8px;}
+.passage-row .pmeta .pmeta-val{color:var(--ink-muted);font-weight:600;}
+.passage-row .pmeta-good{color:var(--green);}
+.passage-row .pmeta-warn{color:var(--amber);}
+.passage-row .pactions{display:flex;gap:4px;flex-shrink:0;}
+
+.editor-grid{display:flex;flex-direction:column;gap:12px;}
+.editor-grid label{display:block;font-size:0.75rem;font-weight:700;color:var(--ink-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.editor-grid label .req{color:var(--red);}
+.editor-grid input[type=text],.editor-grid textarea,.editor-grid input[type=number]{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:0.88rem;font-family:var(--font);background:var(--surface);color:var(--ink);}
+.editor-grid input:focus,.editor-grid textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light);}
+.editor-grid textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.editor-grid textarea.passage-text{min-height:160px;}
+.editor-row-2{display:grid;grid-template-columns:80px 1fr 220px;gap:12px;}
+.elements-card{background:var(--surface-dim);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;}
+.elements-card h4{font-size:0.78rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;font-weight:700;}
+.elements-card .help{font-size:0.78rem;color:var(--ink-muted);margin-bottom:12px;line-height:1.5;}
+.element-field{margin-bottom:10px;}
+.element-field:last-child{margin-bottom:0;}
+.element-field .field-label{display:flex;align-items:center;gap:8px;}
+.element-field .field-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:0.65rem;font-weight:700;background:var(--accent-light);color:var(--accent-dark);text-transform:uppercase;letter-spacing:0.04em;}
+.element-field textarea{min-height:50px;font-size:0.85rem;}
+
+.modal-box.wide{max-width:760px;}
+.editor-msg{font-size:0.85rem;margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm);display:none;}
+.editor-msg.ok{background:var(--green-light);color:var(--green);display:block;}
+.editor-msg.err{background:var(--red-light);color:var(--red);display:block;}
+
+@media(max-width:640px){
+  .editor-row-2{grid-template-columns:1fr;}
+  .passage-row{flex-wrap:wrap;}
+  .passage-row .pactions{width:100%;justify-content:flex-end;}
+}
 </style>
 </head>
 <body>
@@ -111,24 +161,47 @@ tr:hover td{background:var(--surface-dim);}
     </div>
   </div>
 
-  <div class="stat-row" id="statsRow">
-    <div class="stat-box"><div class="val" id="statTotal">-</div><div class="lbl">Total Users</div></div>
-    <div class="stat-box"><div class="val" id="statActive">-</div><div class="lbl">Active</div></div>
-    <div class="stat-box"><div class="val" id="statBlocked">-</div><div class="lbl">Blocked</div></div>
-    <div class="stat-box"><div class="val" id="statAttempts">-</div><div class="lbl">Total Attempts</div></div>
+  <div class="tabs">
+    <button class="tab active" id="tabUsers" onclick="switchTab('users')">Users</button>
+    <button class="tab" id="tabPassages" onclick="switchTab('passages')">Passages</button>
   </div>
 
-  <div class="table-card">
-    <div class="table-header">
-      <h3>Users</h3>
-      <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers(this.value)">
+  <div class="tab-panel active" id="panelUsers">
+    <div class="stat-row" id="statsRow">
+      <div class="stat-box"><div class="val" id="statTotal">-</div><div class="lbl">Total Users</div></div>
+      <div class="stat-box"><div class="val" id="statActive">-</div><div class="lbl">Active</div></div>
+      <div class="stat-box"><div class="val" id="statBlocked">-</div><div class="lbl">Blocked</div></div>
+      <div class="stat-box"><div class="val" id="statAttempts">-</div><div class="lbl">Total Attempts</div></div>
     </div>
-    <table>
-      <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>Attempts</th><th>Avg Score</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="usersBody"></tbody>
-    </table>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Users</h3>
+        <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers(this.value)">
+      </div>
+      <table>
+        <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>Attempts</th><th>Avg Score</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+    </div>
   </div>
-</div>
+
+  <div class="tab-panel" id="panelPassages">
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Practice Passages</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="search-input" id="passageSearch" placeholder="Search passages..." oninput="filterPassages(this.value)">
+          <button class="btn-sm btn-accent" onclick="openPassageEditor(null)">+ New Passage</button>
+        </div>
+      </div>
+      <div style="padding:14px 20px 4px;font-size:0.8rem;color:var(--ink-muted);line-height:1.5;">
+        Edits are saved to the server and load instantly for all students. Each passage's <strong>Key Elements</strong> drive the strict content gate — keep each field one atomic fact for accurate scoring.
+      </div>
+      <div class="passage-list" id="passageList" style="padding:8px 16px 16px;"></div>
+    </div>
+  </div>
+  </div>
 
 <!-- Reset Password Modal -->
 <div class="modal" id="resetModal" onclick="if(event.target===this)this.classList.remove('show')">
@@ -153,6 +226,74 @@ tr:hover td{background:var(--surface-dim);}
     <div class="modal-actions">
       <button class="btn-sm" onclick="document.getElementById('detailModal').classList.remove('show')">Close</button>
       <button class="btn-sm btn-accent" id="impersonateBtn" onclick="">Open Portal as User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Passage Editor Modal -->
+<div class="modal" id="passageModal" onclick="if(event.target===this)closePassageEditor()">
+  <div class="modal-box wide">
+    <h3 id="passageModalTitle">Edit Passage</h3>
+    <div class="editor-grid">
+      <div class="editor-row-2">
+        <div>
+          <label>ID <span class="req">*</span></label>
+          <input type="number" id="pe_id" min="1" placeholder="e.g. 11">
+        </div>
+        <div>
+          <label>Title <span class="req">*</span></label>
+          <input type="text" id="pe_title" placeholder="e.g. Climate Change Economics">
+        </div>
+        <div>
+          <label>Category</label>
+          <input type="text" id="pe_category" placeholder="e.g. Environment/Economics">
+        </div>
+      </div>
+
+      <div>
+        <label>Passage Text <span class="req">*</span></label>
+        <textarea id="pe_text" class="passage-text" placeholder="Paste the full passage here…"></textarea>
+      </div>
+
+      <div class="elements-card">
+        <h4>Key Elements (Atomized — One Fact Per Field)</h4>
+        <div class="help">
+          The strict content gate checks for each of these in the student's summary. <strong>Keep each field to one atomic fact</strong> — don't glue two facts with "and"/"but". The more granular, the more accurate the scoring. At least one field is required.
+        </div>
+        <div class="element-field">
+          <div class="field-label"><label>WHAT — the topic / main subject</label><span class="field-tag">what</span></div>
+          <textarea id="pe_what" placeholder="One atomic fact about the topic"></textarea>
+        </div>
+        <div class="element-field">
+          <div class="field-label"><label>WHY — the reason / cause / problem</label><span class="field-tag">why</span></div>
+          <textarea id="pe_why" placeholder="One atomic fact about the why"></textarea>
+        </div>
+        <div class="element-field">
+          <div class="field-label"><label>HOW — the mechanism / approach</label><span class="field-tag">how</span></div>
+          <textarea id="pe_how" placeholder="One atomic fact about the how"></textarea>
+        </div>
+        <div class="element-field">
+          <div class="field-label"><label>RESULT — the outcome / conclusion</label><span class="field-tag">result</span></div>
+          <textarea id="pe_result" placeholder="One atomic fact about the result"></textarea>
+        </div>
+      </div>
+
+      <div>
+        <label>Sample Response (model answer shown to students)</label>
+        <textarea id="pe_sampleResponse" placeholder="A high-scoring example summary of this passage"></textarea>
+      </div>
+
+      <div>
+        <label>Sample Notes (optional — coach commentary on the sample)</label>
+        <textarea id="pe_sampleNotes" placeholder="e.g. Verbatim Method — 3 connectors. ~63 words."></textarea>
+      </div>
+    </div>
+
+    <div class="editor-msg" id="passageModalMsg"></div>
+
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closePassageEditor()">Cancel</button>
+      <button class="btn-sm btn-accent" onclick="savePassage()">Save Passage</button>
     </div>
   </div>
 </div>
@@ -297,6 +438,163 @@ function viewUser(username){
       document.getElementById('detailContent').innerHTML=html;
       document.getElementById('detailModal').classList.add('show');
     });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Tabs + Passage Editor
+// ═══════════════════════════════════════════════════════════════════════
+let allPassages = [];
+
+function switchTab(name) {
+  document.getElementById('tabUsers').classList.toggle('active', name === 'users');
+  document.getElementById('tabPassages').classList.toggle('active', name === 'passages');
+  document.getElementById('panelUsers').classList.toggle('active', name === 'users');
+  document.getElementById('panelPassages').classList.toggle('active', name === 'passages');
+  if (name === 'passages' && allPassages.length === 0) loadPassages();
+}
+
+async function loadPassages() {
+  try {
+    const r = await fetch(API + '/api/admin/passages', { headers: { 'x-admin-key': adminKey } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    allPassages = d.passages || [];
+    renderPassages(allPassages);
+  } catch (e) {
+    toast('Failed to load passages: ' + e.message);
+  }
+}
+
+function renderPassages(list) {
+  const el = document.getElementById('passageList');
+  if (!list || list.length === 0) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:0.88rem;">No passages yet. Click "+ New Passage" to add one.</div>';
+    return;
+  }
+  el.innerHTML = list.map(p => {
+    const ke = p.keyElements || {};
+    const fields = ['what','why','how','result','topic','pivot','conclusion'].filter(k => ke[k]);
+    const newSchemaCount = ['what','why','how','result'].filter(k => ke[k]).length;
+    const wc = (p.text || '').trim().split(/\s+/).filter(Boolean).length;
+    const schemaTag = newSchemaCount === 4
+      ? '<span class="pmeta-good">✓ Atomized 4-field</span>'
+      : newSchemaCount > 0
+        ? `<span class="pmeta-warn">${newSchemaCount}/4 atomized</span>`
+        : '<span class="pmeta-warn">Legacy 3-field</span>';
+    return `
+      <div class="passage-row">
+        <div class="pid">P${escH(String(p.id))}</div>
+        <div class="pinfo">
+          <div class="ptitle">${escH(p.title || 'Untitled')}</div>
+          <div class="pcat">${escH(p.category || '—')}</div>
+        </div>
+        <div class="pmeta">
+          <div>Words: <span class="pmeta-val">${wc}</span></div>
+          <div>${schemaTag}</div>
+        </div>
+        <div class="pactions">
+          <button class="btn-action" onclick="openPassageEditor(${p.id})">Edit</button>
+          <button class="btn-action danger" onclick="deletePassage(${p.id})">Delete</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function filterPassages(q) {
+  const term = (q || '').toLowerCase();
+  if (!term) return renderPassages(allPassages);
+  renderPassages(allPassages.filter(p =>
+    (p.title || '').toLowerCase().includes(term) ||
+    (p.category || '').toLowerCase().includes(term) ||
+    String(p.id).includes(term)
+  ));
+}
+
+function openPassageEditor(id) {
+  const isNew = !id;
+  const p = isNew ? { id: nextAvailableId(), keyElements: {} } : allPassages.find(x => x.id === id) || { id, keyElements: {} };
+  document.getElementById('passageModalTitle').textContent = isNew ? 'New Passage' : 'Edit Passage P' + p.id;
+  document.getElementById('pe_id').value = p.id || '';
+  document.getElementById('pe_id').disabled = !isNew; // Don't allow ID change on existing
+  document.getElementById('pe_title').value = p.title || '';
+  document.getElementById('pe_category').value = p.category || '';
+  document.getElementById('pe_text').value = p.text || '';
+  const ke = p.keyElements || {};
+  document.getElementById('pe_what').value   = ke.what   || ke.topic      || '';
+  document.getElementById('pe_why').value    = ke.why    || ke.pivot      || '';
+  document.getElementById('pe_how').value    = ke.how    || '';
+  document.getElementById('pe_result').value = ke.result || ke.conclusion || '';
+  document.getElementById('pe_sampleResponse').value = p.sampleResponse || '';
+  document.getElementById('pe_sampleNotes').value = p.sampleNotes || '';
+  document.getElementById('passageModalMsg').className = 'editor-msg';
+  document.getElementById('passageModalMsg').textContent = '';
+  document.getElementById('passageModal').classList.add('show');
+}
+
+function closePassageEditor() {
+  document.getElementById('passageModal').classList.remove('show');
+}
+
+function nextAvailableId() {
+  if (!allPassages || allPassages.length === 0) return 1;
+  return Math.max(...allPassages.map(p => p.id || 0)) + 1;
+}
+
+async function savePassage() {
+  const msg = document.getElementById('passageModalMsg');
+  const setMsg = (text, ok) => { msg.className = 'editor-msg ' + (ok ? 'ok' : 'err'); msg.textContent = text; };
+
+  const id = parseInt(document.getElementById('pe_id').value, 10);
+  const title = document.getElementById('pe_title').value.trim();
+  const text = document.getElementById('pe_text').value.trim();
+  const category = document.getElementById('pe_category').value.trim();
+  const keyElements = {};
+  ['what','why','how','result'].forEach(k => {
+    const v = document.getElementById('pe_' + k).value.trim();
+    if (v) keyElements[k] = v;
+  });
+
+  // Validation
+  if (!id || isNaN(id) || id < 1) return setMsg('ID must be a positive integer', false);
+  if (!title) return setMsg('Title is required', false);
+  if (!text || text.split(/\s+/).filter(Boolean).length < 30) return setMsg('Passage text must be at least 30 words', false);
+  if (Object.keys(keyElements).length === 0) return setMsg('At least one Key Element (what/why/how/result) is required', false);
+
+  const payload = {
+    id, title, category, text, keyElements,
+    sampleResponse: document.getElementById('pe_sampleResponse').value.trim(),
+    sampleNotes: document.getElementById('pe_sampleNotes').value.trim()
+  };
+
+  try {
+    const r = await fetch(API + '/api/admin/passages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (!r.ok) return setMsg('Save failed: ' + (d.error || r.status), false);
+    setMsg('Saved successfully', true);
+    setTimeout(() => { closePassageEditor(); loadPassages(); toast('Passage saved'); }, 700);
+  } catch (e) {
+    setMsg('Network error: ' + e.message, false);
+  }
+}
+
+async function deletePassage(id) {
+  const p = allPassages.find(x => x.id === id);
+  if (!confirm(`Delete passage P${id} "${p?.title || ''}"? This cannot be undone.`)) return;
+  try {
+    const r = await fetch(API + '/api/admin/passages/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminKey }
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    toast('Passage deleted');
+    loadPassages();
+  } catch (e) {
+    toast('Delete failed: ' + e.message);
+  }
 }
 
 // Auto-login if key in session

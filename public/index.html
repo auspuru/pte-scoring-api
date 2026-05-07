@@ -744,6 +744,74 @@
       font-size: 0.85rem; color: #9ca3af; font-style: italic; padding: 6px 0;
     }
 
+    /* ═══ IDEAS COVERAGE BLOCK — prominent visual feedback for content gate ═══ */
+    .ideas-coverage {
+      margin: 16px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #e5e7eb;
+      background: #fff;
+    }
+    .ideas-coverage.has-missing { border-color: #ef4444; }
+    .ideas-coverage.all-captured { border-color: #16a34a; }
+    .ic-header {
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ideas-coverage.has-missing .ic-header {
+      background: linear-gradient(135deg, #fef2f2, #fee2e2);
+      color: #991b1b;
+    }
+    .ideas-coverage.all-captured .ic-header {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      color: #166534;
+    }
+    .ideas-coverage.partial .ic-header {
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      color: #92400e;
+    }
+    .ideas-coverage.partial { border-color: #f59e0b; }
+    .ic-cap-impact {
+      margin-left: auto;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.6);
+    }
+    .ic-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .ic-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .ic-row.captured { background: #f0fdf4; border-left: 3px solid #16a34a; }
+    .ic-row.missing  { background: #fef2f2; border-left: 3px solid #ef4444; }
+    .ic-row-icon { font-size: 1.05rem; line-height: 1.4; flex-shrink: 0; }
+    .ic-row-text { flex: 1; min-width: 0; }
+    .ic-row-text strong { display: block; margin-bottom: 2px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ic-row.captured .ic-row-text strong { color: #166534; }
+    .ic-row.missing  .ic-row-text strong { color: #991b1b; }
+    .ic-row-text span { color: #374151; }
+    .ic-tip {
+      margin-top: 4px;
+      padding: 10px 12px;
+      background: #fffbeb;
+      border-left: 3px solid #f59e0b;
+      border-radius: 6px;
+      font-size: 0.83rem;
+      color: #78350f;
+      line-height: 1.5;
+    }
+
     /* ═══ SAMPLE ANSWER PANEL ═══════════════════════════════════════════════ */
     .sample-answer {
       margin-top: 14px; padding: 16px 18px;
@@ -1118,6 +1186,9 @@
           </div>
         </div>
 
+        <!-- ═══ IDEAS COVERAGE — prominent missing-ideas block driven by content gate ═══ -->
+        <div class="ideas-coverage" id="ideasCoverage" style="display:none;"></div>
+
         <!-- ═══ FEEDBACK CARD v3 — verdict + strengths + improvements + method coaching ═══ -->
         <div class="feedback-card-v3" id="feedbackCardV3" style="display:none;"></div>
 
@@ -1281,117 +1352,147 @@
 // KEY POINTS REFINED: Each point contains specific matchable terms from the passage
     const BAND9_SAMPLES = {"1": "Climate change threatens a potential 10% reduction in global GDP by 2050, with coastal cities facing damages exceeding $1 trillion; however, developing nations contribute merely 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition demands $4 trillion in annual investment despite solar costs declining 89%.", "2": "AI diagnostic tools have demonstrated 94.7% accuracy in cancer detection compared to 86.3% for human specialists; however, despite 67% of hospitals adopting AI, 23 diagnostic errors raise ethical concerns about patient safety; moreover, the technology could potentially reduce US healthcare expenditure by $150 billion annually.", "3": "73% of knowledge workers now operate remotely part-time, a significant increase from 16% before 2020; however, while productivity rose 13%, collaboration declined 22% and remote workers report 67% higher isolation; moreover, four-day workweek trials indicate 92% of participating companies maintained or improved productivity.", "4": "Standardised test scores have remained stagnant for three decades despite a 287% surge in per-student spending; however, 87% of employers struggle to find candidates with adequate critical thinking abilities; consequently, micro-credentials and bootcamps have expanded by 340% since 2019 as alternatives to traditional education.", "5": "828 million individuals experience hunger nightly, with wheat production declining 23% and corn yields falling 18%; however, one-third of all food produced is wasted, representing $940 billion in annual losses; moreover, lab-grown meat costs have plummeted 99% and aquaculture now supplies 52% of global fish consumption.", "6": "Depression affects 280 million individuals worldwide, with 44% of teenagers reporting persistent sadness or hopelessness; however, two-thirds of those with mental health conditions receive no treatment, costing $1 trillion in lost productivity; moreover, workplace mental health programmes yield $4 for every $1 invested.", "7": "By 2050, 68% of humanity will reside in cities, with 2.5 billion individuals migrating to urban areas; however, traffic congestion costs the US economy $87 billion annually while air pollution claims 4.2 million lives; moreover, smart city technologies like Barcelona's IoT systems have saved $75 million annually.", "8": "Renewable energy capacity expanded by 295 gigawatts in 2022, with solar costs declining 89% since 2010; however, $1.8 trillion invested in clean energy surpassed fossil fuel investment, yet governments allocated $7 trillion to fossil fuel subsidies; moreover, electric vehicles constituted 14% of new car sales, up from 4% in 2020.", "9": "The average individual's data is harvested 747 times daily, with Meta collecting approximately 2,300 data points per user; however, 1,800 breaches exposed 422 million records in 2022 and companies require 277 days to identify breaches; consequently, the EU's GDPR regulation reduced privacy complaints by 18%.", "10": "The global space economy reached $469 billion in 2022, with satellite services generating 77% of revenue; however, SpaceX's reusable rockets reduced launch costs by 80%, though 47,000 debris objects pose growing threats; moreover, private investment of $15.4 billion flowed to space startups while NASA's Artemis programme costs $93 billion.", "11": "Ocean temperatures have risen 0.6 degrees since 1900, with 50% of coral reefs, with 8 million tons of plastic entering annually; however, 34% of fish populations are overfished and 700 dead zones exist globally; moreover, marine reserves demonstrate 400% recovery in fish biomass though only 7.7% of oceans are protected.", "12": "Bitcoin peaked at $69,000 in 2021 before plunging below $16,000, with 52% of cryptocurrency buyers incurring losses; however, mining consumes 127 terawatt-hours annually while DeFi hacks stole $3.8 billion in 2022; consequently, 87 countries are exploring central bank digital currencies and the SEC filed 46 enforcement actions.", "13": "By 2050, the global population aged 60 and above will double to 2.1 billion, with merely 4 workers per retiree compared to 12 in 1950; however, dementia care will cost $2 trillion annually by 2030, and Germany faces a 5 million worker shortfall; moreover, the 60-plus market will control $15 trillion in spending.", "14": "Species are vanishing at 1,000 times the natural rate, with 68% of wildlife populations lost since 1970; however, 75% of ice-free land has been transformed for human utilisation and flying insect populations diminished 76% over 27 years; moreover, protected areas have reduced species decline by 40% and ecological services provide $125 trillion annually.", "15": "2.3 billion individuals reside in water-stressed countries, with two-thirds of the global population facing shortages by 2025; however, agriculture consumes 70% of freshwater withdrawals and 21 of 37 major aquifers are receding; consequently, Australia's water trading programme saved $2 billion during drought while desalination capacity expanded 57%.", "16": "The global gender pay gap stands at 20%, with parity not anticipated until 2158; however, women perform 76% of unpaid care work globally, costing $10.8 trillion in lost economic output; moreover, countries with greater female parliamentary representation invest more in health and education, though women occupy merely 26% of seats.", "17": "Antibiotic-resistant infections claim 1.27 million lives annually, potentially rising to 10 million by 2050; however, 70% of antibiotics sold in the US are administered to livestock, and merely 43 new antibiotics are in development; moreover, phage therapy has demonstrated 92% success in treating drug-resistant infections.", "18": "Supply chain disruptions cost companies an average of $184 million annually, with 94% of Fortune 1000 firms affected during COVID-19; however, 80% of semiconductor manufacturing is concentrated in Asia and inventory levels declined 45%; consequently, AI-powered forecasting has reduced stockouts by 35% and 67% of companies are diversifying sources.", "19": "False news is 70% more likely to be disseminated than accurate stories, with echo chamber users 67% more likely to hold extreme views; however, foreign actors reached 126 million Americans on Facebook in 2016 and platform algorithms shape what 2.9 billion individuals see; moreover, the EU's Digital Services Act imposes new accountability.", "20": "Nuclear energy generates 10% of global electricity with minimal emissions, yet Hinkley Point expenditure tripled to 30 billion pounds; however, Fukushima displaced 154,000 individuals while coal pollution eliminates 200,000 annually, whereas nuclear has caused fewer than 100 fatalities; moreover, public approval has risen from 43% to 59%.", "21": "TQM implementation in educational institutions necessitates integrating continuous improvement with stakeholder-centric service delivery; however, leadership must actively engage in quality audits and faculty require competency-based training with robust assessment mechanisms; consequently, institutions embedding these dimensions bolster competitive positioning and graduate employability.", "22": "Sustainable urban development necessitates balancing economic growth with environmental stewardship and social equity; however, compact city models diminish carbon emissions while green building standards guarantee net-zero energy consumption; moreover, participatory governance cultivates social cohesion and metropolitan regions establish resilient urban ecosystems.", "23": "Healthcare digitisation requires comprehensive reconfiguration of clinical workflows and implementation of interoperable electronic health records; however, clinical staff need continuous digital literacy training for telemedicine and AI diagnostics while maintaining patient privacy; consequently, technological integration enhances diagnostic accuracy and reduces hospital readmission rates.", "24": "Strategic human resource management demands a paradigm shift from administrative personnel functions to talent optimisation and employer branding; however, performance management necessitates continuous feedback loops and 360-degree evaluations alongside diversity protocols; consequently, organisations attain superior employee retention and sustainable profitability.", "25": "Educational curricula reconceptualisation requires deliberate integration of critical thinking, digital fluency, and socio-emotional learning; however, problem-based learning and performance assessments must replace static content mastery and standardised testing paradigms; consequently, cross-curricular integration produces graduates with enhanced employability and entrepreneurial mindsets.", "26": "Resilient supply chains necessitate transitioning from cost-centric efficiency to adaptive systems for withstanding geopolitical disruptions; however, procurement strategists must diminish single-point vulnerabilities through supplier diversification and facilitate proactive disruption detection via blockchain visibility; consequently, collaborative threat-sharing partnerships illustrate superior operational continuity and sustained customer loyalty.", "27": "Rigorous scientific inquiry demands systematic adherence to empirical protocols, with researchers formulating precise questions through extensive literature reviews; however, study designs necessitate control groups and randomised techniques with standardised instruments; consequently, peer review guarantees methodological transparency and investigations produce credible evidence advancing knowledge.", "28": "Comprehensive disaster risk reduction necessitates multi-layered frameworks combining structural and non-structural mitigation approaches; however, hazard mapping with geospatial technologies and seismic-resistant building codes safeguard critical infrastructure; consequently, early warning systems and community education programmes result in diminished mortality and accelerated recovery.", "29": "Understanding human microbiome function necessitates integrated analytical methods combining molecular techniques with clinical monitoring; however, DNA sequencing reveals bacterial diversity while dietary tracking correlates nutrient intake with composition variations; consequently, computational algorithms forecast disease susceptibility and facilitate targeted therapeutic interventions restoring homeostatic balance.", "30": "Transitioning to circular economic models demands comprehensive redesign of production, consumption, and waste systems; however, product modularity facilitates component reuse while industrial symbiosis creates closed-loop material flows; consequently, producer responsibility legislation and consumer education attain decoupled resource consumption from GDP growth while demanding systemic changes.", "31": "The narrator opted for a significant lifestyle change by exchanging a city terrace for a farm cottage, having been reared on a farm; however, he acknowledged the minor disadvantages of country living, including uncertain water supply and absence of central heating; moreover, he persuaded his wife that the windswept cottage on lower income was a worthwhile decision.", "32": "Stockbrokers from Jonathan's Coffee House in 1698 established what would become London's mighty financial capital; however, progress was not entirely smooth, with the South Sea Bubble bursting in 1720, yet 325,000 workers now manage more funds than New York rivals; moreover, London holds 70% of the global bond market despite being among the most expensive cities.", "33": "The Nobel Peace Prize justly rewards IPCC scientists for careful climate research, while Al Gore focuses on alarming predictions; however, Gore predicted five-metre sea-level rises whereas the IPCC concludes only twelve to fifty centimetres, and Greenland melting adds merely eight centimetres; moreover, by 2050 rising temperatures will actually save 1.4 million net lives.", "34": "Travel and tourism generates a substantial percentage of GDP and enormous employment worldwide, with continued growth anticipated; however, tourism jobs employ women, minority groups, and young people while acting as a catalyst for environmental conservation and cultural preservation; moreover, tourism possesses a comparative advantage through low start-up and running costs.", "35": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has fundamentally altered how people think and live; however, the Web has transformed shopping, communication, and music while granting individuals the same access to information as the elite; moreover, the Oxford computer scientist created it from frustration with finding scattered information.", "36": "Economic forecasting, though a key function for corporate economists drawing upon statistical data, remains a long way from a precise science; however, assumptions about how economies function vary enormously, with two economists potentially receiving Nobel Prizes for contradictory views; consequently, forecasting records are poor for volatile statistics like interest rates."};
 
-    const passages = [
-  {
-    id: 1, title: "Climate Change Economics", category: "Environment/Economics",
-    text: `Have you ever wondered what the true economic cost of climate change really is? "We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act," warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. "The question is not whether we can afford to address climate change," Chen emphasizes, "but whether we can afford not to?" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. "Every degree of warming matters," states the report. "At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%." The insurance industry reports that climate-related claims have surged by 340% in the past decade. "Is this sustainable?" asks Michael Torres, CEO of Global Insurance Partners. "Absolutely not." Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. "Where is the justice in that?" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. "We have seen solar costs drop by 89% and wind by 70% since 2010," reports the International Energy Agency. "Can we scale fast enough?" The answer, according to their models, requires $4 trillion in annual investment. "Is that a lot?" asks Chen. "It's less than 5% of global military spending."`,
-    keyElements: {
-      topic: "Climate change could cause 10% loss of global GDP by 2050 with coastal cities facing $1 trillion damages",
-      pivot: "Developing nations contribute less than 10% of emissions but bear 75% of the costs",
-      conclusion: "Renewable energy transition offers hope with solar costs dropping 89% but requires $4 trillion annual investment"
-    },
-    sampleResponse: "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
-    sampleNotes: "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words."
-  },
-  {
-    id: 2, title: "Artificial Intelligence in Healthcare", category: "Technology/Health",
-    text: `"AI will transform medicine more dramatically than any technology since the discovery of antibiotics," declares Dr. James Whitmore, Chief of Medical Innovation at Johns Hopkins. But what does the data actually show? A comprehensive study of 2.3 million patient records reveals that AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers, compared to 86.3% for human specialists alone. "The question is not whether AI is better," Whitmore clarifies, "but how we combine human judgment with machine precision?" The implementation has been rapid: 67% of major hospitals now use AI for radiology, and surgical robots assisted in over 1.2 million procedures last year. "Are we moving too fast?" asks Dr. Elena Vasquez, medical ethicist. "We've seen 23 documented cases of AI-related diagnostic errors in the past year alone." The economic implications are staggering. "AI could reduce healthcare costs by $150 billion annually in the US alone," reports the Healthcare Economics Institute. But who benefits? "Hospitals save money, but are patients seeing lower bills?" questions Senator Maria Gonzalez. Workforce disruption is another concern. "Will radiologists become obsolete?" asks Dr. Whitmore. "Not if they adapt. AI handles routine cases; humans focus on complex ones." The technology also raises profound questions about privacy. "We're feeding millions of patient records into algorithms," warns privacy advocate Thomas Reid. "Who owns that data? Who controls it?" Despite concerns, patient acceptance is growing: 58% now trust AI-assisted diagnoses, up from just 23% five years ago.`,
-    keyElements: {
-      topic: "AI diagnostic tools achieved 94.7% accuracy in detecting cancers compared to 86.3% for human specialists",
-      pivot: "67% of hospitals use AI but 23 diagnostic errors documented and privacy concerns about patient records",
-      conclusion: "AI could reduce healthcare costs by $150 billion annually and 58% of patients now trust AI diagnoses"
-    },
-    sampleResponse: "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
-    sampleNotes: "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words."
-  },
-  {
-    id: 3, title: "Sustainable Urban Development Strategies", category: "Urban Planning/Sustainability",
-    text: "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
-    keyElements: {
-      topic: "Sustainable urban development requires reconciling economic growth with environmental stewardship and social equity",
-      pivot: "Compact city models reduce carbon emissions and green building standards ensure net-zero energy consumption",
-      conclusion: "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems"
-    },
-    sampleResponse: "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
-    sampleNotes: "Verbatim Method — passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words."
-  },
-  {
-    id: 4, title: "Scientific Research Protocol", category: "Research Methods",
-    text: "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid, reliable outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions addressing specific knowledge gaps identified through comprehensive literature reviews. Secondly, study designs require appropriate control groups and randomization techniques to minimize confounding variables. Thirdly, data collection protocols necessitate standardized measurement instruments with established validity and inter-rater reliability checks. Fourthly, statistical analyses should employ suitable significance testing alongside effect size calculations rather than relying solely on p-values. Fifthly, peer review processes ensure methodological transparency and identification of potential bias sources before publication. Sixthly, knowledge translation strategies facilitate practical application of findings in clinical or policy contexts. Consequently, investigations adhering to these methodological standards yield credible evidence that advances disciplinary knowledge.",
-    keyElements: {
-      topic: "Scientific inquiry demands systematic empirical protocols with precise research questions and literature reviews",
-      pivot: "Control groups and randomization minimize confounding variables with standardized instruments for reliability",
-      conclusion: "Peer review ensures methodological transparency and investigations yield credible evidence advancing knowledge"
-    },
-    sampleResponse: "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
-    sampleNotes: "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
-  },
-  {
-    id: 5, title: "Farm Cottage", category: "Lifestyle/Personal Narrative",
-    text: "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
-    keyElements: {
-      topic: "The author made a lifestyle choice to exchange a city terrace for a farm cottage having been reared on a farm",
-      pivot: "He was familiar with minor disadvantages of country living like uncertain water supply and lack of central heating",
-      conclusion: "He persuaded his wife that exchanging a warm town house for a windswept farm cottage on lower income was a good idea"
-    },
-    sampleResponse: "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
-    sampleNotes: "Real Pearson-scored Band 90 sample. Paraphrased Method — 5+ swaps (choice→decision, familiar→aware, disadvantages→downsides, advantages→benefits, persuade→convince) + 3 connectors. 74 words."
-  },
-  {
-    id: 6, title: "London Financial Hub", category: "Economics/History",
-    text: "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
-    keyElements: {
-      topic: "Stockbrokers from Jonathan's Coffee House in 1698 founded London as the world's mighty money capital",
-      pivot: "Progress was not smooth with the South Sea Bubble in 1720 but 325000 workers now overtake New York in funds managed",
-      conclusion: "London holds 70% of the global bond market but remains one of the most expensive cities with strained transport"
-    },
-    sampleResponse: "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
-    sampleNotes: "Real Pearson-scored Band 90 sample. Verbatim Method — mostly lifted lines (entirely→completely, UK→United Kingdom only) but glued by 3 connectors. 70 words."
-  },
-  {
-    id: 7, title: "Nobel Prize and Climate Science", category: "Science/Politics",
-    text: "This year's Nobel peace prize justly rewards the thousands of scientists of the United Nations climate change panel (the IPCC). These scientists are engaged in excellent, painstaking work that establishes exactly what the world should expect from climate change. The other award winner, former US vice-president Al Gore, has spent much more time telling us what to fear, while the IPCC's estimates and conclusions are grounded in careful study. Gore told the world in his Academy Award-winning movie to expect five-metre sea-level rises over this century. But his Nobel co-winners, the IPCC, conclude that sea levels will rise between only twelve and fifty centimetres over this century, with their best expectation being about twenty-five centimetres. Likewise, Gore agonises over the accelerated melting of ice in Greenland, but overlooks the IPCC's conclusion that the current rate of melting would add just eight centimetres to the sea level rise by the end of the century. Gore also frets over a predicted rise in heat-related deaths, without mentioning that rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat. The best study shows that by 2050, heat will claim 400,000 more lives, but 1.8 million fewer will die because of cold. Indeed, global warming will actually save lives.",
-    keyElements: {
-      topic: "Nobel peace prize rewards IPCC scientists for careful climate study while Al Gore focuses on fear",
-      pivot: "Gore predicts five-metre sea-level rises but IPCC concludes only twelve to fifty centimetres with Greenland adding eight centimetres",
-      conclusion: "By 2050 heat claims 400000 more lives but 1.8 million fewer die from cold so global warming actually saves lives"
-    },
-    sampleResponse: "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
-    sampleNotes: "Hybrid — captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words."
-  },
-  {
-    id: 8, title: "Travel and Tourism Economic Impact", category: "Economics/Tourism",
-    text: "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
-    keyElements: {
-      topic: "Travel and tourism generates a large percentage of GDP and huge number of jobs in the worldwide economy",
-      pivot: "Tourism jobs employ women minority groups and young people and acts as catalyst for conservation and culture",
-      conclusion: "Tourism has comparative advantage with low start-up and running costs compared to other industries"
-    },
-    sampleResponse: "Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.",
-    sampleNotes: "Paraphrased Method — large→significant, huge→substantial. 3 connectors. ~64 words."
-  },
-  {
-    id: 9, title: "Sir Tim Berners-Lee and the World Wide Web", category: "Technology/History",
-    text: "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
-    keyElements: {
-      topic: "Sir Tim Berners-Lee invented the World Wide Web and changed how people think and live",
-      pivot: "The Web transformed shopping music and communication giving individuals same access to information as the elite",
-      conclusion: "The Oxford computer scientist invented the Web because he was frustrated finding information in one place"
-    },
-    sampleResponse: "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
-    sampleNotes: "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
-  },
-  {
-    id: 10, title: "Economic Forecasting Limitations", category: "Economics/Business",
-    text: "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
-    keyElements: {
-      topic: "Economic forecasting draws on statistical data but is a long way from a precise science",
-      pivot: "Assumptions vary widely and two economists can get a Nobel Prize for saying exactly the opposite thing",
-      conclusion: "Forecasting record is poor for volatile statistics like interest rates but better for stable ones like government spending"
-    },
-    sampleResponse: "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
-    sampleNotes: "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words."
-  }
+    let passages = [
+      {
+            "id": 1,
+            "title": "Climate Change Economics",
+            "category": "Environment/Economics",
+            "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+            "keyElements": {
+                  "what": "Climate change could cause a 10% loss of global GDP by 2050",
+                  "why": "Coastal cities face $1 trillion in annual damages and developing nations bear 75% of costs despite contributing less than 10% of emissions",
+                  "how": "The renewable energy transition offers hope as solar costs have dropped 89% and wind 70% since 2010",
+                  "result": "Scaling the transition requires $4 trillion in annual investment, less than 5% of global military spending"
+            },
+            "sampleResponse": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
+            "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words."
+      },
+      {
+            "id": 2,
+            "title": "Artificial Intelligence in Healthcare",
+            "category": "Technology/Health",
+            "text": "\"AI will transform medicine more dramatically than any technology since the discovery of antibiotics,\" declares Dr. James Whitmore, Chief of Medical Innovation at Johns Hopkins. But what does the data actually show? A comprehensive study of 2.3 million patient records reveals that AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers, compared to 86.3% for human specialists alone. \"The question is not whether AI is better,\" Whitmore clarifies, \"but how we combine human judgment with machine precision?\" The implementation has been rapid: 67% of major hospitals now use AI for radiology, and surgical robots assisted in over 1.2 million procedures last year. \"Are we moving too fast?\" asks Dr. Elena Vasquez, medical ethicist. \"We've seen 23 documented cases of AI-related diagnostic errors in the past year alone.\" The economic implications are staggering. \"AI could reduce healthcare costs by $150 billion annually in the US alone,\" reports the Healthcare Economics Institute. But who benefits? \"Hospitals save money, but are patients seeing lower bills?\" questions Senator Maria Gonzalez. Workforce disruption is another concern. \"Will radiologists become obsolete?\" asks Dr. Whitmore. \"Not if they adapt. AI handles routine cases; humans focus on complex ones.\" The technology also raises profound questions about privacy. \"We're feeding millions of patient records into algorithms,\" warns privacy advocate Thomas Reid. \"Who owns that data? Who controls it?\" Despite concerns, patient acceptance is growing: 58% now trust AI-assisted diagnoses, up from just 23% five years ago.",
+            "keyElements": {
+                  "what": "AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists",
+                  "why": "67% of major hospitals now use AI for radiology but 23 diagnostic errors were documented in the past year",
+                  "how": "AI could reduce US healthcare costs by $150 billion annually with humans focusing on complex cases while AI handles routine ones",
+                  "result": "Patient acceptance has grown to 58% trusting AI-assisted diagnoses, up from 23% five years ago"
+            },
+            "sampleResponse": "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
+            "sampleNotes": "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words."
+      },
+      {
+            "id": 3,
+            "title": "Sustainable Urban Development Strategies",
+            "category": "Urban Planning/Sustainability",
+            "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
+            "keyElements": {
+                  "what": "Sustainable urban development requires an integrated planning approach reconciling economic growth with environmental stewardship and social equity",
+                  "why": "Compact city models with mixed-use zoning and high-density configurations reduce carbon emissions from commuter traffic and urban sprawl",
+                  "how": "Infrastructure investments must prioritize green building standards and renewable energy grids meeting net-zero energy consumption benchmarks",
+                  "result": "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems adapting to climate variability"
+            },
+            "sampleResponse": "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
+            "sampleNotes": "Verbatim Method — passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words."
+      },
+      {
+            "id": 4,
+            "title": "Scientific Research Protocol",
+            "category": "Research Methods",
+            "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions grounded in comprehensive literature reviews, identifying gaps in existing knowledge frameworks and articulating testable hypotheses with operationalizable variables. Secondly, study designs must incorporate appropriate control groups, randomization techniques, and statistical power calculations to minimize confounding variables and selection biases that could compromise internal validity. Furthermore, data collection procedures should employ standardized instruments with established psychometric properties, ensuring inter-rater reliability and construct validity across diverse populations and contexts (Cronbach, 1951). Consequently, peer review processes—whether double-blind or open—serve as critical mechanisms for methodological transparency, enabling the identification of analytical errors, replication of findings, and progressive refinement of theoretical frameworks. Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice in applied domains.",
+            "keyElements": {
+                  "what": "Rigorous scientific inquiry demands systematic empirical protocols ensuring validity, reliability and reproducibility",
+                  "why": "Researchers must formulate precise questions through literature reviews and articulate testable hypotheses with operationalizable variables",
+                  "how": "Study designs require control groups, randomization and standardized instruments to minimize confounding variables and biases",
+                  "result": "Peer review enables methodological transparency and replication so investigations yield credible evidence advancing knowledge"
+            },
+            "sampleResponse": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
+            "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
+      },
+      {
+            "id": 5,
+            "title": "Farm Cottage",
+            "category": "Lifestyle/Personal Narrative",
+            "text": "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
+            "keyElements": {
+                  "what": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, having been born and reared on a farm",
+                  "why": "He was familiar with the minor disadvantages of country living such as uncertain water supply and lack of central heating",
+                  "how": "He listed the many advantages of the farm cottage to his town-born wife who was eight months pregnant",
+                  "result": "He persuaded his wife that exchanging a warm large town house for a windswept farm cottage on a much lower income was a good idea"
+            },
+            "sampleResponse": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
+            "sampleNotes": "Real Pearson-scored Band 90 sample. Paraphrased Method — 5+ swaps (choice→decision, familiar→aware, disadvantages→downsides, advantages→benefits, persuade→convince) + 3 connectors. 74 words."
+      },
+      {
+            "id": 6,
+            "title": "London Financial Hub",
+            "category": "Economics/History",
+            "text": "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
+            "keyElements": {
+                  "what": "The little band of stockbrokers from Jonathan's Coffee House in 1698 became the founder-members of the world's mighty money capital",
+                  "why": "Progress was not smooth — the South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748",
+                  "how": "The UK's financial hub has now overtaken its New York rivals in funds managed and holds 70% of the global secondary bond market",
+                  "result": "London remains the place to be for foreigners in finance despite being one of the most expensive cities with transport systems groaning under pressure"
+            },
+            "sampleResponse": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
+            "sampleNotes": "Real Pearson-scored Band 90 sample. Verbatim Method — mostly lifted lines (entirely→completely, UK→United Kingdom only) but glued by 3 connectors. 70 words."
+      },
+      {
+            "id": 7,
+            "title": "Nobel Prize and Climate Science",
+            "category": "Science/Politics",
+            "text": "This year's Nobel peace prize justly rewards the thousands of scientists of the United Nations climate change panel (the IPCC). These scientists are engaged in excellent, painstaking work that establishes exactly what the world should expect from climate change. The other award winner, former US vice-president Al Gore, has spent much more time telling us what to fear, while the IPCC's estimates and conclusions are grounded in careful study. Gore told the world in his Academy Award-winning movie to expect five-metre sea-level rises over this century. But his Nobel co-winners, the IPCC, conclude that sea levels will rise between only twelve and fifty centimetres over this century, with their best expectation being about twenty-five centimetres. Likewise, Gore agonises over the accelerated melting of ice in Greenland, but overlooks the IPCC's conclusion that the current rate of melting would add just eight centimetres to the sea level rise by the end of the century. Gore also frets over a predicted rise in heat-related deaths, without mentioning that rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat. The best study shows that by 2050, heat will claim 400,000 more lives, but 1.8 million fewer will die because of cold. Indeed, global warming will actually save lives.",
+            "keyElements": {
+                  "what": "The Nobel peace prize rewards IPCC scientists for painstaking climate study while Al Gore focuses on telling people what to fear",
+                  "why": "Gore predicts five-metre sea-level rises but the IPCC concludes sea levels will rise only twelve to fifty centimetres this century",
+                  "how": "The IPCC also concludes Greenland's current rate of melting would add just eight centimetres to sea level rise by century's end",
+                  "result": "By 2050 heat will claim 400,000 more lives but 1.8 million fewer will die from cold, so global warming actually saves lives"
+            },
+            "sampleResponse": "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
+            "sampleNotes": "Hybrid — captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words."
+      },
+      {
+            "id": 8,
+            "title": "Travel and Tourism Economic Impact",
+            "category": "Economics/Tourism",
+            "text": "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
+            "keyElements": {
+                  "what": "Travel and tourism generates a large percentage of GDP and a huge number of jobs in the world-wide economy",
+                  "why": "Jobs are spread across the economy and employ a large proportion of women, minority groups and young people while offering good training and transferability",
+                  "how": "Tourism acts as a catalyst for conservation, environmental improvement and the maintenance of local diversity and culture",
+                  "result": "Tourism has a comparative advantage with low start-up and running costs compared to other forms of industry development"
+            },
+            "sampleResponse": "Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.",
+            "sampleNotes": "Paraphrased Method — large→significant, huge→substantial. 3 connectors. ~64 words."
+      },
+      {
+            "id": 9,
+            "title": "Sir Tim Berners-Lee and the World Wide Web",
+            "category": "Technology/History",
+            "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+            "keyElements": {
+                  "what": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone else in the past hundred years",
+                  "why": "Like Galileo and Newton, he is a scientist who has altered the way people think as well as the way they live",
+                  "how": "Since the Web went global 20 years ago, shopping, music and communication have been transformed and individuals now have the same access to information as the elite",
+                  "result": "The Oxford computer scientist invented the Web because he was frustrated that he could not find all the information he wanted in one place"
+            },
+            "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
+            "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
+      },
+      {
+            "id": 10,
+            "title": "Economic Forecasting Limitations",
+            "category": "Economics/Business",
+            "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
+            "keyElements": {
+                  "what": "For economists in the corporate sector, forecasting is a key function drawing on a wide range of statistical data",
+                  "why": "Economic forecasting is a long way from a precise science because forecasters' assumptions about how an economy works can vary widely",
+                  "how": "Differences in beliefs are so enormous that two economists can get a Nobel Prize for saying exactly the opposite thing",
+                  "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
+            },
+            "sampleResponse": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
+            "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words."
+      }
 ];
     let currentId = 1, easyMode = false, attempted = new Set();
     let currentAbortController = null, currentUserId = '';
@@ -1515,7 +1616,42 @@
     async function submitLogin(){const u=document.getElementById('loginUsername').value.trim(),pw=document.getElementById('loginPassword').value,btn=document.getElementById('loginBtn');if(!u){showLoginError('Enter username.');return;}if(!pw){showLoginError('Enter password.');return;}btn.disabled=true;try{if(loginMode==='register'){if(await userExists(u)){showLoginError('Username taken.');return;}if(pw.length<4){showLoginError('Min 4 chars.');return;}const sq=document.getElementById('loginSecretQ').value,sa=document.getElementById('loginSecretA').value.trim();if(!sq){showLoginError('Choose a question.');return;}if(!sa){showLoginError('Enter answer.');return;}const ok=await registerUser(u,pw,sq,sa);if(ok)await loginAs(u);}else{if(!await userExists(u)){showLoginError('Username not found.');return;}const result=await verifyPassword(u,pw);if(result==='blocked')return;if(!result){showLoginError('Wrong password.');return;}await loginAs(u);}}finally{btn.disabled=false;}}
     async function loginAs(u){currentUserId=u;STORAGE_KEYS=getUserKeys(u);LocalStore.setUserId(u);attempted=new Set();updateUserDisplay();document.getElementById('loginScreen').classList.add('hidden');document.getElementById('results').classList.remove('show');document.getElementById('summaryInput').value='';updateWordCount();loadStoredData();loadPassage(1);renderDots();updateDots();checkAIStatus();updateStats();await pullFromServer();}
 
-    document.addEventListener('DOMContentLoaded', () => { document.getElementById('totalNum').textContent=passages.length; document.getElementById('totalProgress').textContent=passages.length; const last=LocalStore.getUserId(); if(last){document.getElementById('loginUsername').value=last;onUsernameInput();document.getElementById('loginPassword').focus();} });
+    // ── Server-managed passages (admin-editable) ───────────────────────────
+    // The hardcoded `passages` array above is a fallback for offline use.
+    // On page load we try to pull the latest version from the server, which
+    // is the source of truth (admin can edit via /admin.html).
+    async function loadPassagesFromServer() {
+      try {
+        const r = await fetch(API_URL + '/api/passages', { cache: 'no-store' });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json();
+        if (Array.isArray(d.passages) && d.passages.length > 0) {
+          passages = d.passages;
+          document.getElementById('totalNum').textContent = passages.length;
+          document.getElementById('totalProgress').textContent = passages.length;
+          // If a passage is currently loaded, refresh its display in case it was edited.
+          if (typeof currentId !== 'undefined' && currentId) {
+            try { loadPassage(currentId); } catch (_) {}
+          }
+          try { renderDots(); updateDots(); } catch (_) {}
+        }
+      } catch (e) {
+        console.warn('Could not load passages from server, using bundled fallback:', e.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalNum').textContent = passages.length;
+      document.getElementById('totalProgress').textContent = passages.length;
+      // Pull latest passages from the server in the background — non-blocking.
+      loadPassagesFromServer();
+      const last = LocalStore.getUserId();
+      if (last) {
+        document.getElementById('loginUsername').value = last;
+        onUsernameInput();
+        document.getElementById('loginPassword').focus();
+      }
+    });
 
     function updateUserDisplay(){const d=document.getElementById('userIdDisplay');if(currentUserId){d.textContent='👤 '+escapeHtml(currentUserId);d.style.display='block';}else{d.style.display='none';}}
     function loadStoredData(){const s=LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[];s.forEach(id=>attempted.add(id));const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};Object.keys(h).forEach(id=>{if(h[id]&&h[id].length>0)attempted.add(parseInt(id));});document.getElementById('completedCount').textContent=attempted.size;}
@@ -1782,6 +1918,101 @@
       showToast(`✓ Swapped "${original}" → "${replacement}"`);
     }
 
+    // ── IDEAS COVERAGE — prominent visual block for the content gate ──
+    // Shows captured vs missing key ideas with an explicit cap-impact label so
+    // students immediately see WHY their score dropped. Driven by the strict
+    // content gate (v19.1+): 0 missing → green, 1 missing → amber, 2+ → red.
+    function renderIdeasCoverage(data, passage) {
+      const el = document.getElementById('ideasCoverage');
+      if (!el) return;
+      // Skip entirely on form fail — there's nothing meaningful to show.
+      if (data.form_gate_triggered) { el.style.display = 'none'; return; }
+
+      const cd = data.content_details || {};
+      const captured = Array.isArray(cd.key_ideas_present) ? cd.key_ideas_present : [];
+      const missing  = Array.isArray(cd.key_ideas_missing) ? cd.key_ideas_missing : [];
+      const contentScore = (data.trait_scores && typeof data.trait_scores.content === 'number') ? data.trait_scores.content : null;
+
+      // If the server gave us nothing to display, hide.
+      if (captured.length === 0 && missing.length === 0) { el.style.display = 'none'; return; }
+
+      // Pull friendly text from the passage's keyElements so labels like "topic" or
+      // "what" are replaced with the actual idea content. Fall back to the label.
+      const keyEls = (passage && passage.keyElements) || {};
+      const labelMap = {
+        what: 'WHAT (topic)', why: 'WHY (reason)', how: 'HOW (mechanism)', result: 'RESULT (outcome)',
+        topic: 'TOPIC', pivot: 'PIVOT', conclusion: 'CONCLUSION'
+      };
+      const friendly = (id) => {
+        const lbl = labelMap[id] || id.toUpperCase();
+        const txt = keyEls[id] ? keyEls[id].replace(/<[^>]+>/g, '') : '';
+        return { label: lbl, text: txt };
+      };
+
+      // Tier styling
+      let tierCls, headerIcon, headerText, capImpact;
+      if (missing.length === 0 && captured.length > 0) {
+        tierCls = 'all-captured';
+        headerIcon = '🎯';
+        headerText = 'All main ideas captured';
+        capImpact = 'No content cap';
+      } else if (missing.length === 1) {
+        tierCls = 'partial';
+        headerIcon = '⚠️';
+        headerText = `1 main idea missing`;
+        capImpact = 'Score capped at PTE ~50';
+      } else {
+        tierCls = 'has-missing';
+        headerIcon = '🚨';
+        headerText = `${missing.length} main ideas missing`;
+        capImpact = 'Score capped at PTE ~15';
+      }
+
+      const capturedRows = captured.map(id => {
+        const f = friendly(id);
+        return `<div class="ic-row captured">
+          <div class="ic-row-icon">✅</div>
+          <div class="ic-row-text">
+            <strong>${escapeHtml(f.label)}</strong>
+            <span>${escapeHtml(f.text || 'Captured')}</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      const missingRows = missing.map(id => {
+        const f = friendly(id);
+        return `<div class="ic-row missing">
+          <div class="ic-row-icon">❌</div>
+          <div class="ic-row-text">
+            <strong>${escapeHtml(f.label)} — missing</strong>
+            <span>${escapeHtml(f.text || 'This main idea was not conveyed in your summary.')}</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Tip block — actionable, only when there is something to fix.
+      let tipHtml = '';
+      if (missing.length > 0) {
+        tipHtml = `<div class="ic-tip">
+          <strong>How to fix:</strong> Re-read the passage and ensure every WHAT/WHY/HOW/RESULT idea is present in your one sentence. Missing or fabricated ideas drop the score regardless of how good the grammar and vocabulary are.
+        </div>`;
+      }
+
+      el.className = 'ideas-coverage ' + tierCls;
+      el.style.display = 'block';
+      el.innerHTML = `
+        <div class="ic-header">
+          <span>${headerIcon}</span>
+          <span>${escapeHtml(headerText)}</span>
+          <span class="ic-cap-impact">${escapeHtml(capImpact)}</span>
+        </div>
+        <div class="ic-body">
+          ${capturedRows}
+          ${missingRows}
+          ${tipHtml}
+        </div>`;
+    }
+
     function renderFeedbackCard(card, fallbackText, fullData) {
       const el = document.getElementById('feedbackCardV3');
       if (!el) return;
@@ -1876,9 +2107,11 @@
         let nextStep = '';
         if (!hasConnector) {
           nextStep = 'Add a connector (; however, ; moreover, ; therefore,) to chain your clauses.';
-        } else if (swapCredit < 4) {
-          const need = 4 - swapCredit;
-          nextStep = `Swap ${need} more common word${need > 1 ? 's' : ''} for academic synonyms — Reading ${r} → likely 90.`;
+        } else if (swapCredit < 2) {
+          const need = 2 - swapCredit;
+          nextStep = `Swap ${need} more common word${need > 1 ? 's' : ''} for academic synonyms (target: 2–3) — Reading ${r} → likely 90.`;
+        } else if (swapCredit === 2) {
+          nextStep = `One more academic swap (target 3) and Reading ${r} pushes toward 90.`;
         }
         if (nextStep) {
           hintHtml = `<div class="fc-score-hint"><strong>Next step:</strong> ${escapeHtml(nextStep)}</div>`;
@@ -1911,14 +2144,15 @@
       document.getElementById('rawDisplay').textContent = 'Raw: ' + (rawScore.toFixed ? rawScore.toFixed(1) : rawScore) + '/7';
       // Mode + method badge
       const methodLabel = ({
-        paraphrased: '🎯 Paraphrased Method',
-        verbatim:    '📋 Verbatim Method',
-        verbatim_weak: '⚠️ Verbatim (no connectors)',
-        hybrid:      '🔀 Hybrid',
-        invalid:     '❌ Form Invalid'
+        paraphrased:    '🎯 Paraphrased Method',
+        verbatim:       '📋 Verbatim Method',
+        phrase_picking: '🧩 Phrase-Picking Method',
+        verbatim_weak:  '⚠️ Verbatim (no connectors)',
+        hybrid:         '🔀 Hybrid',
+        invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.3 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
@@ -1931,6 +2165,9 @@
       } else {
         document.getElementById('skillContributions').style.display = 'none';
       }
+
+      // ── IDEAS COVERAGE — show captured/missing ideas explicitly above the feedback card ──
+      renderIdeasCoverage(data, passage);
 
       // ── FEEDBACK CARD v3 ── verdict, strengths, improvements, method coaching ──
       renderFeedbackCard(data.feedback_card, data.feedback, data);

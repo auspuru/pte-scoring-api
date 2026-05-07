@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "title": "Climate Change Economics",
+    "category": "Environment/Economics",
+    "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+    "keyElements": {
+      "what": "Climate change could cause a 10% loss of global GDP by 2050",
+      "why": "Coastal cities face $1 trillion in annual damages and developing nations bear 75% of costs despite contributing less than 10% of emissions",
+      "how": "The renewable energy transition offers hope as solar costs have dropped 89% and wind 70% since 2010",
+      "result": "Scaling the transition requires $4 trillion in annual investment, less than 5% of global military spending"
+    },
+    "sampleResponse": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
+    "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words."
+  },
+  {
+    "id": 2,
+    "title": "Artificial Intelligence in Healthcare",
+    "category": "Technology/Health",
+    "text": "\"AI will transform medicine more dramatically than any technology since the discovery of antibiotics,\" declares Dr. James Whitmore, Chief of Medical Innovation at Johns Hopkins. But what does the data actually show? A comprehensive study of 2.3 million patient records reveals that AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers, compared to 86.3% for human specialists alone. \"The question is not whether AI is better,\" Whitmore clarifies, \"but how we combine human judgment with machine precision?\" The implementation has been rapid: 67% of major hospitals now use AI for radiology, and surgical robots assisted in over 1.2 million procedures last year. \"Are we moving too fast?\" asks Dr. Elena Vasquez, medical ethicist. \"We've seen 23 documented cases of AI-related diagnostic errors in the past year alone.\" The economic implications are staggering. \"AI could reduce healthcare costs by $150 billion annually in the US alone,\" reports the Healthcare Economics Institute. But who benefits? \"Hospitals save money, but are patients seeing lower bills?\" questions Senator Maria Gonzalez. Workforce disruption is another concern. \"Will radiologists become obsolete?\" asks Dr. Whitmore. \"Not if they adapt. AI handles routine cases; humans focus on complex ones.\" The technology also raises profound questions about privacy. \"We're feeding millions of patient records into algorithms,\" warns privacy advocate Thomas Reid. \"Who owns that data? Who controls it?\" Despite concerns, patient acceptance is growing: 58% now trust AI-assisted diagnoses, up from just 23% five years ago.",
+    "keyElements": {
+      "what": "AI diagnostic tools achieved 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists",
+      "why": "67% of major hospitals now use AI for radiology but 23 diagnostic errors were documented in the past year",
+      "how": "AI could reduce US healthcare costs by $150 billion annually with humans focusing on complex cases while AI handles routine ones",
+      "result": "Patient acceptance has grown to 58% trusting AI-assisted diagnoses, up from 23% five years ago"
+    },
+    "sampleResponse": "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
+    "sampleNotes": "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words."
+  },
+  {
+    "id": 3,
+    "title": "Sustainable Urban Development Strategies",
+    "category": "Urban Planning/Sustainability",
+    "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
+    "keyElements": {
+      "what": "Sustainable urban development requires an integrated planning approach reconciling economic growth with environmental stewardship and social equity",
+      "why": "Compact city models with mixed-use zoning and high-density configurations reduce carbon emissions from commuter traffic and urban sprawl",
+      "how": "Infrastructure investments must prioritize green building standards and renewable energy grids meeting net-zero energy consumption benchmarks",
+      "result": "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems adapting to climate variability"
+    },
+    "sampleResponse": "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
+    "sampleNotes": "Verbatim Method — passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words."
+  },
+  {
+    "id": 4,
+    "title": "Scientific Research Protocol",
+    "category": "Research Methods",
+    "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions grounded in comprehensive literature reviews, identifying gaps in existing knowledge frameworks and articulating testable hypotheses with operationalizable variables. Secondly, study designs must incorporate appropriate control groups, randomization techniques, and statistical power calculations to minimize confounding variables and selection biases that could compromise internal validity. Furthermore, data collection procedures should employ standardized instruments with established psychometric properties, ensuring inter-rater reliability and construct validity across diverse populations and contexts (Cronbach, 1951). Consequently, peer review processes—whether double-blind or open—serve as critical mechanisms for methodological transparency, enabling the identification of analytical errors, replication of findings, and progressive refinement of theoretical frameworks. Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice in applied domains.",
+    "keyElements": {
+      "what": "Rigorous scientific inquiry demands systematic empirical protocols ensuring validity, reliability and reproducibility",
+      "why": "Researchers must formulate precise questions through literature reviews and articulate testable hypotheses with operationalizable variables",
+      "how": "Study designs require control groups, randomization and standardized instruments to minimize confounding variables and biases",
+      "result": "Peer review enables methodological transparency and replication so investigations yield credible evidence advancing knowledge"
+    },
+    "sampleResponse": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
+    "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
+  },
+  {
+    "id": 5,
+    "title": "Farm Cottage",
+    "category": "Lifestyle/Personal Narrative",
+    "text": "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
+    "keyElements": {
+      "what": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, having been born and reared on a farm",
+      "why": "He was familiar with the minor disadvantages of country living such as uncertain water supply and lack of central heating",
+      "how": "He listed the many advantages of the farm cottage to his town-born wife who was eight months pregnant",
+      "result": "He persuaded his wife that exchanging a warm large town house for a windswept farm cottage on a much lower income was a good idea"
+    },
+    "sampleResponse": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
+    "sampleNotes": "Real Pearson-scored Band 90 sample. Paraphrased Method — 5+ swaps (choice→decision, familiar→aware, disadvantages→downsides, advantages→benefits, persuade→convince) + 3 connectors. 74 words."
+  },
+  {
+    "id": 6,
+    "title": "London Financial Hub",
+    "category": "Economics/History",
+    "text": "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
+    "keyElements": {
+      "what": "The little band of stockbrokers from Jonathan's Coffee House in 1698 became the founder-members of the world's mighty money capital",
+      "why": "Progress was not smooth — the South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748",
+      "how": "The UK's financial hub has now overtaken its New York rivals in funds managed and holds 70% of the global secondary bond market",
+      "result": "London remains the place to be for foreigners in finance despite being one of the most expensive cities with transport systems groaning under pressure"
+    },
+    "sampleResponse": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
+    "sampleNotes": "Real Pearson-scored Band 90 sample. Verbatim Method — mostly lifted lines (entirely→completely, UK→United Kingdom only) but glued by 3 connectors. 70 words."
+  },
+  {
+    "id": 7,
+    "title": "Nobel Prize and Climate Science",
+    "category": "Science/Politics",
+    "text": "This year's Nobel peace prize justly rewards the thousands of scientists of the United Nations climate change panel (the IPCC). These scientists are engaged in excellent, painstaking work that establishes exactly what the world should expect from climate change. The other award winner, former US vice-president Al Gore, has spent much more time telling us what to fear, while the IPCC's estimates and conclusions are grounded in careful study. Gore told the world in his Academy Award-winning movie to expect five-metre sea-level rises over this century. But his Nobel co-winners, the IPCC, conclude that sea levels will rise between only twelve and fifty centimetres over this century, with their best expectation being about twenty-five centimetres. Likewise, Gore agonises over the accelerated melting of ice in Greenland, but overlooks the IPCC's conclusion that the current rate of melting would add just eight centimetres to the sea level rise by the end of the century. Gore also frets over a predicted rise in heat-related deaths, without mentioning that rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat. The best study shows that by 2050, heat will claim 400,000 more lives, but 1.8 million fewer will die because of cold. Indeed, global warming will actually save lives.",
+    "keyElements": {
+      "what": "The Nobel peace prize rewards IPCC scientists for painstaking climate study while Al Gore focuses on telling people what to fear",
+      "why": "Gore predicts five-metre sea-level rises but the IPCC concludes sea levels will rise only twelve to fifty centimetres this century",
+      "how": "The IPCC also concludes Greenland's current rate of melting would add just eight centimetres to sea level rise by century's end",
+      "result": "By 2050 heat will claim 400,000 more lives but 1.8 million fewer will die from cold, so global warming actually saves lives"
+    },
+    "sampleResponse": "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
+    "sampleNotes": "Hybrid — captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words."
+  },
+  {
+    "id": 8,
+    "title": "Travel and Tourism Economic Impact",
+    "category": "Economics/Tourism",
+    "text": "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
+    "keyElements": {
+      "what": "Travel and tourism generates a large percentage of GDP and a huge number of jobs in the world-wide economy",
+      "why": "Jobs are spread across the economy and employ a large proportion of women, minority groups and young people while offering good training and transferability",
+      "how": "Tourism acts as a catalyst for conservation, environmental improvement and the maintenance of local diversity and culture",
+      "result": "Tourism has a comparative advantage with low start-up and running costs compared to other forms of industry development"
+    },
+    "sampleResponse": "Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.",
+    "sampleNotes": "Paraphrased Method — large→significant, huge→substantial. 3 connectors. ~64 words."
+  },
+  {
+    "id": 9,
+    "title": "Sir Tim Berners-Lee and the World Wide Web",
+    "category": "Technology/History",
+    "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+    "keyElements": {
+      "what": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone else in the past hundred years",
+      "why": "Like Galileo and Newton, he is a scientist who has altered the way people think as well as the way they live",
+      "how": "Since the Web went global 20 years ago, shopping, music and communication have been transformed and individuals now have the same access to information as the elite",
+      "result": "The Oxford computer scientist invented the Web because he was frustrated that he could not find all the information he wanted in one place"
+    },
+    "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
+    "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
+  },
+  {
+    "id": 10,
+    "title": "Economic Forecasting Limitations",
+    "category": "Economics/Business",
+    "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
+    "keyElements": {
+      "what": "For economists in the corporate sector, forecasting is a key function drawing on a wide range of statistical data",
+      "why": "Economic forecasting is a long way from a precise science because forecasters' assumptions about how an economy works can vary widely",
+      "how": "Differences in beliefs are so enormous that two economists can get a Nobel Prize for saying exactly the opposite thing",
+      "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
+    },
+    "sampleResponse": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
+    "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words."
+  }
+]

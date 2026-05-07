@@ -29,6 +29,11 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
 // Data storage: Railway volume > local ./data > /tmp fallback
 const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || (process.env.NODE_ENV === 'production' ? '/app/data' : './data');
 const STORAGE_FILE = path.join(DATA_DIR, 'pte_data.json');
+const PASSAGES_FILE = path.join(DATA_DIR, 'pte_passages.json');
+// Default passages bundled with the build — used as seed/fallback if the volume
+// has no pte_passages.json yet (fresh deploy, dev, etc.). The file in the volume
+// always wins after first write so admin edits persist across restarts.
+const DEFAULT_PASSAGES_FILE = path.join(__dirname, 'passages.json');
 
 async function ensureDataDir() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch (e) { /* ok */ }
@@ -137,6 +142,105 @@ const StorageAPI = {
     return Object.entries(data.users)
       .map(([id, u]) => ({ userId: id, averageScore: (u.stats||{}).averageScore||0, totalAttempts: (u.stats||{}).totalAttempts||0 }))
       .sort((a, b) => b.averageScore - a.averageScore).slice(0, limit);
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PASSAGE STORAGE — admin-editable, persisted to the Railway volume
+// ═══════════════════════════════════════════════════════════════════════════════
+// Passages are stored as a JSON array on disk. On first read, if the volume
+// file doesn't exist, we seed it from the bundled passages.json (default 10).
+// Admin endpoints (/api/admin/passages) provide full CRUD.
+const PassageAPI = {
+  _cache: null,
+  _cacheLoaded: false,
+
+  async _loadFromDisk() {
+    // Try the volume file first
+    try {
+      const txt = await fs.readFile(PASSAGES_FILE, 'utf8');
+      const arr = JSON.parse(txt);
+      if (Array.isArray(arr)) return arr;
+    } catch (_) { /* fall through */ }
+    // Seed from bundled defaults
+    try {
+      const txt = await fs.readFile(DEFAULT_PASSAGES_FILE, 'utf8');
+      const arr = JSON.parse(txt);
+      if (Array.isArray(arr)) {
+        // Persist a copy to the volume on first read so admin edits have
+        // somewhere to live.
+        await ensureDataDir();
+        try { await fs.writeFile(PASSAGES_FILE, JSON.stringify(arr, null, 2)); } catch (_) { /* ok */ }
+        return arr;
+      }
+    } catch (e) {
+      console.error('Failed to load default passages:', e.message);
+    }
+    return [];
+  },
+
+  async readAll() {
+    if (!this._cacheLoaded) {
+      this._cache = await this._loadFromDisk();
+      this._cacheLoaded = true;
+    }
+    return this._cache;
+  },
+
+  async writeAll(passages) {
+    if (!Array.isArray(passages)) throw new Error('passages must be an array');
+    await ensureDataDir();
+    await fs.writeFile(PASSAGES_FILE, JSON.stringify(passages, null, 2));
+    this._cache = passages;
+    this._cacheLoaded = true;
+    return passages;
+  },
+
+  async getById(id) {
+    const all = await this.readAll();
+    return all.find(p => p.id === Number(id)) || null;
+  },
+
+  async upsert(passage) {
+    if (!passage || typeof passage !== 'object') throw new Error('passage required');
+    const all = await this.readAll();
+    const idx = all.findIndex(p => p.id === Number(passage.id));
+    const cleaned = this._sanitize(passage);
+    if (idx >= 0) all[idx] = { ...all[idx], ...cleaned };
+    else {
+      // Auto-assign id if missing
+      if (!cleaned.id) cleaned.id = (all.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1);
+      all.push(cleaned);
+    }
+    all.sort((a, b) => (a.id || 0) - (b.id || 0));
+    await this.writeAll(all);
+    return cleaned;
+  },
+
+  async remove(id) {
+    const all = await this.readAll();
+    const next = all.filter(p => p.id !== Number(id));
+    if (next.length === all.length) return false;
+    await this.writeAll(next);
+    return true;
+  },
+
+  _sanitize(p) {
+    const out = {
+      id: Number(p.id) || 0,
+      title: String(p.title || '').trim().slice(0, 200),
+      category: String(p.category || '').trim().slice(0, 100),
+      text: String(p.text || '').trim(),
+      keyElements: {},
+      sampleResponse: String(p.sampleResponse || '').trim(),
+      sampleNotes: String(p.sampleNotes || '').trim()
+    };
+    const ke = p.keyElements || {};
+    // Accept both new (what/why/how/result) and legacy (topic/pivot/conclusion) fields
+    ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
+      if (ke[k] && typeof ke[k] === 'string') out.keyElements[k] = ke[k].trim();
+    });
+    return out;
   }
 };
 
@@ -982,10 +1086,11 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData, grammarData, l
   }
 
   // ── Recognition notes (informational) ──
-  // For "Paraphrased Method" recognition, require actual word swaps (wordSwapCredit), not just structural changes
-  if (wordSwapCredit >= 4) notes.push(`✓ ${wordSwapCredit} synonym swaps — Paraphrased Method`);
-  else if (wordSwapCredit >= 2) notes.push(`${wordSwapCredit} synonym swaps`);
-  else if (wordSwapCredit === 1) notes.push('1 synonym swap (target: 4 for Paraphrased Method)');
+  // For "Paraphrased Method" recognition, require 2+ word swaps (was 4) — students
+  // who lift key phrases (rather than full sentences) and apply 2–3 academic upgrades
+  // deserve full vocabulary credit per the v19.2 rubric.
+  if (wordSwapCredit >= 2) notes.push(`✓ ${wordSwapCredit} synonym swap${wordSwapCredit > 1 ? 's' : ''} — Paraphrased Method`);
+  else if (wordSwapCredit === 1) notes.push('1 synonym swap (target: 2–3 academic upgrades for full marks)');
   else if (!meaningChanged && verbatimRate >= 70) notes.push('Verbatim style — ensure strong connectors');
 
   if (perspectiveShifted) notes.push('✓ Third-person perspective');
@@ -993,16 +1098,24 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData, grammarData, l
   if (safeSwaps.length > 0 && !meaningChanged) notes.push(`Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
   if (structuralChanges.length > 0 && !meaningChanged) notes.push(`Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
 
-  // Method tag — paraphrased requires real word swaps, not just structural changes
-  const method = wordSwapCredit >= 4 ? 'paraphrased'
-               : verbatimRate >= 70 && hasConnector ? 'verbatim'
-               : verbatimRate >= 70 ? 'verbatim_weak'
-               : 'hybrid';
+  // Method tag — five paths, all of which can lead to high marks if executed cleanly:
+  //   paraphrased    : 2+ academic word swaps (was 4 in v19.1)
+  //   verbatim       : ≥70% lifted text + connectors (Verbatim Method)
+  //   verbatim_weak  : ≥70% lifted text but no connectors (lazy lifting)
+  //   phrase_picking : low verbatim + content covered + connectors — student
+  //                    selected key phrases and stitched them; legitimate path.
+  //   hybrid         : doesn't fit cleanly into any of the above
+  let method;
+  if (wordSwapCredit >= 2) method = 'paraphrased';
+  else if (verbatimRate >= 70 && hasConnector) method = 'verbatim';
+  else if (verbatimRate >= 70) method = 'verbatim_weak';
+  else if (verbatimRate < 70 && hasConnector) method = 'phrase_picking';
+  else method = 'hybrid';
 
   if (!suggestion && score >= 2) {
-    suggestion = effectiveCredit >= 4
+    suggestion = wordSwapCredit >= 2
       ? 'Strong vocabulary — keep using academic synonyms.'
-      : 'For higher Reading skill, swap 4 common words for academic synonyms (e.g., made→opted, good→beneficial, important→crucial).';
+      : 'Replace 2–3 common words with academic synonyms (e.g., made→opted, good→beneficial, important→crucial) to lift Reading skill.';
   }
 
   return {
@@ -1039,20 +1152,31 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
   const academicCount = (swapData?.academicWordsUsed?.length || 0)
     + ((llmJudgment?.academic_register === true) ? 2 : 0);
   const swapCredit = swapData?.totalParaphraseCredit || 0;
-  const hasAcademicSynonyms = academicCount >= 2 || swapCredit >= 4;
+  // v19.2: 2+ swaps now counts as "academic synonyms used" (was 4)
+  const hasAcademicSynonyms = academicCount >= 2 || swapCredit >= 2;
+  const cohesionStrong = llmJudgment?.cohesion === 'strong';
+  const cohesionWeak = llmJudgment?.cohesion === 'weak';
 
   // ── READING ──
+  // Rubric (v19.2): Reading 90 requires correct ideas + (academic synonyms OR
+  // phrase-picking with strong cohesion). Pure verbatim still caps moderately
+  // because Pearson's Reading skill rewards lexical resourcefulness, but the
+  // ceiling is no longer locked unless the student also nails cohesion.
   let reading;
   if (contentScore === 0) {
     reading = 15; // Wrong ideas — cap heavily
   } else if (contentScore === 1) {
     reading = hasAcademicSynonyms ? 50 : 38;
   } else { // contentScore === 2
-    if (academicCount >= 3 || swapCredit >= 5) reading = 90;
-    else if (hasAcademicSynonyms) reading = 79;
-    else if (swapCredit >= 1) reading = 65;
-    else reading = 55; // All ideas captured but pure verbatim — Reading caps moderate
+    if (academicCount >= 3 || swapCredit >= 3) reading = 90;
+    else if (hasAcademicSynonyms) reading = 82;            // 2+ swaps now reaches 82 (was 79)
+    else if (cohesionStrong && swapCredit >= 1) reading = 79; // phrase-picking + 1 swap + strong cohesion
+    else if (swapCredit >= 1) reading = 70;
+    else if (cohesionStrong) reading = 65;                 // pure verbatim but well-connected
+    else reading = 55; // verbatim with no swaps and no strong cohesion signal
   }
+  // Cohesion penalty — weak cohesion should knock Reading down even with content
+  if (cohesionWeak && reading > 50) reading = Math.max(50, reading - 15);
 
   // ── WRITING ──
   let writing;
@@ -1070,11 +1194,13 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
       components: { content: contentScore, academic_synonyms: academicCount, swap_credit: swapCredit, has_academic_synonyms: hasAcademicSynonyms },
       note: contentScore === 0
         ? 'Wrong ideas — Reading skill heavily impacted'
-        : contentScore === 2 && hasAcademicSynonyms
-          ? 'Strong — correct ideas + academic synonyms'
-          : contentScore === 2
-            ? 'All ideas captured but no academic synonyms — paraphrase 4 words for higher Reading'
-            : 'Some main ideas missing'
+        : cohesionWeak
+          ? 'Ideas present but weakly connected — cohesion limits Reading skill'
+          : contentScore === 2 && hasAcademicSynonyms
+            ? 'Strong — correct ideas + academic synonyms'
+            : contentScore === 2
+              ? 'All ideas captured — replace 2–3 common words with academic synonyms to push Reading higher'
+              : 'Some main ideas missing'
     },
     writing: {
       estimate: writing,
@@ -1340,6 +1466,70 @@ app.get('/api/admin/impersonate/:username', requireAdmin, async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PASSAGE ENDPOINTS — public read, admin write
+// ═══════════════════════════════════════════════════════════════════════════════
+// Public: list all passages (frontend loads these instead of using its hardcoded
+// fallback array). Admin: full CRUD via /api/admin/passages.
+app.get('/api/passages', async (req, res) => {
+  try {
+    const all = await PassageAPI.readAll();
+    res.json({ passages: all, count: all.length });
+  } catch (e) {
+    console.error('Read passages failed:', e.message);
+    res.status(500).json({ error: 'Failed to load passages', details: e.message });
+  }
+});
+
+app.get('/api/passages/:id', async (req, res) => {
+  try {
+    const p = await PassageAPI.getById(req.params.id);
+    if (!p) return res.status(404).json({ error: 'Passage not found' });
+    res.json(p);
+  } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
+});
+
+app.get('/api/admin/passages', requireAdmin, async (req, res) => {
+  try {
+    const all = await PassageAPI.readAll();
+    res.json({ passages: all, count: all.length });
+  } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
+});
+
+app.post('/api/admin/passages', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    if (!body.title || !body.text) return res.status(400).json({ error: 'title and text are required' });
+    if (!body.keyElements || typeof body.keyElements !== 'object') {
+      return res.status(400).json({ error: 'keyElements object is required' });
+    }
+    const saved = await PassageAPI.upsert(body);
+    res.json({ success: true, passage: saved });
+  } catch (e) {
+    console.error('Save passage failed:', e.message);
+    res.status(500).json({ error: 'Save failed', details: e.message });
+  }
+});
+
+app.delete('/api/admin/passages/:id', requireAdmin, async (req, res) => {
+  try {
+    const ok = await PassageAPI.remove(req.params.id);
+    if (!ok) return res.status(404).json({ error: 'Passage not found' });
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: 'Delete failed', details: e.message }); }
+});
+
+// Bulk import (used to migrate from hardcoded → server-managed in one go)
+app.post('/api/admin/passages/bulk', requireAdmin, async (req, res) => {
+  try {
+    const arr = Array.isArray(req.body?.passages) ? req.body.passages : null;
+    if (!arr) return res.status(400).json({ error: 'passages array required' });
+    const cleaned = arr.map(p => PassageAPI._sanitize(p));
+    await PassageAPI.writeAll(cleaned);
+    res.json({ success: true, count: cleaned.length });
+  } catch (e) { res.status(500).json({ error: 'Bulk import failed', details: e.message }); }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // CONTENT JUDGE — Claude-powered (with local fallback)
 //
 // Per real-exam feedback: content (correct idea selection) is THE primary
@@ -1377,13 +1567,19 @@ ${studentText}
 ${kpHint ? 'KEY IDEAS THE PASSAGE CONVEYS:\n' + kpHint + '\n' : ''}
 EVALUATE:
 1. CONTENT COVERAGE — Did the student capture the main What/Why/How/Result of the passage? This is THE most important dimension. Wrong/missing ideas → 0.
-2. SYNONYM APPROPRIATENESS — If the student replaced words from the passage, are substitutes meaning-preserving and register-appropriate? VERBATIM COPYING IS ACCEPTABLE — do NOT penalise it.
-3. COHESION — Do the clauses connect logically with proper connectors (however/moreover/therefore/furthermore)?
+2. SYNONYM APPROPRIATENESS — If the student replaced words from the passage, are substitutes meaning-preserving and register-appropriate? VERBATIM COPYING IS ACCEPTABLE — do NOT penalise it. PHRASE-LIFTING IS ALSO ACCEPTABLE — students may select key phrases from the passage (rather than full sentences) and stitch them together with their own connectors. Do NOT penalise this style; judge purely on whether the resulting summary is coherent and faithful to the passage.
+3. COHESION — BE STRICT. Ideas must connect logically through proper connectors (however/moreover/therefore/furthermore/consequently). Listed-out facts with no logical glue is "weak" cohesion even if commas separate them. Connectors must signal the actual relationship: "however" only for contrast, "moreover/furthermore" only for addition, "therefore/consequently" only for cause-effect. A misused connector → "weak". Two clauses jammed with "and" or comma-spliced → "weak". Only "strong" when each connective genuinely reflects the relationship between the ideas it links.
 
-SCORING GUIDANCE:
-- content_score 2: All key ideas (or at least 3 of 4 from What/Why/How/Result) captured AND clauses connect cleanly.
-- content_score 1: Some key ideas captured, others missed; OR ideas listed without logical connection.
-- content_score 0: Off-topic, gibberish, OR the main argument is missed entirely.
+SCORING GUIDANCE — BE STRICT. Missing or fabricated ideas MUST drop the score:
+- content_score 2: EVERY key idea provided (every What/Why/How/Result, or topic/pivot/conclusion) is clearly conveyed in the student's summary, AND no fabricated content is added that contradicts or replaces a key idea, AND clauses connect cleanly. The "ideas_missing" array MUST be empty for a score of 2. If ANY key element is absent, distorted, or replaced with unrelated content, you CANNOT give 2.
+- content_score 1: Exactly one key idea is missing or only weakly captured, while the rest are clearly conveyed. Still mostly on-topic.
+- content_score 0: Off-topic, gibberish, the main argument is missed entirely, OR two or more key ideas are missing/distorted, OR the student fabricates substantial content not supported by the passage in place of a key idea.
+
+CRITICAL RULES (do not break these):
+1. An idea is "captured" only if its CORE meaning is clearly present — paraphrasing is fine, but the same fact/argument must be there. Touching a related word (e.g., naming the same place) without conveying the actual idea does NOT count as captured.
+2. If the student replaces a passage idea with different content (even if grammatically fluent), the original idea goes in "ideas_missing" — fluency does not rescue missing content.
+3. Count the items in "ideas_missing". If that count is 1 or more, content_score CANNOT be 2. If the count is 2 or more, content_score MUST be 0.
+
 - synonym_appropriateness "appropriate": all swaps preserve meaning and academic register, OR no swaps were made (verbatim).
 - synonym_appropriateness "some_inappropriate": one or more swaps are awkward, wrong register, or shift connotation.
 - synonym_appropriateness "meaning_changed": a swap reverses or significantly alters the passage meaning.
@@ -1489,19 +1685,20 @@ function judgeContentLocal(studentText, passageText, keyElements) {
   const present = checks.filter(c => c.present).map(c => c.name);
   const missing = checks.filter(c => !c.present).map(c => c.name);
 
+  // STRICT: any missing key idea drops the score.
+  // 0 missing → 2; exactly 1 missing → 1; 2+ missing → 0.
   let score;
-  if (present.length === fields.length) score = 2;
-  else if (present.length >= Math.ceil(fields.length / 2)) score = 1;
-  else if (present.length >= 1) score = 1;
+  if (missing.length === 0) score = 2;
+  else if (missing.length === 1) score = 1;
   else score = 0;
 
   return {
     content_score: score,
-    content_reason: present.length === fields.length
+    content_reason: missing.length === 0
       ? 'All main ideas captured (local check)'
-      : present.length > 0
-        ? `Captured ${present.length}/${fields.length} main ideas — missing: ${missing.join(', ')}`
-        : 'Main ideas not detected',
+      : missing.length === 1
+        ? `1 main idea missing (${missing.join(', ')}) — content capped at 1`
+        : `${missing.length} main ideas missing (${missing.join(', ')}) — content failed`,
     ideas_captured: present,
     ideas_missing: missing,
     synonym_appropriateness: 'no_swaps',  // local can't judge — defer to swap analysis
@@ -1544,6 +1741,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     tier = 'excellent';
     const methodLabel = vocab.method === 'paraphrased' ? 'Paraphrased Method'
                       : vocab.method === 'verbatim' ? 'Verbatim Method'
+                      : vocab.method === 'phrase_picking' ? 'Phrase-Picking Method'
                       : 'a strong hybrid approach';
     headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
   } else if (rawScore >= 5.5) {
@@ -1670,14 +1868,21 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     });
   }
 
-  // Priority 3 — vocabulary (boost Reading skill)
-  if (vocab.effective_credit < 4 && contentScore >= 1 && !vocab.meaning_changed) {
-    const need = 4 - vocab.effective_credit;
+  // Priority 3 — vocabulary (boost Reading skill) — v19.2: target 2-3 swaps (was 4)
+  if (vocab.effective_credit < 2 && contentScore >= 1 && !vocab.meaning_changed) {
+    const need = Math.max(1, 2 - vocab.effective_credit);
     improvements.push({
       priority: 3,
       icon: '📚',
-      action: `Replace ${need} more common word${need > 1 ? 's' : ''} with academic synonyms`,
+      action: `Replace ${need} more common word${need > 1 ? 's' : ''} with academic synonyms (target: 2–3)`,
       detail: 'Boosts Reading skill toward 90. Examples: made → opted, good → beneficial, important → crucial, change → transformation, show → demonstrate.'
+    });
+  } else if (vocab.effective_credit >= 2 && vocab.effective_credit < 3 && contentScore >= 1 && !vocab.meaning_changed) {
+    improvements.push({
+      priority: 4,
+      icon: '📚',
+      action: 'Optional: 1 more academic swap to fully secure Reading 90',
+      detail: 'You already have 2 swaps which qualifies for Paraphrased Method — one more pushes Reading to the very top.'
     });
   }
 
@@ -1720,8 +1925,8 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     if (vocab.method === 'verbatim') {
       methodCoaching = {
         current: 'Verbatim Method',
-        next: vocab.effective_credit < 4
-          ? 'Your Writing skill is at 90. To also push Reading toward 90, swap 4 common words for academic synonyms.'
+        next: vocab.effective_credit < 2
+          ? 'Your Writing skill is at 90. To also push Reading toward 90, swap 2–3 common words for academic synonyms.'
           : 'Excellent execution. You are at the top of both skill ladders.'
       };
     } else if (vocab.method === 'paraphrased') {
@@ -1729,17 +1934,29 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
         current: 'Paraphrased Method',
         next: 'Strong vocabulary work and idea coverage. Maintain the connector chain and you stay at Band 9.'
       };
+    } else if (vocab.method === 'phrase_picking') {
+      methodCoaching = {
+        current: 'Phrase-Picking Method',
+        next: vocab.effective_credit < 2
+          ? 'Solid phrase selection with proper connectors. Add 2–3 academic synonym swaps to lock in Reading 90.'
+          : 'Excellent phrase selection + academic upgrades — top of both ladders.'
+      };
     }
   } else if (rawScore < 6.5 && contentScore >= 1) {
     if (vocab.method === 'verbatim_weak') {
       methodCoaching = {
         current: 'Verbatim style without connectors',
-        next: 'Pick a method and commit. Either: (1) Verbatim Method — keep passage lines but glue them with ; however, ; moreover, ; therefore. Or (2) Paraphrased Method — pick the right lines and replace 4 common words with academic synonyms. Both reach 90 if executed cleanly.'
+        next: 'Pick a method and commit. Either: (1) Verbatim Method — keep passage lines but glue them with ; however, ; moreover, ; therefore. Or (2) Paraphrased Method — pick the right lines and replace 2–3 common words with academic synonyms. Both reach 90 if executed cleanly.'
+      };
+    } else if (vocab.method === 'phrase_picking') {
+      methodCoaching = {
+        current: 'Phrase-Picking style',
+        next: 'You are selecting phrases (good) but cohesion or content coverage needs work. Make sure every WHAT/WHY/HOW/RESULT idea is present and that connectors signal real relationships.'
       };
     } else if (vocab.method === 'hybrid') {
       methodCoaching = {
         current: 'Hybrid approach',
-        next: 'Commit to one path. Verbatim Method (lift + connect) or Paraphrased Method (lift + 4 swaps + connect). Both reach 90; mixing them inconsistently leaves points on the table.'
+        next: 'Commit to one path. Verbatim Method (lift + connect), Paraphrased Method (lift + 2–3 swaps + connect), or Phrase-Picking (key phrases + connectors). All three reach 90; mixing them inconsistently leaves points on the table.'
       };
     }
   }
@@ -1810,7 +2027,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.0.0', mode: 'local'
+        scoring_version: '19.3.0', mode: 'local'
       });
     }
 
@@ -1826,6 +2043,24 @@ app.post('/api/grade', async (req, res) => {
     try {
       llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints);
     } catch (e) { /* swallow → fallback */ }
+
+    // ── STRICT CONTENT GATE: enforce missing-idea penalty regardless of Claude's score ──
+    // Even if Claude awards content_score 2 with non-empty ideas_missing, we cap it.
+    // Rule: 0 missing → 2 allowed; 1 missing → max 1; 2+ missing → 0.
+    if (llmJudgment) {
+      const missingCount = Array.isArray(llmJudgment.ideas_missing) ? llmJudgment.ideas_missing.length : 0;
+      const originalScore = llmJudgment.content_score;
+      if (missingCount >= 2 && llmJudgment.content_score >= 1) {
+        llmJudgment.content_score = 0;
+        llmJudgment.content_reason = `${missingCount} key ideas missing (${(llmJudgment.ideas_missing || []).join(', ')}) — content failed. ${llmJudgment.content_reason || ''}`.trim();
+        llmJudgment.content_score_adjusted = { from: originalScore, to: 0, reason: 'missing_ideas_2plus' };
+      } else if (missingCount >= 1 && llmJudgment.content_score >= 2) {
+        llmJudgment.content_score = 1;
+        llmJudgment.content_reason = `Missing key idea: ${(llmJudgment.ideas_missing || []).join(', ')} — content capped at 1. ${llmJudgment.content_reason || ''}`.trim();
+        llmJudgment.content_score_adjusted = { from: originalScore, to: 1, reason: 'missing_ideas_1' };
+      }
+    }
+
     const fallback = judgeContentLocal(text, prompt, keyPoints);
     const contentVerdict = llmJudgment || fallback;
     const contentScore = contentVerdict.content_score;
@@ -1841,10 +2076,14 @@ app.post('/api/grade', async (req, res) => {
       grammar.grammar_issues.push(`Spelling: ${hints}`);
     }
 
-    // ── COHESION ADJUSTMENT (LLM-driven) ──
-    if (llmJudgment?.cohesion === 'weak' && grammarScore > 0.5) {
-      grammarScore = Math.max(0, grammarScore - 0.5);
-      grammar.grammar_issues.push('Clauses do not connect logically — review connector usage');
+    // ── COHESION ADJUSTMENT (LLM-driven) — v19.2: stronger ──
+    // Per user spec: "deduct scores if ideas are not well connected with each other".
+    // Weakly connected ideas should NOT reach full marks even when content is correct.
+    let cohesionPenaltyApplied = false;
+    if (llmJudgment?.cohesion === 'weak') {
+      grammarScore = Math.max(0, grammarScore - 1.0); // was -0.5
+      grammar.grammar_issues.push('Clauses do not connect logically — ideas listed without proper logical glue');
+      cohesionPenaltyApplied = true;
     }
 
     // ── RAW SCORE ASSEMBLY ──
@@ -1858,6 +2097,12 @@ app.post('/api/grade', async (req, res) => {
     if (contentScore === 0) rawScore = Math.min(rawScore, 1);
     // Partial content → cap at raw 4.5 (PTE ~56)
     else if (contentScore === 1 && rawScore > 4.5) rawScore = 4.5;
+
+    // ── COHESION GATE — ideas not connected = max raw 5 (PTE ~62) ──
+    // Even with all ideas captured and academic vocabulary, weak cohesion caps the
+    // score because Pearson rewards logical glue. This is the v19.2 "well connected"
+    // criterion for full marks.
+    if (cohesionPenaltyApplied && rawScore > 5) rawScore = 5;
 
     rawScore = Math.max(0, Math.min(7, rawScore));
     const overallScore = rawToPTE(rawScore);
@@ -1949,7 +2194,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling),
       llm_used: !!llmJudgment,
-      scoring_version: '19.0.0',
+      scoring_version: '19.3.0',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
