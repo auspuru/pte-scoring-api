@@ -1329,7 +1329,7 @@
 
   <script>
     // Auto-detect: if running on Railway, use Railway URL. If LAN/localhost, use same origin.
-    const RAILWAY_URL = 'https://pte-scoring-api-production.up.railway.app';
+    const RAILWAY_URL = 'https://swt.up.railway.app';
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('10.') || window.location.hostname.startsWith('172.');
     const API_URL = isLocal ? '' : RAILWAY_URL;
     const BASE_KEYS = { USER_ID: 'pte_user_id', KNOWN_USERS: 'pte_known_users' };
