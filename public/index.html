@@ -993,7 +993,7 @@
         </div>
         <div class="login-field">
           <label>Your Answer</label>
-          <input type="text" id="loginSecretA" placeholder="Your answer" autocomplete="off">
+          <input type="text" id="loginSecretA" placeholder="Your answer" autocomplete="off" onkeydown="if(event.key==='Enter') submitLogin()">
         </div>
       </div>
       <div id="resetFields" style="display:none;">
@@ -1008,9 +1008,9 @@
       </div>
       <button class="btn-login" id="loginBtn" onclick="submitLogin()">Sign In</button>
       <div class="login-switch" id="loginSwitch">
-        New here? <a onclick="switchToRegister()">Create an account</a>
+        New here? <a href="#" role="button" onclick="event.preventDefault(); switchToRegister();">Create an account</a>
         &nbsp;&middot;&nbsp;
-        <a onclick="switchToReset()">Forgot password?</a>
+        <a href="#" role="button" onclick="event.preventDefault(); switchToReset();">Forgot password?</a>
       </div>
     </div>
   </div>
@@ -1427,13 +1427,89 @@
     }
 
     let loginMode = 'login', resetUsername = '', resetVerifiedAnswer = '';
-    function setLoginMode(mode) { loginMode = mode; const lf=document.getElementById('loginFields'),rf=document.getElementById('registerFields'),rsf=document.getElementById('resetFields'),rpf=document.getElementById('resetNewPwField'),lpf=document.getElementById('loginPasswordField'),btn=document.getElementById('loginBtn'),sw=document.getElementById('loginSwitch'); document.getElementById('loginError').classList.remove('show'); document.getElementById('loginInfo').style.display='none'; if(mode==='login'){document.getElementById('loginTitle').textContent='Welcome back';lf.style.display='';lpf.style.display='';rf.style.display='none';rsf.style.display='none';btn.textContent='Sign In';btn.onclick=submitLogin;sw.innerHTML='New here? <a onclick="switchToRegister()">Create an account</a> &middot; <a onclick="switchToReset()">Forgot password?</a>';} else if(mode==='register'){document.getElementById('loginTitle').textContent='Create account';lf.style.display='';lpf.style.display='';rf.style.display='';rsf.style.display='none';btn.textContent='Register';btn.onclick=submitLogin;sw.innerHTML='Already have an account? <a onclick="switchToLogin()">Sign in</a>';} else if(mode==='reset'){document.getElementById('loginTitle').textContent='Reset Password';lf.style.display='';lpf.style.display='none';rf.style.display='none';rsf.style.display='none';btn.textContent='Continue';btn.onclick=submitResetStep1;sw.innerHTML='<a onclick="switchToLogin()">Back to Sign In</a>';} else if(mode==='reset-answer'){document.getElementById('loginTitle').textContent='Reset Password';lf.style.display='none';rf.style.display='none';rsf.style.display='';rpf.style.display='none';btn.textContent='Verify Answer';btn.onclick=submitResetStep2;sw.innerHTML='<a onclick="switchToLogin()">Back</a>';} else if(mode==='reset-newpw'){document.getElementById('loginTitle').textContent='Set New Password';lf.style.display='none';rf.style.display='none';rsf.style.display='';rpf.style.display='';btn.textContent='Set New Password';btn.onclick=submitResetFinal;sw.innerHTML='<a onclick="switchToLogin()">Back</a>';} }
+    function setLoginMode(mode) {
+      loginMode = mode;
+      const lf = document.getElementById('loginFields'),
+            rf = document.getElementById('registerFields'),
+            rsf = document.getElementById('resetFields'),
+            rpf = document.getElementById('resetNewPwField'),
+            lpf = document.getElementById('loginPasswordField'),
+            btn = document.getElementById('loginBtn'),
+            sw = document.getElementById('loginSwitch');
+      document.getElementById('loginError').classList.remove('show');
+      document.getElementById('loginInfo').style.display = 'none';
+      // Link templates — using href="#" + preventDefault for reliable click handling
+      const linkRegister = '<a href="#" role="button" onclick="event.preventDefault(); switchToRegister();">Create an account</a>';
+      const linkLogin    = '<a href="#" role="button" onclick="event.preventDefault(); switchToLogin();">Sign in</a>';
+      const linkReset    = '<a href="#" role="button" onclick="event.preventDefault(); switchToReset();">Forgot password?</a>';
+      const linkBack     = '<a href="#" role="button" onclick="event.preventDefault(); switchToLogin();">Back to Sign In</a>';
+      const linkBackShort= '<a href="#" role="button" onclick="event.preventDefault(); switchToLogin();">Back</a>';
+      if (mode === 'login') {
+        document.getElementById('loginTitle').textContent = 'Welcome back';
+        lf.style.display = ''; lpf.style.display = ''; rf.style.display = 'none'; rsf.style.display = 'none';
+        btn.textContent = 'Sign In'; btn.onclick = submitLogin;
+        sw.innerHTML = 'New here? ' + linkRegister + ' &middot; ' + linkReset;
+      } else if (mode === 'register') {
+        document.getElementById('loginTitle').textContent = 'Create account';
+        lf.style.display = ''; lpf.style.display = ''; rf.style.display = ''; rsf.style.display = 'none';
+        btn.textContent = 'Register'; btn.onclick = submitLogin;
+        sw.innerHTML = 'Already have an account? ' + linkLogin;
+      } else if (mode === 'reset') {
+        document.getElementById('loginTitle').textContent = 'Reset Password';
+        lf.style.display = ''; lpf.style.display = 'none'; rf.style.display = 'none'; rsf.style.display = 'none';
+        btn.textContent = 'Continue'; btn.onclick = submitResetStep1;
+        sw.innerHTML = linkBack;
+      } else if (mode === 'reset-answer') {
+        document.getElementById('loginTitle').textContent = 'Reset Password';
+        lf.style.display = 'none'; rf.style.display = 'none'; rsf.style.display = ''; rpf.style.display = 'none';
+        btn.textContent = 'Verify Answer'; btn.onclick = submitResetStep2;
+        sw.innerHTML = linkBackShort;
+      } else if (mode === 'reset-newpw') {
+        document.getElementById('loginTitle').textContent = 'Set New Password';
+        lf.style.display = 'none'; rf.style.display = 'none'; rsf.style.display = ''; rpf.style.display = '';
+        btn.textContent = 'Set New Password'; btn.onclick = submitResetFinal;
+        sw.innerHTML = linkBackShort;
+      }
+    }
     function switchToLogin(){setLoginMode('login');} function switchToRegister(){setLoginMode('register');} function switchToReset(){setLoginMode('reset');}
     function handleResetBtn(){if(loginMode==='reset-answer')submitResetStep2();else if(loginMode==='reset-newpw')submitResetFinal();}
-    function onUsernameInput(){if(loginMode!=='login')return;const u=document.getElementById('loginUsername').value.trim(),info=document.getElementById('loginInfo');document.getElementById('loginError').classList.remove('show');if(!u){info.style.display='none';return;}info.style.display='block';info.textContent=userExists(u)?'Welcome back, '+u+'!':'"'+u+'" is new — switch to Register.';}
+    async function onUsernameInput() {
+      const u = document.getElementById('loginUsername').value.trim();
+      const info = document.getElementById('loginInfo');
+      document.getElementById('loginError').classList.remove('show');
+      if (!u) { info.style.display = 'none'; return; }
+      // Show transient "checking..." while we wait for the server
+      info.style.display = 'block';
+      info.textContent = 'Checking…';
+      // Snapshot what we're checking — if user keeps typing, ignore stale results
+      const snapshot = u;
+      const exists = await userExists(u);
+      if (document.getElementById('loginUsername').value.trim() !== snapshot) return;
+      if (loginMode === 'login') {
+        info.textContent = exists
+          ? 'Welcome back, ' + u + '!'
+          : '"' + u + '" is new — switch to Register.';
+      } else if (loginMode === 'register') {
+        info.textContent = exists
+          ? '⚠ "' + u + '" is already taken — pick another or Sign in.'
+          : '✓ "' + u + '" is available.';
+      } else {
+        info.textContent = exists
+          ? 'Account found.'
+          : '"' + u + '" not found.';
+      }
+    }
     function focusPassword(){document.getElementById('loginPassword').focus();}
     function showLoginError(msg){const el=document.getElementById('loginError');el.textContent=msg;el.classList.add('show');}
-    async function submitResetStep1(){const u=document.getElementById('loginUsername').value.trim();if(!u){showLoginError('Enter username.');return;}if(!userExists(u)){showLoginError('Username not found.');return;}const q=getSecretQuestion(u);if(!q){showLoginError('No recovery question set.');return;}document.getElementById('resetQuestionLabel').textContent=q;setLoginMode('reset-answer');}
+    async function submitResetStep1() {
+      const u = document.getElementById('loginUsername').value.trim();
+      if (!u) { showLoginError('Enter username.'); return; }
+      if (!await userExists(u)) { showLoginError('Username not found.'); return; }
+      const q = await getSecretQuestion(u);
+      if (!q) { showLoginError('No recovery question set.'); return; }
+      document.getElementById('resetQuestionLabel').textContent = q;
+      setLoginMode('reset-answer');
+    }
     async function submitResetStep2(){const u=document.getElementById('loginUsername').value.trim()||resetUsername;resetUsername=u;const a=document.getElementById('resetAnswer').value;if(!a){showLoginError('Enter your answer.');return;}if(!await verifySecretAnswer(u,a)){showLoginError('Incorrect answer.');return;}resetVerifiedAnswer=a;setLoginMode('reset-newpw');}
     async function submitResetFinal(){const pw=document.getElementById('resetNewPw').value;if(!pw||pw.length<4){showLoginError('Min 4 characters.');return;}try{const r=await fetch(API_URL+'/api/auth/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:resetUsername,secretAnswer:resetVerifiedAnswer,newPassword:pw})});const d=await r.json();if(d.success){document.getElementById('loginInfo').style.display='block';document.getElementById('loginInfo').textContent='Password reset! Sign in now.';switchToLogin();}else{showLoginError(d.error||'Reset failed');}}catch(e){localStorage.setItem(getAuthKey(resetUsername),await hashRaw(pw));document.getElementById('loginInfo').style.display='block';document.getElementById('loginInfo').textContent='Password reset! Sign in now.';switchToLogin();}}
     async function submitLogin(){const u=document.getElementById('loginUsername').value.trim(),pw=document.getElementById('loginPassword').value,btn=document.getElementById('loginBtn');if(!u){showLoginError('Enter username.');return;}if(!pw){showLoginError('Enter password.');return;}btn.disabled=true;try{if(loginMode==='register'){if(await userExists(u)){showLoginError('Username taken.');return;}if(pw.length<4){showLoginError('Min 4 chars.');return;}const sq=document.getElementById('loginSecretQ').value,sa=document.getElementById('loginSecretA').value.trim();if(!sq){showLoginError('Choose a question.');return;}if(!sa){showLoginError('Enter answer.');return;}const ok=await registerUser(u,pw,sq,sa);if(ok)await loginAs(u);}else{if(!await userExists(u)){showLoginError('Username not found.');return;}const result=await verifyPassword(u,pw);if(result==='blocked')return;if(!result){showLoginError('Wrong password.');return;}await loginAs(u);}}finally{btn.disabled=false;}}

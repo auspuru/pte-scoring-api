@@ -1391,27 +1391,34 @@ SCORING GUIDANCE:
 - academic_register: true if the summary uses 2+ recognisably academic/formal words (e.g., consequently, substantial, demonstrate, comprehensive).
 
 VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT:
-Identify up to 4 common, non-academic words in the STUDENT SUMMARY that could be replaced with academic synonyms to lift Reading skill score. The CONTEXT MUST FIT — re-read the sentence with each suggested synonym mentally and only include synonyms that read fluently and preserve meaning exactly.
+Identify 6 to 8 common, non-academic words in the STUDENT SUMMARY that could be replaced with academic synonyms to lift Reading skill score. Be GENEROUS — students benefit from having more options to choose from. The CONTEXT MUST FIT — re-read the sentence with each suggested synonym mentally and only include synonyms that read fluently and preserve meaning exactly.
 
 Rules for each suggested word:
-- It MUST appear verbatim from the passage (a word the student copied)
-- It MUST be a common, non-academic word (skip proper nouns, dates, numbers, technical terms, words already academic like "consequently"/"substantial")
-- Each suggested synonym MUST fit the EXACT context of the sentence
-- Skip the word entirely if no synonym fits cleanly — better to suggest nothing than something awkward
+- It can be ANY common, non-academic word the student used (whether they copied it from the passage or wrote it themselves)
+- Skip ONLY: proper nouns, dates, numbers, technical terms, fixed phrases, and words already academic (e.g., "consequently", "substantial", "demonstrate")
+- Provide 3 to 5 academic synonyms per word — the student picks which one fits best
+- Each synonym MUST fit the EXACT context of the sentence
+- Skip the word entirely if NO synonym fits cleanly — better to suggest fewer words with great synonyms than many words with awkward ones
 
 GOOD examples (context-appropriate):
-- "made a lifestyle choice" → word: "made", synonyms: ["opted for", "chose"] ✓
-- "wanted information in one place" → word: "wanted", synonyms: ["sought", "needed"] ✓
-- "many advantages" → word: "many", synonyms: ["numerous", "several"] ✓
-- "good idea" → word: "good", synonyms: ["beneficial", "sound"] ✓
+- "made a lifestyle choice" → word: "made", synonyms: ["opted for", "chose", "selected"] ✓
+- "wanted information in one place" → word: "wanted", synonyms: ["sought", "needed", "required"] ✓
+- "many advantages" → word: "many", synonyms: ["numerous", "several", "multiple", "various"] ✓
+- "good idea" → word: "good", synonyms: ["beneficial", "sound", "sensible", "prudent"] ✓
+- "big problem" → word: "big", synonyms: ["significant", "substantial", "considerable", "major"] ✓
+- "think about" → word: "think about", synonyms: ["consider", "examine", "evaluate"] ✓
+- "show that" → word: "show", synonyms: ["demonstrate", "indicate", "reveal", "establish"] ✓
+- "use" → synonyms: ["utilise", "employ", "apply"] ✓
+- "help" → synonyms: ["assist", "facilitate", "support"] ✓
+- "get" → synonyms: ["obtain", "acquire", "secure"] ✓
 
 BAD examples to AVOID:
 - "wanted information" → DO NOT suggest ["hot", "cherished", "treasured", "loved"] — wrong register and meaning
 - "make a choice" → DO NOT suggest ["create"] for "make" — different sense
-- DO NOT suggest synonyms for content words the student already paraphrased
-- DO NOT suggest synonyms that are too rare or jarring in academic English
+- DO NOT suggest synonyms that are too rare, archaic, or jarring in academic English
+- DO NOT suggest a synonym that subtly shifts meaning
 
-If no swap candidates fit cleanly, return an empty array — that is a valid answer.
+Aim for 6-8 candidates if possible, but quality beats quantity — 4 great suggestions are better than 8 awkward ones.
 
 Respond ONLY with valid JSON, no other text:
 {
@@ -1425,14 +1432,14 @@ Respond ONLY with valid JSON, no other text:
   "academic_register": false,
   "feedback_note": "one short sentence of actionable feedback",
   "recommended_swaps": [
-    { "word": "made", "context": "made a lifestyle choice", "synonyms": ["opted for", "decided on"], "rationale": "Academic register lifts Reading skill" }
+    { "word": "made", "context": "made a lifestyle choice", "synonyms": ["opted for", "decided on", "selected"], "rationale": "Academic register lifts Reading skill" }
   ]
 }`;
 
   try {
     const callPromise = anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 900,
+      max_tokens: 1400,
       messages: [{ role: 'user', content: prompt }]
     });
     const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
@@ -1969,11 +1976,11 @@ app.post('/api/grade', async (req, res) => {
         .filter(s => s && typeof s.word === 'string' && s.word.length > 0
                   && Array.isArray(s.synonyms) && s.synonyms.length > 0
                   && studentLower.includes(s.word.toLowerCase()))
-        .slice(0, 4)
+        .slice(0, 8)
         .map(s => ({
           word: s.word,
           context: s.context || '',
-          synonyms: s.synonyms.slice(0, 3).filter(x => typeof x === 'string' && x.length > 0),
+          synonyms: s.synonyms.slice(0, 5).filter(x => typeof x === 'string' && x.length > 0),
           rationale: s.rationale || ''
         }))
         .filter(s => s.synonyms.length > 0);
