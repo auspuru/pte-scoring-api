@@ -1124,70 +1124,10 @@
         <!-- ═══ AI-curated context-aware vocabulary swap suggestions ═══ -->
         <div class="swap-suggestions" id="swapSuggestions" style="display:none;"></div>
 
-        <div class="elements-grid" id="elementsGrid"></div>
-
-        <!-- NEW: Paraphrasing Quality -->
-        <div class="paraphrase-section glass" id="paraphraseSection" style="display: none;">
-          <div class="paraphrase-header">
-            <div class="paraphrase-title">📝 Paraphrasing Quality</div>
-            <span class="paraphrase-rating" id="paraphraseRating">--</span>
-          </div>
-          <div class="paraphrase-bar-bg">
-            <div class="paraphrase-bar" id="paraphraseBar" style="width: 0%;"></div>
-          </div>
-          <div class="paraphrase-details" id="paraphraseDetails"></div>
-        </div>
-
-        <div class="issues-section warning" id="firstPersonWarning" style="display: none;">
-          <div class="issues-title">⚠️ First-Person Language Detected</div>
-          <div id="firstPersonContent"></div>
-        </div>
-
-        <div class="issues-section grammar" id="grammarSection" style="display: none;">
-          <div class="issues-title">✏️ Grammar Issues</div>
-          <div id="grammarContent"></div>
-          <div class="connector-info" id="connectorInfo"></div>
-        </div>
-
-        <div class="issues-section vocab" id="vocabSection" style="display: none;">
-          <div class="issues-title">📚 Vocabulary Analysis</div>
-          <div id="vocabContent"></div>
-        </div>
-
-        <!-- Vocabulary Upgrade Suggestions -->
-        <div class="issues-section" id="vocabSuggestSection" style="display: none; background: #e8eaf6; border: 2px solid #5c6bc0;">
-          <div class="issues-title" style="color: #283593;">💎 Advanced Vocabulary Suggestions</div>
-          <div id="vocabSuggestContent"></div>
-        </div>
-
-        <!-- Spelling Errors -->
+        <!-- Spelling Errors — only shown when errors exist -->
         <div class="issues-section" id="spellingSection" style="display: none; background: #fff8e1; border: 2px solid #ffb300;">
           <div class="issues-title" style="color: #e65100;">🔤 Spelling Errors</div>
           <div id="spellingContent"></div>
-        </div>
-
-        <!-- Thesaurus Swap Suggestions (Datamuse) -->
-        <div class="issues-section" id="thesaurusSection" style="display: none; background: #e0f2f1; border: 2px solid #00897b;">
-          <div class="issues-title" style="color: #00695c;">📖 Thesaurus — Swap These Verbatim Words</div>
-          <div id="thesaurusContent"></div>
-        </div>
-
-        <!-- Improvement Tips -->
-        <div class="issues-section tips" id="tipsSection" style="display: none;">
-          <div class="issues-title">🎯 Improvement Tips</div>
-          <div id="tipsContent"></div>
-        </div>
-
-        <!-- Band 9 Sample Response -->
-        <div class="issues-section" id="band9Section" style="display: none; background: #e8f5e9; border: 2px solid #4caf50;">
-          <div class="issues-title" style="color: #2e7d32;">🏆 Band 9 Sample Response</div>
-          <div id="band9Content" style="font-style: italic; color: #333; line-height: 1.7; padding: 10px; background: white; border-radius: 6px; border: 1px solid #c8e6c9;"></div>
-          <div style="margin-top: 8px; font-size: 0.8rem; color: #666;">This sample captures all 3 key ideas, uses semicolon+connector structure, and includes 4+ synonym swaps while preserving the original meaning.</div>
-        </div>
-
-        <div class="traits-section">
-          <div class="traits-header">📊 PTE TRAIT SCORES</div>
-          <div class="traits-grid" id="traitsGrid"></div>
         </div>
       </div>
     </div>
@@ -1805,7 +1745,9 @@
           <div class="fc-verdict-icon">${tierIcon}</div>
           <div class="fc-verdict-text" style="flex:1;">
             <strong>${escapeHtml(card.verdict.headline)}</strong>
-            <span>PTE ${card.verdict.pte} · ${escapeHtml(card.verdict.band)} · Raw ${(card.verdict.raw || 0).toFixed ? card.verdict.raw.toFixed(1) : card.verdict.raw}/7${card.verdict.method && card.verdict.method !== 'invalid' ? ' · ' + card.verdict.method.replace('_', ' ') : ''}</span>
+            ${card.verdict.method && card.verdict.method !== 'invalid'
+              ? `<span>${escapeHtml(card.verdict.method.replace('_', ' '))} approach</span>`
+              : ''}
             ${traitChipsHtml}
           </div>
         </div>`;
@@ -1831,7 +1773,7 @@
         </div>` : `
         <div class="fc-block">
           <div class="fc-section-title strengths">What worked</div>
-          <div class="fc-empty">Nothing logged yet — focus on the items on the right first.</div>
+          <div class="fc-empty">Focus on the improvements on the right first.</div>
         </div>`;
 
       const improvementsBlock = (card.improvements && card.improvements.length > 0) ? `
@@ -1841,26 +1783,23 @@
         </div>` : `
         <div class="fc-block">
           <div class="fc-section-title improvements">How to improve</div>
-          <div class="fc-empty">No improvements suggested — keep doing what you're doing.</div>
+          <div class="fc-empty">Nothing left to fix — you're at Band 9.</div>
         </div>`;
 
-      // Two-column container for strengths + improvements
       const twoColHtml = `<div class="fc-two-col">${strengthsBlock}${improvementsBlock}</div>`;
 
-      // Score progression hint — "X → Y with one more swap"
-      const skill = fullData?.skill_contributions;
+      // Show "Next step" hint ONLY when there's no priority-1 improvement
+      // (otherwise it duplicates the P1 row that's already prominent).
       let hintHtml = '';
-      if (skill && card.verdict.tier !== 'excellent' && card.verdict.tier !== 'invalid') {
-        const r = skill.reading?.estimate || 0;
-        const w = skill.writing?.estimate || 0;
+      const hasP1 = (card.improvements || []).some(i => i.priority === 1);
+      if (!hasP1 && card.verdict.tier !== 'excellent' && card.verdict.tier !== 'invalid' && card.verdict.tier !== 'fail') {
+        const skill = fullData?.skill_contributions;
         const swapCredit = fullData?.paraphrase_analysis?.totalCredit || 0;
-        const contentScore = traits.content || 0;
         const hasConnector = fullData?.grammar_details?.has_connector;
+        const r = skill?.reading?.estimate || 0;
         let nextStep = '';
-        if (contentScore < 2) {
-          nextStep = 'Capture the missing main ideas to lift Content from ' + contentScore + '/2 → 2/2.';
-        } else if (!hasConnector) {
-          nextStep = 'Add a connector (; however, / ; moreover, / ; therefore,) to lift Reading and Writing.';
+        if (!hasConnector) {
+          nextStep = 'Add a connector (; however, ; moreover, ; therefore,) to chain your clauses.';
         } else if (swapCredit < 4) {
           const need = 4 - swapCredit;
           nextStep = `Swap ${need} more common word${need > 1 ? 's' : ''} for academic synonyms — Reading ${r} → likely 90.`;
@@ -1870,13 +1809,10 @@
         }
       }
 
-      const coachingHtml = card.method_coaching ? `
-        <div class="fc-method">
-          <div class="fc-method-current">${escapeHtml(card.method_coaching.current)}</div>
-          <div class="fc-method-next">${escapeHtml(card.method_coaching.next)}</div>
-        </div>` : '';
+      // Method coaching block intentionally omitted — its content is already
+      // expressed by the priority-rated improvements above.
 
-      el.innerHTML = verdictHtml + twoColHtml + hintHtml + coachingHtml;
+      el.innerHTML = verdictHtml + twoColHtml + hintHtml;
     }
 
     function showResults(data, passage, spellData) {
@@ -1923,44 +1859,14 @@
       // ── FEEDBACK CARD v3 ── verdict, strengths, improvements, method coaching ──
       renderFeedbackCard(data.feedback_card, data.feedback, data);
 
-      // ─────────────────────────────────────────────────────────────────────
-      // v19: Hide all sections whose content is already shown in the feedback
-      // card (verdict + strengths + improvements + trait chips + score hint).
-      // The only thing rendered below the feedback card now is the AI-curated
-      // swap suggestions panel and the spelling errors panel.
-      // ─────────────────────────────────────────────────────────────────────
-      ['elementsGrid','paraphraseSection','firstPersonWarning',
-       'grammarSection','vocabSection','vocabSuggestSection',
-       'thesaurusSection','tipsSection','band9Section'
-      ].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
-
       // ── Vocabulary swap suggestions (Claude-powered, context-aware) ──
       renderSwapSuggestions(data);
 
-      // Definitions retained for downstream code (traits grid, etc.)
-      const content = data.content_details || {};
-      const vd = data.vocabulary_details || {};
-      const gd = data.grammar_details || {};
-      const present = content.key_ideas_present || [];
-      const missing = content.key_ideas_missing || [];
-      const hasTopic = present.includes('topic') || present.includes('what');
-      const hasPivot = present.includes('pivot') || present.includes('why') || present.includes('how');
-      const hasConclusion = present.includes('conclusion') || present.includes('result');
-
-
-      // (Sections previously rendered here — first-person warning, grammar
-      //  details, vocabulary notes, advanced vocab suggestions, and the
-      //  Datamuse thesaurus list — are now consolidated into the feedback
-      //  card and the new context-aware swap panel above.)
-
-      // ── Spelling Errors — full dictionary check runs in parallel with Verify ──
+      // ── Spelling Errors — only shown when there are real errors ──
       const spellSec = document.getElementById('spellingSection');
       const spellContent = document.getElementById('spellingContent');
 
-      // Merge: spellData (from /api/spellcheck, dictionary + passage) takes priority.
+      // Merge: spellData (from /api/spellcheck — full dictionary) takes priority.
       // Fall back to passage-only spelling_details if spellcheck call failed.
       const mergedErrors = (() => {
         if (spellData && Array.isArray(spellData.errors)) return spellData.errors;
@@ -1971,14 +1877,12 @@
 
       if (mergedErrors.length > 0) {
         spellSec.style.display = 'block';
-
-        // ── Conversational AI feedback message ──
         const errorList = mergedErrors.map(e => `"${e.misspelled}"`).join(', ');
         const plural = mergedErrors.length > 1;
         const headline = plural
-          ? `You made <strong>${mergedErrors.length} spelling mistakes</strong> in your summary: ${errorList}.`
-          : `You made <strong>1 spelling mistake</strong> in your summary: ${errorList}.`;
-        const advice = `Spelling errors reduce your Grammar score. Click a suggestion below to fix ${plural ? 'each one' : 'it'} directly in your summary before re-submitting.`;
+          ? `You made <strong>${mergedErrors.length} spelling mistakes</strong>: ${errorList}.`
+          : `You made <strong>1 spelling mistake</strong>: ${errorList}.`;
+        const advice = `Click a suggestion below to fix ${plural ? 'each one' : 'it'} directly in your summary.`;
 
         spellContent.innerHTML =
           `<div style="font-size:0.86rem;color:#5d4037;margin-bottom:12px;line-height:1.6;padding:10px 12px;background:rgba(255,255,255,0.55);border-radius:8px;border-left:3px solid #ff8f00;">
@@ -2002,25 +1906,10 @@
           `<div style="margin-top:10px;text-align:right;">
             <button class="spell-check-btn" style="padding:5px 12px;font-size:0.75rem;" onclick="runSpellCheck()">↺ Re-check spelling</button>
           </div>`;
-
-      } else if (spellData !== null) {
-        // Spell check ran and found nothing — show clean confirmation
-        spellSec.style.display = 'block';
-        spellContent.innerHTML = `
-          <div style="font-size:0.86rem;color:#2e7d32;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-            <span style="font-size:1.1rem;">✅</span>
-            <span>No spelling errors detected in your summary. Good work!</span>
-          </div>`;
       } else {
-        // Spell check did not run (network error) — hide section, don't show stale data
+        // No errors — just hide. Don't show a "no errors" confirmation; that's noise.
         spellSec.style.display = 'none';
       }
-
-      // (Improvement tips, trait scores grid, and band 9 sample sections
-      //  are no longer rendered — their content is shown in the feedback card,
-      //  the trait chips, and the dedicated sample-answer button on the passage.)
-      const traitsGridEl = document.getElementById('traitsGrid');
-      if (traitsGridEl) traitsGridEl.innerHTML = '';
 
       document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
