@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "18.0.0",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment",
+  "version": "19.0.0",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19: Claude content judge + WWHR scoring)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

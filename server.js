@@ -331,6 +331,20 @@ function checkSpelling(studentText, passageText) {
 const BAND_MAP = { 0:'Band 5',1:'Band 5',2:'Band 6',3:'Band 6.5',4:'Band 7',5:'Band 7.5',6:'Band 8',7:'Band 9' };
 const RAW_TO_PTE = { 0:10,1:15,2:28,3:38,4:50,5:62,6:76,7:90 };
 
+// Continuous raw-to-PTE mapping — supports decimal raw scores via linear interpolation
+function rawToPTE(raw) {
+  raw = Math.max(0, Math.min(7, raw));
+  const lo = Math.floor(raw);
+  const hi = Math.min(7, lo + 1);
+  if (lo === hi || raw === lo) return RAW_TO_PTE[lo];
+  const frac = raw - lo;
+  return Math.round(RAW_TO_PTE[lo] + frac * (RAW_TO_PTE[hi] - RAW_TO_PTE[lo]));
+}
+function rawToBand(raw) {
+  const r = Math.max(0, Math.min(7, Math.round(raw)));
+  return BAND_MAP[r];
+}
+
 const STOP_WORDS = new Set([
   'the','a','an','and','or','but','in','on','at','to','for','of','with','by',
   'is','are','was','were','be','been','have','has','had','will','would','could',
@@ -793,10 +807,22 @@ function analyzeSwaps(studentText, passageText) {
   const totalParaphraseCredit = safeSwaps.length + structuralChanges.length;
 
   const dangerousSwaps = [];
+  // ── Build a set of "polarity pairs already in passage" to suppress false positives ──
+  // If the passage discusses BOTH "advantages" AND "disadvantages" (or any opposing pair),
+  // a student using either word's antonym is legitimately referring to the other side,
+  // not reversing meaning. Don't flag in that case.
+  const passageContainsBothSides = (original, antonyms) => {
+    // Check if passage contains the original AND any of its listed antonyms
+    return passageWordSet.has(original) && antonyms.some(a => passageWordSet.has(a));
+  };
   for (const [original, antonyms] of Object.entries(MEANING_DANGER)) {
     if (passageWordSet.has(original) && !studentWordSet.has(original)) {
+      // SUPPRESS if passage discusses both polarities — student is using antonym for the other side
+      if (passageContainsBothSides(original, antonyms)) continue;
       for (const ant of antonyms) {
-        if (studentWordSet.has(ant) && !passageWordSet.has(ant)) dangerousSwaps.push({ original, replacement: ant, type: 'dangerous' });
+        if (studentWordSet.has(ant) && !passageWordSet.has(ant)) {
+          dangerousSwaps.push({ original, replacement: ant, type: 'dangerous' });
+        }
       }
     }
   }
@@ -825,14 +851,15 @@ function generateVocabSuggestions(studentText) {
 function validateForm(text) {
   const words = text.trim().split(/\s+/).filter(w => w.length > 0);
   const wc = words.length;
-  if (wc < 5)  return { valid: false, score: 0, reason: 'Too short (min 5 words)', wc };
-  if (wc > 75) return { valid: false, score: 0, reason: 'Too long (max 75 words)', wc };
-  if (!/[.!?]$/.test(text.trim())) return { valid: false, score: 0, reason: 'Must end with period', wc };
+  if (wc < 5)  return { valid: false, score: 0, reason: 'Too short (min 5 words)', wc, overflow_penalty: 0 };
+  if (wc > 75) return { valid: false, score: 0, reason: `Too long (${wc} words, max 75) — form fails, PTE 10`, wc, overflow_penalty: 0 };
+  if (!/[.!?]$/.test(text.trim())) return { valid: false, score: 0, reason: 'Must end with period', wc, overflow_penalty: 0 };
   const clean = text.replace(/\b(?:Dr|Mrs|Mr|Ms|Prof|Jr|Sr|St|etc|vs|approx|govt|Inc|Corp|Ltd|Vol|No|Fig)\./gi, '##')
                      .replace(/\b(?:U\.K|U\.S|i\.e|e\.g|a\.m|p\.m)\b\.?/gi, '##');
   const sentences = (clean.match(/[.!?](\s|$)/g) || []).length;
-  if (sentences !== 1) return { valid: false, score: 0, reason: `Must be exactly one sentence (found ${sentences})`, wc };
-  return { valid: true, score: 1, reason: 'Valid', wc };
+  if (sentences !== 1) return { valid: false, score: 0, reason: `Must be exactly one sentence (found ${sentences})`, wc, overflow_penalty: 0 };
+
+  return { valid: true, score: 1, reason: 'Valid', wc, overflow_penalty: 0, warning: null };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -885,53 +912,97 @@ function checkGrammar(text, passageText) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// VOCABULARY SCORING — FINAL LOGIC:
+// VOCABULARY SCORING v2 — Two methods to full marks:
 //
-// Rule 1: Verbatim is FINE as long as student has 4+ meaning-safe synonym swaps → 2/2
-// Rule 2: Verbatim with <4 safe swaps → 1/2
-// Rule 3: If synonyms CHANGE meaning (antonyms/meaning-reversing) → penalize to 0/2
-// Rule 4: First-person from passage without perspective shift → cap at 1/2
-// Rule 5: Pure gibberish / off-topic → 0/2
+// VERBATIM METHOD: copy passage lines + connect with however/moreover/etc → 2/2
+// PARAPHRASED METHOD: 4+ appropriate synonym swaps → 2/2
+//
+// Penalties:
+// - Heavy verbatim WITHOUT connectors (lazy lifting) → cap at 1/2
+// - Meaning-reversing synonym → 0/2
+// - LLM-flagged inappropriate synonym → -0.5
+// - First-person not shifted → -0.5 (was hard cap at 1)
 // ═══════════════════════════════════════════════════════════════════════════════
-function scoreVocabulary(verbatimData, swapData, firstPersonData) {
+function scoreVocabulary(verbatimData, swapData, firstPersonData, grammarData, llmJudgment) {
   const { verbatimRate } = verbatimData;
   const { safeSwaps, structuralChanges, dangerousSwaps, safeSwapCount, structuralCount, totalParaphraseCredit, dangerousSwapCount, academicWordsUsed } = swapData;
   const perspectiveShifted = firstPersonData.hasPerspectiveShift;
-  const effectiveCredit = safeSwapCount + structuralCount;
+  // ── Effective credit for the 4-swap rule = ACTUAL word swaps only ──
+  // Structural changes (combining, condensing) happen in every summary and
+  // shouldn't count as "swap credits" for the paraphrased-vs-verbatim distinction.
+  const wordSwapCredit = safeSwapCount;
+  const effectiveCredit = wordSwapCredit + structuralCount; // for total recognition only
+  const hasConnector = grammarData?.has_connector || false;
 
-  let score = 2; // Default: copy-paste is FINE
+  let score = 2; // Default: copy is FINE
   let notes = [];
   let suggestion = null;
   let meaningChanged = false;
+  let inappropriateCount = 0;
 
-  // ── ONLY penalty 1: Meaning-changing swaps → V:0 ──
+  // ── Hard penalty: meaning-reversing synonyms → V:0 ──
   if (dangerousSwapCount > 0) {
     meaningChanged = true; score = 0;
-    notes.push(`⚠ MEANING CHANGED: ${dangerousSwaps.map(s => `"${s.original}" → "${s.replacement}" reverses meaning`).join('; ')}`);
-    suggestion = 'Your synonym changed the meaning. "minor" → "small" (OK), "minor" → "major" (WRONG).';
+    notes.push(`⚠ MEANING REVERSED: ${dangerousSwaps.map(s => `"${s.original}" → "${s.replacement}"`).join('; ')}`);
+    suggestion = 'Synonym changed the meaning. Choose substitutes that preserve sense ("minor" → "small" OK; "minor" → "major" WRONG).';
   }
 
-  // ── ONLY penalty 2: First-person copy without shift → cap V:1 ──
-  if (!meaningChanged && firstPersonData.isProblematic && score > 1) {
-    score = 1;
-    notes.push('⚠ First-person copied — shift to "The author/narrator"');
-    suggestion = 'Change "I made" → "The author opted", "my wife" → "his wife"';
+  // ── LLM-detected meaning damage (highest priority after dangerous swaps) ──
+  if (!meaningChanged && llmJudgment?.synonym_appropriateness === 'meaning_changed') {
+    meaningChanged = true; score = 0;
+    notes.push('⚠ Synonym altered passage meaning (AI judge)');
+    if (llmJudgment.synonym_issues?.length) {
+      suggestion = llmJudgment.synonym_issues.slice(0, 2).join('; ');
+    }
+  } else if (!meaningChanged && llmJudgment?.synonym_appropriateness === 'some_inappropriate') {
+    inappropriateCount = (llmJudgment.synonym_issues?.length || 1);
+    score = Math.max(0, score - 0.5);
+    notes.push(`⚠ ${inappropriateCount} inappropriate synonym${inappropriateCount > 1 ? 's' : ''}: ${(llmJudgment.synonym_issues || []).slice(0,2).join('; ')}`);
   }
 
-  // ── Recognition notes (informational, no score impact) ──
-  if (effectiveCredit >= 4) notes.push(`✓ ${effectiveCredit} paraphrasing credits — excellent vocabulary`);
-  else if (effectiveCredit >= 2) notes.push(`${effectiveCredit} paraphrasing credits — good vocabulary`);
-  else if (effectiveCredit === 1) notes.push('1 paraphrasing credit detected');
-  else if (!meaningChanged) notes.push('Verbatim response accepted — add synonym swaps for even better scores');
+  // ── Verbatim Method check: lifting only counts if connectors are present ──
+  // Use wordSwapCredit (actual word substitutions), not effectiveCredit, because
+  // structural changes like "combining" and "condensing" happen in every summary.
+  const isHeavyVerbatim = verbatimRate >= 80 && wordSwapCredit < 2;
+  if (!meaningChanged && isHeavyVerbatim) {
+    if (!hasConnector) {
+      score = Math.min(score, 1);
+      notes.push('⚠ Heavy verbatim without connectors — add ; however, / ; moreover, / ; therefore, to connect clauses');
+      if (!suggestion) suggestion = 'Verbatim is fine BUT clauses must be glued with connectors.';
+    } else {
+      notes.push('✓ Verbatim Method — passage lines properly connected');
+    }
+  }
 
-  if (perspectiveShifted) notes.push('✓ Perspective shift to third-person');
-  if (academicWordsUsed.length >= 2) notes.push(`✓ Academic: ${academicWordsUsed.slice(0, 3).join(', ')}`);
-  if (safeSwaps.length > 0 && !meaningChanged) notes.push(`✓ Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
-  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`✓ Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
+  // ── First-person not shifted → soft -0.5 (was hard cap at 1) ──
+  if (!meaningChanged && firstPersonData.isProblematic) {
+    score = Math.max(0, score - 0.5);
+    notes.push('⚠ First-person not shifted — change "I made" → "the author made"');
+    if (!suggestion) suggestion = 'Convert "I/my/we" to "the author/his/their" for academic register.';
+  }
 
-  // Suggestion for improvement (no score penalty)
-  if (!meaningChanged && !suggestion && effectiveCredit < 4) {
-    suggestion = 'Tip: Replace verbs/adjectives with synonyms (made→opted, good→beneficial) for stronger vocabulary demonstration.';
+  // ── Recognition notes (informational) ──
+  // For "Paraphrased Method" recognition, require actual word swaps (wordSwapCredit), not just structural changes
+  if (wordSwapCredit >= 4) notes.push(`✓ ${wordSwapCredit} synonym swaps — Paraphrased Method`);
+  else if (wordSwapCredit >= 2) notes.push(`${wordSwapCredit} synonym swaps`);
+  else if (wordSwapCredit === 1) notes.push('1 synonym swap (target: 4 for Paraphrased Method)');
+  else if (!meaningChanged && verbatimRate >= 70) notes.push('Verbatim style — ensure strong connectors');
+
+  if (perspectiveShifted) notes.push('✓ Third-person perspective');
+  if (academicWordsUsed.length >= 2) notes.push(`✓ Academic vocabulary: ${academicWordsUsed.slice(0, 3).join(', ')}`);
+  if (safeSwaps.length > 0 && !meaningChanged) notes.push(`Swaps: ${safeSwaps.slice(0, 4).map(s => `"${s.original}" → "${s.replacement}"`).join(', ')}`);
+  if (structuralChanges.length > 0 && !meaningChanged) notes.push(`Structural: ${structuralChanges.map(s => s.detail).join(', ')}`);
+
+  // Method tag — paraphrased requires real word swaps, not just structural changes
+  const method = wordSwapCredit >= 4 ? 'paraphrased'
+               : verbatimRate >= 70 && hasConnector ? 'verbatim'
+               : verbatimRate >= 70 ? 'verbatim_weak'
+               : 'hybrid';
+
+  if (!suggestion && score >= 2) {
+    suggestion = effectiveCredit >= 4
+      ? 'Strong vocabulary — keep using academic synonyms.'
+      : 'For higher Reading skill, swap 4 common words for academic synonyms (e.g., made→opted, good→beneficial, important→crucial).';
   }
 
   return {
@@ -939,29 +1010,76 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData) {
     safe_swaps: safeSwaps, structural_changes: structuralChanges, dangerous_swaps: dangerousSwaps,
     safe_swap_count: safeSwapCount, structural_count: structuralCount,
     effective_credit: effectiveCredit, total_paraphrase_credit: effectiveCredit,
-    dangerous_swap_count: dangerousSwapCount, meaning_changed: meaningChanged,
+    dangerous_swap_count: dangerousSwapCount,
+    inappropriate_count: inappropriateCount,
+    meaning_changed: meaningChanged,
     academic_words: academicWordsUsed, perspective_shifted: perspectiveShifted,
+    method,
     notes, suggestion,
-    breakdown: { verbatim_penalty: 'none', swap_status: effectiveCredit >= 4 ? 'excellent' : effectiveCredit >= 1 ? 'partial' : 'none', meaning_danger: dangerousSwapCount > 0 }
+    breakdown: {
+      verbatim_penalty: isHeavyVerbatim && !hasConnector ? 'no_connectors' : 'none',
+      swap_status: effectiveCredit >= 4 ? 'excellent' : effectiveCredit >= 1 ? 'partial' : 'none',
+      meaning_danger: meaningChanged
+    }
   };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// READING/WRITING CONTRIBUTION ESTIMATOR
+// SKILL CONTRIBUTIONS v2
+//
+// Reading skill ceiling rule (per real exam feedback):
+//   "For good Reading scores, correct idea selection AND academic synonyms is must."
+// → contentScore=0 caps Reading at PTE 15 (heavy penalty for wrong ideas)
+// → contentScore=2 + no academic synonyms caps Reading around 55–65 (verbatim path)
+// → contentScore=2 + academic synonyms can reach Reading 90 (paraphrased path)
+//
+// Writing skill: tracks form + grammar + vocab + length-band
 // ═══════════════════════════════════════════════════════════════════════════════
-function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabScore) {
-  const readingRaw = contentScore + Math.min(1, vocabScore);
-  const writingRaw = grammarScore + vocabScore + 1;
+function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabScore, swapData, llmJudgment) {
+  const academicCount = (swapData?.academicWordsUsed?.length || 0)
+    + ((llmJudgment?.academic_register === true) ? 2 : 0);
+  const swapCredit = swapData?.totalParaphraseCredit || 0;
+  const hasAcademicSynonyms = academicCount >= 2 || swapCredit >= 4;
+
+  // ── READING ──
+  let reading;
+  if (contentScore === 0) {
+    reading = 15; // Wrong ideas — cap heavily
+  } else if (contentScore === 1) {
+    reading = hasAcademicSynonyms ? 50 : 38;
+  } else { // contentScore === 2
+    if (academicCount >= 3 || swapCredit >= 5) reading = 90;
+    else if (hasAcademicSynonyms) reading = 79;
+    else if (swapCredit >= 1) reading = 65;
+    else reading = 55; // All ideas captured but pure verbatim — Reading caps moderate
+  }
+
+  // ── WRITING ──
+  let writing;
+  if (rawScore >= 6.5) writing = 88;
+  else if (rawScore >= 6) writing = 82;
+  else if (rawScore >= 5) writing = 70;
+  else if (rawScore >= 4) writing = 58;
+  else if (rawScore >= 3) writing = 45;
+  else if (rawScore >= 2) writing = 30;
+  else writing = 15;
+
   return {
     reading: {
-      estimate: Math.min(90, Math.max(10, Math.round((readingRaw / 3) * 90))),
-      components: { content: contentScore, vocabulary_partial: Math.min(1, vocabScore) },
-      note: contentScore >= 2 ? 'Strong — all key ideas captured' : contentScore === 1 ? 'Moderate — some key ideas missing' : 'Weak — key ideas not detected'
+      estimate: reading,
+      components: { content: contentScore, academic_synonyms: academicCount, swap_credit: swapCredit, has_academic_synonyms: hasAcademicSynonyms },
+      note: contentScore === 0
+        ? 'Wrong ideas — Reading skill heavily impacted'
+        : contentScore === 2 && hasAcademicSynonyms
+          ? 'Strong — correct ideas + academic synonyms'
+          : contentScore === 2
+            ? 'All ideas captured but no academic synonyms — paraphrase 4 words for higher Reading'
+            : 'Some main ideas missing'
     },
     writing: {
-      estimate: Math.min(90, Math.max(10, Math.round((writingRaw / 5) * 90))),
-      components: { grammar: grammarScore, vocabulary: vocabScore, form: 1 },
-      note: writingRaw >= 4 ? 'Strong — good grammar and vocabulary' : writingRaw >= 3 ? 'Moderate — improve grammar or vocabulary' : 'Weak — needs better grammar and word choice'
+      estimate: writing,
+      components: { grammar: grammarScore, vocabulary: vocabScore, form: 1, raw: rawScore },
+      note: rawScore >= 6 ? 'Strong production' : rawScore >= 4 ? 'Moderate production' : 'Production needs work'
     }
   };
 }
@@ -1221,107 +1339,590 @@ app.get('/api/admin/impersonate/:username', requireAdmin, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Impersonate failed' }); }
 });
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT JUDGE — Claude-powered (with local fallback)
+//
+// Per real-exam feedback: content (correct idea selection) is THE primary
+// determinant. Wrong ideas → severe ceiling. Correct ideas + academic synonyms
+// → reach Band 9 / PTE 90. Verbatim with good connectors stays at Writing 90
+// but caps Reading around 55–65 unless academic synonyms are added.
+// ═══════════════════════════════════════════════════════════════════════════════
+function formatKeyElementsHint(keyElements) {
+  if (!keyElements) return '';
+  const parts = [];
+  // New schema (preferred)
+  if (keyElements.what)    parts.push('- What: '   + stripHtml(keyElements.what));
+  if (keyElements.why)     parts.push('- Why: '    + stripHtml(keyElements.why));
+  if (keyElements.how)     parts.push('- How: '    + stripHtml(keyElements.how));
+  if (keyElements.result)  parts.push('- Result: ' + stripHtml(keyElements.result));
+  // Legacy schema (fallback)
+  if (!keyElements.what && keyElements.topic)      parts.push('- Topic: '      + stripHtml(keyElements.topic));
+  if (!keyElements.why  && keyElements.pivot)      parts.push('- Pivot: '      + stripHtml(keyElements.pivot));
+  if (!keyElements.result && keyElements.conclusion) parts.push('- Conclusion: ' + stripHtml(keyElements.conclusion));
+  return parts.join('\n');
+}
+
+async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 12000) {
+  if (!anthropic) return null;
+  const kpHint = formatKeyElementsHint(keyElements);
+
+  const prompt = `You are a strict but fair PTE Academic Summarize Written Text scorer. Score this one-sentence summary across three dimensions.
+
+PASSAGE:
+${passageText}
+
+STUDENT SUMMARY:
+${studentText}
+
+${kpHint ? 'KEY IDEAS THE PASSAGE CONVEYS:\n' + kpHint + '\n' : ''}
+EVALUATE:
+1. CONTENT COVERAGE — Did the student capture the main What/Why/How/Result of the passage? This is THE most important dimension. Wrong/missing ideas → 0.
+2. SYNONYM APPROPRIATENESS — If the student replaced words from the passage, are substitutes meaning-preserving and register-appropriate? VERBATIM COPYING IS ACCEPTABLE — do NOT penalise it.
+3. COHESION — Do the clauses connect logically with proper connectors (however/moreover/therefore/furthermore)?
+
+SCORING GUIDANCE:
+- content_score 2: All key ideas (or at least 3 of 4 from What/Why/How/Result) captured AND clauses connect cleanly.
+- content_score 1: Some key ideas captured, others missed; OR ideas listed without logical connection.
+- content_score 0: Off-topic, gibberish, OR the main argument is missed entirely.
+- synonym_appropriateness "appropriate": all swaps preserve meaning and academic register, OR no swaps were made (verbatim).
+- synonym_appropriateness "some_inappropriate": one or more swaps are awkward, wrong register, or shift connotation.
+- synonym_appropriateness "meaning_changed": a swap reverses or significantly alters the passage meaning.
+- synonym_appropriateness "no_swaps": pure verbatim with zero substitution (still acceptable).
+- academic_register: true if the summary uses 2+ recognisably academic/formal words (e.g., consequently, substantial, demonstrate, comprehensive).
+
+Respond ONLY with valid JSON, no other text:
+{
+  "content_score": 0,
+  "content_reason": "one short sentence",
+  "ideas_captured": ["short label", "short label"],
+  "ideas_missing": ["short label"],
+  "synonym_appropriateness": "appropriate",
+  "synonym_issues": [],
+  "cohesion": "strong",
+  "academic_register": false,
+  "feedback_note": "one short sentence of actionable feedback"
+}`;
+
+  try {
+    const callPromise = anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    });
+    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
+    const response = await Promise.race([callPromise, timeoutPromise]);
+    const text = response.content?.[0]?.text || '';
+    const m = text.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const parsed = JSON.parse(m[0]);
+    parsed.source = 'claude';
+    // Sanity-clamp content_score
+    if (typeof parsed.content_score !== 'number' || parsed.content_score < 0 || parsed.content_score > 2) {
+      parsed.content_score = 1;
+    }
+    return parsed;
+  } catch (e) {
+    console.error('Claude content judge failed:', e.message);
+    return null;
+  }
+}
+
+function judgeContentLocal(studentText, passageText, keyElements) {
+  // Build field list from whichever schema is present
+  const fields = [];
+  if (keyElements?.what)       fields.push({ name: 'what',       text: stripHtml(keyElements.what) });
+  if (keyElements?.why)        fields.push({ name: 'why',        text: stripHtml(keyElements.why) });
+  if (keyElements?.how)        fields.push({ name: 'how',        text: stripHtml(keyElements.how) });
+  if (keyElements?.result)     fields.push({ name: 'result',     text: stripHtml(keyElements.result) });
+  if (fields.length === 0) {
+    if (keyElements?.topic)      fields.push({ name: 'topic',      text: stripHtml(keyElements.topic) });
+    if (keyElements?.pivot)      fields.push({ name: 'pivot',      text: stripHtml(keyElements.pivot) });
+    if (keyElements?.conclusion) fields.push({ name: 'conclusion', text: stripHtml(keyElements.conclusion) });
+  }
+
+  if (fields.length === 0) {
+    return {
+      content_score: 1,
+      content_reason: 'No key elements provided — neutral local score',
+      ideas_captured: [], ideas_missing: [],
+      synonym_appropriateness: 'no_swaps',
+      synonym_issues: [], cohesion: 'moderate', academic_register: false,
+      feedback_note: 'Content judged locally without key element data',
+      source: 'local_fallback'
+    };
+  }
+
+  const checks = fields.map(f => ({ name: f.name, ...checkKeyPoint(studentText, f.text) }));
+  const present = checks.filter(c => c.present).map(c => c.name);
+  const missing = checks.filter(c => !c.present).map(c => c.name);
+
+  let score;
+  if (present.length === fields.length) score = 2;
+  else if (present.length >= Math.ceil(fields.length / 2)) score = 1;
+  else if (present.length >= 1) score = 1;
+  else score = 0;
+
+  return {
+    content_score: score,
+    content_reason: present.length === fields.length
+      ? 'All main ideas captured (local check)'
+      : present.length > 0
+        ? `Captured ${present.length}/${fields.length} main ideas — missing: ${missing.join(', ')}`
+        : 'Main ideas not detected',
+    ideas_captured: present,
+    ideas_missing: missing,
+    synonym_appropriateness: 'no_swaps',  // local can't judge — defer to swap analysis
+    synonym_issues: [],
+    cohesion: 'moderate',
+    academic_register: false,
+    feedback_note: missing.length > 0 ? `Include the missing ideas: ${missing.join(', ')}` : 'Good content coverage',
+    source: 'local_fallback'
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEEDBACK BUILDERS v2
+// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEEDBACK CARD v3 — structured feedback that mirrors the v19 scoring philosophy.
+//
+// Returns:
+//   { verdict, strengths[], improvements[], method_coaching, summary_line }
+//
+// - verdict.tier: excellent | good | partial | fail | invalid
+// - strengths: green check items (what worked)
+// - improvements: priority-sorted action items (1=critical, 4=polish)
+// - method_coaching: path-specific guidance (Verbatim vs Paraphrased)
+// - summary_line: single-line backwards-compatible feedback string
+// ═══════════════════════════════════════════════════════════════════════════════
+function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment) {
+  const pte = rawToPTE(rawScore);
+  const band = rawToBand(rawScore);
+
+  // ── VERDICT ──────────────────────────────────────────────────────────────
+  let tier, headline;
+  if (form && !form.valid) {
+    tier = 'invalid';
+    headline = `Form failed — ${form.reason}`;
+  } else if (contentScore === 0) {
+    tier = 'fail';
+    headline = 'The main ideas were not captured. Re-read the passage and identify What, Why, How and the Result.';
+  } else if (rawScore >= 6.5) {
+    tier = 'excellent';
+    const methodLabel = vocab.method === 'paraphrased' ? 'Paraphrased Method'
+                      : vocab.method === 'verbatim' ? 'Verbatim Method'
+                      : 'a strong hybrid approach';
+    headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
+  } else if (rawScore >= 5.5) {
+    tier = 'good';
+    headline = `Solid attempt — ${band} (PTE ${pte}). One or two changes will push this to Band 9.`;
+  } else if (rawScore >= 3.5) {
+    tier = 'partial';
+    headline = `Partial credit — ${band} (PTE ${pte}). Significant gaps to close.`;
+  } else {
+    tier = 'fail';
+    headline = `${band} (PTE ${pte}) — major gaps. Focus on capturing the main ideas first.`;
+  }
+
+  const verdict = { tier, headline, pte, band, raw: rawScore, method: vocab.method };
+
+  // ── STRENGTHS ────────────────────────────────────────────────────────────
+  const strengths = [];
+
+  if (contentScore === 2) {
+    strengths.push({ icon: '🎯', label: 'All main ideas captured', detail: (contentVerdict.ideas_captured || []).join(' · ') });
+  } else if (contentScore === 1 && (contentVerdict.ideas_captured || []).length > 0) {
+    strengths.push({ icon: '✓', label: `Captured ${contentVerdict.ideas_captured.length} main idea${contentVerdict.ideas_captured.length > 1 ? 's' : ''}`, detail: contentVerdict.ideas_captured.join(' · ') });
+  }
+
+  if (grammar.has_connector && grammar.connector_quality === 'perfect') {
+    strengths.push({ icon: '🔗', label: `Connector + semicolon: "; ${grammar.connector_used},"`, detail: 'Clauses are properly chained.' });
+  } else if (grammar.has_connector) {
+    strengths.push({ icon: '🔗', label: `Connector used: "${grammar.connector_used}"`, detail: '' });
+  }
+
+  if (vocab.method === 'paraphrased' && !vocab.meaning_changed) {
+    strengths.push({ icon: '📚', label: `${vocab.effective_credit} synonym swap${vocab.effective_credit > 1 ? 's' : ''} — Paraphrased Method`, detail: (vocab.safe_swaps || []).slice(0, 3).map(s => `${s.original}→${s.replacement}`).join(', ') });
+  } else if (vocab.method === 'verbatim' && grammar.has_connector) {
+    strengths.push({ icon: '📋', label: 'Verbatim Method executed correctly', detail: 'Passage lines + connector chain. Note: Reading skill caps moderate without academic synonyms.' });
+  }
+
+  if (vocab.academic_words && vocab.academic_words.length >= 2) {
+    strengths.push({ icon: '🎓', label: 'Academic vocabulary detected', detail: vocab.academic_words.slice(0, 4).join(', ') });
+  }
+
+  if (firstPerson && firstPerson.hasPerspectiveShift) {
+    strengths.push({ icon: '👁️', label: 'Third-person perspective', detail: 'Correct academic register.' });
+  }
+
+  if (llmJudgment && llmJudgment.cohesion === 'strong') {
+    strengths.push({ icon: '✓', label: 'Clauses connect logically', detail: 'AI judge confirmed strong cohesion.' });
+  }
+
+  if (form && form.valid && form.wc >= 35 && form.wc <= 65) {
+    strengths.push({ icon: '📝', label: `Word count in sweet spot (${form.wc} words)`, detail: '' });
+  }
+
+  // ── IMPROVEMENTS ─────────────────────────────────────────────────────────
+  const improvements = [];
+
+  // Form failures absorb everything — return early with just the form fix
+  if (form && !form.valid) {
+    improvements.push({
+      priority: 1,
+      icon: '🚨',
+      action: form.reason,
+      detail: 'Write exactly one sentence between 5 and 75 words, ending in a period. Aim for 35–65 words.'
+    });
+    return {
+      verdict, strengths, improvements,
+      method_coaching: null,
+      summary_line: `FORM ERROR: ${form.reason}`
+    };
+  }
+
+  // Priority 1 — content
+  if (contentScore === 0) {
+    improvements.push({
+      priority: 1,
+      icon: '🚨',
+      action: 'Re-read the passage and capture the main ideas',
+      detail: 'Identify the What (topic), Why (reason), How (mechanism) and Result (outcome). Wrong ideas heavily cap the score (PTE 15 max).'
+    });
+  } else if (contentScore === 1) {
+    const missing = (contentVerdict.ideas_missing || []).join(', ');
+    improvements.push({
+      priority: 1,
+      icon: '⚠️',
+      action: missing ? `Add the missing ideas: ${missing}` : 'Some main ideas are missing',
+      detail: 'Score is partial-capped (PTE 50 ceiling) until all main ideas are included.'
+    });
+  }
+
+  // Priority 1 — meaning changed
+  if (vocab.meaning_changed) {
+    const danger = (vocab.dangerous_swaps || [])[0];
+    improvements.push({
+      priority: 1,
+      icon: '⚠️',
+      action: danger ? `"${danger.original}" → "${danger.replacement}" reverses the meaning` : 'A synonym you used reverses the meaning',
+      detail: 'Pick substitutes that preserve the original sense. "minor → small" is OK; "minor → major" is wrong.'
+    });
+  }
+
+  // Priority 2 — grammar / connector
+  if (!grammar.has_connector) {
+    improvements.push({
+      priority: 2,
+      icon: '🔗',
+      action: 'Add a connector to chain your clauses',
+      detail: 'Use ; however, ; moreover, ; therefore, ; furthermore, — these signal logical connection between ideas. Without them, the summary reads as a list.'
+    });
+  } else if (grammar.connector_quality === 'partial') {
+    improvements.push({
+      priority: 2,
+      icon: '🔗',
+      action: `Add a semicolon before "${grammar.connector_used}"`,
+      detail: `Write: "; ${grammar.connector_used}," to mark the clause boundary.`
+    });
+  }
+
+  // Priority 2 — cohesion (LLM-flagged)
+  if (llmJudgment && llmJudgment.cohesion === 'weak') {
+    improvements.push({
+      priority: 2,
+      icon: '🧩',
+      action: 'Clauses do not connect logically',
+      detail: 'Each connector should signal a real relationship: "however" for contrast, "moreover" for addition, "therefore" for consequence.'
+    });
+  }
+
+  // Priority 3 — vocabulary (boost Reading skill)
+  if (vocab.effective_credit < 4 && contentScore >= 1 && !vocab.meaning_changed) {
+    const need = 4 - vocab.effective_credit;
+    improvements.push({
+      priority: 3,
+      icon: '📚',
+      action: `Replace ${need} more common word${need > 1 ? 's' : ''} with academic synonyms`,
+      detail: 'Boosts Reading skill toward 90. Examples: made → opted, good → beneficial, important → crucial, change → transformation, show → demonstrate.'
+    });
+  }
+
+  // Priority 3 — inappropriate synonyms (LLM-flagged)
+  if (vocab.inappropriate_count > 0) {
+    const issues = (llmJudgment?.synonym_issues || []).slice(0, 2).join('; ');
+    improvements.push({
+      priority: 3,
+      icon: '📖',
+      action: 'Some synonym choices are slightly off',
+      detail: issues || 'Pick closer-sense or more register-appropriate substitutes.'
+    });
+  }
+
+  // Priority 4 — first-person shift
+  if (firstPerson && firstPerson.isProblematic) {
+    const issues = (firstPerson.issues || []).slice(0, 2).map(i => `"${i.match}"`).join(', ');
+    improvements.push({
+      priority: 4,
+      icon: '👁️',
+      action: 'Shift first-person to third-person',
+      detail: `Change ${issues || '"I made"'} → "the author made", "my wife" → "his wife", "we" → "they".`
+    });
+  }
+
+  // Priority 4 — spelling
+  if (spelling && spelling.count > 0) {
+    const hints = (spelling.suggestions || []).slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
+    improvements.push({
+      priority: 4,
+      icon: '🔤',
+      action: `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (capped at -0.5 raw)`,
+      detail: hints
+    });
+  }
+
+  // ── METHOD COACHING ──────────────────────────────────────────────────────
+  let methodCoaching = null;
+  if (rawScore >= 6.5 && contentScore === 2) {
+    if (vocab.method === 'verbatim') {
+      methodCoaching = {
+        current: 'Verbatim Method',
+        next: vocab.effective_credit < 4
+          ? 'Your Writing skill is at 90. To also push Reading toward 90, swap 4 common words for academic synonyms.'
+          : 'Excellent execution. You are at the top of both skill ladders.'
+      };
+    } else if (vocab.method === 'paraphrased') {
+      methodCoaching = {
+        current: 'Paraphrased Method',
+        next: 'Strong vocabulary work and idea coverage. Maintain the connector chain and you stay at Band 9.'
+      };
+    }
+  } else if (rawScore < 6.5 && contentScore >= 1) {
+    if (vocab.method === 'verbatim_weak') {
+      methodCoaching = {
+        current: 'Verbatim style without connectors',
+        next: 'Pick a method and commit. Either: (1) Verbatim Method — keep passage lines but glue them with ; however, ; moreover, ; therefore. Or (2) Paraphrased Method — pick the right lines and replace 4 common words with academic synonyms. Both reach 90 if executed cleanly.'
+      };
+    } else if (vocab.method === 'hybrid') {
+      methodCoaching = {
+        current: 'Hybrid approach',
+        next: 'Commit to one path. Verbatim Method (lift + connect) or Paraphrased Method (lift + 4 swaps + connect). Both reach 90; mixing them inconsistently leaves points on the table.'
+      };
+    }
+  }
+
+  // Sort improvements by priority
+  improvements.sort((a, b) => a.priority - b.priority);
+
+  // ── BACKWARDS-COMPAT SUMMARY LINE ────────────────────────────────────────
+  const sParts = [];
+  sParts.push(headline);
+  if (improvements.length > 0) {
+    const top = improvements[0];
+    sParts.push(`Priority: ${top.action}`);
+  }
+  const summary_line = sParts.join(' · ');
+
+  return { verdict, strengths, improvements, method_coaching: methodCoaching, summary_line };
+}
+
+// Legacy aliases — kept for any other call site that imports them
+function buildFeedback(contentVerdict, grammar, vocab, firstPerson, form) {
+  const card = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, { count: 0 }, 0, contentVerdict.content_score, 0, null);
+  return card.summary_line;
+}
+function buildImprovementTips(rawScore, contentScore, vocab, grammar, contentVerdict, form) {
+  const card = buildFeedbackCard(contentVerdict, grammar, vocab, { isProblematic: false }, form, { count: 0 }, rawScore, contentScore, 0, null);
+  return card.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
+}
+
+function buildPenaltiesList(form, contentScore, vocab, spelling) {
+  const arr = [];
+  if (form.overflow_penalty) arr.push({ type: 'word_count_overflow', impact: -form.overflow_penalty, detail: form.warning });
+  if (contentScore === 0) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_15', detail: 'Main ideas missed — heavy cap' });
+  else if (contentScore === 1) arr.push({ type: 'content_partial', impact: 'cap_at_PTE_50', detail: 'Some ideas missing — partial cap' });
+  if (spelling.count > 0) arr.push({ type: 'spelling', impact: -0.5, detail: `${spelling.count} error(s), capped at -0.5 raw` });
+  if (vocab.meaning_changed) arr.push({ type: 'meaning_reversed', impact: 'vocab_to_0', detail: 'Synonym altered passage meaning' });
+  if (vocab.inappropriate_count > 0) arr.push({ type: 'inappropriate_synonym', impact: -0.5, detail: `${vocab.inappropriate_count} occurrence(s)` });
+  return arr;
+}
+
 // ═══ GRADING ROUTE ═══
 app.post('/api/grade', async (req, res) => {
   try {
     const { text, type, prompt, keyPoints, userId } = req.body;
     if (!text || !type || !prompt) return res.status(400).json({ error: 'Missing fields' });
 
+    // ── FORM GATE ──
     const form = validateForm(text);
-    const topicText = stripHtml(keyPoints?.topic || '');
-    const pivotText = stripHtml(keyPoints?.pivot || '');
-    const conclusionText = stripHtml(keyPoints?.conclusion || '');
-
     if (!form.valid) {
+      const formFailCard = buildFeedbackCard(
+        { content_score: 0, ideas_captured: [], ideas_missing: [], cohesion: 'unknown' },
+        { score: 0, has_connector: false, connector_quality: 'missing', grammar_issues: [] },
+        { score: 0, method: 'invalid', effective_credit: 0, safe_swaps: [], dangerous_swaps: [], meaning_changed: false, academic_words: [], inappropriate_count: 0 },
+        { isProblematic: false, hasPerspectiveShift: false, issues: [] },
+        form, { count: 0, suggestions: [] }, 0, 0, 0, null
+      );
       return res.json({
         trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
-        content_details: { key_ideas_extracted: [topicText, pivotText, conclusionText], key_ideas_present: [], key_ideas_missing: ['topic','pivot','conclusion'] },
+        content_details: { key_ideas_extracted: [], key_ideas_present: [], key_ideas_missing: [], notes: form.reason },
         grammar_details: { score: 0, has_connector: false, grammar_issues: [], connector_quality: 'missing' },
-        vocabulary_details: { score: 0, notes: ['Form invalid'], safe_swaps: [], dangerous_swaps: [], meaning_changed: false },
-        skill_contributions: { reading: { estimate: 10 }, writing: { estimate: 10 } },
+        vocabulary_details: { score: 0, notes: ['Form invalid'], safe_swaps: [], dangerous_swaps: [], meaning_changed: false, method: 'invalid' },
+        skill_contributions: { reading: { estimate: 10, note: 'Form invalid' }, writing: { estimate: 10, note: 'Form invalid' } },
         paraphrase_analysis: { quality: 0, safeSwapCount: 0, dangerousSwapCount: 0 },
         overall_score: 10, raw_score: 0, band: 'Band 5',
         form_gate_triggered: true, form_reason: form.reason, word_count: form.wc,
-        feedback: `FORM ERROR: ${form.reason}`, improvement_tips: 'Fix form first.',
-        first_person_detected: false, first_person_problematic: false, scoring_version: '18.0.0', mode: 'local'
+        feedback: formFailCard.summary_line,
+        feedback_card: formFailCard,
+        improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
+        first_person_detected: false, first_person_problematic: false,
+        method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
+        scoring_version: '19.0.0', mode: 'local'
       });
     }
 
-    const tc = checkKeyPoint(text, topicText);
-    const pc = checkKeyPoint(text, pivotText);
-    const cc = checkKeyPoint(text, conclusionText);
-    const coverage = [{ type:'topic', present:tc.present },{ type:'pivot', present:pc.present },{ type:'conclusion', present:cc.present }];
-    const presentCount = coverage.filter(c => c.present).length;
-    const contentScore = presentCount >= 3 ? 2 : presentCount >= 1 ? 1 : 0;
-
+    // ── LOCAL ANALYSIS (deterministic, fast) ──
     const verbatim = detectVerbatim(text, prompt);
     const swaps = analyzeSwaps(text, prompt);
     const firstPerson = detectFirstPerson(text, prompt);
     const grammar = checkGrammar(text, prompt);
-    const vocab = scoreVocabulary(verbatim, swaps, firstPerson);
     const spelling = checkSpelling(text, prompt);
 
-    // Deduct grammar for spelling errors: any spelling error = -1 grammar
+    // ── CONTENT JUDGE: Claude first, local fallback ──
+    let llmJudgment = null;
+    try {
+      llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints);
+    } catch (e) { /* swallow → fallback */ }
+    const fallback = judgeContentLocal(text, prompt, keyPoints);
+    const contentVerdict = llmJudgment || fallback;
+    const contentScore = contentVerdict.content_score;
+
+    // ── VOCABULARY (now informed by LLM judgment) ──
+    const vocab = scoreVocabulary(verbatim, swaps, firstPerson, grammar, llmJudgment);
+
+    // ── GRAMMAR — apply spelling penalty (capped at -0.5 raw, was -1 per error) ──
     let grammarScore = grammar.score;
     if (spelling.count >= 1) {
-      grammarScore = Math.max(0, grammarScore - 1);
+      grammarScore = Math.max(0, grammarScore - 0.5);
       const hints = spelling.suggestions.slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
-      grammar.grammar_issues.push(`Spelling errors: ${hints}`);
+      grammar.grammar_issues.push(`Spelling: ${hints}`);
     }
 
-    const rawScore = 1 + contentScore + grammarScore + vocab.score;
-    const overallScore = RAW_TO_PTE[Math.min(7, rawScore)] || 10;
-    const band = BAND_MAP[Math.min(7, rawScore)] || 'Band 5';
-    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score);
-    const feedback = generateFeedback(coverage, grammar, vocab, firstPerson);
-    const improvementTips = generateImprovementTips(rawScore, contentScore, grammarScore, vocab.score, grammar, vocab);
+    // ── COHESION ADJUSTMENT (LLM-driven) ──
+    if (llmJudgment?.cohesion === 'weak' && grammarScore > 0.5) {
+      grammarScore = Math.max(0, grammarScore - 0.5);
+      grammar.grammar_issues.push('Clauses do not connect logically — review connector usage');
+    }
+
+    // ── RAW SCORE ASSEMBLY ──
+    let rawScore = 1 + contentScore + grammarScore + vocab.score; // max 7
+
+    // Soft word-count overflow
+    if (form.overflow_penalty) rawScore -= form.overflow_penalty;
+
+    // ── CONTENT GATE — heavy penalty for wrong ideas ──
+    // Per user spec: wrong content → cap PTE 9–15 (essentially fail)
+    if (contentScore === 0) rawScore = Math.min(rawScore, 1);
+    // Partial content → cap at raw 4.5 (PTE ~56)
+    else if (contentScore === 1 && rawScore > 4.5) rawScore = 4.5;
+
+    rawScore = Math.max(0, Math.min(7, rawScore));
+    const overallScore = rawToPTE(rawScore);
+    const band = rawToBand(rawScore);
+
+    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment);
+    const feedbackCard = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment);
+    const feedback = feedbackCard.summary_line;
+    const improvementTips = feedbackCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
 
     const result = {
-      trait_scores: { form: 1, content: contentScore, grammar: grammarScore, vocabulary: vocab.score },
+      trait_scores: {
+        form: 1,
+        content: contentScore,
+        grammar: Math.round(grammarScore * 10) / 10,
+        vocabulary: Math.round(vocab.score * 10) / 10
+      },
       content_details: {
-        key_ideas_extracted: [topicText.substring(0,60), pivotText.substring(0,60), conclusionText.substring(0,60)],
-        key_ideas_present: coverage.filter(c => c.present).map(c => c.type),
-        key_ideas_missing: coverage.filter(c => !c.present).map(c => c.type),
-        notes: `${presentCount}/3 key ideas present`,
-        key_point_details: { topic: tc, pivot: pc, conclusion: cc }
+        key_ideas_extracted: [
+          ...(contentVerdict.ideas_captured || []),
+          ...(contentVerdict.ideas_missing || [])
+        ],
+        key_ideas_present: contentVerdict.ideas_captured || [],
+        key_ideas_missing: contentVerdict.ideas_missing || [],
+        notes: contentVerdict.content_reason,
+        feels_connected: contentVerdict.cohesion ? contentVerdict.cohesion !== 'weak' : true,
+        cohesion: contentVerdict.cohesion || 'unknown',
+        feedback_note: contentVerdict.feedback_note || '',
+        source: contentVerdict.source || 'local_fallback'
       },
       grammar_details: {
-        score: grammarScore, has_connector: grammar.has_connector, connector_used: grammar.connector_used,
-        connector_type: grammar.connector_type, connector_quality: grammar.connector_quality,
+        score: grammarScore,
+        has_connector: grammar.has_connector,
+        connector_used: grammar.connector_used,
+        connector_type: grammar.connector_type,
+        connector_quality: grammar.connector_quality,
         has_semicolon_before_connector: grammar.has_semicolon_before_connector,
-        grammar_issues: grammar.grammar_issues, first_person: grammar.first_person,
-        spelling_errors: spelling.errors, spelling_suggestions: spelling.suggestions, spelling_count: spelling.count
+        grammar_issues: grammar.grammar_issues,
+        first_person: grammar.first_person,
+        spelling_errors: spelling.errors,
+        spelling_suggestions: spelling.suggestions,
+        spelling_count: spelling.count,
+        cohesion: contentVerdict.cohesion || 'unknown'
       },
       vocabulary_details: {
-        score: vocab.score, verbatim_rate: vocab.verbatim_rate + '%',
-        safe_swaps: vocab.safe_swaps, structural_changes: vocab.structural_changes || [], dangerous_swaps: vocab.dangerous_swaps,
-        safe_swap_count: vocab.total_paraphrase_credit, structural_count: vocab.structural_count || 0,
+        score: vocab.score,
+        verbatim_rate: vocab.verbatim_rate + '%',
+        safe_swaps: vocab.safe_swaps,
+        structural_changes: vocab.structural_changes || [],
+        dangerous_swaps: vocab.dangerous_swaps,
+        safe_swap_count: vocab.total_paraphrase_credit,
+        structural_count: vocab.structural_count || 0,
         dangerous_swap_count: vocab.dangerous_swap_count,
+        inappropriate_count: vocab.inappropriate_count || 0,
         meaning_changed: vocab.meaning_changed,
-        academic_words: vocab.academic_words, perspective_shifted: vocab.perspective_shifted,
-        notes: vocab.notes, suggestion: vocab.suggestion, breakdown: vocab.breakdown
+        academic_words: vocab.academic_words,
+        perspective_shifted: vocab.perspective_shifted,
+        method: vocab.method,
+        notes: vocab.notes,
+        suggestion: vocab.suggestion,
+        breakdown: vocab.breakdown
       },
       paraphrase_analysis: {
         quality: swaps.totalParaphraseCredit >= 4 ? 100 : Math.round((swaps.totalParaphraseCredit / 4) * 100),
         rating: swaps.totalParaphraseCredit >= 4 ? 'strong' : swaps.totalParaphraseCredit >= 2 ? 'moderate' : 'weak',
         swaps: swaps.safeSwaps, dangerous: swaps.dangerousSwaps,
         academic_words: swaps.academicWordsUsed, novel_words: swaps.novelWords,
-        novel_word_rate: swaps.novelWordRate + '%', safeSwapCount: swaps.safeSwapCount, structuralCount: swaps.structuralCount, totalCredit: swaps.totalParaphraseCredit, dangerousSwapCount: swaps.dangerousSwapCount
+        novel_word_rate: swaps.novelWordRate + '%',
+        safeSwapCount: swaps.safeSwapCount, structuralCount: swaps.structuralCount,
+        totalCredit: swaps.totalParaphraseCredit, dangerousSwapCount: swaps.dangerousSwapCount
       },
       verbatim_analysis: { rate: verbatim.verbatimRate + '%', is_verbatim: verbatim.isVerbatim, longest_run: verbatim.longestRun },
-      first_person_detected: firstPerson.detected, first_person_problematic: firstPerson.isProblematic,
+      first_person_detected: firstPerson.detected,
+      first_person_problematic: firstPerson.isProblematic,
       first_person_details: firstPerson,
       skill_contributions: skillContributions,
-      overall_score: overallScore, raw_score: rawScore, band, word_count: form.wc,
-      feedback, improvement_tips: improvementTips,
-      key_ideas_status: { topic: tc.present, pivot: pc.present, conclusion: cc.present },
-      scoring_version: '18.0.0', mode: 'local',
+      overall_score: overallScore,
+      raw_score: rawScore,
+      band,
+      word_count: form.wc,
+      word_count_warning: form.warning || null,
+      feedback,
+      feedback_card: feedbackCard,
+      improvement_tips: improvementTips,
+      key_ideas_status: {
+        captured: contentVerdict.ideas_captured || [],
+        missing: contentVerdict.ideas_missing || []
+      },
+      method_detected: vocab.method,
+      penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling),
+      llm_used: !!llmJudgment,
+      scoring_version: '19.0.0',
+      mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
-      // Spelling — passage-relative (fast, sync). For full dictionary check call /api/spellcheck
       spelling_details: {
         count: spelling.count,
         errors: spelling.suggestions.map(s => ({ misspelled: s.misspelled, suggestion: s.suggestion, source: 'passage' })),
-        note: spelling.count > 0 ? `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} detected` : null
+        note: spelling.count > 0 ? `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (capped at -0.5 raw)` : null
       }
     };
 
@@ -1330,13 +1931,13 @@ app.post('/api/grade', async (req, res) => {
       catch (e) { result.saved = false; }
     }
 
-    // ── Thesaurus swap candidates (words to swap, synonyms fetched on-demand by frontend) ──
+    // Thesaurus swap candidates (for the frontend to fetch synonyms on demand)
     const alreadySwapped = (result.paraphrase_analysis?.swaps || []).map(s => s.original);
     result.thesaurus_candidates = identifySwapCandidates(text, prompt, alreadySwapped);
 
     res.json(result);
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Grade error:', error);
     res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
