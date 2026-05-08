@@ -815,8 +815,12 @@ function checkKeyPoint(studentText, keyPointText) {
   const keyPoint = stripHtml(keyPointText).toLowerCase();
   const keyConcepts = extractConcepts(normaliseNumbers(keyPoint));
 
+  // v19.5: tightened thresholds — old values (0.18 / 0.22) caused false positives
+  // when student summaries shared generic vocabulary with the passage but did
+  // not actually convey the idea. Stricter thresholds + a critical-term gate
+  // for short ideas keep the local fallback honest when Claude is unavailable.
   const isLong = keyConcepts.length > 15;
-  const thresholds = { concept: isLong ? 0.18 : 0.22, critical: isLong ? 0.25 : 0.30 };
+  const thresholds = { concept: isLong ? 0.30 : 0.45, critical: isLong ? 0.35 : 0.50 };
 
   let matchedConcepts = 0;
   const matched = [];
@@ -838,19 +842,26 @@ function checkKeyPoint(studentText, keyPointText) {
   const studentNums = studentNorm.match(/\d+(?:\.\d+)?/g) || [];
   const numberMatched = keyNums.length > 0 ? fuzzyNumberMatch(keyNums, studentNums) : true;
 
-  // PRESENCE DECISION — numbers are a bonus signal, NOT a hard gate
-  // A key idea is present if:
-  //   Path A: concept match >= threshold OR critical match >= threshold OR 2+ critical terms
-  //   Path B: numbers matched (bonus — boosts confidence but absence doesn't block)
-  // Old logic had numberGate as hard blocker — this caused false negatives
-  // when student captured the idea without specific numbers
+  // PRESENCE DECISION (v19.5 — stricter than v19.4)
+  // An idea is "present" when:
+  //   - critical-term match >= threshold (preferred — content words specific to this idea), AND
+  //   - either: numbers matched (when present in the key point), OR concept match >= 0.30
+  // This prevents false positives where student shares only generic words.
+  // For short key points (<=15 concepts), critical match is mandatory.
   const conceptPass = matchRate >= thresholds.concept;
   const criticalPass = criticalRate >= thresholds.critical;
-  const minCritical = matchedCritical >= 2;
-  const strongConcept = matchRate >= 0.35;
-  
-  const isPresent = (conceptPass || criticalPass || minCritical) && 
-                    (numberMatched || strongConcept || matchRate >= 0.25);
+  const minCritical = matchedCritical >= 3; // was 2 — 3 specific terms required
+  const strongConcept = matchRate >= 0.50;  // was 0.35
+
+  // Two paths to "present":
+  //   Path A: critical-term match passes the threshold AND numbers (if any) match
+  //   Path B: very strong concept overlap (≥0.50) AND number match
+  // Otherwise: not present.
+  const isPresent = (
+    (criticalPass || minCritical) && (numberMatched || strongConcept)
+  ) || (
+    strongConcept && numberMatched && conceptPass
+  );
 
   return {
     present: isPresent, matchRate: Math.round(matchRate * 100), criticalRate: Math.round(criticalRate * 100),
@@ -1734,7 +1745,7 @@ Respond ONLY with valid JSON, no other text. The "content_score" field MUST equa
   }
 }
 
-function judgeContentLocal(studentText, passageText, keyElements) {
+function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
   // Build field list from whichever schema is present
   const fields = [];
   if (keyElements?.what)       fields.push({ name: 'what',       text: stripHtml(keyElements.what) });
@@ -1747,13 +1758,34 @@ function judgeContentLocal(studentText, passageText, keyElements) {
     if (keyElements?.conclusion) fields.push({ name: 'conclusion', text: stripHtml(keyElements.conclusion) });
   }
 
+  // ── v19.5: heuristic cohesion detection for local mode ──
+  // Cohesion was always 'moderate' in v19.4, which meant the cohesion gate
+  // never fired without Claude. Now we infer cohesion from grammar signals:
+  //   - missing connector → 'weak' (Pearson penalises listed-out facts)
+  //   - connector without semicolon → 'moderate' (partial credit)
+  //   - 3+ "and" joins without a connector → 'weak'
+  //   - perfect connector + semicolon → 'strong'
+  let cohesion = 'moderate';
+  if (grammarHint) {
+    const ql = grammarHint.connector_quality;
+    if (ql === 'perfect') cohesion = 'strong';
+    else if (ql === 'partial') cohesion = 'moderate';
+    else cohesion = 'weak'; // 'missing'
+  }
+  // Additional weak-cohesion signal: too many " and " joins without a connector
+  // (e.g., "X and Y and Z and W") — a classic Band 5–6 listed-out style.
+  const lower = (studentText || '').toLowerCase();
+  const andJoins = (lower.match(/\sand\s/g) || []).length;
+  const hasAnyConnector = /(however|moreover|furthermore|therefore|consequently|whereas|although|nevertheless)/i.test(studentText || '');
+  if (andJoins >= 3 && !hasAnyConnector) cohesion = 'weak';
+
   if (fields.length === 0) {
     return {
       content_score: 1,
       content_reason: 'No key elements provided — neutral local score',
       ideas_captured: [], ideas_missing: [],
       synonym_appropriateness: 'no_swaps',
-      synonym_issues: [], cohesion: 'moderate', academic_register: false,
+      synonym_issues: [], cohesion, academic_register: false,
       feedback_note: 'Content judged locally without key element data',
       source: 'local_fallback'
     };
@@ -1777,7 +1809,7 @@ function judgeContentLocal(studentText, passageText, keyElements) {
     ideas_missing: missing,
     synonym_appropriateness: 'no_swaps',  // local can't judge — defer to swap analysis
     synonym_issues: [],
-    cohesion: 'moderate',
+    cohesion,
     academic_register: false,
     feedback_note: missing.length > 0 ? `Include the missing ideas: ${missing.join(', ')}` : 'Good content coverage',
     source: 'local_fallback'
@@ -1906,8 +1938,8 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   } else if (contentPartial) {
     const missing = (contentVerdict.ideas_missing || []).join(', ');
     const need = cMax - contentScore;
-    // PTE cap depends on captured ratio — surface the right number to the student.
-    const capPte = contentRatio < 0.5 ? 50 : contentRatio < 0.75 ? 65 : 79;
+    // v19.5: PTE caps must match the gate at the exact same boundaries.
+    const capPte = contentRatio <= 0.5 ? 50 : contentRatio <= 0.75 ? 65 : 79;
     improvements.push({
       priority: 1,
       icon: '⚠️',
@@ -2081,9 +2113,9 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   if (form.overflow_penalty) arr.push({ type: 'word_count_overflow', impact: -form.overflow_penalty, detail: form.warning });
   if (contentScore === 0) {
     arr.push({ type: 'content_gate', impact: 'cap_at_PTE_15', detail: `0/${cMax} main ideas captured — heavy cap` });
-  } else if (ratio < 0.5) {
+  } else if (ratio <= 0.5) {
     arr.push({ type: 'content_partial', impact: 'cap_at_PTE_50', detail: `${contentScore}/${cMax} main ideas captured — partial cap` });
-  } else if (ratio < 0.75) {
+  } else if (ratio <= 0.75) {
     arr.push({ type: 'content_partial', impact: 'cap_at_PTE_65', detail: `${contentScore}/${cMax} main ideas captured — upper-mid cap` });
   } else if (ratio < 1) {
     arr.push({ type: 'content_partial', impact: 'cap_at_PTE_79', detail: `${contentScore}/${cMax} main ideas captured — almost there` });
@@ -2127,7 +2159,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.4.1', mode: 'local'
+        scoring_version: '19.5.0', mode: 'local'
       });
     }
 
@@ -2193,7 +2225,7 @@ app.post('/api/grade', async (req, res) => {
       }
     }
 
-    const fallback = judgeContentLocal(text, prompt, keyPoints);
+    const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
     const contentVerdict = llmJudgment || fallback;
     // Make sure content_max is set on whichever verdict we end up using
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
@@ -2210,11 +2242,12 @@ app.post('/api/grade', async (req, res) => {
       grammar.grammar_issues.push(`Spelling: ${hints}`);
     }
 
-    // ── COHESION ADJUSTMENT (LLM-driven) — v19.2: stronger ──
+    // ── COHESION ADJUSTMENT — v19.5: reads from contentVerdict ──
+    // Was llmJudgment-only, which meant the local fallback's weak-cohesion
+    // detection never triggered the gate. Now both paths feed in.
     // Per user spec: "deduct scores if ideas are not well connected with each other".
-    // Weakly connected ideas should NOT reach full marks even when content is correct.
     let cohesionPenaltyApplied = false;
-    if (llmJudgment?.cohesion === 'weak') {
+    if (contentVerdict?.cohesion === 'weak') {
       grammarScore = Math.max(0, grammarScore - 1.0);
       grammar.grammar_issues.push('Clauses do not connect logically — ideas listed without proper logical glue');
       cohesionPenaltyApplied = true;
@@ -2230,13 +2263,21 @@ app.post('/api/grade', async (req, res) => {
     // Captured ratio drives the cap. The user's rule: each idea = one band.
     // We additionally enforce a hard PTE cap so that severely incomplete
     // summaries can't reach Band 9 just by having strong vocab/grammar.
+    //
+    // v19.5: boundaries widened so 50% coverage lands in the "PTE 50" tier
+    // (was strictly < 0.5 which excluded exactly 0.5 — 2/4 misclassified).
+    // New tiers:
+    //   0% captured        → PTE 15 cap
+    //   1%–50%  captured   → PTE 50 cap   (e.g. 2/4 = 50%)
+    //   51%–75% captured   → PTE 65 cap   (e.g. 3/4 captured but ratio≠1)
+    //   76%–<100% captured → PTE 79 cap
+    //   100% captured      → no cap
     const capturedRatio = maxContent > 0 ? contentScore / maxContent : 1;
     let contentCapPTE = null;
-    if (capturedRatio === 0) contentCapPTE = 15;            // no ideas → near-fail
-    else if (capturedRatio < 0.5)  contentCapPTE = 50;       // less than half → mid-band cap
-    else if (capturedRatio < 0.75) contentCapPTE = 65;       // partial → upper-mid cap
-    else if (capturedRatio < 1)    contentCapPTE = 79;       // most but not all → just below top
-    // capturedRatio === 1 → no cap from content
+    if (capturedRatio === 0)            contentCapPTE = 15;
+    else if (capturedRatio <= 0.5)      contentCapPTE = 50;
+    else if (capturedRatio <= 0.75)     contentCapPTE = 65;
+    else if (capturedRatio < 1)         contentCapPTE = 79;
     if (contentCapPTE !== null) {
       const capRaw = pteToRaw(contentCapPTE, maxRaw);
       if (rawScore > capRaw) rawScore = capRaw;
@@ -2279,7 +2320,11 @@ app.post('/api/grade', async (req, res) => {
         feels_connected: contentVerdict.cohesion ? contentVerdict.cohesion !== 'weak' : true,
         cohesion: contentVerdict.cohesion || 'unknown',
         feedback_note: contentVerdict.feedback_note || '',
-        source: contentVerdict.source || 'local_fallback'
+        source: contentVerdict.source || 'local_fallback',
+        // v19.5: surface the reconcile metadata so the UI / debug tools can
+        // see when Claude's numeric content_score was overridden by the
+        // ideas_captured array length (a known LLM inconsistency).
+        score_adjusted: contentVerdict.content_score_adjusted || null
       },
       grammar_details: {
         score: grammarScore,
@@ -2344,7 +2389,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.4.1',
+      scoring_version: '19.5.0',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {

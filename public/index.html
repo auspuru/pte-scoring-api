@@ -1964,17 +1964,20 @@
         headerIcon = '🚨';
         headerText = `0/${total} main ideas captured`;
         capImpact = 'Score capped at PTE ~15';
-      } else if (ratio >= 0.75) {
+      } else if (ratio > 0.75) {
+        // 76%–<100% captured (e.g. very rare partial fractions)
         tierCls = 'partial';
         headerIcon = '⚠️';
         headerText = `${capturedCount}/${total} main ideas captured`;
         capImpact = 'Score capped at PTE ~79';
-      } else if (ratio >= 0.5) {
+      } else if (ratio > 0.5) {
+        // 51%–75% captured (e.g. 3/4 = 75%)
         tierCls = 'partial';
         headerIcon = '⚠️';
         headerText = `${capturedCount}/${total} main ideas captured`;
         capImpact = 'Score capped at PTE ~65';
       } else {
+        // 1%–50% captured (e.g. 2/4 = 50%, or 1/3 = 33%)
         tierCls = 'has-missing';
         headerIcon = '🚨';
         headerText = `${capturedCount}/${total} main ideas captured`;
@@ -2166,7 +2169,7 @@
         invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.4.1 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.5 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
