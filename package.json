@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.5.0",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.5: deep debug pass — local fallback honesty + boundary inclusivity + cohesion heuristic)",
+  "version": "19.6.0",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.6: Datamuse-backed inline spell check + scaled spelling penalty)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1350,6 +1350,61 @@ const spellCache = new Map();
 const SPELL_CACHE_MAX = 1000;
 
 // Returns top suggestion for a misspelled word, or null if word looks correct
+// ─── INLINE SPELLING ENRICHMENT (v19.6) ─────────────────────────────────────
+// `checkSpelling` is fast but conservative: it only catches typos within edit
+// distance 1 of words that *already appear in the passage*, with length diff
+// ≤ 1. That misses common transpositions ("excahnge" → "exchange" is distance
+// 2 in pure Levenshtein) and any typo of a paraphrased word that isn't in the
+// passage at all ("decsion" → "decision" when the passage says "choice").
+//
+// This helper takes the existing checkSpelling result and asks Datamuse about
+// remaining candidate words. Datamuse's `sp=` endpoint returns words spelled
+// similarly; if the top result is the queried word, it's correctly spelled.
+// Otherwise we treat it as a typo and use the top suggestions.
+//
+// Bounded concurrency (8 in flight max) + per-call timeout (already in
+// datamouseSpellCheck) keep the overall added latency under ~1 second even
+// for sloppy summaries with many candidates.
+async function enrichSpellingWithDatamuse(localResult, studentText) {
+  if (!studentText || typeof studentText !== 'string') return localResult;
+  // Words already flagged by the passage checker — skip them in Datamuse to
+  // avoid double-counting. Compare lower-cased so "Athur" (capitalised) and
+  // "athur" both dedupe.
+  const localFlagged = new Set((localResult?.suggestions || []).map(s => (s.misspelled || '').toLowerCase()));
+  const candidates = spellCheckCandidates(studentText)
+    .filter(w => !localFlagged.has(w.toLowerCase()))
+    .slice(0, 12); // hard cap to bound latency
+
+  if (candidates.length === 0) return localResult;
+
+  // Run lookups in parallel with a soft overall budget. Any individual
+  // datamouseSpellCheck call has its own 3s timeout already.
+  let datamuseHits = [];
+  try {
+    const lookups = candidates.map(async (w) => {
+      const suggestions = await datamouseSpellCheck(w);
+      return suggestions ? { word: w, suggestions } : null;
+    });
+    const overallTimeout = new Promise(resolve => setTimeout(() => resolve('timeout'), 4500));
+    const settled = await Promise.race([Promise.all(lookups), overallTimeout]);
+    if (settled === 'timeout') return localResult; // network slow — keep local-only result
+    datamuseHits = settled.filter(Boolean);
+  } catch (_) { return localResult; }
+
+  if (datamuseHits.length === 0) return localResult;
+
+  // Merge: existing errors + new Datamuse errors. Each Datamuse error keeps
+  // the word's top suggestion as the canonical "suggestion" field for
+  // downstream UI compatibility.
+  const newErrors = datamuseHits.map(h => ({ misspelled: h.word, suggestion: h.suggestions[0], suggestions: h.suggestions, source: 'dictionary' }));
+  const existingSuggestions = (localResult?.suggestions || []).map(s => ({ ...s, source: s.source || 'passage' }));
+  return {
+    errors: [...(localResult?.errors || []), ...newErrors.map(e => e.misspelled)],
+    suggestions: [...existingSuggestions, ...newErrors],
+    count: (localResult?.count || 0) + newErrors.length
+  };
+}
+
 async function datamouseSpellCheck(word) {
   const key = word.toLowerCase().trim();
   if (spellCache.has(key)) return spellCache.get(key);
@@ -2028,13 +2083,14 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     });
   }
 
-  // Priority 4 — spelling
+  // Priority 4 — spelling (v19.6: penalty scales 0.25/0.5/0.75/1.0)
   if (spelling && spelling.count > 0) {
+    const penalty = Math.min(1.0, 0.25 * spelling.count);
     const hints = (spelling.suggestions || []).slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
     improvements.push({
       priority: 4,
       icon: '🔤',
-      action: `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (capped at -0.5 raw)`,
+      action: `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (−${penalty.toFixed(2)} raw)`,
       detail: hints
     });
   }
@@ -2120,7 +2176,10 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   } else if (ratio < 1) {
     arr.push({ type: 'content_partial', impact: 'cap_at_PTE_79', detail: `${contentScore}/${cMax} main ideas captured — almost there` });
   }
-  if (spelling.count > 0) arr.push({ type: 'spelling', impact: -0.5, detail: `${spelling.count} error(s), capped at -0.5 raw` });
+  if (spelling.count > 0) {
+    const penalty = Math.min(1.0, 0.25 * spelling.count);
+    arr.push({ type: 'spelling', impact: -penalty, detail: `${spelling.count} error(s), -${penalty.toFixed(2)} raw (cap -1.0)` });
+  }
   if (vocab.meaning_changed) arr.push({ type: 'meaning_reversed', impact: 'vocab_to_0', detail: 'Synonym altered passage meaning' });
   if (vocab.inappropriate_count > 0) arr.push({ type: 'inappropriate_synonym', impact: -0.5, detail: `${vocab.inappropriate_count} occurrence(s)` });
   return arr;
@@ -2159,7 +2218,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.5.0', mode: 'local'
+        scoring_version: '19.6.0', mode: 'local'
       });
     }
 
@@ -2168,13 +2227,20 @@ app.post('/api/grade', async (req, res) => {
     const swaps = analyzeSwaps(text, prompt);
     const firstPerson = detectFirstPerson(text, prompt);
     const grammar = checkGrammar(text, prompt);
-    const spelling = checkSpelling(text, prompt);
+    let spelling = checkSpelling(text, prompt);
 
     // ── CONTENT JUDGE: Claude first, local fallback ──
+    // v19.6: also fire the Datamuse spelling enrichment in parallel — both are
+    // network-bound, so doing them concurrently saves ~2-4s on slow paths.
     let llmJudgment = null;
-    try {
-      llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints);
-    } catch (e) { /* swallow → fallback */ }
+    const [_judgeResult, enrichedSpelling] = await Promise.all([
+      (async () => {
+        try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
+        catch (e) { /* swallow → fallback */ }
+      })(),
+      enrichSpellingWithDatamuse(spelling, text).catch(() => spelling)
+    ]);
+    spelling = enrichedSpelling;
 
     // ── DYNAMIC CONTENT SCALE (v19.4) ───────────────────────────────────────
     // Each captured key idea = +1 to content_score. Total ideas (3 or 4) defines
@@ -2234,12 +2300,16 @@ app.post('/api/grade', async (req, res) => {
     // ── VOCABULARY (now informed by LLM judgment) ──
     const vocab = scoreVocabulary(verbatim, swaps, firstPerson, grammar, llmJudgment);
 
-    // ── GRAMMAR — apply spelling penalty (capped at -0.5 raw, was -1 per error) ──
+    // ── GRAMMAR — apply spelling penalty (v19.6: scales with error count) ──
+    // Penalty bands: 1 typo → -0.25, 2 typos → -0.5, 3 typos → -0.75, 4+ → -1.0.
+    // Cap is -1.0 raw, which on a 9-point scale is roughly -8 PTE — bounded,
+    // but a sloppy summary with 4+ typos no longer escapes with -0.5.
     let grammarScore = grammar.score;
     if (spelling.count >= 1) {
-      grammarScore = Math.max(0, grammarScore - 0.5);
-      const hints = spelling.suggestions.slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
-      grammar.grammar_issues.push(`Spelling: ${hints}`);
+      const penalty = Math.min(1.0, 0.25 * spelling.count);
+      grammarScore = Math.max(0, grammarScore - penalty);
+      const hints = (spelling.suggestions || []).slice(0, 3).map(s => `"${s.misspelled}" → "${s.suggestion}"`).join(', ');
+      grammar.grammar_issues.push(`Spelling (${spelling.count} error${spelling.count > 1 ? 's' : ''}, -${penalty.toFixed(2)} raw): ${hints}`);
     }
 
     // ── COHESION ADJUSTMENT — v19.5: reads from contentVerdict ──
@@ -2389,13 +2459,23 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.5.0',
+      scoring_version: '19.6.0',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
         count: spelling.count,
-        errors: spelling.suggestions.map(s => ({ misspelled: s.misspelled, suggestion: s.suggestion, source: 'passage' })),
-        note: spelling.count > 0 ? `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (capped at -0.5 raw)` : null
+        // v19.6: each suggestion may carry its own `source` (passage|dictionary)
+        // — preserve it so the UI can show where the typo flag came from. Some
+        // suggestions also have a `suggestions` array of alternatives.
+        errors: (spelling.suggestions || []).map(s => ({
+          misspelled: s.misspelled,
+          suggestion: s.suggestion,
+          suggestions: s.suggestions || [s.suggestion].filter(Boolean),
+          source: s.source || 'passage'
+        })),
+        note: spelling.count > 0
+          ? `${spelling.count} spelling error${spelling.count > 1 ? 's' : ''} (−${Math.min(1.0, 0.25 * spelling.count).toFixed(2)} raw, cap -1.0)`
+          : null
       }
     };
 

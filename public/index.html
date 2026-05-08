@@ -2169,7 +2169,7 @@
         invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.5 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.6 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
@@ -2197,11 +2197,21 @@
       const spellContent = document.getElementById('spellingContent');
 
       // Merge: spellData (from /api/spellcheck — full dictionary) takes priority.
-      // Fall back to passage-only spelling_details if spellcheck call failed.
+      // Fall back to spelling_details from /api/grade — v19.6 onwards this
+      // already contains Datamuse-enriched suggestions inline so the fallback
+      // is essentially as good as the dedicated endpoint.
       const mergedErrors = (() => {
         if (spellData && Array.isArray(spellData.errors)) return spellData.errors;
         const spd = data.spelling_details || {};
-        if (spd.count > 0 && spd.errors) return spd.errors.map(e => ({ misspelled: e.misspelled, suggestions: [e.suggestion], source: 'passage' }));
+        if (spd.count > 0 && spd.errors) {
+          return spd.errors.map(e => ({
+            misspelled: e.misspelled,
+            suggestions: Array.isArray(e.suggestions) && e.suggestions.length
+              ? e.suggestions
+              : (e.suggestion ? [e.suggestion] : []),
+            source: e.source || 'passage'
+          }));
+        }
         return [];
       })();
 
