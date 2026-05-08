@@ -794,11 +794,13 @@
       line-height: 1.5;
     }
     .ic-row.captured { background: #f0fdf4; border-left: 3px solid #16a34a; }
+    .ic-row.partial  { background: #fffbeb; border-left: 3px solid #f59e0b; }
     .ic-row.missing  { background: #fef2f2; border-left: 3px solid #ef4444; }
     .ic-row-icon { font-size: 1.05rem; line-height: 1.4; flex-shrink: 0; }
     .ic-row-text { flex: 1; min-width: 0; }
     .ic-row-text strong { display: block; margin-bottom: 2px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
     .ic-row.captured .ic-row-text strong { color: #166534; }
+    .ic-row.partial  .ic-row-text strong { color: #92400e; }
     .ic-row.missing  .ic-row-text strong { color: #991b1b; }
     .ic-row-text span { color: #374151; }
     .ic-tip {
@@ -1930,11 +1932,12 @@
 
       const cd = data.content_details || {};
       const captured = Array.isArray(cd.key_ideas_present) ? cd.key_ideas_present : [];
+      const partialIdeas = Array.isArray(cd.key_ideas_partial) ? cd.key_ideas_partial : [];
       const missing  = Array.isArray(cd.key_ideas_missing) ? cd.key_ideas_missing : [];
       const contentScore = (data.trait_scores && typeof data.trait_scores.content === 'number') ? data.trait_scores.content : null;
 
       // If the server gave us nothing to display, hide.
-      if (captured.length === 0 && missing.length === 0) { el.style.display = 'none'; return; }
+      if (captured.length === 0 && partialIdeas.length === 0 && missing.length === 0) { el.style.display = 'none'; return; }
 
       // Pull friendly text from the passage's keyElements so labels like "topic" or
       // "what" are replaced with the actual idea content. Fall back to the label.
@@ -1949,38 +1952,36 @@
         return { label: lbl, text: txt };
       };
 
-      // Tier styling — v19.4: cap depends on captured ratio, not just count
-      const total = captured.length + missing.length;
-      const capturedCount = captured.length;
-      const ratio = total > 0 ? capturedCount / total : 0;
+      // Tier styling — v19.7: header reflects total weighted coverage including partial credit
+      const total = captured.length + partialIdeas.length + missing.length;
+      const weighted = captured.length + 0.5 * partialIdeas.length;
+      const ratio = total > 0 ? weighted / total : 0;
+      const partialNote = partialIdeas.length > 0 ? ` (${partialIdeas.length} partial)` : '';
       let tierCls, headerIcon, headerText, capImpact;
-      if (missing.length === 0 && capturedCount > 0) {
+      if (missing.length === 0 && partialIdeas.length === 0 && captured.length > 0) {
         tierCls = 'all-captured';
         headerIcon = '🎯';
         headerText = `All ${total} main ideas captured`;
         capImpact = 'No content cap';
-      } else if (capturedCount === 0) {
+      } else if (captured.length === 0 && partialIdeas.length === 0) {
         tierCls = 'has-missing';
         headerIcon = '🚨';
         headerText = `0/${total} main ideas captured`;
         capImpact = 'Score capped at PTE ~15';
       } else if (ratio > 0.75) {
-        // 76%–<100% captured (e.g. very rare partial fractions)
         tierCls = 'partial';
         headerIcon = '⚠️';
-        headerText = `${capturedCount}/${total} main ideas captured`;
+        headerText = `${captured.length}/${total} main ideas captured${partialNote}`;
         capImpact = 'Score capped at PTE ~79';
       } else if (ratio > 0.5) {
-        // 51%–75% captured (e.g. 3/4 = 75%)
         tierCls = 'partial';
         headerIcon = '⚠️';
-        headerText = `${capturedCount}/${total} main ideas captured`;
+        headerText = `${captured.length}/${total} main ideas captured${partialNote}`;
         capImpact = 'Score capped at PTE ~65';
       } else {
-        // 1%–50% captured (e.g. 2/4 = 50%, or 1/3 = 33%)
         tierCls = 'has-missing';
         headerIcon = '🚨';
-        headerText = `${capturedCount}/${total} main ideas captured`;
+        headerText = `${captured.length}/${total} main ideas captured${partialNote}`;
         capImpact = 'Score capped at PTE ~50';
       }
 
@@ -1991,6 +1992,17 @@
           <div class="ic-row-text">
             <strong>${escapeHtml(f.label)}</strong>
             <span>${escapeHtml(f.text || 'Captured')}</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      const partialRows = partialIdeas.map(id => {
+        const f = friendly(id);
+        return `<div class="ic-row partial">
+          <div class="ic-row-icon">⚠️</div>
+          <div class="ic-row-text">
+            <strong>${escapeHtml(f.label)} — partial credit</strong>
+            <span>${escapeHtml(f.text || 'Captured but with significant gaps.')}</span>
           </div>
         </div>`;
       }).join('');
@@ -2008,9 +2020,12 @@
 
       // Tip block — actionable, only when there is something to fix.
       let tipHtml = '';
-      if (missing.length > 0) {
+      if (missing.length > 0 || partialIdeas.length > 0) {
+        const focus = [];
+        if (missing.length > 0) focus.push(`add the missing idea${missing.length > 1 ? 's' : ''}`);
+        if (partialIdeas.length > 0) focus.push(`flesh out the partial idea${partialIdeas.length > 1 ? 's' : ''}`);
         tipHtml = `<div class="ic-tip">
-          <strong>How to fix:</strong> Re-read the passage and ensure every WHAT/WHY/HOW/RESULT idea is present in your one sentence. Missing or fabricated ideas drop the score regardless of how good the grammar and vocabulary are.
+          <strong>How to fix:</strong> Re-read the passage and ${focus.join(' and ')}. Missing or partial ideas drop the score regardless of how good the grammar and vocabulary are.
         </div>`;
       }
 
@@ -2024,6 +2039,7 @@
         </div>
         <div class="ic-body">
           ${capturedRows}
+          ${partialRows}
           ${missingRows}
           ${tipHtml}
         </div>`;
@@ -2119,9 +2135,14 @@
         const skill = fullData?.skill_contributions;
         const swapCredit = fullData?.paraphrase_analysis?.totalCredit || 0;
         const hasConnector = fullData?.grammar_details?.has_connector;
+        // v19.7: surface partial-credit ideas before vocabulary suggestions —
+        // partial ideas cost a half-band each, more impactful than swaps.
+        const partialList = fullData?.content_details?.key_ideas_partial || [];
         const r = skill?.reading?.estimate || 0;
         let nextStep = '';
-        if (!hasConnector) {
+        if (partialList.length > 0) {
+          nextStep = `Flesh out the partial idea${partialList.length > 1 ? 's' : ''}: ${partialList.join(', ')}. Each goes from 0.5 to 1.0 once the headline meaning is clear.`;
+        } else if (!hasConnector) {
           nextStep = 'Add a connector (; however, ; moreover, ; therefore,) to chain your clauses.';
         } else if (swapCredit < 2) {
           const need = 2 - swapCredit;
@@ -2169,7 +2190,7 @@
         invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.6 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.7.1 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
@@ -2255,7 +2276,7 @@
     }
 
     // ── History / Modals / Dots (same logic as original) ──
-    function showPassageHistory(pid){const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};const attempts=h[pid]||[];const p=passages.find(x=>x.id===pid);document.getElementById('historyModalSubtitle').textContent=`Passage ${pid}: ${p?p.title:'Unknown'}`;const body=document.getElementById('historyModalBody');if(attempts.length===0){body.innerHTML='<div class="empty-state"><div class="empty-state-icon">📝</div><p>No attempts yet.</p></div>';}else{body.innerHTML=`<div style="margin-bottom:16px;padding:12px;background:#e3f2fd;border-radius:8px;font-size:0.9rem;"><strong>${attempts.length}</strong> attempt${attempts.length>1?'s':''}</div>`+attempts.map((a,i)=>{const sk=a.skill_contributions;const pa=a.paraphrase_analysis;const readEst=sk?.reading?.estimate||'--';const writeEst=sk?.writing?.estimate||'--';const paraQ=pa?.quality||'--';const paraR=pa?.rating||'';const cMax=a.trait_scores?.content_max||a.total_ideas||(a.content_details?.key_ideas_present?.length||0)+(a.content_details?.key_ideas_missing?.length||0)||3;return`<div class="history-item" onclick="loadHistoryAttempt(${pid},${i})"><div class="history-header"><span class="history-score">${a.overall_score}/90 (${a.band})</span><span class="history-date">${new Date(a.timestamp).toLocaleString()}</span></div><div class="history-meta"><span>Words: ${a.word_count}</span><span>Content: ${a.content_details?.key_ideas_present?.length||0}/${cMax}</span><span>📖R:${readEst}</span><span>✍️W:${writeEst}</span><span>Para:${paraQ}${paraR?' ('+paraR+')':''}</span></div><div class="history-text">"${escapeHtml(a.text)}"</div></div>`;}).join('');}document.getElementById('historyModal').classList.add('show');document.body.style.overflow='hidden';}
+    function showPassageHistory(pid){const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};const attempts=h[pid]||[];const p=passages.find(x=>x.id===pid);document.getElementById('historyModalSubtitle').textContent=`Passage ${pid}: ${p?p.title:'Unknown'}`;const body=document.getElementById('historyModalBody');if(attempts.length===0){body.innerHTML='<div class="empty-state"><div class="empty-state-icon">📝</div><p>No attempts yet.</p></div>';}else{body.innerHTML=`<div style="margin-bottom:16px;padding:12px;background:#e3f2fd;border-radius:8px;font-size:0.9rem;"><strong>${attempts.length}</strong> attempt${attempts.length>1?'s':''}</div>`+attempts.map((a,i)=>{const sk=a.skill_contributions;const pa=a.paraphrase_analysis;const readEst=sk?.reading?.estimate||'--';const writeEst=sk?.writing?.estimate||'--';const paraQ=pa?.quality||'--';const paraR=pa?.rating||'';const cd=a.content_details||{};const fullCount=(cd.key_ideas_present||[]).length;const partCount=(cd.key_ideas_partial||[]).length;const cMax=a.trait_scores?.content_max||a.total_ideas||(fullCount+partCount+(cd.key_ideas_missing||[]).length)||3;const contentLabel=partCount>0?`${fullCount}+${partCount}p/${cMax}`:`${fullCount}/${cMax}`;return`<div class="history-item" onclick="loadHistoryAttempt(${pid},${i})"><div class="history-header"><span class="history-score">${a.overall_score}/90 (${a.band})</span><span class="history-date">${new Date(a.timestamp).toLocaleString()}</span></div><div class="history-meta"><span>Words: ${a.word_count}</span><span>Content: ${contentLabel}</span><span>📖R:${readEst}</span><span>✍️W:${writeEst}</span><span>Para:${paraQ}${paraR?' ('+paraR+')':''}</span></div><div class="history-text">"${escapeHtml(a.text)}"</div></div>`;}).join('');}document.getElementById('historyModal').classList.add('show');document.body.style.overflow='hidden';}
     function loadHistoryAttempt(pid,idx){const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};const a=(h[pid]||[])[idx];if(a){document.getElementById('summaryInput').value=a.text;updateWordCount();showToast(`Loaded attempt — Score: ${a.overall_score}/90`,3000);closeHistoryModal();document.getElementById('summaryInput').scrollIntoView({behavior:'smooth'});}}
     function closeHistoryModal(e){if(!e||e.target.id==='historyModal'||e.target.classList.contains('btn-close-modal')){document.getElementById('historyModal').classList.remove('show');document.body.style.overflow='';}}
     function renderDots(){const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};document.getElementById('passageDots').innerHTML=passages.map((p,i)=>{const id=p.id;const cnt=(h[id]||[]).length;return`<div class="dot" data-id="${id}" onclick="loadPassage(${id})">${id}${cnt>0?`<span class="attempt-count">${cnt}</span>`:''}</div>`;}).join('');}

@@ -1272,15 +1272,16 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
     reading: {
       estimate: reading,
       components: { content: contentScore, content_max: cMax, academic_synonyms: academicCount, swap_credit: swapCredit, has_academic_synonyms: hasAcademicSynonyms },
-      note: contentNone
-        ? 'Wrong ideas — Reading skill heavily impacted'
-        : cohesionWeak
-          ? 'Ideas present but weakly connected — cohesion limits Reading skill'
-          : contentFull && hasAcademicSynonyms
-            ? 'Strong — correct ideas + academic synonyms'
-            : contentFull
-              ? 'All ideas captured — replace 2–3 common words with academic synonyms to push Reading higher'
-              : `${contentScore}/${cMax} main ideas captured — add the missing one${cMax - contentScore > 1 ? 's' : ''} to lift Reading further`
+      note: (() => {
+        if (contentNone) return 'Wrong ideas — Reading skill heavily impacted';
+        if (cohesionWeak) return 'Ideas present but weakly connected — cohesion limits Reading skill';
+        // v19.7: surface partial-credit ideas in the note
+        const partialList = (llmJudgment && Array.isArray(llmJudgment.ideas_partial)) ? llmJudgment.ideas_partial : [];
+        if (contentFull && partialList.length === 0 && hasAcademicSynonyms) return 'Strong — correct ideas + academic synonyms';
+        if (contentFull && partialList.length === 0) return 'All ideas captured — replace 2–3 common words with academic synonyms to push Reading higher';
+        if (partialList.length > 0) return `${contentScore}/${cMax} main ideas captured (${partialList.length} partial) — flesh out the partial idea${partialList.length > 1 ? 's' : ''} to lift Reading further`;
+        return `${contentScore}/${cMax} main ideas captured — add the missing one${cMax - contentScore > 1 ? 's' : ''} to lift Reading further`;
+      })()
     },
     writing: {
       estimate: writing,
@@ -1702,27 +1703,51 @@ ${studentText}
 
 ${kpHint ? 'KEY IDEAS THE PASSAGE CONVEYS (this passage has exactly ' + totalIdeas + ' key idea' + (totalIdeas !== 1 ? 's' : '') + '):\n' + kpHint + '\n' : ''}
 EVALUATE:
-1. CONTENT COVERAGE — Count exactly how many of the ${totalIdeas} key ideas above the student CLEARLY captured. This number IS the content_score (0 to ${totalIdeas}).
+1. CONTENT COVERAGE — For each of the ${totalIdeas} key ideas, judge how well the student conveyed its CORE meaning. This produces a per-idea score that sums to content_score.
 2. SYNONYM APPROPRIATENESS — If the student replaced words from the passage, are substitutes meaning-preserving and register-appropriate? VERBATIM COPYING IS ACCEPTABLE — do NOT penalise it. PHRASE-LIFTING IS ALSO ACCEPTABLE — students may select key phrases from the passage (rather than full sentences) and stitch them together with their own connectors. Do NOT penalise this style; judge purely on whether the resulting summary is coherent and faithful to the passage.
 3. COHESION — BE STRICT. Ideas must connect logically through proper connectors (however/moreover/therefore/furthermore/consequently). Listed-out facts with no logical glue is "weak" cohesion even if commas separate them. Connectors must signal the actual relationship: "however" only for contrast, "moreover/furthermore" only for addition, "therefore/consequently" only for cause-effect. A misused connector → "weak". Two clauses jammed with "and" or comma-spliced → "weak". Only "strong" when each connective genuinely reflects the relationship between the ideas it links.
 
-CONTENT SCORING (the rule is mechanical — one band per captured idea):
-- content_score = the number of key ideas the student clearly captured.
-- Range: 0 to ${totalIdeas}.
-- 0 captured → content_score 0.
-- 1 captured → content_score 1.
-- 2 captured → content_score 2.
-- 3 captured → content_score 3.
-${totalIdeas >= 4 ? '- 4 captured → content_score 4.' : ''}
-- ideas_captured MUST list each captured idea by its label (what/why/how/result OR topic/pivot/conclusion).
-- ideas_missing MUST list every key idea NOT clearly conveyed.
-- length(ideas_captured) + length(ideas_missing) MUST equal ${totalIdeas}.
-- content_score MUST equal length(ideas_captured).
+CONTENT SCORING — partial credit per idea:
+
+For EACH key idea above, assign a per-idea score:
+  • 1.0  — HEADLINE captured. The student's summary clearly conveys the central claim of this idea, even if specific supporting details (dates, names, numbers, secondary clauses) are omitted. Paraphrasing the headline IS capture.
+  • 0.5  — Partially captured. The student gestures at the idea but with significant distortion or only fragments of the core claim.
+  • 0.0  — Missing. The idea is not conveyed at all, or has been replaced by unrelated/fabricated content.
+
+Then content_score = SUM of per-idea scores, ROUNDED to nearest integer (range 0–${totalIdeas}).
+
+CAPTURE PHILOSOPHY — read this carefully:
+The KEY IDEAS above are written as full sentences with headline + supporting context. A student who captures the HEADLINE earns 1.0 even without the supporting context. Examples of captured (1.0):
+  • Key idea: "Progress was not entirely smooth, with setbacks like the South Sea Bubble of 1720"
+    Student wrote: "the progress was not completely smooth"  →  1.0 (headline captured; the date is supporting detail).
+  • Key idea: "He has altered the way people think as well as the way they live, like other revolutionary scientists"
+    Student wrote: "has changed the world more than anyone in the past century"  →  1.0 (same headline meaning).
+  • Key idea: "He persuaded his wife that exchanging the town house for a farm cottage on a lower income was a good idea"
+    Student wrote: "he tried to convince his wife that exchanging town house for farm cottage was a good idea"  →  1.0 ("tried to convince" = "persuaded"; same idea).
+  • Key idea: "Tourism employs a large proportion of women, minority groups and young people"
+    Student wrote: "the sector employs many women, minority groups and young people"  →  1.0.
+
+Examples of partial (0.5):
+  • Key idea: "He persuaded his wife that exchanging the town house for a farm cottage was a good idea"
+    Student wrote: "he made his wife move"  →  0.5 (gestures at the action but loses the persuasion + reasoning).
+
+Examples of missing (0.0):
+  • Key idea: "The financial hub has overtaken New York rivals in funds managed and holds 70% of bond markets"
+    Student wrote: nothing about overtaking NY  →  0.0.
+  • Student replaces an idea with fabricated content not in the passage  →  0.0.
+
+OUTPUT REQUIREMENTS:
+- per_idea_scores: object mapping each idea label (what/why/how/result OR topic/pivot/conclusion) to its 0.0/0.5/1.0 score.
+- ideas_captured: labels with score >= 1.0.
+- ideas_partial: labels with score == 0.5.
+- ideas_missing: labels with score == 0.0.
+- length(ideas_captured) + length(ideas_partial) + length(ideas_missing) MUST equal ${totalIdeas}.
+- content_score: SUM of per_idea_scores values, rounded to nearest integer (so two 0.5s round up; one 0.5 alone rounds down).
 
 CRITICAL RULES (do not break these):
-1. An idea is "captured" only if its CORE meaning is clearly present — paraphrasing is fine, but the same fact/argument must be there. Touching a related word (e.g., naming the same place) without conveying the actual idea does NOT count as captured.
-2. If the student replaces a passage idea with different content (even if grammatically fluent), the original idea goes in "ideas_missing" — fluency does not rescue missing content.
-3. If the summary is off-topic or gibberish, content_score = 0 and ideas_missing contains every key idea.
+1. An idea is "captured" (1.0) when its CORE/HEADLINE meaning is clearly present — paraphrasing is fine, omitting supporting detail is fine, the central claim must be there.
+2. If the student replaces a passage idea with different content (even if grammatically fluent), score that idea 0.0 — fluency does not rescue missing content.
+3. If the summary is off-topic or gibberish, every per_idea_score is 0.0.
 
 - synonym_appropriateness "appropriate": all swaps preserve meaning and academic register, OR no swaps were made (verbatim).
 - synonym_appropriateness "some_inappropriate": one or more swaps are awkward, wrong register, or shift connotation.
@@ -1760,12 +1785,14 @@ BAD examples to AVOID:
 
 Aim for 6-8 candidates if possible, but quality beats quantity — 4 great suggestions are better than 8 awkward ones.
 
-Respond ONLY with valid JSON, no other text. The "content_score" field MUST equal the length of "ideas_captured" — they are the same number expressed two ways. If the passage has 4 key ideas and the student captured 3, return content_score=3 and ideas_captured with 3 entries. Do not use the legacy 0–2 scale.
+Respond ONLY with valid JSON, no other text. Use this exact structure:
 {
-  "content_score": 0,
-  "content_reason": "one short sentence",
-  "ideas_captured": ["short label", "short label"],
-  "ideas_missing": ["short label"],
+  "per_idea_scores": { "what": 1.0, "why": 1.0, "how": 0.5, "result": 0.0 },
+  "content_score": 3,
+  "content_reason": "one short sentence summarising overall coverage",
+  "ideas_captured": ["what", "why"],
+  "ideas_partial": ["how"],
+  "ideas_missing": ["result"],
   "synonym_appropriateness": "appropriate",
   "synonym_issues": [],
   "cohesion": "strong",
@@ -1774,7 +1801,13 @@ Respond ONLY with valid JSON, no other text. The "content_score" field MUST equa
   "recommended_swaps": [
     { "word": "made", "context": "made a lifestyle choice", "synonyms": ["opted for", "decided on", "selected"], "rationale": "Academic register lifts Reading skill" }
   ]
-}`;
+}
+
+Notes on the schema:
+- per_idea_scores keys: only the labels actually present in the KEY IDEAS above (what/why/how/result OR topic/pivot/conclusion).
+- per_idea_scores values: only 0.0, 0.5, or 1.0 (no other values).
+- content_score: ROUND(sum of per_idea_scores values) — JavaScript Math.round semantics (0.5 rounds up).
+- ideas_captured / ideas_partial / ideas_missing: derived from per_idea_scores. Their lengths must sum to ${totalIdeas}.`;
 
   try {
     const callPromise = anthropic.messages.create({
@@ -1900,6 +1933,10 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   const contentNone    = contentScore === 0;
 
   // ── VERDICT ──────────────────────────────────────────────────────────────
+  // v19.7: when there's partial coverage, say so explicitly so the headline
+  // tells students what's actually going on, not just the score band.
+  const partialIdeasList = contentVerdict.ideas_partial || [];
+  const hasPartial = partialIdeasList.length > 0;
   let tier, headline;
   if (form && !form.valid) {
     tier = 'invalid';
@@ -1913,13 +1950,18 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
                       : vocab.method === 'verbatim' ? 'Verbatim Method'
                       : vocab.method === 'phrase_picking' ? 'Phrase-Picking Method'
                       : 'a strong hybrid approach';
-    headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
+    const partialNote = hasPartial
+      ? ` ${partialIdeasList.length} idea${partialIdeasList.length > 1 ? 's' : ''} got partial credit — flesh ${partialIdeasList.length > 1 ? 'them' : 'it'} out to fully secure this band.`
+      : '';
+    headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.${partialNote}`;
   } else if (rawRatio >= 0.79) {
     tier = 'good';
-    headline = `Solid attempt — ${band} (PTE ${pte}). One or two changes will push this to Band 9.`;
+    const partialNote = hasPartial ? ` ${partialIdeasList.length} idea${partialIdeasList.length > 1 ? 's' : ''} partial — flesh ${partialIdeasList.length > 1 ? 'them' : 'it'} out for full marks.` : ' One or two changes will push this to Band 9.';
+    headline = `Solid attempt — ${band} (PTE ${pte}).${partialNote}`;
   } else if (rawRatio >= 0.50) {
     tier = 'partial';
-    headline = `Partial credit — ${band} (PTE ${pte}). Significant gaps to close.`;
+    const partialNote = hasPartial ? ` ${partialIdeasList.length} of your ideas got partial credit only.` : ' Significant gaps to close.';
+    headline = `Partial credit — ${band} (PTE ${pte}).${partialNote}`;
   } else {
     tier = 'fail';
     headline = `${band} (PTE ${pte}) — major gaps. Focus on capturing the main ideas first.`;
@@ -1930,10 +1972,28 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   // ── STRENGTHS ────────────────────────────────────────────────────────────
   const strengths = [];
 
-  if (contentFull && cMax > 0) {
-    strengths.push({ icon: '🎯', label: `All ${cMax} main ideas captured`, detail: (contentVerdict.ideas_captured || []).join(' · ') });
-  } else if (contentPartial && (contentVerdict.ideas_captured || []).length > 0) {
-    strengths.push({ icon: '✓', label: `Captured ${contentScore}/${cMax} main idea${contentScore > 1 ? 's' : ''}`, detail: contentVerdict.ideas_captured.join(' · ') });
+  const fullyCaptured = contentVerdict.ideas_captured || [];
+  const partialCaptured = contentVerdict.ideas_partial || [];
+
+  if (contentFull && cMax > 0 && partialCaptured.length === 0) {
+    strengths.push({ icon: '🎯', label: `All ${cMax} main ideas captured`, detail: fullyCaptured.join(' · ') });
+  } else if (fullyCaptured.length > 0 || partialCaptured.length > 0) {
+    // Build a label that surfaces both fully captured AND partial, so the student
+    // gets credit for what they got and a clear cue for what to flesh out.
+    const totalWeighted = fullyCaptured.length + 0.5 * partialCaptured.length;
+    const niceTotal = Number.isInteger(totalWeighted) ? totalWeighted.toString() : totalWeighted.toFixed(1);
+    let label;
+    if (fullyCaptured.length > 0 && partialCaptured.length > 0) {
+      label = `Captured ${niceTotal}/${cMax} main ideas (${partialCaptured.length} partial)`;
+    } else if (fullyCaptured.length > 0) {
+      label = `Captured ${fullyCaptured.length}/${cMax} main idea${fullyCaptured.length > 1 ? 's' : ''}`;
+    } else {
+      label = `${partialCaptured.length} idea${partialCaptured.length > 1 ? 's' : ''} partially captured`;
+    }
+    const detailParts = [];
+    if (fullyCaptured.length) detailParts.push('Full: ' + fullyCaptured.join(', '));
+    if (partialCaptured.length) detailParts.push('Partial: ' + partialCaptured.join(', '));
+    strengths.push({ icon: '✓', label, detail: detailParts.join(' · ') });
   }
 
   if (grammar.has_connector && grammar.connector_quality === 'perfect') {
@@ -1982,7 +2042,9 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     };
   }
 
-  // Priority 1 — content
+  // Priority 1 — content (v19.7: split missing vs partial guidance)
+  const missingArr = contentVerdict.ideas_missing || [];
+  const partialArr = contentVerdict.ideas_partial || [];
   if (contentNone) {
     improvements.push({
       priority: 1,
@@ -1990,19 +2052,29 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
       action: 'Re-read the passage and capture the main ideas',
       detail: `Identify each of the ${cMax} key ideas (What/Why/How/Result). Missing all ideas heavily caps the score (PTE 15 max).`
     });
-  } else if (contentPartial) {
-    const missing = (contentVerdict.ideas_missing || []).join(', ');
-    const need = cMax - contentScore;
-    // v19.5: PTE caps must match the gate at the exact same boundaries.
+  } else if (contentPartial || missingArr.length > 0 || partialArr.length > 0) {
+    // PTE cap matches the gate at the same boundaries.
     const capPte = contentRatio <= 0.5 ? 50 : contentRatio <= 0.75 ? 65 : 79;
-    improvements.push({
-      priority: 1,
-      icon: '⚠️',
-      action: missing
-        ? `Add the missing idea${need > 1 ? 's' : ''}: ${missing}`
-        : `${need} main idea${need > 1 ? 's are' : ' is'} missing`,
-      detail: `You captured ${contentScore}/${cMax}. Score is currently capped at PTE ${capPte} until all main ideas are included.`
-    });
+
+    // Action: prioritise missing over partial because missing costs a full band each.
+    if (missingArr.length > 0) {
+      improvements.push({
+        priority: 1,
+        icon: '⚠️',
+        action: `Add the missing idea${missingArr.length > 1 ? 's' : ''}: ${missingArr.join(', ')}`,
+        detail: `You captured ${contentScore}/${cMax}. Score is currently capped at PTE ${capPte} until all main ideas are included.`
+      });
+    }
+    // Partial ideas get their own coaching — half-credit means there's something
+    // there but it needs the headline meaning to be clearer.
+    if (partialArr.length > 0) {
+      improvements.push({
+        priority: 1,
+        icon: '🟡',
+        action: `Flesh out the partial idea${partialArr.length > 1 ? 's' : ''}: ${partialArr.join(', ')}`,
+        detail: `You touched on ${partialArr.length === 1 ? 'this idea' : 'these ideas'} but the core meaning isn't clear yet — half credit only. Re-read the passage and convey the headline of each one explicitly.`
+      });
+    }
   }
 
   // Priority 1 — meaning changed
@@ -2218,7 +2290,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.6.0', mode: 'local'
+        scoring_version: '19.7.1', mode: 'local'
       });
     }
 
@@ -2250,50 +2322,74 @@ app.post('/api/grade', async (req, res) => {
     const maxContent = totalIdeas > 0 ? totalIdeas : 2;
     const maxRaw = 1 + maxContent + 2 + 2; // form + content + grammar + vocab
 
-    // ── STRICT CONTENT GATE: content_score is *literally* the captured count ──
-    // Claude is told this directly in the prompt, but we re-verify here so the
-    // server is the source of truth even if the model returns inconsistent data.
-    //
-    // v19.4.1 fix: when the model returns ideas_captured/ideas_missing arrays,
-    // those are authoritative — they're the explicit per-idea breakdown Claude
-    // committed to. Some Claude responses also include a legacy 0–2 numeric
-    // content_score that disagrees with the array length (e.g. all 4 captured
-    // but content_score=1); in that case we trust the array, not the integer.
-    // The only time we DON'T trust the captured list is when both arrays are
-    // empty (e.g. an off-topic summary) — then we honor the numeric score.
+    // ── STRICT CONTENT GATE — v19.7: partial credit per idea ───────────────
+    // The prompt asks Claude to return per_idea_scores: { what: 1.0, why: 0.5, ... }
+    // We compute content_score = ROUND(sum) on the server. If per_idea_scores
+    // is missing (older Claude responses, prompt regression), fall back to
+    // the array-length authoritative path from v19.4.1.
     if (llmJudgment) {
+      const perIdea = (llmJudgment.per_idea_scores && typeof llmJudgment.per_idea_scores === 'object')
+        ? llmJudgment.per_idea_scores : null;
       const captured = Array.isArray(llmJudgment.ideas_captured) ? llmJudgment.ideas_captured : [];
+      const partial  = Array.isArray(llmJudgment.ideas_partial)  ? llmJudgment.ideas_partial  : [];
       const missing  = Array.isArray(llmJudgment.ideas_missing)  ? llmJudgment.ideas_missing  : [];
       const originalScore = llmJudgment.content_score;
-      let capturedCount;
-      if (captured.length > 0 || missing.length > 0) {
-        // Authoritative path: trust the per-idea breakdown.
-        capturedCount = captured.length;
+      let computedScore;
+      let computedSum = 0;
+
+      if (perIdea && Object.keys(perIdea).length > 0) {
+        // Authoritative — use per_idea_scores. Each value clamped to {0, 0.5, 1.0}.
+        for (const k of Object.keys(perIdea)) {
+          let v = Number(perIdea[k]);
+          if (Number.isNaN(v)) v = 0;
+          // Snap to nearest of 0 / 0.5 / 1
+          if (v >= 0.75) v = 1;
+          else if (v >= 0.25) v = 0.5;
+          else v = 0;
+          perIdea[k] = v;
+          computedSum += v;
+        }
+        computedScore = Math.round(computedSum);
+        // Rebuild captured / partial / missing arrays so they always match perIdea.
+        llmJudgment.ideas_captured = Object.keys(perIdea).filter(k => perIdea[k] === 1);
+        llmJudgment.ideas_partial  = Object.keys(perIdea).filter(k => perIdea[k] === 0.5);
+        llmJudgment.ideas_missing  = Object.keys(perIdea).filter(k => perIdea[k] === 0);
+      } else if (captured.length > 0 || missing.length > 0 || partial.length > 0) {
+        // Fallback — array-length authoritative (legacy v19.4.1 path).
+        // Half-credit for "partial" entries.
+        computedSum = captured.length + 0.5 * partial.length;
+        computedScore = Math.round(computedSum);
       } else {
-        // Both arrays empty — fall back to the numeric score Claude gave us,
-        // clamped into the new dynamic scale.
-        capturedCount = (typeof originalScore === 'number') ? originalScore : 0;
+        // Last resort — both arrays and per_idea_scores empty.
+        computedScore = (typeof originalScore === 'number') ? Math.round(originalScore) : 0;
+        computedSum = computedScore;
       }
-      // Clamp into [0, maxContent]
-      capturedCount = Math.max(0, Math.min(maxContent, capturedCount));
-      llmJudgment.content_score = capturedCount;
-      llmJudgment.content_max   = maxContent;
-      if (capturedCount !== originalScore) {
-        llmJudgment.content_score_adjusted = { from: originalScore, to: capturedCount, reason: 'reconciled_with_captured_list' };
+      computedScore = Math.max(0, Math.min(maxContent, computedScore));
+      llmJudgment.content_score = computedScore;
+      llmJudgment.content_score_raw_sum = computedSum;
+      llmJudgment.content_max = maxContent;
+      if (computedScore !== originalScore) {
+        llmJudgment.content_score_adjusted = { from: originalScore, to: computedScore, reason: perIdea ? 'computed_from_per_idea_scores' : 'reconciled_with_arrays' };
       }
-      // Update reason text to match the final score.
-      if (capturedCount === maxContent && missing.length === 0) {
+      // Update reason text to reflect the final score.
+      const capList = llmJudgment.ideas_captured || [];
+      const partList = llmJudgment.ideas_partial || [];
+      const missList = llmJudgment.ideas_missing || [];
+      if (capList.length === maxContent && partList.length === 0 && missList.length === 0) {
         llmJudgment.content_reason = `All ${maxContent} key ideas captured.`;
-      } else if (capturedCount === 0 && missing.length > 0) {
-        llmJudgment.content_reason = `No key ideas captured (${missing.join(', ')} all missing).`;
-      } else if (missing.length > 0) {
-        llmJudgment.content_reason = `${capturedCount}/${maxContent} key ideas captured. Missing: ${missing.join(', ')}.`;
+      } else if (capList.length === 0 && partList.length === 0) {
+        llmJudgment.content_reason = `No key ideas captured (${missList.join(', ')} all missing).`;
+      } else {
+        const parts = [];
+        if (capList.length) parts.push(`${capList.length} fully (${capList.join(', ')})`);
+        if (partList.length) parts.push(`${partList.length} partial (${partList.join(', ')})`);
+        if (missList.length) parts.push(`${missList.length} missing (${missList.join(', ')})`);
+        llmJudgment.content_reason = `Captured ${parts.join('; ')}. Score: ${computedScore}/${maxContent}.`;
       }
     }
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
     const contentVerdict = llmJudgment || fallback;
-    // Make sure content_max is set on whichever verdict we end up using
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
@@ -2382,10 +2478,13 @@ app.post('/api/grade', async (req, res) => {
       content_details: {
         key_ideas_extracted: [
           ...(contentVerdict.ideas_captured || []),
-          ...(contentVerdict.ideas_missing || [])
+          ...(contentVerdict.ideas_partial  || []),
+          ...(contentVerdict.ideas_missing  || [])
         ],
         key_ideas_present: contentVerdict.ideas_captured || [],
-        key_ideas_missing: contentVerdict.ideas_missing || [],
+        key_ideas_partial: contentVerdict.ideas_partial  || [],
+        key_ideas_missing: contentVerdict.ideas_missing  || [],
+        per_idea_scores: contentVerdict.per_idea_scores  || null,
         notes: contentVerdict.content_reason,
         feels_connected: contentVerdict.cohesion ? contentVerdict.cohesion !== 'weak' : true,
         cohesion: contentVerdict.cohesion || 'unknown',
@@ -2459,7 +2558,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.6.0',
+      scoring_version: '19.7.1',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {

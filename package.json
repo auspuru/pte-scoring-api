@@ -1,16 +1,16 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.6.0",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.6: Datamuse-backed inline spell check + scaled spelling penalty)",
+  "version": "19.7.1",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.7.1: full feedback for partial credit — verdict, strengths, improvements, Reading note, history all updated)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "@anthropic-ai/sdk": "^0.24.0"
+    "@anthropic-ai/sdk": "^0.24.3",
+    "cors": "^2.8.6",
+    "express": "^4.22.1"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -64,7 +64,7 @@
       "what": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, having been born and reared on a farm",
       "why": "He was familiar with the minor disadvantages of country living such as uncertain water supply and lack of central heating",
       "how": "He told his town-born wife about the many advantages of the farm cottage",
-      "result": "He persuaded his wife that exchanging a warm large town house for a windswept farm cottage on a much lower income was a good idea"
+      "result": "He tried to convince his wife that exchanging the town house for a farm cottage on a lower income was a good idea"
     },
     "sampleResponse": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
     "sampleNotes": "Real Pearson-scored Band 90 sample. Paraphrased Method \u2014 5+ swaps (choice\u2192decision, familiar\u2192aware, disadvantages\u2192downsides, advantages\u2192benefits, persuade\u2192convince) + 3 connectors. 74 words."
@@ -76,7 +76,7 @@
     "text": "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
     "keyElements": {
       "what": "The little band of stockbrokers from Jonathan's Coffee House in 1698 became the founder-members of the world's mighty money capital",
-      "why": "Progress was not smooth \u2014 the South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748",
+      "why": "Progress was not entirely smooth, with setbacks like the South Sea Bubble of 1720",
       "how": "The UK's financial hub has now overtaken its New York rivals in funds managed and holds 70% of the global secondary bond market",
       "result": "London remains the place to be for foreigners in finance despite being one of the most expensive cities with transport systems groaning under pressure"
     },
@@ -118,8 +118,8 @@
     "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
     "keyElements": {
       "what": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone else in the past hundred years",
-      "why": "Like Galileo and Newton, he is a scientist who has altered the way people think as well as the way they live",
-      "how": "Since the Web went global 20 years ago, shopping, music and communication have been transformed and individuals now have the same access to information as the elite",
+      "why": "He has altered the way people think as well as the way they live, like other revolutionary scientists",
+      "how": "Since the Web went global 20 years ago, shopping, music and communication have been transformed, and individuals now have the same access to information as the elite",
       "result": "The Oxford computer scientist invented the Web because he was frustrated that he could not find all the information he wanted in one place"
     },
     "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
