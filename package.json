@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.7.1",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.7.1: full feedback for partial credit — verdict, strengths, improvements, Reading note, history all updated)",
+  "version": "19.7.2",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.7.2: headline-rescue auto-upgrades 0.5→1.0 when student captures the headline of overstuffed key elements)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -411,6 +411,88 @@ function checkSpelling(studentText, passageText) {
   hyphenated.forEach(h => passageExpanded.add(h.replace(/-/g, '').toLowerCase()));
   // Common function words that are never typos
   const SAFE = new Set(['though','although','through','throughout','therefore','however','moreover','furthermore','nevertheless','consequently','additionally','whereas','whereby','thereby','therein','thereof','nonetheless','meanwhile','otherwise','likewise','similarly','accordingly','subsequently','alternatively','simultaneously','approximately','predominantly','significantly','substantially','considerably','particularly','specifically','essentially','fundamentally','traditionally','potentially','previously','currently','recently','apparently','ultimately','worldwide','nationwide','otherwise']);
+
+  // v19.7.2: pairs of irregular-verb forms that share lemma but differ at
+  // edit-distance 1 (e.g., "became"/"become", "begun"/"begin"). When the
+  // student types one form and the passage uses the other, the basic edit-
+  // distance check would false-flag it as a typo. We map each form to its
+  // common alternates so the inflection check below can recognize the pair
+  // and skip the typo flag.
+  const IRREGULAR_VERB_PAIRS = {
+    'became':  ['become','becomes','becoming'],
+    'become':  ['became','becomes','becoming'],
+    'begun':   ['begin','began','begins','beginning'],
+    'began':   ['begin','begun','begins','beginning'],
+    'begin':   ['began','begun','begins','beginning'],
+    'broke':   ['break','breaks','broken','breaking'],
+    'broken':  ['break','breaks','broke','breaking'],
+    'chose':   ['choose','chooses','chosen','choosing'],
+    'chosen':  ['choose','chooses','chose','choosing'],
+    'drove':   ['drive','drives','driven','driving'],
+    'driven':  ['drive','drives','drove','driving'],
+    'fell':    ['fall','falls','fallen','falling'],
+    'fallen':  ['fall','falls','fell','falling'],
+    'flew':    ['fly','flies','flew','flown','flying'],
+    'flown':   ['fly','flies','flew','flying'],
+    'gave':    ['give','gives','given','giving'],
+    'given':   ['give','gives','gave','giving'],
+    'grew':    ['grow','grows','grown','growing'],
+    'grown':   ['grow','grows','grew','growing'],
+    'held':    ['hold','holds','holding'],
+    'hold':    ['held','holds','holding'],
+    'knew':    ['know','knows','known','knowing'],
+    'known':   ['know','knows','knew','knowing'],
+    'rose':    ['rise','rises','risen','rising'],
+    'risen':   ['rise','rises','rose','rising'],
+    'shook':   ['shake','shakes','shaken','shaking'],
+    'spoke':   ['speak','speaks','spoken','speaking'],
+    'spoken':  ['speak','speaks','spoke','speaking'],
+    'stole':   ['steal','steals','stolen','stealing'],
+    'stolen':  ['steal','steals','stole','stealing'],
+    'swam':    ['swim','swims','swum','swimming'],
+    'swum':    ['swim','swims','swam','swimming'],
+    'took':    ['take','takes','taken','taking'],
+    'taken':   ['take','takes','took','taking'],
+    'threw':   ['throw','throws','thrown','throwing'],
+    'thrown':  ['throw','throws','threw','throwing'],
+    'wore':    ['wear','wears','worn','wearing'],
+    'worn':    ['wear','wears','wore','wearing'],
+    'wrote':   ['write','writes','written','writing'],
+    'written': ['write','writes','wrote','writing'],
+    'went':    ['go','goes','gone','going'],
+    'gone':    ['go','goes','went','going'],
+    'saw':     ['see','sees','seen','seeing'],
+    'seen':    ['see','sees','saw','seeing'],
+    'made':    ['make','makes','making'],
+    'make':    ['made','makes','making'],
+    'said':    ['say','says','saying'],
+    'told':    ['tell','tells','telling'],
+    'tell':    ['told','tells','telling'],
+    'sold':    ['sell','sells','selling'],
+    'sell':    ['sold','sells','selling'],
+    'left':    ['leave','leaves','leaving'],
+    'leave':   ['left','leaves','leaving'],
+    'felt':    ['feel','feels','feeling'],
+    'feel':    ['felt','feels','feeling'],
+    'heard':   ['hear','hears','hearing'],
+    'paid':    ['pay','pays','paying'],
+    'pay':     ['paid','pays','paying'],
+    'lay':     ['lie','lies','lying','lain'],
+    'lain':    ['lie','lies','lay','lying'],
+    'sat':     ['sit','sits','sitting'],
+    'stood':   ['stand','stands','standing'],
+    'stand':   ['stood','stands','standing'],
+    'won':     ['win','wins','winning'],
+    'lost':    ['lose','loses','losing'],
+    'lose':    ['lost','loses','losing'],
+    'caught':  ['catch','catches','catching'],
+    'taught':  ['teach','teaches','teaching'],
+    'bought':  ['buy','buys','buying'],
+    'brought': ['bring','brings','bringing'],
+    'thought': ['think','thinks','thinking'],
+    'fought':  ['fight','fights','fighting'],
+    'sought':  ['seek','seeks','seeking'],
+  };
   
   const studentWords = studentText.replace(/[^\w\s'-]/g, '').split(/\s+/).filter(w => w.length > 2);
   const errors = [];
@@ -438,6 +520,11 @@ function checkSpelling(studentText, passageText) {
       }
     }
     if (isDerived) continue;
+    // v19.7.2: irregular verb pairs (e.g., "became"/"become") are at edit
+    // distance 1 but are NOT typos — they're inflections. If the student's
+    // word has a known alternate form that appears in the passage, skip.
+    const irregularAlts = IRREGULAR_VERB_PAIRS[lower];
+    if (irregularAlts && irregularAlts.some(alt => passageWords.has(alt))) continue;
     for (const pw of passageWords) {
       if (Math.abs(pw.length - lower.length) > 1) continue;
       const dist = editDistance(lower, pw);
@@ -1351,6 +1438,111 @@ const spellCache = new Map();
 const SPELL_CACHE_MAX = 1000;
 
 // Returns top suggestion for a misspelled word, or null if word looks correct
+// ─── HEADLINE RESCUE (v19.7.2) ──────────────────────────────────────────────
+// When Claude awards 0.5 to an idea, the most common reason in practice is that
+// the key element itself contains TWO clauses joined by " and ", " ; ", a comma
+// before "and", or "; moreover/furthermore" — i.e., it's overstuffed. If the
+// student captures the FIRST clause (the headline) but omits the secondary
+// clause, Claude reports partial credit even though by PTE rubric they have
+// fully captured the idea.
+//
+// This rescue extracts the headline from each key element (the substring before
+// the first joining conjunction) and checks whether the student's text contains
+// the distinctive content tokens of that headline. If yes → upgrade 0.5 → 1.0.
+// Conservative thresholds: requires ≥60% of headline content tokens to match,
+// and at least 2 distinctive terms. Never downgrades — only upgrades.
+
+const HEADLINE_STOP = new Set([
+  'the','a','an','and','or','but','of','to','for','from','with','by','in','on',
+  'at','as','is','are','was','were','be','been','have','has','had','will','would',
+  'could','should','may','might','can','this','that','these','those','it','its',
+  'their','they','them','there','then','than','so','also','about','up','out','down',
+  'off','i','you','he','she','we','his','her','our','your','my'
+]);
+
+function extractHeadline(keyElementText) {
+  if (!keyElementText) return '';
+  const t = String(keyElementText).trim();
+  // Split on the FIRST joining marker that separates a headline from its
+  // supporting context. Order matters: more specific markers first.
+  const splitters = [
+    /;\s*moreover\b/i, /;\s*furthermore\b/i, /;\s*and\b/i,
+    /,\s+and\s+/i,                    // ", and " (Oxford-comma joiner of 2 clauses)
+    /,\s+with\s+/i,                   // ", with setbacks like..." (supporting detail)
+    /,\s+including\s+/i,              // ", including..."
+    /,\s+such\s+as\s+/i,              // ", such as..."
+    /\s+;\s+/,                        // bare semicolon
+    /\s+and\s+(?:also\s+|then\s+)?/i  // " and " — last resort, may over-split lists
+  ];
+  for (const re of splitters) {
+    const m = t.match(re);
+    if (m && m.index > 20) {  // require at least 20 chars before the split → real clause
+      return t.slice(0, m.index).trim();
+    }
+  }
+  return t;
+}
+
+function tokenizeForHeadline(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[^\w\s$%]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length >= 3 && !HEADLINE_STOP.has(w));
+}
+
+// Returns true when the student's text contains enough of the headline's
+// distinctive tokens that we're confident they captured it.
+function headlineCapturedInText(headline, studentText) {
+  const headlineTokens = tokenizeForHeadline(headline);
+  const studentTokens = new Set(tokenizeForHeadline(studentText));
+  if (headlineTokens.length < 2) return false;
+  // Token overlap (lemma-loose: prefix match for short stems)
+  let hits = 0;
+  const matched = [];
+  for (const tok of headlineTokens) {
+    if (studentTokens.has(tok)) { hits++; matched.push(tok); continue; }
+    // Fuzzy: stem prefix (e.g. "overtaken" vs "overtake" or "overtook")
+    const stem = tok.length > 5 ? tok.slice(0, tok.length - 2) : tok;
+    if (stem.length >= 4) {
+      for (const st of studentTokens) {
+        if (st.startsWith(stem)) { hits++; matched.push(tok + '→' + st); break; }
+      }
+    }
+  }
+  const ratio = hits / headlineTokens.length;
+  // Require ≥60% match AND at least 2 distinctive tokens hit.
+  return { captured: ratio >= 0.60 && hits >= 2, ratio, hits, total: headlineTokens.length, matched };
+}
+
+// Apply the rescue to a per_idea_scores object. Returns the rescue audit so
+// it can be surfaced in content_details for transparency / debugging.
+function applyHeadlineRescue(perIdeaScores, keyElements, studentText) {
+  if (!perIdeaScores || !keyElements) return { applied: [], skipped: [] };
+  const audit = { applied: [], skipped: [] };
+  for (const label of Object.keys(perIdeaScores)) {
+    const score = perIdeaScores[label];
+    if (score >= 1) continue;          // already full — nothing to do
+    if (score === 0)   continue;       // missing — rescue is for partial only
+    const keyText = keyElements[label];
+    if (!keyText) continue;
+    const headline = extractHeadline(keyText);
+    // If headline equals the whole key element, no overstuffing detected →
+    // Claude's 0.5 stands.
+    if (headline.length >= keyText.length - 5) {
+      audit.skipped.push({ label, reason: 'no_dual_clause_pattern' });
+      continue;
+    }
+    const result = headlineCapturedInText(headline, studentText);
+    if (result.captured) {
+      perIdeaScores[label] = 1;
+      audit.applied.push({ label, headline, hits: result.hits, total: result.total, ratio: +result.ratio.toFixed(2), matched: result.matched.slice(0, 6) });
+    } else {
+      audit.skipped.push({ label, reason: 'headline_not_captured', ratio: +result.ratio.toFixed(2) });
+    }
+  }
+  return audit;
+}
+
 // ─── INLINE SPELLING ENRICHMENT (v19.6) ─────────────────────────────────────
 // `checkSpelling` is fast but conservative: it only catches typos within edit
 // distance 1 of words that *already appear in the passage*, with length diff
@@ -2290,7 +2482,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.7.1', mode: 'local'
+        scoring_version: '19.7.2', mode: 'local'
       });
     }
 
@@ -2347,8 +2539,18 @@ app.post('/api/grade', async (req, res) => {
           else if (v >= 0.25) v = 0.5;
           else v = 0;
           perIdea[k] = v;
-          computedSum += v;
         }
+        // ── HEADLINE RESCUE (v19.7.2) ──
+        // Catch overstuffed key elements: when a key element is two clauses
+        // joined by " and " or "; moreover", capturing just the FIRST clause
+        // (the headline) earns full credit per PTE rubric. Claude often
+        // awards 0.5 here because the secondary clause isn't conveyed —
+        // this rescue corrects that automatically.
+        const rescueAudit = applyHeadlineRescue(perIdea, keyPoints, text);
+        llmJudgment.headline_rescue = rescueAudit;
+        // Recompute sum after rescue
+        computedSum = 0;
+        for (const k of Object.keys(perIdea)) computedSum += perIdea[k];
         computedScore = Math.round(computedSum);
         // Rebuild captured / partial / missing arrays so they always match perIdea.
         llmJudgment.ideas_captured = Object.keys(perIdea).filter(k => perIdea[k] === 1);
@@ -2490,10 +2692,10 @@ app.post('/api/grade', async (req, res) => {
         cohesion: contentVerdict.cohesion || 'unknown',
         feedback_note: contentVerdict.feedback_note || '',
         source: contentVerdict.source || 'local_fallback',
-        // v19.5: surface the reconcile metadata so the UI / debug tools can
-        // see when Claude's numeric content_score was overridden by the
-        // ideas_captured array length (a known LLM inconsistency).
-        score_adjusted: contentVerdict.content_score_adjusted || null
+        score_adjusted: contentVerdict.content_score_adjusted || null,
+        // v19.7.2: surface the headline-rescue audit so debugging is easy.
+        // Lists which 0.5 → 1.0 upgrades were applied based on headline match.
+        headline_rescue: contentVerdict.headline_rescue || null
       },
       grammar_details: {
         score: grammarScore,
@@ -2558,7 +2760,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.7.1',
+      scoring_version: '19.7.2',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
