@@ -1694,7 +1694,7 @@ BAD examples to AVOID:
 
 Aim for 6-8 candidates if possible, but quality beats quantity — 4 great suggestions are better than 8 awkward ones.
 
-Respond ONLY with valid JSON, no other text:
+Respond ONLY with valid JSON, no other text. The "content_score" field MUST equal the length of "ideas_captured" — they are the same number expressed two ways. If the passage has 4 key ideas and the student captured 3, return content_score=3 and ideas_captured with 3 entries. Do not use the legacy 0–2 scale.
 {
   "content_score": 0,
   "content_reason": "one short sentence",
@@ -2127,7 +2127,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.4.0', mode: 'local'
+        scoring_version: '19.4.1', mode: 'local'
       });
     }
 
@@ -2155,30 +2155,41 @@ app.post('/api/grade', async (req, res) => {
     // ── STRICT CONTENT GATE: content_score is *literally* the captured count ──
     // Claude is told this directly in the prompt, but we re-verify here so the
     // server is the source of truth even if the model returns inconsistent data.
+    //
+    // v19.4.1 fix: when the model returns ideas_captured/ideas_missing arrays,
+    // those are authoritative — they're the explicit per-idea breakdown Claude
+    // committed to. Some Claude responses also include a legacy 0–2 numeric
+    // content_score that disagrees with the array length (e.g. all 4 captured
+    // but content_score=1); in that case we trust the array, not the integer.
+    // The only time we DON'T trust the captured list is when both arrays are
+    // empty (e.g. an off-topic summary) — then we honor the numeric score.
     if (llmJudgment) {
       const captured = Array.isArray(llmJudgment.ideas_captured) ? llmJudgment.ideas_captured : [];
       const missing  = Array.isArray(llmJudgment.ideas_missing)  ? llmJudgment.ideas_missing  : [];
       const originalScore = llmJudgment.content_score;
-      // Reconcile: if the captured/missing arrays don't sum to totalIdeas,
-      // trust the missing array (it's what the gate cares about) and back-fill.
-      let capturedCount = captured.length;
-      // If Claude's content_score disagrees with len(captured), prefer the
-      // smaller of the two so we never reward more than what's listed.
-      if (typeof originalScore === 'number' && originalScore < capturedCount) {
-        capturedCount = originalScore;
+      let capturedCount;
+      if (captured.length > 0 || missing.length > 0) {
+        // Authoritative path: trust the per-idea breakdown.
+        capturedCount = captured.length;
+      } else {
+        // Both arrays empty — fall back to the numeric score Claude gave us,
+        // clamped into the new dynamic scale.
+        capturedCount = (typeof originalScore === 'number') ? originalScore : 0;
       }
-      // Clamp into [0, totalIdeas]
+      // Clamp into [0, maxContent]
       capturedCount = Math.max(0, Math.min(maxContent, capturedCount));
       llmJudgment.content_score = capturedCount;
       llmJudgment.content_max   = maxContent;
       if (capturedCount !== originalScore) {
         llmJudgment.content_score_adjusted = { from: originalScore, to: capturedCount, reason: 'reconciled_with_captured_list' };
       }
-      // If everything is missing, force the failure message.
-      if (capturedCount === 0 && missing.length > 0) {
+      // Update reason text to match the final score.
+      if (capturedCount === maxContent && missing.length === 0) {
+        llmJudgment.content_reason = `All ${maxContent} key ideas captured.`;
+      } else if (capturedCount === 0 && missing.length > 0) {
         llmJudgment.content_reason = `No key ideas captured (${missing.join(', ')} all missing).`;
       } else if (missing.length > 0) {
-        llmJudgment.content_reason = `${capturedCount}/${maxContent} key ideas captured. Missing: ${missing.join(', ')}. ${llmJudgment.content_reason || ''}`.trim();
+        llmJudgment.content_reason = `${capturedCount}/${maxContent} key ideas captured. Missing: ${missing.join(', ')}.`;
       }
     }
 
@@ -2333,7 +2344,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.4.0',
+      scoring_version: '19.4.1',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
