@@ -39,12 +39,30 @@ async function ensureDataDir() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch (e) { /* ok */ }
 }
 
+// ─── ATOMIC FILE WRITE ──────────────────────────────────────────────────────
+// Writes via temp + rename so a crash mid-write can never corrupt the target.
+// Also keeps a .bak copy of the previous version. Used by every persistent
+// store so admin edits and student progress are safe across restarts.
+async function safeWriteJSON(filePath, data) {
+  await ensureDataDir();
+  const json = JSON.stringify(data, null, 2);
+  const tmp  = filePath + '.tmp';
+  const bak  = filePath + '.bak';
+  await fs.writeFile(tmp, json);
+  // Best-effort backup of the existing file before overwriting it.
+  try {
+    const existing = await fs.readFile(filePath);
+    await fs.writeFile(bak, existing);
+  } catch (_) { /* no prior file — fine */ }
+  await fs.rename(tmp, filePath);
+}
+
 const StorageAPI = {
   async readData() {
     try { return JSON.parse(await fs.readFile(STORAGE_FILE, 'utf8')); }
     catch { return { users: {}, global: { totalAttempts: 0 } }; }
   },
-  async writeData(data) { await ensureDataDir(); await fs.writeFile(STORAGE_FILE, JSON.stringify(data, null, 2)); },
+  async writeData(data) { await safeWriteJSON(STORAGE_FILE, data); },
   
   // Save individual attempt (called after each verify)
   async saveProgress(userId, passageId, summary, scoreData) {
@@ -168,9 +186,8 @@ const PassageAPI = {
       const arr = JSON.parse(txt);
       if (Array.isArray(arr)) {
         // Persist a copy to the volume on first read so admin edits have
-        // somewhere to live.
-        await ensureDataDir();
-        try { await fs.writeFile(PASSAGES_FILE, JSON.stringify(arr, null, 2)); } catch (_) { /* ok */ }
+        // somewhere to live. Atomic write — no risk of corruption on a partial.
+        try { await safeWriteJSON(PASSAGES_FILE, arr); } catch (_) { /* ok */ }
         return arr;
       }
     } catch (e) {
@@ -189,8 +206,7 @@ const PassageAPI = {
 
   async writeAll(passages) {
     if (!Array.isArray(passages)) throw new Error('passages must be an array');
-    await ensureDataDir();
-    await fs.writeFile(PASSAGES_FILE, JSON.stringify(passages, null, 2));
+    await safeWriteJSON(PASSAGES_FILE, passages);
     this._cache = passages;
     this._cacheLoaded = true;
     return passages;
@@ -435,7 +451,20 @@ function checkSpelling(studentText, passageText) {
 const BAND_MAP = { 0:'Band 5',1:'Band 5',2:'Band 6',3:'Band 6.5',4:'Band 7',5:'Band 7.5',6:'Band 8',7:'Band 9' };
 const RAW_TO_PTE = { 0:10,1:15,2:28,3:38,4:50,5:62,6:76,7:90 };
 
+// ─── HELPERS: Count the number of key elements on a passage ─────────────────
+// The strict content gate (v19.4) treats each key element as one "band". A
+// passage with 4 elements has content_score 0–4; a passage with 3 elements
+// has content_score 0–3. This function reports the total — accepting both
+// the new (what/why/how/result) and legacy (topic/pivot/conclusion) schemas.
+function countKeyElements(keyElements) {
+  if (!keyElements || typeof keyElements !== 'object') return 0;
+  const newCount = ['what','why','how','result'].filter(k => typeof keyElements[k] === 'string' && keyElements[k].trim()).length;
+  if (newCount > 0) return newCount;
+  return ['topic','pivot','conclusion'].filter(k => typeof keyElements[k] === 'string' && keyElements[k].trim()).length;
+}
+
 // Continuous raw-to-PTE mapping — supports decimal raw scores via linear interpolation
+// (legacy 0–7 scale; preserved for callers that haven't been updated to the dynamic version)
 function rawToPTE(raw) {
   raw = Math.max(0, Math.min(7, raw));
   const lo = Math.floor(raw);
@@ -447,6 +476,34 @@ function rawToPTE(raw) {
 function rawToBand(raw) {
   const r = Math.max(0, Math.min(7, Math.round(raw)));
   return BAND_MAP[r];
+}
+
+// ─── DYNAMIC RAW → PTE / BAND ───────────────────────────────────────────────
+// v19.4: content_score now scales with the number of key elements (0–N where
+// N is 3 or 4). Raw score therefore scales 0–(N+5). These functions linearly
+// interpolate so that raw=0 → PTE 10 and raw=maxRaw → PTE 90, with band labels
+// proportional to the raw/maxRaw ratio.
+function rawToPTEDynamic(raw, maxRaw) {
+  if (!maxRaw || maxRaw <= 0) return rawToPTE(raw); // legacy fallback
+  raw = Math.max(0, Math.min(maxRaw, raw));
+  if (raw === 0) return 10;
+  return Math.round(10 + (raw / maxRaw) * 80);
+}
+function rawToBandDynamic(raw, maxRaw) {
+  if (!maxRaw || maxRaw <= 0) return rawToBand(raw);
+  const r = maxRaw > 0 ? raw / maxRaw : 0;
+  if (r >= 0.93) return 'Band 9';
+  if (r >= 0.79) return 'Band 8';
+  if (r >= 0.64) return 'Band 7.5';
+  if (r >= 0.50) return 'Band 7';
+  if (r >= 0.36) return 'Band 6.5';
+  if (r >= 0.21) return 'Band 6';
+  return 'Band 5';
+}
+// Inverse of rawToPTEDynamic — given a PTE cap, what raw cap does that imply?
+function pteToRaw(pte, maxRaw) {
+  if (!maxRaw || maxRaw <= 0) return 0;
+  return Math.max(0, (pte - 10) * maxRaw / 80);
 }
 
 const STOP_WORDS = new Set([
@@ -1148,7 +1205,7 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData, grammarData, l
 //
 // Writing skill: tracks form + grammar + vocab + length-band
 // ═══════════════════════════════════════════════════════════════════════════════
-function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabScore, swapData, llmJudgment) {
+function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabScore, swapData, llmJudgment, contentMax, maxRaw) {
   const academicCount = (swapData?.academicWordsUsed?.length || 0)
     + ((llmJudgment?.academic_register === true) ? 2 : 0);
   const swapCredit = swapData?.totalParaphraseCredit || 0;
@@ -1157,17 +1214,29 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
   const cohesionStrong = llmJudgment?.cohesion === 'strong';
   const cohesionWeak = llmJudgment?.cohesion === 'weak';
 
+  // v19.4: ratio-based content tier so 0–N scoring works for any N
+  const cMax = contentMax > 0 ? contentMax : 2;
+  const rMax = maxRaw > 0 ? maxRaw : 7;
+  const contentRatio = contentScore / cMax;        // 0..1
+  const rawRatio     = rawScore / rMax;            // 0..1
+  const contentFull    = contentScore >= cMax;
+  const contentPartial = contentScore > 0 && contentScore < cMax;
+  const contentNone    = contentScore === 0;
+
   // ── READING ──
   // Rubric (v19.2): Reading 90 requires correct ideas + (academic synonyms OR
   // phrase-picking with strong cohesion). Pure verbatim still caps moderately
   // because Pearson's Reading skill rewards lexical resourcefulness, but the
   // ceiling is no longer locked unless the student also nails cohesion.
   let reading;
-  if (contentScore === 0) {
+  if (contentNone) {
     reading = 15; // Wrong ideas — cap heavily
-  } else if (contentScore === 1) {
-    reading = hasAcademicSynonyms ? 50 : 38;
-  } else { // contentScore === 2
+  } else if (contentPartial) {
+    // v19.4: partial coverage scales with how much of the passage was actually captured.
+    if (contentRatio >= 0.75) reading = hasAcademicSynonyms ? 70 : 60;
+    else if (contentRatio >= 0.5) reading = hasAcademicSynonyms ? 55 : 45;
+    else reading = hasAcademicSynonyms ? 42 : 32;
+  } else { // contentFull
     if (academicCount >= 3 || swapCredit >= 3) reading = 90;
     else if (hasAcademicSynonyms) reading = 82;            // 2+ swaps now reaches 82 (was 79)
     else if (cohesionStrong && swapCredit >= 1) reading = 79; // phrase-picking + 1 swap + strong cohesion
@@ -1178,34 +1247,34 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
   // Cohesion penalty — weak cohesion should knock Reading down even with content
   if (cohesionWeak && reading > 50) reading = Math.max(50, reading - 15);
 
-  // ── WRITING ──
+  // ── WRITING ── (ratio-based on dynamic maxRaw)
   let writing;
-  if (rawScore >= 6.5) writing = 88;
-  else if (rawScore >= 6) writing = 82;
-  else if (rawScore >= 5) writing = 70;
-  else if (rawScore >= 4) writing = 58;
-  else if (rawScore >= 3) writing = 45;
-  else if (rawScore >= 2) writing = 30;
+  if (rawRatio >= 0.93) writing = 88;
+  else if (rawRatio >= 0.85) writing = 82;
+  else if (rawRatio >= 0.71) writing = 70;
+  else if (rawRatio >= 0.57) writing = 58;
+  else if (rawRatio >= 0.43) writing = 45;
+  else if (rawRatio >= 0.29) writing = 30;
   else writing = 15;
 
   return {
     reading: {
       estimate: reading,
-      components: { content: contentScore, academic_synonyms: academicCount, swap_credit: swapCredit, has_academic_synonyms: hasAcademicSynonyms },
-      note: contentScore === 0
+      components: { content: contentScore, content_max: cMax, academic_synonyms: academicCount, swap_credit: swapCredit, has_academic_synonyms: hasAcademicSynonyms },
+      note: contentNone
         ? 'Wrong ideas — Reading skill heavily impacted'
         : cohesionWeak
           ? 'Ideas present but weakly connected — cohesion limits Reading skill'
-          : contentScore === 2 && hasAcademicSynonyms
+          : contentFull && hasAcademicSynonyms
             ? 'Strong — correct ideas + academic synonyms'
-            : contentScore === 2
+            : contentFull
               ? 'All ideas captured — replace 2–3 common words with academic synonyms to push Reading higher'
-              : 'Some main ideas missing'
+              : `${contentScore}/${cMax} main ideas captured — add the missing one${cMax - contentScore > 1 ? 's' : ''} to lift Reading further`
     },
     writing: {
       estimate: writing,
-      components: { grammar: grammarScore, vocabulary: vocabScore, form: 1, raw: rawScore },
-      note: rawScore >= 6 ? 'Strong production' : rawScore >= 4 ? 'Moderate production' : 'Production needs work'
+      components: { grammar: grammarScore, vocabulary: vocabScore, form: 1, raw: rawScore, max_raw: rMax },
+      note: rawRatio >= 0.85 ? 'Strong production' : rawRatio >= 0.57 ? 'Moderate production' : 'Production needs work'
     }
   };
 }
@@ -1555,6 +1624,7 @@ function formatKeyElementsHint(keyElements) {
 async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 12000) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
+  const totalIdeas = countKeyElements(keyElements);
 
   const prompt = `You are a strict but fair PTE Academic Summarize Written Text scorer. Score this one-sentence summary across three dimensions AND suggest context-appropriate vocabulary swaps.
 
@@ -1564,21 +1634,29 @@ ${passageText}
 STUDENT SUMMARY:
 ${studentText}
 
-${kpHint ? 'KEY IDEAS THE PASSAGE CONVEYS:\n' + kpHint + '\n' : ''}
+${kpHint ? 'KEY IDEAS THE PASSAGE CONVEYS (this passage has exactly ' + totalIdeas + ' key idea' + (totalIdeas !== 1 ? 's' : '') + '):\n' + kpHint + '\n' : ''}
 EVALUATE:
-1. CONTENT COVERAGE — Did the student capture the main What/Why/How/Result of the passage? This is THE most important dimension. Wrong/missing ideas → 0.
+1. CONTENT COVERAGE — Count exactly how many of the ${totalIdeas} key ideas above the student CLEARLY captured. This number IS the content_score (0 to ${totalIdeas}).
 2. SYNONYM APPROPRIATENESS — If the student replaced words from the passage, are substitutes meaning-preserving and register-appropriate? VERBATIM COPYING IS ACCEPTABLE — do NOT penalise it. PHRASE-LIFTING IS ALSO ACCEPTABLE — students may select key phrases from the passage (rather than full sentences) and stitch them together with their own connectors. Do NOT penalise this style; judge purely on whether the resulting summary is coherent and faithful to the passage.
 3. COHESION — BE STRICT. Ideas must connect logically through proper connectors (however/moreover/therefore/furthermore/consequently). Listed-out facts with no logical glue is "weak" cohesion even if commas separate them. Connectors must signal the actual relationship: "however" only for contrast, "moreover/furthermore" only for addition, "therefore/consequently" only for cause-effect. A misused connector → "weak". Two clauses jammed with "and" or comma-spliced → "weak". Only "strong" when each connective genuinely reflects the relationship between the ideas it links.
 
-SCORING GUIDANCE — BE STRICT. Missing or fabricated ideas MUST drop the score:
-- content_score 2: EVERY key idea provided (every What/Why/How/Result, or topic/pivot/conclusion) is clearly conveyed in the student's summary, AND no fabricated content is added that contradicts or replaces a key idea, AND clauses connect cleanly. The "ideas_missing" array MUST be empty for a score of 2. If ANY key element is absent, distorted, or replaced with unrelated content, you CANNOT give 2.
-- content_score 1: Exactly one key idea is missing or only weakly captured, while the rest are clearly conveyed. Still mostly on-topic.
-- content_score 0: Off-topic, gibberish, the main argument is missed entirely, OR two or more key ideas are missing/distorted, OR the student fabricates substantial content not supported by the passage in place of a key idea.
+CONTENT SCORING (the rule is mechanical — one band per captured idea):
+- content_score = the number of key ideas the student clearly captured.
+- Range: 0 to ${totalIdeas}.
+- 0 captured → content_score 0.
+- 1 captured → content_score 1.
+- 2 captured → content_score 2.
+- 3 captured → content_score 3.
+${totalIdeas >= 4 ? '- 4 captured → content_score 4.' : ''}
+- ideas_captured MUST list each captured idea by its label (what/why/how/result OR topic/pivot/conclusion).
+- ideas_missing MUST list every key idea NOT clearly conveyed.
+- length(ideas_captured) + length(ideas_missing) MUST equal ${totalIdeas}.
+- content_score MUST equal length(ideas_captured).
 
 CRITICAL RULES (do not break these):
 1. An idea is "captured" only if its CORE meaning is clearly present — paraphrasing is fine, but the same fact/argument must be there. Touching a related word (e.g., naming the same place) without conveying the actual idea does NOT count as captured.
 2. If the student replaces a passage idea with different content (even if grammatically fluent), the original idea goes in "ideas_missing" — fluency does not rescue missing content.
-3. Count the items in "ideas_missing". If that count is 1 or more, content_score CANNOT be 2. If the count is 2 or more, content_score MUST be 0.
+3. If the summary is off-topic or gibberish, content_score = 0 and ideas_missing contains every key idea.
 
 - synonym_appropriateness "appropriate": all swaps preserve meaning and academic register, OR no swaps were made (verbatim).
 - synonym_appropriateness "some_inappropriate": one or more swaps are awkward, wrong register, or shift connotation.
@@ -1685,20 +1763,16 @@ function judgeContentLocal(studentText, passageText, keyElements) {
   const present = checks.filter(c => c.present).map(c => c.name);
   const missing = checks.filter(c => !c.present).map(c => c.name);
 
-  // STRICT: any missing key idea drops the score.
-  // 0 missing → 2; exactly 1 missing → 1; 2+ missing → 0.
-  let score;
-  if (missing.length === 0) score = 2;
-  else if (missing.length === 1) score = 1;
-  else score = 0;
+  // v19.4: content_score is literally the number of captured ideas (0..N).
+  const score = present.length;
+  const max = fields.length;
 
   return {
     content_score: score,
+    content_max: max,
     content_reason: missing.length === 0
-      ? 'All main ideas captured (local check)'
-      : missing.length === 1
-        ? `1 main idea missing (${missing.join(', ')}) — content capped at 1`
-        : `${missing.length} main ideas missing (${missing.join(', ')}) — content failed`,
+      ? `All ${max} main ideas captured (local check)`
+      : `${score}/${max} main ideas captured — missing: ${missing.join(', ')}`,
     ideas_captured: present,
     ideas_missing: missing,
     synonym_appropriateness: 'no_swaps',  // local can't judge — defer to swap analysis
@@ -1725,29 +1799,38 @@ function judgeContentLocal(studentText, passageText, keyElements) {
 // - method_coaching: path-specific guidance (Verbatim vs Paraphrased)
 // - summary_line: single-line backwards-compatible feedback string
 // ═══════════════════════════════════════════════════════════════════════════════
-function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment) {
-  const pte = rawToPTE(rawScore);
-  const band = rawToBand(rawScore);
+function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment, contentMax, maxRaw) {
+  // v19.4: support dynamic content/raw ranges. Default to legacy 0–2 / 0–7 if
+  // a caller hasn't been updated yet (back-compat for buildFeedback alias).
+  const cMax = (typeof contentMax === 'number' && contentMax > 0) ? contentMax : 2;
+  const rMax = (typeof maxRaw === 'number' && maxRaw > 0) ? maxRaw : 7;
+  const pte  = rawToPTEDynamic(rawScore, rMax);
+  const band = rawToBandDynamic(rawScore, rMax);
+  const rawRatio     = rawScore / rMax;
+  const contentRatio = contentScore / cMax;
+  const contentFull    = contentScore >= cMax;
+  const contentPartial = contentScore > 0 && contentScore < cMax;
+  const contentNone    = contentScore === 0;
 
   // ── VERDICT ──────────────────────────────────────────────────────────────
   let tier, headline;
   if (form && !form.valid) {
     tier = 'invalid';
     headline = `Form failed — ${form.reason}`;
-  } else if (contentScore === 0) {
+  } else if (contentNone) {
     tier = 'fail';
     headline = 'The main ideas were not captured. Re-read the passage and identify What, Why, How and the Result.';
-  } else if (rawScore >= 6.5) {
+  } else if (rawRatio >= 0.93) {
     tier = 'excellent';
     const methodLabel = vocab.method === 'paraphrased' ? 'Paraphrased Method'
                       : vocab.method === 'verbatim' ? 'Verbatim Method'
                       : vocab.method === 'phrase_picking' ? 'Phrase-Picking Method'
                       : 'a strong hybrid approach';
     headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
-  } else if (rawScore >= 5.5) {
+  } else if (rawRatio >= 0.79) {
     tier = 'good';
     headline = `Solid attempt — ${band} (PTE ${pte}). One or two changes will push this to Band 9.`;
-  } else if (rawScore >= 3.5) {
+  } else if (rawRatio >= 0.50) {
     tier = 'partial';
     headline = `Partial credit — ${band} (PTE ${pte}). Significant gaps to close.`;
   } else {
@@ -1755,15 +1838,15 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     headline = `${band} (PTE ${pte}) — major gaps. Focus on capturing the main ideas first.`;
   }
 
-  const verdict = { tier, headline, pte, band, raw: rawScore, method: vocab.method };
+  const verdict = { tier, headline, pte, band, raw: rawScore, raw_max: rMax, content_max: cMax, method: vocab.method };
 
   // ── STRENGTHS ────────────────────────────────────────────────────────────
   const strengths = [];
 
-  if (contentScore === 2) {
-    strengths.push({ icon: '🎯', label: 'All main ideas captured', detail: (contentVerdict.ideas_captured || []).join(' · ') });
-  } else if (contentScore === 1 && (contentVerdict.ideas_captured || []).length > 0) {
-    strengths.push({ icon: '✓', label: `Captured ${contentVerdict.ideas_captured.length} main idea${contentVerdict.ideas_captured.length > 1 ? 's' : ''}`, detail: contentVerdict.ideas_captured.join(' · ') });
+  if (contentFull && cMax > 0) {
+    strengths.push({ icon: '🎯', label: `All ${cMax} main ideas captured`, detail: (contentVerdict.ideas_captured || []).join(' · ') });
+  } else if (contentPartial && (contentVerdict.ideas_captured || []).length > 0) {
+    strengths.push({ icon: '✓', label: `Captured ${contentScore}/${cMax} main idea${contentScore > 1 ? 's' : ''}`, detail: contentVerdict.ideas_captured.join(' · ') });
   }
 
   if (grammar.has_connector && grammar.connector_quality === 'perfect') {
@@ -1813,20 +1896,25 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   }
 
   // Priority 1 — content
-  if (contentScore === 0) {
+  if (contentNone) {
     improvements.push({
       priority: 1,
       icon: '🚨',
       action: 'Re-read the passage and capture the main ideas',
-      detail: 'Identify the What (topic), Why (reason), How (mechanism) and Result (outcome). Wrong ideas heavily cap the score (PTE 15 max).'
+      detail: `Identify each of the ${cMax} key ideas (What/Why/How/Result). Missing all ideas heavily caps the score (PTE 15 max).`
     });
-  } else if (contentScore === 1) {
+  } else if (contentPartial) {
     const missing = (contentVerdict.ideas_missing || []).join(', ');
+    const need = cMax - contentScore;
+    // PTE cap depends on captured ratio — surface the right number to the student.
+    const capPte = contentRatio < 0.5 ? 50 : contentRatio < 0.75 ? 65 : 79;
     improvements.push({
       priority: 1,
       icon: '⚠️',
-      action: missing ? `Add the missing ideas: ${missing}` : 'Some main ideas are missing',
-      detail: 'Score is partial-capped (PTE 50 ceiling) until all main ideas are included.'
+      action: missing
+        ? `Add the missing idea${need > 1 ? 's' : ''}: ${missing}`
+        : `${need} main idea${need > 1 ? 's are' : ' is'} missing`,
+      detail: `You captured ${contentScore}/${cMax}. Score is currently capped at PTE ${capPte} until all main ideas are included.`
     });
   }
 
@@ -1921,7 +2009,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
 
   // ── METHOD COACHING ──────────────────────────────────────────────────────
   let methodCoaching = null;
-  if (rawScore >= 6.5 && contentScore === 2) {
+  if (rawRatio >= 0.93 && contentFull) {
     if (vocab.method === 'verbatim') {
       methodCoaching = {
         current: 'Verbatim Method',
@@ -1942,7 +2030,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
           : 'Excellent phrase selection + academic upgrades — top of both ladders.'
       };
     }
-  } else if (rawScore < 6.5 && contentScore >= 1) {
+  } else if (rawRatio < 0.93 && contentScore > 0) {
     if (vocab.method === 'verbatim_weak') {
       methodCoaching = {
         current: 'Verbatim style without connectors',
@@ -1986,11 +2074,20 @@ function buildImprovementTips(rawScore, contentScore, vocab, grammar, contentVer
   return card.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
 }
 
-function buildPenaltiesList(form, contentScore, vocab, spelling) {
+function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   const arr = [];
+  const cMax = (typeof contentMax === 'number' && contentMax > 0) ? contentMax : 2;
+  const ratio = contentScore / cMax;
   if (form.overflow_penalty) arr.push({ type: 'word_count_overflow', impact: -form.overflow_penalty, detail: form.warning });
-  if (contentScore === 0) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_15', detail: 'Main ideas missed — heavy cap' });
-  else if (contentScore === 1) arr.push({ type: 'content_partial', impact: 'cap_at_PTE_50', detail: 'Some ideas missing — partial cap' });
+  if (contentScore === 0) {
+    arr.push({ type: 'content_gate', impact: 'cap_at_PTE_15', detail: `0/${cMax} main ideas captured — heavy cap` });
+  } else if (ratio < 0.5) {
+    arr.push({ type: 'content_partial', impact: 'cap_at_PTE_50', detail: `${contentScore}/${cMax} main ideas captured — partial cap` });
+  } else if (ratio < 0.75) {
+    arr.push({ type: 'content_partial', impact: 'cap_at_PTE_65', detail: `${contentScore}/${cMax} main ideas captured — upper-mid cap` });
+  } else if (ratio < 1) {
+    arr.push({ type: 'content_partial', impact: 'cap_at_PTE_79', detail: `${contentScore}/${cMax} main ideas captured — almost there` });
+  }
   if (spelling.count > 0) arr.push({ type: 'spelling', impact: -0.5, detail: `${spelling.count} error(s), capped at -0.5 raw` });
   if (vocab.meaning_changed) arr.push({ type: 'meaning_reversed', impact: 'vocab_to_0', detail: 'Synonym altered passage meaning' });
   if (vocab.inappropriate_count > 0) arr.push({ type: 'inappropriate_synonym', impact: -0.5, detail: `${vocab.inappropriate_count} occurrence(s)` });
@@ -2013,21 +2110,24 @@ app.post('/api/grade', async (req, res) => {
         { isProblematic: false, hasPerspectiveShift: false, issues: [] },
         form, { count: 0, suggestions: [] }, 0, 0, 0, null
       );
+      // Form-fail also needs to know the passage's idea count for the UI chips.
+      const ffMaxContent = countKeyElements(keyPoints) || 2;
+      const ffMaxRaw = 1 + ffMaxContent + 2 + 2;
       return res.json({
-        trait_scores: { form: 0, content: 0, grammar: 0, vocabulary: 0 },
+        trait_scores: { form: 0, form_max: 1, content: 0, content_max: ffMaxContent, grammar: 0, grammar_max: 2, vocabulary: 0, vocabulary_max: 2 },
         content_details: { key_ideas_extracted: [], key_ideas_present: [], key_ideas_missing: [], notes: form.reason },
         grammar_details: { score: 0, has_connector: false, grammar_issues: [], connector_quality: 'missing' },
         vocabulary_details: { score: 0, notes: ['Form invalid'], safe_swaps: [], dangerous_swaps: [], meaning_changed: false, method: 'invalid' },
         skill_contributions: { reading: { estimate: 10, note: 'Form invalid' }, writing: { estimate: 10, note: 'Form invalid' } },
         paraphrase_analysis: { quality: 0, safeSwapCount: 0, dangerousSwapCount: 0 },
-        overall_score: 10, raw_score: 0, band: 'Band 5',
+        overall_score: 10, raw_score: 0, max_raw_score: ffMaxRaw, total_ideas: ffMaxContent, band: 'Band 5',
         form_gate_triggered: true, form_reason: form.reason, word_count: form.wc,
         feedback: formFailCard.summary_line,
         feedback_card: formFailCard,
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.3.0', mode: 'local'
+        scoring_version: '19.4.0', mode: 'local'
       });
     }
 
@@ -2044,26 +2144,49 @@ app.post('/api/grade', async (req, res) => {
       llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints);
     } catch (e) { /* swallow → fallback */ }
 
-    // ── STRICT CONTENT GATE: enforce missing-idea penalty regardless of Claude's score ──
-    // Even if Claude awards content_score 2 with non-empty ideas_missing, we cap it.
-    // Rule: 0 missing → 2 allowed; 1 missing → max 1; 2+ missing → 0.
+    // ── DYNAMIC CONTENT SCALE (v19.4) ───────────────────────────────────────
+    // Each captured key idea = +1 to content_score. Total ideas (3 or 4) defines
+    // the maximum content_score and therefore the maximum raw score.
+    const totalIdeas = countKeyElements(keyPoints);
+    // If a passage somehow has no key elements, fall back to legacy 0–2 scoring.
+    const maxContent = totalIdeas > 0 ? totalIdeas : 2;
+    const maxRaw = 1 + maxContent + 2 + 2; // form + content + grammar + vocab
+
+    // ── STRICT CONTENT GATE: content_score is *literally* the captured count ──
+    // Claude is told this directly in the prompt, but we re-verify here so the
+    // server is the source of truth even if the model returns inconsistent data.
     if (llmJudgment) {
-      const missingCount = Array.isArray(llmJudgment.ideas_missing) ? llmJudgment.ideas_missing.length : 0;
+      const captured = Array.isArray(llmJudgment.ideas_captured) ? llmJudgment.ideas_captured : [];
+      const missing  = Array.isArray(llmJudgment.ideas_missing)  ? llmJudgment.ideas_missing  : [];
       const originalScore = llmJudgment.content_score;
-      if (missingCount >= 2 && llmJudgment.content_score >= 1) {
-        llmJudgment.content_score = 0;
-        llmJudgment.content_reason = `${missingCount} key ideas missing (${(llmJudgment.ideas_missing || []).join(', ')}) — content failed. ${llmJudgment.content_reason || ''}`.trim();
-        llmJudgment.content_score_adjusted = { from: originalScore, to: 0, reason: 'missing_ideas_2plus' };
-      } else if (missingCount >= 1 && llmJudgment.content_score >= 2) {
-        llmJudgment.content_score = 1;
-        llmJudgment.content_reason = `Missing key idea: ${(llmJudgment.ideas_missing || []).join(', ')} — content capped at 1. ${llmJudgment.content_reason || ''}`.trim();
-        llmJudgment.content_score_adjusted = { from: originalScore, to: 1, reason: 'missing_ideas_1' };
+      // Reconcile: if the captured/missing arrays don't sum to totalIdeas,
+      // trust the missing array (it's what the gate cares about) and back-fill.
+      let capturedCount = captured.length;
+      // If Claude's content_score disagrees with len(captured), prefer the
+      // smaller of the two so we never reward more than what's listed.
+      if (typeof originalScore === 'number' && originalScore < capturedCount) {
+        capturedCount = originalScore;
+      }
+      // Clamp into [0, totalIdeas]
+      capturedCount = Math.max(0, Math.min(maxContent, capturedCount));
+      llmJudgment.content_score = capturedCount;
+      llmJudgment.content_max   = maxContent;
+      if (capturedCount !== originalScore) {
+        llmJudgment.content_score_adjusted = { from: originalScore, to: capturedCount, reason: 'reconciled_with_captured_list' };
+      }
+      // If everything is missing, force the failure message.
+      if (capturedCount === 0 && missing.length > 0) {
+        llmJudgment.content_reason = `No key ideas captured (${missing.join(', ')} all missing).`;
+      } else if (missing.length > 0) {
+        llmJudgment.content_reason = `${capturedCount}/${maxContent} key ideas captured. Missing: ${missing.join(', ')}. ${llmJudgment.content_reason || ''}`.trim();
       }
     }
 
     const fallback = judgeContentLocal(text, prompt, keyPoints);
     const contentVerdict = llmJudgment || fallback;
-    const contentScore = contentVerdict.content_score;
+    // Make sure content_max is set on whichever verdict we end up using
+    if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
+    const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
     // ── VOCABULARY (now informed by LLM judgment) ──
     const vocab = scoreVocabulary(verbatim, swaps, firstPerson, grammar, llmJudgment);
@@ -2081,44 +2204,58 @@ app.post('/api/grade', async (req, res) => {
     // Weakly connected ideas should NOT reach full marks even when content is correct.
     let cohesionPenaltyApplied = false;
     if (llmJudgment?.cohesion === 'weak') {
-      grammarScore = Math.max(0, grammarScore - 1.0); // was -0.5
+      grammarScore = Math.max(0, grammarScore - 1.0);
       grammar.grammar_issues.push('Clauses do not connect logically — ideas listed without proper logical glue');
       cohesionPenaltyApplied = true;
     }
 
-    // ── RAW SCORE ASSEMBLY ──
-    let rawScore = 1 + contentScore + grammarScore + vocab.score; // max 7
+    // ── RAW SCORE ASSEMBLY (v19.4 dynamic max) ──
+    let rawScore = 1 + contentScore + grammarScore + vocab.score; // max = maxRaw
 
     // Soft word-count overflow
     if (form.overflow_penalty) rawScore -= form.overflow_penalty;
 
-    // ── CONTENT GATE — heavy penalty for wrong ideas ──
-    // Per user spec: wrong content → cap PTE 9–15 (essentially fail)
-    if (contentScore === 0) rawScore = Math.min(rawScore, 1);
-    // Partial content → cap at raw 4.5 (PTE ~56)
-    else if (contentScore === 1 && rawScore > 4.5) rawScore = 4.5;
+    // ── CONTENT GATE — proportional cap based on idea coverage ─────────────
+    // Captured ratio drives the cap. The user's rule: each idea = one band.
+    // We additionally enforce a hard PTE cap so that severely incomplete
+    // summaries can't reach Band 9 just by having strong vocab/grammar.
+    const capturedRatio = maxContent > 0 ? contentScore / maxContent : 1;
+    let contentCapPTE = null;
+    if (capturedRatio === 0) contentCapPTE = 15;            // no ideas → near-fail
+    else if (capturedRatio < 0.5)  contentCapPTE = 50;       // less than half → mid-band cap
+    else if (capturedRatio < 0.75) contentCapPTE = 65;       // partial → upper-mid cap
+    else if (capturedRatio < 1)    contentCapPTE = 79;       // most but not all → just below top
+    // capturedRatio === 1 → no cap from content
+    if (contentCapPTE !== null) {
+      const capRaw = pteToRaw(contentCapPTE, maxRaw);
+      if (rawScore > capRaw) rawScore = capRaw;
+    }
 
-    // ── COHESION GATE — ideas not connected = max raw 5 (PTE ~62) ──
-    // Even with all ideas captured and academic vocabulary, weak cohesion caps the
-    // score because Pearson rewards logical glue. This is the v19.2 "well connected"
-    // criterion for full marks.
-    if (cohesionPenaltyApplied && rawScore > 5) rawScore = 5;
+    // ── COHESION GATE — weak cohesion caps the score (PTE 62) ──
+    if (cohesionPenaltyApplied) {
+      const cohesionCapRaw = pteToRaw(62, maxRaw);
+      if (rawScore > cohesionCapRaw) rawScore = cohesionCapRaw;
+    }
 
-    rawScore = Math.max(0, Math.min(7, rawScore));
-    const overallScore = rawToPTE(rawScore);
-    const band = rawToBand(rawScore);
+    rawScore = Math.max(0, Math.min(maxRaw, rawScore));
+    const overallScore = rawToPTEDynamic(rawScore, maxRaw);
+    const band = rawToBandDynamic(rawScore, maxRaw);
 
-    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment);
-    const feedbackCard = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment);
+    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment, maxContent, maxRaw);
+    const feedbackCard = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment, maxContent, maxRaw);
     const feedback = feedbackCard.summary_line;
     const improvementTips = feedbackCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
 
     const result = {
       trait_scores: {
         form: 1,
+        form_max: 1,
         content: contentScore,
+        content_max: maxContent,         // v19.4: 3 or 4 depending on passage
         grammar: Math.round(grammarScore * 10) / 10,
-        vocabulary: Math.round(vocab.score * 10) / 10
+        grammar_max: 2,
+        vocabulary: Math.round(vocab.score * 10) / 10,
+        vocabulary_max: 2
       },
       content_details: {
         key_ideas_extracted: [
@@ -2181,6 +2318,8 @@ app.post('/api/grade', async (req, res) => {
       skill_contributions: skillContributions,
       overall_score: overallScore,
       raw_score: rawScore,
+      max_raw_score: maxRaw,                // v19.4: dynamic ceiling
+      total_ideas: maxContent,               // 3 or 4 — drives content_max
       band,
       word_count: form.wc,
       word_count_warning: form.warning || null,
@@ -2192,9 +2331,9 @@ app.post('/api/grade', async (req, res) => {
         missing: contentVerdict.ideas_missing || []
       },
       method_detected: vocab.method,
-      penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling),
+      penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.3.0',
+      scoring_version: '19.4.0',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
