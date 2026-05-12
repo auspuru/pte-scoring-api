@@ -166,6 +166,66 @@
     .input-meta { font-size: 0.78rem; color: var(--ink-4); }
     .saved-indicator { font-size: 0.78rem; color: var(--emerald); font-weight: 600; display: none; }
     .saved-indicator.show { display: inline; }
+
+    /* v19.8.2: Previous Answer callout — restore last graded result without re-verifying */
+    .prev-answer-card {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(99,102,241,0.02));
+      border: 1px solid rgba(99,102,241,0.18);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+    .prev-answer-card.show { display: flex; }
+    .prev-answer-card:hover { background: linear-gradient(135deg, rgba(99,102,241,0.10), rgba(99,102,241,0.04)); }
+    .prev-answer-icon {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(99,102,241,0.10);
+      border: 1px solid rgba(99,102,241,0.18);
+      border-radius: 10px;
+      font-size: 1.2rem;
+    }
+    .prev-answer-text { flex: 1; min-width: 0; }
+    .prev-answer-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
+    .prev-answer-sub { font-size: 0.82rem; color: #64748b; }
+    .prev-answer-sub .score-pill {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: rgba(13,148,136,0.10);
+      color: #0f766e;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.74rem;
+    }
+    .prev-answer-btn {
+      flex-shrink: 0;
+      padding: 9px 16px;
+      background: white;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .prev-answer-btn:hover { background: #f8fafc; border-color: #94a3b8; transform: translateY(-1px); }
+    .prev-answer-btn:active { transform: translateY(0); }
+    @media (max-width: 600px) {
+      .prev-answer-card { flex-wrap: wrap; }
+      .prev-answer-text { width: 100%; }
+      .prev-answer-btn { width: 100%; justify-content: center; }
+    }
     .input-actions { display: flex; gap: 6px; }
     .btn-verify, .btn-primary { padding: 11px 28px; background: linear-gradient(135deg, var(--teal-600), var(--teal-700)); color: #fff; border: none; border-radius: var(--r-sm); font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: var(--font); transition: all 0.2s var(--ease); letter-spacing: 0.02em; }
     .btn-verify:hover, .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,148,136,0.3); }
@@ -1155,6 +1215,19 @@
           <button class="btn btn-primary" id="verifyBtn" onclick="verifySummary()">Verify</button>
         </div>
       </div>
+
+      <!-- v19.8.2: Previous Answer callout — restore the last graded result without burning a Claude call -->
+      <div class="prev-answer-card" id="prevAnswerCard">
+        <div class="prev-answer-icon">🕒</div>
+        <div class="prev-answer-text">
+          <div class="prev-answer-title">Previous Answer</div>
+          <div class="prev-answer-sub" id="prevAnswerSub">You have already attempted this question</div>
+        </div>
+        <button class="prev-answer-btn" onclick="showPreviousAnswer()" title="Restore the last AI feedback without re-grading">
+          <span>👁</span>
+          <span>Show My Answer</span>
+        </button>
+      </div>
     </div>
 
     <!-- ═══ RESULTS SECTION (UPGRADED) ═══ -->
@@ -1717,7 +1790,79 @@
       `).join('');
     }
     function updateHistoryButton(){const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};const has=h[currentId]&&h[currentId].length>0;document.getElementById('historyBtn').style.display=has?'inline-block':'none';const tag=document.getElementById('historyTag');if(has){tag.style.display='inline-block';tag.textContent=`📜 ${h[currentId].length} attempt${h[currentId].length>1?'s':''}`;}else{tag.style.display='none';}}
-    function loadPreviousAttempt(){const s=LocalStore.get(STORAGE_KEYS.SUMMARIES)||{};if(s[currentId]){document.getElementById('summaryInput').value=s[currentId].text||'';updateWordCount();document.getElementById('savedTag').style.display='inline-block';document.getElementById('savedIndicator').classList.add('show');document.getElementById('summaryInput').classList.add('has-saved');}else{document.getElementById('summaryInput').value='';updateWordCount();document.getElementById('savedTag').style.display='none';document.getElementById('savedIndicator').classList.remove('show');document.getElementById('summaryInput').classList.remove('has-saved');}}
+    function loadPreviousAttempt(){
+      const s=LocalStore.get(STORAGE_KEYS.SUMMARIES)||{};
+      const sc=LocalStore.get(STORAGE_KEYS.SCORES)||{};
+      const summaryInput=document.getElementById('summaryInput');
+      const savedTag=document.getElementById('savedTag');
+      const savedIndicator=document.getElementById('savedIndicator');
+      const prevAnswerCard=document.getElementById('prevAnswerCard');
+      const prevAnswerSub=document.getElementById('prevAnswerSub');
+
+      if(s[currentId]){
+        summaryInput.value=s[currentId].text||'';
+        updateWordCount();
+        savedTag.style.display='inline-block';
+        savedIndicator.classList.add('show');
+        summaryInput.classList.add('has-saved');
+      } else {
+        summaryInput.value='';
+        updateWordCount();
+        savedTag.style.display='none';
+        savedIndicator.classList.remove('show');
+        summaryInput.classList.remove('has-saved');
+      }
+
+      // v19.8.2: Previous Answer callout — shown when there's a stored AI grade.
+      // Hide the simple "✓ Previously saved" text indicator when the richer
+      // callout is up (it's redundant).
+      const stored=sc[currentId];
+      if(stored && typeof stored.overall_score==='number'){
+        const pte=stored.overall_score;
+        const band=stored.band||'';
+        const ts=stored.__timestamp;
+        let when='';
+        if(ts){
+          const t=new Date(ts);
+          if(!isNaN(t.getTime())){
+            const ms=Date.now()-t.getTime();
+            const m=Math.floor(ms/60000), h=Math.floor(m/60), d=Math.floor(h/24);
+            when = d>0 ? `${d}d ago` : h>0 ? `${h}h ago` : m>0 ? `${m}m ago` : 'just now';
+          }
+        }
+        const parts=['You have already attempted this question'];
+        if(when) parts.push(when);
+        prevAnswerSub.innerHTML = parts.join(' · ') + ` <span class="score-pill">PTE ${pte}${band?' · '+band:''}</span>`;
+        prevAnswerCard.classList.add('show');
+        savedIndicator.classList.remove('show');
+      } else {
+        prevAnswerCard.classList.remove('show');
+      }
+    }
+
+    // v19.8.2: Restore the last graded result without burning a Claude call.
+    // Uses STORAGE_KEYS.SCORES which holds the full payload (feedback_card,
+    // content_details, skill_contributions, paraphrase_analysis, vocabulary_details,
+    // and the __spellData blob we stash in saveToLocalStorage).
+    function showPreviousAnswer(){
+      const sc=LocalStore.get(STORAGE_KEYS.SCORES)||{};
+      const stored=sc[currentId];
+      if(!stored){showToast('No previous answer to show.');return;}
+      const passage=passages.find(p=>p.id===currentId);
+      if(!passage){showToast('Passage not loaded yet.');return;}
+      // Restore the textarea text so the result matches what's visible.
+      if(stored.__text){
+        const ta=document.getElementById('summaryInput');
+        ta.value=stored.__text;
+        updateWordCount();
+      }
+      // Render with stored data — no API call. spellData was stashed at save time.
+      const spellData=stored.__spellData||null;
+      showResults(stored, passage, spellData);
+      // Scroll to the results.
+      const r=document.getElementById('results');
+      if(r) r.scrollIntoView({behavior:'smooth',block:'start'});
+    }
     function clearSummary(){document.getElementById('summaryInput').value='';updateWordCount();}
     function prevPassage(){if(currentId>1)loadPassage(currentId-1);}
     function nextPassage(){if(currentId<passages.length)loadPassage(currentId+1);}
@@ -1799,7 +1944,7 @@
           try { spellData = await spellRes.value.json(); } catch { spellData = null; }
         }
 
-        saveToLocalStorage(currentId, text, data);
+        saveToLocalStorage(currentId, text, data, spellData);
         showResults(data, passage, spellData);
         resetTimer();
         attempted.add(currentId);
@@ -1815,7 +1960,7 @@
       }
     }
 
-    function saveToLocalStorage(pid,text,data){const ts=new Date().toISOString();const att=LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[];if(!att.includes(pid)){att.push(pid);LocalStore.set(STORAGE_KEYS.ATTEMPTED,att);}const sum=LocalStore.get(STORAGE_KEYS.SUMMARIES)||{};sum[pid]={text,timestamp:ts,score:data.overall_score||0};LocalStore.set(STORAGE_KEYS.SUMMARIES,sum);const sc=LocalStore.get(STORAGE_KEYS.SCORES)||{};sc[pid]=data;LocalStore.set(STORAGE_KEYS.SCORES,sc);const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};if(!h[pid])h[pid]=[];h[pid].unshift({text,timestamp:ts,overall_score:data.overall_score||0,band:data.band||'Band 5',trait_scores:data.trait_scores||{},word_count:data.word_count||0,feedback:data.feedback||'',content_details:data.content_details||{},skill_contributions:data.skill_contributions||null,paraphrase_analysis:data.paraphrase_analysis||null,vocabulary_details:data.vocabulary_details||null,first_person_detected:data.first_person_detected||false,improvement_tips:data.improvement_tips||'',scoring_version:data.scoring_version||'unknown'});if(h[pid].length>10)h[pid]=h[pid].slice(0,10);LocalStore.set(STORAGE_KEYS.HISTORY,h);pushToServer();}
+    function saveToLocalStorage(pid,text,data,spellData){const ts=new Date().toISOString();const att=LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[];if(!att.includes(pid)){att.push(pid);LocalStore.set(STORAGE_KEYS.ATTEMPTED,att);}const sum=LocalStore.get(STORAGE_KEYS.SUMMARIES)||{};sum[pid]={text,timestamp:ts,score:data.overall_score||0};LocalStore.set(STORAGE_KEYS.SUMMARIES,sum);const sc=LocalStore.get(STORAGE_KEYS.SCORES)||{};sc[pid]=Object.assign({},data,{__text:text,__timestamp:ts,__spellData:spellData||null});LocalStore.set(STORAGE_KEYS.SCORES,sc);const h=LocalStore.get(STORAGE_KEYS.HISTORY)||{};if(!h[pid])h[pid]=[];h[pid].unshift({text,timestamp:ts,overall_score:data.overall_score||0,band:data.band||'Band 5',trait_scores:data.trait_scores||{},word_count:data.word_count||0,feedback:data.feedback||'',content_details:data.content_details||{},skill_contributions:data.skill_contributions||null,paraphrase_analysis:data.paraphrase_analysis||null,vocabulary_details:data.vocabulary_details||null,first_person_detected:data.first_person_detected||false,improvement_tips:data.improvement_tips||'',scoring_version:data.scoring_version||'unknown'});if(h[pid].length>10)h[pid]=h[pid].slice(0,10);LocalStore.set(STORAGE_KEYS.HISTORY,h);pushToServer();}
 
     // ═══ SERVER SYNC ═══
     function getLocalUserData(){return{attempted:LocalStore.get(STORAGE_KEYS.ATTEMPTED)||[],summaries:LocalStore.get(STORAGE_KEYS.SUMMARIES)||{},scores:LocalStore.get(STORAGE_KEYS.SCORES)||{},history:LocalStore.get(STORAGE_KEYS.HISTORY)||{}};}
@@ -2172,7 +2317,7 @@
         invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.8.1 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.8.2 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
