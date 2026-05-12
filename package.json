@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.8.0",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.8: binary capture per idea — partial-credit tier removed, matches actual Pearson rubric)",
+  "version": "19.8.1",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.8.1: key-element condenser + synonym-aware headline rescue prevents false 'missing' on paraphrased Band-90 samples)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

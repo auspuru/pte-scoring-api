@@ -1460,22 +1460,25 @@ const HEADLINE_STOP = new Set([
 function extractHeadline(keyElementText) {
   if (!keyElementText) return '';
   const t = String(keyElementText).trim();
-  // Split on the FIRST joining marker that separates a headline from its
-  // supporting context. Order matters: more specific markers first.
+  // Splitters kept in sync with condenseKeyElement() to ensure the rescue
+  // sees the same headline that was sent to Claude in the prompt.
   const splitters = [
-    /;\s*moreover\b/i, /;\s*furthermore\b/i, /;\s*and\b/i,
-    /,\s+and\s+/i,                    // ", and " (Oxford-comma joiner of 2 clauses)
-    /,\s+with\s+/i,                   // ", with setbacks like..." (supporting detail)
-    /,\s+including\s+/i,              // ", including..."
-    /,\s+such\s+as\s+/i,              // ", such as..."
-    /\s+;\s+/,                        // bare semicolon
-    /\s+and\s+(?:also\s+|then\s+)?/i  // " and " — last resort, may over-split lists
+    /,\s+such\s+as\s+/i,
+    /\s+such\s+as\s+/i,               // no-comma variant
+    /,\s+including\s+/i,
+    /,\s+like\s+/i,
+    /,\s+for\s+example\b/i,
+    /,\s+e\.?g\.?\s+/i,
+    /,\s+with\s+/i,
+    /;\s*moreover\b/i,
+    /;\s*furthermore\b/i,
+    /;\s*and\b/i,
+    /,\s+and\s+/i,
+    /\s+;\s+/,
   ];
   for (const re of splitters) {
     const m = t.match(re);
-    if (m && m.index > 20) {  // require at least 20 chars before the split → real clause
-      return t.slice(0, m.index).trim();
-    }
+    if (m && m.index > 20) return t.slice(0, m.index).trim();
   }
   return t;
 }
@@ -1489,26 +1492,84 @@ function tokenizeForHeadline(s) {
 
 // Returns true when the student's text contains enough of the headline's
 // distinctive tokens that we're confident they captured it.
+// Common paraphrase pairs that PTE students use. When the headline contains
+// any of these, students often substitute the alternate form — the matcher
+// should treat them as equivalent. Asymmetric: directional, lookup by headline
+// token. Each entry's array is the set of common student substitutions.
+const HEADLINE_SYNONYMS = {
+  familiar:     ['aware','conscious','acquainted','knowledgeable','knew'],
+  aware:        ['familiar','conscious','acquainted','knowledgeable','knew'],
+  disadvantages:['downsides','drawbacks','limitations','negatives','cons','disadvantage'],
+  disadvantage: ['downside','drawback','limitation','negative','con'],
+  advantages:   ['benefits','upsides','positives','pros','perks','advantage'],
+  advantage:    ['benefit','upside','positive','pro','perk'],
+  persuaded:    ['convinced','swayed','induced','urged','tried'],
+  persuade:     ['convince','sway','induce','urge','try'],
+  altered:      ['changed','transformed','modified','reshaped','revolutionised','revolutionized'],
+  alter:        ['change','transform','modify','reshape','revolutionise','revolutionize'],
+  overtaken:    ['surpassed','exceeded','outpaced','eclipsed','outstripped'],
+  surpassed:    ['overtaken','exceeded','outpaced','eclipsed'],
+  generates:    ['produces','creates','yields','delivers','contributes'],
+  generate:     ['produce','create','yield','deliver','contribute'],
+  catalyst:     ['driver','facilitator','agent','spur'],
+  invented:     ['created','devised','developed','originated','pioneered'],
+  invent:       ['create','devise','develop','originate','pioneer'],
+  frustrated:   ['dissatisfied','annoyed','irritated','displeased'],
+  rivals:       ['competitors','counterparts','peers'],
+  rival:        ['competitor','counterpart','peer'],
+  smooth:       ['easy','steady','straightforward','seamless','effortless'],
+  decision:     ['choice','selection','determination'],
+  choice:       ['decision','selection','determination'],
+  scientist:    ['researcher','academic','scholar','expert'],
+  exchange:     ['swap','trade','substitute','replace'],
+  exchanged:    ['swapped','traded','substituted','replaced'],
+  exchanging:   ['swapping','trading','substituting','replacing'],
+  expensive:    ['costly','pricey','dear','high-priced'],
+  big:          ['large','huge','massive','substantial','significant'],
+  huge:         ['large','big','massive','substantial','significant'],
+  large:        ['big','huge','massive','substantial','significant'],
+  many:         ['numerous','various','several','multiple','plenty'],
+  several:      ['multiple','many','various','numerous'],
+  reduce:       ['lower','decrease','diminish','cut'],
+  reduces:      ['lowers','decreases','diminishes','cuts'],
+};
+
 function headlineCapturedInText(headline, studentText) {
   const headlineTokens = tokenizeForHeadline(headline);
   const studentTokens = new Set(tokenizeForHeadline(studentText));
-  if (headlineTokens.length < 2) return false;
-  // Token overlap (lemma-loose: prefix match for short stems)
+  if (headlineTokens.length < 2) return { captured: false, ratio: 0, hits: 0, total: 0, matched: [] };
   let hits = 0;
   const matched = [];
   for (const tok of headlineTokens) {
+    // Direct match
     if (studentTokens.has(tok)) { hits++; matched.push(tok); continue; }
-    // Fuzzy: stem prefix (e.g. "overtaken" vs "overtake" or "overtook")
+    // Fuzzy stem (e.g., "overtaken" vs "overtake")
     const stem = tok.length > 5 ? tok.slice(0, tok.length - 2) : tok;
+    let stemHit = false;
     if (stem.length >= 4) {
       for (const st of studentTokens) {
-        if (st.startsWith(stem)) { hits++; matched.push(tok + '→' + st); break; }
+        if (st.startsWith(stem)) { hits++; matched.push(tok + '→' + st); stemHit = true; break; }
+      }
+    }
+    if (stemHit) continue;
+    // v19.8.1: synonym-aware fallback
+    const synonyms = HEADLINE_SYNONYMS[tok];
+    if (synonyms) {
+      for (const syn of synonyms) {
+        if (studentTokens.has(syn)) { hits++; matched.push(tok + '⇄' + syn); break; }
+        const synStem = syn.length > 5 ? syn.slice(0, syn.length - 2) : syn;
+        if (synStem.length >= 4) {
+          let synHit = false;
+          for (const st of studentTokens) {
+            if (st.startsWith(synStem)) { hits++; matched.push(tok + '⇄' + st); synHit = true; break; }
+          }
+          if (synHit) break;
+        }
       }
     }
   }
   const ratio = hits / headlineTokens.length;
-  // Require ≥60% match AND at least 2 distinctive tokens hit.
-  return { captured: ratio >= 0.60 && hits >= 2, ratio, hits, total: headlineTokens.length, matched };
+  return { captured: ratio >= 0.55 && hits >= 2, ratio, hits, total: headlineTokens.length, matched };
 }
 
 // Apply the rescue to a per_idea_scores object. Returns the rescue audit so
@@ -1519,22 +1580,31 @@ function applyHeadlineRescue(perIdeaScores, keyElements, studentText) {
   for (const label of Object.keys(perIdeaScores)) {
     const score = perIdeaScores[label];
     if (score >= 1) continue;          // already full — nothing to do
-    if (score === 0)   continue;       // missing — rescue is for partial only
     const keyText = keyElements[label];
     if (!keyText) continue;
     const headline = extractHeadline(keyText);
     // If headline equals the whole key element, no overstuffing detected →
-    // Claude's 0.5 stands.
+    // accept Claude's verdict.
     if (headline.length >= keyText.length - 5) {
       audit.skipped.push({ label, reason: 'no_dual_clause_pattern' });
       continue;
     }
     const result = headlineCapturedInText(headline, studentText);
-    if (result.captured) {
+    // v19.8.1: rescue 0.5 and 0.0 cases — but use stricter threshold for 0.0
+    // since Claude was more confident the idea was missing.
+    const wasMissing = score === 0;
+    const threshold = wasMissing ? 0.65 : 0.55;
+    const minHits = wasMissing ? 3 : 2;
+    if (result.ratio >= threshold && result.hits >= minHits) {
       perIdeaScores[label] = 1;
-      audit.applied.push({ label, headline, hits: result.hits, total: result.total, ratio: +result.ratio.toFixed(2), matched: result.matched.slice(0, 6) });
+      audit.applied.push({
+        label, headline, hits: result.hits, total: result.total,
+        ratio: +result.ratio.toFixed(2),
+        matched: result.matched.slice(0, 6),
+        was: wasMissing ? 'missing' : 'partial'
+      });
     } else {
-      audit.skipped.push({ label, reason: 'headline_not_captured', ratio: +result.ratio.toFixed(2) });
+      audit.skipped.push({ label, reason: 'headline_not_captured', ratio: +result.ratio.toFixed(2), hits: result.hits, total: result.total });
     }
   }
   return audit;
@@ -1862,18 +1932,73 @@ app.post('/api/admin/passages/bulk', requireAdmin, async (req, res) => {
 // → reach Band 9 / PTE 90. Verbatim with good connectors stays at Writing 90
 // but caps Reading around 55–65 unless academic synonyms are added.
 // ═══════════════════════════════════════════════════════════════════════════════
+// ─── KEY ELEMENT CONDENSER (v19.8.1) ────────────────────────────────────────
+// PTE passages often have key elements written as full sentences with
+// supporting context: "He was familiar with the minor disadvantages of country
+// living such as uncertain water supply and lack of central heating."
+//
+// The capture-worthy part — the headline — is "He was familiar with the minor
+// disadvantages of country living". The "such as ... and ..." tail is supporting
+// detail. A student capturing only the headline should earn full credit, but
+// Claude tends to judge against the full text and report "missing" when the
+// tail isn't conveyed.
+//
+// This helper extracts just the headline by splitting on the FIRST joining
+// marker that introduces supporting context. The full original text is also
+// retained and shown to Claude as supporting context — Claude judges against
+// the HEADLINE only.
+function condenseKeyElement(text) {
+  if (!text) return { headline: '', full: '', wasCondensed: false };
+  const t = String(text).trim();
+  // Order matters: more specific markers first. Patterns that introduce
+  // examples or supporting detail vs patterns joining two co-equal clauses.
+  const splitters = [
+    /,\s+such\s+as\s+/i,              // "X, such as Y" → headline = X
+    /\s+such\s+as\s+/i,               //  "X such as Y" (no comma) → same
+    /,\s+including\s+/i,
+    /,\s+like\s+/i,
+    /,\s+for\s+example\b/i,
+    /,\s+e\.?g\.?\s+/i,
+    /,\s+with\s+/i,                   // "X, with Y" (e.g., "smooth, with setbacks like...")
+    /;\s*moreover\b/i,
+    /;\s*furthermore\b/i,
+    /;\s*and\b/i,
+    /,\s+and\s+/i,                    // Oxford-comma joining two clauses
+    /\s+;\s+/,
+  ];
+  for (const re of splitters) {
+    const m = t.match(re);
+    if (m && m.index > 20) {
+      return { headline: t.slice(0, m.index).trim(), full: t, wasCondensed: true };
+    }
+  }
+  return { headline: t, full: t, wasCondensed: false };
+}
+
 function formatKeyElementsHint(keyElements) {
   if (!keyElements) return '';
   const parts = [];
-  // New schema (preferred)
-  if (keyElements.what)    parts.push('- What: '   + stripHtml(keyElements.what));
-  if (keyElements.why)     parts.push('- Why: '    + stripHtml(keyElements.why));
-  if (keyElements.how)     parts.push('- How: '    + stripHtml(keyElements.how));
-  if (keyElements.result)  parts.push('- Result: ' + stripHtml(keyElements.result));
-  // Legacy schema (fallback)
-  if (!keyElements.what && keyElements.topic)      parts.push('- Topic: '      + stripHtml(keyElements.topic));
-  if (!keyElements.why  && keyElements.pivot)      parts.push('- Pivot: '      + stripHtml(keyElements.pivot));
-  if (!keyElements.result && keyElements.conclusion) parts.push('- Conclusion: ' + stripHtml(keyElements.conclusion));
+  const fieldOrder = [
+    ['what','What'], ['why','Why'], ['how','How'], ['result','Result'],
+    ['topic','Topic'], ['pivot','Pivot'], ['conclusion','Conclusion']
+  ];
+  // Only emit fields the passage actually has, deduping the new + legacy schemas
+  const seen = new Set();
+  for (const [k, label] of fieldOrder) {
+    if (!keyElements[k]) continue;
+    if (k === 'topic'      && (keyElements.what    || seen.has('what')))   continue;
+    if (k === 'pivot'      && (keyElements.why     || seen.has('why')))    continue;
+    if (k === 'conclusion' && (keyElements.result  || seen.has('result'))) continue;
+    seen.add(k);
+    const c = condenseKeyElement(stripHtml(keyElements[k]));
+    if (c.wasCondensed) {
+      // Show HEADLINE prominently + the supporting detail in parentheses, so
+      // Claude knows what's required (headline) vs what's optional (detail).
+      parts.push(`- ${label}: ${c.headline}\n    (supporting detail in passage — not required for capture: ${c.full.slice(c.headline.length).replace(/^[,;\s]+/, '')})`);
+    } else {
+      parts.push(`- ${label}: ${c.full}`);
+    }
+  }
   return parts.join('\n');
 }
 
@@ -2444,7 +2569,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.8.0', mode: 'local'
+        scoring_version: '19.8.1', mode: 'local'
       });
     }
 
@@ -2733,7 +2858,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.8.0',
+      scoring_version: '19.8.1',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
