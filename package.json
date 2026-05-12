@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.7.2",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.7.2: headline-rescue auto-upgrades 0.5→1.0 when student captures the headline of overstuffed key elements)",
+  "version": "19.8.0",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.8: binary capture per idea — partial-credit tier removed, matches actual Pearson rubric)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
     "cors": "^2.8.6",
-    "express": "^4.22.1"
+    "express": "^4.22.2"
   },
   "engines": {
     "node": ">=18.0.0"
