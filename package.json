@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.8.2",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.8.2: 'Show My Answer' button restores last AI feedback without re-grading)",
+  "version": "19.9.0",
+  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.9: full results UI revamp — annotated passage with key-sentence highlighting, circular score dials, inline-annotated submission, AI Detector / Copy Detector banner)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

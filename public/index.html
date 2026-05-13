@@ -167,6 +167,197 @@
     .saved-indicator { font-size: 0.78rem; color: var(--emerald); font-weight: 600; display: none; }
     .saved-indicator.show { display: inline; }
 
+    /* v19.9: AI Detector / Copy Detector banner — top of results */
+    .ai-detector {
+      display: none;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(99, 102, 241, 0.18);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .ai-detector.show { display: block; }
+    .ai-detector-title { font-weight: 700; color: #1e293b; font-size: 0.92rem; margin-bottom: 10px; }
+    .ai-detector-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 14px; border-radius: 8px; margin-bottom: 6px;
+      background: rgba(16, 185, 129, 0.06);
+      border-left: 3px solid #10b981;
+      font-size: 0.86rem; color: #1e293b;
+    }
+    .ai-detector-row.amber { background: rgba(245, 158, 11, 0.06); border-left-color: #f59e0b; }
+    .ai-detector-row.red   { background: rgba(239, 68, 68, 0.06); border-left-color: #ef4444; }
+    .ai-detector-row-label { font-weight: 700; min-width: 140px; }
+    .ai-detector-row-status {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 0.74rem; font-weight: 800; letter-spacing: 0.04em;
+    }
+    .ai-detector-row .ai-detector-row-status { background: #10b981; color: white; }
+    .ai-detector-row.amber .ai-detector-row-status { background: #f59e0b; color: white; }
+    .ai-detector-row.red .ai-detector-row-status   { background: #ef4444; color: white; }
+    .ai-detector-row-detail { color: #475569; font-size: 0.82rem; flex: 1; min-width: 140px; }
+    .annotated-submission {
+      display: none;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(99, 102, 241, 0.18);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .annotated-submission.show { display: block; }
+    .annotated-submission-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .annotated-submission-title { font-weight: 700; color: #1e293b; font-size: 0.92rem; }
+    .annotated-submission-hint { font-size: 0.78rem; color: #64748b; }
+    .annotated-submission-text { line-height: 1.85; color: #1e293b; font-size: 0.96rem; }
+    .ann-issue {
+      position: relative;
+      background: rgba(239, 68, 68, 0.08);
+      border-bottom: 2px wavy #ef4444;
+      padding: 0 2px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.15s ease;
+    }
+    .ann-issue:hover { background: rgba(239, 68, 68, 0.18); }
+    .ann-issue.fixed { background: rgba(16, 185, 129, 0.10); border-bottom: 2px solid #10b981; cursor: default; }
+    .ann-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      z-index: 50;
+      transition: opacity 0.15s ease, visibility 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .ann-tooltip::after {
+      content: '';
+      position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #1e293b;
+    }
+    .ann-issue:hover .ann-tooltip { visibility: visible; opacity: 1; }
+    .ann-tooltip-suggest { color: #86efac; font-weight: 700; margin-left: 4px; }
+    .score-dials {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      padding: 24px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(99,102,241,0.18);
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+    .score-dials.show { display: grid; }
+    .score-dial {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-dial-ring {
+      position: relative;
+      width: 90px; height: 90px;
+    }
+    .score-dial-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .score-dial-ring .track { fill: none; stroke: rgba(148,163,184,0.20); stroke-width: 8; }
+    .score-dial-ring .progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .score-dial-ring .progress.green  { stroke: #10b981; }
+    .score-dial-ring .progress.amber  { stroke: #f59e0b; }
+    .score-dial-ring .progress.red    { stroke: #ef4444; }
+    .score-dial-ring .progress.violet { stroke: #8b5cf6; }
+    .score-dial-ring .progress.blue   { stroke: #3b82f6; }
+    .score-dial-value {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; font-weight: 800; color: #1e293b;
+      letter-spacing: -0.02em;
+    }
+    .score-dial-value .denom { font-size: 0.72rem; font-weight: 600; color: #64748b; margin-left: 2px; }
+    .score-dial-label {
+      font-size: 0.74rem; font-weight: 700; color: #475569;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      text-align: center;
+    }
+    @media (max-width: 720px) {
+      .score-dials { grid-template-columns: repeat(3, 1fr); padding: 16px; gap: 10px; }
+      .score-dials .score-dial:nth-child(4),
+      .score-dials .score-dial:nth-child(5) { grid-column: span 1; }
+      .score-dial-ring { width: 72px; height: 72px; }
+      .score-dial-value { font-size: 1rem; }
+      .score-dial-value .denom { font-size: 0.66rem; }
+    }
+    @media (max-width: 480px) {
+      .score-dials { grid-template-columns: repeat(2, 1fr); }
+    }
+    .annotated-passage {
+      display: none;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(99, 102, 241, 0.18);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .annotated-passage.show { display: block; }
+    .annotated-passage-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .annotated-passage-title { font-weight: 700; color: #1e293b; font-size: 0.92rem; }
+    .annotated-passage-legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.74rem; }
+    .legend-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-weight: 600;
+    }
+    .legend-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-chip.captured { background: rgba(16,185,129,0.10); color: #065f46; }
+    .legend-chip.captured .dot { background: #10b981; }
+    .legend-chip.missing { background: rgba(239,68,68,0.10); color: #991b1b; }
+    .legend-chip.missing .dot { background: #ef4444; }
+    .annotated-passage-text { line-height: 1.75; color: #1e293b; font-size: 0.95rem; }
+    .key-sentence {
+      display: inline;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: background 0.2s ease;
+    }
+    .key-sentence.captured {
+      background: rgba(16, 185, 129, 0.14);
+      border-bottom: 2px solid #10b981;
+    }
+    .key-sentence.missing {
+      background: rgba(239, 68, 68, 0.12);
+      border-bottom: 2px solid #ef4444;
+    }
+    .key-sentence-label {
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 999px;
+      margin-right: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      vertical-align: middle;
+    }
+    .key-sentence.captured .key-sentence-label { background: #10b981; color: white; }
+    .key-sentence.missing .key-sentence-label { background: #ef4444; color: white; }
+
     /* v19.8.2: Previous Answer callout — restore last graded result without re-verifying */
     .prev-answer-card {
       display: none;
@@ -1238,6 +1429,69 @@
           <div id="formErrorReason" style="color: #666; font-size: 0.9rem;"></div>
         </div>
 
+        <!-- v19.9: AI Detector / Copy Detector banner -->
+        <div class="ai-detector" id="aiDetector"></div>
+
+        <!-- v19.9: Annotated passage — passage with key idea sentences highlighted by capture status -->
+        <div class="annotated-passage" id="annotatedPassage"></div>
+
+        <!-- v19.9: Annotated submission — your answer with spelling/grammar issues underlined -->
+        <div class="annotated-submission" id="annotatedSubmission"></div>
+
+        <!-- v19.9: Circular score dials — one ring per trait + total -->
+        <div class="score-dials" id="scoreDials" style="display:none;">
+          <div class="score-dial">
+            <div class="score-dial-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="progress green" id="dialContentRing" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+              </svg>
+              <div class="score-dial-value"><span id="dialContentVal">0</span><span class="denom" id="dialContentMax">/4</span></div>
+            </div>
+            <div class="score-dial-label">Content</div>
+          </div>
+          <div class="score-dial">
+            <div class="score-dial-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="progress red" id="dialFormRing" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+              </svg>
+              <div class="score-dial-value"><span id="dialFormVal">0</span><span class="denom">/1</span></div>
+            </div>
+            <div class="score-dial-label">Form</div>
+          </div>
+          <div class="score-dial">
+            <div class="score-dial-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="progress amber" id="dialGrammarRing" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+              </svg>
+              <div class="score-dial-value"><span id="dialGrammarVal">0</span><span class="denom">/2</span></div>
+            </div>
+            <div class="score-dial-label">Grammar</div>
+          </div>
+          <div class="score-dial">
+            <div class="score-dial-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="progress violet" id="dialVocabRing" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+              </svg>
+              <div class="score-dial-value"><span id="dialVocabVal">0</span><span class="denom">/2</span></div>
+            </div>
+            <div class="score-dial-label">Vocabulary</div>
+          </div>
+          <div class="score-dial">
+            <div class="score-dial-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"></circle>
+                <circle class="progress blue" id="dialTotalRing" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+              </svg>
+              <div class="score-dial-value"><span id="dialTotalVal">0</span><span class="denom" id="dialTotalMax">/9</span></div>
+            </div>
+            <div class="score-dial-label">Total</div>
+          </div>
+        </div>
+
         <div class="score-header">
           <div class="main-score" id="mainScore">0/90</div>
           <div class="score-info">
@@ -2177,6 +2431,292 @@
         </div>`;
     }
 
+    // v19.9: Annotated passage — show the original passage with each key idea sentence
+    // highlighted in green (captured) or red (missing). Tokens are matched locally using
+    // the same headline-extraction logic as the server's rescue layer.
+    //
+    // Strategy: for each key element label, extract the headline, find the most-similar
+    // sentence in the passage, and wrap it with a <span> tagged with the label and status.
+    function renderAnnotatedPassage(data, passage) {
+      const el = document.getElementById('annotatedPassage');
+      if (!el) return;
+      if (!passage || !passage.text || !passage.keyElements) { el.classList.remove('show'); return; }
+      const cd = data.content_details || {};
+      const captured = new Set(cd.key_ideas_present || []);
+      const missing = new Set(cd.key_ideas_missing || []);
+      const allLabels = [...captured, ...missing];
+      if (allLabels.length === 0) { el.classList.remove('show'); return; }
+
+      const labelMap = {
+        what:'What', why:'Why', how:'How', result:'Result',
+        topic:'Topic', pivot:'Pivot', conclusion:'Conclusion'
+      };
+
+      // Stopwords mirror the server's HEADLINE_STOP — keep these tight.
+      const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','may','might','can','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','up','out','down','off','i','you','he','she','we','his','her','our','your','my']);
+
+      function extractHeadline(t) {
+        if (!t) return '';
+        t = String(t).trim();
+        const splitters = [
+          /,\s+such\s+as\s+/i, /\s+such\s+as\s+/i,
+          /,\s+including\s+/i, /,\s+like\s+/i,
+          /,\s+for\s+example\b/i, /,\s+with\s+/i,
+          /;\s*moreover\b/i, /;\s*furthermore\b/i,
+          /,\s+and\s+/i, /\s+;\s+/,
+        ];
+        for (const re of splitters) {
+          const m = t.match(re);
+          if (m && m.index > 20) return t.slice(0, m.index).trim();
+        }
+        return t;
+      }
+      function toks(s) {
+        return String(s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length >= 3 && !STOP.has(w));
+      }
+
+      // Split passage into sentences (keep delimiters).
+      const text = passage.text;
+      // Match ends of sentences while preserving them. We split on ". ", "? ", "! "
+      // including the punctuation, then preserve the joiner.
+      const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)/g;
+      const sentences = text.match(sentenceRegex) || [text];
+
+      // For each key label, find best-matching sentence index.
+      const matches = {};  // sentenceIdx → {label, status}
+      for (const lbl of allLabels) {
+        const headline = extractHeadline(passage.keyElements[lbl] || '');
+        const hTokens = toks(headline);
+        if (hTokens.length < 2) continue;
+        let bestIdx = -1, bestHits = 0;
+        for (let i = 0; i < sentences.length; i++) {
+          if (matches[i]) continue;  // already matched
+          const sTokens = new Set(toks(sentences[i]));
+          let hits = 0;
+          for (const t of hTokens) {
+            if (sTokens.has(t)) { hits++; continue; }
+            const stem = t.length > 5 ? t.slice(0, t.length - 2) : t;
+            if (stem.length >= 4) {
+              for (const st of sTokens) {
+                if (st.startsWith(stem)) { hits++; break; }
+              }
+            }
+          }
+          if (hits > bestHits) { bestHits = hits; bestIdx = i; }
+        }
+        // Require at least 2 hits to claim a match — otherwise the key element doesn't
+        // map cleanly to any one sentence (multi-sentence ideas).
+        if (bestIdx >= 0 && bestHits >= 2) {
+          matches[bestIdx] = { label: lbl, status: captured.has(lbl) ? 'captured' : 'missing' };
+        }
+      }
+
+      // Build the annotated HTML.
+      const parts = sentences.map((s, i) => {
+        if (!matches[i]) return escapeHtml(s);
+        const m = matches[i];
+        const lbl = labelMap[m.label] || m.label.toUpperCase();
+        return `<span class="key-sentence ${m.status}" data-label="${m.label}"><span class="key-sentence-label">${escapeHtml(lbl)}</span>${escapeHtml(s)}</span>`;
+      });
+
+      const capCount = captured.size, missCount = missing.size, total = capCount + missCount;
+      el.innerHTML = `
+        <div class="annotated-passage-header">
+          <span class="annotated-passage-title">📖 Passage — key sentences highlighted (${capCount}/${total} captured)</span>
+          <div class="annotated-passage-legend">
+            <span class="legend-chip captured"><span class="dot"></span>Captured in your summary</span>
+            ${missCount > 0 ? '<span class="legend-chip missing"><span class="dot"></span>Missing from your summary</span>' : ''}
+          </div>
+        </div>
+        <div class="annotated-passage-text">${parts.join('')}</div>`;
+      el.classList.add('show');
+    }
+
+    // v19.9: AI Detector / Copy Detector — measures how much of the student's text
+    // overlaps with the passage. PTE allows verbatim copying, so high overlap is
+    // not a fail — but it tells the student whether they're using verbatim or
+    // paraphrased style, which affects the Reading skill score.
+    //
+    // We compute n-gram overlap (4-word sliding windows) and a longest-contiguous-
+    // run metric to flag suspicious "wholesale paste" patterns.
+    function renderAIDetector(data, passage, studentText) {
+      const el = document.getElementById('aiDetector');
+      if (!el) return;
+      if (!passage || !passage.text || !studentText || !studentText.trim()) {
+        el.classList.remove('show'); return;
+      }
+
+      // Tokenise — lowercase, strip punctuation
+      function words(s) {
+        return s.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+      }
+      const studentW = words(studentText);
+      const passageW = words(passage.text);
+      if (studentW.length === 0) { el.classList.remove('show'); return; }
+
+      // Build 4-grams from passage
+      const passageNgrams = new Set();
+      for (let i = 0; i <= passageW.length - 4; i++) {
+        passageNgrams.add(passageW.slice(i, i + 4).join(' '));
+      }
+
+      // Count student 4-grams that appear in passage
+      let overlapCount = 0;
+      const studentNgrams = studentW.length >= 4 ? studentW.length - 3 : 0;
+      for (let i = 0; i <= studentW.length - 4; i++) {
+        const g = studentW.slice(i, i + 4).join(' ');
+        if (passageNgrams.has(g)) overlapCount++;
+      }
+      const overlapPct = studentNgrams > 0 ? Math.round((overlapCount / studentNgrams) * 100) : 0;
+
+      // Compute longest contiguous run of words from the passage in the student's text.
+      // Simple sliding-window match: for each position, walk forward in both.
+      let longestRun = 0;
+      const passageJoined = ' ' + passageW.join(' ') + ' ';
+      for (let i = 0; i < studentW.length; i++) {
+        for (let len = Math.min(20, studentW.length - i); len >= 4; len--) {
+          const segment = ' ' + studentW.slice(i, i + len).join(' ') + ' ';
+          if (passageJoined.includes(segment)) {
+            if (len > longestRun) longestRun = len;
+            break;
+          }
+        }
+      }
+
+      // Status classification for the SWT Copy Detector row:
+      //   ≤30% overlap AND longest run <6 → OK (paraphrased)
+      //   30–60% overlap OR longest run 6–10 → MODERATE (hybrid / phrase-picking)
+      //   >60% overlap OR longest run >10 → HIGH (verbatim — still legal, but Reading caps)
+      let copyStatus, copyClass, copyDetail;
+      if (overlapPct <= 30 && longestRun < 6) {
+        copyStatus = 'OK'; copyClass = '';
+        copyDetail = `Low overlap with the passage (${overlapPct}% · longest run ${longestRun} words). Strong paraphrasing.`;
+      } else if (overlapPct <= 60 && longestRun <= 10) {
+        copyStatus = 'MODERATE'; copyClass = 'amber';
+        copyDetail = `Moderate overlap with the passage (${overlapPct}% · longest run ${longestRun} words). Hybrid / phrase-picking style.`;
+      } else {
+        copyStatus = 'HIGH'; copyClass = 'amber';
+        copyDetail = `High overlap with the passage (${overlapPct}% · longest run ${longestRun} words). Verbatim style — legal for PTE but Reading skill is capped without paraphrasing.`;
+      }
+
+      // Better content suggestion — only when there's a clear improvement to surface
+      // and the student didn't already nail it. Pull from the passage's sampleResponse
+      // if available and the student's score is below band-9.
+      let suggestionRow = '';
+      const pte = data.overall_score || 0;
+      if (pte < 86 && passage.sampleResponse) {
+        suggestionRow = `
+          <div class="ai-detector-row amber">
+            <span class="ai-detector-row-label">📝 Better Answer</span>
+            <span class="ai-detector-row-status">SUGGESTION</span>
+            <div class="ai-detector-row-detail">${escapeHtml(passage.sampleResponse)}</div>
+          </div>`;
+      }
+
+      el.innerHTML = `
+        <div class="ai-detector-title">🔍 A.I. Detector</div>
+        <div class="ai-detector-row ${copyClass}">
+          <span class="ai-detector-row-label">SWT Copy Detector</span>
+          <span class="ai-detector-row-status">${copyStatus}</span>
+          <div class="ai-detector-row-detail">${escapeHtml(copyDetail)}</div>
+        </div>
+        ${suggestionRow}`;
+      el.classList.add('show');
+    }
+
+    // underlined wavy red. Hovering shows the suggestion. Clicking applies the fix
+    // (uses the existing applySpellFix function which updates the textarea + DOM).
+    function renderAnnotatedSubmission(data, spellData, studentText) {
+      const el = document.getElementById('annotatedSubmission');
+      if (!el) return;
+      const text = studentText || '';
+      if (!text.trim()) { el.classList.remove('show'); return; }
+
+      // Collect errors from both sources (spellData takes priority; spelling_details is fallback).
+      let errors = [];
+      if (spellData && Array.isArray(spellData.errors) && spellData.errors.length) {
+        errors = spellData.errors;
+      } else if (data?.spelling_details?.errors?.length) {
+        errors = data.spelling_details.errors;
+      }
+
+      if (errors.length === 0) {
+        // Still show the submission, but with no underlines — gives the student
+        // a clean view of what they wrote alongside the score.
+        el.innerHTML = `
+          <div class="annotated-submission-header">
+            <span class="annotated-submission-title">📝 Your Answer</span>
+            <span class="annotated-submission-hint">No spelling issues detected</span>
+          </div>
+          <div class="annotated-submission-text">${escapeHtml(text)}</div>`;
+        el.classList.add('show');
+        return;
+      }
+
+      // Build a map of misspelled word → suggestion(s). Match whole-word, case-insensitive.
+      // We process text left-to-right and inject <span class="ann-issue"> around each
+      // error's first remaining occurrence.
+      const errorIdx = {};  // lowercase word → { suggestion, source }
+      for (const e of errors) {
+        const w = (e.misspelled || '').toLowerCase().trim();
+        if (!w) continue;
+        const suggestion = e.suggestion || (e.suggestions && e.suggestions[0]) || '';
+        errorIdx[w] = { suggestion, source: e.source || 'unknown' };
+      }
+
+      // Tokenise the text preserving whitespace and punctuation. Use a regex to split on
+      // word boundaries, keeping the delimiters.
+      const tokens = text.split(/(\s+|[.,;:!?"'()\[\]\u2014\u2013])/);
+      const used = new Set();  // each error fired at most once
+      const out = tokens.map(tok => {
+        if (!tok) return '';
+        const stripped = tok.toLowerCase().replace(/[^a-z']/g, '');
+        if (!stripped) return escapeHtml(tok);
+        if (errorIdx[stripped] && !used.has(stripped)) {
+          used.add(stripped);
+          const e = errorIdx[stripped];
+          const suggHtml = e.suggestion ? `<span class="ann-tooltip-suggest">→ ${escapeHtml(e.suggestion)}</span>` : '';
+          return `<span class="ann-issue" data-word="${escapeHtml(stripped)}" data-suggest="${escapeHtml(e.suggestion||'')}" onclick="applyInlineFix(this)"><span class="ann-tooltip">Misspelled${suggHtml}</span>${escapeHtml(tok)}</span>`;
+        }
+        return escapeHtml(tok);
+      });
+
+      el.innerHTML = `
+        <div class="annotated-submission-header">
+          <span class="annotated-submission-title">📝 Your Answer — ${errors.length} issue${errors.length > 1 ? 's' : ''} flagged</span>
+          <span class="annotated-submission-hint">Hover an underlined word to see the fix · click to apply</span>
+        </div>
+        <div class="annotated-submission-text">${out.join('')}</div>`;
+      el.classList.add('show');
+    }
+
+    // Apply an inline fix when the user clicks an underlined word in the annotated submission.
+    function applyInlineFix(el) {
+      const word = el.dataset.word;
+      const suggest = el.dataset.suggest;
+      if (!word || !suggest) return;
+      const ta = document.getElementById('summaryInput');
+      if (!ta) return;
+      // Replace the first whole-word, case-insensitive occurrence in the textarea
+      // value. Preserve original casing of the first letter when possible.
+      const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      const match = ta.value.match(re);
+      if (!match) { showToast('Word no longer in text — re-verify'); return; }
+      let replacement = suggest;
+      // Preserve initial capital if the original was capitalised
+      if (match[0][0] === match[0][0].toUpperCase()) {
+        replacement = suggest.charAt(0).toUpperCase() + suggest.slice(1);
+      }
+      ta.value = ta.value.replace(re, replacement);
+      updateWordCount();
+      // Mark the span as fixed visually
+      el.classList.add('fixed');
+      el.onclick = null;
+      const tip = el.querySelector('.ann-tooltip');
+      if (tip) tip.textContent = 'Fixed → ' + replacement;
+      showToast(`"${word}" → "${replacement}"`);
+    }
+
     function renderFeedbackCard(card, fallbackText, fullData) {
       const el = document.getElementById('feedbackCardV3');
       if (!el) return;
@@ -2307,6 +2847,30 @@
       document.getElementById('bandDisplay').textContent = data.band || 'Band 5';
       const maxRawDisplay = data.max_raw_score || 7;
       document.getElementById('rawDisplay').textContent = 'Raw: ' + (rawScore.toFixed ? rawScore.toFixed(1) : rawScore) + '/' + maxRawDisplay;
+
+      // v19.9: Update circular score dials
+      const C = 263.89;  // circumference of r=42 circle: 2π × 42 ≈ 263.89
+      function setDial(ringId, valId, value, maxValue, maxIdEl) {
+        const ring = document.getElementById(ringId);
+        const val = document.getElementById(valId);
+        if (!ring || !val) return;
+        const pct = maxValue > 0 ? Math.min(1, value / maxValue) : 0;
+        ring.style.strokeDasharray = C;
+        ring.style.strokeDashoffset = (C * (1 - pct)).toFixed(2);
+        val.textContent = (Number.isInteger(value) ? value : value.toFixed(1));
+        if (maxIdEl) { const m = document.getElementById(maxIdEl); if (m) m.textContent = '/' + maxValue; }
+      }
+      // Use the actual trait values (not the clamped versions above) so dials
+      // reflect the real score breakdown.
+      const tFull = data.trait_scores || {};
+      const cMax = tFull.content_max || 4;
+      const rMax = data.max_raw_score || (1 + cMax + 2 + 2);
+      setDial('dialContentRing', 'dialContentVal', tFull.content || 0, cMax, 'dialContentMax');
+      setDial('dialFormRing',    'dialFormVal',    tFull.form    || 0, 1, null);
+      setDial('dialGrammarRing', 'dialGrammarVal', tFull.grammar || 0, 2, null);
+      setDial('dialVocabRing',   'dialVocabVal',   tFull.vocabulary || 0, 2, null);
+      setDial('dialTotalRing',   'dialTotalVal',   rawScore,           rMax, 'dialTotalMax');
+      document.getElementById('scoreDials').style.display = 'grid';
       // Mode + method badge
       const methodLabel = ({
         paraphrased:    '🎯 Paraphrased Method',
@@ -2317,7 +2881,7 @@
         invalid:        '❌ Form Invalid'
       })[data.method_detected] || '';
       const modeBadge = data.llm_used ? '🤖 Claude' : '⚙️ Local';
-      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.8.2 · ${methodLabel}`;
+      document.getElementById('modeDisplay').innerHTML = `${modeBadge} v19.9 · ${methodLabel}`;
 
       // ── NEW: Skill Contributions ──
       const skills = data.skill_contributions;
@@ -2330,6 +2894,16 @@
       } else {
         document.getElementById('skillContributions').style.display = 'none';
       }
+
+      // ── AI DETECTOR / COPY DETECTOR — top of results, flags verbatim vs paraphrased ──
+      const submittedText = (document.getElementById('summaryInput').value || data.__text || '').trim();
+      renderAIDetector(data, passage, submittedText);
+
+      // ── ANNOTATED PASSAGE — highlight key sentences in the original passage by capture status ──
+      renderAnnotatedPassage(data, passage);
+
+      // ── ANNOTATED SUBMISSION — student's text with spelling issues underlined inline ──
+      renderAnnotatedSubmission(data, spellData, submittedText);
 
       // ── IDEAS COVERAGE — show captured/missing ideas explicitly above the feedback card ──
       renderIdeasCoverage(data, passage);
