@@ -6,6 +6,16 @@ const fsSync = require('fs');
 const fs = require('fs').promises;
 const path = require('path');
 
+// v19.10: Optional Postgres support. The 'pg' module is loaded lazily so that
+// installations without DATABASE_URL still work (local dev, JSON-file fallback).
+// When DATABASE_URL is set (Railway auto-injects this for Postgres services),
+// the JSON-file StorageAPI is replaced with a Postgres-backed adapter that
+// implements the same interface.
+let Pool = null;
+try { Pool = require('pg').Pool; } catch (_) { /* pg not installed — JSON fallback only */ }
+const DATABASE_URL = process.env.DATABASE_URL;
+const USE_POSTGRES = !!(DATABASE_URL && Pool);
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
@@ -39,6 +49,77 @@ async function ensureDataDir() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }); } catch (e) { /* ok */ }
 }
 
+// ─── DIAGNOSTIC: BOOT SNAPSHOT ──────────────────────────────────────────────
+// v19.9: Capture a snapshot of the storage file at process start so /api/health
+// can later compare boot state to current state. If the snapshot is empty but
+// the volume is supposedly persistent, OR if the snapshot doesn't match what's
+// in the volume on a known-stable file, the volume isn't being mounted right.
+//
+// We record: instance ID (random per process), boot time, the storage path,
+// whether the volume env var was set, whether the file existed at boot,
+// its size, mtime, and user count.
+const INSTANCE_ID = Math.random().toString(36).slice(2, 10);
+const BOOT_TIME = new Date().toISOString();
+let BOOT_SNAPSHOT = null;
+async function captureBootSnapshot() {
+  const snap = {
+    instance_id: INSTANCE_ID,
+    boot_time: BOOT_TIME,
+    storage_path: STORAGE_FILE,
+    data_dir: DATA_DIR,
+    using_railway_volume_env: !!process.env.RAILWAY_VOLUME_MOUNT_PATH,
+    railway_volume_env_value: process.env.RAILWAY_VOLUME_MOUNT_PATH || null,
+    node_env: process.env.NODE_ENV || null,
+    // The "fallback" path used when no volume env var is set. If the active
+    // DATA_DIR equals the fallback, you're writing to ephemeral disk.
+    fallback_path_if_no_volume: process.env.NODE_ENV === 'production' ? '/app/data' : './data',
+    // Probe the file's existence and metadata at boot.
+    file_existed_at_boot: false,
+    file_size_at_boot: 0,
+    file_mtime_at_boot: null,
+    user_count_at_boot: 0,
+  };
+  try {
+    const stat = await fs.stat(STORAGE_FILE);
+    snap.file_existed_at_boot = true;
+    snap.file_size_at_boot = stat.size;
+    snap.file_mtime_at_boot = stat.mtime.toISOString();
+    try {
+      const parsed = JSON.parse(await fs.readFile(STORAGE_FILE, 'utf8'));
+      snap.user_count_at_boot = Object.keys(parsed.users || {}).length;
+    } catch (_) { /* corrupt file? leave user_count = 0 */ }
+  } catch (_) {
+    // File doesn't exist — that's the smoking gun if the volume should have it.
+  }
+  BOOT_SNAPSHOT = snap;
+}
+
+// ─── DIAGNOSTIC: WRITE PROBE ────────────────────────────────────────────────
+// Tests whether we can write to the data dir AND whether the write persists
+// across the probe call. Useful for distinguishing "can write at all" from
+// "writes survive container restart".
+async function writeProbe() {
+  await ensureDataDir();
+  const probePath = path.join(DATA_DIR, '.write-probe.json');
+  const now = new Date().toISOString();
+  const result = { can_write: false, can_read_back: false, written_at: null, read_value: null, error: null };
+  try {
+    await fs.writeFile(probePath, JSON.stringify({ ts: now, instance: INSTANCE_ID }));
+    result.can_write = true;
+    result.written_at = now;
+    try {
+      const back = JSON.parse(await fs.readFile(probePath, 'utf8'));
+      result.can_read_back = true;
+      result.read_value = back;
+    } catch (e) { result.error = 'readback_failed: ' + e.message; }
+    // Leave the probe file in place — its mtime on the next deploy tells you
+    // whether the volume actually persisted across deploys.
+  } catch (e) {
+    result.error = 'write_failed: ' + e.message;
+  }
+  return result;
+}
+
 // ─── ATOMIC FILE WRITE ──────────────────────────────────────────────────────
 // Writes via temp + rename so a crash mid-write can never corrupt the target.
 // Also keeps a .bak copy of the previous version. Used by every persistent
@@ -57,7 +138,312 @@ async function safeWriteJSON(filePath, data) {
   await fs.rename(tmp, filePath);
 }
 
-const StorageAPI = {
+// ─── POSTGRES POOL & ADAPTER (v19.10) ───────────────────────────────────────
+// When DATABASE_URL is present, this replaces the JSON-file StorageAPI with
+// a Postgres-backed implementation that has the same method signatures. The
+// route handlers below remain unchanged.
+//
+// Schema (auto-created on first boot):
+//   accounts(username PK, password_hash, secret_q, secret_a_hash,
+//            created_at, last_login, blocked, role)
+//   user_data(username PK, data JSONB)         -- attempted/summaries/scores/history/stats
+//   passages(id INT PK, payload JSONB)
+//   global_stats(id INT PK = 1, total_attempts BIGINT)
+//
+// The "data" JSONB column keeps the same shape the JSON file used, so the
+// API surface (getUserData, setUserData, etc.) returns identical payloads.
+let pgPool = null;
+if (USE_POSTGRES) {
+  pgPool = new Pool({
+    connectionString: DATABASE_URL,
+    ssl: DATABASE_URL.includes('railway.app') || process.env.PGSSL === 'require' || /sslmode=require/.test(DATABASE_URL)
+         ? { rejectUnauthorized: false } : false,
+    max: 10, idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000,
+  });
+  pgPool.on('error', (err) => { console.error('Postgres pool error:', err.message); });
+}
+
+async function pgInitSchema() {
+  if (!pgPool) return;
+  const ddl = `
+    CREATE TABLE IF NOT EXISTS accounts (
+      username       TEXT PRIMARY KEY,
+      password_hash  TEXT NOT NULL,
+      secret_q       TEXT DEFAULT '',
+      secret_a_hash  TEXT DEFAULT '',
+      created_at     TIMESTAMPTZ DEFAULT NOW(),
+      last_login     TIMESTAMPTZ,
+      blocked        BOOLEAN DEFAULT FALSE,
+      role           TEXT DEFAULT 'user'
+    );
+    CREATE TABLE IF NOT EXISTS user_data (
+      username       TEXT PRIMARY KEY,
+      data           JSONB NOT NULL DEFAULT '{}'::jsonb,
+      updated_at     TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS passages (
+      id             INTEGER PRIMARY KEY,
+      payload        JSONB NOT NULL,
+      updated_at     TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS global_stats (
+      id             INTEGER PRIMARY KEY DEFAULT 1,
+      total_attempts BIGINT DEFAULT 0,
+      CONSTRAINT global_stats_singleton CHECK (id = 1)
+    );
+    INSERT INTO global_stats (id, total_attempts) VALUES (1, 0) ON CONFLICT (id) DO NOTHING;
+  `;
+  await pgPool.query(ddl);
+}
+
+// One-time JSON → Postgres migration. Runs at boot if the volume still has a
+// pte_data.json AND the accounts table is empty. Idempotent and safe to re-run
+// — it skips any row whose primary key already exists.
+async function pgMigrateFromJsonIfNeeded() {
+  if (!pgPool) return { migrated: false, reason: 'no_pg_pool' };
+  const { rows: countRow } = await pgPool.query('SELECT COUNT(*)::int AS n FROM accounts');
+  if (countRow[0].n > 0) return { migrated: false, reason: 'accounts_already_populated', existing_accounts: countRow[0].n };
+  let raw;
+  try { raw = await fs.readFile(STORAGE_FILE, 'utf8'); }
+  catch { return { migrated: false, reason: 'no_json_file_to_migrate' }; }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch { return { migrated: false, reason: 'json_parse_failed' }; }
+
+  const accounts = parsed.accounts || {};
+  const users = parsed.users || {};
+  let importedAccounts = 0, importedUserData = 0;
+  const client = await pgPool.connect();
+  try {
+    await client.query('BEGIN');
+    for (const [uid, acct] of Object.entries(accounts)) {
+      await client.query(
+        `INSERT INTO accounts (username, password_hash, secret_q, secret_a_hash, created_at, last_login, blocked, role)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (username) DO NOTHING`,
+        [uid, acct.passwordHash || '', acct.secretQ || '', acct.secretAHash || '',
+         acct.createdAt || new Date().toISOString(), acct.lastLogin || null,
+         !!acct.blocked, acct.role || 'user']
+      );
+      importedAccounts++;
+    }
+    for (const [uid, u] of Object.entries(users)) {
+      await client.query(
+        `INSERT INTO user_data (username, data) VALUES ($1, $2::jsonb) ON CONFLICT (username) DO NOTHING`,
+        [uid, JSON.stringify({
+          attempted: u.attempted || [], summaries: u.summaries || {},
+          scores: u.scores || {}, history: u.history || {},
+          stats: u.stats || { totalAttempts: 0, averageScore: 0 }
+        })]
+      );
+      importedUserData++;
+    }
+    if (parsed.global?.totalAttempts) {
+      await client.query(
+        `UPDATE global_stats SET total_attempts = $1 WHERE id = 1`,
+        [parsed.global.totalAttempts]
+      );
+    }
+    await client.query('COMMIT');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+  return { migrated: true, accounts: importedAccounts, user_data: importedUserData };
+}
+
+// ─── POSTGRES STORAGE ADAPTER ───────────────────────────────────────────────
+// Same method names as JsonStorage below, but reads/writes through pgPool.
+// All methods are async and use parameterised queries (no SQL injection risk).
+const PgStorage = {
+  async _allAccounts() {
+    const { rows } = await pgPool.query('SELECT * FROM accounts');
+    const out = {};
+    for (const r of rows) {
+      out[r.username] = {
+        username: r.username, passwordHash: r.password_hash,
+        secretQ: r.secret_q, secretAHash: r.secret_a_hash,
+        createdAt: r.created_at ? r.created_at.toISOString() : null,
+        lastLogin: r.last_login ? r.last_login.toISOString() : null,
+        blocked: r.blocked, role: r.role || 'user'
+      };
+    }
+    return out;
+  },
+  async _allUserData() {
+    const { rows } = await pgPool.query('SELECT * FROM user_data');
+    const out = {};
+    for (const r of rows) out[r.username] = r.data || {};
+    return out;
+  },
+  async _getAccount(uid) {
+    const { rows } = await pgPool.query('SELECT * FROM accounts WHERE username = $1', [uid]);
+    if (!rows.length) return null;
+    const r = rows[0];
+    return {
+      username: r.username, passwordHash: r.password_hash,
+      secretQ: r.secret_q, secretAHash: r.secret_a_hash,
+      createdAt: r.created_at ? r.created_at.toISOString() : null,
+      lastLogin: r.last_login ? r.last_login.toISOString() : null,
+      blocked: r.blocked, role: r.role || 'user'
+    };
+  },
+  async _saveAccount(acct) {
+    await pgPool.query(
+      `INSERT INTO accounts (username, password_hash, secret_q, secret_a_hash, created_at, last_login, blocked, role)
+       VALUES ($1,$2,$3,$4,COALESCE($5::timestamptz, NOW()),$6::timestamptz,$7,$8)
+       ON CONFLICT (username) DO UPDATE SET
+         password_hash = EXCLUDED.password_hash,
+         secret_q = EXCLUDED.secret_q,
+         secret_a_hash = EXCLUDED.secret_a_hash,
+         last_login = EXCLUDED.last_login,
+         blocked = EXCLUDED.blocked,
+         role = EXCLUDED.role`,
+      [acct.username, acct.passwordHash, acct.secretQ || '', acct.secretAHash || '',
+       acct.createdAt || null, acct.lastLogin || null, !!acct.blocked, acct.role || 'user']
+    );
+  },
+  async _deleteAccount(uid) {
+    await pgPool.query('DELETE FROM accounts WHERE username = $1', [uid]);
+    await pgPool.query('DELETE FROM user_data WHERE username = $1', [uid]);
+  },
+
+  // ── readData / writeData — emulate the JSON shape for any code that still
+  //    uses the old whole-blob interface. AuthAPI uses this pattern, so we
+  //    keep it working for backwards compatibility.
+  async readData() {
+    const [accounts, users, globalStats] = await Promise.all([
+      this._allAccounts(),
+      this._allUserData(),
+      pgPool.query('SELECT total_attempts FROM global_stats WHERE id = 1')
+    ]);
+    return {
+      accounts, users,
+      global: { totalAttempts: Number(globalStats.rows[0]?.total_attempts || 0) }
+    };
+  },
+  // writeData is the "everything" write path. We split it into per-row updates
+  // inside a transaction so a partial write doesn't corrupt the store.
+  async writeData(data) {
+    const client = await pgPool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const [uid, acct] of Object.entries(data.accounts || {})) {
+        await client.query(
+          `INSERT INTO accounts (username, password_hash, secret_q, secret_a_hash, created_at, last_login, blocked, role)
+           VALUES ($1,$2,$3,$4,COALESCE($5::timestamptz, NOW()),$6::timestamptz,$7,$8)
+           ON CONFLICT (username) DO UPDATE SET
+             password_hash = EXCLUDED.password_hash, secret_q = EXCLUDED.secret_q,
+             secret_a_hash = EXCLUDED.secret_a_hash, last_login = EXCLUDED.last_login,
+             blocked = EXCLUDED.blocked, role = EXCLUDED.role`,
+          [uid, acct.passwordHash || '', acct.secretQ || '', acct.secretAHash || '',
+           acct.createdAt || null, acct.lastLogin || null, !!acct.blocked, acct.role || 'user']
+        );
+      }
+      for (const [uid, u] of Object.entries(data.users || {})) {
+        await client.query(
+          `INSERT INTO user_data (username, data, updated_at) VALUES ($1, $2::jsonb, NOW())
+           ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+          [uid, JSON.stringify(u)]
+        );
+      }
+      if (data.global?.totalAttempts != null) {
+        await client.query(
+          `INSERT INTO global_stats (id, total_attempts) VALUES (1, $1)
+           ON CONFLICT (id) DO UPDATE SET total_attempts = EXCLUDED.total_attempts`,
+          [data.global.totalAttempts]
+        );
+      }
+      await client.query('COMMIT');
+    } catch (e) { await client.query('ROLLBACK'); throw e; }
+    finally { client.release(); }
+  },
+
+  async saveProgress(userId, passageId, summary, scoreData) {
+    const data = await this.readData();
+    if (!data.users[userId]) data.users[userId] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    const u = data.users[userId];
+    if (!u.attempted) u.attempted = [];
+    if (!u.attempted.includes(passageId)) u.attempted.push(passageId);
+    if (!u.summaries) u.summaries = {};
+    u.summaries[passageId] = { text: summary, timestamp: new Date().toISOString(), score: scoreData?.overall_score || 0 };
+    if (!u.scores) u.scores = {};
+    u.scores[passageId] = scoreData;
+    if (!u.history) u.history = {};
+    if (!u.history[passageId]) u.history[passageId] = [];
+    u.history[passageId].unshift({
+      text: summary, timestamp: new Date().toISOString(),
+      overall_score: scoreData?.overall_score || 0, band: scoreData?.band || 'Band 5',
+      trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
+      feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
+      skill_contributions: scoreData?.skill_contributions || null,
+      scoring_version: scoreData?.scoring_version || 'unknown'
+    });
+    if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
+    let total = 0, count = 0;
+    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+    // Persist this single user's data + bump global stats — focused write, not whole-blob.
+    await pgPool.query(
+      `INSERT INTO user_data (username, data, updated_at) VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      [userId, JSON.stringify(u)]
+    );
+    await pgPool.query(`UPDATE global_stats SET total_attempts = total_attempts + 1 WHERE id = 1`);
+    return { success: true, userStats: u.stats };
+  },
+  async getUserData(userId) {
+    const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
+    if (!rows.length) return { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    const u = rows[0].data || {};
+    return { attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {} };
+  },
+  async setUserData(userId, userData) {
+    // Replicate the merge logic from JsonStorage exactly so behavior is identical.
+    const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
+    const existing = rows[0]?.data || {};
+    const clientHistory = userData.history || {};
+    const serverHistory = existing.history || {};
+    const mergedHistory = {};
+    const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
+    for (const pid of allPassageIds) {
+      const all = [...(clientHistory[pid] || []), ...(serverHistory[pid] || [])];
+      const seen = new Set();
+      const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
+      merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      mergedHistory[pid] = merged.slice(0, 10);
+    }
+    const u = {
+      attempted: [...new Set([...(existing.attempted || []), ...(userData.attempted || [])])],
+      summaries: { ...(existing.summaries || {}), ...(userData.summaries || {}) },
+      scores: { ...(existing.scores || {}), ...(userData.scores || {}) },
+      history: mergedHistory
+    };
+    let total = 0, count = 0;
+    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+    await pgPool.query(
+      `INSERT INTO user_data (username, data, updated_at) VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      [userId, JSON.stringify(u)]
+    );
+    return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count };
+  },
+  async getProgress(userId) { return this.getUserData(userId); },
+  async getLeaderboard(limit = 10) {
+    const { rows } = await pgPool.query(
+      `SELECT username, (data->'stats'->>'averageScore')::int AS avg_score,
+              (data->'stats'->>'totalAttempts')::int AS total
+       FROM user_data
+       ORDER BY (data->'stats'->>'averageScore')::int DESC NULLS LAST
+       LIMIT $1`, [limit]
+    );
+    return rows.map(r => ({ userId: r.username, averageScore: r.avg_score || 0, totalAttempts: r.total || 0 }));
+  }
+};
+
+const JsonStorage = {
   async readData() {
     try { return JSON.parse(await fs.readFile(STORAGE_FILE, 'utf8')); }
     catch { return { users: {}, global: { totalAttempts: 0 } }; }
@@ -162,6 +548,11 @@ const StorageAPI = {
       .sort((a, b) => b.averageScore - a.averageScore).slice(0, limit);
   }
 };
+
+// v19.10: Pick the active storage backend. Postgres when DATABASE_URL is set,
+// JSON file otherwise. Every consumer (AuthAPI, route handlers) uses StorageAPI
+// — they don't need to know which backend is active.
+const StorageAPI = USE_POSTGRES ? PgStorage : JsonStorage;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // PASSAGE STORAGE — admin-editable, persisted to the Railway volume
@@ -271,13 +662,33 @@ const AuthAPI = {
   async readAccounts() {
     const data = await StorageAPI.readData();
     if (!data.accounts) data.accounts = {};
+    if (!data.users) data.users = {};
     return data;
   },
   async register(username, password, secretQ, secretA) {
-    const data = await this.readAccounts();
     const uid = username.toLowerCase().trim();
-    if (data.accounts[uid]) return { success: false, error: 'Username taken' };
     if (password.length < 4) return { success: false, error: 'Password min 4 chars' };
+    // v19.10: Postgres fast path — single account lookup + single insert.
+    if (USE_POSTGRES) {
+      const existing = await PgStorage._getAccount(uid);
+      if (existing) return { success: false, error: 'Username taken' };
+      await PgStorage._saveAccount({
+        username: uid, passwordHash: hashPw(password),
+        secretQ: secretQ || '', secretAHash: secretA ? hashPw(secretA) : '',
+        createdAt: new Date().toISOString(), lastLogin: null,
+        blocked: false, role: 'user'
+      });
+      // Seed an empty user_data row so subsequent getUserData returns the same
+      // shape JsonStorage would return for a brand-new user.
+      await pgPool.query(
+        `INSERT INTO user_data (username, data) VALUES ($1, $2::jsonb) ON CONFLICT (username) DO NOTHING`,
+        [uid, JSON.stringify({ attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } })]
+      );
+      return { success: true, user: { username: uid, role: 'user' } };
+    }
+    // JSON fallback (unchanged)
+    const data = await this.readAccounts();
+    if (data.accounts[uid]) return { success: false, error: 'Username taken' };
     data.accounts[uid] = {
       username: uid, passwordHash: hashPw(password),
       secretQ: secretQ || '', secretAHash: secretA ? hashPw(secretA) : '',
@@ -289,8 +700,17 @@ const AuthAPI = {
     return { success: true, user: { username: uid, role: 'user' } };
   },
   async login(username, password) {
-    const data = await this.readAccounts();
     const uid = username.toLowerCase().trim();
+    if (USE_POSTGRES) {
+      const acct = await PgStorage._getAccount(uid);
+      if (!acct) return { success: false, error: 'User not found' };
+      if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
+      if (acct.passwordHash !== hashPw(password)) return { success: false, error: 'Wrong password' };
+      // Stamp lastLogin without rewriting any other field.
+      await pgPool.query('UPDATE accounts SET last_login = NOW() WHERE username = $1', [uid]);
+      return { success: true, user: { username: uid, role: acct.role || 'user' } };
+    }
+    const data = await this.readAccounts();
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
     if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
@@ -300,8 +720,16 @@ const AuthAPI = {
     return { success: true, user: { username: uid, role: acct.role || 'user' } };
   },
   async changePassword(username, oldPw, newPw) {
-    const data = await this.readAccounts();
     const uid = username.toLowerCase().trim();
+    if (USE_POSTGRES) {
+      const acct = await PgStorage._getAccount(uid);
+      if (!acct) return { success: false, error: 'User not found' };
+      if (acct.passwordHash !== hashPw(oldPw)) return { success: false, error: 'Wrong current password' };
+      if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
+      await pgPool.query('UPDATE accounts SET password_hash = $1 WHERE username = $2', [hashPw(newPw), uid]);
+      return { success: true };
+    }
+    const data = await this.readAccounts();
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
     if (acct.passwordHash !== hashPw(oldPw)) return { success: false, error: 'Wrong current password' };
@@ -1742,8 +2170,116 @@ app.get('/api/thesaurus/:word', async (req, res) => {
   }
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '18.0.0', anthropicConfigured: !!anthropic, storage: DATA_DIR, sync: true });
+app.get('/api/health', async (req, res) => {
+  // Snapshot current state of the storage file
+  const current = {
+    file_exists_now: false,
+    file_size_now: 0,
+    file_mtime_now: null,
+    user_count_now: 0,
+  };
+  try {
+    const stat = await fs.stat(STORAGE_FILE);
+    current.file_exists_now = true;
+    current.file_size_now = stat.size;
+    current.file_mtime_now = stat.mtime.toISOString();
+    try {
+      const parsed = JSON.parse(await fs.readFile(STORAGE_FILE, 'utf8'));
+      current.user_count_now = Object.keys(parsed.users || {}).length;
+    } catch (_) {}
+  } catch (_) {}
+
+  // Probe write capability + persistence
+  let probe = { skipped: 'use ?probe=1 to run a write probe' };
+  if (req.query.probe === '1') probe = await writeProbe();
+
+  // Check the previous write probe's age — if it exists, that's a survivor file
+  // from a previous boot. Its mtime tells us whether the volume persisted.
+  let prevProbeFile = null;
+  try {
+    const probePath = path.join(DATA_DIR, '.write-probe.json');
+    const stat = await fs.stat(probePath);
+    const data = JSON.parse(await fs.readFile(probePath, 'utf8'));
+    prevProbeFile = {
+      mtime: stat.mtime.toISOString(),
+      from_previous_instance: data.instance !== INSTANCE_ID,
+      from_instance: data.instance,
+      written_at: data.ts,
+      age_minutes: Math.round((Date.now() - new Date(data.ts).getTime()) / 60000)
+    };
+  } catch (_) {
+    prevProbeFile = { exists: false, note: 'No probe file from any previous boot — volume may be ephemeral' };
+  }
+
+  // v19.10: When Postgres is active, query DB stats instead of JSON file.
+  let pgStatus = null;
+  if (USE_POSTGRES && pgPool) {
+    pgStatus = { connected: false, accounts: 0, user_data_rows: 0, error: null };
+    try {
+      const { rows: a } = await pgPool.query('SELECT COUNT(*)::int AS n FROM accounts');
+      const { rows: u } = await pgPool.query('SELECT COUNT(*)::int AS n FROM user_data');
+      pgStatus.connected = true;
+      pgStatus.accounts = a[0].n;
+      pgStatus.user_data_rows = u[0].n;
+    } catch (e) {
+      pgStatus.error = e.message;
+    }
+  }
+
+  // Verdict: piece it all together
+  const usingVolume = !!process.env.RAILWAY_VOLUME_MOUNT_PATH;
+  const writingToEphemeral = !USE_POSTGRES && !usingVolume && (DATA_DIR === '/app/data' || DATA_DIR === './data');
+  let verdict;
+  if (USE_POSTGRES) {
+    verdict = pgStatus?.connected
+      ? `✓ Postgres backend active — ${pgStatus.accounts} accounts, ${pgStatus.user_data_rows} user records. Data persists across deploys.`
+      : `⚠ Postgres configured but not reachable: ${pgStatus?.error || 'unknown error'}`;
+  } else if (usingVolume) {
+    verdict = '✓ Volume env var set — writes should persist';
+  } else if (writingToEphemeral) {
+    verdict = '⚠ NO VOLUME AND NO DATABASE_URL — writing to ephemeral disk. Data will be wiped on every deploy.';
+  } else {
+    verdict = '? Unknown — manually check the storage path';
+  }
+
+  res.json({
+    status: 'ok',
+    version: '19.10.0',
+    anthropicConfigured: !!anthropic,
+    verdict,
+    runtime: {
+      instance_id: INSTANCE_ID,
+      boot_time: BOOT_TIME,
+      uptime_seconds: Math.round(process.uptime()),
+      node_version: process.version,
+    },
+    storage: {
+      backend: USE_POSTGRES ? 'postgres' : 'json_file',
+      postgres: pgStatus,
+      data_dir: DATA_DIR,
+      storage_file: STORAGE_FILE,
+      passages_file: PASSAGES_FILE,
+      using_railway_volume_env: usingVolume,
+      railway_volume_env_value: process.env.RAILWAY_VOLUME_MOUNT_PATH || null,
+      database_url_set: !!process.env.DATABASE_URL,
+      node_env: process.env.NODE_ENV || null,
+      writing_to_ephemeral_disk: writingToEphemeral,
+    },
+    boot_snapshot: BOOT_SNAPSHOT,
+    current_snapshot: current,
+    previous_probe_file: prevProbeFile,
+    write_probe: probe,
+    hints: USE_POSTGRES ? [
+      'Postgres backend is active. Data persists across deploys and is not affected by Railway volume issues.',
+      'If verdict shows the connection error, check that DATABASE_URL points to a reachable Postgres service.',
+      'To migrate from a previous JSON-file deployment, restart the server — pgMigrateFromJsonIfNeeded runs on every boot and is idempotent.'
+    ] : [
+      'Hit /api/health?probe=1 to test write+read on the data dir',
+      'Compare boot_snapshot.user_count_at_boot vs current_snapshot.user_count_now — if boot starts at 0 after every deploy, the volume is not persisting',
+      'previous_probe_file.from_previous_instance should be true if the volume persists across deploys',
+      'For a permanent fix, provision a Postgres service on Railway — set DATABASE_URL and redeploy'
+    ]
+  });
 });
 
 app.post('/api/progress/:userId', async (req, res) => {
@@ -2569,7 +3105,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '19.9.0', mode: 'local'
+        scoring_version: '19.10.0', mode: 'local'
       });
     }
 
@@ -2858,7 +3394,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '19.9.0',
+      scoring_version: '19.10.0',
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
@@ -2923,12 +3459,52 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ PTE SWT Grader v18.0.0 on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', async () => {
+  console.log(`✅ PTE SWT Grader v19.10.0 on port ${PORT}`);
   console.log(`🌐 Frontend: http://localhost:${PORT}`);
   console.log(`🔑 Admin: http://localhost:${PORT}/admin.html (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
   console.log(`🤖 Anthropic: ${anthropic ? 'configured' : 'not configured'}`);
-  console.log(`💾 Storage: ${DATA_DIR}/pte_data.json`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
-  console.log(`💾 Storage: ${DATA_DIR}/pte_data.json`);
+  console.log(`💾 Storage backend: ${USE_POSTGRES ? 'POSTGRES (DATABASE_URL set)' : 'JSON FILE (' + DATA_DIR + '/pte_data.json)'}`);
+
+  // v19.10: Initialise Postgres schema and migrate any existing JSON data.
+  // Both operations are idempotent.
+  if (USE_POSTGRES) {
+    try {
+      await pgInitSchema();
+      console.log('🐘 Postgres schema ready');
+      const mig = await pgMigrateFromJsonIfNeeded();
+      if (mig.migrated) {
+        console.log(`🐘 Migrated ${mig.accounts} accounts and ${mig.user_data} user records from pte_data.json`);
+      } else {
+        console.log(`🐘 No migration needed (${mig.reason})`);
+      }
+    } catch (e) {
+      console.error('🐘 Postgres init failed:', e.message);
+      console.error('     The server will keep running but writes will fail until Postgres is healthy.');
+    }
+  }
+
+  // Boot diagnostic — relevant whether or not Postgres is active.
+  await captureBootSnapshot();
+  console.log('');
+  console.log('━━━ STORAGE DIAGNOSTIC ━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`Instance ID:      ${INSTANCE_ID}`);
+  console.log(`Boot time:        ${BOOT_TIME}`);
+  console.log(`Backend:          ${USE_POSTGRES ? 'Postgres' : 'JSON file'}`);
+  if (USE_POSTGRES) {
+    console.log(`DATABASE_URL:     SET (host redacted)`);
+  } else {
+    console.log(`DATA_DIR:         ${DATA_DIR}`);
+    console.log(`Volume env var:   ${process.env.RAILWAY_VOLUME_MOUNT_PATH ? 'SET → ' + process.env.RAILWAY_VOLUME_MOUNT_PATH : 'NOT SET'}`);
+    console.log(`NODE_ENV:         ${process.env.NODE_ENV || '(unset)'}`);
+    console.log(`File at boot:     ${BOOT_SNAPSHOT.file_existed_at_boot ? `${BOOT_SNAPSHOT.file_size_at_boot}B, ${BOOT_SNAPSHOT.user_count_at_boot} users, mtime ${BOOT_SNAPSHOT.file_mtime_at_boot}` : 'DOES NOT EXIST'}`);
+    if (!process.env.RAILWAY_VOLUME_MOUNT_PATH && (DATA_DIR === '/app/data' || DATA_DIR === './data')) {
+      console.log('');
+      console.log('⚠⚠⚠  WARNING: No DATABASE_URL and no RAILWAY_VOLUME_MOUNT_PATH detected.');
+      console.log('⚠⚠⚠  Writes will go to ephemeral container disk and be wiped on every deploy.');
+      console.log('⚠⚠⚠  Provision a Postgres service on Railway (recommended) or attach a volume.');
+    }
+  }
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 });

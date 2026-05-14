@@ -1,7 +1,7 @@
 {
   "name": "pte-scoring-api",
-  "version": "19.9.0",
-  "description": "PTE SWT Scoring API + Practice Portal — Railway Deployment (v19.9: full results UI revamp — annotated passage with key-sentence highlighting, circular score dials, inline-annotated submission, AI Detector / Copy Detector banner)",
+  "version": "19.10.0",
+  "description": "PTE SWT Scoring API + Practice Portal — v19.10: Postgres storage backend (auto-detects DATABASE_URL, falls back to JSON file for local dev, auto-migrates existing JSON data on first boot)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
     "cors": "^2.8.6",
-    "express": "^4.22.2"
+    "express": "^4.22.2",
+    "pg": "^8.20.0"
   },
   "engines": {
     "node": ">=18.0.0"
