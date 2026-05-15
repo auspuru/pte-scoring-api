@@ -154,13 +154,24 @@ async function safeWriteJSON(filePath, data) {
 // API surface (getUserData, setUserData, etc.) returns identical payloads.
 let pgPool = null;
 if (USE_POSTGRES) {
+  // SSL decision. Railway's Postgres needs SSL on every connection path —
+  // internal (*.railway.internal), public proxy (*.proxy.rlwy.net), and the
+  // older *.railway.app hosts. Rather than enumerate hostnames (the previous
+  // bug — the list was incomplete), default to SSL-ON for any host that isn't
+  // local, and let PGSSL=disable explicitly turn it off for local Postgres.
+  //   - PGSSL=disable           -> no SSL (use for local dev Postgres)
+  //   - PGSSL=require (or unset) -> SSL with rejectUnauthorized:false
+  // A localhost / unix-socket / 127.0.0.1 connection string also defaults to
+  // no SSL since local Postgres typically isn't configured for it.
+  const isLocalDb = /(\blocalhost\b|127\.0\.0\.1|@\/|host=\/)/.test(DATABASE_URL);
+  const sslDisabled = process.env.PGSSL === 'disable' || (isLocalDb && process.env.PGSSL !== 'require');
   pgPool = new Pool({
     connectionString: DATABASE_URL,
-    ssl: DATABASE_URL.includes('railway.app') || process.env.PGSSL === 'require' || /sslmode=require/.test(DATABASE_URL)
-         ? { rejectUnauthorized: false } : false,
+    ssl: sslDisabled ? false : { rejectUnauthorized: false },
     max: 10, idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000,
   });
   pgPool.on('error', (err) => { console.error('Postgres pool error:', err.message); });
+  console.log(`🐘 Postgres pool created — SSL ${sslDisabled ? 'disabled (local)' : 'enabled'}`);
 }
 
 async function pgInitSchema() {
