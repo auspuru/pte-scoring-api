@@ -217,6 +217,15 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01e
   font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink);
   font-size: 13px;
 }
+.timer-pill.warning { color: var(--warn); }
+.timer-pill.expired {
+  color: var(--bad);
+  animation: timerFlash 1.6s ease-in-out infinite;
+}
+@keyframes timerFlash {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
 
 /* Passage reading pane */
 .passage-pane .passage-meta {
@@ -279,15 +288,16 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   font-size: 11.5px; color: var(--ink-faint); font-style: italic; margin-top: 8px;
 }
 
-/* Writing Health panel */
+/* Writing Health panel — slim, word-band row only */
 .health-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
+  display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 16px;
 }
-.health-panel, .connector-panel {
+.health-panel {
   border: 1px solid var(--line); border-radius: var(--radius-sm);
   padding: 14px; background: var(--card-raised);
+  max-width: 360px;
 }
-.health-panel .panel-title, .connector-panel .panel-title {
+.health-panel .panel-title {
   font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--ink-faint); margin-bottom: 10px;
 }
@@ -295,7 +305,6 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   display: flex; align-items: flex-start; gap: 8px;
   padding: 6px 0; font-size: 12.5px;
 }
-.health-row + .health-row { border-top: 1px solid var(--line-soft); }
 .health-row .h-icon {
   width: 15px; flex-shrink: 0; text-align: center; font-size: 12px;
 }
@@ -309,13 +318,6 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink);
   font-size: 12.5px;
 }
-.connector-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.spell-hint {
-  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft);
-  font-size: 11.5px; color: var(--ink-mute);
-}
-.spell-hint .spell-word { color: var(--bad); text-decoration: line-through; }
-.spell-hint .spell-fix { color: var(--good); font-weight: 600; }
 
 .write-actions {
   display: flex; align-items: center; gap: 10px; margin-top: 16px;
@@ -646,28 +648,11 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
           <div class="health-grid">
             <div class="health-panel">
               <div class="panel-title">Writing Health</div>
-              <div class="health-row" id="hrSentence">
-                <span class="h-icon">○</span>
-                <span class="h-label">Single sentence</span>
-                <span class="h-value" id="hrSentenceVal">0</span>
-              </div>
               <div class="health-row" id="hrWordBand">
                 <span class="h-icon">○</span>
-                <span class="h-label">Inside word band</span>
+                <span class="h-label">Inside word band <span class="h-sub">target: 5–75 words</span></span>
                 <span class="h-value" id="hrWordBandVal">0</span>
               </div>
-              <div class="health-row" id="hrConnectors">
-                <span class="h-icon">○</span>
-                <span class="h-label">Connectors used
-                  <span class="h-sub" id="hrConnectorsList">none yet</span>
-                </span>
-                <span class="h-value" id="hrConnectorsVal">0</span>
-              </div>
-            </div>
-            <div class="connector-panel">
-              <div class="panel-title">Try a Connector</div>
-              <div class="connector-chips" id="connectorChips"></div>
-              <div class="spell-hint hidden" id="spellHint"></div>
             </div>
           </div>
 
@@ -927,7 +912,6 @@ function loadPassage(id){
 
   switchWriteTab('write');
   onSummaryInput();
-  renderConnectorChips();
   resetTimer();
 }
 
@@ -962,8 +946,6 @@ function detectConnectors(t){
 function onSummaryInput(){
   const text = document.getElementById('summaryInput').value;
   const words = countWords(text);
-  const sentences = countSentences(text);
-  const connectors = detectConnectors(text);
 
   document.getElementById('wordCount').textContent = words;
   const fill = document.getElementById('wordMeterFill');
@@ -971,11 +953,7 @@ function onSummaryInput(){
   fill.style.width = pct + '%';
   fill.classList.toggle('over', words > 75);
 
-  setHealthRow('hrSentence', sentences === 1, sentences, sentences === 1 ? 'ok' : 'warn');
   setHealthRow('hrWordBand', words >= 5 && words <= 75, words, (words >= 5 && words <= 75) ? 'ok' : 'warn');
-  setHealthRow('hrConnectors', connectors.length >= 1, connectors.length, connectors.length >= 1 ? 'ok' : 'warn');
-  document.getElementById('hrConnectorsList').textContent =
-    connectors.length ? connectors.join(' · ') : 'none yet';
 
   const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
   if(text.trim()){
@@ -988,38 +966,16 @@ function onSummaryInput(){
 
 function setHealthRow(rowId, ok, value, cls){
   const row = document.getElementById(rowId);
+  if(!row) return;
   row.classList.remove('ok','warn');
   row.classList.add(cls);
   row.querySelector('.h-icon').textContent = ok ? '✓' : '!';
   document.getElementById(rowId + 'Val').textContent = value;
 }
 
-function renderConnectorChips(){
-  const wrap = document.getElementById('connectorChips');
-  const used = detectConnectors(document.getElementById('summaryInput').value);
-  wrap.innerHTML = CONNECTORS.map(c =>
-    `<span class="chip ${used.includes(c)?'used':''}" onclick="insertConnector('${c}')">${c}</span>`
-  ).join('');
-}
-
-function insertConnector(word){
-  const ta = document.getElementById('summaryInput');
-  const pos = ta.selectionStart;
-  const before = ta.value.slice(0, pos);
-  const after = ta.value.slice(pos);
-  const needsSemi = before.trim() && !/[;,]\s*$/.test(before);
-  const insertion = (needsSemi ? '; ' : '') + word + ', ';
-  ta.value = before + insertion + after;
-  ta.focus();
-  ta.selectionStart = ta.selectionEnd = pos + insertion.length;
-  onSummaryInput();
-  renderConnectorChips();
-}
-
 function resetSummary(){
   document.getElementById('summaryInput').value = '';
   onSummaryInput();
-  renderConnectorChips();
 }
 
 document.addEventListener('input', function(e){
@@ -1031,27 +987,59 @@ document.addEventListener('input', function(e){
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   TIMER
+   TIMER — countdown from 10:00 (PTE Academic standard SWT time).
+   Resets fresh on every toggle-on AND when navigating to a new passage.
+   At 00:00 the timer stops on its own; no auto-submit (preserves the user's
+   in-progress work — they can still hit Score when ready).
    ═══════════════════════════════════════════════════════════════ */
+const TIMER_START_SECONDS = 10 * 60;   // 10 minutes
 function toggleTimer(){
   timerOn = !timerOn;
   document.getElementById('timerState').textContent = timerOn ? 'Timed' : 'Off';
-  if(timerOn){ startTimer(); }
-  else { stopTimer(); document.getElementById('timerDisplay').textContent = '—'; }
+  if(timerOn){
+    // Always start fresh — don't resume from a previous remaining time.
+    timerSeconds = TIMER_START_SECONDS;
+    startTimer();
+  } else {
+    stopTimer();
+    const disp = document.getElementById('timerDisplay');
+    disp.textContent = '—';
+    disp.classList.remove('expired');
+  }
 }
 function startTimer(){
   stopTimer();
+  renderTimer();  // paint immediately so user sees 10:00, not a 1-second blank
   timerInterval = setInterval(() => {
-    timerSeconds++;
-    const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
-    const s = String(timerSeconds%60).padStart(2,'0');
-    document.getElementById('timerDisplay').textContent = m + ':' + s;
+    timerSeconds--;
+    if(timerSeconds <= 0){
+      timerSeconds = 0;
+      renderTimer();
+      stopTimer();
+      document.getElementById('timerDisplay').classList.add('expired');
+      toast('Time up — submit when you\'re ready.');
+      return;
+    }
+    renderTimer();
   }, 1000);
+}
+function renderTimer(){
+  const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+  const s = String(timerSeconds%60).padStart(2,'0');
+  const disp = document.getElementById('timerDisplay');
+  disp.textContent = m + ':' + s;
+  // Warn when under 60 seconds remain
+  disp.classList.toggle('warning', timerSeconds > 0 && timerSeconds <= 60);
 }
 function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
 function resetTimer(){
-  timerSeconds = 0;
-  if(timerOn){ document.getElementById('timerDisplay').textContent = '00:00'; startTimer(); }
+  // Fresh window for each passage. If the timer is currently on, restart at 10:00.
+  // If off, leave the display showing '—'.
+  if(timerOn){
+    timerSeconds = TIMER_START_SECONDS;
+    document.getElementById('timerDisplay').classList.remove('expired');
+    startTimer();
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1448,7 +1436,6 @@ function showSample(){
   showScreen('practiceScreen');
   switchWriteTab('write');
   onSummaryInput();
-  renderConnectorChips();
   toast('Band-9 sample loaded — compare it to your attempt.');
 }
 
