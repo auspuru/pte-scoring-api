@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWT Practice — IPT Brisbane</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   DESIGN SYSTEM — editorial / magazine
+   Warm cream, hairline borders, serif display, system sans body
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Surfaces */
+  --bg:          #EDE8DC;
+  --bg-deep:     #E6E0D1;
+  --card:        #F7F3E9;
+  --card-raised: #FBF9F3;
+  --ink:         #1A1A18;
+  --ink-soft:    #4A453D;
+  --ink-mute:    #6B6760;
+  --ink-faint:   #9A958A;
+  --line:        #DDD6C6;
+  --line-soft:   #E8E2D4;
+
+  /* Accents — the W/W/H/R coverage system */
+  --what:    #8B9A7B;   /* sage green */
+  --why:     #C9A24B;   /* amber */
+  --how:     #C97B5E;   /* terracotta */
+  --result:  #9B8FB0;   /* muted violet */
+  --what-bg:   rgba(139,154,123,0.16);
+  --why-bg:    rgba(201,162,75,0.16);
+  --how-bg:    rgba(201,123,94,0.16);
+  --result-bg: rgba(155,143,176,0.16);
+
+  /* Semantic */
+  --indigo:  #5B5BD6;   /* highlight numerals */
+  --good:    #6F8B5C;
+  --warn:    #C68A3E;
+  --bad:     #BC5B4A;
+  --good-bg: rgba(111,139,92,0.14);
+  --warn-bg: rgba(198,138,62,0.14);
+  --bad-bg:  rgba(188,91,74,0.14);
+
+  /* Type */
+  --serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --sans:  -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  --radius:    10px;
+  --radius-sm: 6px;
+  --shadow:    0 1px 2px rgba(26,26,24,0.04), 0 4px 16px rgba(26,26,24,0.05);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+/* ─── Typography utilities ─────────────────────────────────── */
+.eyebrow {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.serif { font-family: var(--serif); }
+h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; }
+.display { font-family: var(--serif); font-size: 30px; font-weight: 500; line-height: 1.2; }
+.display em { font-style: italic; color: var(--indigo); }
+
+/* ─── Layout shell ─────────────────────────────────────────── */
+.shell { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 0; border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ink); color: var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.brand-name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+.brand-sub {
+  font-size: 11px; color: var(--ink-mute);
+  padding-left: 12px; margin-left: 4px; border-left: 1px solid var(--line);
+}
+.topbar-spacer { flex: 1; }
+.topbar-tag {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-mute);
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px;
+}
+.topbar-tag .dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--good); margin-right: 5px; vertical-align: middle;
+}
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--ink); color: var(--card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+}
+
+/* ─── Cards ────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.card-raised { background: var(--card-raised); box-shadow: var(--shadow); }
+
+/* ─── Buttons ──────────────────────────────────────────────── */
+.btn {
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  padding: 9px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line); background: var(--card-raised);
+  color: var(--ink); cursor: pointer; transition: all 0.14s ease;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.btn:hover { border-color: var(--ink-faint); }
+.btn-primary {
+  background: var(--ink); color: var(--card-raised); border-color: var(--ink);
+}
+.btn-primary:hover { background: #000; border-color: #000; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--ink-mute); }
+.btn-ghost:hover { background: var(--bg-deep); color: var(--ink); }
+.btn-kbd {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+}
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── Chips ────────────────────────────────────────────────── */
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 500;
+  padding: 4px 11px; border-radius: 999px;
+  background: var(--card-raised); border: 1px solid var(--line);
+  color: var(--ink-soft); cursor: pointer; transition: all 0.14s ease;
+}
+.chip:hover { border-color: var(--ink-faint); }
+.chip-static { cursor: default; }
+.chip.used { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+
+/* ─── Login ────────────────────────────────────────────────── */
+.login-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 28px;
+}
+.login-card { width: 100%; max-width: 380px; }
+.login-card h1 { font-size: 24px; margin-bottom: 4px; }
+.login-card .sub { color: var(--ink-mute); font-size: 13px; margin-bottom: 22px; }
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px;
+}
+.field input, .field select {
+  width: 100%; font-family: var(--sans); font-size: 14px;
+  padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--card-raised); color: var(--ink);
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--ink-faint); }
+.login-err {
+  font-size: 12.5px; color: var(--bad); margin: 8px 0; display: none;
+}
+.login-info {
+  font-size: 12.5px; color: var(--good); margin: 8px 0; display: none;
+}
+.login-switch {
+  font-size: 12.5px; color: var(--ink-mute); margin-top: 16px; text-align: center;
+}
+.login-switch a { color: var(--indigo); cursor: pointer; text-decoration: none; }
+
+.hidden { display: none !important; }
+
+/* ─── Practice screen — two pane ───────────────────────────── */
+.practice-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+  align-items: start;
+}
+
+/* Passage navigation strip */
+.passage-nav {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+  font-size: 12px; color: var(--ink-mute);
+}
+.passage-nav .nav-arrow {
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line); background: var(--card-raised);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--ink-soft); font-size: 13px;
+}
+.passage-nav .nav-arrow:hover { border-color: var(--ink-faint); }
+.passage-nav .nav-arrow[disabled] { opacity: 0.35; cursor: not-allowed; }
+.passage-nav .nav-label { font-weight: 600; color: var(--ink); }
+.passage-nav-spacer { flex: 1; }
+.timer-toggle {
+  display: flex; align-items: center; gap: 7px; font-size: 12px;
+  color: var(--ink-mute); cursor: pointer;
+}
+.timer-pill {
+  font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink);
+  font-size: 13px;
+}
+
+/* Passage reading pane */
+.passage-pane .passage-meta {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.passage-meta .meta-tag {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; background: var(--bg-deep); color: var(--ink-mute);
+}
+.passage-body {
+  font-family: var(--serif); font-size: 16px; line-height: 1.72; color: var(--ink-soft);
+}
+.passage-body p { margin-bottom: 14px; }
+.passage-body p:last-child { margin-bottom: 0; }
+.passage-fresh-note {
+  margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line);
+  font-size: 12px; color: var(--ink-faint); font-style: italic;
+}
+
+/* Write pane */
+.write-tabs {
+  display: flex; gap: 22px; border-bottom: 1px solid var(--line); margin-bottom: 16px;
+}
+.write-tab {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  padding-bottom: 10px; color: var(--ink-faint); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.write-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.write-tab .tab-sub {
+  display: block; font-size: 9.5px; font-weight: 500; letter-spacing: 0.03em;
+  color: var(--ink-faint); margin-top: 2px;
+}
+
+.word-meter {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  font-size: 11px; color: var(--ink-mute);
+}
+.word-meter .meter-track {
+  flex: 1; height: 4px; border-radius: 2px; background: var(--bg-deep);
+  position: relative; overflow: hidden;
+}
+.word-meter .meter-fill {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  background: var(--what); border-radius: 2px; transition: width 0.2s ease;
+}
+.word-meter .meter-fill.over { background: var(--bad); }
+.word-meter .meter-count { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); }
+
+textarea.summary-input, textarea.scratch-input {
+  width: 100%; min-height: 200px; resize: vertical;
+  font-family: var(--serif); font-size: 15px; line-height: 1.65;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--card-raised); color: var(--ink);
+}
+textarea.summary-input:focus, textarea.scratch-input:focus {
+  outline: none; border-color: var(--ink-faint);
+}
+.scratch-note {
+  font-size: 11.5px; color: var(--ink-faint); font-style: italic; margin-top: 8px;
+}
+
+/* Writing Health panel */
+.health-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
+}
+.health-panel, .connector-panel {
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  padding: 14px; background: var(--card-raised);
+}
+.health-panel .panel-title, .connector-panel .panel-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 10px;
+}
+.health-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 0; font-size: 12.5px;
+}
+.health-row + .health-row { border-top: 1px solid var(--line-soft); }
+.health-row .h-icon {
+  width: 15px; flex-shrink: 0; text-align: center; font-size: 12px;
+}
+.health-row.ok .h-icon { color: var(--good); }
+.health-row.warn .h-icon { color: var(--warn); }
+.health-row .h-label { flex: 1; color: var(--ink-soft); }
+.health-row .h-label .h-sub {
+  display: block; font-size: 10.5px; color: var(--ink-faint); margin-top: 1px;
+}
+.health-row .h-value {
+  font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink);
+  font-size: 12.5px;
+}
+.connector-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.spell-hint {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft);
+  font-size: 11.5px; color: var(--ink-mute);
+}
+.spell-hint .spell-word { color: var(--bad); text-decoration: line-through; }
+.spell-hint .spell-fix { color: var(--good); font-weight: 600; }
+
+.write-actions {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+}
+.write-actions-spacer { flex: 1; }
+
+/* ─── Results screen ───────────────────────────────────────── */
+.results-hero {
+  display: flex; align-items: flex-start; gap: 28px; margin-bottom: 22px;
+}
+.score-ring-wrap { flex-shrink: 0; text-align: center; }
+.score-ring { position: relative; width: 130px; height: 130px; }
+.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.score-ring .ring-track { fill: none; stroke: var(--bg-deep); stroke-width: 6; }
+.score-ring .ring-fill {
+  fill: none; stroke: var(--indigo); stroke-width: 6; stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+.score-ring .ring-value {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 32px; font-weight: 500;
+}
+.score-ring-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-faint); margin-top: 8px;
+}
+.results-hero-body { flex: 1; }
+.results-hero-body .eyebrow { margin-bottom: 6px; }
+.results-hero-body .display { margin-bottom: 10px; }
+.results-hero-body .result-summary {
+  font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 14px;
+  max-width: 560px;
+}
+.trait-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.trait-chip {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--bg-deep); color: var(--ink-soft);
+}
+.results-hero-actions {
+  display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+}
+
+/* Originality checks */
+.originality {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 22px;
+}
+.orig-cell { background: var(--card); padding: 14px 16px; }
+.orig-cell.good { background: var(--good-bg); }
+.orig-cell.warn { background: var(--warn-bg); }
+.orig-cell .orig-head {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px;
+}
+.orig-cell .orig-name { font-size: 12px; font-weight: 600; }
+.orig-cell .orig-verdict {
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.orig-cell .orig-detail { font-size: 11px; color: var(--ink-mute); }
+
+.results-cols {
+  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px;
+  align-items: start; margin-bottom: 22px;
+}
+
+/* Annotated submission */
+.section-num {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--ink-faint); margin-bottom: 12px;
+}
+.section-num .legend {
+  float: right; display: flex; gap: 10px; font-weight: 500;
+}
+.section-num .legend span { display: inline-flex; align-items: center; gap: 4px; }
+.section-num .legend i {
+  width: 9px; height: 9px; border-radius: 2px; display: inline-block;
+}
+.annotated-text {
+  font-family: var(--serif); font-size: 15px; line-height: 1.75; color: var(--ink);
+}
+.ann-seg { padding: 1px 2px; border-radius: 3px; }
+.ann-seg.what   { background: var(--what-bg);   border-bottom: 2px solid var(--what); }
+.ann-seg.why    { background: var(--why-bg);    border-bottom: 2px solid var(--why); }
+.ann-seg.how    { background: var(--how-bg);    border-bottom: 2px solid var(--how); }
+.ann-seg.result { background: var(--result-bg); border-bottom: 2px solid var(--result); }
+.ann-seg.spell  {
+  background: var(--bad-bg); border-bottom: 2px wavy var(--bad);
+  cursor: pointer;
+}
+.annotated-feedback {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
+  padding-top: 14px; border-top: 1px solid var(--line-soft);
+}
+.ann-fb-item { display: flex; gap: 8px; font-size: 12px; }
+.ann-fb-item .fb-icon { flex-shrink: 0; }
+.ann-fb-item.good .fb-icon { color: var(--good); }
+.ann-fb-item.warn .fb-icon { color: var(--warn); }
+.ann-fb-item .fb-text { color: var(--ink-soft); }
+.ann-fb-item .fb-text em { font-style: italic; color: var(--ink); }
+
+/* Trait breakdown */
+.trait-breakdown .trait-row { margin-bottom: 16px; }
+.trait-breakdown .trait-row:last-child { margin-bottom: 0; }
+.trait-row .trait-head {
+  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px;
+}
+.trait-row .trait-name { font-size: 13px; font-weight: 600; }
+.trait-row .trait-score {
+  font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-mute);
+}
+.trait-row .trait-score b { color: var(--ink); font-size: 13px; }
+.trait-row .trait-bar {
+  height: 5px; border-radius: 3px; background: var(--bg-deep); overflow: hidden;
+}
+.trait-row .trait-bar-fill {
+  height: 100%; border-radius: 3px; background: var(--good);
+  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.trait-row .trait-note {
+  font-size: 11px; color: var(--ink-faint); font-style: italic; margin-top: 5px;
+}
+
+/* Key element coverage */
+.coverage-table { margin-top: 4px; }
+.coverage-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--line-soft);
+}
+.coverage-row:last-child { border-bottom: none; }
+.coverage-row .cov-key {
+  display: flex; align-items: center; gap: 7px;
+  width: 78px; flex-shrink: 0;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em;
+}
+.coverage-row .cov-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.cov-dot.what { background: var(--what); }
+.cov-dot.why { background: var(--why); }
+.cov-dot.how { background: var(--how); }
+.cov-dot.result { background: var(--result); }
+.coverage-row .cov-text { flex: 1; font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+.coverage-row .cov-text.missing { color: var(--ink-faint); font-style: italic; }
+.coverage-row .cov-status {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; flex-shrink: 0;
+}
+.cov-status.covered { background: var(--good-bg); color: var(--good); }
+.cov-status.partial { background: var(--warn-bg); color: var(--warn); }
+.cov-status.missing { background: var(--bad-bg); color: var(--bad); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--card-raised);
+  padding: 11px 18px; border-radius: var(--radius-sm); font-size: 13px;
+  opacity: 0; transition: all 0.25s ease; z-index: 200; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Loading */
+.loading-veil {
+  position: fixed; inset: 0; background: rgba(237,232,220,0.8);
+  display: flex; align-items: center; justify-content: center; z-index: 150;
+  backdrop-filter: blur(2px);
+}
+.loading-veil .spinner {
+  width: 28px; height: 28px; border: 2px solid var(--line);
+  border-top-color: var(--ink); border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .practice-grid { grid-template-columns: 1fr; }
+  .results-cols { grid-template-columns: 1fr; }
+  .results-hero { flex-direction: column; align-items: stretch; }
+  .results-hero-actions { flex-direction: row; }
+  .originality { grid-template-columns: 1fr; }
+  .health-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .shell { padding: 0 16px; }
+  .annotated-feedback { grid-template-columns: 1fr; }
+  .brand-sub { display: none; }
+}
+
+/* Page sections */
+.screen { display: none; }
+.screen.active { display: block; }
+.page-foot {
+  text-align: center; font-size: 10px; letter-spacing: 0.1em;
+  color: var(--ink-faint); padding: 32px 0; text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
+<div class="screen active" id="loginScreen">
+  <div class="login-wrap">
+    <div class="card card-raised login-card">
+      <div class="brand" style="margin-bottom:20px;">
+        <div class="brand-mark">◐</div>
+        <div>
+          <div class="brand-name">IPT Brisbane</div>
+          <div class="eyebrow" style="margin-top:1px;">Summarize Written Text</div>
+        </div>
+      </div>
+
+      <!-- Login form -->
+      <div id="loginForm">
+        <h1>Welcome back.</h1>
+        <div class="sub">Sign in to continue your practice.</div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="loginUser" autocomplete="username" placeholder="your username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="loginPw" autocomplete="current-password" placeholder="••••••••">
+        </div>
+        <div class="login-err" id="loginErr"></div>
+        <div class="login-info" id="loginInfo"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">Sign in</button>
+        <div class="login-switch">
+          New here? <a onclick="showRegister()">Create an account</a>
+        </div>
+      </div>
+
+      <!-- Register form -->
+      <div id="registerForm" class="hidden">
+        <h1>Create account.</h1>
+        <div class="sub">Start tracking your SWT progress.</div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="regUser" autocomplete="username" placeholder="choose a username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="regPw" autocomplete="new-password" placeholder="min 4 characters">
+        </div>
+        <div class="field">
+          <label>Security question</label>
+          <select id="regSecretQ">
+            <option value="pet">What was the name of your first pet?</option>
+            <option value="school">What primary school did you attend?</option>
+            <option value="city">What city were you born in?</option>
+            <option value="mother">What is your mother's maiden name?</option>
+            <option value="food">What is your favourite food?</option>
+            <option value="friend">What was your childhood best friend's name?</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Answer</label>
+          <input type="text" id="regSecretA" placeholder="for password recovery">
+        </div>
+        <div class="login-err" id="regErr"></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doRegister()">Create account</button>
+        <div class="login-switch">
+          Already have an account? <a onclick="showLogin()">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PRACTICE SCREEN ══════════════════ -->
+<div class="screen" id="practiceScreen">
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">◐</div>
+        <div class="brand-name">IPT Brisbane</div>
+        <div class="brand-sub">Summarize Written Text</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-tag" id="aiStatusTag"><span class="dot"></span>Claude Live</div>
+      <div class="avatar" id="userAvatar" onclick="signOut()" title="Sign out">··</div>
+    </div>
+
+    <div class="passage-nav">
+      <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
+      <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
+      <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
+      <div class="passage-nav-spacer"></div>
+      <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
+        <span id="timerState">Timed</span>
+        <span class="timer-pill" id="timerDisplay">—</span>
+      </div>
+    </div>
+
+    <div class="practice-grid">
+      <!-- LEFT: passage -->
+      <div class="card passage-pane">
+        <div class="passage-meta">
+          <span class="eyebrow">Passage <span id="pasNum">01</span></span>
+          <span class="meta-tag" id="pasWordCount">261 words</span>
+          <span class="meta-tag" id="pasCategory">~10 min</span>
+        </div>
+        <div class="passage-body" id="passageBody"></div>
+        <div class="passage-fresh-note">Title &amp; key ideas appear after you submit — so you read fresh.</div>
+      </div>
+
+      <!-- RIGHT: write -->
+      <div class="card write-pane">
+        <div class="write-tabs">
+          <div class="write-tab active" id="tabWrite" onclick="switchWriteTab('write')">
+            Write<span class="tab-sub">Your summary</span>
+          </div>
+          <div class="write-tab" id="tabPlan" onclick="switchWriteTab('plan')">
+            Plan<span class="tab-sub">Scratch notes</span>
+          </div>
+        </div>
+
+        <!-- Write tab -->
+        <div id="writeTabPane">
+          <div class="word-meter">
+            <span>Words</span>
+            <div class="meter-track"><div class="meter-fill" id="wordMeterFill"></div></div>
+            <span class="meter-count"><span id="wordCount">0</span> / 5–75</span>
+          </div>
+          <textarea class="summary-input" id="summaryInput"
+            placeholder="Write your one-sentence summary here…"
+            oninput="onSummaryInput()" spellcheck="true"></textarea>
+
+          <div class="health-grid">
+            <div class="health-panel">
+              <div class="panel-title">Writing Health</div>
+              <div class="health-row" id="hrSentence">
+                <span class="h-icon">○</span>
+                <span class="h-label">Single sentence</span>
+                <span class="h-value" id="hrSentenceVal">0</span>
+              </div>
+              <div class="health-row" id="hrWordBand">
+                <span class="h-icon">○</span>
+                <span class="h-label">Inside word band</span>
+                <span class="h-value" id="hrWordBandVal">0</span>
+              </div>
+              <div class="health-row" id="hrConnectors">
+                <span class="h-icon">○</span>
+                <span class="h-label">Connectors used
+                  <span class="h-sub" id="hrConnectorsList">none yet</span>
+                </span>
+                <span class="h-value" id="hrConnectorsVal">0</span>
+              </div>
+            </div>
+            <div class="connector-panel">
+              <div class="panel-title">Try a Connector</div>
+              <div class="connector-chips" id="connectorChips"></div>
+              <div class="spell-hint hidden" id="spellHint"></div>
+            </div>
+          </div>
+
+          <div class="write-actions">
+            <button class="btn btn-ghost" onclick="resetSummary()">Reset</button>
+            <button class="btn" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Show my answer</button>
+            <div class="write-actions-spacer"></div>
+            <button class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">
+              Score my summary <span class="btn-kbd">⌘↵</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Plan tab -->
+        <div id="planTabPane" class="hidden">
+          <textarea class="scratch-input" id="scratchInput"
+            placeholder="Jot down What / Why / How / Result before you write. These notes are never scored."></textarea>
+          <div class="scratch-note">Scratch notes are saved locally and never sent for scoring.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot" id="practiceFootLabel">Practice Session</div>
+  </div>
+</div>
+
+<!-- ══════════════════ RESULTS SCREEN ══════════════════ -->
+<div class="screen" id="resultsScreen">
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">◐</div>
+        <div class="brand-name">IPT Brisbane</div>
+        <div class="brand-sub" id="resultsBreadcrumb">Results</div>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="topbar-tag" id="aiStatusTag2"><span class="dot"></span>Claude Live</div>
+      <div class="avatar" id="userAvatar2" onclick="signOut()" title="Sign out">··</div>
+    </div>
+
+    <!-- Hero -->
+    <div class="card results-hero">
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg viewBox="0 0 120 120">
+            <circle class="ring-track" cx="60" cy="60" r="54"></circle>
+            <circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54"
+              stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle>
+          </svg>
+          <div class="ring-value" id="heroScore">0</div>
+        </div>
+        <div class="score-ring-label">PTE Estimate</div>
+      </div>
+      <div class="results-hero-body">
+        <div class="eyebrow">Result</div>
+        <div class="display" id="heroVerdict">—</div>
+        <div class="result-summary" id="heroSummary"></div>
+        <div class="trait-chips" id="heroTraitChips"></div>
+      </div>
+      <div class="results-hero-actions">
+        <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
+        <button class="btn" onclick="showSample()">Compare to sample</button>
+      </div>
+    </div>
+
+    <!-- Originality checks -->
+    <div class="originality" id="originalityChecks"></div>
+
+    <!-- Two columns: annotated submission + trait breakdown -->
+    <div class="results-cols">
+      <div class="card">
+        <div class="section-num">
+          03 · Annotated Submission
+          <span class="legend">
+            <span><i style="background:var(--what)"></i>What</span>
+            <span><i style="background:var(--why)"></i>Why</span>
+            <span><i style="background:var(--how)"></i>How</span>
+            <span><i style="background:var(--result)"></i>Result</span>
+          </span>
+        </div>
+        <div class="annotated-text" id="annotatedSubmission"></div>
+        <div class="annotated-feedback" id="annotatedFeedback"></div>
+      </div>
+      <div class="card">
+        <div class="section-num">05 · Trait Breakdown</div>
+        <div class="trait-breakdown" id="traitBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- Key element coverage -->
+    <div class="card">
+      <div class="section-num">04 · Key Element Coverage</div>
+      <div class="coverage-table" id="coverageTable"></div>
+    </div>
+
+    <div class="page-foot">Results &amp; Feedback</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="loading-veil hidden" id="loadingVeil"><div class="spinner"></div></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   API CONTRACT — same backend as index.html, no server changes
+   ═══════════════════════════════════════════════════════════════ */
+const RAILWAY_URL = 'https://swt.up.railway.app';
+const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
+  || location.hostname.startsWith('192.168.')
+  || location.hostname.startsWith('10.')
+  || location.hostname.startsWith('172.');
+const API_URL = isLocal ? '' : RAILWAY_URL;
+
+const BASE_KEYS = { USER_ID: 'pte_user_id' };
+function getUserKeys(uid) {
+  const u = (uid || 'default').toLowerCase().trim();
+  return { ATTEMPTED:`pte_${u}_attempted`, SCORES:`pte_${u}_scores`, SUMMARIES:`pte_${u}_summaries`, HISTORY:`pte_${u}_history`, SCRATCH:`pte_${u}_scratch` };
+}
+let STORAGE_KEYS = getUserKeys('');
+
+const LocalStore = {
+  get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
+  getUserId(){ return localStorage.getItem(BASE_KEYS.USER_ID) || ''; },
+  setUserId(id){ try{ localStorage.setItem(BASE_KEYS.USER_ID, id); }catch(e){} }
+};
+
+function escapeHtml(t){ if(typeof t!=='string')return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+/* ─── State ─────────────────────────────────────────────────── */
+let passages = [];
+let currentId = 1;
+let currentUserId = '';
+let attempted = new Set();
+let timerOn = false, timerSeconds = 0, timerInterval = null;
+let lastSpellData = null;
+let writeTab = 'write';
+
+const CONNECTORS = ['however','moreover','therefore','consequently','furthermore','whereas','thus'];
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════════════ */
+function showRegister(){ document.getElementById('loginForm').classList.add('hidden'); document.getElementById('registerForm').classList.remove('hidden'); }
+function showLogin(){ document.getElementById('registerForm').classList.add('hidden'); document.getElementById('loginForm').classList.remove('hidden'); }
+function loginErr(msg){ const e=document.getElementById('loginErr'); e.textContent=msg; e.style.display='block'; }
+function regErr(msg){ const e=document.getElementById('regErr'); e.textContent=msg; e.style.display='block'; }
+
+async function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  document.getElementById('loginErr').style.display='none';
+  if(!u || !pw){ loginErr('Enter username and password.'); return; }
+  try {
+    const r = await fetch(API_URL+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw})});
+    const d = await r.json();
+    if(d.success){ enterApp(u); }
+    else { loginErr(d.error || 'Login failed.'); }
+  } catch(e){ loginErr('Connection error. Try again.'); }
+}
+
+async function doRegister(){
+  const u = document.getElementById('regUser').value.trim();
+  const pw = document.getElementById('regPw').value;
+  const sq = document.getElementById('regSecretQ').value;
+  const sa = document.getElementById('regSecretA').value.trim();
+  document.getElementById('regErr').style.display='none';
+  if(!u || !pw){ regErr('Enter username and password.'); return; }
+  if(pw.length < 4){ regErr('Password must be at least 4 characters.'); return; }
+  try {
+    const r = await fetch(API_URL+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa})});
+    const d = await r.json();
+    if(d.success){ enterApp(u); }
+    else { regErr(d.error || 'Registration failed.'); }
+  } catch(e){ regErr('Connection error. Try again.'); }
+}
+
+async function enterApp(uid){
+  currentUserId = uid;
+  STORAGE_KEYS = getUserKeys(uid);
+  LocalStore.setUserId(uid);
+  attempted = new Set();
+  const initials = uid.slice(0,2).toUpperCase();
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userAvatar2').textContent = initials;
+  showScreen('practiceScreen');
+  await loadPassages();
+  loadStoredData();
+  await pullFromServer();
+  loadPassage(1);
+  checkAIStatus();
+}
+
+function signOut(){
+  currentUserId = '';
+  STORAGE_KEYS = getUserKeys('');
+  LocalStore.setUserId('');
+  showScreen('loginScreen');
+  showLogin();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PASSAGES
+   ═══════════════════════════════════════════════════════════════ */
+async function loadPassages(){
+  try {
+    const r = await fetch(API_URL+'/api/passages',{cache:'no-store'});
+    const d = await r.json();
+    if(Array.isArray(d) && d.length){ passages = d; }
+    else if(d.passages && Array.isArray(d.passages)){ passages = d.passages; }
+  } catch(e){ /* fall through */ }
+  if(!passages.length){
+    passages = [{ id:1, title:'Sample', category:'General', text:'Passage unavailable — check your connection.', keyElements:{what:'',why:'',how:'',result:''} }];
+  }
+  document.getElementById('navTotal').textContent = passages.length;
+  document.getElementById('practiceFootLabel').textContent =
+    String(passages.length).padStart(2,'0') + ' · Practice Session';
+}
+
+function loadStoredData(){
+  const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+  att.forEach(id => attempted.add(id));
+  const h = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+  Object.keys(h).forEach(id => { if(h[id] && h[id].length) attempted.add(parseInt(id)); });
+}
+
+function loadPassage(id){
+  if(id < 1 || id > passages.length) return;
+  currentId = id;
+  const p = passages.find(x => x.id === id) || passages[id-1];
+  if(!p) return;
+
+  const num = String(id).padStart(2,'0');
+  document.getElementById('navCurrent').textContent = num;
+  document.getElementById('pasNum').textContent = num;
+
+  const wordCount = (p.text || '').trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById('pasWordCount').textContent = wordCount + ' words';
+  const mins = Math.max(1, Math.round(wordCount / 26));
+  document.getElementById('pasCategory').textContent = '~' + mins + ' min';
+
+  const paras = (p.text || '').split(/\n\n+/).filter(Boolean);
+  document.getElementById('passageBody').innerHTML =
+    (paras.length ? paras : [p.text]).map(t => '<p>' + escapeHtml(t) + '</p>').join('');
+
+  document.getElementById('navPrev').toggleAttribute('disabled', id === 1);
+  document.getElementById('navNext').toggleAttribute('disabled', id === passages.length);
+
+  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+  document.getElementById('summaryInput').value = (summaries[id] && summaries[id].text) || '';
+  const scratch = LocalStore.get(STORAGE_KEYS.SCRATCH) || {};
+  document.getElementById('scratchInput').value = scratch[id] || '';
+
+  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+  document.getElementById('prevAnswerBtn').style.display =
+    (scores[id] && typeof scores[id].overall_score === 'number') ? 'inline-flex' : 'none';
+
+  switchWriteTab('write');
+  onSummaryInput();
+  renderConnectorChips();
+  resetTimer();
+}
+
+function prevPassage(){ if(currentId > 1) loadPassage(currentId - 1); }
+function nextPassage(){ if(currentId < passages.length) loadPassage(currentId + 1); }
+
+/* ═══════════════════════════════════════════════════════════════
+   WRITE TAB / WRITING HEALTH
+   ═══════════════════════════════════════════════════════════════ */
+function switchWriteTab(tab){
+  writeTab = tab;
+  document.getElementById('tabWrite').classList.toggle('active', tab === 'write');
+  document.getElementById('tabPlan').classList.toggle('active', tab === 'plan');
+  document.getElementById('writeTabPane').classList.toggle('hidden', tab !== 'write');
+  document.getElementById('planTabPane').classList.toggle('hidden', tab !== 'plan');
+}
+
+function countWords(t){ return (t || '').trim().split(/\s+/).filter(Boolean).length; }
+
+function countSentences(t){
+  const trimmed = (t || '').trim();
+  if(!trimmed) return 0;
+  const matches = trimmed.match(/[.!?]+(?=\s|$)/g);
+  return matches ? matches.length : 1;
+}
+
+function detectConnectors(t){
+  const lower = (t || '').toLowerCase();
+  return CONNECTORS.filter(c => new RegExp('\\b' + c + '\\b').test(lower));
+}
+
+function onSummaryInput(){
+  const text = document.getElementById('summaryInput').value;
+  const words = countWords(text);
+  const sentences = countSentences(text);
+  const connectors = detectConnectors(text);
+
+  document.getElementById('wordCount').textContent = words;
+  const fill = document.getElementById('wordMeterFill');
+  const pct = Math.min(100, (words / 75) * 100);
+  fill.style.width = pct + '%';
+  fill.classList.toggle('over', words > 75);
+
+  setHealthRow('hrSentence', sentences === 1, sentences, sentences === 1 ? 'ok' : 'warn');
+  setHealthRow('hrWordBand', words >= 5 && words <= 75, words, (words >= 5 && words <= 75) ? 'ok' : 'warn');
+  setHealthRow('hrConnectors', connectors.length >= 1, connectors.length, connectors.length >= 1 ? 'ok' : 'warn');
+  document.getElementById('hrConnectorsList').textContent =
+    connectors.length ? connectors.join(' · ') : 'none yet';
+
+  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+  if(text.trim()){
+    summaries[currentId] = { text, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
+  } else if(summaries[currentId]) {
+    delete summaries[currentId];
+  }
+  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
+}
+
+function setHealthRow(rowId, ok, value, cls){
+  const row = document.getElementById(rowId);
+  row.classList.remove('ok','warn');
+  row.classList.add(cls);
+  row.querySelector('.h-icon').textContent = ok ? '✓' : '!';
+  document.getElementById(rowId + 'Val').textContent = value;
+}
+
+function renderConnectorChips(){
+  const wrap = document.getElementById('connectorChips');
+  const used = detectConnectors(document.getElementById('summaryInput').value);
+  wrap.innerHTML = CONNECTORS.map(c =>
+    `<span class="chip ${used.includes(c)?'used':''}" onclick="insertConnector('${c}')">${c}</span>`
+  ).join('');
+}
+
+function insertConnector(word){
+  const ta = document.getElementById('summaryInput');
+  const pos = ta.selectionStart;
+  const before = ta.value.slice(0, pos);
+  const after = ta.value.slice(pos);
+  const needsSemi = before.trim() && !/[;,]\s*$/.test(before);
+  const insertion = (needsSemi ? '; ' : '') + word + ', ';
+  ta.value = before + insertion + after;
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = pos + insertion.length;
+  onSummaryInput();
+  renderConnectorChips();
+}
+
+function resetSummary(){
+  document.getElementById('summaryInput').value = '';
+  onSummaryInput();
+  renderConnectorChips();
+}
+
+document.addEventListener('input', function(e){
+  if(e.target && e.target.id === 'scratchInput'){
+    const scratch = LocalStore.get(STORAGE_KEYS.SCRATCH) || {};
+    scratch[currentId] = e.target.value;
+    LocalStore.set(STORAGE_KEYS.SCRATCH, scratch);
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   TIMER
+   ═══════════════════════════════════════════════════════════════ */
+function toggleTimer(){
+  timerOn = !timerOn;
+  document.getElementById('timerState').textContent = timerOn ? 'Timed' : 'Off';
+  if(timerOn){ startTimer(); }
+  else { stopTimer(); document.getElementById('timerDisplay').textContent = '—'; }
+}
+function startTimer(){
+  stopTimer();
+  timerInterval = setInterval(() => {
+    timerSeconds++;
+    const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+    const s = String(timerSeconds%60).padStart(2,'0');
+    document.getElementById('timerDisplay').textContent = m + ':' + s;
+  }, 1000);
+}
+function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
+function resetTimer(){
+  timerSeconds = 0;
+  if(timerOn){ document.getElementById('timerDisplay').textContent = '00:00'; startTimer(); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCORING
+   ═══════════════════════════════════════════════════════════════ */
+async function scoreSummary(){
+  const text = document.getElementById('summaryInput').value.trim();
+  if(!text){ toast('Write a summary first.'); return; }
+  const words = countWords(text);
+  if(words < 5){ toast('Too short — minimum 5 words.'); return; }
+  if(words > 75){ toast('Too long — maximum 75 words.'); return; }
+
+  const p = passages.find(x => x.id === currentId);
+  if(!p){ toast('Passage not loaded.'); return; }
+
+  showLoading(true);
+  document.getElementById('scoreBtn').setAttribute('disabled','');
+
+  try {
+    const payload = { type: 'swt', prompt: p.text, keyPoints: p.keyElements, text: text };
+    if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentId; }
+
+    const [gradeRes, spellRes] = await Promise.allSettled([
+      fetch(API_URL+'/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),
+      fetch(API_URL+'/api/spellcheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})})
+    ]);
+
+    if(gradeRes.status !== 'fulfilled' || !gradeRes.value.ok){ throw new Error('Grading failed'); }
+    const data = await gradeRes.value.json();
+
+    let spellData = null;
+    if(spellRes.status === 'fulfilled' && spellRes.value.ok){
+      try { spellData = await spellRes.value.json(); } catch(e){ spellData = null; }
+    }
+    lastSpellData = spellData;
+
+    saveAttempt(currentId, text, data, spellData);
+    attempted.add(currentId);
+    stopTimer();
+    showResults(data, p, spellData, text);
+    showScreen('resultsScreen');
+  } catch(e){
+    toast('Scoring failed — check your connection and try again.');
+  } finally {
+    showLoading(false);
+    document.getElementById('scoreBtn').removeAttribute('disabled');
+  }
+}
+
+function saveAttempt(pid, text, data, spellData){
+  const ts = new Date().toISOString();
+  const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
+  if(!att.includes(pid)){ att.push(pid); LocalStore.set(STORAGE_KEYS.ATTEMPTED, att); }
+
+  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+  summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
+  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
+
+  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+  scores[pid] = Object.assign({}, data, { __text: text, __timestamp: ts, __spellData: spellData || null });
+  LocalStore.set(STORAGE_KEYS.SCORES, scores);
+
+  const h = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
+  if(!h[pid]) h[pid] = [];
+  h[pid].unshift({
+    text, timestamp: ts,
+    overall_score: data.overall_score || 0, band: data.band || 'Band 5',
+    trait_scores: data.trait_scores || {}, word_count: data.word_count || 0,
+    content_details: data.content_details || {},
+    scoring_version: data.scoring_version || 'unknown'
+  });
+  if(h[pid].length > 10) h[pid] = h[pid].slice(0,10);
+  LocalStore.set(STORAGE_KEYS.HISTORY, h);
+
+  pushToServer();
+}
+
+function loadPreviousAnswer(){
+  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+  const stored = scores[currentId];
+  if(!stored){ toast('No previous answer for this passage.'); return; }
+  const p = passages.find(x => x.id === currentId);
+  if(!p){ return; }
+  if(stored.__text){ document.getElementById('summaryInput').value = stored.__text; onSummaryInput(); }
+  showResults(stored, p, stored.__spellData || null, stored.__text || '');
+  showScreen('resultsScreen');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESULTS RENDERING
+   ═══════════════════════════════════════════════════════════════ */
+function showResults(data, passage, spellData, submittedText){
+  const pte = data.overall_score || 0;
+  const band = data.band || 'Band 5';
+  const traits = data.trait_scores || {};
+
+  document.getElementById('resultsBreadcrumb').textContent =
+    'Results · ' + (passage.title || 'Passage ' + currentId);
+
+  const ringCirc = 339.29;
+  const heroRing = document.getElementById('heroRing');
+  heroRing.style.strokeDasharray = ringCirc;
+  heroRing.style.strokeDashoffset = ringCirc * (1 - Math.min(1, pte/90));
+  document.getElementById('heroScore').textContent = pte;
+
+  document.getElementById('heroVerdict').innerHTML = verdictLine(pte, band);
+  document.getElementById('heroSummary').textContent = buildResultSummary(data, traits);
+
+  const cMax = traits.content_max || 4;
+  document.getElementById('heroTraitChips').innerHTML = [
+    `Content ${fmtNum(traits.content)}/${cMax}`,
+    `Form ${fmtNum(traits.form)}/1`,
+    `Grammar ${fmtNum(traits.grammar)}/2`,
+    `Vocab ${fmtNum(traits.vocabulary)}/2`,
+    `${data.word_count || countWords(submittedText)} / 5–75 words`
+  ].map(t => `<span class="trait-chip">${t}</span>`).join('');
+
+  renderOriginality(data, passage, submittedText);
+  renderAnnotatedSubmission(data, passage, spellData, submittedText);
+  renderTraitBreakdown(data, traits);
+  renderCoverage(data, passage);
+}
+
+function fmtNum(n){
+  if(n == null) return '0';
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function verdictLine(pte, band){
+  let word;
+  if(pte >= 86) word = 'Excellent';
+  else if(pte >= 79) word = 'Strong attempt';
+  else if(pte >= 65) word = 'Solid attempt';
+  else if(pte >= 50) word = 'Developing';
+  else word = 'Needs work';
+  return escapeHtml(word) + ' — <em>' + escapeHtml(band) + '</em>';
+}
+
+function buildResultSummary(data, traits){
+  const cd = data.content_details || {};
+  const captured = (cd.key_ideas_present || []).length;
+  const cMax = traits.content_max || 4;
+  const parts = [];
+  if(captured === cMax){
+    parts.push('You captured all ' + cMax + ' key ideas in one well-formed sentence.');
+  } else {
+    parts.push('You captured ' + captured + ' of ' + cMax + ' key ideas in one sentence with appropriate connectors.');
+  }
+  if((traits.vocabulary || 0) < 2){
+    parts.push('Vocabulary range is the lever that will push you higher — try swapping high-frequency words for academic alternatives.');
+  } else if((traits.grammar || 0) < 2){
+    parts.push('Tightening grammar will lift the score — check connector punctuation and article use.');
+  } else if(captured < cMax){
+    parts.push('Add the missing key element to move up a band.');
+  }
+  return parts.join(' ');
+}
+
+function renderOriginality(data, passage, submittedText){
+  const el = document.getElementById('originalityChecks');
+  const overlap = computeCopyMetrics(submittedText, passage.text || '');
+
+  let copyVerdict, copyClass, copyDetail;
+  if(overlap.pct <= 15 && overlap.longestRun < 6){
+    copyVerdict = 'Original'; copyClass = 'good';
+  } else if(overlap.pct <= 40 && overlap.longestRun <= 10){
+    copyVerdict = 'Some lifting'; copyClass = 'warn';
+  } else {
+    copyVerdict = 'Heavy lifting'; copyClass = 'warn';
+  }
+  copyDetail = 'Longest run: ' + overlap.longestRun + ' words · ' + overlap.pct + '% verbatim';
+
+  const aiVerdict = 'Likely Human';
+  const aiDetail = 'Burstiness signal · written in-session';
+
+  el.innerHTML = `
+    <div class="orig-cell">
+      <div class="orig-head">
+        <span class="orig-name">AI Detector</span>
+        <span class="orig-verdict">${aiVerdict}</span>
+      </div>
+      <div class="orig-detail">${aiDetail}</div>
+    </div>
+    <div class="orig-cell ${copyClass}">
+      <div class="orig-head">
+        <span class="orig-name">Copy Detector</span>
+        <span class="orig-verdict">${escapeHtml(copyVerdict)}</span>
+      </div>
+      <div class="orig-detail">${escapeHtml(copyDetail)}</div>
+    </div>
+    <div class="orig-cell">
+      <div class="orig-head">
+        <span class="orig-name">Plagiarism Web</span>
+        <span class="orig-verdict">Not Checked</span>
+      </div>
+      <div class="orig-detail">Web plagiarism check not enabled</div>
+    </div>`;
+}
+
+function computeCopyMetrics(student, passage){
+  function words(s){ return (s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean); }
+  const sw = words(student), pw = words(passage);
+  if(sw.length === 0) return { pct: 0, longestRun: 0 };
+
+  const pGrams = new Set();
+  for(let i = 0; i <= pw.length - 4; i++) pGrams.add(pw.slice(i,i+4).join(' '));
+  let hits = 0;
+  const total = Math.max(1, sw.length - 3);
+  for(let i = 0; i <= sw.length - 4; i++){
+    if(pGrams.has(sw.slice(i,i+4).join(' '))) hits++;
+  }
+  const pct = Math.round((hits / total) * 100);
+
+  let longest = 0;
+  const pJoined = ' ' + pw.join(' ') + ' ';
+  for(let i = 0; i < sw.length; i++){
+    for(let len = Math.min(25, sw.length - i); len >= 4; len--){
+      if(pJoined.includes(' ' + sw.slice(i,i+len).join(' ') + ' ')){
+        if(len > longest) longest = len;
+        break;
+      }
+    }
+  }
+  return { pct, longestRun: longest };
+}
+
+function renderAnnotatedSubmission(data, passage, spellData, submittedText){
+  const el = document.getElementById('annotatedSubmission');
+  const text = submittedText || '';
+  if(!text.trim()){ el.textContent = '—'; return; }
+
+  const cd = data.content_details || {};
+  const captured = new Set(cd.key_ideas_present || []);
+  const keyEls = passage.keyElements || {};
+
+  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
+  function toks(s){ return (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w)); }
+  function headline(t){
+    if(!t) return '';
+    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
+    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
+  }
+
+  const segments = text.split(/(;|\.|!|\?)/).filter(s => s !== '');
+  const clauses = [];
+  for(let i = 0; i < segments.length; i++){
+    if(/^[;.!?]$/.test(segments[i])){
+      if(clauses.length) clauses[clauses.length-1] += segments[i];
+    } else {
+      clauses.push(segments[i]);
+    }
+  }
+
+  const labels = ['what','why','how','result'];
+  const clauseLabel = {};
+  const usedLabels = new Set();
+  for(const lbl of labels){
+    if(!keyEls[lbl]) continue;
+    const hTok = toks(headline(keyEls[lbl]));
+    if(hTok.length < 2) continue;
+    let bestIdx = -1, bestHits = 0;
+    for(let i = 0; i < clauses.length; i++){
+      if(clauseLabel[i]) continue;
+      const cTok = new Set(toks(clauses[i]));
+      let hits = 0;
+      for(const t of hTok){
+        if(cTok.has(t)){ hits++; continue; }
+        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
+        if(stem.length >= 4){ for(const ct of cTok){ if(ct.startsWith(stem)){ hits++; break; } } }
+      }
+      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
+    }
+    if(bestIdx >= 0 && bestHits >= 2){ clauseLabel[bestIdx] = lbl; usedLabels.add(lbl); }
+  }
+
+  let spellWords = {};
+  const errs = (spellData && Array.isArray(spellData.errors)) ? spellData.errors
+             : (data.spelling_details && data.spelling_details.errors) || [];
+  for(const e of errs){
+    const w = (e.misspelled || '').toLowerCase().trim();
+    if(w) spellWords[w] = e.suggestion || (e.suggestions && e.suggestions[0]) || '';
+  }
+
+  let html = '';
+  for(let i = 0; i < clauses.length; i++){
+    const lbl = clauseLabel[i];
+    const inner = annotateSpelling(clauses[i], spellWords);
+    if(lbl){ html += `<span class="ann-seg ${lbl}">${inner}</span>`; }
+    else { html += inner; }
+  }
+  el.innerHTML = html;
+
+  const fb = document.getElementById('annotatedFeedback');
+  const items = [];
+  const connectors = detectConnectors(text);
+  const sentences = countSentences(text);
+  if(sentences === 1 && connectors.length >= 2){
+    items.push({ cls:'good', icon:'✓', text:'One sentence, ' + connectors.length + ' connectors (' + connectors.join(' / ') + '), inside the 5–75 word band.' });
+  } else if(sentences === 1){
+    items.push({ cls:'good', icon:'✓', text:'Single well-formed sentence within the word band.' });
+  } else {
+    items.push({ cls:'warn', icon:'!', text:'Summary should be a <em>single sentence</em> — found ' + sentences + '.' });
+  }
+  const cMax = (data.trait_scores||{}).content_max || 4;
+  const missing = labels.filter(l => keyEls[l] && !captured.has(l) && !usedLabels.has(l));
+  if(missing.length){
+    const missLabel = missing[0].charAt(0).toUpperCase() + missing[0].slice(1);
+    items.push({ cls:'warn', icon:'!', text:'Missing the <em>' + missLabel + '</em> element — work it into your summary.' });
+  } else if((captured.size || usedLabels.size) >= cMax){
+    items.push({ cls:'good', icon:'✓', text:'All key elements present and accounted for.' });
+  }
+  fb.innerHTML = items.map(it =>
+    `<div class="ann-fb-item ${it.cls}"><span class="fb-icon">${it.icon}</span><span class="fb-text">${it.text}</span></div>`
+  ).join('');
+}
+
+function annotateSpelling(clause, spellWords){
+  if(Object.keys(spellWords).length === 0) return escapeHtml(clause);
+  const parts = clause.split(/(\s+|[.,;:!?"'()])/);
+  return parts.map(tok => {
+    const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
+    if(stripped && spellWords[stripped] !== undefined){
+      const fix = spellWords[stripped];
+      return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${escapeHtml(tok)}</span>`;
+    }
+    return escapeHtml(tok);
+  }).join('');
+}
+
+function renderTraitBreakdown(data, traits){
+  const el = document.getElementById('traitBreakdown');
+  const cMax = traits.content_max || 4;
+  const cd = data.content_details || {};
+  const captured = (cd.key_ideas_present || []).length;
+
+  const rows = [
+    { name:'Content', score:traits.content||0, max:cMax,
+      note: captured >= cMax ? 'All key elements present.' : captured + ' of ' + cMax + ' key elements present — add the missing one(s).' },
+    { name:'Form', score:traits.form||0, max:1,
+      note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
+    { name:'Grammar', score:traits.grammar||0, max:2,
+      note: (traits.grammar >= 2) ? 'Clean grammar and connector punctuation.' : 'Check connector punctuation (semicolons) and article use.' },
+    { name:'Vocabulary', score:traits.vocabulary||0, max:2,
+      note: (traits.vocabulary >= 2) ? 'Good academic range.' : 'Range could be wider — swap high-frequency words for academic alternatives.' }
+  ];
+
+  el.innerHTML = rows.map(r => {
+    const pct = r.max > 0 ? Math.min(100, (r.score / r.max) * 100) : 0;
+    let barColor = 'var(--good)';
+    if(pct < 50) barColor = 'var(--bad)';
+    else if(pct < 100) barColor = 'var(--warn)';
+    return `
+      <div class="trait-row">
+        <div class="trait-head">
+          <span class="trait-name">${r.name}</span>
+          <span class="trait-score"><b>${fmtNum(r.score)}</b> / ${r.max}</span>
+        </div>
+        <div class="trait-bar"><div class="trait-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+        <div class="trait-note">${escapeHtml(r.note)}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderCoverage(data, passage){
+  const el = document.getElementById('coverageTable');
+  const keyEls = passage.keyElements || {};
+  const cd = data.content_details || {};
+  const captured = new Set(cd.key_ideas_present || []);
+  const missing = new Set(cd.key_ideas_missing || []);
+
+  const labels = [['what','What'],['why','Why'],['how','How'],['result','Result']];
+  el.innerHTML = labels.filter(([k]) => keyEls[k]).map(([k, label]) => {
+    let status, statusCls;
+    if(captured.has(k)){ status = 'Covered'; statusCls = 'covered'; }
+    else if(missing.has(k)){ status = 'Missing'; statusCls = 'missing'; }
+    else { status = 'Partial'; statusCls = 'partial'; }
+    const txt = String(keyEls[k] || '').replace(/<[^>]+>/g,'');
+    return `
+      <div class="coverage-row">
+        <div class="cov-key"><span class="cov-dot ${k}"></span>${label.toUpperCase()}</div>
+        <div class="cov-text ${statusCls === 'missing' ? 'missing' : ''}">${escapeHtml(txt)}</div>
+        <div class="cov-status ${statusCls}">${status}</div>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAMPLE / NAVIGATION
+   ═══════════════════════════════════════════════════════════════ */
+function showSample(){
+  const p = passages.find(x => x.id === currentId);
+  if(!p || !p.sampleResponse){ toast('No sample available for this passage.'); return; }
+  document.getElementById('summaryInput').value = p.sampleResponse;
+  showScreen('practiceScreen');
+  switchWriteTab('write');
+  onSummaryInput();
+  renderConnectorChips();
+  toast('Band-9 sample loaded — compare it to your attempt.');
+}
+
+function backToPractice(){
+  showScreen('practiceScreen');
+  switchWriteTab('write');
+  document.getElementById('summaryInput').focus();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SERVER SYNC
+   ═══════════════════════════════════════════════════════════════ */
+async function pullFromServer(){
+  if(!currentUserId) return;
+  try {
+    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId));
+    const d = await r.json();
+    if(d.success && d.data){
+      if(d.data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, d.data.attempted);
+      if(d.data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, d.data.summaries);
+      if(d.data.scores)    LocalStore.set(STORAGE_KEYS.SCORES, d.data.scores);
+      if(d.data.history)   LocalStore.set(STORAGE_KEYS.HISTORY, d.data.history);
+      loadStoredData();
+    }
+  } catch(e){ /* offline — local data still works */ }
+}
+
+async function pushToServer(){
+  if(!currentUserId) return;
+  try {
+    const payload = {
+      attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
+      summaries: LocalStore.get(STORAGE_KEYS.SUMMARIES) || {},
+      scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
+      history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}
+    };
+    await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+    });
+  } catch(e){ /* will retry on next save */ }
+}
+
+async function checkAIStatus(){
+  try {
+    const r = await fetch(API_URL+'/api/health');
+    const d = await r.json();
+    const live = !!d.anthropicConfigured;
+    ['aiStatusTag','aiStatusTag2'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
+    });
+  } catch(e){ /* leave default */ }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+function showLoading(on){
+  document.getElementById('loadingVeil').classList.toggle('hidden', !on);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD + INIT
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e){
+  if((e.metaKey || e.ctrlKey) && e.key === 'Enter'){
+    if(document.getElementById('practiceScreen').classList.contains('active') && writeTab === 'write'){
+      e.preventDefault();
+      scoreSummary();
+    }
+  }
+});
+
+['loginPw','loginUser'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+});
+['regSecretA'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doRegister(); });
+});
+
+(function init(){
+  const last = LocalStore.getUserId();
+  if(last){ document.getElementById('loginUser').value = last; }
+})();
+</script>
+</body>
+</html>
