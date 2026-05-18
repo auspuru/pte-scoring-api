@@ -133,6 +133,36 @@ tr:hover td{background:var(--surface-dim);}
 .editor-msg.ok{background:var(--green-light);color:var(--green);display:block;}
 .editor-msg.err{background:var(--red-light);color:var(--red);display:block;}
 
+/* v19.11: AI key-element extraction panel */
+.extract-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.btn-extract{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:0.82rem;font-weight:600;cursor:pointer;font-family:var(--font);}
+.btn-extract:hover{background:#1d4ed8;}
+.btn-extract:disabled{opacity:0.5;cursor:not-allowed;}
+.extract-hint{font-size:0.75rem;color:var(--ink-faint);}
+.extract-draft{display:none;background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:14px;}
+.extract-draft.show{display:block;}
+.extract-draft-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.extract-draft-title{font-size:0.8rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.04em;}
+.draft-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+.draft-badge.fw{background:var(--accent-light);color:var(--accent-dark);}
+.draft-badge.conf-high{background:var(--green-light);color:var(--green);}
+.draft-badge.conf-medium{background:var(--amber-light);color:var(--amber);}
+.draft-badge.conf-low{background:var(--red-light);color:var(--red);}
+.draft-reason{font-size:0.78rem;color:var(--ink-muted);font-style:italic;margin-bottom:10px;line-height:1.5;}
+.draft-elements{margin-bottom:10px;}
+.draft-el{padding:7px 0;border-bottom:1px solid #dbeafe;font-size:0.82rem;}
+.draft-el:last-child{border-bottom:none;}
+.draft-el .del-key{font-weight:700;color:var(--blue);text-transform:uppercase;font-size:0.68rem;letter-spacing:0.04em;margin-right:6px;}
+.draft-el .del-rationale{display:block;font-size:0.74rem;color:var(--ink-faint);margin-top:2px;}
+.draft-low-warn{background:var(--red-light);color:var(--red);font-size:0.76rem;padding:7px 10px;border-radius:6px;margin-bottom:10px;}
+.draft-actions{display:flex;gap:8px;}
+.btn-draft{padding:6px 14px;border-radius:var(--radius-sm);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:var(--font);border:1px solid var(--border);background:var(--surface);}
+.btn-draft.apply{background:var(--blue);color:#fff;border-color:var(--blue);}
+.btn-draft.apply:hover{background:#1d4ed8;}
+.rationale-card{background:var(--surface-dim);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;}
+.rationale-card h4{font-size:0.78rem;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:700;}
+.rationale-card .help{font-size:0.75rem;color:var(--ink-faint);margin-bottom:10px;}
+
 @media(max-width:640px){
   .editor-row-2{grid-template-columns:1fr;}
   .passage-row{flex-wrap:wrap;}
@@ -260,6 +290,14 @@ tr:hover td{background:var(--surface-dim);}
         <div class="help">
           The strict content gate checks for each of these in the student's summary. <strong>Keep each field to one atomic fact</strong> — don't glue two facts with "and"/"but". The more granular, the more accurate the scoring. At least one field is required.
         </div>
+
+        <!-- v19.11: AI auto-extraction -->
+        <div class="extract-bar">
+          <button type="button" class="btn-extract" id="extractBtn" onclick="runExtraction()">✨ Auto-extract with AI</button>
+          <span class="extract-hint">Claude reads the passage, picks the framework, and drafts the key elements for your review.</span>
+        </div>
+        <div class="extract-draft" id="extractDraft"></div>
+
         <div class="element-field">
           <div class="field-label"><label>WHAT — the topic / main subject</label><span class="field-tag">what</span></div>
           <textarea id="pe_what" placeholder="One atomic fact about the topic"></textarea>
@@ -275,6 +313,21 @@ tr:hover td{background:var(--surface-dim);}
         <div class="element-field">
           <div class="field-label"><label>RESULT — the outcome / conclusion</label><span class="field-tag">result</span></div>
           <textarea id="pe_result" placeholder="One atomic fact about the result"></textarea>
+        </div>
+      </div>
+
+      <!-- v19.11: Passage rationale — explains topic + why these key elements.
+           Feeds the "About this passage" card students see after submitting. -->
+      <div class="rationale-card">
+        <h4>About This Passage (shown to students after they submit)</h4>
+        <div class="help">Auto-filled by AI extraction. Explains what the passage is about and why these key elements are the load-bearing ones — students see this in their results.</div>
+        <div class="element-field">
+          <div class="field-label"><label>Topic — what the passage is about</label></div>
+          <textarea id="pe_rat_topic" placeholder="2–3 sentences: what the passage covers and how it's structured"></textarea>
+        </div>
+        <div class="element-field">
+          <div class="field-label"><label>Importance — why these are the critical ideas</label></div>
+          <textarea id="pe_rat_importance" placeholder="2–3 sentences: why these sentences are load-bearing and which are decoration"></textarea>
         </div>
       </div>
 
@@ -481,6 +534,15 @@ function renderPassages(list) {
       : newSchemaCount > 0
         ? `<span class="pmeta-warn">${newSchemaCount}/4 atomized</span>`
         : '<span class="pmeta-warn">Legacy 3-field</span>';
+    // v19.11: rationale indicator — shows whether the student-facing "About this
+    // passage" content exists, and the AI extraction confidence if recorded.
+    const hasRat = p.keyElementsRationale && (p.keyElementsRationale.topic || p.keyElementsRationale.importance);
+    const conf = p.extractionMeta && p.extractionMeta.confidence;
+    const ratTag = hasRat
+      ? (conf
+          ? `<span class="pmeta-${conf === 'low' ? 'warn' : 'good'}">✓ Rationale (${escH(conf)})</span>`
+          : '<span class="pmeta-good">✓ Rationale</span>')
+      : '<span class="pmeta-warn">No rationale</span>';
     return `
       <div class="passage-row">
         <div class="pid">P${escH(String(p.id))}</div>
@@ -491,6 +553,7 @@ function renderPassages(list) {
         <div class="pmeta">
           <div>Words: <span class="pmeta-val">${wc}</span></div>
           <div>${schemaTag}</div>
+          <div>${ratTag}</div>
         </div>
         <div class="pactions">
           <button class="btn-action" onclick="openPassageEditor(${p.id})">Edit</button>
@@ -526,6 +589,17 @@ function openPassageEditor(id) {
   document.getElementById('pe_result').value = ke.result || ke.conclusion || '';
   document.getElementById('pe_sampleResponse').value = p.sampleResponse || '';
   document.getElementById('pe_sampleNotes').value = p.sampleNotes || '';
+  // v19.11: rationale fields + draft panel reset
+  const rat = p.keyElementsRationale || {};
+  document.getElementById('pe_rat_topic').value = rat.topic || '';
+  document.getElementById('pe_rat_importance').value = rat.importance || '';
+  const modalEl = document.getElementById('passageModal');
+  modalEl.dataset.ratElements = JSON.stringify(rat.elements || {});
+  modalEl.dataset.extractionMeta = JSON.stringify(p.extractionMeta || {});
+  currentDraft = null;
+  const draftBox = document.getElementById('extractDraft');
+  draftBox.className = 'extract-draft';
+  draftBox.innerHTML = '';
   document.getElementById('passageModalMsg').className = 'editor-msg';
   document.getElementById('passageModalMsg').textContent = '';
   document.getElementById('passageModal').classList.add('show');
@@ -533,6 +607,132 @@ function openPassageEditor(id) {
 
 function closePassageEditor() {
   document.getElementById('passageModal').classList.remove('show');
+}
+
+/* ── v19.11: AI key-element extraction ────────────────────────────────────── */
+let currentDraft = null;  // the most recent extraction draft, held for Apply
+
+async function runExtraction() {
+  const btn = document.getElementById('extractBtn');
+  const draftBox = document.getElementById('extractDraft');
+  const text = document.getElementById('pe_text').value.trim();
+  const title = document.getElementById('pe_title').value.trim();
+
+  if (!text || text.length < 40) {
+    draftBox.className = 'extract-draft show';
+    draftBox.innerHTML = '<div class="draft-low-warn">Add the passage text first (at least 40 characters), then auto-extract.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '✨ Extracting…';
+  draftBox.className = 'extract-draft show';
+  draftBox.innerHTML = '<div class="draft-reason">Claude is reading the passage and drafting key elements…</div>';
+
+  try {
+    const r = await fetch(API + '/api/admin/passages/extract', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+      body: JSON.stringify({ text, title })
+    });
+    const d = await r.json();
+    if (!r.ok || !d.success) {
+      draftBox.innerHTML = '<div class="draft-low-warn">Extraction failed: ' +
+        escapeHtmlAdmin(d.error || ('HTTP ' + r.status)) + '</div>';
+      return;
+    }
+    currentDraft = d.draft;
+    renderDraft(d.draft);
+  } catch (e) {
+    draftBox.innerHTML = '<div class="draft-low-warn">Network error: ' + escapeHtmlAdmin(e.message) + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✨ Auto-extract with AI';
+  }
+}
+
+function escapeHtmlAdmin(t) {
+  const d = document.createElement('div'); d.textContent = String(t == null ? '' : t); return d.innerHTML;
+}
+
+function renderDraft(draft) {
+  const box = document.getElementById('extractDraft');
+  const fw = draft.framework === 'tpc' ? 'Topic / Pivot / Conclusion' : 'What / Why / How / Result';
+  const conf = draft.confidence || 'medium';
+  const ke = draft.keyElements || {};
+  const rat = draft.keyElementsRationale || {};
+  const ratEls = rat.elements || {};
+
+  // Order keys by framework
+  const order = draft.framework === 'tpc'
+    ? [['topic','Topic'],['pivot','Pivot'],['conclusion','Conclusion']]
+    : [['what','What'],['why','Why'],['how','How'],['result','Result']];
+
+  const elsHtml = order.filter(([k]) => ke[k]).map(([k, label]) => `
+    <div class="draft-el">
+      <span class="del-key">${label}</span>${escapeHtmlAdmin(ke[k])}
+      ${ratEls[k] ? '<span class="del-rationale">↳ ' + escapeHtmlAdmin(ratEls[k]) + '</span>' : ''}
+    </div>`).join('');
+
+  const lowWarn = conf === 'low'
+    ? '<div class="draft-low-warn">⚠ Low confidence — this passage\'s structure is genuinely ambiguous. Review the key elements carefully before applying.</div>'
+    : '';
+
+  box.className = 'extract-draft show';
+  box.innerHTML = `
+    <div class="extract-draft-head">
+      <span class="extract-draft-title">AI Draft — review before applying</span>
+      <span class="draft-badge fw">${escapeHtmlAdmin(fw)}</span>
+      <span class="draft-badge conf-${conf}">${conf} confidence</span>
+    </div>
+    ${draft.framework_reason ? '<div class="draft-reason">' + escapeHtmlAdmin(draft.framework_reason) + '</div>' : ''}
+    ${lowWarn}
+    <div class="draft-elements">${elsHtml}</div>
+    <div class="draft-actions">
+      <button type="button" class="btn-draft apply" onclick="applyDraft()">Apply to fields</button>
+      <button type="button" class="btn-draft" onclick="discardDraft()">Discard</button>
+    </div>`;
+}
+
+function applyDraft() {
+  if (!currentDraft) return;
+  const ke = currentDraft.keyElements || {};
+  const rat = currentDraft.keyElementsRationale || {};
+  // Map both schemas onto the what/why/how/result form fields
+  // (tpc topic->what, pivot->why, conclusion->result; how stays empty for tpc)
+  if (currentDraft.framework === 'tpc') {
+    document.getElementById('pe_what').value   = ke.topic || '';
+    document.getElementById('pe_why').value    = ke.pivot || '';
+    document.getElementById('pe_how').value    = '';
+    document.getElementById('pe_result').value = ke.conclusion || '';
+  } else {
+    document.getElementById('pe_what').value   = ke.what   || '';
+    document.getElementById('pe_why').value    = ke.why    || '';
+    document.getElementById('pe_how').value    = ke.how    || '';
+    document.getElementById('pe_result').value = ke.result || '';
+  }
+  document.getElementById('pe_rat_topic').value      = rat.topic || '';
+  document.getElementById('pe_rat_importance').value = rat.importance || '';
+  if (currentDraft.sampleResponse && !document.getElementById('pe_sampleResponse').value.trim()) {
+    document.getElementById('pe_sampleResponse').value = currentDraft.sampleResponse;
+  }
+  // Stash the rationale elements + extractionMeta for save (not shown as fields,
+  // but persisted so the student-facing "About this passage" card is complete).
+  document.getElementById('passageModal').dataset.ratElements =
+    JSON.stringify(rat.elements || {});
+  document.getElementById('passageModal').dataset.extractionMeta =
+    JSON.stringify(currentDraft.extractionMeta || {});
+
+  const box = document.getElementById('extractDraft');
+  box.innerHTML = '<div class="draft-reason" style="color:var(--green);">✓ Applied. Review the fields below, edit anything, then Save Passage.</div>';
+  setTimeout(() => { box.className = 'extract-draft'; }, 2500);
+}
+
+function discardDraft() {
+  currentDraft = null;
+  const box = document.getElementById('extractDraft');
+  box.className = 'extract-draft';
+  box.innerHTML = '';
 }
 
 function nextAvailableId() {
@@ -565,6 +765,24 @@ async function savePassage() {
     sampleResponse: document.getElementById('pe_sampleResponse').value.trim(),
     sampleNotes: document.getElementById('pe_sampleNotes').value.trim()
   };
+
+  // v19.11: attach the passage rationale (the student-facing "About this passage"
+  // card) and the extraction metadata, if present.
+  const ratTopic = document.getElementById('pe_rat_topic').value.trim();
+  const ratImportance = document.getElementById('pe_rat_importance').value.trim();
+  let ratElements = {};
+  try { ratElements = JSON.parse(document.getElementById('passageModal').dataset.ratElements || '{}'); }
+  catch (e) { ratElements = {}; }
+  if (ratTopic || ratImportance || Object.keys(ratElements).length) {
+    payload.keyElementsRationale = {};
+    if (ratTopic) payload.keyElementsRationale.topic = ratTopic;
+    if (ratImportance) payload.keyElementsRationale.importance = ratImportance;
+    if (Object.keys(ratElements).length) payload.keyElementsRationale.elements = ratElements;
+  }
+  try {
+    const em = JSON.parse(document.getElementById('passageModal').dataset.extractionMeta || '{}');
+    if (em && Object.keys(em).length) payload.extractionMeta = em;
+  } catch (e) { /* ignore */ }
 
   try {
     const r = await fetch(API + '/api/admin/passages', {

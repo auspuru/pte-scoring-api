@@ -7,13 +7,32 @@ const fs = require('fs').promises;
 const path = require('path');
 
 // v19.10: Optional Postgres support. The 'pg' module is loaded lazily so that
-// installations without DATABASE_URL still work (local dev, JSON-file fallback).
-// When DATABASE_URL is set (Railway auto-injects this for Postgres services),
-// the JSON-file StorageAPI is replaced with a Postgres-backed adapter that
-// implements the same interface.
+// installations without a database URL still work (local dev, JSON-file fallback).
+//
+// Connection URL precedence (v19.10.1):
+//   1. PGURL              — explicit override, wins over everything
+//   2. DATABASE_PUBLIC_URL — Railway's public proxy host (*.proxy.rlwy.net),
+//                            reachable from anywhere. Preferred because the
+//                            private host (postgres.railway.internal) only
+//                            resolves when Railway private networking is fully
+//                            active, which is not guaranteed on every project.
+//   3. DATABASE_URL       — Railway's default (often the private internal host)
+//
+// Whichever is chosen, the JSON-file StorageAPI is replaced with the Postgres
+// adapter. With none of them set, the server falls back to the JSON file.
 let Pool = null;
 try { Pool = require('pg').Pool; } catch (_) { /* pg not installed — JSON fallback only */ }
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL =
+      process.env.PGURL
+   || process.env.DATABASE_PUBLIC_URL
+   || process.env.DATABASE_URL
+   || '';
+// Record which env var won, for the boot log + /api/health diagnostic.
+const DATABASE_URL_SOURCE =
+      process.env.PGURL ? 'PGURL'
+    : process.env.DATABASE_PUBLIC_URL ? 'DATABASE_PUBLIC_URL'
+    : process.env.DATABASE_URL ? 'DATABASE_URL'
+    : 'none';
 const USE_POSTGRES = !!(DATABASE_URL && Pool);
 
 const app = express();
@@ -171,7 +190,7 @@ if (USE_POSTGRES) {
     max: 10, idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000,
   });
   pgPool.on('error', (err) => { console.error('Postgres pool error:', err.message); });
-  console.log(`🐘 Postgres pool created — SSL ${sslDisabled ? 'disabled (local)' : 'enabled'}`);
+  console.log(`🐘 Postgres pool created — SSL ${sslDisabled ? 'disabled (local)' : 'enabled'}, URL from ${DATABASE_URL_SOURCE}`);
 }
 
 async function pgInitSchema() {
@@ -658,6 +677,36 @@ const PassageAPI = {
     ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
       if (ke[k] && typeof ke[k] === 'string') out.keyElements[k] = ke[k].trim();
     });
+    // v19.10.3: pass through the optional pedagogical rationale block.
+    // Shape: { topic: string, importance: string, elements: { what, why, how, result } }
+    // Sanitized: only string fields are kept, capped to a reasonable length to
+    // prevent abuse / oversized payloads through the admin API.
+    if (p.keyElementsRationale && typeof p.keyElementsRationale === 'object') {
+      const r = p.keyElementsRationale;
+      const rOut = {};
+      if (typeof r.topic === 'string')      rOut.topic = r.topic.trim().slice(0, 2000);
+      if (typeof r.importance === 'string') rOut.importance = r.importance.trim().slice(0, 2000);
+      if (r.elements && typeof r.elements === 'object') {
+        rOut.elements = {};
+        ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
+          if (typeof r.elements[k] === 'string') rOut.elements[k] = r.elements[k].trim().slice(0, 1000);
+        });
+        if (!Object.keys(rOut.elements).length) delete rOut.elements;
+      }
+      if (Object.keys(rOut).length) out.keyElementsRationale = rOut;
+    }
+    // v19.11: optional extraction metadata — records which framework was chosen,
+    // Claude's confidence, and its one-line reason. Useful for later review
+    // (a 'low' confidence passage is a candidate to revisit).
+    if (p.extractionMeta && typeof p.extractionMeta === 'object') {
+      const em = p.extractionMeta;
+      const emOut = {};
+      if (em.framework === 'tpc' || em.framework === 'wwhr') emOut.framework = em.framework;
+      if (['high','medium','low'].includes(em.confidence)) emOut.confidence = em.confidence;
+      if (typeof em.framework_reason === 'string') emOut.framework_reason = em.framework_reason.trim().slice(0, 500);
+      if (typeof em.extractedAt === 'string') emOut.extractedAt = em.extractedAt.slice(0, 40);
+      if (Object.keys(emOut).length) out.extractionMeta = emOut;
+    }
     return out;
   }
 };
@@ -2272,7 +2321,16 @@ app.get('/api/health', async (req, res) => {
       passages_file: PASSAGES_FILE,
       using_railway_volume_env: usingVolume,
       railway_volume_env_value: process.env.RAILWAY_VOLUME_MOUNT_PATH || null,
-      database_url_set: !!process.env.DATABASE_URL,
+      // v19.10.1: report which env var supplied the connection URL, and the
+      // host it points at (credentials stripped) so a bad host is obvious.
+      database_url_source: DATABASE_URL_SOURCE,
+      database_url_host: (() => {
+        if (!DATABASE_URL) return null;
+        try { return new URL(DATABASE_URL).host; }
+        catch (_) { const m = DATABASE_URL.match(/@([^/?]+)/); return m ? m[1] : 'unparseable'; }
+      })(),
+      database_public_url_present: !!process.env.DATABASE_PUBLIC_URL,
+      database_url_present: !!process.env.DATABASE_URL,
       node_env: process.env.NODE_ENV || null,
       writing_to_ephemeral_disk: writingToEphemeral,
     },
@@ -2452,6 +2510,50 @@ app.post('/api/admin/passages', requireAdmin, async (req, res) => {
   }
 });
 
+// v19.11: Key-element extraction — Claude drafts framework + key ideas for a
+// passage. Returns a DRAFT for admin review; does NOT save. The admin reviews
+// the draft in the UI and saves via the normal POST /api/admin/passages.
+// Body: { text: string (required), title: string (optional) }
+//   OR: { id: number }  — extract for an existing passage by id
+app.post('/api/admin/passages/extract', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    let text = typeof body.text === 'string' ? body.text.trim() : '';
+    let title = typeof body.title === 'string' ? body.title.trim() : '';
+
+    // If an id is given, pull the passage text from storage
+    if (!text && body.id != null) {
+      const existing = await PassageAPI.getById(body.id);
+      if (!existing) return res.status(404).json({ error: 'Passage not found' });
+      text = (existing.text || '').trim();
+      title = title || (existing.title || '');
+    }
+    if (!text || text.length < 40) {
+      return res.status(400).json({ error: 'Passage text is required (min 40 characters)' });
+    }
+    if (!anthropic) {
+      return res.status(503).json({ error: 'Claude is not configured on this server — cannot auto-extract. Author key elements manually.' });
+    }
+
+    const draft = await extractKeyElementsWithClaude(text, title);
+    if (!draft) {
+      return res.status(502).json({ error: 'Extraction failed — Claude was unavailable or returned an unusable response. Try again or author manually.' });
+    }
+    // Package the draft with extraction metadata so the admin UI can show
+    // Claude's framework choice + confidence, and save it straight through.
+    draft.extractionMeta = {
+      framework: draft.framework,
+      confidence: draft.confidence,
+      framework_reason: draft.framework_reason,
+      extractedAt: new Date().toISOString()
+    };
+    res.json({ success: true, draft });
+  } catch (e) {
+    console.error('Extraction endpoint failed:', e.message);
+    res.status(500).json({ error: 'Extraction failed', details: e.message });
+  }
+});
+
 app.delete('/api/admin/passages/:id', requireAdmin, async (req, res) => {
   try {
     const ok = await PassageAPI.remove(req.params.id);
@@ -2472,8 +2574,151 @@ app.post('/api/admin/passages/bulk', requireAdmin, async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONTENT JUDGE — Claude-powered (with local fallback)
+// KEY-ELEMENT EXTRACTION (v19.11) — Claude drafts the framework + key ideas
+// for a passage. Runs ONCE at authoring time (admin action), not per submission.
+// The output is a DRAFT — the admin reviews and approves before it goes live.
 //
+// Returns:
+//   {
+//     framework: 'wwhr' | 'tpc',
+//     framework_reason: string,
+//     confidence: 'high' | 'medium' | 'low',
+//     keyElements: { what,why,how,result }  OR  { topic,pivot,conclusion },
+//     keyElementsRationale: { topic, importance, elements:{...} },
+//     sampleResponse: string,
+//     source: 'claude'
+//   }
+// Returns null if Claude is unavailable or the response can't be parsed.
+// ═══════════════════════════════════════════════════════════════════════════════
+async function extractKeyElementsWithClaude(passageText, passageTitle, timeoutMs = 25000) {
+  if (!anthropic) return null;
+  const title = (passageTitle || '').trim();
+  const text = (passageText || '').trim();
+  if (text.length < 40) return null;
+
+  const prompt = `You are an expert PTE Academic item writer. Your job: read a passage and identify the KEY IDEAS a student must capture to write a high-scoring one-sentence Summarize Written Text (SWT) response.
+
+PASSAGE${title ? ' — "' + title + '"' : ''}:
+"""
+${text}
+"""
+
+STEP 1 — CHOOSE THE FRAMEWORK.
+Decide which of two structures the passage actually has:
+
+• "tpc" (Topic / Pivot / Conclusion) — use ONLY if the passage HINGES ON A TURN: an
+  argument that reverses or complicates itself. Signals: "but", "however", "despite",
+  "once thought ... now", "although". The pivot IS the point of the passage.
+  3 key ideas: topic (the initial position), pivot (the turn/complication),
+  conclusion (where it lands).
+
+• "wwhr" (What / Why / How / Result) — use for EXPOSITORY passages that BUILD rather
+  than turn: present a thing, explain its importance, describe the mechanism, state
+  the outcome. Most science, business, and process passages.
+  4 key ideas: what (central claim), why (reason/evidence it matters),
+  how (mechanism/process), result (consequence/implication).
+
+Pick the one that loses the LEAST meaning. State which and why.
+
+STEP 2 — EXTRACT THE KEY IDEAS.
+For each slot, write a short phrase (NOT a full copied sentence) naming the idea.
+CRITICAL RULES:
+- A key idea is a claim the summary would be WRONG or INCOMPLETE without.
+- Quotes, rhetorical questions, and vivid statistics that merely ILLUSTRATE a claim
+  already counted are DECORATION — do not make them key ideas.
+- The test: "if a reader had ONLY these key ideas, would they understand the passage's
+  actual argument?" — not "would they find it interesting".
+
+STEP 3 — JUSTIFY.
+For each key idea, give one sentence explaining why it is load-bearing AND, where
+relevant, which competing sentence it was chosen OVER.
+
+STEP 4 — RATE YOUR CONFIDENCE.
+"high" = the structure is unambiguous. "medium" = reasonable editors might carve it
+slightly differently. "low" = genuinely murky — flag for careful human review.
+
+STEP 5 — WRITE A MODEL ANSWER.
+One sentence, 30-50 words, that captures every key idea using academic connectors
+(however / moreover / therefore). This is the Band-90 sample.
+
+Respond with ONLY this JSON, no other text:
+{
+  "framework": "wwhr" OR "tpc",
+  "framework_reason": "one sentence on why this framework fits",
+  "confidence": "high" OR "medium" OR "low",
+  "keyElements": {
+    // if wwhr: "what","why","how","result"  — if tpc: "topic","pivot","conclusion"
+    "what": "short phrase naming the idea"
+  },
+  "keyElementsRationale": {
+    "topic": "2-3 sentences: what the passage is about and how it is structured",
+    "importance": "2-3 sentences: why THESE sentences are load-bearing and which kinds of sentences in this passage are decoration",
+    "elements": {
+      // same keys as keyElements; each value = one sentence on why that element matters
+      "what": "why this element is load-bearing, and what it was chosen over"
+    }
+  },
+  "sampleResponse": "one-sentence Band-90 model answer, 30-50 words"
+}`;
+
+  try {
+    const callPromise = anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    });
+    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('extraction timeout')), timeoutMs));
+    const response = await Promise.race([callPromise, timeoutPromise]);
+    const raw = response.content?.[0]?.text || '';
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const parsed = JSON.parse(m[0]);
+
+    // ── Validate + normalise ──
+    const framework = (parsed.framework === 'tpc') ? 'tpc' : 'wwhr';
+    const validKeys = framework === 'tpc'
+      ? ['topic','pivot','conclusion']
+      : ['what','why','how','result'];
+
+    const ke = {};
+    for (const k of validKeys) {
+      if (parsed.keyElements && typeof parsed.keyElements[k] === 'string' && parsed.keyElements[k].trim()) {
+        ke[k] = parsed.keyElements[k].trim();
+      }
+    }
+    // If Claude returned the wrong-schema keys, the extraction is unusable.
+    if (Object.keys(ke).length < (framework === 'tpc' ? 3 : 4)) {
+      console.error('Extraction: incomplete keyElements for framework', framework, '— got', Object.keys(ke));
+      return null;
+    }
+
+    const rationale = {};
+    const pr = parsed.keyElementsRationale || {};
+    if (typeof pr.topic === 'string')      rationale.topic = pr.topic.trim().slice(0, 2000);
+    if (typeof pr.importance === 'string') rationale.importance = pr.importance.trim().slice(0, 2000);
+    if (pr.elements && typeof pr.elements === 'object') {
+      rationale.elements = {};
+      for (const k of validKeys) {
+        if (typeof pr.elements[k] === 'string') rationale.elements[k] = pr.elements[k].trim().slice(0, 1000);
+      }
+    }
+
+    return {
+      framework,
+      framework_reason: typeof parsed.framework_reason === 'string' ? parsed.framework_reason.trim() : '',
+      confidence: ['high','medium','low'].includes(parsed.confidence) ? parsed.confidence : 'medium',
+      keyElements: ke,
+      keyElementsRationale: rationale,
+      sampleResponse: typeof parsed.sampleResponse === 'string' ? parsed.sampleResponse.trim() : '',
+      source: 'claude'
+    };
+  } catch (e) {
+    console.error('Key-element extraction failed:', e.message);
+    return null;
+  }
+}
+
+
 // Per real-exam feedback: content (correct idea selection) is THE primary
 // determinant. Wrong ideas → severe ceiling. Correct ideas + academic synonyms
 // → reach Band 9 / PTE 90. Verbatim with good connectors stays at Writing 90
@@ -3476,7 +3721,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🔑 Admin: http://localhost:${PORT}/admin.html (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
   console.log(`🤖 Anthropic: ${anthropic ? 'configured' : 'not configured'}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
-  console.log(`💾 Storage backend: ${USE_POSTGRES ? 'POSTGRES (DATABASE_URL set)' : 'JSON FILE (' + DATA_DIR + '/pte_data.json)'}`);
+  console.log(`💾 Storage backend: ${USE_POSTGRES ? 'POSTGRES (URL from ' + DATABASE_URL_SOURCE + ')' : 'JSON FILE (' + DATA_DIR + '/pte_data.json)'}`);
 
   // v19.10: Initialise Postgres schema and migrate any existing JSON data.
   // Both operations are idempotent.
