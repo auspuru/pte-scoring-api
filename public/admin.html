@@ -154,7 +154,9 @@ tr:hover td{background:var(--surface-dim);}
 .draft-el:last-child{border-bottom:none;}
 .draft-el .del-key{font-weight:700;color:var(--blue);text-transform:uppercase;font-size:0.68rem;letter-spacing:0.04em;margin-right:6px;}
 .draft-el .del-rationale{display:block;font-size:0.74rem;color:var(--ink-faint);margin-top:2px;}
-.draft-low-warn{background:var(--red-light);color:var(--red);font-size:0.76rem;padding:7px 10px;border-radius:6px;margin-bottom:10px;}
+.draft-low-warn{background:var(--red-light);color:var(--red);font-size:0.76rem;padding:7px 10px;border-radius:6px;margin-bottom:10px;line-height:1.5;}
+.draft-el-warn{background:var(--amber-light);border-radius:5px;padding-left:8px;padding-right:8px;}
+.del-warn{display:block;font-size:0.73rem;color:var(--amber);font-weight:600;margin-top:3px;}
 .draft-actions{display:flex;gap:8px;}
 .btn-draft{padding:6px 14px;border-radius:var(--radius-sm);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:var(--font);border:1px solid var(--border);background:var(--surface);}
 .btn-draft.apply{background:var(--blue);color:#fff;border-color:var(--blue);}
@@ -668,14 +670,29 @@ function renderDraft(draft) {
     ? [['topic','Topic'],['pivot','Pivot'],['conclusion','Conclusion']]
     : [['what','What'],['why','Why'],['how','How'],['result','Result']];
 
+  // v19.11: example-leakage warnings — flag any key element that captured a
+  // specific example (named event, year, "for example") instead of the general idea.
+  const warnings = Array.isArray(draft.warnings) ? draft.warnings : [];
+  const warnedSlots = {};
+  warnings.forEach(w => { warnedSlots[w.element] = w.issue; });
+
   const elsHtml = order.filter(([k]) => ke[k]).map(([k, label]) => `
-    <div class="draft-el">
+    <div class="draft-el${warnedSlots[k] ? ' draft-el-warn' : ''}">
       <span class="del-key">${label}</span>${escapeHtmlAdmin(ke[k])}
       ${ratEls[k] ? '<span class="del-rationale">↳ ' + escapeHtmlAdmin(ratEls[k]) + '</span>' : ''}
+      ${warnedSlots[k] ? '<span class="del-warn">⚠ ' + escapeHtmlAdmin(warnedSlots[k]) + '</span>' : ''}
     </div>`).join('');
 
   const lowWarn = conf === 'low'
     ? '<div class="draft-low-warn">⚠ Low confidence — this passage\'s structure is genuinely ambiguous. Review the key elements carefully before applying.</div>'
+    : '';
+
+  const exampleWarn = warnings.length
+    ? '<div class="draft-low-warn">⚠ ' + warnings.length + ' key element' +
+      (warnings.length > 1 ? 's' : '') + ' may have captured an EXAMPLE rather than the ' +
+      'general idea (highlighted below). A key idea should state the principle, not the ' +
+      'specific case — edit these before applying so students aren\'t marked wrong for ' +
+      'summarising the principle without naming the example.</div>'
     : '';
 
   box.className = 'extract-draft show';
@@ -687,6 +704,7 @@ function renderDraft(draft) {
     </div>
     ${draft.framework_reason ? '<div class="draft-reason">' + escapeHtmlAdmin(draft.framework_reason) + '</div>' : ''}
     ${lowWarn}
+    ${exampleWarn}
     <div class="draft-elements">${elsHtml}</div>
     <div class="draft-actions">
       <button type="button" class="btn-draft apply" onclick="applyDraft()">Apply to fields</button>

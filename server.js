@@ -2525,6 +2525,67 @@ app.post('/api/admin/passages', requireAdmin, async (req, res) => {
   }
 });
 
+// v19.11: Detect when a key element has captured an EXAMPLE instead of the
+// general idea. Returns an array of { element, issue } warnings for admin review.
+// Non-blocking — some passages legitimately reference a proper noun. The point is
+// to make a leaked example impossible to MISS, not impossible to save.
+function detectExampleLeakage(keyElements) {
+  const warnings = [];
+  if (!keyElements || typeof keyElements !== 'object') return warnings;
+
+  // Words that are capitalised mid-sentence but are NOT proper nouns — ignore these
+  // so we don't false-positive on ordinary sentence-initial capitals.
+  const COMMON = new Set(['The','A','An','This','That','These','Those','It','In','On',
+    'After','Before','When','While','Each','Some','Many','Most','All','No','Their',
+    'Its','As','By','For','With','From','Until','Since','If','But','And','Or','So']);
+
+  for (const [slot, value] of Object.entries(keyElements)) {
+    if (typeof value !== 'string' || !value.trim()) continue;
+    const v = value.trim();
+    const issues = [];
+
+    // 1. Explicit example markers
+    if (/\b(for example|for instance|such as|in the case of|e\.g\.)\b/i.test(v)) {
+      issues.push('contains an example marker ("for example"/"such as"/etc.)');
+    }
+    // 2. A year — almost always a specific dated event
+    if (/\b(1[5-9]\d\d|20\d\d)\b/.test(v)) {
+      issues.push('contains a year — likely a specific dated event, not a general idea');
+    }
+    // 3. A proper-noun run: 2+ capitalised tokens in sequence. Catches
+    //    "Mount St. Helens", "Saturn V", and all-caps acronyms ("NASA").
+    //    A token is capitalised if it starts with a capital (Helens, V) or is
+    //    all-caps (NASA, SO2 is excluded as a unit below).
+    const tokens = v.split(/\s+/);
+    let runStart = -1, flaggedProper = null;
+    for (let i = 0; i <= tokens.length; i++) {
+      const tok = (tokens[i] || '').replace(/[.,;:]$/, '');
+      const isCap = /^[A-Z][a-z]+$/.test(tok)        // Helens
+                 || /^[A-Z]{2,}$/.test(tok)          // NASA
+                 || /^[A-Z]$/.test(tok);             // V (designator)
+      const isConnector = /^(of|the|and)$/i.test(tok);
+      if (isCap || (runStart >= 0 && isConnector)) {
+        if (runStart < 0) runStart = i;
+      } else {
+        if (runStart >= 0 && i - runStart >= 2) {
+          const run = tokens.slice(runStart, i).join(' ');
+          const first = tokens[runStart].replace(/[.,;:]$/, '');
+          if (!COMMON.has(first)) { flaggedProper = run; break; }
+        }
+        runStart = -1;
+      }
+    }
+    if (flaggedProper) {
+      issues.push('names a specific entity (' + flaggedProper + ') — a key idea should state the general principle, not the example');
+    }
+
+    if (issues.length) {
+      warnings.push({ element: slot, issue: issues.join('; '), value: v });
+    }
+  }
+  return warnings;
+}
+
 // v19.11: Key-element extraction — Claude drafts framework + key ideas for a
 // passage. Returns a DRAFT for admin review; does NOT save. The admin reviews
 // the draft in the UI and saves via the normal POST /api/admin/passages.
@@ -2562,6 +2623,12 @@ app.post('/api/admin/passages/extract', requireAdmin, async (req, res) => {
       framework_reason: draft.framework_reason,
       extractedAt: new Date().toISOString()
     };
+    // Safety net: scan each key element for signs it captured an EXAMPLE rather
+    // than the general idea (a named event, a year, "for example"/"such as", a
+    // run of capitalised proper-noun words). These are warnings for the admin to
+    // review — they do NOT block saving, since some passages legitimately need a
+    // proper noun. The admin sees them next to the draft.
+    draft.warnings = detectExampleLeakage(draft.keyElements);
     res.json({ success: true, draft });
   } catch (e) {
     console.error('Extraction endpoint failed:', e.message);
@@ -2637,16 +2704,35 @@ Pick the one that loses the LEAST meaning. State which and why.
 
 STEP 2 — EXTRACT THE KEY IDEAS.
 For each slot, write a short phrase (NOT a full copied sentence) naming the idea.
+
 CRITICAL RULES:
-- A key idea is a claim the summary would be WRONG or INCOMPLETE without.
+- A key idea is a GENERAL claim the summary would be WRONG or INCOMPLETE without.
 - Quotes, rhetorical questions, and vivid statistics that merely ILLUSTRATE a claim
   already counted are DECORATION — do not make them key ideas.
+
+- NEVER let an EXAMPLE be the key idea. This is the most common and most damaging
+  error. A passage states a general principle and then ILLUSTRATES it with a
+  specific case — a named event, a dated incident, a particular study, a single
+  person or place. The KEY IDEA is the general principle. The example is decoration.
+  * WRONG: "After the 1980 Mount St. Helens eruption, monitoring of seismic energy,
+    tilt and SO2 enabled accurate prediction." — this bakes in a specific event.
+  * RIGHT: "Monitoring multiple signals together — seismic activity, ground
+    deformation, gas emissions — allows eruptions to be forecast." — the general
+    mechanism, with no named event.
+  If you find yourself writing a year, a place name, a person's name, or the phrase
+  "for example / for instance / such as / in the case of" inside a key idea, STOP —
+  you have captured the example, not the idea. Rewrite it as the general claim the
+  example was demonstrating.
+  A student who summarises the general principle WITHOUT naming the specific example
+  must score full marks for that element. The key idea must be phrased so that is true.
+
 - The test: "if a reader had ONLY these key ideas, would they understand the passage's
-  actual argument?" — not "would they find it interesting".
+  actual argument?" — not "would they find it interesting", and not "do they know
+  the specific examples".
 
 STEP 3 — JUSTIFY.
 For each key idea, give one sentence explaining why it is load-bearing AND, where
-relevant, which competing sentence it was chosen OVER.
+relevant, which competing sentence (or which example) it was chosen OVER.
 
 STEP 4 — RATE YOUR CONFIDENCE.
 "high" = the structure is unambiguous. "medium" = reasonable editors might carve it
@@ -2876,35 +2962,52 @@ CRITICAL RULES (do not break these):
 - synonym_appropriateness "no_swaps": pure verbatim with zero substitution (still acceptable).
 - academic_register: true if the summary uses 2+ recognisably academic/formal words (e.g., consequently, substantial, demonstrate, comprehensive).
 
-VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT:
-Identify 6 to 8 common, non-academic words in the STUDENT SUMMARY that could be replaced with academic synonyms to lift Reading skill score. Be GENEROUS — students benefit from having more options to choose from. The CONTEXT MUST FIT — re-read the sentence with each suggested synonym mentally and only include synonyms that read fluently and preserve meaning exactly.
+VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT, ALWAYS REQUIRED:
+You MUST return 7 to 8 word/phrase suggestions from the STUDENT SUMMARY. This is not
+optional and not conditional on the summary's quality — EVERY summary, however
+strong, has 7-8 words whose register or precision can be varied. Returning fewer
+than 7 is a failure of this task. Returning an empty list is never acceptable.
+
+How to always find 7-8:
+- Scan the summary left to right. For EVERY verb, common noun, adjective, and
+  adverb, ask "is there an academic synonym that fits this exact context?" — there
+  almost always is.
+- This includes words that are ALREADY reasonably academic. Offering a lateral
+  alternative (e.g. "achieved" → "attained / reached", "shows" → "demonstrates /
+  indicates / reveals", "reduce" → "lower / curtail / cut") still helps the student.
+- A heavily passage-lifted summary still qualifies: suggest swaps for the lifted
+  words so the student learns to paraphrase rather than copy.
+
+The CONTEXT MUST FIT — re-read the sentence with each synonym mentally; only include
+synonyms that read fluently and preserve meaning exactly.
 
 Rules for each suggested word:
-- It can be ANY common, non-academic word the student used (whether they copied it from the passage or wrote it themselves)
-- Skip ONLY: proper nouns, dates, numbers, technical terms, fixed phrases, and words already academic (e.g., "consequently", "substantial", "demonstrate")
-- Provide 3 to 5 academic synonyms per word — the student picks which one fits best
-- Each synonym MUST fit the EXACT context of the sentence
-- Skip the word entirely if NO synonym fits cleanly — better to suggest fewer words with great synonyms than many words with awkward ones
+- It can be ANY word the student used (verb, noun, adjective, adverb).
+- Skip ONLY: proper nouns, dates, numbers, domain-fixed technical terms, fixed
+  multi-word phrases, connectors already in use, and articles/prepositions.
+- Provide 2 to 5 academic synonyms per word — the student picks which fits best.
+- Each synonym MUST fit the EXACT context of the sentence.
 
 GOOD examples (context-appropriate):
 - "made a lifestyle choice" → word: "made", synonyms: ["opted for", "chose", "selected"] ✓
 - "wanted information in one place" → word: "wanted", synonyms: ["sought", "needed", "required"] ✓
-- "many advantages" → word: "many", synonyms: ["numerous", "several", "multiple", "various"] ✓
+- "many advantages" → word: "many", synonyms: ["numerous", "several", "multiple"] ✓
 - "good idea" → word: "good", synonyms: ["beneficial", "sound", "sensible", "prudent"] ✓
-- "big problem" → word: "big", synonyms: ["significant", "substantial", "considerable", "major"] ✓
-- "think about" → word: "think about", synonyms: ["consider", "examine", "evaluate"] ✓
-- "show that" → word: "show", synonyms: ["demonstrate", "indicate", "reveal", "establish"] ✓
-- "use" → synonyms: ["utilise", "employ", "apply"] ✓
-- "help" → synonyms: ["assist", "facilitate", "support"] ✓
-- "get" → synonyms: ["obtain", "acquire", "secure"] ✓
+- "big problem" → word: "big", synonyms: ["significant", "substantial", "considerable"] ✓
+- "AI has achieved high accuracy" → word: "achieved", synonyms: ["attained", "reached"] ✓
+- "growing concerns" → word: "growing", synonyms: ["mounting", "rising", "increasing"] ✓
+- "show that" → word: "show", synonyms: ["demonstrate", "indicate", "reveal"] ✓
+- "reduce costs" → word: "reduce", synonyms: ["lower", "cut", "curtail"] ✓
 
 BAD examples to AVOID:
-- "wanted information" → DO NOT suggest ["hot", "cherished", "treasured", "loved"] — wrong register and meaning
+- "wanted information" → DO NOT suggest ["hot", "cherished", "treasured"] — wrong register
 - "make a choice" → DO NOT suggest ["create"] for "make" — different sense
 - DO NOT suggest synonyms that are too rare, archaic, or jarring in academic English
 - DO NOT suggest a synonym that subtly shifts meaning
 
-Aim for 6-8 candidates if possible, but quality beats quantity — 4 great suggestions are better than 8 awkward ones.
+TARGET: exactly 7-8 word suggestions, each with 2-5 fitting synonyms. If you think
+you can only find 4, look again at the verbs and adjectives you skipped.
+
 
 Respond ONLY with valid JSON, no other text. Use this exact structure:
 {
