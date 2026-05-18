@@ -2636,6 +2636,112 @@ app.post('/api/admin/passages/extract', requireAdmin, async (req, res) => {
   }
 });
 
+// v19.11: Map an extraction draft onto the passage fields that get saved.
+// Mirrors the admin UI's applyDraft(): tpc topic/pivot/conclusion fold onto
+// what/why/result (how left blank for tpc); wwhr maps 1:1.
+function draftToPassageFields(existing, draft) {
+  const ke = draft.keyElements || {};
+  const keyElements = {};
+  if (draft.framework === 'tpc') {
+    if (ke.topic)      keyElements.what   = ke.topic;
+    if (ke.pivot)      keyElements.why    = ke.pivot;
+    if (ke.conclusion) keyElements.result = ke.conclusion;
+  } else {
+    if (ke.what)   keyElements.what   = ke.what;
+    if (ke.why)    keyElements.why    = ke.why;
+    if (ke.how)    keyElements.how    = ke.how;
+    if (ke.result) keyElements.result = ke.result;
+  }
+  const out = {
+    id: existing.id,
+    title: existing.title,
+    category: existing.category || '',
+    text: existing.text,
+    keyElements,
+    sampleResponse: draft.sampleResponse || existing.sampleResponse || '',
+    sampleNotes: existing.sampleNotes || ''
+  };
+  if (draft.keyElementsRationale && Object.keys(draft.keyElementsRationale).length) {
+    out.keyElementsRationale = draft.keyElementsRationale;
+  }
+  if (draft.extractionMeta) out.extractionMeta = draft.extractionMeta;
+  return out;
+}
+
+// v19.11: BULK extraction — full auto. Extracts every passage, applies and saves
+// each result immediately (no review gate). Returns a per-passage report so the
+// admin can SEE afterward what happened — especially which passages tripped the
+// example-leakage detector. The report does not block anything; it is a receipt.
+// Body: { onlyMissing: bool }  — if true, skip passages that already have rationale
+app.post('/api/admin/passages/extract-all', requireAdmin, async (req, res) => {
+  if (!anthropic) {
+    return res.status(503).json({ error: 'Claude is not configured — cannot auto-extract.' });
+  }
+  try {
+    const onlyMissing = !!(req.body && req.body.onlyMissing);
+    const all = await PassageAPI.readAll();
+    const report = { total: all.length, updated: 0, skipped: 0, failed: 0,
+                     flagged: 0, items: [] };
+
+    for (const p of all) {
+      const text = (p.text || '').trim();
+      const item = { id: p.id, title: p.title || ('Passage ' + p.id) };
+
+      if (onlyMissing && p.keyElementsRationale &&
+          (p.keyElementsRationale.topic || p.keyElementsRationale.importance)) {
+        item.status = 'skipped'; item.reason = 'already has rationale';
+        report.skipped++; report.items.push(item); continue;
+      }
+      if (text.length < 40) {
+        item.status = 'failed'; item.reason = 'passage text too short';
+        report.failed++; report.items.push(item); continue;
+      }
+
+      let draft = null;
+      try {
+        draft = await extractKeyElementsWithClaude(text, p.title || '');
+      } catch (e) {
+        draft = null; item.reason = e.message;
+      }
+      if (!draft) {
+        item.status = 'failed';
+        item.reason = item.reason || 'Claude returned an unusable response';
+        report.failed++; report.items.push(item); continue;
+      }
+
+      draft.extractionMeta = {
+        framework: draft.framework,
+        confidence: draft.confidence,
+        framework_reason: draft.framework_reason,
+        extractedAt: new Date().toISOString()
+      };
+      const warnings = detectExampleLeakage(draft.keyElements);
+
+      // Full auto: apply + save immediately.
+      try {
+        const fields = draftToPassageFields(p, draft);
+        await PassageAPI.upsert(fields);
+        item.status = 'updated';
+        item.framework = draft.framework;
+        item.confidence = draft.confidence;
+        item.warnings = warnings;
+        if (warnings.length) report.flagged++;
+        report.updated++;
+      } catch (e) {
+        item.status = 'failed'; item.reason = 'save failed: ' + e.message;
+        report.failed++;
+      }
+      report.items.push(item);
+    }
+
+    console.log(`📋 Bulk extraction: ${report.updated} updated, ${report.flagged} flagged, ${report.failed} failed, ${report.skipped} skipped`);
+    res.json({ success: true, report });
+  } catch (e) {
+    console.error('Bulk extraction failed:', e.message);
+    res.status(500).json({ error: 'Bulk extraction failed', details: e.message });
+  }
+});
+
 app.delete('/api/admin/passages/:id', requireAdmin, async (req, res) => {
   try {
     const ok = await PassageAPI.remove(req.params.id);
@@ -2703,28 +2809,40 @@ Decide which of two structures the passage actually has:
 Pick the one that loses the LEAST meaning. State which and why.
 
 STEP 2 — EXTRACT THE KEY IDEAS.
-For each slot, write a short phrase (NOT a full copied sentence) naming the idea.
+
+Each key idea must STAY CLOSE TO THE PASSAGE'S OWN WORDING. Do NOT freely paraphrase
+or re-express the idea in your own words. Find the sentence (or the part of a
+sentence) in the passage that states the idea, and use that wording — lightly
+trimmed, not rewritten.
+
+HOW to phrase each key element:
+- Locate the passage sentence that carries the idea.
+- Quote its substance using the passage's own words and phrasing.
+- You MAY trim it: drop a lead-in clause, drop a trailing example, cut it to the
+  load-bearing core. You may NOT swap in synonyms or restructure it.
+- The result should read like a faithful condensation of a real passage sentence,
+  not a fresh sentence you wrote. If you re-extracted the same passage twice, both
+  results should be nearly identical because both are anchored to the same text.
 
 CRITICAL RULES:
 - A key idea is a GENERAL claim the summary would be WRONG or INCOMPLETE without.
 - Quotes, rhetorical questions, and vivid statistics that merely ILLUSTRATE a claim
   already counted are DECORATION — do not make them key ideas.
 
-- NEVER let an EXAMPLE be the key idea. This is the most common and most damaging
-  error. A passage states a general principle and then ILLUSTRATES it with a
-  specific case — a named event, a dated incident, a particular study, a single
-  person or place. The KEY IDEA is the general principle. The example is decoration.
-  * WRONG: "After the 1980 Mount St. Helens eruption, monitoring of seismic energy,
-    tilt and SO2 enabled accurate prediction." — this bakes in a specific event.
-  * RIGHT: "Monitoring multiple signals together — seismic activity, ground
-    deformation, gas emissions — allows eruptions to be forecast." — the general
-    mechanism, with no named event.
-  If you find yourself writing a year, a place name, a person's name, or the phrase
-  "for example / for instance / such as / in the case of" inside a key idea, STOP —
-  you have captured the example, not the idea. Rewrite it as the general claim the
-  example was demonstrating.
+- NEVER let an EXAMPLE be the key idea. A passage states a general principle and then
+  ILLUSTRATES it with a specific case — a named event, a dated incident, a particular
+  study, a single person or place. The KEY IDEA is the general principle.
+  This is the ONE case where you trim rather than copy whole: if the passage sentence
+  is "After the 1980 Mount St. Helens eruption, monitoring of seismic energy, tilt and
+  SO2 enabled accurate prediction", you KEEP the general clause in the passage's words
+  — "monitoring of seismic energy, tilt and SO2 enables accurate prediction" — and
+  DROP only the dated-example lead-in. You are still using the passage's wording; you
+  are just cutting the example clause out of it.
+  If you find a year, a place name, a person's name, or "for example / for instance /
+  such as / in the case of" inside a key idea, cut that clause — but keep the rest of
+  the sentence verbatim. Do not rewrite the surviving part.
   A student who summarises the general principle WITHOUT naming the specific example
-  must score full marks for that element. The key idea must be phrased so that is true.
+  must score full marks for that element.
 
 - The test: "if a reader had ONLY these key ideas, would they understand the passage's
   actual argument?" — not "would they find it interesting", and not "do they know
@@ -3826,6 +3944,16 @@ app.post('/api/grade', async (req, res) => {
     console.error('Grade error:', error);
     res.status(500).json({ error: 'Server error', details: error.message });
   }
+});
+
+// Friendly shortcut routes — let /admin and /practice work without the .html
+// extension. These must come BEFORE the catch-all, which would otherwise serve
+// index.html for any path that isn't a real file.
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+app.get('/practice', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'practice.html'));
 });
 
 // Catch-all: serve index.html for any unknown routes (SPA support)
