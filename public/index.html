@@ -1801,9 +1801,59 @@ document.addEventListener('keydown', function(e){
   document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doRegister(); });
 });
 
-(function init(){
+/* ═══════════════════════════════════════════════════════════════
+   SESSION RESTORE — on page load, if a username was saved from a
+   previous login, re-enter the app instead of showing the login
+   screen. The server is asked to confirm the account still exists
+   and isn't blocked.
+   - valid account      -> enter the app directly
+   - blocked / deleted  -> clear the session, show login
+   - server unreachable -> trust the saved session and enter anyway
+     (the app works offline from localStorage; locking a user out on
+     a dropped connection would be worse than letting them continue)
+   ═══════════════════════════════════════════════════════════════ */
+(async function init(){
   const last = LocalStore.getUserId();
-  if(last){ document.getElementById('loginUser').value = last; }
+  if(!last){
+    // No saved session — normal login screen.
+    showLogin();
+    return;
+  }
+  // Pre-fill the username in case we fall through to the login screen.
+  document.getElementById('loginUser').value = last;
+
+  // Show the loading veil while we check — avoids a flash of the login screen.
+  showLoading(true);
+  let verdict = 'enter';   // enter | login
+  try {
+    const r = await fetch(API_URL + '/api/auth/check/' + encodeURIComponent(last),
+      { cache: 'no-store' });
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.exists === false){
+        verdict = 'login';                       // account no longer exists
+      } else if(d && d.blocked === true){
+        verdict = 'login';                       // account blocked
+        setTimeout(() => loginErr('This account has been blocked. Contact your administrator.'), 50);
+      }
+      // d.valid true (or any ambiguous response) -> enter
+    }
+    // Non-OK HTTP -> treat as unreachable, fall through to "enter"
+  } catch(e){
+    // Network error — trust the saved session, enter offline.
+    verdict = 'enter';
+  }
+
+  if(verdict === 'login'){
+    showLoading(false);
+    LocalStore.setUserId('');                    // clear the dead session
+    showScreen('loginScreen');
+    showLogin();
+  } else {
+    // Keep the veil on through enterApp's loads, then drop it.
+    await enterApp(last);
+    showLoading(false);
+  }
 })();
 </script>
 </body>

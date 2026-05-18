@@ -2418,11 +2418,26 @@ app.get('/api/auth/secret-question/:username', async (req, res) => {
 });
 
 app.get('/api/auth/check/:username', async (req, res) => {
+  // Session-validation endpoint. Used by the frontend on page load to decide
+  // whether a saved session is still valid (account exists AND is not blocked).
+  // No password — this only confirms the account is still in good standing.
   try {
-    const data = await StorageAPI.readData();
-    const exists = !!(data.accounts && data.accounts[req.params.username.toLowerCase().trim()]);
-    res.json({ exists });
-  } catch (e) { res.json({ exists: false }); }
+    const uid = String(req.params.username || '').toLowerCase().trim();
+    if (!uid) return res.json({ exists: false, blocked: false, valid: false });
+    let acct = null;
+    if (USE_POSTGRES) {
+      // Fast path — single-row lookup instead of reading the whole store.
+      acct = await PgStorage._getAccount(uid);
+    } else {
+      const data = await StorageAPI.readData();
+      acct = (data.accounts && data.accounts[uid]) || null;
+    }
+    const exists = !!acct;
+    const blocked = !!(acct && acct.blocked);
+    res.json({ exists, blocked, valid: exists && !blocked, role: acct ? (acct.role || 'user') : null });
+  } catch (e) {
+    res.json({ exists: false, blocked: false, valid: false });
+  }
 });
 
 // ═══ ADMIN ROUTES (require ADMIN_KEY) ═══
