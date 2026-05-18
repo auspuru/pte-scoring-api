@@ -469,6 +469,67 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
 .cov-status.partial { background: var(--warn-bg); color: var(--warn); }
 .cov-status.missing { background: var(--bad-bg); color: var(--bad); }
 
+/* v19.10.3: About-this-passage card */
+.about-passage {
+  font-family: var(--serif); font-size: 14.5px; line-height: 1.7; color: var(--ink-soft);
+}
+.about-passage p { margin-bottom: 12px; }
+.about-passage p:last-child { margin-bottom: 0; }
+.about-passage .about-section {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line-soft);
+}
+.about-passage .about-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.about-passage .about-eyebrow {
+  font-family: var(--sans);
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-faint);
+  display: flex; align-items: center; gap: 7px; margin-bottom: 8px;
+}
+.about-passage .about-eyebrow .e-dot {
+  width: 9px; height: 9px; border-radius: 2px;
+}
+.about-passage strong { color: var(--ink); font-weight: 600; }
+
+/* v19.10.3: Vocabulary coach card */
+.vocab-coach { margin-top: 4px; }
+.vocab-row {
+  display: grid; grid-template-columns: 1fr auto 1.4fr; align-items: center;
+  gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-soft);
+}
+.vocab-row:last-child { border-bottom: none; }
+.vocab-original .vocab-word {
+  font-family: var(--serif); font-size: 16px; font-weight: 500; color: var(--ink);
+}
+.vocab-original .vocab-context {
+  font-size: 11.5px; color: var(--ink-faint); font-style: italic; margin-top: 4px;
+}
+.vocab-original .vocab-context b { color: var(--ink-soft); font-style: normal; font-weight: 600; }
+.vocab-arrow {
+  color: var(--ink-faint); font-size: 14px;
+}
+.vocab-syns { display: flex; flex-wrap: wrap; gap: 6px; }
+.vocab-chip {
+  font-family: var(--sans); font-size: 12.5px; font-weight: 500;
+  padding: 5px 12px; border-radius: 999px;
+  background: var(--card-raised); border: 1px solid var(--line);
+  color: var(--ink-soft); cursor: pointer; transition: all 0.14s ease;
+}
+.vocab-chip:hover { background: var(--ink); color: var(--card-raised); border-color: var(--ink); }
+.vocab-rationale {
+  grid-column: 1 / -1;
+  font-size: 11.5px; color: var(--ink-mute); font-style: italic;
+  margin-top: 6px; padding-left: 0;
+}
+.vocab-rationale b { font-style: normal; color: var(--ink-soft); font-weight: 600; }
+.vocab-empty {
+  font-size: 12.5px; color: var(--ink-faint); font-style: italic;
+  padding: 12px 0;
+}
+@media (max-width: 640px) {
+  .vocab-row { grid-template-columns: 1fr; gap: 8px; }
+  .vocab-arrow { display: none; }
+}
+
 /* Toast */
 .toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -693,6 +754,15 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
       <div class="avatar" id="userAvatar2" onclick="signOut()" title="Sign out">··</div>
     </div>
 
+    <!-- v19.10.3: passage nav on the results screen too — students can move forward/back without going back to practice first -->
+    <div class="passage-nav">
+      <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
+      <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
+      <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
+      <div class="passage-nav-spacer"></div>
+      <span class="eyebrow" id="resNavHint">Use arrows or buttons below</span>
+    </div>
+
     <!-- Hero -->
     <div class="card results-hero">
       <div class="score-ring-wrap">
@@ -714,6 +784,7 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
       </div>
       <div class="results-hero-actions">
         <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
+        <button class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button>
         <button class="btn" onclick="showSample()">Compare to sample</button>
       </div>
     </div>
@@ -746,6 +817,20 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
     <div class="card">
       <div class="section-num">04 · Key Element Coverage</div>
       <div class="coverage-table" id="coverageTable"></div>
+    </div>
+
+    <!-- v19.10.3: About this passage — explains topic + why these key elements -->
+    <div class="card" id="aboutPassageCard" style="display:none;">
+      <div class="section-num">06 · About this passage</div>
+      <div class="about-passage" id="aboutPassageBody"></div>
+    </div>
+
+    <!-- v19.10.3: Vocabulary coach — context-aware academic synonyms from the AI judge -->
+    <div class="card" id="vocabCoachCard" style="display:none;">
+      <div class="section-num">07 · Vocabulary Coach
+        <span class="legend"><span style="font-style:italic;">academic synonyms that precisely fit the context</span></span>
+      </div>
+      <div class="vocab-coach" id="vocabCoachBody"></div>
     </div>
 
     <div class="page-foot">Results &amp; Feedback</div>
@@ -1161,6 +1246,11 @@ function showResults(data, passage, spellData, submittedText){
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
   renderTraitBreakdown(data, traits);
   renderCoverage(data, passage);
+
+  // v19.10.3: new feedback sections
+  renderAboutPassage(passage);
+  renderVocabCoach(data);
+  updateResultsNav();
 }
 
 function fmtNum(n){
@@ -1427,6 +1517,146 @@ function renderCoverage(data, passage){
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   v19.10.3: ABOUT-THIS-PASSAGE — explains topic and why these key elements
+   are the critical ones to capture. Prefers a hand-authored rationale on the
+   passage object (passage.keyElementsRationale); falls back to a generic
+   explanation when missing, so passages without rationale still produce
+   something useful instead of an empty card.
+   ═══════════════════════════════════════════════════════════════ */
+function renderAboutPassage(passage){
+  const card = document.getElementById('aboutPassageCard');
+  const body = document.getElementById('aboutPassageBody');
+  if(!card || !body || !passage){ return; }
+
+  const r = passage.keyElementsRationale || {};
+  const topic = r.topic || generateTopicFallback(passage);
+  const importance = r.importance || generateImportanceFallback(passage);
+  const elementsExplained = r.elements || generateElementsFallback(passage);
+
+  const sections = [];
+  sections.push(`
+    <div class="about-section">
+      <div class="about-eyebrow">📖 What this passage is about</div>
+      <p>${escapeHtml(topic)}</p>
+    </div>`);
+  sections.push(`
+    <div class="about-section">
+      <div class="about-eyebrow">🎯 Why these are the critical ideas</div>
+      <p>${escapeHtml(importance)}</p>
+    </div>`);
+  if(elementsExplained && Object.keys(elementsExplained).length){
+    const order = [['what','What','what'],['why','Why','why'],['how','How','how'],['result','Result','result']];
+    sections.push(`
+      <div class="about-section">
+        <div class="about-eyebrow">🧩 Why each element matters</div>
+        ${order.filter(([k]) => elementsExplained[k]).map(([k,label,cls]) => `
+          <p><strong style="display:inline-flex;align-items:center;gap:6px;">
+            <span class="e-dot" style="background:var(--${cls});display:inline-block;width:9px;height:9px;border-radius:2px;"></span>${label}:
+          </strong> ${escapeHtml(elementsExplained[k])}</p>
+        `).join('')}
+      </div>`);
+  }
+  body.innerHTML = sections.join('');
+  card.style.display = 'block';
+}
+
+// Fallbacks generate something readable when keyElementsRationale isn't filled in
+// for a passage yet. They're intentionally generic — the hand-authored version
+// (in passages.json) is always better and should override these.
+function generateTopicFallback(passage){
+  const title = passage.title || 'this passage';
+  const cat = passage.category ? ' (' + passage.category + ')' : '';
+  return `This passage covers ${title}${cat}. It presents a topic, supporting evidence or reasoning, and a result or implication — the four elements you're asked to capture map to those structural parts.`;
+}
+function generateImportanceFallback(passage){
+  const keys = passage.keyElements || {};
+  const count = ['what','why','how','result'].filter(k => keys[k]).length;
+  return `Of all the sentences in the passage, ${count} carry the load: the topic claim, the reasons supporting it, the mechanism or evidence, and the consequence. Other sentences add colour or restate — they're not required for a Band 8+ summary and can safely be left out.`;
+}
+function generateElementsFallback(passage){
+  // Use the keyElements text itself as the "why this matters" — it's at least relevant.
+  // The hand-authored field overrides this entirely.
+  const keys = passage.keyElements || {};
+  const out = {};
+  if(keys.what)   out.what   = 'States the central claim or topic — without this, the summary has no subject.';
+  if(keys.why)    out.why    = 'Supplies the reason or evidence that makes the claim credible.';
+  if(keys.how)    out.how    = 'Describes the mechanism or process — how the claim plays out in practice.';
+  if(keys.result) out.result = 'Captures the consequence or implication — what follows from the claim.';
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   v19.10.3: VOCABULARY COACH — context-aware academic synonyms
+   from the server's recommended_swaps (vocabulary_swap_suggestions).
+   Each row shows the original phrase, the surrounding context, the
+   AI's rationale, and clickable synonyms that apply on click.
+   ═══════════════════════════════════════════════════════════════ */
+function renderVocabCoach(data){
+  const card = document.getElementById('vocabCoachCard');
+  const body = document.getElementById('vocabCoachBody');
+  if(!card || !body) return;
+
+  const suggestions = (data && Array.isArray(data.vocabulary_swap_suggestions))
+    ? data.vocabulary_swap_suggestions : [];
+
+  if(!suggestions.length){
+    // Don't show the card at all if there's nothing meaningful — avoids an
+    // empty-state that adds visual noise without value.
+    card.style.display = 'none';
+    body.innerHTML = '';
+    return;
+  }
+
+  body.innerHTML = suggestions.map(s => {
+    const word = s.word || '';
+    const context = s.context || '';
+    const syns = Array.isArray(s.synonyms) ? s.synonyms.filter(Boolean) : [];
+    const rationale = s.rationale || '';
+    if(!word || !syns.length) return '';
+    // Highlight the original word inside its context
+    let highlightedContext = context;
+    if(context && word){
+      const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      highlightedContext = escapeHtml(context).replace(re, m => '<b>' + m + '</b>');
+    }
+    return `
+      <div class="vocab-row">
+        <div class="vocab-original">
+          <div class="vocab-word">${escapeHtml(word)}</div>
+          ${context ? '<div class="vocab-context">in: "' + highlightedContext + '"</div>' : ''}
+        </div>
+        <div class="vocab-arrow">→</div>
+        <div class="vocab-syns">
+          ${syns.map(syn => `<span class="vocab-chip" onclick="applyVocabSwap('${escapeHtml(word).replace(/'/g, "\\'")}','${escapeHtml(syn).replace(/'/g, "\\'")}')">${escapeHtml(syn)}</span>`).join('')}
+        </div>
+        ${rationale ? '<div class="vocab-rationale"><b>Why:</b> ' + escapeHtml(rationale) + '</div>' : ''}
+      </div>`;
+  }).join('');
+  card.style.display = 'block';
+}
+
+// Apply a synonym swap into the user's textarea. Preserves capitalisation
+// of the first letter and replaces only the first whole-word occurrence —
+// so re-attempting won't run the swap on every instance accidentally.
+function applyVocabSwap(original, replacement){
+  const ta = document.getElementById('summaryInput');
+  if(!ta){ toast('Summary not available.'); return; }
+  const re = new RegExp('\\b' + original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+  const match = ta.value.match(re);
+  if(!match){ toast('"' + original + '" is no longer in your summary.'); return; }
+  let repl = replacement;
+  if(match[0][0] === match[0][0].toUpperCase()){
+    repl = replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+  ta.value = ta.value.replace(re, repl);
+  // Persist the edit
+  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
+  summaries[currentId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
+  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
+  toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
+}
+
+/* ═══════════════════════════════════════════════════════════════
    SAMPLE / NAVIGATION
    ═══════════════════════════════════════════════════════════════ */
 function showSample(){
@@ -1443,6 +1673,49 @@ function backToPractice(){
   showScreen('practiceScreen');
   switchWriteTab('write');
   document.getElementById('summaryInput').focus();
+}
+
+/* v19.10.3: Results-screen passage navigation.
+   - "Next passage →" button moves forward and lands on the practice screen
+     (the user is going to attempt the next one).
+   - The nav-strip arrows let users move backward/forward to view a previously-
+     scored attempt's results directly, OR jump to the practice screen for a
+     fresh passage. Behavior: if the target passage has a stored result, show
+     it; otherwise drop into practice for that passage. */
+function navResultsPassage(delta){
+  const target = currentId + delta;
+  if(target < 1 || target > passages.length) return;
+  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+  const p = passages.find(x => x.id === target) || passages[target-1];
+  if(!p) return;
+  if(scores[target] && typeof scores[target].overall_score === 'number'){
+    // Show the stored result without re-scoring
+    currentId = target;
+    updateResultsNav();
+    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
+  } else {
+    // No prior attempt — go to practice for this passage
+    loadPassage(target);
+    showScreen('practiceScreen');
+  }
+}
+function goToNextPassage(){
+  if(currentId >= passages.length){ toast('You\'re on the last passage.'); return; }
+  loadPassage(currentId + 1);
+  showScreen('practiceScreen');
+  document.getElementById('summaryInput').focus();
+}
+function updateResultsNav(){
+  const cur = document.getElementById('resNavCurrent');
+  const tot = document.getElementById('resNavTotal');
+  const prev = document.getElementById('resNavPrev');
+  const next = document.getElementById('resNavNext');
+  const nextBtn = document.getElementById('nextPassageBtn');
+  if(cur) cur.textContent = String(currentId).padStart(2,'0');
+  if(tot) tot.textContent = passages.length;
+  if(prev) prev.toggleAttribute('disabled', currentId === 1);
+  if(next) next.toggleAttribute('disabled', currentId === passages.length);
+  if(nextBtn) nextBtn.style.display = (currentId === passages.length) ? 'none' : 'inline-flex';
 }
 
 /* ═══════════════════════════════════════════════════════════════

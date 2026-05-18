@@ -11,7 +11,17 @@
       "result": "Scaling the transition requires $4 trillion in annual investment, less than 5% of global military spending"
     },
     "sampleResponse": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
-    "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words."
+    "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words.",
+    "keyElementsRationale": {
+      "topic": "This passage is about the economic stakes of climate change \u2014 using GDP impact, regional inequity, and the cost of the renewable energy transition as the core argument. It is structured around a central claim (the economic damage), evidence (specific damage figures and emissions inequity), a proposed mechanism (renewables and their falling costs), and the implied call to action (the scale of investment needed).",
+      "importance": "Many sentences in this passage are colour \u2014 direct quotes from named experts, rhetorical questions, dramatic phrasing. A summariser must filter past those to the structural backbone. The four key ideas below are the load-bearing claims; everything else (Chen's exact wording, the insurance industry's 340% surge, the Okafor quote about 'justice') is illustration, not argument. Capturing the elaborations instead of the structure produces a long, vivid, but low-scoring summary.",
+      "elements": {
+        "what": "The headline economic claim (10% of global GDP by 2050) \u2014 without this, the summary has no thesis. Other large figures in the passage (the 25% agricultural drop, the 46% increase in weather events) are downstream consequences, not the central economic claim.",
+        "why": "The inequity figure (developing nations bearing 75% of the cost despite contributing under 10% of emissions) \u2014 this is the moral and political weight of the topic. The $1 trillion coastal-damage figure is part of this same 'why' because it grounds the cost claim in concrete impact.",
+        "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) \u2014 this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
+        "result": "The $4 trillion annual investment requirement, framed against military spending \u2014 this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
+      }
+    }
   },
   {
     "id": 2,
@@ -25,7 +35,17 @@
       "result": "Patient acceptance has grown to 58% trusting AI-assisted diagnoses, up from 23% five years ago"
     },
     "sampleResponse": "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
-    "sampleNotes": "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words."
+    "sampleNotes": "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words.",
+    "keyElementsRationale": {
+      "topic": "This passage describes AI's role in medical diagnostics, weighing its accuracy advantage against ethical and adoption concerns. The argument moves from a performance claim (AI vs human accuracy), to scale of adoption, to ethical caveats, to economic implication.",
+      "importance": "The passage mixes hard numbers (94.7%, 86.3%, 67%, 23, $150 billion) with cautionary framing. The trap is treating every statistic as equally important. Only four numbers carry the argument: the accuracy comparison (the claim), the adoption rate (the scale), the diagnostic errors (the caveat), and the cost savings (the stake). The rest are texture.",
+      "elements": {
+        "what": "The accuracy comparison (94.7% vs 86.3%) \u2014 this is the central claim and the reason the topic matters at all.",
+        "why": "Hospital adoption at 67% \u2014 this establishes that the technology is no longer hypothetical, which is what makes the rest worth caring about.",
+        "how": "The 23 diagnostic errors \u2014 this is the necessary counterweight; without it the summary reads as cheerleading rather than analysis.",
+        "result": "The $150 billion annual saving \u2014 this quantifies why the question is worth resolving. Without it, the conclusion is moralistic rather than economic."
+      }
+    }
   },
   {
     "id": 3,
@@ -39,7 +59,17 @@
       "result": "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems adapting to climate variability"
     },
     "sampleResponse": "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
-    "sampleNotes": "Verbatim Method \u2014 passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words."
+    "sampleNotes": "Verbatim Method \u2014 passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words.",
+    "keyElementsRationale": {
+      "topic": "This passage outlines how cities can grow without exhausting their environment or fracturing their communities. It moves from the central tension (economic growth vs ecological and social cost), through a design response (compact-city models, green buildings), into a process response (participatory governance), and lands on the systems-level outcome (resilient urban ecosystems).",
+      "importance": "Urban planning passages are dense with overlapping concepts \u2014 sustainability, equity, density, governance, infrastructure. A summariser who tries to list them all ends over the 75-word cap or under-specified on each. The four key ideas reduce the passage to its argumentative spine: the problem, the design fix, the governance fix, and the systemic payoff. Other phrases (specific technologies, regional examples if any) are evidence, not load-bearing.",
+      "elements": {
+        "what": "The triple constraint \u2014 balancing economic growth, environmental stewardship, and social equity \u2014 names the actual problem the passage is solving.",
+        "why": "Compact city models and green building standards \u2014 the design-level response. This is the 'what we change' beat.",
+        "how": "Participatory governance \u2014 the process-level response. Without it the summary describes physical changes but not how they happen.",
+        "result": "Resilient urban ecosystems at the metropolitan scale \u2014 the outcome that justifies the effort. Skipping it leaves the summary mid-argument."
+      }
+    }
   },
   {
     "id": 4,
