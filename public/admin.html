@@ -325,20 +325,20 @@ tr:hover td{background:var(--surface-dim);}
         </div>
         <div class="extract-draft" id="extractDraft"></div>
 
-        <div class="element-field">
-          <div class="field-label"><label>WHAT — the topic / main subject</label><span class="field-tag">what</span></div>
+        <div class="element-field" id="field_what">
+          <div class="field-label"><label for="pe_what" id="lbl_what">WHAT — the topic / main subject</label><span class="field-tag" id="tag_what">what</span></div>
           <textarea id="pe_what" placeholder="One atomic fact about the topic"></textarea>
         </div>
-        <div class="element-field">
-          <div class="field-label"><label>WHY — the reason / cause / problem</label><span class="field-tag">why</span></div>
+        <div class="element-field" id="field_why">
+          <div class="field-label"><label for="pe_why" id="lbl_why">WHY — the reason / cause / problem</label><span class="field-tag" id="tag_why">why</span></div>
           <textarea id="pe_why" placeholder="One atomic fact about the why"></textarea>
         </div>
-        <div class="element-field">
-          <div class="field-label"><label>HOW — the mechanism / approach</label><span class="field-tag">how</span></div>
+        <div class="element-field" id="field_how">
+          <div class="field-label"><label for="pe_how" id="lbl_how">HOW — the mechanism / approach</label><span class="field-tag" id="tag_how">how</span></div>
           <textarea id="pe_how" placeholder="One atomic fact about the how"></textarea>
         </div>
-        <div class="element-field">
-          <div class="field-label"><label>RESULT — the outcome / conclusion</label><span class="field-tag">result</span></div>
+        <div class="element-field" id="field_result">
+          <div class="field-label"><label for="pe_result" id="lbl_result">RESULT — the outcome / conclusion</label><span class="field-tag" id="tag_result">result</span></div>
           <textarea id="pe_result" placeholder="One atomic fact about the result"></textarea>
         </div>
       </div>
@@ -389,11 +389,22 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 function escH(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 function fmtDate(d){if(!d)return '—';const dt=new Date(d);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'2-digit'});}
 
-function adminLogin(){
+function adminLogin(opts){
+  const silent = opts && opts.silent;   // true when called by auto-login at page load
   adminKey=document.getElementById('adminKeyInput').value.trim();
-  if(!adminKey){document.getElementById('authError').style.display='block';document.getElementById('authError').textContent='Enter admin key';return;}
+  if(!adminKey){
+    if(!silent){
+      document.getElementById('authError').style.display='block';
+      document.getElementById('authError').textContent='Enter admin key';
+    }
+    return;
+  }
   fetch(API+'/api/admin/users',{headers:{'x-admin-key':adminKey}})
-    .then(r=>{if(!r.ok)throw new Error('Invalid key');return r.json();})
+    .then(r=>{
+      if(r.status===403){ const e=new Error('Invalid key'); e.is403=true; throw e; }
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    })
     .then(users=>{
       document.getElementById('authCard').style.display='none';
       document.getElementById('dashboard').style.display='block';
@@ -401,7 +412,20 @@ function adminLogin(){
       allUsers=users;
       renderUsers(users);
     })
-    .catch(e=>{document.getElementById('authError').style.display='block';document.getElementById('authError').textContent='Invalid admin key';});
+    .catch(e=>{
+      // A 403 means the key is wrong. If it came from a stale saved key during
+      // auto-login, drop that saved key so it stops retrying and stop here
+      // quietly — the login screen is already showing.
+      if(e.is403){
+        sessionStorage.removeItem('adminKey');
+        adminKey='';
+      }
+      if(!silent){
+        document.getElementById('authError').style.display='block';
+        document.getElementById('authError').textContent =
+          e.is403 ? 'Invalid admin key' : 'Could not reach the server — try again';
+      }
+    });
 }
 
 function adminLogout(){adminKey='';sessionStorage.removeItem('adminKey');location.reload();}
@@ -614,6 +638,12 @@ function openPassageEditor(id) {
   document.getElementById('pe_why').value    = ke.why    || ke.pivot      || '';
   document.getElementById('pe_how').value    = ke.how    || '';
   document.getElementById('pe_result').value = ke.result || ke.conclusion || '';
+  // v19.11: a passage stored with topic/pivot/conclusion keys (or extractionMeta
+  // saying so) is a tpc passage — show the form with the matching labels.
+  const isTpc = (p.extractionMeta && p.extractionMeta.framework === 'tpc')
+    || (!ke.what && !ke.why && !ke.how && !ke.result
+        && !!(ke.topic || ke.pivot || ke.conclusion));
+  setEditorFramework(isTpc ? 'tpc' : 'wwhr');
   document.getElementById('pe_sampleResponse').value = p.sampleResponse || '';
   document.getElementById('pe_sampleNotes').value = p.sampleNotes || '';
   // v19.11: rationale fields + draft panel reset
@@ -669,13 +699,6 @@ async function runExtraction() {
       return;
     }
     currentDraft = d.draft;
-    // ── DIAGNOSTIC (v19.11) — logs the draft exactly as received from the server.
-    try {
-      console.group('%c[runExtraction] draft received from server', 'color:#16a34a;font-weight:700');
-      console.log('framework:', d.draft && d.draft.framework);
-      console.log('keyElements as received:', JSON.parse(JSON.stringify((d.draft && d.draft.keyElements) || {})));
-      console.groupEnd();
-    } catch (e) { /* logging must never break extraction */ }
     renderDraft(d.draft);
   } catch (e) {
     draftBox.innerHTML = '<div class="draft-low-warn">Network error: ' + escapeHtmlAdmin(e.message) + '</div>';
@@ -744,37 +767,56 @@ function renderDraft(draft) {
     </div>`;
 }
 
+// v19.11: relabel the key-element fields to match the framework. The form has
+// 4 fixed textareas (pe_what/why/how/result), but a tpc passage only has 3 real
+// ideas. For tpc we relabel what/why/result as Topic/Pivot/Conclusion and hide
+// the HOW field entirely, so the admin sees an honest 3-field form instead of a
+// mislabelled 4-field one with a mysteriously empty HOW.
+function setEditorFramework(fw) {
+  const labels = fw === 'tpc'
+    ? { what:['TOPIC — what the passage is about','topic'],
+        why:['PIVOT — the turn / counterpoint / shift','pivot'],
+        result:['CONCLUSION — the resolution / takeaway','conclusion'] }
+    : { what:['WHAT — the topic / main subject','what'],
+        why:['WHY — the reason / cause / problem','why'],
+        how:['HOW — the mechanism / approach','how'],
+        result:['RESULT — the outcome / conclusion','result'] };
+  ['what','why','how','result'].forEach(k => {
+    const lbl = document.getElementById('lbl_' + k);
+    const tag = document.getElementById('tag_' + k);
+    if (labels[k]) {
+      if (lbl) lbl.textContent = labels[k][0];
+      if (tag) tag.textContent = labels[k][1];
+    }
+  });
+  // HOW field: hidden for tpc, shown for wwhr.
+  const howField = document.getElementById('field_how');
+  if (howField) howField.style.display = (fw === 'tpc') ? 'none' : '';
+  // Remember the active framework so save can record it.
+  document.getElementById('passageModal').dataset.editorFramework = fw;
+}
+
 function applyDraft() {
   if (!currentDraft) return;
   const ke = currentDraft.keyElements || {};
   const rat = currentDraft.keyElementsRationale || {};
 
-  // ── DIAGNOSTIC (v19.11) — logs the exact draft being applied so a draft/apply
-  //    mismatch can be seen in the browser console. Safe to leave in.
-  try {
-    console.group('%c[applyDraft] applying this draft', 'color:#2563eb;font-weight:700');
-    console.log('framework:', currentDraft.framework);
-    console.log('keyElements being applied:', JSON.parse(JSON.stringify(ke)));
-    console.log('what  ->', ke.what);
-    console.log('why   ->', ke.why);
-    console.log('how   ->', ke.how);
-    console.log('result->', ke.result);
-    console.log('(if framework is "tpc": topic/pivot/conclusion are used instead)');
-    console.groupEnd();
-  } catch (e) { /* logging must never break apply */ }
-
-  // Map both schemas onto the what/why/how/result form fields
-  // (tpc topic->what, pivot->why, conclusion->result; how stays empty for tpc)
+  // v19.11: apply the draft. The form has 4 fixed fields (what/why/how/result),
+  // but a tpc-framework draft only has 3 ideas (topic/pivot/conclusion). Rather
+  // than silently jam 3 into 4 and blank HOW — which looked like "the ideas
+  // changed" — relabel the form to match the framework and hide the unused field.
   if (currentDraft.framework === 'tpc') {
     document.getElementById('pe_what').value   = ke.topic || '';
     document.getElementById('pe_why').value    = ke.pivot || '';
-    document.getElementById('pe_how').value    = '';
     document.getElementById('pe_result').value = ke.conclusion || '';
+    document.getElementById('pe_how').value    = '';
+    setEditorFramework('tpc');
   } else {
     document.getElementById('pe_what').value   = ke.what   || '';
     document.getElementById('pe_why').value    = ke.why    || '';
     document.getElementById('pe_how').value    = ke.how    || '';
     document.getElementById('pe_result').value = ke.result || '';
+    setEditorFramework('wwhr');
   }
   document.getElementById('pe_rat_topic').value      = rat.topic || '';
   document.getElementById('pe_rat_importance').value = rat.importance || '';
@@ -907,11 +949,22 @@ async function savePassage() {
   const title = document.getElementById('pe_title').value.trim();
   const text = document.getElementById('pe_text').value.trim();
   const category = document.getElementById('pe_category').value.trim();
+  // v19.11: collect key elements under the right keys for the active framework.
+  // In tpc mode the form's what/why/result fields hold topic/pivot/conclusion.
+  const editorFw = document.getElementById('passageModal').dataset.editorFramework || 'wwhr';
   const keyElements = {};
-  ['what','why','how','result'].forEach(k => {
-    const v = document.getElementById('pe_' + k).value.trim();
-    if (v) keyElements[k] = v;
-  });
+  if (editorFw === 'tpc') {
+    const map = { what:'topic', why:'pivot', result:'conclusion' };
+    Object.keys(map).forEach(fid => {
+      const v = document.getElementById('pe_' + fid).value.trim();
+      if (v) keyElements[map[fid]] = v;
+    });
+  } else {
+    ['what','why','how','result'].forEach(k => {
+      const v = document.getElementById('pe_' + k).value.trim();
+      if (v) keyElements[k] = v;
+    });
+  }
 
   // Validation
   if (!id || isNaN(id) || id < 1) return setMsg('ID must be a positive integer', false);
@@ -974,9 +1027,11 @@ async function deletePassage(id) {
   }
 }
 
-// Auto-login if key in session
+// Auto-login if a key was saved this session. Runs in silent mode: if the saved
+// key is stale (e.g. ADMIN_KEY changed on the server) the failed call clears it
+// and we fall back to the login screen without a noisy error.
 const savedKey=sessionStorage.getItem('adminKey');
-if(savedKey){document.getElementById('adminKeyInput').value=savedKey;adminLogin();}
+if(savedKey){document.getElementById('adminKeyInput').value=savedKey;adminLogin({silent:true});}
 </script>
 </body>
 </html>
