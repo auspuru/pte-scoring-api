@@ -226,6 +226,55 @@ async function pgInitSchema() {
   await pgPool.query(ddl);
 }
 
+// v19.11.1: passages first-boot seed. If the Postgres passages table is EMPTY,
+// seed it from the bundled passages.json so a fresh deployment isn't passage-
+// less. If the table already has rows, never touch it — the admin's edits are
+// the source of truth from that point on.
+//
+// This function is the safety counterpart to the previous data loss: as long
+// as a deploy keeps Postgres connected, this will not overwrite the admin's
+// passages, ever. The only time it writes is the very first time the table is
+// empty after this code lands.
+async function pgSeedPassagesIfEmpty() {
+  if (!pgPool) return { seeded: false, reason: 'no_pg_pool' };
+  const { rows } = await pgPool.query('SELECT COUNT(*)::int AS n FROM passages');
+  if (rows[0].n > 0) {
+    return { seeded: false, reason: 'passages_already_populated', existing: rows[0].n };
+  }
+  // Empty table — seed from the bundled file.
+  let raw;
+  try { raw = await fs.readFile(DEFAULT_PASSAGES_FILE, 'utf8'); }
+  catch (e) { return { seeded: false, reason: 'bundled_file_not_found' }; }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch { return { seeded: false, reason: 'bundled_json_parse_failed' }; }
+  if (!Array.isArray(parsed) || !parsed.length) {
+    return { seeded: false, reason: 'bundled_file_empty' };
+  }
+  // Use the same insert path the runtime uses. Transactional — all or nothing.
+  const client = await pgPool.connect();
+  let count = 0;
+  try {
+    await client.query('BEGIN');
+    for (const p of parsed) {
+      const cleaned = sanitizePassage(p);
+      if (!cleaned.id) continue;
+      await client.query(
+        'INSERT INTO passages (id, payload, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (id) DO NOTHING',
+        [cleaned.id, cleaned]
+      );
+      count++;
+    }
+    await client.query('COMMIT');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    return { seeded: false, reason: 'insert_failed', error: e.message };
+  } finally {
+    client.release();
+  }
+  return { seeded: true, count };
+}
+
 // One-time JSON → Postgres migration. Runs at boot if the volume still has a
 // pte_data.json AND the accounts table is empty. Idempotent and safe to re-run
 // — it skips any row whose primary key already exists.
@@ -587,10 +636,18 @@ const StorageAPI = USE_POSTGRES ? PgStorage : JsonStorage;
 // ═══════════════════════════════════════════════════════════════════════════════
 // PASSAGE STORAGE — admin-editable, persisted to the Railway volume
 // ═══════════════════════════════════════════════════════════════════════════════
-// Passages are stored as a JSON array on disk. On first read, if the volume
-// file doesn't exist, we seed it from the bundled passages.json (default 10).
-// Admin endpoints (/api/admin/passages) provide full CRUD.
-const PassageAPI = {
+// Passage storage. Two backends, same interface — selected at boot based on
+// whether Postgres is available. ALL writes go to the chosen backend.
+//
+// v19.11.1 — CRITICAL FIX: until this version, PassageAPI was file-only. On
+// Railway, the file lived on the container's ephemeral filesystem, which is
+// wiped on every deploy. Users lost edits and any passages they added beyond
+// the bundled defaults. This refactor moves passages to Postgres on Railway
+// while keeping the file backend for local/dev use.
+//
+// The shared in-memory cache (`_cache` + `_cacheLoaded`) is kept on the selector
+// so callers like the admin UI see fresh data immediately after a write.
+const JsonPassageAPI = {
   _cache: null,
   _cacheLoaded: false,
 
@@ -642,18 +699,11 @@ const PassageAPI = {
     if (!passage || typeof passage !== 'object') throw new Error('passage required');
     const all = await this.readAll();
     const idx = all.findIndex(p => p.id === Number(passage.id));
-    const cleaned = this._sanitize(passage);
+    const cleaned = sanitizePassage(passage);
     if (idx >= 0) {
-      // FULL REPLACE — not a merge. The admin editor always sends the complete
-      // passage, so merging with the old record is wrong: it would resurrect
-      // fields the admin deliberately cleared (e.g. removing an example from a
-      // key element, or clearing the rationale). Replace outright.
-      // The id is preserved from the existing record in case the payload's id
-      // was coerced oddly.
       cleaned.id = all[idx].id;
       all[idx] = cleaned;
     } else {
-      // Auto-assign id if missing
       if (!cleaned.id) cleaned.id = (all.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1);
       all.push(cleaned);
     }
@@ -668,56 +718,142 @@ const PassageAPI = {
     if (next.length === all.length) return false;
     await this.writeAll(next);
     return true;
-  },
-
-  _sanitize(p) {
-    const out = {
-      id: Number(p.id) || 0,
-      title: String(p.title || '').trim().slice(0, 200),
-      category: String(p.category || '').trim().slice(0, 100),
-      text: String(p.text || '').trim(),
-      keyElements: {},
-      sampleResponse: String(p.sampleResponse || '').trim(),
-      sampleNotes: String(p.sampleNotes || '').trim()
-    };
-    const ke = p.keyElements || {};
-    // Accept both new (what/why/how/result) and legacy (topic/pivot/conclusion) fields
-    ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
-      if (ke[k] && typeof ke[k] === 'string') out.keyElements[k] = ke[k].trim();
-    });
-    // v19.10.3: pass through the optional pedagogical rationale block.
-    // Shape: { topic: string, importance: string, elements: { what, why, how, result } }
-    // Sanitized: only string fields are kept, capped to a reasonable length to
-    // prevent abuse / oversized payloads through the admin API.
-    if (p.keyElementsRationale && typeof p.keyElementsRationale === 'object') {
-      const r = p.keyElementsRationale;
-      const rOut = {};
-      if (typeof r.topic === 'string')      rOut.topic = r.topic.trim().slice(0, 2000);
-      if (typeof r.importance === 'string') rOut.importance = r.importance.trim().slice(0, 2000);
-      if (r.elements && typeof r.elements === 'object') {
-        rOut.elements = {};
-        ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
-          if (typeof r.elements[k] === 'string') rOut.elements[k] = r.elements[k].trim().slice(0, 1000);
-        });
-        if (!Object.keys(rOut.elements).length) delete rOut.elements;
-      }
-      if (Object.keys(rOut).length) out.keyElementsRationale = rOut;
-    }
-    // v19.11: optional extraction metadata — records which framework was chosen,
-    // Claude's confidence, and its one-line reason. Useful for later review
-    // (a 'low' confidence passage is a candidate to revisit).
-    if (p.extractionMeta && typeof p.extractionMeta === 'object') {
-      const em = p.extractionMeta;
-      const emOut = {};
-      if (em.framework === 'tpc' || em.framework === 'wwhr') emOut.framework = em.framework;
-      if (['high','medium','low'].includes(em.confidence)) emOut.confidence = em.confidence;
-      if (typeof em.framework_reason === 'string') emOut.framework_reason = em.framework_reason.trim().slice(0, 500);
-      if (typeof em.extractedAt === 'string') emOut.extractedAt = em.extractedAt.slice(0, 40);
-      if (Object.keys(emOut).length) out.extractionMeta = emOut;
-    }
-    return out;
   }
 };
+
+// Postgres-backed passages. The `passages` table is created at boot (in the
+// existing DDL block). Each row stores its full payload as JSONB so the schema
+// can evolve without migrations. Caching mirrors the JSON backend: read once,
+// invalidate on every write.
+const PgPassageAPI = {
+  _cache: null,
+  _cacheLoaded: false,
+
+  async readAll() {
+    if (this._cacheLoaded) return this._cache;
+    const { rows } = await pgPool.query('SELECT id, payload FROM passages ORDER BY id ASC');
+    // The id is also stored inside payload; the column is the source of truth.
+    this._cache = rows.map(r => ({ ...(r.payload || {}), id: r.id }));
+    this._cacheLoaded = true;
+    return this._cache;
+  },
+
+  async writeAll(passages) {
+    // Bulk replace — used by the JSON→Postgres seed path on first boot, and by
+    // any caller that has constructed the full list. Wrapped in a transaction so
+    // a failure mid-write doesn't leave the table half-populated.
+    if (!Array.isArray(passages)) throw new Error('passages must be an array');
+    const client = await pgPool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM passages');
+      for (const p of passages) {
+        const cleaned = sanitizePassage(p);
+        if (!cleaned.id) continue;
+        await client.query(
+          'INSERT INTO passages (id, payload, updated_at) VALUES ($1, $2, NOW())',
+          [cleaned.id, cleaned]
+        );
+      }
+      await client.query('COMMIT');
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+    this._cache = passages.map(p => sanitizePassage(p));
+    this._cacheLoaded = true;
+    return this._cache;
+  },
+
+  async getById(id) {
+    // Don't read the whole table when the cache is hot — but if it isn't, a
+    // single-row fetch is still cheaper than loading everything.
+    if (this._cacheLoaded) return this._cache.find(p => p.id === Number(id)) || null;
+    const { rows } = await pgPool.query('SELECT id, payload FROM passages WHERE id = $1', [Number(id)]);
+    if (!rows.length) return null;
+    return { ...(rows[0].payload || {}), id: rows[0].id };
+  },
+
+  async upsert(passage) {
+    if (!passage || typeof passage !== 'object') throw new Error('passage required');
+    const cleaned = sanitizePassage(passage);
+    // If no id, assign one (next available).
+    if (!cleaned.id) {
+      const { rows } = await pgPool.query('SELECT COALESCE(MAX(id), 0) + 1 AS next FROM passages');
+      cleaned.id = rows[0].next;
+    }
+    // Single-row upsert — the FULL REPLACE semantic (no merging with old) is
+    // achieved naturally because Postgres ON CONFLICT … DO UPDATE SET payload =
+    // EXCLUDED.payload replaces the whole JSONB blob with the new one. Same
+    // intent as the JSON backend's full-replace.
+    await pgPool.query(
+      `INSERT INTO passages (id, payload, updated_at) VALUES ($1, $2, NOW())
+       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW()`,
+      [cleaned.id, cleaned]
+    );
+    // Invalidate cache — simplest correct behaviour. Re-reads pick up the change.
+    this._cacheLoaded = false;
+    this._cache = null;
+    return cleaned;
+  },
+
+  async remove(id) {
+    const r = await pgPool.query('DELETE FROM passages WHERE id = $1', [Number(id)]);
+    this._cacheLoaded = false;
+    this._cache = null;
+    return r.rowCount > 0;
+  }
+};
+
+const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
+
+// Shared sanitizer used by both backends — pulled out so it stays consistent.
+function sanitizePassage(p) {
+  const out = {
+    id: Number(p.id) || 0,
+    title: String(p.title || '').trim().slice(0, 200),
+    category: String(p.category || '').trim().slice(0, 100),
+    text: String(p.text || '').trim(),
+    keyElements: {},
+    sampleResponse: String(p.sampleResponse || '').trim(),
+    sampleNotes: String(p.sampleNotes || '').trim()
+  };
+  const ke = p.keyElements || {};
+  // Accept both new (what/why/how/result) and legacy (topic/pivot/conclusion) fields
+  ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
+    if (ke[k] && typeof ke[k] === 'string') out.keyElements[k] = ke[k].trim();
+  });
+  if (p.keyElementsRationale && typeof p.keyElementsRationale === 'object') {
+    const r = p.keyElementsRationale;
+    const rOut = {};
+    if (typeof r.topic === 'string')      rOut.topic = r.topic.trim().slice(0, 2000);
+    if (typeof r.importance === 'string') rOut.importance = r.importance.trim().slice(0, 2000);
+    if (r.elements && typeof r.elements === 'object') {
+      rOut.elements = {};
+      ['what','why','how','result','topic','pivot','conclusion'].forEach(k => {
+        if (typeof r.elements[k] === 'string') rOut.elements[k] = r.elements[k].trim().slice(0, 1000);
+      });
+      if (!Object.keys(rOut.elements).length) delete rOut.elements;
+    }
+    if (Object.keys(rOut).length) out.keyElementsRationale = rOut;
+  }
+  if (p.extractionMeta && typeof p.extractionMeta === 'object') {
+    const em = p.extractionMeta;
+    const emOut = {};
+    if (em.framework === 'tpc' || em.framework === 'wwhr') emOut.framework = em.framework;
+    if (['high','medium','low'].includes(em.confidence)) emOut.confidence = em.confidence;
+    if (typeof em.framework_reason === 'string') emOut.framework_reason = em.framework_reason.trim().slice(0, 500);
+    if (typeof em.extractedAt === 'string') emOut.extractedAt = em.extractedAt.slice(0, 40);
+    if (Object.keys(emOut).length) out.extractionMeta = emOut;
+  }
+  return out;
+}
+
+// Convenience: the admin API used to call PassageAPI._sanitize directly in a
+// couple of places. Map it to the shared function for backwards compatibility.
+PassageAPI._sanitize = sanitizePassage;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SERVER-SIDE AUTH
@@ -4098,6 +4234,17 @@ app.listen(PORT, '0.0.0.0', async () => {
         console.log(`🐘 Migrated ${mig.accounts} accounts and ${mig.user_data} user records from pte_data.json`);
       } else {
         console.log(`🐘 No migration needed (${mig.reason})`);
+      }
+      // v19.11.1: seed the passages table from the bundle ONLY if it's empty.
+      // After this run, every admin edit lives in Postgres and is safe across
+      // deploys. The previous file-based PassageAPI is no longer used.
+      const seed = await pgSeedPassagesIfEmpty();
+      if (seed.seeded) {
+        console.log(`🐘 Seeded ${seed.count} passages from bundled passages.json (table was empty)`);
+      } else if (seed.reason === 'passages_already_populated') {
+        console.log(`🐘 Passages table already has ${seed.existing} rows — leaving them alone`);
+      } else {
+        console.log(`🐘 Passage seed skipped (${seed.reason}${seed.error ? ': ' + seed.error : ''})`);
       }
     } catch (e) {
       console.error('🐘 Postgres init failed:', e.message);

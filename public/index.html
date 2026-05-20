@@ -385,6 +385,19 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   align-items: start; margin-bottom: 22px;
 }
 
+/* v19.11: side-by-side passage / submission for detailed-feedback review */
+.side-by-side {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+  align-items: start;
+}
+.sbs-col { min-width: 0; }
+.sbs-head {
+  font-family: var(--ui-font); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-muted); margin-bottom: 8px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--line-soft);
+}
+
 /* Annotated submission */
 .section-num {
   font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
@@ -556,6 +569,7 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
 @media (max-width: 900px) {
   .practice-grid { grid-template-columns: 1fr; }
   .results-cols { grid-template-columns: 1fr; }
+  .side-by-side { grid-template-columns: 1fr; }
   .results-hero { flex-direction: column; align-items: stretch; }
   .results-hero-actions { flex-direction: row; }
   .originality { grid-template-columns: 1fr; }
@@ -824,25 +838,37 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
     <!-- Originality checks -->
     <div class="originality" id="originalityChecks"></div>
 
-    <!-- Two columns: annotated submission + trait breakdown -->
-    <div class="results-cols">
-      <div class="card">
-        <div class="section-num">
-          03 · Annotated Submission
-          <span class="legend">
-            <span><i style="background:var(--what)"></i>What</span>
-            <span><i style="background:var(--why)"></i>Why</span>
-            <span><i style="background:var(--how)"></i>How</span>
-            <span><i style="background:var(--result)"></i>Result</span>
-          </span>
+    <!-- v19.11: side-by-side passage + annotated summary, for detailed feedback.
+         The same W/W/H/R coloring runs on both sides — a green sentence in the
+         passage is the "what", and you can immediately see whether the student
+         captured it, lifted it, or missed it. -->
+    <div class="card">
+      <div class="section-num">
+        03 · Passage &amp; Submission — Side by Side
+        <span class="legend">
+          <span><i style="background:var(--what)"></i>What</span>
+          <span><i style="background:var(--why)"></i>Why</span>
+          <span><i style="background:var(--how)"></i>How</span>
+          <span><i style="background:var(--result)"></i>Result</span>
+        </span>
+      </div>
+      <div class="side-by-side">
+        <div class="sbs-col">
+          <div class="sbs-head">Original Passage</div>
+          <div class="annotated-text" id="annotatedPassage"></div>
         </div>
-        <div class="annotated-text" id="annotatedSubmission"></div>
-        <div class="annotated-feedback" id="annotatedFeedback"></div>
+        <div class="sbs-col">
+          <div class="sbs-head">Student Summary</div>
+          <div class="annotated-text" id="annotatedSubmission"></div>
+          <div class="annotated-feedback" id="annotatedFeedback"></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="section-num">05 · Trait Breakdown</div>
-        <div class="trait-breakdown" id="traitBreakdown"></div>
-      </div>
+    </div>
+
+    <!-- Trait breakdown, now on its own row -->
+    <div class="card">
+      <div class="section-num">05 · Trait Breakdown</div>
+      <div class="trait-breakdown" id="traitBreakdown"></div>
     </div>
 
     <!-- Key element coverage -->
@@ -1310,6 +1336,7 @@ function showResults(data, passage, spellData, submittedText){
 
   renderOriginality(data, passage, submittedText);
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
+  renderAnnotatedPassage(passage);
   renderTraitBreakdown(data, traits);
   renderCoverage(data, passage);
 
@@ -1510,6 +1537,81 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
   fb.innerHTML = items.map(it =>
     `<div class="ann-fb-item ${it.cls}"><span class="fb-icon">${it.icon}</span><span class="fb-text">${it.text}</span></div>`
   ).join('');
+}
+
+// v19.11: render the ORIGINAL PASSAGE with each sentence colored by its W/W/H/R
+// role — sage if it carries the "what", amber the "why", etc. Sentences that
+// aren't load-bearing stay uncolored. Sits beside the annotated summary so an
+// admin/teacher can see at a glance which passage sentences the student covered,
+// which they lifted, and which they missed.
+function renderAnnotatedPassage(passage){
+  const el = document.getElementById('annotatedPassage');
+  if(!el) return;
+  const text = (passage && passage.text) || '';
+  if(!text.trim()){ el.textContent = '—'; return; }
+  const keyEls = (passage && passage.keyElements) || {};
+
+  // Same tokenization + matching as renderAnnotatedSubmission, applied to
+  // passage sentences. Threshold lowered slightly because passage sentences
+  // are full while summary clauses are abbreviated.
+  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
+  const toks = s => (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w));
+  const headline = t => {
+    if(!t) return '';
+    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
+    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
+  };
+
+  // Split into sentences (period/!/? followed by space). Preserve the delimiter
+  // so the rendered output reads naturally.
+  const parts = text.split(/([.!?])\s+/);
+  const sentences = [];
+  for(let i = 0; i < parts.length; i += 2){
+    const body = parts[i];
+    const delim = parts[i+1] || '';
+    if(body && body.trim()) sentences.push(body + delim);
+  }
+  if(!sentences.length) sentences.push(text);
+
+  // Support both wwhr (what/why/how/result) and tpc (topic/pivot/conclusion).
+  const labels = keyEls.topic || keyEls.pivot || keyEls.conclusion
+    ? ['topic','pivot','conclusion']
+    : ['what','why','how','result'];
+  // For tpc, color them with their semantic equivalents: topic->what, pivot->why, conclusion->result.
+  const colorOf = (lbl) => ({topic:'what', pivot:'why', conclusion:'result'}[lbl] || lbl);
+
+  const sentLabel = {};
+  for(const lbl of labels){
+    if(!keyEls[lbl]) continue;
+    const hTok = toks(headline(keyEls[lbl]));
+    if(hTok.length < 2) continue;
+    let bestIdx = -1, bestHits = 0;
+    for(let i = 0; i < sentences.length; i++){
+      if(sentLabel[i]) continue;
+      const sTok = new Set(toks(sentences[i]));
+      let hits = 0;
+      for(const t of hTok){
+        if(sTok.has(t)){ hits++; continue; }
+        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
+        if(stem.length >= 4){
+          for(const st of sTok){ if(st.startsWith(stem)){ hits++; break; } }
+        }
+      }
+      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
+    }
+    if(bestIdx >= 0 && bestHits >= 2){ sentLabel[bestIdx] = colorOf(lbl); }
+  }
+
+  // Render — colored sentences get the same .ann-seg.<color> classes used in the
+  // submission side, so the legend and visual mapping are identical.
+  let html = '';
+  for(let i = 0; i < sentences.length; i++){
+    const lbl = sentLabel[i];
+    const safe = escapeHtml(sentences[i]);
+    if(lbl){ html += `<span class="ann-seg ${lbl}">${safe}</span> `; }
+    else { html += safe + ' '; }
+  }
+  el.innerHTML = html;
 }
 
 function annotateSpelling(clause, spellWords){
