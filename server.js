@@ -2822,8 +2822,9 @@ app.post('/api/admin/passages/extract', requireAdmin, async (req, res) => {
     }
 
     const draft = await extractKeyElementsWithClaude(text, title);
-    if (!draft) {
-      return res.status(502).json({ error: 'Extraction failed — Claude was unavailable or returned an unusable response. Try again or author manually.' });
+    if (!draft || draft._failed) {
+      const reason = (draft && draft.reason) || 'Claude was unavailable or returned an unusable response';
+      return res.status(502).json({ error: 'Extraction failed: ' + reason });
     }
     // Package the draft with extraction metadata so the admin UI can show
     // Claude's framework choice + confidence, and save it straight through.
@@ -2911,11 +2912,11 @@ app.post('/api/admin/passages/extract-all', requireAdmin, async (req, res) => {
       try {
         draft = await extractKeyElementsWithClaude(text, p.title || '');
       } catch (e) {
-        draft = null; item.reason = e.message;
+        draft = { _failed: true, reason: e.message };
       }
-      if (!draft) {
+      if (!draft || draft._failed) {
         item.status = 'failed';
-        item.reason = item.reason || 'Claude returned an unusable response';
+        item.reason = (draft && draft.reason) || 'Claude returned an unusable response';
         report.failed++; report.items.push(item); continue;
       }
 
@@ -2988,11 +2989,16 @@ app.post('/api/admin/passages/bulk', requireAdmin, async (req, res) => {
 //   }
 // Returns null if Claude is unavailable or the response can't be parsed.
 // ═══════════════════════════════════════════════════════════════════════════════
+// v19.11.2: instead of returning bare `null` for every failure, return either
+// the draft OR an object { _failed: true, reason }. Lets the endpoint surface a
+// specific message ("API key invalid", "Claude returned wrong-schema JSON",
+// "timed out") instead of one generic "unavailable" line that gave the admin no
+// way to debug it.
 async function extractKeyElementsWithClaude(passageText, passageTitle, timeoutMs = 25000) {
-  if (!anthropic) return null;
+  if (!anthropic) return { _failed: true, reason: 'Anthropic API key is not configured on the server' };
   const title = (passageTitle || '').trim();
   const text = (passageText || '').trim();
-  if (text.length < 40) return null;
+  if (text.length < 40) return { _failed: true, reason: 'Passage text is too short (under 40 chars)' };
 
   const prompt = `You are an expert PTE Academic item writer. Your job: read a passage and identify the KEY IDEAS a student must capture to write a high-scoring one-sentence Summarize Written Text (SWT) response.
 
@@ -3100,8 +3106,16 @@ Respond with ONLY this JSON, no other text:
     const response = await Promise.race([callPromise, timeoutPromise]);
     const raw = response.content?.[0]?.text || '';
     const m = raw.match(/\{[\s\S]*\}/);
-    if (!m) return null;
-    const parsed = JSON.parse(m[0]);
+    if (!m) {
+      console.error('Extraction: Claude returned no JSON. First 200 chars:', raw.slice(0, 200));
+      return { _failed: true, reason: 'Claude returned a response with no JSON object — likely a refusal or formatting error. Try again.' };
+    }
+    let parsed;
+    try { parsed = JSON.parse(m[0]); }
+    catch (e) {
+      console.error('Extraction: JSON parse failed:', e.message, '— raw:', m[0].slice(0, 200));
+      return { _failed: true, reason: 'Claude returned malformed JSON. Try again.' };
+    }
 
     // ── Validate + normalise ──
     const framework = (parsed.framework === 'tpc') ? 'tpc' : 'wwhr';
@@ -3118,7 +3132,7 @@ Respond with ONLY this JSON, no other text:
     // If Claude returned the wrong-schema keys, the extraction is unusable.
     if (Object.keys(ke).length < (framework === 'tpc' ? 3 : 4)) {
       console.error('Extraction: incomplete keyElements for framework', framework, '— got', Object.keys(ke));
-      return null;
+      return { _failed: true, reason: 'Claude returned an incomplete set of key elements (' + Object.keys(ke).length + ' of ' + (framework === 'tpc' ? 3 : 4) + ' for ' + framework + '). Try again.' };
     }
 
     const rationale = {};
@@ -3143,7 +3157,15 @@ Respond with ONLY this JSON, no other text:
     };
   } catch (e) {
     console.error('Key-element extraction failed:', e.message);
-    return null;
+    // Distinguish common Anthropic SDK errors so the admin sees something useful.
+    let reason = e.message || 'unknown error';
+    if (/timeout|timed out/i.test(reason))          reason = 'Claude call timed out (>25s). Try again.';
+    else if (/401|unauthor/i.test(reason))          reason = 'Anthropic API key was rejected (401). Check ANTHROPIC_API_KEY in Railway.';
+    else if (/403/i.test(reason))                   reason = 'Anthropic API forbade the request (403). Check the API key and billing.';
+    else if (/429|rate.?limit/i.test(reason))       reason = 'Anthropic rate-limit hit (429). Wait a minute and try again.';
+    else if (/529|overload/i.test(reason))          reason = 'Anthropic is overloaded (529). Try again in a moment.';
+    else if (/ENOTFOUND|ECONNREFUSED|network/i.test(reason)) reason = 'Network error reaching Anthropic — check the Railway service has outbound internet.';
+    return { _failed: true, reason };
   }
 }
 
