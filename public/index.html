@@ -574,9 +574,41 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   text-align: center; font-size: 10px; letter-spacing: 0.1em;
   color: var(--ink-faint); padding: 32px 0; text-transform: uppercase;
 }
+
+/* v19.11: impersonation banner — warm-toned, hard to miss, sticky at the top */
+.imp-banner {
+  position: sticky; top: 0; z-index: 1000;
+  background: #4A3520; color: #F7F3E9;
+  padding: 10px 20px;
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--ui-font); font-size: 0.85rem;
+  border-bottom: 2px solid #C9A24B;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.imp-banner .imp-eye { font-size: 1.1rem; flex-shrink: 0; }
+.imp-banner .imp-text { flex: 1; line-height: 1.4; }
+.imp-banner .imp-text strong { color: #E8C97B; font-weight: 700; }
+.imp-banner .imp-exit {
+  background: rgba(255,255,255,0.12); color: #F7F3E9;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 14px; border-radius: 4px;
+  font-family: var(--ui-font); font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; flex-shrink: 0;
+}
+.imp-banner .imp-exit:hover { background: rgba(255,255,255,0.22); }
 </style>
 </head>
 <body>
+
+<!-- v19.11: global impersonation banner. Sits above every screen, hidden by
+     default. Shown only when this tab was opened via /practice?impersonate=…
+     by an admin — a persistent reminder that submissions write to the
+     impersonated student's record. -->
+<div id="impersonateBanner" class="imp-banner" style="display:none;">
+  <span class="imp-eye">👁</span>
+  <span class="imp-text">Admin view — acting as <strong id="impersonateName">…</strong>. Any submission writes to this student's record.</span>
+  <button class="imp-exit" onclick="exitImpersonation()">Exit admin view</button>
+</div>
 
 <!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
 <div class="screen active" id="loginScreen">
@@ -915,20 +947,44 @@ async function doRegister(){
   } catch(e){ regErr('Connection error. Try again.'); }
 }
 
-async function enterApp(uid){
+async function enterApp(uid, opts){
+  const impersonating = !!(opts && opts.impersonating);
   currentUserId = uid;
   STORAGE_KEYS = getUserKeys(uid);
-  LocalStore.setUserId(uid);
+  // Persist the session ONLY for a real login. When impersonating, deliberately
+  // skip setUserId so a refresh or new tab doesn't keep showing the student's
+  // portal — the impersonation must come fresh from a clicked admin link.
+  if (!impersonating) LocalStore.setUserId(uid);
+  isImpersonating = impersonating;
   attempted = new Set();
   const initials = uid.slice(0,2).toUpperCase();
   document.getElementById('userAvatar').textContent = initials;
   document.getElementById('userAvatar2').textContent = initials;
+  // Show the impersonation banner if active, hide otherwise.
+  const banner = document.getElementById('impersonateBanner');
+  if (banner) {
+    if (impersonating) {
+      banner.style.display = 'block';
+      document.getElementById('impersonateName').textContent = uid;
+    } else {
+      banner.style.display = 'none';
+    }
+  }
   showScreen('practiceScreen');
   await loadPassages();
   loadStoredData();
   await pullFromServer();
   loadPassage(1);
   checkAIStatus();
+}
+
+let isImpersonating = false;
+
+function exitImpersonation(){
+  // Close the impersonating tab. (If we can't close — e.g. it wasn't opened by
+  // script — fall back to navigating back to the admin panel.)
+  try { window.close(); } catch(e){}
+  setTimeout(() => { window.location.href = '/admin'; }, 200);
 }
 
 function signOut(){
@@ -1164,7 +1220,17 @@ async function scoreSummary(){
     saveAttempt(currentId, text, data, spellData);
     attempted.add(currentId);
     stopTimer();
-    showResults(data, p, spellData, text);
+    // v19.11: if the server returned the live passage (current key elements +
+    // rationale), use THAT for the results screen — the local `p` may be stale
+    // if an admin edited the passage after this page loaded. Also refresh the
+    // in-memory copy so subsequent views are current.
+    let resultPassage = p;
+    if(data.passage_current){
+      resultPassage = Object.assign({}, p, data.passage_current);
+      const idx = passages.findIndex(x => x.id === currentId);
+      if(idx >= 0) passages[idx] = Object.assign({}, passages[idx], data.passage_current);
+    }
+    showResults(data, resultPassage, spellData, text);
     showScreen('resultsScreen');
   } catch(e){
     toast('Scoring failed — check your connection and try again.');
@@ -1813,6 +1879,38 @@ document.addEventListener('keydown', function(e){
      a dropped connection would be worse than letting them continue)
    ═══════════════════════════════════════════════════════════════ */
 (async function init(){
+  // v19.11: impersonation entry. If the URL has ?impersonate=<token>, redeem
+  // it server-side and enter the portal as that user with a persistent banner.
+  // The token is short-lived (5 min) and signed with ADMIN_KEY — a student
+  // cannot forge one or replay one for a different username.
+  const params = new URLSearchParams(window.location.search);
+  const impToken = params.get('impersonate');
+  if (impToken) {
+    showLoading(true);
+    try {
+      const r = await fetch(API_URL + '/api/impersonate/redeem?token=' + encodeURIComponent(impToken),
+                            { cache: 'no-store' });
+      const d = await r.json();
+      if (r.ok && d.success && d.username) {
+        // Clean the token out of the URL so it isn't bookmarked or refresh-replayed.
+        try { history.replaceState({}, '', window.location.pathname); } catch(e){}
+        await enterApp(d.username, { impersonating: true });
+        showLoading(false);
+        return;
+      } else {
+        showLoading(false);
+        loginErr(d.error || 'Impersonation token is invalid or has expired.');
+        showLogin();
+        return;
+      }
+    } catch (e) {
+      showLoading(false);
+      loginErr('Could not verify impersonation token: ' + e.message);
+      showLogin();
+      return;
+    }
+  }
+
   const last = LocalStore.getUserId();
   if(!last){
     // No saved session — normal login screen.

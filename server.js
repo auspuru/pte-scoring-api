@@ -643,8 +643,16 @@ const PassageAPI = {
     const all = await this.readAll();
     const idx = all.findIndex(p => p.id === Number(passage.id));
     const cleaned = this._sanitize(passage);
-    if (idx >= 0) all[idx] = { ...all[idx], ...cleaned };
-    else {
+    if (idx >= 0) {
+      // FULL REPLACE — not a merge. The admin editor always sends the complete
+      // passage, so merging with the old record is wrong: it would resurrect
+      // fields the admin deliberately cleared (e.g. removing an example from a
+      // key element, or clearing the rationale). Replace outright.
+      // The id is preserved from the existing record in case the payload's id
+      // was coerced oddly.
+      cleaned.id = all[idx].id;
+      all[idx] = cleaned;
+    } else {
       // Auto-assign id if missing
       if (!cleaned.id) cleaned.id = (all.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1);
       all.push(cleaned);
@@ -2472,12 +2480,78 @@ app.get('/api/admin/user-data/:username', requireAdmin, async (req, res) => {
   catch (e) { res.status(500).json({ error: 'Failed' }); }
 });
 
+// ─── v19.11: ADMIN IMPERSONATION ("Open Portal as User") ─────────────────────
+// Lets an admin view a student's portal in a new tab. Security model:
+//   1. Admin (authenticated by ADMIN_KEY) requests a token for one username.
+//   2. The token is an HMAC-signed string: base64(username|expiry).signature
+//      — signed with a secret derived from ADMIN_KEY, valid ~5 minutes.
+//   3. The student portal sends the token back; the server validates the
+//      signature + expiry and returns that user's data.
+// A student cannot forge a token (no ADMIN_KEY), and the token cannot be reused
+// for a different username (the username is inside the signed payload).
+const IMPERSONATION_TTL_MS = 5 * 60 * 1000;  // 5 minutes
+function _impersonationSecret() {
+  // Derive a signing secret from ADMIN_KEY so it rotates if the admin key changes.
+  return crypto.createHash('sha256').update('impersonation:' + ADMIN_KEY).digest();
+}
+function mintImpersonationToken(username) {
+  const payload = username.toLowerCase().trim() + '|' + (Date.now() + IMPERSONATION_TTL_MS);
+  const sig = crypto.createHmac('sha256', _impersonationSecret()).update(payload).digest('hex');
+  return Buffer.from(payload).toString('base64') + '.' + sig;
+}
+function verifyImpersonationToken(token) {
+  // Returns the username if valid, or null.
+  if (!token || typeof token !== 'string' || token.indexOf('.') < 0) return null;
+  const [b64, sig] = token.split('.');
+  let payload;
+  try { payload = Buffer.from(b64, 'base64').toString('utf8'); }
+  catch (e) { return null; }
+  const expectedSig = crypto.createHmac('sha256', _impersonationSecret()).update(payload).digest('hex');
+  // Constant-time comparison
+  if (sig.length !== expectedSig.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
+  const sep = payload.lastIndexOf('|');
+  if (sep < 0) return null;
+  const username = payload.slice(0, sep);
+  const expiry = Number(payload.slice(sep + 1));
+  if (!username || !expiry || Date.now() > expiry) return null;
+  return username;
+}
+
+// Admin mints an impersonation token for a username. Requires ADMIN_KEY.
 app.get('/api/admin/impersonate/:username', requireAdmin, async (req, res) => {
   try {
     const uid = req.params.username.toLowerCase().trim();
+    if (!uid) return res.status(400).json({ error: 'username required' });
+    // Confirm the account exists before minting a token for it.
     const userData = await StorageAPI.getUserData(uid);
-    res.json({ success: true, username: uid, data: userData });
-  } catch (e) { res.status(500).json({ error: 'Impersonate failed' }); }
+    const account = await (USE_POSTGRES
+      ? PgStorage._getAccount(uid)
+      : (async () => { const d = await StorageAPI.readData(); return d.accounts && d.accounts[uid]; })());
+    if (!account) return res.status(404).json({ error: 'No such user' });
+    const token = mintImpersonationToken(uid);
+    res.json({ success: true, username: uid, token, expiresInMs: IMPERSONATION_TTL_MS });
+  } catch (e) {
+    console.error('Impersonate mint failed:', e.message);
+    res.status(500).json({ error: 'Impersonate failed' });
+  }
+});
+
+// The student portal redeems an impersonation token. No ADMIN_KEY here — the
+// token itself is the credential. Returns the impersonated user's data.
+app.get('/api/impersonate/redeem', async (req, res) => {
+  try {
+    const token = req.query.token;
+    const username = verifyImpersonationToken(token);
+    if (!username) {
+      return res.status(403).json({ error: 'Invalid or expired impersonation token' });
+    }
+    const userData = await StorageAPI.getUserData(username);
+    res.json({ success: true, username, data: userData, impersonated: true });
+  } catch (e) {
+    console.error('Impersonate redeem failed:', e.message);
+    res.status(500).json({ error: 'Redeem failed' });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2525,6 +2599,67 @@ app.post('/api/admin/passages', requireAdmin, async (req, res) => {
   }
 });
 
+// v19.11: Detect when a key element has captured an EXAMPLE instead of the
+// general idea. Returns an array of { element, issue } warnings for admin review.
+// Non-blocking — some passages legitimately reference a proper noun. The point is
+// to make a leaked example impossible to MISS, not impossible to save.
+function detectExampleLeakage(keyElements) {
+  const warnings = [];
+  if (!keyElements || typeof keyElements !== 'object') return warnings;
+
+  // Words that are capitalised mid-sentence but are NOT proper nouns — ignore these
+  // so we don't false-positive on ordinary sentence-initial capitals.
+  const COMMON = new Set(['The','A','An','This','That','These','Those','It','In','On',
+    'After','Before','When','While','Each','Some','Many','Most','All','No','Their',
+    'Its','As','By','For','With','From','Until','Since','If','But','And','Or','So']);
+
+  for (const [slot, value] of Object.entries(keyElements)) {
+    if (typeof value !== 'string' || !value.trim()) continue;
+    const v = value.trim();
+    const issues = [];
+
+    // 1. Explicit example markers
+    if (/\b(for example|for instance|such as|in the case of|e\.g\.)\b/i.test(v)) {
+      issues.push('contains an example marker ("for example"/"such as"/etc.)');
+    }
+    // 2. A year — almost always a specific dated event
+    if (/\b(1[5-9]\d\d|20\d\d)\b/.test(v)) {
+      issues.push('contains a year — likely a specific dated event, not a general idea');
+    }
+    // 3. A proper-noun run: 2+ capitalised tokens in sequence. Catches
+    //    "Mount St. Helens", "Saturn V", and all-caps acronyms ("NASA").
+    //    A token is capitalised if it starts with a capital (Helens, V) or is
+    //    all-caps (NASA, SO2 is excluded as a unit below).
+    const tokens = v.split(/\s+/);
+    let runStart = -1, flaggedProper = null;
+    for (let i = 0; i <= tokens.length; i++) {
+      const tok = (tokens[i] || '').replace(/[.,;:]$/, '');
+      const isCap = /^[A-Z][a-z]+$/.test(tok)        // Helens
+                 || /^[A-Z]{2,}$/.test(tok)          // NASA
+                 || /^[A-Z]$/.test(tok);             // V (designator)
+      const isConnector = /^(of|the|and)$/i.test(tok);
+      if (isCap || (runStart >= 0 && isConnector)) {
+        if (runStart < 0) runStart = i;
+      } else {
+        if (runStart >= 0 && i - runStart >= 2) {
+          const run = tokens.slice(runStart, i).join(' ');
+          const first = tokens[runStart].replace(/[.,;:]$/, '');
+          if (!COMMON.has(first)) { flaggedProper = run; break; }
+        }
+        runStart = -1;
+      }
+    }
+    if (flaggedProper) {
+      issues.push('names a specific entity (' + flaggedProper + ') — a key idea should state the general principle, not the example');
+    }
+
+    if (issues.length) {
+      warnings.push({ element: slot, issue: issues.join('; '), value: v });
+    }
+  }
+  return warnings;
+}
+
 // v19.11: Key-element extraction — Claude drafts framework + key ideas for a
 // passage. Returns a DRAFT for admin review; does NOT save. The admin reviews
 // the draft in the UI and saves via the normal POST /api/admin/passages.
@@ -2562,10 +2697,122 @@ app.post('/api/admin/passages/extract', requireAdmin, async (req, res) => {
       framework_reason: draft.framework_reason,
       extractedAt: new Date().toISOString()
     };
+    // Safety net: scan each key element for signs it captured an EXAMPLE rather
+    // than the general idea (a named event, a year, "for example"/"such as", a
+    // run of capitalised proper-noun words). These are warnings for the admin to
+    // review — they do NOT block saving, since some passages legitimately need a
+    // proper noun. The admin sees them next to the draft.
+    draft.warnings = detectExampleLeakage(draft.keyElements);
     res.json({ success: true, draft });
   } catch (e) {
     console.error('Extraction endpoint failed:', e.message);
     res.status(500).json({ error: 'Extraction failed', details: e.message });
+  }
+});
+
+// v19.11: Map an extraction draft onto the passage fields that get saved.
+// Mirrors the admin UI's applyDraft(): tpc topic/pivot/conclusion fold onto
+// what/why/result (how left blank for tpc); wwhr maps 1:1.
+function draftToPassageFields(existing, draft) {
+  const ke = draft.keyElements || {};
+  const keyElements = {};
+  if (draft.framework === 'tpc') {
+    if (ke.topic)      keyElements.what   = ke.topic;
+    if (ke.pivot)      keyElements.why    = ke.pivot;
+    if (ke.conclusion) keyElements.result = ke.conclusion;
+  } else {
+    if (ke.what)   keyElements.what   = ke.what;
+    if (ke.why)    keyElements.why    = ke.why;
+    if (ke.how)    keyElements.how    = ke.how;
+    if (ke.result) keyElements.result = ke.result;
+  }
+  const out = {
+    id: existing.id,
+    title: existing.title,
+    category: existing.category || '',
+    text: existing.text,
+    keyElements,
+    sampleResponse: draft.sampleResponse || existing.sampleResponse || '',
+    sampleNotes: existing.sampleNotes || ''
+  };
+  if (draft.keyElementsRationale && Object.keys(draft.keyElementsRationale).length) {
+    out.keyElementsRationale = draft.keyElementsRationale;
+  }
+  if (draft.extractionMeta) out.extractionMeta = draft.extractionMeta;
+  return out;
+}
+
+// v19.11: BULK extraction — full auto. Extracts every passage, applies and saves
+// each result immediately (no review gate). Returns a per-passage report so the
+// admin can SEE afterward what happened — especially which passages tripped the
+// example-leakage detector. The report does not block anything; it is a receipt.
+// Body: { onlyMissing: bool }  — if true, skip passages that already have rationale
+app.post('/api/admin/passages/extract-all', requireAdmin, async (req, res) => {
+  if (!anthropic) {
+    return res.status(503).json({ error: 'Claude is not configured — cannot auto-extract.' });
+  }
+  try {
+    const onlyMissing = !!(req.body && req.body.onlyMissing);
+    const all = await PassageAPI.readAll();
+    const report = { total: all.length, updated: 0, skipped: 0, failed: 0,
+                     flagged: 0, items: [] };
+
+    for (const p of all) {
+      const text = (p.text || '').trim();
+      const item = { id: p.id, title: p.title || ('Passage ' + p.id) };
+
+      if (onlyMissing && p.keyElementsRationale &&
+          (p.keyElementsRationale.topic || p.keyElementsRationale.importance)) {
+        item.status = 'skipped'; item.reason = 'already has rationale';
+        report.skipped++; report.items.push(item); continue;
+      }
+      if (text.length < 40) {
+        item.status = 'failed'; item.reason = 'passage text too short';
+        report.failed++; report.items.push(item); continue;
+      }
+
+      let draft = null;
+      try {
+        draft = await extractKeyElementsWithClaude(text, p.title || '');
+      } catch (e) {
+        draft = null; item.reason = e.message;
+      }
+      if (!draft) {
+        item.status = 'failed';
+        item.reason = item.reason || 'Claude returned an unusable response';
+        report.failed++; report.items.push(item); continue;
+      }
+
+      draft.extractionMeta = {
+        framework: draft.framework,
+        confidence: draft.confidence,
+        framework_reason: draft.framework_reason,
+        extractedAt: new Date().toISOString()
+      };
+      const warnings = detectExampleLeakage(draft.keyElements);
+
+      // Full auto: apply + save immediately.
+      try {
+        const fields = draftToPassageFields(p, draft);
+        await PassageAPI.upsert(fields);
+        item.status = 'updated';
+        item.framework = draft.framework;
+        item.confidence = draft.confidence;
+        item.warnings = warnings;
+        if (warnings.length) report.flagged++;
+        report.updated++;
+      } catch (e) {
+        item.status = 'failed'; item.reason = 'save failed: ' + e.message;
+        report.failed++;
+      }
+      report.items.push(item);
+    }
+
+    console.log(`📋 Bulk extraction: ${report.updated} updated, ${report.flagged} flagged, ${report.failed} failed, ${report.skipped} skipped`);
+    res.json({ success: true, report });
+  } catch (e) {
+    console.error('Bulk extraction failed:', e.message);
+    res.status(500).json({ error: 'Bulk extraction failed', details: e.message });
   }
 });
 
@@ -2636,17 +2883,48 @@ Decide which of two structures the passage actually has:
 Pick the one that loses the LEAST meaning. State which and why.
 
 STEP 2 — EXTRACT THE KEY IDEAS.
-For each slot, write a short phrase (NOT a full copied sentence) naming the idea.
+
+Each key idea must STAY CLOSE TO THE PASSAGE'S OWN WORDING. Do NOT freely paraphrase
+or re-express the idea in your own words. Find the sentence (or the part of a
+sentence) in the passage that states the idea, and use that wording — lightly
+trimmed, not rewritten.
+
+HOW to phrase each key element:
+- Locate the passage sentence that carries the idea.
+- Quote its substance using the passage's own words and phrasing.
+- You MAY trim it: drop a lead-in clause, drop a trailing example, cut it to the
+  load-bearing core. You may NOT swap in synonyms or restructure it.
+- The result should read like a faithful condensation of a real passage sentence,
+  not a fresh sentence you wrote. If you re-extracted the same passage twice, both
+  results should be nearly identical because both are anchored to the same text.
+
 CRITICAL RULES:
-- A key idea is a claim the summary would be WRONG or INCOMPLETE without.
+- A key idea is a GENERAL claim the summary would be WRONG or INCOMPLETE without.
 - Quotes, rhetorical questions, and vivid statistics that merely ILLUSTRATE a claim
   already counted are DECORATION — do not make them key ideas.
+
+- NEVER let an EXAMPLE be the key idea. A passage states a general principle and then
+  ILLUSTRATES it with a specific case — a named event, a dated incident, a particular
+  study, a single person or place. The KEY IDEA is the general principle.
+  This is the ONE case where you trim rather than copy whole: if the passage sentence
+  is "After the 1980 Mount St. Helens eruption, monitoring of seismic energy, tilt and
+  SO2 enabled accurate prediction", you KEEP the general clause in the passage's words
+  — "monitoring of seismic energy, tilt and SO2 enables accurate prediction" — and
+  DROP only the dated-example lead-in. You are still using the passage's wording; you
+  are just cutting the example clause out of it.
+  If you find a year, a place name, a person's name, or "for example / for instance /
+  such as / in the case of" inside a key idea, cut that clause — but keep the rest of
+  the sentence verbatim. Do not rewrite the surviving part.
+  A student who summarises the general principle WITHOUT naming the specific example
+  must score full marks for that element.
+
 - The test: "if a reader had ONLY these key ideas, would they understand the passage's
-  actual argument?" — not "would they find it interesting".
+  actual argument?" — not "would they find it interesting", and not "do they know
+  the specific examples".
 
 STEP 3 — JUSTIFY.
 For each key idea, give one sentence explaining why it is load-bearing AND, where
-relevant, which competing sentence it was chosen OVER.
+relevant, which competing sentence (or which example) it was chosen OVER.
 
 STEP 4 — RATE YOUR CONFIDENCE.
 "high" = the structure is unambiguous. "medium" = reasonable editors might carve it
@@ -2876,35 +3154,52 @@ CRITICAL RULES (do not break these):
 - synonym_appropriateness "no_swaps": pure verbatim with zero substitution (still acceptable).
 - academic_register: true if the summary uses 2+ recognisably academic/formal words (e.g., consequently, substantial, demonstrate, comprehensive).
 
-VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT:
-Identify 6 to 8 common, non-academic words in the STUDENT SUMMARY that could be replaced with academic synonyms to lift Reading skill score. Be GENEROUS — students benefit from having more options to choose from. The CONTEXT MUST FIT — re-read the sentence with each suggested synonym mentally and only include synonyms that read fluently and preserve meaning exactly.
+VOCABULARY SWAP SUGGESTIONS (recommended_swaps) — VERY IMPORTANT, ALWAYS REQUIRED:
+You MUST return 7 to 8 word/phrase suggestions from the STUDENT SUMMARY. This is not
+optional and not conditional on the summary's quality — EVERY summary, however
+strong, has 7-8 words whose register or precision can be varied. Returning fewer
+than 7 is a failure of this task. Returning an empty list is never acceptable.
+
+How to always find 7-8:
+- Scan the summary left to right. For EVERY verb, common noun, adjective, and
+  adverb, ask "is there an academic synonym that fits this exact context?" — there
+  almost always is.
+- This includes words that are ALREADY reasonably academic. Offering a lateral
+  alternative (e.g. "achieved" → "attained / reached", "shows" → "demonstrates /
+  indicates / reveals", "reduce" → "lower / curtail / cut") still helps the student.
+- A heavily passage-lifted summary still qualifies: suggest swaps for the lifted
+  words so the student learns to paraphrase rather than copy.
+
+The CONTEXT MUST FIT — re-read the sentence with each synonym mentally; only include
+synonyms that read fluently and preserve meaning exactly.
 
 Rules for each suggested word:
-- It can be ANY common, non-academic word the student used (whether they copied it from the passage or wrote it themselves)
-- Skip ONLY: proper nouns, dates, numbers, technical terms, fixed phrases, and words already academic (e.g., "consequently", "substantial", "demonstrate")
-- Provide 3 to 5 academic synonyms per word — the student picks which one fits best
-- Each synonym MUST fit the EXACT context of the sentence
-- Skip the word entirely if NO synonym fits cleanly — better to suggest fewer words with great synonyms than many words with awkward ones
+- It can be ANY word the student used (verb, noun, adjective, adverb).
+- Skip ONLY: proper nouns, dates, numbers, domain-fixed technical terms, fixed
+  multi-word phrases, connectors already in use, and articles/prepositions.
+- Provide 2 to 5 academic synonyms per word — the student picks which fits best.
+- Each synonym MUST fit the EXACT context of the sentence.
 
 GOOD examples (context-appropriate):
 - "made a lifestyle choice" → word: "made", synonyms: ["opted for", "chose", "selected"] ✓
 - "wanted information in one place" → word: "wanted", synonyms: ["sought", "needed", "required"] ✓
-- "many advantages" → word: "many", synonyms: ["numerous", "several", "multiple", "various"] ✓
+- "many advantages" → word: "many", synonyms: ["numerous", "several", "multiple"] ✓
 - "good idea" → word: "good", synonyms: ["beneficial", "sound", "sensible", "prudent"] ✓
-- "big problem" → word: "big", synonyms: ["significant", "substantial", "considerable", "major"] ✓
-- "think about" → word: "think about", synonyms: ["consider", "examine", "evaluate"] ✓
-- "show that" → word: "show", synonyms: ["demonstrate", "indicate", "reveal", "establish"] ✓
-- "use" → synonyms: ["utilise", "employ", "apply"] ✓
-- "help" → synonyms: ["assist", "facilitate", "support"] ✓
-- "get" → synonyms: ["obtain", "acquire", "secure"] ✓
+- "big problem" → word: "big", synonyms: ["significant", "substantial", "considerable"] ✓
+- "AI has achieved high accuracy" → word: "achieved", synonyms: ["attained", "reached"] ✓
+- "growing concerns" → word: "growing", synonyms: ["mounting", "rising", "increasing"] ✓
+- "show that" → word: "show", synonyms: ["demonstrate", "indicate", "reveal"] ✓
+- "reduce costs" → word: "reduce", synonyms: ["lower", "cut", "curtail"] ✓
 
 BAD examples to AVOID:
-- "wanted information" → DO NOT suggest ["hot", "cherished", "treasured", "loved"] — wrong register and meaning
+- "wanted information" → DO NOT suggest ["hot", "cherished", "treasured"] — wrong register
 - "make a choice" → DO NOT suggest ["create"] for "make" — different sense
 - DO NOT suggest synonyms that are too rare, archaic, or jarring in academic English
 - DO NOT suggest a synonym that subtly shifts meaning
 
-Aim for 6-8 candidates if possible, but quality beats quantity — 4 great suggestions are better than 8 awkward ones.
+TARGET: exactly 7-8 word suggestions, each with 2-5 fitting synonyms. If you think
+you can only find 4, look again at the verbs and adjectives you skipped.
+
 
 Respond ONLY with valid JSON, no other text. Use this exact structure:
 {
@@ -3346,8 +3641,31 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
 // ═══ GRADING ROUTE ═══
 app.post('/api/grade', async (req, res) => {
   try {
-    const { text, type, prompt, keyPoints, userId } = req.body;
+    let { text, type, prompt, keyPoints, userId } = req.body;
+    const passageId = req.body.passageId;
     if (!text || !type || !prompt) return res.status(400).json({ error: 'Missing fields' });
+
+    // ── SOURCE-OF-TRUTH OVERRIDE (v19.11) ──────────────────────────────────
+    // The client sends `prompt` and `keyPoints` from its in-memory passage copy,
+    // which goes STALE the moment an admin edits a passage while a student has
+    // the page open. If the request names a passageId, ignore the client's copy
+    // and score against the passage's CURRENT stored version. This guarantees a
+    // fresh attempt is always graded against the latest key elements, even if
+    // the student never refreshed.
+    if (passageId != null) {
+      try {
+        const live = await PassageAPI.getById(passageId);
+        if (live) {
+          if (live.text) prompt = live.text;
+          if (live.keyElements && Object.keys(live.keyElements).length) {
+            keyPoints = live.keyElements;
+          }
+        }
+      } catch (e) {
+        console.warn('grade: could not load live passage', passageId, '-', e.message);
+        // fall through with the client-supplied values
+      }
+    }
 
     // ── FORM GATE ──
     const form = validateForm(text);
@@ -3690,6 +4008,27 @@ app.post('/api/grade', async (req, res) => {
       catch (e) { result.saved = false; }
     }
 
+    // v19.11: attach the LIVE passage's key elements + rationale to the response.
+    // The results screen uses this to render "About this passage" and "Key
+    // Element Coverage" from current server data — not the student's stale
+    // in-memory copy. Without this, a student who had the page open before an
+    // admin edit would see the old feedback on a brand-new attempt.
+    if (passageId != null) {
+      try {
+        const live = await PassageAPI.getById(passageId);
+        if (live) {
+          result.passage_current = {
+            id: live.id,
+            title: live.title,
+            category: live.category,
+            keyElements: live.keyElements || {},
+            keyElementsRationale: live.keyElementsRationale || null,
+            extractionMeta: live.extractionMeta || null
+          };
+        }
+      } catch (e) { /* non-fatal — frontend falls back to its own copy */ }
+    }
+
     // ── Vocabulary swap suggestions ──
     // Prefer Claude's context-aware recommendations (no Datamuse out-of-context noise).
     // The legacy thesaurus_candidates field is preserved for backward compat but only
@@ -3723,6 +4062,16 @@ app.post('/api/grade', async (req, res) => {
     console.error('Grade error:', error);
     res.status(500).json({ error: 'Server error', details: error.message });
   }
+});
+
+// Friendly shortcut routes — let /admin and /practice work without the .html
+// extension. These must come BEFORE the catch-all, which would otherwise serve
+// index.html for any path that isn't a real file.
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+app.get('/practice', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'practice.html'));
 });
 
 // Catch-all: serve index.html for any unknown routes (SPA support)
