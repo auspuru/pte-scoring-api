@@ -3384,28 +3384,44 @@ Notes on the schema:
 - per_idea_scores values: ONLY 1.0 (captured) or 0.0 (missing). Do NOT use 0.5 or other fractional values.
 - content_score: SUM of per_idea_scores values (equals length(ideas_captured)).
 - ideas_captured / ideas_missing: lengths must sum to ${totalIdeas}.
+- grammar_annotations: this field is MANDATORY. Even an empty array is acceptable for a perfect summary, but at typical proficiency 4–10 entries is normal. DO NOT omit this field.
 
-GRAMMAR ANNOTATIONS — VERY IMPORTANT:
-Return ONE entry per distinct grammar issue you find in the SUMMARY. Be COMPREHENSIVE — flag everything from major errors to subtle stylistic issues. Aim for 3–10 annotations per typical summary; an unusually clean summary may have 0–2, a weak one may have 8–12.
+GRAMMAR ANNOTATIONS — MANDATORY FIELD:
+You MUST populate grammar_annotations with every distinct grammar, usage, or stylistic issue you observe in the SUMMARY. This is a teaching feature: the student will see each flagged phrase highlighted in their summary with your fix as a tooltip. Be COMPREHENSIVE.
+
+For a typical PTE Academic SWT response, expect 4–10 entries. A perfect summary may have 0–2; a weak summary may have 8–12. An EMPTY array is only correct if the summary is genuinely flawless.
+
+Common issues to flag (NOT exhaustive — flag anything you'd correct as a teacher):
+- Subject-verb agreement ("the study show" → "the study shows")
+- Tense inconsistency, missing or wrong articles ("a/an/the")
+- Missing comma before a coordinating conjunction in compound sentences
+- Wrong word ("their/there/they're", "affect/effect")
+- Awkward phrasing, redundancy ("in order to" vs "to"), informal register
+- Wordy connectors that could be tighter
+- Preposition errors
+- Sentence-fragment risk where commas should be semicolons or vice versa
 
 Each annotation needs all five fields:
-- "phrase": the EXACT verbatim substring of the summary to highlight. Must appear character-for-character in the student's text. Keep it short (2–8 words usually) — just enough to locate the issue.
-- "fix": what the phrase should say instead.
-- "severity": one of "major" or "minor".
-  - "major" = subject-verb agreement, tense errors, wrong word (their/there), missing articles where required, run-on sentences, fragments, ambiguous pronoun reference.
-  - "minor" = stylistic preferences, comma optionality, register issues, redundancies, awkward but technically grammatical phrasing.
+- "phrase": the EXACT verbatim substring of the student's summary to highlight. Must appear character-for-character in the summary — copy it directly. Keep it short (2–8 words). DO NOT paraphrase or quote-mark.
+- "fix": the corrected version of the phrase.
+- "severity": "major" (subject-verb, tense, wrong word, missing required article, run-on, fragment, ambiguous pronoun) OR "minor" (style, register, optional comma, redundancy, awkward but grammatical).
 - "type": short tag — one of: "subject-verb", "tense", "article", "preposition", "punctuation", "register", "redundancy", "word-choice", "fragment", "run-on", "pronoun", "style".
-- "rationale": one short clause (under 80 chars) explaining why this is wrong. NO long explanations.
+- "rationale": one short clause (under 80 chars) explaining the issue. No long explanations.
 
-Critical rules for "phrase":
-- Must be a VERBATIM substring of the student's summary. Do NOT paraphrase, do NOT add quotes, do NOT change capitalization.
-- If the same issue appears twice, return TWO entries with each occurrence's phrase (they may be different substrings).
-- If there are no issues at all, return an empty array. Do not invent issues to fill the array.`;
+Critical:
+- "phrase" MUST be a verbatim substring. The frontend filters out any annotation whose phrase isn't in the text.
+- If the same issue appears twice, return TWO entries with each occurrence.
+- Do NOT use this field for content/coverage feedback — that goes in content_reason.`;
 
   try {
     const callPromise = anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1400,
+      // v19.12: bumped from 1400 to 2400 because the response now includes
+      // grammar_annotations alongside the existing recommended_swaps (7-8 vocab
+      // entries) and content scoring. Cap was getting hit on long summaries
+      // with the new field, causing JSON to truncate and the whole judge call
+      // to fall back to local — silently dropping grammar_annotations entirely.
+      max_tokens: 2400,
       messages: [{ role: 'user', content: prompt }]
     });
     const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
@@ -3415,6 +3431,12 @@ Critical rules for "phrase":
     if (!m) return null;
     const parsed = JSON.parse(m[0]);
     parsed.source = 'claude';
+    // v19.12: log how many grammar annotations Claude returned. If this prints
+    // "0" for summaries with obvious errors, the prompt isn't being followed
+    // and we need to strengthen it further; if it prints reasonable numbers
+    // but they aren't appearing in the UI, the filter is dropping them.
+    const annCount = Array.isArray(parsed.grammar_annotations) ? parsed.grammar_annotations.length : 'MISSING_FIELD';
+    console.log(`[grade] Claude returned ${annCount} grammar_annotations`);
     // Sanity-clamp content_score
     if (typeof parsed.content_score !== 'number' || parsed.content_score < 0 || parsed.content_score > 2) {
       parsed.content_score = 1;
@@ -4115,9 +4137,16 @@ app.post('/api/grade', async (req, res) => {
         grammar_annotations: (() => {
           const ann = Array.isArray(contentVerdict.grammar_annotations) ? contentVerdict.grammar_annotations : [];
           const lc = (text || '').toLowerCase();
-          return ann
-            .filter(a => a && typeof a.phrase === 'string' && typeof a.fix === 'string' && a.phrase.length > 0)
-            .filter(a => lc.includes(a.phrase.toLowerCase()))
+          const valid = ann.filter(a => a && typeof a.phrase === 'string' && typeof a.fix === 'string' && a.phrase.length > 0);
+          const inText = valid.filter(a => lc.includes(a.phrase.toLowerCase()));
+          // v19.12 diagnostic: surface what's happening to grammar_annotations on each grade call.
+          if (ann.length > 0 && inText.length < ann.length) {
+            console.log(`[grade] grammar_annotations: Claude returned ${ann.length}, ${inText.length} passed filter (phrase must be in summary)`);
+            // Log the dropped phrases so we can see if Claude is paraphrasing despite the instruction.
+            const dropped = valid.filter(a => !lc.includes(a.phrase.toLowerCase())).map(a => a.phrase);
+            if (dropped.length) console.log('  dropped phrases (paraphrased, not verbatim):', JSON.stringify(dropped));
+          }
+          return inText
             .map(a => ({
               phrase: a.phrase,
               fix: String(a.fix).slice(0, 200),
@@ -4125,7 +4154,7 @@ app.post('/api/grade', async (req, res) => {
               type: typeof a.type === 'string' ? a.type.slice(0, 30) : 'style',
               rationale: typeof a.rationale === 'string' ? a.rationale.slice(0, 120) : ''
             }))
-            .slice(0, 20);  // hard cap to prevent runaway
+            .slice(0, 20);
         })(),
         first_person: grammar.first_person,
         spelling_errors: spelling.errors,
