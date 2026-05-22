@@ -422,6 +422,48 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   background: var(--bad-bg); border-bottom: 2px wavy var(--bad);
   cursor: pointer;
 }
+/* v19.12: grammar annotations. Major issues get a strong solid red underline;
+   minor (stylistic) get a softer amber dashed underline. Cursor:help signals
+   tooltip availability. */
+.ann-seg.grammar-major {
+  background: rgba(201, 79, 79, 0.10);
+  border-bottom: 2px solid #c94f4f;
+  cursor: help;
+}
+.ann-seg.grammar-minor {
+  background: rgba(201, 162, 75, 0.10);
+  border-bottom: 1px dashed #C9A24B;
+  cursor: help;
+}
+
+/* v19.12: side-by-side right-column toggle (Student Summary <-> Sample Answer).
+   Looks like a segmented control matching the rest of the editorial UI. */
+.sbs-toggle {
+  display: flex; gap: 0;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.sbs-tab {
+  background: none; border: none;
+  font-family: var(--ui-font); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 6px 12px; margin-bottom: -1px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sbs-tab:hover { color: var(--ink); }
+.sbs-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--accent, #2b5e4f);
+}
+.sample-note {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 12px; color: var(--ink-muted);
+  font-style: italic;
+}
 .annotated-feedback {
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
   padding-top: 14px; border-top: 1px solid var(--line-soft);
@@ -858,9 +900,25 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
           <div class="annotated-text" id="annotatedPassage"></div>
         </div>
         <div class="sbs-col">
-          <div class="sbs-head">Student Summary</div>
-          <div class="annotated-text" id="annotatedSubmission"></div>
-          <div class="annotated-feedback" id="annotatedFeedback"></div>
+          <!-- v19.12: toggle between the student's annotated summary and the
+               sample band-9 answer, on the right side. Non-destructive — the
+               student's submission isn't touched, just hidden behind the tab. -->
+          <div class="sbs-toggle" role="tablist" aria-label="Right column view">
+            <button type="button" class="sbs-tab active" id="sbsTabSummary"
+                    role="tab" aria-selected="true"
+                    onclick="switchSbsView('summary')">Student Summary</button>
+            <button type="button" class="sbs-tab" id="sbsTabSample"
+                    role="tab" aria-selected="false"
+                    onclick="switchSbsView('sample')">Sample Answer</button>
+          </div>
+          <div id="sbsViewSummary">
+            <div class="annotated-text" id="annotatedSubmission"></div>
+            <div class="annotated-feedback" id="annotatedFeedback"></div>
+          </div>
+          <div id="sbsViewSample" style="display:none;">
+            <div class="annotated-text" id="sampleAnswerText"></div>
+            <div class="sample-note" id="sampleAnswerNotes"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1340,6 +1398,24 @@ function showResults(data, passage, spellData, submittedText){
   renderTraitBreakdown(data, traits);
   renderCoverage(data, passage);
 
+  // v19.12: render the sample answer for the right-column toggle. The text
+  // shows even if missing — students see "(none authored)" rather than the
+  // toggle appearing broken. Reset the view to "summary" so each new result
+  // starts on the student's own work.
+  const sampleEl = document.getElementById('sampleAnswerText');
+  const sampleNotes = document.getElementById('sampleAnswerNotes');
+  if(sampleEl){
+    const sample = (passage && passage.sampleResponse) || '';
+    sampleEl.textContent = sample || '(No sample answer authored for this passage yet.)';
+  }
+  if(sampleNotes){
+    const notes = (passage && passage.sampleNotes) || '';
+    sampleNotes.textContent = notes;
+    sampleNotes.style.display = notes ? '' : 'none';
+  }
+  // Reset to summary view whenever new results render
+  switchSbsView('summary');
+
   // v19.10.3: new feedback sections
   renderAboutPassage(passage);
   renderVocabCoach(data);
@@ -1506,10 +1582,17 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
     if(w) spellWords[w] = e.suggestion || (e.suggestions && e.suggestions[0]) || '';
   }
 
+  // v19.12: grammar annotations (from Claude). Chain grammar first, then
+  // spelling — spelling walks text nodes between grammar spans so they don't
+  // collide.
+  const grammarIssues = (data.grammar_details && Array.isArray(data.grammar_details.grammar_annotations))
+    ? data.grammar_details.grammar_annotations : [];
+
   let html = '';
   for(let i = 0; i < clauses.length; i++){
     const lbl = clauseLabel[i];
-    const inner = annotateSpelling(clauses[i], spellWords);
+    let inner = annotateGrammar(clauses[i], grammarIssues);
+    inner = annotateSpelling(inner, spellWords, true);  // HTML mode
     if(lbl){ html += `<span class="ann-seg ${lbl}">${inner}</span>`; }
     else { html += inner; }
   }
@@ -1614,17 +1697,118 @@ function renderAnnotatedPassage(passage){
   el.innerHTML = html;
 }
 
-function annotateSpelling(clause, spellWords){
-  if(Object.keys(spellWords).length === 0) return escapeHtml(clause);
-  const parts = clause.split(/(\s+|[.,;:!?"'()])/);
-  return parts.map(tok => {
-    const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
-    if(stripped && spellWords[stripped] !== undefined){
-      const fix = spellWords[stripped];
-      return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${escapeHtml(tok)}</span>`;
+// v19.12: grammar annotations. Wraps the verbatim phrase Claude flagged in a
+// tooltipped span. Major severity → red solid underline; minor → amber dashed.
+// Phrases are matched case-insensitively but the original text casing is
+// preserved in the output. Overlapping issues are handled by sorting phrases
+// longest-first so the longer span wins (a sub-phrase inside an already-
+// annotated phrase would be unreachable anyway).
+function annotateGrammar(clause, issues){
+  if(!issues || issues.length === 0) return escapeHtml(clause);
+  // Sort longest first to prevent a short phrase being shadowed by a longer one
+  // that contains it.
+  const sorted = [...issues].sort((a,b) => (b.phrase||'').length - (a.phrase||'').length);
+  // Build a result by repeatedly slicing out the first remaining match. This
+  // avoids messy regex escaping and handles overlap deterministically.
+  let result = escapeHtml(clause);
+  // We need to operate on the ORIGINAL text for matching (case-insensitive),
+  // but output HTML-escaped wrapped spans. Two-pass: first find positions in
+  // the raw text, then rebuild the escaped output with insertions.
+  const lowerClause = clause.toLowerCase();
+  const insertions = [];  // { start, end, html }
+  const claimed = new Array(clause.length).fill(false);
+  for(const issue of sorted){
+    if(!issue.phrase) continue;
+    const needle = issue.phrase.toLowerCase();
+    let pos = 0;
+    while(pos < lowerClause.length){
+      const idx = lowerClause.indexOf(needle, pos);
+      if(idx < 0) break;
+      // Skip if any character in this span is already claimed by a longer issue
+      let conflict = false;
+      for(let i = idx; i < idx + needle.length; i++){ if(claimed[i]){ conflict = true; break; } }
+      if(!conflict){
+        for(let i = idx; i < idx + needle.length; i++) claimed[i] = true;
+        const sev = (issue.severity === 'major') ? 'grammar-major' : 'grammar-minor';
+        const tipParts = [];
+        if(issue.type) tipParts.push('[' + issue.type + ']');
+        if(issue.fix) tipParts.push('→ ' + issue.fix);
+        if(issue.rationale) tipParts.push(issue.rationale);
+        insertions.push({ start: idx, end: idx + needle.length, sev, tip: tipParts.join('  ') });
+      }
+      pos = idx + needle.length;
     }
-    return escapeHtml(tok);
+  }
+  // Sort insertions left-to-right and rebuild
+  insertions.sort((a,b) => a.start - b.start);
+  let out = '';
+  let cursor = 0;
+  for(const ins of insertions){
+    out += escapeHtml(clause.slice(cursor, ins.start));
+    out += `<span class="ann-seg ${ins.sev}" title="${escapeHtml(ins.tip)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
+    cursor = ins.end;
+  }
+  out += escapeHtml(clause.slice(cursor));
+  return out;
+}
+
+// v19.12: annotateSpelling now operates on either raw text OR already-annotated
+// HTML. When the input contains <span> tags (from grammar annotation), we walk
+// only the text *between* tags so we don't shred them. This lets the renderer
+// chain grammar-first, then spelling, on the same clause.
+function annotateSpelling(clauseOrHtml, spellWords, alreadyHtml){
+  if(Object.keys(spellWords).length === 0) return alreadyHtml ? clauseOrHtml : escapeHtml(clauseOrHtml);
+  if(!alreadyHtml){
+    // Original path — raw text. Tokenize and annotate.
+    const parts = clauseOrHtml.split(/(\s+|[.,;:!?"'()])/);
+    return parts.map(tok => {
+      const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
+      if(stripped && spellWords[stripped] !== undefined){
+        const fix = spellWords[stripped];
+        return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${escapeHtml(tok)}</span>`;
+      }
+      return escapeHtml(tok);
+    }).join('');
+  }
+  // HTML mode — walk text nodes between <span>…</span> blocks. Plain split on
+  // tag boundaries works because annotateGrammar only ever produces <span>…</span>.
+  const parts = clauseOrHtml.split(/(<span[^>]*>[\s\S]*?<\/span>)/);
+  return parts.map(p => {
+    if(p.startsWith('<span')) return p;  // pass-through, do not mutate
+    if(!p) return p;
+    // p is already escaped HTML of raw text — un-escape just enough to tokenize,
+    // re-escape on output. Simplest: treat p as text and re-escape it through
+    // the raw path. Since p was produced by escapeHtml originally, the round-trip
+    // is safe for ASCII.
+    const tokParts = p.split(/(\s+|[.,;:!?"'()]|&[a-z]+;)/);
+    return tokParts.map(tok => {
+      // Skip entities and pure whitespace/punct.
+      if(tok.startsWith('&') && tok.endsWith(';')) return tok;
+      const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
+      if(stripped && spellWords[stripped] !== undefined){
+        const fix = spellWords[stripped];
+        return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${tok}</span>`;
+      }
+      return tok;
+    }).join('');
   }).join('');
+}
+
+// v19.12: tab switcher for the right-side panel (Student Summary <-> Sample
+// Answer). Non-destructive — both views are rendered; we just toggle display.
+function switchSbsView(view){
+  const isSample = (view === 'sample');
+  const vSum = document.getElementById('sbsViewSummary');
+  const vSam = document.getElementById('sbsViewSample');
+  const tSum = document.getElementById('sbsTabSummary');
+  const tSam = document.getElementById('sbsTabSample');
+  if(!vSum || !vSam || !tSum || !tSam) return;
+  vSum.style.display = isSample ? 'none' : '';
+  vSam.style.display = isSample ? '' : 'none';
+  tSum.classList.toggle('active', !isSample);
+  tSam.classList.toggle('active', isSample);
+  tSum.setAttribute('aria-selected', isSample ? 'false' : 'true');
+  tSam.setAttribute('aria-selected', isSample ? 'true' : 'false');
 }
 
 function renderTraitBreakdown(data, traits){

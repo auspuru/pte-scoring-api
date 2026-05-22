@@ -3373,6 +3373,9 @@ Respond ONLY with valid JSON, no other text. Use this exact structure:
   "feedback_note": "one short sentence of actionable feedback",
   "recommended_swaps": [
     { "word": "made", "context": "made a lifestyle choice", "synonyms": ["opted for", "decided on", "selected"], "rationale": "Academic register lifts Reading skill" }
+  ],
+  "grammar_annotations": [
+    { "phrase": "verbatim text from the summary", "fix": "the corrected version", "severity": "major", "type": "subject-verb", "rationale": "one short clause explaining why" }
   ]
 }
 
@@ -3380,7 +3383,24 @@ Notes on the schema:
 - per_idea_scores keys: only the labels actually present in the KEY IDEAS above (what/why/how/result OR topic/pivot/conclusion).
 - per_idea_scores values: ONLY 1.0 (captured) or 0.0 (missing). Do NOT use 0.5 or other fractional values.
 - content_score: SUM of per_idea_scores values (equals length(ideas_captured)).
-- ideas_captured / ideas_missing: lengths must sum to ${totalIdeas}.`;
+- ideas_captured / ideas_missing: lengths must sum to ${totalIdeas}.
+
+GRAMMAR ANNOTATIONS — VERY IMPORTANT:
+Return ONE entry per distinct grammar issue you find in the SUMMARY. Be COMPREHENSIVE — flag everything from major errors to subtle stylistic issues. Aim for 3–10 annotations per typical summary; an unusually clean summary may have 0–2, a weak one may have 8–12.
+
+Each annotation needs all five fields:
+- "phrase": the EXACT verbatim substring of the summary to highlight. Must appear character-for-character in the student's text. Keep it short (2–8 words usually) — just enough to locate the issue.
+- "fix": what the phrase should say instead.
+- "severity": one of "major" or "minor".
+  - "major" = subject-verb agreement, tense errors, wrong word (their/there), missing articles where required, run-on sentences, fragments, ambiguous pronoun reference.
+  - "minor" = stylistic preferences, comma optionality, register issues, redundancies, awkward but technically grammatical phrasing.
+- "type": short tag — one of: "subject-verb", "tense", "article", "preposition", "punctuation", "register", "redundancy", "word-choice", "fragment", "run-on", "pronoun", "style".
+- "rationale": one short clause (under 80 chars) explaining why this is wrong. NO long explanations.
+
+Critical rules for "phrase":
+- Must be a VERBATIM substring of the student's summary. Do NOT paraphrase, do NOT add quotes, do NOT change capitalization.
+- If the same issue appears twice, return TWO entries with each occurrence's phrase (they may be different substrings).
+- If there are no issues at all, return an empty array. Do not invent issues to fill the array.`;
 
   try {
     const callPromise = anthropic.messages.create({
@@ -4086,6 +4106,27 @@ app.post('/api/grade', async (req, res) => {
         connector_quality: grammar.connector_quality,
         has_semicolon_before_connector: grammar.has_semicolon_before_connector,
         grammar_issues: grammar.grammar_issues,
+        // v19.12: inline grammar annotations from Claude. Each entry has phrase
+        // (verbatim substring), fix, severity (major/minor), type, rationale.
+        // The frontend renders these as tooltipped underlines on the summary.
+        // Filtered to only include phrases that actually appear in the student's
+        // text — Claude occasionally paraphrases despite the instruction, and we
+        // never want a tooltip that points to text the student didn't write.
+        grammar_annotations: (() => {
+          const ann = Array.isArray(contentVerdict.grammar_annotations) ? contentVerdict.grammar_annotations : [];
+          const lc = (text || '').toLowerCase();
+          return ann
+            .filter(a => a && typeof a.phrase === 'string' && typeof a.fix === 'string' && a.phrase.length > 0)
+            .filter(a => lc.includes(a.phrase.toLowerCase()))
+            .map(a => ({
+              phrase: a.phrase,
+              fix: String(a.fix).slice(0, 200),
+              severity: (a.severity === 'major' || a.severity === 'minor') ? a.severity : 'minor',
+              type: typeof a.type === 'string' ? a.type.slice(0, 30) : 'style',
+              rationale: typeof a.rationale === 'string' ? a.rationale.slice(0, 120) : ''
+            }))
+            .slice(0, 20);  // hard cap to prevent runaway
+        })(),
         first_person: grammar.first_person,
         spelling_errors: spelling.errors,
         spelling_suggestions: spelling.suggestions,
