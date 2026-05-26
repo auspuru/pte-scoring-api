@@ -3406,23 +3406,47 @@ Each annotation needs all five fields:
 - "fix": the corrected version of the phrase.
 - "severity": "major" (subject-verb, tense, wrong word, missing required article, run-on, fragment, ambiguous pronoun) OR "minor" (style, register, optional comma, redundancy, awkward but grammatical).
 - "type": short tag — one of: "subject-verb", "tense", "article", "preposition", "punctuation", "register", "redundancy", "word-choice", "fragment", "run-on", "pronoun", "style".
-- "rationale": a PLAIN-ENGLISH explanation aimed at a 15-year-old student, NOT a grammar teacher. Maximum 15 words. The rationale must STAND ALONE — never reference the type tag, never use grammar jargon like "subject-verb agreement", "colloquial", "register", "verbatim", "coordinating conjunction", "antecedent", "predicate". The student will see ONLY the rationale (the type tag is hidden from them), so it must make complete sense by itself.
+- "rationale": a PLAIN-ENGLISH explanation aimed at a 15-year-old student with NO grammar education. The student sees ONLY this rationale — the type tag is hidden — so it must stand alone and make complete sense. Aim for 20–30 words: usually two short sentences. First sentence: explain what's wrong in everyday language. Second sentence: tell them what to do instead and why.
+
+ABSOLUTE BAN — these words and phrases must NEVER appear in a rationale (they are textbook-speak that confuses students):
+- "subject-verb agreement", "subject", "predicate", "verb form", "verb tense"
+- "third-person", "first-person", "second-person", "singular", "plural" used as nouns
+- "agreement", "antecedent", "modifier", "clause", "phrase" (as grammar terms)
+- "conjunction", "coordinating", "subordinating", "preposition" (as labels)
+- "noun", "pronoun", "article" used to label parts of speech
+- "colloquial", "register", "informal register", "formal register"
+- "verbatim", "paraphrase"
+
+WHAT TO DO INSTEAD: refer to the actual words in the student's sentence. Talk about what they MEAN, not what they ARE.
+- Wrong: "Singular noun requires singular verb form." 
+- Wrong: "Third-person singular subject 'study' requires verb 'shows'."
+- Right: "Only one study is being talked about. When the thing doing the action is one, write 'shows' (with an 's') not 'show'."
 
 RATIONALE STYLE — examples of GOOD vs BAD:
-- BAD:  "Subject-verb agreement; singular noun takes singular verb."
-  GOOD: "'Study' is one thing, so use 'shows' not 'show'."
-- BAD:  "'Giving' is colloquial and inaccurate; passage uses 'face damages'."
-  GOOD: "Cities aren't giving money — they're losing it. Use 'facing'."
-- BAD:  "Article 'the' required before specific noun."
-  GOOD: "Add 'the' before 'sector' — it refers to a specific one."
-- BAD:  "Comma splice; replace with semicolon or conjunction."
-  GOOD: "Two complete sentences joined by just a comma. Use a semicolon."
-- BAD:  "Wordy connector; 'because' is more concise than 'due to the fact that'."
-  GOOD: "'Due to the fact that' is wordy. Just write 'because'."
-- BAD:  "Misspelling of 'monthly'."
-  GOOD: "Spelled wrong. Should be 'monthly'."
 
-The rationale should TEACH, not LABEL. Explain what's wrong in concrete terms and what to do instead. NEVER include the words "colloquial", "register", "subject-verb", "predicate", "antecedent", "agreement", "conjunction", "modifier", "clause", "coordinating", "subordinating".
+BAD:  "Subject-verb agreement; singular noun takes singular verb."
+BAD:  "Third-person singular subject 'study' requires verb 'shows', not 'show'."
+GOOD: "Only one study is mentioned, not many. When one thing does an action, the verb ends in 's' — write 'shows', not 'show'."
+
+BAD:  "'Giving' is colloquial and inaccurate; passage uses 'face damages'."
+GOOD: "'Giving' sounds like the cities are donating money, but they're actually losing it. Use 'facing' to show they're suffering the damage."
+
+BAD:  "Definite article 'the' required before specific singular noun."
+GOOD: "You're talking about one specific industry, not industries in general. Add 'the' before 'sector' to point to that one."
+
+BAD:  "Comma splice; replace with semicolon or coordinating conjunction."
+GOOD: "These are two complete sentences joined by only a comma — that's too weak. Use a semicolon ( ; ) or add 'and' after the comma."
+
+BAD:  "Wordy connector; 'because' is more concise than 'due to the fact that'."
+GOOD: "'Due to the fact that' is five words doing the work of one. Just say 'because' — it means exactly the same thing."
+
+BAD:  "Misspelling of 'monthly'."
+GOOD: "Spelled wrong. It should be 'monthly' (m-o-n-t-h-l-y) — the letter 'h' goes after 'nt'."
+
+BAD:  "Pronoun 'they' lacks clear antecedent."
+GOOD: "'They' could mean the cities OR the nations from earlier — it's unclear. Replace it with the specific group you mean."
+
+The rationale must TEACH the student something they can apply next time, not LABEL the error category. Imagine you're a friendly tutor explaining over a student's shoulder, not a textbook.
 
 Critical:
 - "phrase" MUST be a verbatim substring. The frontend filters out any annotation whose phrase isn't in the text.

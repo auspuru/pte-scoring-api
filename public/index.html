@@ -1914,6 +1914,11 @@ function annotateGrammar(clause, issues){
       for(const pop of open){
         if(pop._target === target){ closePopover(pop); return; }
       }
+      // v19.14: only ONE popover open at a time. Close any other open ones
+      // before showing this new one. (Previously multiple could stack — but
+      // that gets visually busy on summaries with several errors. A student
+      // typically wants to read one explanation at a time anyway.)
+      closeAll();
       const pop = buildPopover(target);
       if(!pop) return;
       pop._target = target;
