@@ -428,12 +428,59 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
 .ann-seg.grammar-major {
   background: rgba(201, 79, 79, 0.10);
   border-bottom: 2px solid #c94f4f;
-  cursor: help;
+  cursor: pointer;
 }
 .ann-seg.grammar-minor {
   background: rgba(201, 162, 75, 0.10);
   border-bottom: 1px dashed #C9A24B;
-  cursor: help;
+  cursor: pointer;
+}
+/* v19.13: hover state to hint at clickability (richer than just :help cursor) */
+.ann-seg.grammar-major:hover { background: rgba(201, 79, 79, 0.18); }
+.ann-seg.grammar-minor:hover { background: rgba(201, 162, 75, 0.18); }
+
+/* v19.13: click-to-pin grammar popover. Floats above the document, positioned
+   relative to the clicked phrase. Multiple can be open. Dismiss with × or by
+   clicking outside. Designed for plain-English explanations, not jargon. */
+.gp-popover {
+  position: absolute;
+  z-index: 5000;
+  max-width: 280px;
+  background: #FBF8F1;
+  border: 1px solid #D9CFB6;
+  border-radius: 6px;
+  padding: 10px 30px 10px 12px;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  box-shadow: 0 4px 14px rgba(60, 40, 20, 0.18);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+}
+.gp-popover.gp-shown { opacity: 1; transform: translateY(0); }
+.gp-popover.gp-closing { opacity: 0; transform: translateY(-4px); }
+.gp-popover .gp-close {
+  position: absolute; top: 6px; right: 8px;
+  background: none; border: none;
+  font-size: 17px; line-height: 1;
+  color: var(--ink-faint);
+  cursor: pointer; padding: 2px 4px;
+  border-radius: 3px;
+}
+.gp-popover .gp-close:hover { color: var(--ink); background: rgba(0,0,0,0.05); }
+.gp-popover .gp-fix {
+  font-weight: 600; color: #4a2818;
+  margin-bottom: 4px;
+}
+.gp-popover .gp-arrow {
+  color: #c94f4f; margin-right: 2px; font-weight: 700;
+}
+.gp-popover .gp-rationale {
+  color: var(--ink-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
 /* v19.12: side-by-side right-column toggle (Student Summary <-> Sample Answer).
@@ -1730,11 +1777,18 @@ function annotateGrammar(clause, issues){
       if(!conflict){
         for(let i = idx; i < idx + needle.length; i++) claimed[i] = true;
         const sev = (issue.severity === 'major') ? 'grammar-major' : 'grammar-minor';
+        // v19.13: hover tooltip is plain-English only — no [type] tag.
+        // Fix and rationale are also stored as data-attrs so the click handler
+        // can build a richer pinned popover.
         const tipParts = [];
-        if(issue.type) tipParts.push('[' + issue.type + ']');
         if(issue.fix) tipParts.push('→ ' + issue.fix);
         if(issue.rationale) tipParts.push(issue.rationale);
-        insertions.push({ start: idx, end: idx + needle.length, sev, tip: tipParts.join('  ') });
+        insertions.push({
+          start: idx, end: idx + needle.length, sev,
+          tip: tipParts.join('  '),
+          fix: issue.fix || '',
+          rationale: issue.rationale || ''
+        });
       }
       pos = idx + needle.length;
     }
@@ -1743,14 +1797,154 @@ function annotateGrammar(clause, issues){
   insertions.sort((a,b) => a.start - b.start);
   let out = '';
   let cursor = 0;
+  // v19.13: attribute-context escaping. escapeHtml uses textContent/innerHTML
+  // which doesn't escape quotes — fine for text content but unsafe in
+  // attributes. attrEscape replaces &, <, ", and ' explicitly.
+  const attrEscape = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   for(const ins of insertions){
     out += escapeHtml(clause.slice(cursor, ins.start));
-    out += `<span class="ann-seg ${ins.sev}" title="${escapeHtml(ins.tip)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
+    out += `<span class="ann-seg ${ins.sev}" title="${attrEscape(ins.tip)}" data-fix="${attrEscape(ins.fix)}" data-rationale="${attrEscape(ins.rationale)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
     cursor = ins.end;
   }
   out += escapeHtml(clause.slice(cursor));
   return out;
 }
+
+// v19.13: click-to-pin popover for grammar annotations. Hover gives a quick
+// tooltip peek (browser-native, from the title attribute). Click pins a
+// richer popover with the fix and a plain-English rationale, which stays open
+// until the student dismisses it. Multiple popovers can be pinned at once.
+// Uses event delegation on the annotated submission, so it auto-rewires on
+// every re-render — no setup needed after each scoring.
+(function setupGrammarPopovers(){
+  // Track open popovers so we can dismiss them on outside-click / Escape.
+  // We don't pre-build any DOM — popovers are created on demand and appended
+  // to document.body so they escape any container's overflow:hidden.
+  const open = new Set();
+
+  function closePopover(pop){
+    if(!pop) return;
+    pop.classList.add('gp-closing');
+    setTimeout(() => { if(pop.parentNode) pop.parentNode.removeChild(pop); }, 120);
+    open.delete(pop);
+  }
+
+  function closeAll(){
+    [...open].forEach(closePopover);
+  }
+
+  function buildPopover(target){
+    const fix = target.getAttribute('data-fix') || '';
+    const rationale = target.getAttribute('data-rationale') || '';
+    // If there's nothing to show, do nothing.
+    if(!fix && !rationale) return null;
+
+    const pop = document.createElement('div');
+    pop.className = 'gp-popover';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Grammar feedback');
+
+    const close = document.createElement('button');
+    close.className = 'gp-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    close.textContent = '×';
+    close.addEventListener('click', (e) => { e.stopPropagation(); closePopover(pop); });
+    pop.appendChild(close);
+
+    if(fix){
+      const fixEl = document.createElement('div');
+      fixEl.className = 'gp-fix';
+      // Render as an arrow + the fix. The arrow is a visual cue, not a label.
+      const arrow = document.createElement('span');
+      arrow.className = 'gp-arrow';
+      arrow.textContent = '→';
+      fixEl.appendChild(arrow);
+      fixEl.appendChild(document.createTextNode(' ' + fix));
+      pop.appendChild(fixEl);
+    }
+
+    if(rationale){
+      const ratEl = document.createElement('div');
+      ratEl.className = 'gp-rationale';
+      ratEl.textContent = rationale;
+      pop.appendChild(ratEl);
+    }
+
+    return pop;
+  }
+
+  function positionPopover(pop, target){
+    // Position the popover below the target by default. If that would clip
+    // below the viewport, flip above. If it would clip to the right, shift
+    // left to stay on screen.
+    document.body.appendChild(pop);  // need it in the DOM to measure
+    const rect = target.getBoundingClientRect();
+    const popRect = pop.getBoundingClientRect();
+    const margin = 6;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
+
+    let top = rect.bottom + scrollY + margin;
+    let left = rect.left + scrollX;
+
+    // Flip above if the popover would go off the bottom of the viewport
+    if(rect.bottom + popRect.height + margin > vh){
+      top = rect.top + scrollY - popRect.height - margin;
+    }
+    // Shift left if it would go off the right edge
+    if(left + popRect.width > scrollX + vw - 12){
+      left = scrollX + vw - popRect.width - 12;
+    }
+    // Don't push past the left edge either
+    if(left < scrollX + 8) left = scrollX + 8;
+
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+  }
+
+  // Click delegation — listen on document so we catch clicks anywhere.
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('.ann-seg.grammar-major, .ann-seg.grammar-minor');
+    if(target){
+      e.stopPropagation();
+      // If this exact phrase already has a popover open, close it (toggle).
+      for(const pop of open){
+        if(pop._target === target){ closePopover(pop); return; }
+      }
+      const pop = buildPopover(target);
+      if(!pop) return;
+      pop._target = target;
+      positionPopover(pop, target);
+      open.add(pop);
+      // Pulse animation in
+      requestAnimationFrame(() => { pop.classList.add('gp-shown'); });
+      return;
+    }
+    // Click outside any open popover dismisses ALL of them. We check that
+    // the click target isn't inside an existing popover before closing.
+    if(open.size > 0){
+      const inside = e.target.closest('.gp-popover');
+      if(!inside) closeAll();
+    }
+  });
+
+  // Escape key dismisses all open popovers.
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && open.size > 0){ closeAll(); }
+  });
+
+  // Re-reposition popovers if the page scrolls or resizes (otherwise they
+  // float in mid-air detached from their phrase).
+  window.addEventListener('scroll', () => {
+    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
+  }, { passive: true });
+  window.addEventListener('resize', () => {
+    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
+  });
+})();
 
 // v19.12: annotateSpelling now operates on either raw text OR already-annotated
 // HTML. When the input contains <span> tags (from grammar annotation), we walk

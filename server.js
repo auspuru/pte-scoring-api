@@ -3406,7 +3406,23 @@ Each annotation needs all five fields:
 - "fix": the corrected version of the phrase.
 - "severity": "major" (subject-verb, tense, wrong word, missing required article, run-on, fragment, ambiguous pronoun) OR "minor" (style, register, optional comma, redundancy, awkward but grammatical).
 - "type": short tag — one of: "subject-verb", "tense", "article", "preposition", "punctuation", "register", "redundancy", "word-choice", "fragment", "run-on", "pronoun", "style".
-- "rationale": one short clause (under 80 chars) explaining the issue. No long explanations.
+- "rationale": a PLAIN-ENGLISH explanation aimed at a 15-year-old student, NOT a grammar teacher. Maximum 15 words. The rationale must STAND ALONE — never reference the type tag, never use grammar jargon like "subject-verb agreement", "colloquial", "register", "verbatim", "coordinating conjunction", "antecedent", "predicate". The student will see ONLY the rationale (the type tag is hidden from them), so it must make complete sense by itself.
+
+RATIONALE STYLE — examples of GOOD vs BAD:
+- BAD:  "Subject-verb agreement; singular noun takes singular verb."
+  GOOD: "'Study' is one thing, so use 'shows' not 'show'."
+- BAD:  "'Giving' is colloquial and inaccurate; passage uses 'face damages'."
+  GOOD: "Cities aren't giving money — they're losing it. Use 'facing'."
+- BAD:  "Article 'the' required before specific noun."
+  GOOD: "Add 'the' before 'sector' — it refers to a specific one."
+- BAD:  "Comma splice; replace with semicolon or conjunction."
+  GOOD: "Two complete sentences joined by just a comma. Use a semicolon."
+- BAD:  "Wordy connector; 'because' is more concise than 'due to the fact that'."
+  GOOD: "'Due to the fact that' is wordy. Just write 'because'."
+- BAD:  "Misspelling of 'monthly'."
+  GOOD: "Spelled wrong. Should be 'monthly'."
+
+The rationale should TEACH, not LABEL. Explain what's wrong in concrete terms and what to do instead. NEVER include the words "colloquial", "register", "subject-verb", "predicate", "antecedent", "agreement", "conjunction", "modifier", "clause", "coordinating", "subordinating".
 
 Critical:
 - "phrase" MUST be a verbatim substring. The frontend filters out any annotation whose phrase isn't in the text.
