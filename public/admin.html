@@ -523,7 +523,11 @@ async function openPortalAsUser(username) {
     }
     // Open /practice with the impersonation token. New tab so the admin panel
     // stays open in the original tab.
-    window.open('/practice?impersonate=' + encodeURIComponent(d.token), '_blank');
+    // Open as /index — on this deployment, the catch-all serves the practice
+    // UI under that path (index.html on Railway is practice.html with all the
+    // student features). Using /index instead of /practice.html matches the URL
+    // students already use.
+    window.open('/index?impersonate=' + encodeURIComponent(d.token), '_blank');
   } catch (e) {
     toast('Network error: ' + e.message);
   }
