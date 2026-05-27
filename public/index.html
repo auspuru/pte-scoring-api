@@ -352,6 +352,51 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   max-width: 560px;
 }
 .trait-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* v19.15: small sync-state indicator under the verdict. Three visual states:
+   • saving  — neutral grey with a subtle dot
+   • saved   — quiet confirmation in muted green
+   • failed  — amber warning (NOT red — student's data is still safe locally) */
+.sync-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ui-font);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  margin-top: 10px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.04);
+  transition: opacity 0.3s, background 0.2s;
+}
+.sync-status::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.sync-status.sync-saving { color: #6a6a6a; }
+.sync-status.sync-saving::before {
+  background: #888;
+  animation: sync-pulse 1.2s ease-in-out infinite;
+}
+.sync-status.sync-saved {
+  color: #2b5e4f;
+  background: rgba(43, 94, 79, 0.08);
+}
+.sync-status.sync-failed {
+  color: #8a6a1c;
+  background: rgba(201, 162, 75, 0.16);
+}
+@keyframes sync-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
 .trait-chip {
   font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
   padding: 4px 10px; border-radius: 999px;
@@ -428,12 +473,59 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
 .ann-seg.grammar-major {
   background: rgba(201, 79, 79, 0.10);
   border-bottom: 2px solid #c94f4f;
-  cursor: help;
+  cursor: pointer;
 }
 .ann-seg.grammar-minor {
   background: rgba(201, 162, 75, 0.10);
   border-bottom: 1px dashed #C9A24B;
-  cursor: help;
+  cursor: pointer;
+}
+/* v19.13: hover state to hint at clickability (richer than just :help cursor) */
+.ann-seg.grammar-major:hover { background: rgba(201, 79, 79, 0.18); }
+.ann-seg.grammar-minor:hover { background: rgba(201, 162, 75, 0.18); }
+
+/* v19.13: click-to-pin grammar popover. Floats above the document, positioned
+   relative to the clicked phrase. Multiple can be open. Dismiss with × or by
+   clicking outside. Designed for plain-English explanations, not jargon. */
+.gp-popover {
+  position: absolute;
+  z-index: 5000;
+  max-width: 280px;
+  background: #FBF8F1;
+  border: 1px solid #D9CFB6;
+  border-radius: 6px;
+  padding: 10px 30px 10px 12px;
+  font-family: var(--ui-font);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  box-shadow: 0 4px 14px rgba(60, 40, 20, 0.18);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+}
+.gp-popover.gp-shown { opacity: 1; transform: translateY(0); }
+.gp-popover.gp-closing { opacity: 0; transform: translateY(-4px); }
+.gp-popover .gp-close {
+  position: absolute; top: 6px; right: 8px;
+  background: none; border: none;
+  font-size: 17px; line-height: 1;
+  color: var(--ink-faint);
+  cursor: pointer; padding: 2px 4px;
+  border-radius: 3px;
+}
+.gp-popover .gp-close:hover { color: var(--ink); background: rgba(0,0,0,0.05); }
+.gp-popover .gp-fix {
+  font-weight: 600; color: #4a2818;
+  margin-bottom: 4px;
+}
+.gp-popover .gp-arrow {
+  color: #c94f4f; margin-right: 2px; font-weight: 700;
+}
+.gp-popover .gp-rationale {
+  color: var(--ink-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 
 /* v19.12: side-by-side right-column toggle (Student Summary <-> Sample Answer).
@@ -869,6 +961,10 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
         <div class="display" id="heroVerdict">—</div>
         <div class="result-summary" id="heroSummary"></div>
         <div class="trait-chips" id="heroTraitChips"></div>
+        <!-- v19.15: small sync-state pill. Hidden by default; appears briefly
+             after each scoring to confirm the data persisted (or to alert
+             the student if it didn't). Hides itself 4s after 'saved'. -->
+        <div class="sync-status" id="syncStatus" style="display:none;"></div>
       </div>
       <div class="results-hero-actions">
         <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
@@ -977,6 +1073,7 @@ let STORAGE_KEYS = getUserKeys('');
 const LocalStore = {
   get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
+  remove(k){ try{ localStorage.removeItem(k); return true; }catch(e){ return false; } },
   getUserId(){ return localStorage.getItem(BASE_KEYS.USER_ID) || ''; },
   setUserId(id){ try{ localStorage.setItem(BASE_KEYS.USER_ID, id); }catch(e){} }
 };
@@ -1057,6 +1154,11 @@ async function enterApp(uid, opts){
   showScreen('practiceScreen');
   await loadPassages();
   loadStoredData();
+  // v19.15: if there's leftover unsynced state in localStorage from a previous
+  // session (tab closed mid-push, network failed, etc), push it BEFORE pulling.
+  // Otherwise the pull would overwrite local-only changes with the older
+  // server state. The push endpoint merges histories, so this is safe.
+  await retryUnsyncedFromPriorSession();
   await pullFromServer();
   loadPassage(1);
   checkAIStatus();
@@ -1301,7 +1403,7 @@ async function scoreSummary(){
     }
     lastSpellData = spellData;
 
-    saveAttempt(currentId, text, data, spellData);
+    saveAttempt(currentId, text, data, spellData);  // fire-and-forget visually; sync happens asynchronously inside
     attempted.add(currentId);
     stopTimer();
     // v19.11: if the server returned the live passage (current key elements +
@@ -1324,7 +1426,7 @@ async function scoreSummary(){
   }
 }
 
-function saveAttempt(pid, text, data, spellData){
+async function saveAttempt(pid, text, data, spellData){
   const ts = new Date().toISOString();
   const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
   if(!att.includes(pid)){ att.push(pid); LocalStore.set(STORAGE_KEYS.ATTEMPTED, att); }
@@ -1349,7 +1451,53 @@ function saveAttempt(pid, text, data, spellData){
   if(h[pid].length > 10) h[pid] = h[pid].slice(0,10);
   LocalStore.set(STORAGE_KEYS.HISTORY, h);
 
-  pushToServer();
+  // v19.15: previously this was fire-and-forget (no await), so a slow tab-close
+  // would lose the network request mid-flight. Now we await the push and
+  // surface failures to the student. Their local data is safe regardless —
+  // the issue we're fixing is "data shows up on this device but not when they
+  // log in elsewhere", which means we need to confirm the server actually
+  // persisted it.
+  updateSyncStatus('saving');
+  const result = await pushToServer();
+  if(result.ok){
+    updateSyncStatus('saved');
+  } else {
+    updateSyncStatus('failed');
+    // Non-blocking toast — the student can see their score immediately, but
+    // they also know to re-submit or stay on this device if it matters.
+    if(typeof toast === 'function'){
+      toast("Couldn't save to server — your work is safe on this device. Will retry.");
+    }
+  }
+}
+
+// v19.15: small status pill near the score showing sync state.
+// States: 'saving' | 'saved' | 'failed'. Updates the #syncStatus element
+// in the results header (added in the HTML). Auto-hides after 'saved' for
+// 4 seconds so the UI doesn't stay cluttered.
+let syncStatusHideTimer = null;
+function updateSyncStatus(state){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  clearTimeout(syncStatusHideTimer);
+  el.className = 'sync-status sync-' + state;
+  if(state === 'saving'){
+    el.textContent = 'Saving…';
+    el.style.display = '';
+  } else if(state === 'saved'){
+    const ts = LocalStore.get('pte_last_synced_at');
+    el.textContent = ts ? 'Saved' : 'Saved';
+    el.style.display = '';
+    // Fade out after a beat
+    syncStatusHideTimer = setTimeout(() => {
+      if(el) el.style.display = 'none';
+    }, 4000);
+  } else if(state === 'failed'){
+    el.textContent = 'Save failed — will retry';
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 function loadPreviousAnswer(){
@@ -1730,11 +1878,18 @@ function annotateGrammar(clause, issues){
       if(!conflict){
         for(let i = idx; i < idx + needle.length; i++) claimed[i] = true;
         const sev = (issue.severity === 'major') ? 'grammar-major' : 'grammar-minor';
+        // v19.13: hover tooltip is plain-English only — no [type] tag.
+        // Fix and rationale are also stored as data-attrs so the click handler
+        // can build a richer pinned popover.
         const tipParts = [];
-        if(issue.type) tipParts.push('[' + issue.type + ']');
         if(issue.fix) tipParts.push('→ ' + issue.fix);
         if(issue.rationale) tipParts.push(issue.rationale);
-        insertions.push({ start: idx, end: idx + needle.length, sev, tip: tipParts.join('  ') });
+        insertions.push({
+          start: idx, end: idx + needle.length, sev,
+          tip: tipParts.join('  '),
+          fix: issue.fix || '',
+          rationale: issue.rationale || ''
+        });
       }
       pos = idx + needle.length;
     }
@@ -1743,14 +1898,159 @@ function annotateGrammar(clause, issues){
   insertions.sort((a,b) => a.start - b.start);
   let out = '';
   let cursor = 0;
+  // v19.13: attribute-context escaping. escapeHtml uses textContent/innerHTML
+  // which doesn't escape quotes — fine for text content but unsafe in
+  // attributes. attrEscape replaces &, <, ", and ' explicitly.
+  const attrEscape = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   for(const ins of insertions){
     out += escapeHtml(clause.slice(cursor, ins.start));
-    out += `<span class="ann-seg ${ins.sev}" title="${escapeHtml(ins.tip)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
+    out += `<span class="ann-seg ${ins.sev}" title="${attrEscape(ins.tip)}" data-fix="${attrEscape(ins.fix)}" data-rationale="${attrEscape(ins.rationale)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
     cursor = ins.end;
   }
   out += escapeHtml(clause.slice(cursor));
   return out;
 }
+
+// v19.13: click-to-pin popover for grammar annotations. Hover gives a quick
+// tooltip peek (browser-native, from the title attribute). Click pins a
+// richer popover with the fix and a plain-English rationale, which stays open
+// until the student dismisses it. Multiple popovers can be pinned at once.
+// Uses event delegation on the annotated submission, so it auto-rewires on
+// every re-render — no setup needed after each scoring.
+(function setupGrammarPopovers(){
+  // Track open popovers so we can dismiss them on outside-click / Escape.
+  // We don't pre-build any DOM — popovers are created on demand and appended
+  // to document.body so they escape any container's overflow:hidden.
+  const open = new Set();
+
+  function closePopover(pop){
+    if(!pop) return;
+    pop.classList.add('gp-closing');
+    setTimeout(() => { if(pop.parentNode) pop.parentNode.removeChild(pop); }, 120);
+    open.delete(pop);
+  }
+
+  function closeAll(){
+    [...open].forEach(closePopover);
+  }
+
+  function buildPopover(target){
+    const fix = target.getAttribute('data-fix') || '';
+    const rationale = target.getAttribute('data-rationale') || '';
+    // If there's nothing to show, do nothing.
+    if(!fix && !rationale) return null;
+
+    const pop = document.createElement('div');
+    pop.className = 'gp-popover';
+    pop.setAttribute('role', 'dialog');
+    pop.setAttribute('aria-label', 'Grammar feedback');
+
+    const close = document.createElement('button');
+    close.className = 'gp-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    close.textContent = '×';
+    close.addEventListener('click', (e) => { e.stopPropagation(); closePopover(pop); });
+    pop.appendChild(close);
+
+    if(fix){
+      const fixEl = document.createElement('div');
+      fixEl.className = 'gp-fix';
+      // Render as an arrow + the fix. The arrow is a visual cue, not a label.
+      const arrow = document.createElement('span');
+      arrow.className = 'gp-arrow';
+      arrow.textContent = '→';
+      fixEl.appendChild(arrow);
+      fixEl.appendChild(document.createTextNode(' ' + fix));
+      pop.appendChild(fixEl);
+    }
+
+    if(rationale){
+      const ratEl = document.createElement('div');
+      ratEl.className = 'gp-rationale';
+      ratEl.textContent = rationale;
+      pop.appendChild(ratEl);
+    }
+
+    return pop;
+  }
+
+  function positionPopover(pop, target){
+    // Position the popover below the target by default. If that would clip
+    // below the viewport, flip above. If it would clip to the right, shift
+    // left to stay on screen.
+    document.body.appendChild(pop);  // need it in the DOM to measure
+    const rect = target.getBoundingClientRect();
+    const popRect = pop.getBoundingClientRect();
+    const margin = 6;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
+
+    let top = rect.bottom + scrollY + margin;
+    let left = rect.left + scrollX;
+
+    // Flip above if the popover would go off the bottom of the viewport
+    if(rect.bottom + popRect.height + margin > vh){
+      top = rect.top + scrollY - popRect.height - margin;
+    }
+    // Shift left if it would go off the right edge
+    if(left + popRect.width > scrollX + vw - 12){
+      left = scrollX + vw - popRect.width - 12;
+    }
+    // Don't push past the left edge either
+    if(left < scrollX + 8) left = scrollX + 8;
+
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+  }
+
+  // Click delegation — listen on document so we catch clicks anywhere.
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('.ann-seg.grammar-major, .ann-seg.grammar-minor');
+    if(target){
+      e.stopPropagation();
+      // If this exact phrase already has a popover open, close it (toggle).
+      for(const pop of open){
+        if(pop._target === target){ closePopover(pop); return; }
+      }
+      // v19.14: only ONE popover open at a time. Close any other open ones
+      // before showing this new one. (Previously multiple could stack — but
+      // that gets visually busy on summaries with several errors. A student
+      // typically wants to read one explanation at a time anyway.)
+      closeAll();
+      const pop = buildPopover(target);
+      if(!pop) return;
+      pop._target = target;
+      positionPopover(pop, target);
+      open.add(pop);
+      // Pulse animation in
+      requestAnimationFrame(() => { pop.classList.add('gp-shown'); });
+      return;
+    }
+    // Click outside any open popover dismisses ALL of them. We check that
+    // the click target isn't inside an existing popover before closing.
+    if(open.size > 0){
+      const inside = e.target.closest('.gp-popover');
+      if(!inside) closeAll();
+    }
+  });
+
+  // Escape key dismisses all open popovers.
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && open.size > 0){ closeAll(); }
+  });
+
+  // Re-reposition popovers if the page scrolls or resizes (otherwise they
+  // float in mid-air detached from their phrase).
+  window.addEventListener('scroll', () => {
+    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
+  }, { passive: true });
+  window.addEventListener('resize', () => {
+    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
+  });
+})();
 
 // v19.12: annotateSpelling now operates on either raw text OR already-annotated
 // HTML. When the input contains <span> tags (from grammar annotation), we walk
@@ -2088,8 +2388,20 @@ async function pullFromServer(){
   } catch(e){ /* offline — local data still works */ }
 }
 
+// v19.15: pushToServer returns a result object {ok, status, error} so the
+// caller can react to failures (instead of silently swallowing them, which
+// was the v19.10 behaviour and the cause of data-loss-between-devices).
+//
+// The "sync_dirty" flag in localStorage records that there's unsynced state.
+// It's set BEFORE the push starts (so a tab-close mid-flight doesn't clear it)
+// and only cleared on a confirmed-successful response. On page load, we look
+// at this flag and retry the push.
 async function pushToServer(){
-  if(!currentUserId) return;
+  if(!currentUserId) return { ok: false, status: 'no_user' };
+  // Mark dirty before attempting the push. If the push succeeds, we clear it;
+  // if it fails or the tab closes mid-request, we keep it so the next load
+  // knows to retry.
+  LocalStore.set('pte_sync_dirty', { userId: currentUserId, at: Date.now() });
   try {
     const payload = {
       attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
@@ -2097,10 +2409,45 @@ async function pushToServer(){
       scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
       history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}
     };
-    await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{
+    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
     });
-  } catch(e){ /* will retry on next save */ }
+    if(!r.ok){
+      return { ok: false, status: 'server_error', error: 'HTTP ' + r.status };
+    }
+    const d = await r.json();
+    // The server returns either {success:true, stats, passageCount, attemptCount}
+    // or {error: '...'}. Accept any non-error response as success.
+    if(d && d.error){
+      return { ok: false, status: 'server_error', error: d.error };
+    }
+    // Successful — clear the dirty flag and record when we last synced.
+    LocalStore.remove('pte_sync_dirty');
+    LocalStore.set('pte_last_synced_at', Date.now());
+    return { ok: true, status: 'saved', stats: d.stats };
+  } catch(e){
+    // Network failure — dirty flag stays set, next page load will retry.
+    return { ok: false, status: 'network_error', error: e.message };
+  }
+}
+
+// v19.15: on page load (or login), retry pushing any unsynced state from a
+// previous session that didn't complete. Silent unless something's wrong.
+async function retryUnsyncedFromPriorSession(){
+  if(!currentUserId) return;
+  const dirty = LocalStore.get('pte_sync_dirty');
+  if(!dirty || dirty.userId !== currentUserId) return;
+  // Don't retry if dirty is older than 7 days — at that point the data is
+  // stale enough that we trust the server-side state more.
+  if(Date.now() - (dirty.at || 0) > 7 * 24 * 3600 * 1000){
+    LocalStore.remove('pte_sync_dirty');
+    return;
+  }
+  const result = await pushToServer();
+  if(result.ok && typeof toast === 'function'){
+    // Quiet confirmation — only if the retry actually saved something.
+    // Don't bother the student with a banner if everything was already in sync.
+  }
 }
 
 async function checkAIStatus(){
