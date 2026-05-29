@@ -3318,6 +3318,11 @@ optional and not conditional on the summary's quality — EVERY summary, however
 strong, has 7-8 words whose register or precision can be varied. Returning fewer
 than 7 is a failure of this task. Returning an empty list is never acceptable.
 
+CRITICAL: recommended_swaps is just as important as content_score and grammar_annotations.
+If you find yourself focusing heavily on grammar issues, do NOT skip or shorten the swaps —
+they are a separate teaching dimension. Both fields must be fully populated in every response.
+A response with detailed grammar_annotations but empty recommended_swaps is INCOMPLETE.
+
 How to always find 7-8:
 - Scan the summary left to right. For EVERY verb, common noun, adjective, and
   adverb, ask "is there an academic synonym that fits this exact context?" — there
@@ -3456,12 +3461,12 @@ Critical:
   try {
     const callPromise = anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      // v19.12: bumped from 1400 to 2400 because the response now includes
-      // grammar_annotations alongside the existing recommended_swaps (7-8 vocab
-      // entries) and content scoring. Cap was getting hit on long summaries
-      // with the new field, causing JSON to truncate and the whole judge call
-      // to fall back to local — silently dropping grammar_annotations entirely.
-      max_tokens: 2400,
+      // v19.16: bumped from 2400 to 3200. With both recommended_swaps (7-8
+      // entries × multi-line rationale) AND grammar_annotations (3-10 entries
+      // × plain-English rationale that can run 20-30 words), heavily-marked
+      // summaries were occasionally hitting the cap and silently dropping the
+      // swaps array. 3200 leaves comfortable headroom for both.
+      max_tokens: 3200,
       messages: [{ role: 'user', content: prompt }]
     });
     const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
@@ -4305,7 +4310,8 @@ app.post('/api/grade', async (req, res) => {
       // Filter out anything where the word doesn't actually appear in the student text
       // (Claude occasionally suggests swaps for words that aren't present)
       const studentLower = text.toLowerCase();
-      result.vocabulary_swap_suggestions = llmJudgment.recommended_swaps
+      const raw = llmJudgment.recommended_swaps;
+      const filtered = raw
         .filter(s => s && typeof s.word === 'string' && s.word.length > 0
                   && Array.isArray(s.synonyms) && s.synonyms.length > 0
                   && studentLower.includes(s.word.toLowerCase()))
@@ -4317,10 +4323,26 @@ app.post('/api/grade', async (req, res) => {
           rationale: s.rationale || ''
         }))
         .filter(s => s.synonyms.length > 0);
+      result.vocabulary_swap_suggestions = filtered;
       result.swap_source = 'claude';
+      // v19.16 diagnostic: log how many swaps Claude returned vs how many survived
+      // the substring-must-be-in-text filter. If "raw" is consistently low, Claude
+      // is ignoring the prompt's 7-8 mandate. If "raw" is fine but "filtered" is
+      // low, Claude is suggesting words that aren't in the student text (it's
+      // confusing passage words with summary words).
+      console.log(`[grade] vocab swaps: Claude returned ${raw.length}, ${filtered.length} passed filter`);
+      if (raw.length > 0 && filtered.length < raw.length) {
+        const dropped = raw
+          .filter(s => s && s.word && !studentLower.includes(String(s.word).toLowerCase()))
+          .map(s => s.word);
+        if (dropped.length) {
+          console.log(`  dropped swap words (not in student text):`, JSON.stringify(dropped));
+        }
+      }
     } else {
       result.vocabulary_swap_suggestions = [];
       result.swap_source = 'none';
+      console.log(`[grade] vocab swaps: Claude returned no recommended_swaps array`);
     }
     // Keep legacy field empty in v19 — frontend no longer reads it
     result.thesaurus_candidates = [];
