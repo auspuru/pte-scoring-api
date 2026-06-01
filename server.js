@@ -4339,8 +4339,46 @@ app.post('/api/grade', async (req, res) => {
     }
 
     rawScore = Math.max(0, Math.min(maxRaw, rawScore));
-    const overallScore = rawToPTEDynamic(rawScore, maxRaw);
-    const band = rawToBandDynamic(rawScore, maxRaw);
+    let overallScore = rawToPTEDynamic(rawScore, maxRaw);
+    let band = rawToBandDynamic(rawScore, maxRaw);
+
+    // v19.18: rollup softening. When a student has captured ALL the content and
+    // written a valid single-sentence summary (Content full + Form full), a
+    // single weak secondary trait (grammar OR vocab) shouldn't drag the band
+    // down more than half a band. The trait scores themselves are unchanged —
+    // grammar still honestly shows e.g. 1/2 with its feedback — but the OVERALL
+    // band reflects that the substance is fully there. This does NOT apply if
+    // BOTH grammar and vocab are weak (that's a genuinely weaker summary).
+    //
+    // Mechanism: compute the band the student WOULD get if their weaker of the
+    // two secondary traits (grammar/vocab) were bumped to full. The actual band
+    // is then floored at one half-band step below that hypothetical. Half-band
+    // steps, in order, are: 6 → 6.5 → 7 → 7.5 → 8 → 9. The PTE number is floored
+    // to the softened band's minimum so the two stay consistent.
+    const contentFull = (maxContent > 0 && contentScore >= maxContent);
+    const formFull = (form >= 1);
+    const grammarWeak = grammarScore < 2;
+    const vocabWeak = vocab.score < 2;
+    // Band → minimum PTE for that band (matches rawToBandDynamic thresholds).
+    const BAND_MIN_PTE = { 'Band 5': 10, 'Band 6': 27, 'Band 6.5': 39, 'Band 7': 50, 'Band 7.5': 61, 'Band 8': 73, 'Band 9': 84 };
+    // Only soften when exactly ONE secondary trait is weak (not both).
+    if (contentFull && formFull && (grammarWeak !== vocabWeak)) {
+      const BAND_LADDER = ['Band 5','Band 6','Band 6.5','Band 7','Band 7.5','Band 8','Band 9'];
+      const missingPts = (2 - grammarScore) + (2 - vocab.score); // only one is >0 here
+      const hypotheticalRaw = Math.min(maxRaw, rawScore + missingPts);
+      const hypotheticalBand = rawToBandDynamic(hypotheticalRaw, maxRaw);
+      const hypoIdx = BAND_LADDER.indexOf(hypotheticalBand);
+      const actualIdx = BAND_LADDER.indexOf(band);
+      const flooredIdx = Math.max(actualIdx, hypoIdx - 1);
+      if (flooredIdx > actualIdx && flooredIdx >= 0) {
+        const newBand = BAND_LADDER[flooredIdx];
+        // Floor the PTE number to the new band's minimum (only raise, never lower).
+        const newMinPTE = BAND_MIN_PTE[newBand] || overallScore;
+        if (DEBUG) console.log(`[grade] band softened ${band} → ${newBand}, PTE ${overallScore} → ${Math.max(overallScore, newMinPTE)} (content+form full, one weak trait)`);
+        band = newBand;
+        overallScore = Math.max(overallScore, newMinPTE);
+      }
+    }
 
     const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment, maxContent, maxRaw);
     const feedbackCard = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment, maxContent, maxRaw);
@@ -4494,7 +4532,10 @@ app.post('/api/grade', async (req, res) => {
 
     if (userId && req.body.passageId) {
       try { await StorageAPI.saveProgress(userId, req.body.passageId, text, result); result.saved = true; }
-      catch (e) { result.saved = false; }
+      catch (e) { result.saved = false; if (DEBUG) console.error('[grade] saveProgress FAILED — user', userId, 'passage', req.body.passageId, '—', e.message); }
+    } else {
+      result.saved = false;
+      if (DEBUG) console.error('[grade] NOT saving at grade-time — userId:', userId || '(MISSING)', 'passageId:', req.body.passageId || '(MISSING)', '— note: the sync endpoint is the primary save path, so this alone does not mean data is lost.');
     }
 
     // v19.11: attach the LIVE passage's key elements + rationale to the response.
