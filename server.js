@@ -54,6 +54,13 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
+// v19.17.1: Railway (and most PaaS hosts) put the app behind a reverse proxy,
+// so requests arrive with an X-Forwarded-For header. express-rate-limit needs
+// Express to "trust" that proxy to read the real client IP — otherwise it
+// throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR on every request. Trusting one hop
+// (the Railway edge) is correct here. Without this the rate limiter crashes.
+app.set('trust proxy', 1);
+
 // ─── SERVE STATIC FILES (Railway deployment) ─────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -3410,7 +3417,13 @@ function formatKeyElementsHint(keyElements) {
   return parts.join('\n');
 }
 
-async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 12000) {
+async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000) {
+  // v19.17.1: timeout raised from 12s to 30s. The response now budgets 3200
+  // tokens (content scoring + 7-8 vocab swaps + grammar annotations), and a
+  // Haiku response that long can take 15-20s. The old 12s ceiling was
+  // calibrated for the original ~1400-token responses and was cutting Claude
+  // off mid-generation — which is why EVERY grade was timing out and falling
+  // back to the local scorer (no vocab coach, no grammar annotations).
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
   const totalIdeas = countKeyElements(keyElements);
@@ -4125,24 +4138,33 @@ app.post('/api/grade', async (req, res) => {
     const grammar = checkGrammar(text, prompt);
     let spelling = checkSpelling(text, prompt);
 
-    // ── CONTENT JUDGE: Claude first (with one retry), local fallback ──
+    // ── CONTENT JUDGE: Claude first (with a bounded retry), local fallback ──
     // v19.6: also fire the Datamuse spelling enrichment in parallel — both are
     // network-bound, so doing them concurrently saves ~2-4s on slow paths.
-    // C1/F3 (v19.17): most Claude failures are transient (timeout, momentary
-    // rate-limit, occasional truncated JSON). Retrying once eliminates the
-    // majority of "no vocab coach / no grammar annotations" cases that were
-    // caused by a single failed call silently dropping to the local judge.
+    // C1/F3 (v19.17): retry once on failure.
+    // v19.17.1: but be smart about WHICH failures to retry. A timeout means the
+    // model was slow — retrying with the full 30s budget could mean a 60s wait,
+    // which is unacceptable. So: on a timeout, retry only ONCE with a SHORTER
+    // budget (15s) so worst-case total stays ~45s; on a fast error (bad JSON,
+    // momentary network blip), retry with the full budget since it'll likely
+    // return quickly.
     let llmJudgment = null;
     const [_judgeResult, enrichedSpelling] = await Promise.all([
       (async () => {
+        const t0 = Date.now();
+        let firstErr = null;
         try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
-        catch (e) { /* swallow → retry below */ }
+        catch (e) { firstErr = e; }
         if (!llmJudgment) {
-          // brief backoff, then one retry
-          await new Promise(r => setTimeout(r, 400));
-          try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
+          const elapsed = Date.now() - t0;
+          const wasTimeout = firstErr && /timeout/i.test(firstErr.message || '');
+          // If the first attempt already ate most of our time budget on a
+          // timeout, retry with a shorter ceiling; otherwise retry normally.
+          const retryTimeout = wasTimeout ? 15000 : 30000;
+          await new Promise(r => setTimeout(r, 300));
+          try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints, retryTimeout); }
           catch (e) { /* swallow → fallback */ }
-          if (DEBUG) console.log('[grade] Claude judge ' + (llmJudgment ? 'succeeded on retry' : 'failed twice — using local fallback'));
+          if (DEBUG) console.log(`[grade] Claude judge ${llmJudgment ? 'succeeded on retry' : 'failed twice — using local fallback'} (first attempt ${elapsed}ms, timeout=${wasTimeout})`);
         }
       })(),
       enrichSpellingWithDatamuse(spelling, text).catch(() => spelling)
