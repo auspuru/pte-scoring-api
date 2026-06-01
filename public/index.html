@@ -353,6 +353,22 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
 }
 .trait-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* F1 (v19.17): AI-degraded notice — shown when the local fallback scored the
+   attempt. Amber/informational, deliberately not alarming red, because the
+   score IS valid; only the detailed coaching is missing. */
+.ai-degraded-notice {
+  margin-top: 12px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  background: rgba(201, 162, 75, 0.12);
+  border: 1px solid rgba(201, 162, 75, 0.35);
+  color: #6a5212;
+  font-family: var(--ui-font);
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 560px;
+}
+
 /* v19.15: small sync-state indicator under the verdict. Three visual states:
    • saving  — neutral grey with a subtle dot
    • saved   — quiet confirmation in muted green
@@ -744,6 +760,45 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
   cursor: pointer; flex-shrink: 0;
 }
 .imp-banner .imp-exit:hover { background: rgba(255,255,255,0.22); }
+
+/* H5 (v19.17): print / PDF rendering. Browsers drop background colours and
+   underline borders when printing, so grammar annotations become invisible in
+   an exported PDF — losing the most valuable feedback. This print stylesheet
+   forces the marks to show as ink: major errors get a heavy underline + the
+   correction inline, minor get a dotted underline. force-color-adjust keeps the
+   subtle backgrounds where the browser honours it. */
+@media print {
+  .ann-seg.grammar-major,
+  .ann-seg.grammar-minor,
+  .ann-seg.spell {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .ann-seg.grammar-major {
+    text-decoration: underline;
+    text-decoration-color: #c94f4f;
+    text-decoration-thickness: 2px;
+    font-weight: 600;
+  }
+  .ann-seg.grammar-minor {
+    text-decoration: underline dotted;
+    text-decoration-color: #C9A24B;
+  }
+  .ann-seg.spell {
+    text-decoration: underline wavy;
+    text-decoration-color: #c94f4f;
+  }
+  /* Print the correction inline after each major error, pulled from data-fix,
+     so a printed page carries the fix even without hover/click. */
+  .ann-seg.grammar-major[data-fix]:not([data-fix=""])::after {
+    content: " [→ " attr(data-fix) "]";
+    font-size: 0.85em;
+    font-weight: 400;
+    color: #c94f4f;
+  }
+  /* Hide interactive chrome that makes no sense on paper. */
+  .gp-popover, .sync-status, .results-hero-actions, .resultsNav, .imp-banner { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -961,6 +1016,10 @@ textarea.summary-input:focus, textarea.scratch-input:focus {
         <div class="display" id="heroVerdict">—</div>
         <div class="result-summary" id="heroSummary"></div>
         <div class="trait-chips" id="heroTraitChips"></div>
+        <!-- F1 (v19.17): shown only when the AI grader was unavailable and the
+             local fallback scored the attempt. Tells the student the score is
+             accurate but detailed coaching is missing for this attempt. -->
+        <div class="ai-degraded-notice" id="aiDegradedNotice" style="display:none;"></div>
         <!-- v19.15: small sync-state pill. Hidden by default; appears briefly
              after each scoring to confirm the data persisted (or to alert
              the student if it didn't). Hides itself 4s after 'saved'. -->
@@ -1078,6 +1137,14 @@ const LocalStore = {
   setUserId(id){ try{ localStorage.setItem(BASE_KEYS.USER_ID, id); }catch(e){} }
 };
 
+// C3 (v19.17): session token used to authorize sync calls. Stored in memory
+// AND localStorage so it survives a page refresh. During impersonation we hold
+// the admin's short-lived impersonation token here instead (the server accepts
+// both on the sync endpoints).
+let sessionToken = (function(){ try { return localStorage.getItem('pte_session_token') || ''; } catch(e){ return ''; } })();
+function setSessionToken(t){ sessionToken = t || ''; try { if(t) localStorage.setItem('pte_session_token', t); else localStorage.removeItem('pte_session_token'); } catch(e){} }
+function getSessionToken(){ return sessionToken; }
+
 function escapeHtml(t){ if(typeof t!=='string')return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
 /* ─── State ─────────────────────────────────────────────────── */
@@ -1107,7 +1174,7 @@ async function doLogin(){
   try {
     const r = await fetch(API_URL+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw})});
     const d = await r.json();
-    if(d.success){ enterApp(u); }
+    if(d.success){ if(d.token) setSessionToken(d.token); enterApp(u); }
     else { loginErr(d.error || 'Login failed.'); }
   } catch(e){ loginErr('Connection error. Try again.'); }
 }
@@ -1123,7 +1190,7 @@ async function doRegister(){
   try {
     const r = await fetch(API_URL+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa})});
     const d = await r.json();
-    if(d.success){ enterApp(u); }
+    if(d.success){ if(d.token) setSessionToken(d.token); enterApp(u); }
     else { regErr(d.error || 'Registration failed.'); }
   } catch(e){ regErr('Connection error. Try again.'); }
 }
@@ -1177,8 +1244,27 @@ function signOut(){
   currentUserId = '';
   STORAGE_KEYS = getUserKeys('');
   LocalStore.setUserId('');
+  setSessionToken('');  // C3: drop the session token
   showScreen('loginScreen');
   showLogin();
+}
+
+// C3 (v19.17): called when a sync request returns 401/403 (expired or missing
+// session). Drops the user to the login screen with a gentle message. Their
+// local data is untouched and will re-sync once they log in again.
+let _authExpiredHandled = false;
+function handleAuthExpired(){
+  if(_authExpiredHandled) return;  // avoid double-firing from parallel calls
+  if(isImpersonating) return;      // impersonation uses its own token; don't bounce
+  _authExpiredHandled = true;
+  setSessionToken('');
+  currentUserId = '';
+  STORAGE_KEYS = getUserKeys('');
+  LocalStore.setUserId('');
+  showScreen('loginScreen');
+  showLogin();
+  if(typeof loginErr === 'function') loginErr('Your session expired — please sign in again. Your work is saved.');
+  setTimeout(() => { _authExpiredHandled = false; }, 3000);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1428,16 +1514,20 @@ async function scoreSummary(){
 
 async function saveAttempt(pid, text, data, spellData){
   const ts = new Date().toISOString();
+  // H3 (v19.17): track whether any local write fails (quota exceeded, private
+  // mode, etc). If so, the data isn't safe locally, so we must rely on the
+  // server sync — and we tell the student.
+  let localWriteOk = true;
   const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
-  if(!att.includes(pid)){ att.push(pid); LocalStore.set(STORAGE_KEYS.ATTEMPTED, att); }
+  if(!att.includes(pid)){ att.push(pid); if(!LocalStore.set(STORAGE_KEYS.ATTEMPTED, att)) localWriteOk = false; }
 
   const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
   summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
-  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
+  if(!LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries)) localWriteOk = false;
 
   const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
   scores[pid] = Object.assign({}, data, { __text: text, __timestamp: ts, __spellData: spellData || null });
-  LocalStore.set(STORAGE_KEYS.SCORES, scores);
+  if(!LocalStore.set(STORAGE_KEYS.SCORES, scores)) localWriteOk = false;
 
   const h = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
   if(!h[pid]) h[pid] = [];
@@ -1449,7 +1539,7 @@ async function saveAttempt(pid, text, data, spellData){
     scoring_version: data.scoring_version || 'unknown'
   });
   if(h[pid].length > 10) h[pid] = h[pid].slice(0,10);
-  LocalStore.set(STORAGE_KEYS.HISTORY, h);
+  if(!LocalStore.set(STORAGE_KEYS.HISTORY, h)) localWriteOk = false;
 
   // v19.15: previously this was fire-and-forget (no await), so a slow tab-close
   // would lose the network request mid-flight. Now we await the push and
@@ -1461,11 +1551,18 @@ async function saveAttempt(pid, text, data, spellData){
   const result = await pushToServer();
   if(result.ok){
     updateSyncStatus('saved');
+    // H3: if local writes failed but the server save succeeded, the data is
+    // safe on the server — let the student know it's stored but device storage
+    // is full.
+    if(!localWriteOk && typeof toast === 'function'){
+      toast("Your device storage is full — saved to the server instead. Clear some space to keep working offline.");
+    }
   } else {
     updateSyncStatus('failed');
-    // Non-blocking toast — the student can see their score immediately, but
-    // they also know to re-submit or stay on this device if it matters.
-    if(typeof toast === 'function'){
+    // H3: worst case — both local AND server failed. Be explicit.
+    if(!localWriteOk && typeof toast === 'function'){
+      toast("⚠ Could not save this attempt — device storage is full and the server is unreachable. Please copy your summary somewhere safe.");
+    } else if(typeof toast === 'function'){
       toast("Couldn't save to server — your work is safe on this device. Will retry.");
     }
   }
@@ -1500,6 +1597,27 @@ function updateSyncStatus(state){
   }
 }
 
+// H4/F4 (v19.17): human-friendly relative/absolute time for a stored attempt.
+// "just now" / "2 hours ago" / "May 27, 2:14 PM" for older ones.
+function formatAttemptTime(iso){
+  if(!iso) return '';
+  const then = new Date(iso);
+  if(isNaN(then.getTime())) return '';
+  const now = new Date();
+  const diffMs = now - then;
+  const diffMin = Math.round(diffMs / 60000);
+  if(diffMin < 1) return 'just now';
+  if(diffMin < 60) return diffMin + (diffMin === 1 ? ' minute ago' : ' minutes ago');
+  const diffHr = Math.round(diffMin / 60);
+  if(diffHr < 24) return diffHr + (diffHr === 1 ? ' hour ago' : ' hours ago');
+  // Older — show an absolute date/time.
+  try {
+    return then.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  } catch(e){
+    return then.toISOString().slice(0,16).replace('T',' ');
+  }
+}
+
 function loadPreviousAnswer(){
   const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
   const stored = scores[currentId];
@@ -1519,8 +1637,16 @@ function showResults(data, passage, spellData, submittedText){
   const band = data.band || 'Band 5';
   const traits = data.trait_scores || {};
 
-  document.getElementById('resultsBreadcrumb').textContent =
-    'Results · ' + (passage.title || 'Passage ' + currentId);
+  // H4/F4 (v19.17): when re-viewing a stored attempt (via the ← / → arrows or
+  // "show previous answer"), the data carries a __timestamp. Surface it so it's
+  // obvious this is a saved attempt from a past session, not a fresh score —
+  // this was the cause of the "wrong summary on results" confusion.
+  let crumb = 'Results · ' + (passage.title || 'Passage ' + currentId);
+  if(data.__timestamp){
+    const when = formatAttemptTime(data.__timestamp);
+    if(when) crumb += '  ·  your attempt from ' + when;
+  }
+  document.getElementById('resultsBreadcrumb').textContent = crumb;
 
   const ringCirc = 339.29;
   const heroRing = document.getElementById('heroRing');
@@ -1530,6 +1656,20 @@ function showResults(data, passage, spellData, submittedText){
 
   document.getElementById('heroVerdict').innerHTML = verdictLine(pte, band);
   document.getElementById('heroSummary').textContent = buildResultSummary(data, traits);
+
+  // F1 (v19.17): if the server flagged this attempt as AI-degraded (Claude was
+  // unavailable and the local fallback scored it), tell the student plainly.
+  // The score is still valid; the detailed grammar/vocab coaching just isn't
+  // available for this attempt.
+  const degradedEl = document.getElementById('aiDegradedNotice');
+  if(degradedEl){
+    if(data.ai_feedback_degraded){
+      degradedEl.style.display = '';
+      degradedEl.textContent = 'Detailed grammar and vocabulary feedback was unavailable for this attempt (the AI grader was busy). Your score is accurate — try again in a moment for full coaching.';
+    } else {
+      degradedEl.style.display = 'none';
+    }
+  }
 
   const cMax = traits.content_max || 4;
   document.getElementById('heroTraitChips').innerHTML = [
@@ -2376,7 +2516,10 @@ function updateResultsNav(){
 async function pullFromServer(){
   if(!currentUserId) return;
   try {
-    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId));
+    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId), {
+      headers: { 'x-session-token': getSessionToken() }
+    });
+    if(r.status === 401 || r.status === 403){ handleAuthExpired(); return; }
     const d = await r.json();
     if(d.success && d.data){
       if(d.data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, d.data.attempted);
@@ -2410,8 +2553,12 @@ async function pushToServer(){
       history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}
     };
     const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+      method:'POST',headers:{'Content-Type':'application/json','x-session-token':getSessionToken()},body:JSON.stringify(payload)
     });
+    if(r.status === 401 || r.status === 403){
+      // Auth problem — keep the dirty flag set so a re-login retry catches it.
+      return { ok: false, status: 'auth_error', error: 'HTTP ' + r.status };
+    }
     if(!r.ok){
       return { ok: false, status: 'server_error', error: 'HTTP ' + r.status };
     }
@@ -2491,6 +2638,16 @@ document.addEventListener('keydown', function(e){
       scoreSummary();
     }
   }
+  // F9 (v19.17): results-screen keyboard navigation.
+  // Don't hijack keys while the user is typing in a field.
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+  const typing = tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable);
+  const onResults = document.getElementById('resultsScreen') && document.getElementById('resultsScreen').classList.contains('active');
+  if(onResults && !typing){
+    if(e.key === 'Escape'){ e.preventDefault(); if(typeof backToPractice === 'function') backToPractice(); }
+    else if(e.key === 'ArrowLeft'){ if(typeof navResultsPassage === 'function' && currentId > 1){ e.preventDefault(); navResultsPassage(-1); } }
+    else if(e.key === 'ArrowRight'){ if(typeof navResultsPassage === 'function' && currentId < passages.length){ e.preventDefault(); navResultsPassage(1); } }
+  }
 });
 
 ['loginPw','loginUser'].forEach(id => {
@@ -2527,6 +2684,10 @@ document.addEventListener('keydown', function(e){
       if (r.ok && d.success && d.username) {
         // Clean the token out of the URL so it isn't bookmarked or refresh-replayed.
         try { history.replaceState({}, '', window.location.pathname); } catch(e){}
+        // C3: the server's sync endpoints accept the impersonation token too, so
+        // hold it as the session token while acting as this student. (It expires
+        // in 5 min, which is fine for an admin spot-check.)
+        setSessionToken(impToken);
         await enterApp(d.username, { impersonating: true });
         showLoading(false);
         return;

@@ -6,6 +6,21 @@ const fsSync = require('fs');
 const fs = require('fs').promises;
 const path = require('path');
 
+// L3 (v19.17): gate verbose per-request diagnostics behind a DEBUG flag so
+// production logs stay clean. Set DEBUG=1 (or LOG_LEVEL=debug) in Railway to
+// see the [grade] vocab/grammar diagnostic lines.
+const DEBUG = process.env.DEBUG === '1' || process.env.DEBUG === 'true' || /debug/i.test(process.env.LOG_LEVEL || '');
+
+// L2 (v19.17): single source of truth for the grading model, so a model
+// upgrade is a one-line change instead of hunting hardcoded strings.
+const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+
+// H2 (v19.17): optional rate limiting. express-rate-limit is loaded lazily;
+// if it isn't installed the server still runs (just without the limiter), and
+// the boot log notes it. This protects the paid /api/grade endpoint from abuse.
+let rateLimit = null;
+try { rateLimit = require('express-rate-limit'); } catch (_) { /* not installed — limiter disabled */ }
+
 // v19.10: Optional Postgres support. The 'pg' module is loaded lazily so that
 // installations without a database URL still work (local dev, JSON-file fallback).
 //
@@ -45,9 +60,36 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  // C3: the client now sends x-session-token on sync calls; admin uses x-admin-key.
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key']
 }));
-app.use(express.json({ limit: '10mb' }));
+// H1: 10mb was generous enough to wave through abusive payloads. The largest
+// legitimate request is a passage + summary, comfortably under 256kb.
+app.use(express.json({ limit: '256kb' }));
+
+// H2 (v19.17): rate-limit the paid grading + spellcheck endpoints if the
+// limiter is available. Generous enough for real practice (a student scores
+// every minute or two) but stops a script from running up the API bill.
+if (rateLimit) {
+  const gradeLimiter = rateLimit({
+    windowMs: 60 * 1000,      // 1 minute
+    max: 20,                  // 20 grade calls/min/IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many scoring requests — please wait a minute and try again.' }
+  });
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50,                  // 50 login/register attempts per 15 min/IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many attempts — please wait a few minutes.' }
+  });
+  app.use('/api/grade', gradeLimiter);
+  app.use('/api/spellcheck', gradeLimiter);
+  app.use('/api/auth/login', authLimiter);
+  app.use('/api/auth/register', authLimiter);
+}
 
 let anthropic = null;
 if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
@@ -858,9 +900,114 @@ PassageAPI._sanitize = sanitizePassage;
 // ═══════════════════════════════════════════════════════════════════════════════
 // SERVER-SIDE AUTH
 // ═══════════════════════════════════════════════════════════════════════════════
-const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123'; // Set in Railway env vars
+// M1: refuse to run in production with a default/unset admin key. Locally
+// (NODE_ENV !== 'production') a fallback is allowed for convenience.
+const ADMIN_KEY = process.env.ADMIN_KEY || (process.env.NODE_ENV === 'production' ? null : 'admin123');
+if (process.env.NODE_ENV === 'production' && !process.env.ADMIN_KEY) {
+  console.error('🛑 FATAL: ADMIN_KEY environment variable is not set. Admin routes will be DISABLED until it is configured in Railway.');
+}
 
-function hashPw(pw) { return crypto.createHash('sha256').update(pw.toLowerCase().trim()).digest('hex'); }
+// ── Password hashing (C2) ───────────────────────────────────────────────────
+// v19.17: replaced unsalted SHA-256 with salted scrypt (Node built-in, no new
+// dependency). Each password gets a unique random salt, so identical passwords
+// no longer collide, and scrypt is deliberately slow so brute-forcing is
+// expensive. We ALSO stopped lowercasing the password — that was destroying
+// entropy ("Passw0rd" === "passw0rd"). Usernames are still lowercased; only the
+// password is now case-sensitive.
+//
+// Stored format: "scrypt$<saltHex>$<hashHex>".
+// Legacy hashes are plain 64-char hex (old sha256 of the lowercased password).
+// verifyPw() handles both, and login()/changePassword() upgrade legacy hashes
+// to scrypt on the next successful authentication.
+function hashPwScrypt(pw) {
+  const salt = crypto.randomBytes(16);
+  const derived = crypto.scryptSync(String(pw), salt, 32);
+  return 'scrypt$' + salt.toString('hex') + '$' + derived.toString('hex');
+}
+// Legacy hash — only used to verify old accounts so they can be upgraded.
+function hashPwLegacy(pw) { return crypto.createHash('sha256').update(String(pw).toLowerCase().trim()).digest('hex'); }
+
+// Returns { ok: boolean, needsUpgrade: boolean }. needsUpgrade is true when the
+// stored hash verified under the legacy scheme and should be re-hashed.
+function verifyPw(pw, storedHash) {
+  if (!storedHash) return { ok: false, needsUpgrade: false };
+  if (storedHash.startsWith('scrypt$')) {
+    const parts = storedHash.split('$');
+    if (parts.length !== 3) return { ok: false, needsUpgrade: false };
+    const salt = Buffer.from(parts[1], 'hex');
+    const expected = Buffer.from(parts[2], 'hex');
+    let derived;
+    try { derived = crypto.scryptSync(String(pw), salt, expected.length); }
+    catch (e) { return { ok: false, needsUpgrade: false }; }
+    // Constant-time compare
+    const ok = expected.length === derived.length && crypto.timingSafeEqual(expected, derived);
+    return { ok, needsUpgrade: false };
+  }
+  // Legacy sha256(lowercased)
+  const legacy = hashPwLegacy(pw);
+  // timingSafeEqual needs equal-length buffers
+  const a = Buffer.from(legacy); const b = Buffer.from(storedHash);
+  const ok = a.length === b.length && crypto.timingSafeEqual(a, b);
+  return { ok, needsUpgrade: ok };
+}
+
+// For NEW hashes (register, password change/reset) always use scrypt.
+function hashPw(pw) { return hashPwScrypt(pw); }
+
+// ── Session tokens (C3) ─────────────────────────────────────────────────────
+// v19.17: the sync endpoints used to accept any username with no proof of
+// identity — anyone could read or overwrite anyone's data. We now issue a
+// signed session token at login/register and require it on sync. Same HMAC
+// pattern as impersonation tokens, but a longer TTL (30 days) and a distinct
+// signing secret so the two token types can't be confused.
+//
+// A server-side SESSION_SECRET env var is preferred; if unset we derive one
+// from ADMIN_KEY (or a process-stable random fallback in local dev). Note:
+// deriving from ADMIN_KEY means changing the admin key invalidates all
+// sessions, which is acceptable (and arguably desirable).
+const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;  // 30 days
+const _sessionFallbackSecret = crypto.randomBytes(32);  // used only if nothing else available
+function _sessionSecret() {
+  if (process.env.SESSION_SECRET) return crypto.createHash('sha256').update('session:' + process.env.SESSION_SECRET).digest();
+  if (ADMIN_KEY) return crypto.createHash('sha256').update('session:' + ADMIN_KEY).digest();
+  return _sessionFallbackSecret;
+}
+function mintSessionToken(username) {
+  const payload = username.toLowerCase().trim() + '|' + (Date.now() + SESSION_TTL_MS);
+  const sig = crypto.createHmac('sha256', _sessionSecret()).update(payload).digest('hex');
+  return Buffer.from(payload).toString('base64') + '.' + sig;
+}
+// Returns the username if the token is valid and unexpired, else null.
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string' || token.indexOf('.') < 0) return null;
+  const [b64, sig] = token.split('.');
+  let payload;
+  try { payload = Buffer.from(b64, 'base64').toString('utf8'); }
+  catch (e) { return null; }
+  const expectedSig = crypto.createHmac('sha256', _sessionSecret()).update(payload).digest('hex');
+  if (!sig || sig.length !== expectedSig.length) return null;
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
+  const sep = payload.lastIndexOf('|');
+  if (sep < 0) return null;
+  const username = payload.slice(0, sep);
+  const expiry = Number(payload.slice(sep + 1));
+  if (!username || !expiry || Date.now() > expiry) return null;
+  return username;
+}
+// Middleware: the request must carry a valid session token whose username
+// matches the :userId route param (case-insensitive). Impersonation tokens are
+// also accepted so the admin "Open as User" flow keeps working.
+function requireSyncAuth(req, res, next) {
+  const token = req.headers['x-session-token'] || req.query.token || '';
+  const target = (req.params.userId || '').toLowerCase().trim();
+  let who = verifySessionToken(token);
+  if (!who) who = verifyImpersonationToken(token);  // admin acting as user
+  if (!who) return res.status(401).json({ error: 'Not authenticated' });
+  if (who.toLowerCase().trim() !== target) {
+    return res.status(403).json({ error: 'Token does not match this user' });
+  }
+  next();
+}
 
 const AuthAPI = {
   async readAccounts() {
@@ -909,7 +1056,13 @@ const AuthAPI = {
       const acct = await PgStorage._getAccount(uid);
       if (!acct) return { success: false, error: 'User not found' };
       if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
-      if (acct.passwordHash !== hashPw(password)) return { success: false, error: 'Wrong password' };
+      const v = verifyPw(password, acct.passwordHash);
+      if (!v.ok) return { success: false, error: 'Wrong password' };
+      // v19.17: upgrade legacy sha256 hashes to scrypt on successful login.
+      if (v.needsUpgrade) {
+        try { await pgPool.query('UPDATE accounts SET password_hash = $1 WHERE username = $2', [hashPw(password), uid]); }
+        catch (e) { /* non-fatal — they're still logged in; upgrade retries next login */ }
+      }
       // Stamp lastLogin without rewriting any other field.
       await pgPool.query('UPDATE accounts SET last_login = NOW() WHERE username = $1', [uid]);
       return { success: true, user: { username: uid, role: acct.role || 'user' } };
@@ -918,7 +1071,9 @@ const AuthAPI = {
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
     if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
-    if (acct.passwordHash !== hashPw(password)) return { success: false, error: 'Wrong password' };
+    const v = verifyPw(password, acct.passwordHash);
+    if (!v.ok) return { success: false, error: 'Wrong password' };
+    if (v.needsUpgrade) acct.passwordHash = hashPw(password);
     acct.lastLogin = new Date().toISOString();
     await StorageAPI.writeData(data);
     return { success: true, user: { username: uid, role: acct.role || 'user' } };
@@ -928,7 +1083,7 @@ const AuthAPI = {
     if (USE_POSTGRES) {
       const acct = await PgStorage._getAccount(uid);
       if (!acct) return { success: false, error: 'User not found' };
-      if (acct.passwordHash !== hashPw(oldPw)) return { success: false, error: 'Wrong current password' };
+      if (!verifyPw(oldPw, acct.passwordHash).ok) return { success: false, error: 'Wrong current password' };
       if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
       await pgPool.query('UPDATE accounts SET password_hash = $1 WHERE username = $2', [hashPw(newPw), uid]);
       return { success: true };
@@ -936,7 +1091,7 @@ const AuthAPI = {
     const data = await this.readAccounts();
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
-    if (acct.passwordHash !== hashPw(oldPw)) return { success: false, error: 'Wrong current password' };
+    if (!verifyPw(oldPw, acct.passwordHash).ok) return { success: false, error: 'Wrong current password' };
     if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
     acct.passwordHash = hashPw(newPw);
     await StorageAPI.writeData(data);
@@ -947,7 +1102,7 @@ const AuthAPI = {
     const uid = username.toLowerCase().trim();
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
-    if (!acct.secretAHash || acct.secretAHash !== hashPw(secretA)) return { success: false, error: 'Wrong answer' };
+    if (!acct.secretAHash || !verifyPw(secretA, acct.secretAHash).ok) return { success: false, error: 'Wrong answer' };
     if (newPw && newPw.length >= 4) { acct.passwordHash = hashPw(newPw); await StorageAPI.writeData(data); return { success: true }; }
     return { success: true, verified: true, secretQ: acct.secretQ };
   },
@@ -2514,13 +2669,15 @@ app.get('/api/leaderboard', async (req, res) => {
 
 // ═══ SYNC ENDPOINTS ═══
 // Pull: get full user data from server (called on login)
-app.get('/api/sync/:userId', async (req, res) => {
+// C3: now requires a valid session token matching :userId.
+app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
   try { res.json({ success: true, data: await StorageAPI.getUserData(req.params.userId) }); }
   catch (e) { res.status(500).json({ error: 'Sync pull failed' }); }
 });
 
 // Push: send full user data to server (called on login + after verify)
-app.post('/api/sync/:userId', async (req, res) => {
+// C3: now requires a valid session token matching :userId.
+app.post('/api/sync/:userId', requireSyncAuth, async (req, res) => {
   try { res.json(await StorageAPI.setUserData(req.params.userId, req.body)); }
   catch (e) { res.status(500).json({ error: 'Sync push failed' }); }
 });
@@ -2530,7 +2687,10 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     const { username, password, secretQ, secretA } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
-    res.json(await AuthAPI.register(username, password, secretQ, secretA));
+    const result = await AuthAPI.register(username, password, secretQ, secretA);
+    // C3: hand back a session token the client uses to authorize sync calls.
+    if (result && result.success) result.token = mintSessionToken(username);
+    res.json(result);
   } catch (e) { res.status(500).json({ error: 'Registration failed' }); }
 });
 
@@ -2538,7 +2698,9 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
-    res.json(await AuthAPI.login(username, password));
+    const result = await AuthAPI.login(username, password);
+    if (result && result.success) result.token = mintSessionToken(username);
+    res.json(result);
   } catch (e) { res.status(500).json({ error: 'Login failed' }); }
 });
 
@@ -2586,6 +2748,9 @@ app.get('/api/auth/check/:username', async (req, res) => {
 
 // ═══ ADMIN ROUTES (require ADMIN_KEY) ═══
 function requireAdmin(req, res, next) {
+  // M1: if ADMIN_KEY is unset (production with no env var), admin routes are
+  // hard-disabled rather than falling back to a guessable default.
+  if (!ADMIN_KEY) return res.status(503).json({ error: 'Admin is not configured on this server (ADMIN_KEY unset).' });
   const key = req.headers['x-admin-key'] || req.query.key;
   if (key !== ADMIN_KEY) return res.status(403).json({ error: 'Invalid admin key' });
   next();
@@ -3098,7 +3263,7 @@ Respond with ONLY this JSON, no other text:
 
   try {
     const callPromise = anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: CLAUDE_MODEL,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }]
     });
@@ -3460,7 +3625,7 @@ Critical:
 
   try {
     const callPromise = anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: CLAUDE_MODEL,
       // v19.16: bumped from 2400 to 3200. With both recommended_swaps (7-8
       // entries × multi-line rationale) AND grammar_annotations (3-10 entries
       // × plain-English rationale that can run 20-30 words), heavily-marked
@@ -3481,11 +3646,12 @@ Critical:
     // and we need to strengthen it further; if it prints reasonable numbers
     // but they aren't appearing in the UI, the filter is dropping them.
     const annCount = Array.isArray(parsed.grammar_annotations) ? parsed.grammar_annotations.length : 'MISSING_FIELD';
-    console.log(`[grade] Claude returned ${annCount} grammar_annotations`);
-    // Sanity-clamp content_score
-    if (typeof parsed.content_score !== 'number' || parsed.content_score < 0 || parsed.content_score > 2) {
-      parsed.content_score = 1;
-    }
+    if (DEBUG) console.log(`[grade] Claude returned ${annCount} grammar_annotations`);
+    // C4 (v19.17): removed the content_score clamp that forced values >2 down to
+    // 1. content_score legitimately ranges 0–4 for what/why/how/result passages,
+    // and the downstream per_idea_scores recomputation is authoritative anyway.
+    // The old clamp was dead code in the normal path but corrupted scores in the
+    // fallback path where per_idea_scores was absent.
     return parsed;
   } catch (e) {
     console.error('Claude content judge failed:', e.message);
@@ -3889,6 +4055,15 @@ app.post('/api/grade', async (req, res) => {
     let { text, type, prompt, keyPoints, userId } = req.body;
     const passageId = req.body.passageId;
     if (!text || !type || !prompt) return res.status(400).json({ error: 'Missing fields' });
+    // H1 (v19.17): hard length cap BEFORE any Claude call. The form gate rejects
+    // >75 words for scoring, but the raw text would still be sent to the paid
+    // API. Cap at 4000 chars (~600 words) to prevent token-burning abuse.
+    if (typeof text !== 'string' || text.length > 4000) {
+      return res.status(400).json({ error: 'Summary too long (max 4000 characters).' });
+    }
+    if (typeof prompt === 'string' && prompt.length > 20000) {
+      return res.status(400).json({ error: 'Passage too long.' });
+    }
 
     // ── SOURCE-OF-TRUTH OVERRIDE (v19.11) ──────────────────────────────────
     // The client sends `prompt` and `keyPoints` from its in-memory passage copy,
@@ -3950,14 +4125,25 @@ app.post('/api/grade', async (req, res) => {
     const grammar = checkGrammar(text, prompt);
     let spelling = checkSpelling(text, prompt);
 
-    // ── CONTENT JUDGE: Claude first, local fallback ──
+    // ── CONTENT JUDGE: Claude first (with one retry), local fallback ──
     // v19.6: also fire the Datamuse spelling enrichment in parallel — both are
     // network-bound, so doing them concurrently saves ~2-4s on slow paths.
+    // C1/F3 (v19.17): most Claude failures are transient (timeout, momentary
+    // rate-limit, occasional truncated JSON). Retrying once eliminates the
+    // majority of "no vocab coach / no grammar annotations" cases that were
+    // caused by a single failed call silently dropping to the local judge.
     let llmJudgment = null;
     const [_judgeResult, enrichedSpelling] = await Promise.all([
       (async () => {
         try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
-        catch (e) { /* swallow → fallback */ }
+        catch (e) { /* swallow → retry below */ }
+        if (!llmJudgment) {
+          // brief backoff, then one retry
+          await new Promise(r => setTimeout(r, 400));
+          try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
+          catch (e) { /* swallow → fallback */ }
+          if (DEBUG) console.log('[grade] Claude judge ' + (llmJudgment ? 'succeeded on retry' : 'failed twice — using local fallback'));
+        }
       })(),
       enrichSpellingWithDatamuse(spelling, text).catch(() => spelling)
     ]);
@@ -4060,6 +4246,11 @@ app.post('/api/grade', async (req, res) => {
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
     const contentVerdict = llmJudgment || fallback;
+    // F1 (v19.17): when the local fallback is used (Claude failed twice), the
+    // response can't include grammar annotations or vocabulary swaps. Flag this
+    // so the frontend can show an honest "detailed feedback unavailable for this
+    // attempt — try again" notice instead of silently dropping those sections.
+    const aiFeedbackDegraded = !llmJudgment;
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
@@ -4135,6 +4326,9 @@ app.post('/api/grade', async (req, res) => {
     const improvementTips = feedbackCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
 
     const result = {
+      // F1 (v19.17): true when Claude was unavailable and the local fallback
+      // produced the scores (no grammar annotations / vocab swaps available).
+      ai_feedback_degraded: aiFeedbackDegraded,
       trait_scores: {
         form: 1,
         form_max: 1,
@@ -4186,10 +4380,10 @@ app.post('/api/grade', async (req, res) => {
           const inText = valid.filter(a => lc.includes(a.phrase.toLowerCase()));
           // v19.12 diagnostic: surface what's happening to grammar_annotations on each grade call.
           if (ann.length > 0 && inText.length < ann.length) {
-            console.log(`[grade] grammar_annotations: Claude returned ${ann.length}, ${inText.length} passed filter (phrase must be in summary)`);
+            if (DEBUG) console.log(`[grade] grammar_annotations: Claude returned ${ann.length}, ${inText.length} passed filter (phrase must be in summary)`);
             // Log the dropped phrases so we can see if Claude is paraphrasing despite the instruction.
             const dropped = valid.filter(a => !lc.includes(a.phrase.toLowerCase())).map(a => a.phrase);
-            if (dropped.length) console.log('  dropped phrases (paraphrased, not verbatim):', JSON.stringify(dropped));
+            if (dropped.length && DEBUG) console.log('  dropped phrases (paraphrased, not verbatim):', JSON.stringify(dropped));
           }
           return inText
             .map(a => ({
@@ -4330,19 +4524,19 @@ app.post('/api/grade', async (req, res) => {
       // is ignoring the prompt's 7-8 mandate. If "raw" is fine but "filtered" is
       // low, Claude is suggesting words that aren't in the student text (it's
       // confusing passage words with summary words).
-      console.log(`[grade] vocab swaps: Claude returned ${raw.length}, ${filtered.length} passed filter`);
+      if (DEBUG) console.log(`[grade] vocab swaps: Claude returned ${raw.length}, ${filtered.length} passed filter`);
       if (raw.length > 0 && filtered.length < raw.length) {
         const dropped = raw
           .filter(s => s && s.word && !studentLower.includes(String(s.word).toLowerCase()))
           .map(s => s.word);
         if (dropped.length) {
-          console.log(`  dropped swap words (not in student text):`, JSON.stringify(dropped));
+          if (DEBUG) console.log(`  dropped swap words (not in student text):`, JSON.stringify(dropped));
         }
       }
     } else {
       result.vocabulary_swap_suggestions = [];
       result.swap_source = 'none';
-      console.log(`[grade] vocab swaps: Claude returned no recommended_swaps array`);
+      if (DEBUG) console.log(`[grade] vocab swaps: Claude returned no recommended_swaps array`);
     }
     // Keep legacy field empty in v19 — frontend no longer reads it
     result.thesaurus_candidates = [];
