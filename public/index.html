@@ -2556,7 +2556,13 @@ async function pushToServer(){
       method:'POST',headers:{'Content-Type':'application/json','x-session-token':getSessionToken()},body:JSON.stringify(payload)
     });
     if(r.status === 401 || r.status === 403){
-      // Auth problem — keep the dirty flag set so a re-login retry catches it.
+      // v19.18.1: auth failure on push. This is the "saved locally but not on
+      // server" symptom — almost always an OLD SESSION with no token (logged in
+      // before token-auth was deployed) or an expired token. Keep the dirty
+      // flag set (so nothing is lost) AND prompt re-login: once they sign in
+      // again they get a fresh token, and retryUnsyncedFromPriorSession pushes
+      // everything that was stranded.
+      if(typeof handleAuthExpired === 'function' && !isImpersonating){ handleAuthExpired(); }
       return { ok: false, status: 'auth_error', error: 'HTTP ' + r.status };
     }
     if(!r.ok){
