@@ -2268,7 +2268,7 @@ function extractHeadline(keyElementText) {
     /;\s*furthermore\b/i,
     /;\s*and\b/i,
     /,\s+and\s+/i,
-    /\s+;\s+/,
+    /;\s*/,
   ];
   for (const re of splitters) {
     const m = t.match(re);
@@ -3379,7 +3379,7 @@ function condenseKeyElement(text) {
     /;\s*furthermore\b/i,
     /;\s*and\b/i,
     /,\s+and\s+/i,                    // Oxford-comma joining two clauses
-    /\s+;\s+/,
+    /;\s*/,
   ];
   for (const re of splitters) {
     const m = t.match(re);
