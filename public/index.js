@@ -62,11 +62,8 @@ const SYNC_MAX_RETRIES = 5;
 
 // API configuration
 const RAILWAY_URL = 'https://ptewriting.up.railway.app';
-const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
-  || location.hostname.startsWith('192.168.')
-  || location.hostname.startsWith('10.')
-  || location.hostname.startsWith('172.');
-const API_URL = isLocal ? '' : RAILWAY_URL;
+const isLocalFile = location.protocol === 'file:';
+const API_URL = isLocalFile ? RAILWAY_URL : '';
 
 const LocalStore = {
   get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
