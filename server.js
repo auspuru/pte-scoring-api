@@ -3448,7 +3448,7 @@ For EACH key idea above, assign a per-idea score:
   • 1.0  — CAPTURED. The student's summary conveys the central claim/headline of this idea. Paraphrasing IS capture. Omitting supporting detail (dates, names, examples, secondary clauses) is fine — the headline is what counts.
   • 0.0  — MISSING. The idea is not conveyed at all, or has been replaced by unrelated/fabricated content.
 
-Use 1.0 generously when the student has clearly attempted the idea, even if the wording differs from the passage. PTE does NOT use partial credit — it's binary. When in doubt, score 1.0.
+Use 1.0 generously when the student has clearly attempted the idea, even if the wording differs from the passage. PTE does NOT use partial credit — it's binary. When in doubt, score 1.0. However, a student who has not attempted the idea at all (or only overlaps on 1-2 words by chance without conveying the proposition) must receive 0.0.
 
 Then content_score = SUM of per-idea scores (range 0–${totalIdeas}).
 
@@ -3481,8 +3481,10 @@ OUTPUT REQUIREMENTS:
 
 CRITICAL RULES (do not break these):
 1. An idea is "captured" (1.0) when its CORE/HEADLINE meaning is present — paraphrasing is fine, omitting supporting detail is fine. Be generous: when in doubt, score 1.0.
-2. If the student replaces a passage idea with different content (even if grammatically fluent), score 0.0 — fluency does not rescue missing content.
-3. If the summary is off-topic or gibberish, every per_idea_score is 0.0.
+2. STRICT SHARED-WORD EXCLUSION: Do NOT mark an idea as captured (1.0) if the student summary only shares a single word or generic vocabulary (e.g., sharing only "diffuses" or "intelligence") without conveying the actual claim of that key idea. There must be a semantic mapping of the proposition, not just lexical overlap.
+3. SHORT SUMMARY GUARD: If the student summary is very short (e.g., under 20 words) and only contains a single clause or statement, it cannot physically capture more than ONE key idea. In such cases, be extremely strict: do not award multiple key ideas based on single-word overlaps.
+4. If the student replaces a passage idea with different content (even if grammatically fluent), score 0.0 — fluency does not rescue missing content.
+5. If the summary is off-topic or gibberish, every per_idea_score is 0.0.
 
 - synonym_appropriateness "appropriate": all swaps preserve meaning and academic register, OR no swaps were made (verbatim).
 - synonym_appropriateness "some_inappropriate": one or more swaps are awkward, wrong register, or shift connotation.
