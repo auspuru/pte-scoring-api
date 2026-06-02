@@ -335,6 +335,33 @@ body.light-mode .btn-kbd {
   background: var(--card);
   color: var(--ink);
 }
+.passage-filter-select {
+  background: var(--card-raised);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  max-width: 140px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  margin-left: 8px;
+}
+.passage-filter-select:hover {
+  border-color: var(--indigo);
+  color: var(--ink);
+  background: var(--line-soft);
+}
+.passage-filter-select:focus {
+  border-color: var(--indigo);
+}
+.passage-filter-select option {
+  background: var(--card);
+  color: var(--ink);
+}
 .passage-nav-spacer { flex: 1; }
 .timer-toggle {
   display: flex; align-items: center; gap: 8px; font-size: 12.5px;
@@ -1146,6 +1173,11 @@ body.light-mode .loading-veil {
       <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
       <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
       <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
+      <select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
+        <option value="all">All</option>
+        <option value="attempted">Attempted</option>
+        <option value="unattempted">Unattempted</option>
+      </select>
       <select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select>
       <div class="passage-nav-spacer"></div>
       <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
@@ -1242,6 +1274,11 @@ body.light-mode .loading-veil {
       <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
       <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
       <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
+      <select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)">
+        <option value="all">All</option>
+        <option value="attempted">Attempted</option>
+        <option value="unattempted">Unattempted</option>
+      </select>
       <select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select>
       <div class="passage-nav-spacer"></div>
       <span class="eyebrow" id="resNavHint">Use arrows or buttons below</span>
@@ -1541,18 +1578,71 @@ async function loadPassages(){
   populatePassageDropdowns();
 }
 
+let activeFilter = 'all';
+let activeResFilter = 'all';
+
 function populatePassageDropdowns() {
-  const selects = [document.getElementById('passageSelect'), document.getElementById('resPassageSelect')];
-  selects.forEach(sel => {
-    if (!sel) return;
-    sel.innerHTML = '';
+  // Practice dropdown
+  const select1 = document.getElementById('passageSelect');
+  if (select1) {
+    select1.innerHTML = '';
     passages.forEach((p, idx) => {
+      const isAttempted = attempted.has(p.id);
+      if (activeFilter === 'attempted' && !isAttempted) return;
+      if (activeFilter === 'unattempted' && isAttempted) return;
+      
       const opt = document.createElement('option');
       opt.value = idx + 1;
-      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}`;
-      sel.appendChild(opt);
+      const statusSuffix = isAttempted ? ' (Attempted)' : ' (Unattempted)';
+      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}${statusSuffix}`;
+      select1.appendChild(opt);
     });
-  });
+  }
+
+  // Results dropdown
+  const select2 = document.getElementById('resPassageSelect');
+  if (select2) {
+    select2.innerHTML = '';
+    passages.forEach((p, idx) => {
+      const isAttempted = attempted.has(p.id);
+      if (activeResFilter === 'attempted' && !isAttempted) return;
+      if (activeResFilter === 'unattempted' && isAttempted) return;
+      
+      const opt = document.createElement('option');
+      opt.value = idx + 1;
+      const statusSuffix = isAttempted ? ' (Attempted)' : ' (Unattempted)';
+      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}${statusSuffix}`;
+      select2.appendChild(opt);
+    });
+  }
+}
+
+function changePassageFilter(val) {
+  activeFilter = val;
+  populatePassageDropdowns();
+  const select = document.getElementById('passageSelect');
+  if (select) {
+    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
+    if (hasCurrent) {
+      select.value = currentId;
+    } else if (select.options.length > 0) {
+      jumpToPassage(parseInt(select.options[0].value));
+    }
+  }
+}
+
+function changeResultsPassageFilter(val) {
+  activeResFilter = val;
+  populatePassageDropdowns();
+  const select = document.getElementById('resPassageSelect');
+  if (select) {
+    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
+    if (hasCurrent) {
+      select.value = currentId;
+    } else if (select.options.length > 0) {
+      jumpToResultsPassage(parseInt(select.options[0].value));
+    }
+  }
 }
 
 function jumpToPassage(target) {
@@ -1789,6 +1879,7 @@ async function scoreSummary(){
 
     saveAttempt(currentId, text, data, spellData);  // fire-and-forget visually; sync happens asynchronously inside
     attempted.add(currentId);
+    populatePassageDropdowns();
     stopTimer();
     // v19.11: if the server returned the live passage (current key elements +
     // rationale), use THAT for the results screen — the local `p` may be stale
