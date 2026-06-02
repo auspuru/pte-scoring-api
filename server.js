@@ -5,6 +5,103 @@ const crypto = require('crypto');
 const fsSync = require('fs');
 const fs = require('fs').promises;
 const path = require('path');
+const compression = require('compression');
+const nodemailer = require('nodemailer');
+const puppeteer = require('puppeteer');
+
+// Email and Puppeteer settings from Essay Builder
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+
+let mailTransport = null;
+if (GMAIL_USER && GMAIL_APP_PASSWORD) {
+  mailTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD }
+  });
+}
+
+// Puppeteer browser singleton
+let browserInstance = null;
+let browserStarting = null;
+
+async function getBrowser() {
+  if (browserInstance) {
+    try {
+      await browserInstance.version();
+      return browserInstance;
+    } catch (e) {
+      console.warn('Browser instance died, restarting...');
+      browserInstance = null;
+    }
+  }
+  if (browserStarting) {
+    return browserStarting;
+  }
+  browserStarting = (async () => {
+    console.log('Launching Puppeteer for PDF rendering...');
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-background-timer-throttling',
+        '--disable-renderer-backgrounding'
+      ]
+    });
+    browser.on('disconnected', () => {
+      console.warn('Puppeteer disconnected');
+      browserInstance = null;
+    });
+    browserInstance = browser;
+    browserStarting = null;
+    console.log('Puppeteer ready (' + (await browser.version()) + ')');
+    return browser;
+  })();
+  return browserStarting;
+}
+
+// Render HTML content to A4 PDF using Puppeteer
+async function renderHtmlToPdf(fullHtml, opts = {}) {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+  try {
+    await page.setContent(fullHtml, {
+      waitUntil: ['load', 'networkidle0'],
+      timeout: 30000
+    });
+    await page.evaluate(async () => {
+      if (!document.fonts || !document.fonts.load) return;
+      const families = [
+        '400 16px Fraunces', '500 16px Fraunces', '600 16px Fraunces', '700 16px Fraunces',
+        'italic 400 16px Fraunces',
+        '400 16px Inter', '500 16px Inter', '600 16px Inter', '700 16px Inter'
+      ];
+      try {
+        await Promise.all(families.map(f => document.fonts.load(f)));
+      } catch (e) {}
+      try { await document.fonts.ready; } catch (e) {}
+    });
+    await new Promise(r => setTimeout(r, 400));
+    const pdf = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      preferCSSPageSize: false,
+      margin: { top: 0, right: 0, bottom: 0, left: 0 },
+      ...opts
+    });
+    return pdf;
+  } finally {
+    await page.close().catch(() => {});
+  }
+}
+
 
 // L3 (v19.17): gate verbose per-request diagnostics behind a DEBUG flag so
 // production logs stay clean. Set DEBUG=1 (or LOG_LEVEL=debug) in Railway to
@@ -51,6 +148,7 @@ const DATABASE_URL_SOURCE =
 const USE_POSTGRES = !!(DATABASE_URL && Pool);
 
 const app = express();
+app.use(compression());
 const PORT = process.env.PORT || 3001;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -70,9 +168,8 @@ app.use(cors({
   // C3: the client now sends x-session-token on sync calls; admin uses x-admin-key.
   allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key']
 }));
-// H1: 10mb was generous enough to wave through abusive payloads. The largest
-// legitimate request is a passage + summary, comfortably under 256kb.
-app.use(express.json({ limit: '256kb' }));
+// H1: 10mb was generous enough to wave through abusive payloads. Adjusted to 25mb for PDF html uploads.
+app.use(express.json({ limit: '25mb' }));
 
 // H2 (v19.17): rate-limit the paid grading + spellcheck endpoints if the
 // limiter is available. Generous enough for real practice (a student scores
@@ -108,6 +205,7 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
 const DATA_DIR = process.env.RAILWAY_VOLUME_MOUNT_PATH || (process.env.NODE_ENV === 'production' ? '/app/data' : './data');
 const STORAGE_FILE = path.join(DATA_DIR, 'pte_data.json');
 const PASSAGES_FILE = path.join(DATA_DIR, 'pte_passages.json');
+const VOCAB_FILE = path.join(DATA_DIR, 'vocab_extras.json');
 // Default passages bundled with the build — used as seed/fallback if the volume
 // has no pte_passages.json yet (fresh deploy, dev, etc.). The file in the volume
 // always wins after first write so admin edits persist across restarts.
@@ -271,6 +369,13 @@ async function pgInitSchema() {
       CONSTRAINT global_stats_singleton CHECK (id = 1)
     );
     INSERT INTO global_stats (id, total_attempts) VALUES (1, 0) ON CONFLICT (id) DO NOTHING;
+    CREATE TABLE IF NOT EXISTS vocab_extras (
+      id             INTEGER PRIMARY KEY DEFAULT 1,
+      payload        JSONB NOT NULL DEFAULT '{}'::jsonb,
+      updated_at     TIMESTAMPTZ DEFAULT NOW(),
+      CONSTRAINT vocab_extras_singleton CHECK (id = 1)
+    );
+    INSERT INTO vocab_extras (id, payload) VALUES (1, '{}') ON CONFLICT (id) DO NOTHING;
   `;
   await pgPool.query(ddl);
 }
@@ -523,12 +628,20 @@ const PgStorage = {
   },
   async getUserData(userId) {
     const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
-    if (!rows.length) return { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+    if (!rows.length) {
+      return {
+        attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
+        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [], vocabProgress: {}
+      };
+    }
     const u = rows[0].data || {};
-    return { attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {} };
+    return {
+      attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
+      essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
+      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [], vocabProgress: u.vocabProgress || {}
+    };
   },
   async setUserData(userId, userData) {
-    // Replicate the merge logic from JsonStorage exactly so behavior is identical.
     const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
     const existing = rows[0]?.data || {};
     const clientHistory = userData.history || {};
@@ -546,7 +659,14 @@ const PgStorage = {
       attempted: [...new Set([...(existing.attempted || []), ...(userData.attempted || [])])],
       summaries: { ...(existing.summaries || {}), ...(userData.summaries || {}) },
       scores: { ...(existing.scores || {}), ...(userData.scores || {}) },
-      history: mergedHistory
+      history: mergedHistory,
+      essays: userData.essays !== undefined ? userData.essays : (existing.essays || []),
+      templates: userData.templates !== undefined ? userData.templates : (existing.templates || {}),
+      currentId: userData.currentId !== undefined ? userData.currentId : (existing.currentId || null),
+      quotaUsed: userData.quotaUsed !== undefined ? userData.quotaUsed : (existing.quotaUsed || {}),
+      quotaDate: userData.quotaDate !== undefined ? userData.quotaDate : (existing.quotaDate || ""),
+      practiceHistory: userData.practiceHistory !== undefined ? userData.practiceHistory : (existing.practiceHistory || []),
+      vocabProgress: userData.vocabProgress !== undefined ? userData.vocabProgress : (existing.vocabProgress || {})
     };
     let total = 0, count = 0;
     Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
@@ -619,12 +739,20 @@ const JsonStorage = {
     return { success: true, userStats: u.stats };
   },
   
-  // Get full user data (for sync on login)
   async getUserData(userId) {
     const data = await this.readData();
     const u = data.users[userId];
-    if (!u) return { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
-    return { attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {} };
+    if (!u) {
+      return {
+        attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
+        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [], vocabProgress: {}
+      };
+    }
+    return {
+      attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
+      essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
+      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [], vocabProgress: u.vocabProgress || {}
+    };
   },
   
   // Push full user data from client (for bulk sync)
@@ -657,6 +785,15 @@ const JsonStorage = {
     u.summaries = { ...(u.summaries || {}), ...(userData.summaries || {}) };
     u.scores = { ...(u.scores || {}), ...(userData.scores || {}) };
     u.history = mergedHistory;
+    
+    // Merge essay attributes
+    u.essays = userData.essays !== undefined ? userData.essays : (u.essays || []);
+    u.templates = userData.templates !== undefined ? userData.templates : (u.templates || {});
+    u.currentId = userData.currentId !== undefined ? userData.currentId : (u.currentId || null);
+    u.quotaUsed = userData.quotaUsed !== undefined ? userData.quotaUsed : (u.quotaUsed || {});
+    u.quotaDate = userData.quotaDate !== undefined ? userData.quotaDate : (u.quotaDate || "");
+    u.practiceHistory = userData.practiceHistory !== undefined ? userData.practiceHistory : (u.practiceHistory || []);
+    u.vocabProgress = userData.vocabProgress !== undefined ? userData.vocabProgress : (u.vocabProgress || {});
     
     // Recalculate stats
     let total = 0, count = 0;
@@ -857,6 +994,41 @@ const PgPassageAPI = {
 };
 
 const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
+
+const PgVocabExtrasAPI = {
+  async read() {
+    if (!pgPool) return {};
+    const { rows } = await pgPool.query('SELECT payload FROM vocab_extras WHERE id = 1');
+    return rows[0]?.payload?.extras || {};
+  },
+  async write(extras) {
+    if (!pgPool) return extras;
+    await pgPool.query(
+      `INSERT INTO vocab_extras (id, payload, updated_at) VALUES (1, $1::jsonb, NOW())
+       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW()`,
+      [JSON.stringify({ extras, updatedAt: Date.now() })]
+    );
+    return extras;
+  }
+};
+
+const JsonVocabExtrasAPI = {
+  async read() {
+    try {
+      const raw = await fs.readFile(VOCAB_FILE, 'utf8');
+      const parsed = JSON.parse(raw);
+      return parsed.extras || {};
+    } catch {
+      return {};
+    }
+  },
+  async write(extras) {
+    await safeWriteJSON(VOCAB_FILE, { extras, updatedAt: Date.now() });
+    return extras;
+  }
+};
+
+const VocabExtrasAPI = USE_POSTGRES ? PgVocabExtrasAPI : JsonVocabExtrasAPI;
 
 // Shared sanitizer used by both backends — pulled out so it stays consistent.
 function sanitizePassage(p) {
@@ -2863,6 +3035,31 @@ app.get('/api/impersonate/redeem', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// VOCABULARY EXTRAS ENDPOINTS — public read, admin write
+// ═══════════════════════════════════════════════════════════════════════════════
+app.get('/api/vocab/extras', async (req, res) => {
+  try {
+    const extras = await VocabExtrasAPI.read();
+    res.json({ extras });
+  } catch (e) {
+    console.error('Read vocab extras failed:', e.message);
+    res.status(500).json({ error: 'Failed to load vocab extras', details: e.message });
+  }
+});
+
+app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const extras = body.extras || {};
+    await VocabExtrasAPI.write(extras);
+    res.json({ success: true, extras });
+  } catch (e) {
+    console.error('Write vocab extras failed:', e.message);
+    res.status(500).json({ error: 'Failed to write vocab extras', details: e.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // PASSAGE ENDPOINTS — public read, admin write
 // ═══════════════════════════════════════════════════════════════════════════════
 // Public: list all passages (frontend loads these instead of using its hardcoded
@@ -4613,6 +4810,142 @@ app.post('/api/grade', async (req, res) => {
   }
 });
 
+// Friendly config route (no secrets)
+app.get('/api/config', (req, res) => {
+  res.json({
+    adminEmail: ADMIN_EMAIL || null
+  });
+});
+
+// Claude proxy endpoint
+app.post('/api/claude', async (req, res) => {
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: { message: 'Server is missing ANTHROPIC_API_KEY environment variable.' } });
+  }
+  try {
+    const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(req.body)
+    });
+    const text = await upstream.text();
+    res.status(upstream.status);
+    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json');
+    res.send(text);
+  } catch (err) {
+    console.error('Proxy error:', err);
+    res.status(500).json({ error: { message: 'Proxy error: ' + err.message } });
+  }
+});
+
+// Server-side PDF renderer
+app.post('/api/render-pdf', async (req, res) => {
+  const { html } = req.body || {};
+  if (!html || typeof html !== 'string' || html.length < 100) {
+    return res.status(400).json({ error: 'Missing or invalid HTML.' });
+  }
+  if (html.length > 5 * 1024 * 1024) {
+    return res.status(400).json({ error: 'HTML too large (limit 5MB).' });
+  }
+  try {
+    const pdf = await renderHtmlToPdf(html);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Length', pdf.length);
+    res.send(pdf);
+  } catch (err) {
+    console.error('PDF render error:', err);
+    res.status(500).json({ error: 'PDF render failed: ' + (err.message || 'unknown') });
+  }
+});
+
+// Email essay with PDF attachment
+app.post('/api/email-essay', async (req, res) => {
+  if (!mailTransport) {
+    return res.status(500).json({ error: 'Server is not configured to send email. Set GMAIL_USER and GMAIL_APP_PASSWORD in Railway env vars.' });
+  }
+  const { to, essayTitle, fileName, html: rawHtml, pdfBase64 } = req.body || {};
+
+  if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    return res.status(400).json({ error: 'Invalid recipient email.' });
+  }
+
+  const safeTitle = (essayTitle || 'Essay').replace(/[^a-zA-Z0-9 _-]/g, '').slice(0, 80) || 'Essay';
+  const subject = `Your essay: ${safeTitle}`;
+  const safeFileName = (fileName || `${safeTitle}.pdf`).replace(/[^a-zA-Z0-9 ._-]/g, '_');
+
+  let pdfBuffer;
+
+  if (rawHtml && typeof rawHtml === 'string' && rawHtml.length > 100) {
+    if (rawHtml.length > 5 * 1024 * 1024) {
+      return res.status(400).json({ error: 'HTML too large (limit 5MB).' });
+    }
+    try {
+      pdfBuffer = await renderHtmlToPdf(rawHtml);
+    } catch (err) {
+      console.error('Server-side render failed:', err);
+      return res.status(500).json({ error: 'PDF render failed: ' + (err.message || 'unknown') });
+    }
+  } else if (pdfBase64 && typeof pdfBase64 === 'string') {
+    if (pdfBase64.length < 1000) {
+      return res.status(400).json({ error: 'Missing or invalid PDF content.' });
+    }
+    if (pdfBase64.length > 20 * 1024 * 1024) {
+      return res.status(400).json({ error: 'PDF too large to email (limit ~20MB).' });
+    }
+    try {
+      const clean = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
+      pdfBuffer = Buffer.from(clean, 'base64');
+    } catch (err) {
+      return res.status(400).json({ error: 'Could not decode PDF.' });
+    }
+  } else {
+    return res.status(400).json({ error: 'No HTML or PDF content provided.' });
+  }
+
+  if (pdfBuffer.length < 500) {
+    return res.status(400).json({ error: 'PDF appears to be empty or corrupt.' });
+  }
+
+  const plainBody =
+    `Hello,\n\nYour essay "${safeTitle}" is attached as a PDF.\n\n` +
+    `— IPT Brisbane Essay Builder`;
+  const htmlBody =
+    `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; line-height: 1.5; max-width: 560px; margin: 0 auto; padding: 20px;">
+      <p>Hello,</p>
+      <p>Your essay <strong>"${escapeHtmlServer(safeTitle)}"</strong> is attached as a PDF.</p>
+      <p style="color:#888; font-size:12px; margin-top: 32px; font-style: italic;">Sent from IPT Brisbane Essay Builder</p>
+    </div>`;
+
+  try {
+    const info = await mailTransport.sendMail({
+      from: `"IPT Brisbane Essay Builder" <${GMAIL_USER}>`,
+      to: to,
+      replyTo: GMAIL_USER,
+      subject: subject,
+      text: plainBody,
+      html: htmlBody,
+      attachments: [{
+        filename: safeFileName.endsWith('.pdf') ? safeFileName : safeFileName + '.pdf',
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      }]
+    });
+    console.log(`Email sent to ${to}: ${info.messageId} (PDF ${pdfBuffer.length} bytes)`);
+    res.json({ ok: true, messageId: info.messageId, pdfSize: pdfBuffer.length });
+  } catch (err) {
+    console.error('Email error:', err);
+    res.status(500).json({ error: 'Failed to send email: ' + (err.message || 'unknown error') });
+  }
+});
+
+function escapeHtmlServer(s) {
+  return String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
 // Friendly shortcut routes — let /admin and /practice work without the .html
 // extension. These must come BEFORE the catch-all, which would otherwise serve
 // index.html for any path that isn't a real file.
@@ -4620,7 +4953,7 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 app.get('/practice', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'practice.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Catch-all: serve index.html for any unknown routes (SPA support)
@@ -4629,12 +4962,16 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', async () => {
-  console.log(`✅ PTE SWT Grader v19.10.0 on port ${PORT}`);
+  console.log(`✅ PTE SWT and Essay Builder Unified Portal running on port ${PORT}`);
   console.log(`🌐 Frontend: http://localhost:${PORT}`);
-  console.log(`🔑 Admin: http://localhost:${PORT}/admin.html (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
+  console.log(`🔑 Admin: http://localhost:${PORT}/admin (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
   console.log(`🤖 Anthropic: ${anthropic ? 'configured' : 'not configured'}`);
   console.log(`🤖 AI: ${anthropic ? 'ACTIVE' : 'LOCAL'}`);
+  console.log(`📧 Gmail Transport: ${mailTransport ? 'ACTIVE' : 'INACTIVE'}`);
   console.log(`💾 Storage backend: ${USE_POSTGRES ? 'POSTGRES (URL from ' + DATABASE_URL_SOURCE + ')' : 'JSON FILE (' + DATA_DIR + '/pte_data.json)'}`);
+
+  // Warm up Puppeteer in the background (don't block startup)
+  getBrowser().catch(err => console.error('Puppeteer warm-up failed:', err));
 
   // v19.10: Initialise Postgres schema and migrate any existing JSON data.
   // Both operations are idempotent.
@@ -4687,4 +5024,16 @@ app.listen(PORT, '0.0.0.0', async () => {
     }
   }
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+});
+
+// Graceful shutdown — close browser before exit
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM — closing browser');
+  if (browserInstance) await browserInstance.close().catch(() => {});
+  process.exit(0);
+});
+process.on('SIGINT', async () => {
+  console.log('SIGINT — closing browser');
+  if (browserInstance) await browserInstance.close().catch(() => {});
+  process.exit(0);
 });

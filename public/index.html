@@ -3,1134 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SWT Practice — IPT Brisbane</title><link rel="preconnect" href="https://fonts.googleapis.com">
+<title>IPT Brisbane — PTE Writing Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&display=swap" rel="stylesheet">
-<style>
-/* ─────────────────────────────────────────────────────────────
-   DESIGN SYSTEM — obsidian dark / ambient glow / glassmorphism
-   Vibrant neon colors, smooth layout transitions, high readability
-   ───────────────────────────────────────────────────────────── */
-:root {
-  /* Default Obsidian Dark Theme */
-  --bg:          #07090e;
-  --bg-deep:     #030407;
-  --card:        rgba(15, 23, 42, 0.45);
-  --card-raised: rgba(30, 41, 59, 0.55);
-  --ink:         #f8fafc;
-  --ink-soft:    #cbd5e1;
-  --ink-mute:    #94a3b8;
-  --ink-faint:   #64748b;
-  --line:        rgba(255, 255, 255, 0.08);
-  --line-soft:   rgba(255, 255, 255, 0.04);
-  
-  /* Accents — the W/W/H/R coverage system */
-  --what:      #10b981;   /* emerald green */
-  --why:       #f59e0b;   /* amber */
-  --how:       #06b6d4;   /* terracotta/cyan */
-  --result:    #8b5cf6;   /* violet */
-  --what-bg:   rgba(16, 185, 129, 0.12);
-  --why-bg:    rgba(245, 158, 11, 0.12);
-  --how-bg:    rgba(6, 182, 212, 0.12);
-  --result-bg: rgba(139, 92, 246, 0.12);
-
-  /* Semantic status colors */
-  --indigo:    #6366f1;   /* highlight numerals */
-  --good:      #10b981;
-  --warn:      #f59e0b;
-  --bad:       #ef4444;
-  --good-bg:   rgba(16, 185, 129, 0.10);
-  --warn-bg:   rgba(245, 158, 11, 0.10);
-  --bad-bg:    rgba(239, 68, 68, 0.10);
-
-  /* Type */
-  --serif:     'Fraunces', Georgia, 'Times New Roman', serif;
-  --sans:      'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-
-  --radius:    20px;
-  --radius-sm: 12px;
-  --shadow:    0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  
-  --ui-font:   var(--sans);
-  --primary-grad: linear-gradient(135deg, #6366f1 0%, #0d9488 100%);
-}
-
-body.light-mode {
-  /* Cream Light Theme */
-  --bg:          #faf9f5;
-  --bg-deep:     #f2efe6;
-  --card:        rgba(255, 255, 255, 0.75);
-  --card-raised: rgba(255, 255, 255, 0.95);
-  --ink:         #1c1917;
-  --ink-soft:    #44403c;
-  --ink-mute:    #78716c;
-  --ink-faint:   #a8a29e;
-  --line:        rgba(0, 0, 0, 0.08);
-  --line-soft:   rgba(0, 0, 0, 0.04);
-
-  --what:        #047857;   /* darker emerald */
-  --why:         #b45309;   /* darker amber */
-  --how:         #0e7490;   /* darker cyan */
-  --result:      #6d28d9;   /* darker violet */
-  --what-bg:     rgba(4, 120, 87, 0.08);
-  --why-bg:      rgba(180, 83, 9, 0.08);
-  --how-bg:      rgba(14, 116, 144, 0.08);
-  --result-bg:   rgba(109, 40, 217, 0.08);
-
-  --indigo:      #4f46e5;
-  --good:        #047857;
-  --warn:        #b45309;
-  --bad:         #b91c1c;
-  --good-bg:     rgba(4, 120, 87, 0.07);
-  --warn-bg:     rgba(180, 83, 9, 0.07);
-  --bad-bg:      rgba(185, 28, 28, 0.07);
-  --shadow:      0 12px 40px rgba(28, 25, 23, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  --primary-grad: linear-gradient(135deg, #4f46e5 0%, #0f766e 100%);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--ink);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  font-size: 15px;
-  position: relative;
-  min-height: 100vh;
-  transition: background 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
-}
-
-.ambient-glow-blob {
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(120px);
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.15;
-  transition: all 0.5s ease;
-}
-body.light-mode .ambient-glow-blob {
-  opacity: 0.06;
-  filter: blur(100px);
-}
-
-/* ─── Typography utilities ─────────────────────────────────── */
-.eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--ink-mute);
-}
-.serif { font-family: var(--serif); }
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; }
-.display { font-family: var(--serif); font-size: 32px; font-weight: 700; line-height: 1.25; }
-.display em { font-style: italic; color: var(--indigo); font-weight: 500; }
-
-/* ─── Layout shell ─────────────────────────────────────────── */
-.shell { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
-
-.topbar {
-  display: flex; align-items: center; gap: 16px;
-  padding: 24px 0; border-bottom: 1px solid var(--line);
-  margin-bottom: 32px;
-}
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-mark {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--ink); color: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 800; flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-.brand-name { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
-.brand-sub {
-  font-size: 12px; color: var(--ink-mute);
-  padding-left: 14px; margin-left: 4px; border-left: 1px solid var(--line);
-}
-.topbar-spacer { flex: 1; }
-.topbar-tag {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-soft);
-  padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px;
-  background: var(--card);
-  backdrop-filter: blur(8px);
-  display: flex; align-items: center; gap: 6px;
-}
-.topbar-tag .dot {
-  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--good);
-  box-shadow: 0 0 8px var(--good);
-}
-.theme-toggle {
-  background: var(--card); border: 1px solid var(--line); color: var(--ink-soft);
-  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 14px;
-  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-}
-.theme-toggle:hover {
-  background: var(--line-soft); color: var(--ink); transform: scale(1.08); border-color: var(--ink-mute);
-}
-.avatar {
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--ink); color: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  transition: all 0.2s ease;
-}
-.avatar:hover {
-  transform: scale(1.05);
-}
-
-/* ─── Cards ────────────────────────────────────────────────── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 28px;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow);
-  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease, border-color 0.3s ease;
-}
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
-}
-body.light-mode .card:hover {
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: 0 20px 48px rgba(28, 25, 23, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-.card-raised { background: var(--card-raised); border-color: rgba(255,255,255,0.12); }
-body.light-mode .card-raised { border-color: rgba(0,0,0,0.1); }
-
-/* ─── Buttons ──────────────────────────────────────────────── */
-.btn {
-  font-family: var(--sans); font-size: 13.5px; font-weight: 600;
-  padding: 10px 20px; border-radius: var(--radius-sm);
-  border: 1px solid var(--line); background: var(--card-raised);
-  color: var(--ink-soft); cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-  display: inline-flex; align-items: center; gap: 8px;
-}
-.btn:hover { border-color: var(--ink-mute); color: var(--ink); background: var(--line-soft); transform: translateY(-1px); }
-.btn-primary {
-  background: var(--primary-grad); color: #fff; border: none;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-}
-.btn-primary:hover {
-  background: var(--primary-grad); opacity: 0.95; transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-  color: #fff;
-}
-.btn-ghost { background: transparent; border-color: transparent; color: var(--ink-mute); }
-.btn-ghost:hover { background: var(--line-soft); color: var(--ink); transform: none; }
-.btn-kbd {
-  font-size: 10px; padding: 2px 6px; border-radius: 4px;
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15);
-  color: var(--ink-mute);
-}
-body.light-mode .btn-kbd {
-  background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.08);
-}
-.btn[disabled] { opacity: 0.35; cursor: not-allowed; transform: none !important; }
-
-/* ─── Chips ────────────────────────────────────────────────── */
-.chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12.5px; font-weight: 600;
-  padding: 6px 14px; border-radius: 999px;
-  background: var(--card-raised); border: 1px solid var(--line);
-  color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease;
-}
-.chip:hover { border-color: var(--ink-mute); color: var(--ink); }
-.chip-static { cursor: default; }
-.chip.used { background: var(--indigo); border-color: var(--indigo); color: #fff; box-shadow: 0 0 10px rgba(99, 102, 241, 0.4); }
-
-/* ─── Login ────────────────────────────────────────────────── */
-.login-wrap {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  padding: 28px;
-}
-.login-card { width: 100%; max-width: 420px; border-color: rgba(255,255,255,0.12); }
-.login-card h1 { font-size: 28px; margin-bottom: 6px; }
-.login-card .sub { color: var(--ink-mute); font-size: 14px; margin-bottom: 24px; }
-.field { margin-bottom: 18px; }
-.field label {
-  display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-mute); margin-bottom: 8px;
-}
-.field input, .field select {
-  width: 100%; font-family: var(--sans); font-size: 14.5px;
-  padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm);
-  background: var(--bg-deep); color: var(--ink);
-  transition: all 0.2s ease;
-}
-.field input:focus, .field select:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25); }
-.login-err {
-  font-size: 13px; color: var(--bad); margin: 10px 0; display: none;
-  background: var(--bad-bg); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.2);
-}
-.login-info {
-  font-size: 13px; color: var(--good); margin: 10px 0; display: none;
-  background: var(--good-bg); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(16, 185, 129, 0.2);
-}
-.login-switch {
-  font-size: 13.5px; color: var(--ink-mute); margin-top: 20px; text-align: center;
-}
-.login-switch a { color: var(--indigo); cursor: pointer; text-decoration: none; font-weight: 600; }
-.login-switch a:hover { text-decoration: underline; }
-
-.hidden { display: none !important; }
-
-/* ─── Practice screen — two pane ───────────────────────────── */
-.practice-grid {
-  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px;
-  align-items: start;
-}
-
-/* Passage navigation strip */
-.passage-nav {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-  font-size: 13px; color: var(--ink-mute);
-}
-.passage-nav .nav-arrow {
-  width: 32px; height: 32px; border-radius: var(--radius-sm);
-  border: 1px solid var(--line); background: var(--card-raised);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--ink-soft); font-size: 14px;
-  transition: all 0.2s ease;
-}
-.passage-nav .nav-arrow:hover { border-color: var(--ink-mute); color: var(--ink); background: var(--line-soft); }
-.passage-nav .nav-arrow[disabled] { opacity: 0.25; cursor: not-allowed; }
-.passage-nav .nav-label { font-weight: 700; color: var(--ink); }
-.passage-select-dropdown {
-  background: var(--card-raised);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  font-size: 13.5px;
-  font-weight: 500;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  outline: none;
-  cursor: pointer;
-  max-width: 280px;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  margin-left: 8px;
-}
-.passage-select-dropdown:hover {
-  border-color: var(--indigo);
-  background: var(--line-soft);
-}
-.passage-select-dropdown:focus {
-  border-color: var(--indigo);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-.passage-select-dropdown option {
-  background: var(--card);
-  color: var(--ink);
-}
-.passage-filter-select {
-  background: var(--card-raised);
-  border: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  outline: none;
-  cursor: pointer;
-  max-width: 140px;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  margin-left: 8px;
-}
-.passage-filter-select:hover {
-  border-color: var(--indigo);
-  color: var(--ink);
-  background: var(--line-soft);
-}
-.passage-filter-select:focus {
-  border-color: var(--indigo);
-}
-.passage-filter-select option {
-  background: var(--card);
-  color: var(--ink);
-}
-.passage-nav-spacer { flex: 1; }
-.timer-toggle {
-  display: flex; align-items: center; gap: 8px; font-size: 12.5px;
-  color: var(--ink-mute); cursor: pointer;
-  padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px;
-  background: var(--card);
-}
-.timer-pill {
-  font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink);
-  font-size: 13.5px;
-}
-.timer-pill.warning { color: var(--warn); }
-.timer-pill.expired {
-  color: var(--bad);
-  animation: timerFlash 1.6s ease-in-out infinite;
-}
-@keyframes timerFlash {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.35; }
-}
-
-/* Passage reading pane */
-.passage-pane .passage-meta {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
-}
-.passage-meta .meta-tag {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px; background: var(--bg-deep); color: var(--ink-mute);
-  border: 1px solid var(--line);
-}
-.passage-body {
-  font-family: var(--serif); font-size: 17.5px; line-height: 1.75; color: var(--ink-soft);
-}
-.passage-body p { margin-bottom: 18px; }
-.passage-body p:last-child { margin-bottom: 0; }
-.passage-fresh-note {
-  margin-top: 24px; padding-top: 18px; border-top: 1px dashed var(--line);
-  font-size: 12.5px; color: var(--ink-faint); font-style: italic;
-}
-
-/* Write pane */
-.write-tabs {
-  display: flex; gap: 24px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
-}
-.write-tab {
-  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  padding-bottom: 12px; color: var(--ink-faint); cursor: pointer;
-  border-bottom: 3px solid transparent; margin-bottom: -2px;
-  transition: all 0.2s ease;
-}
-.write-tab:hover { color: var(--ink-soft); }
-.write-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-.write-tab .tab-sub {
-  display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.03em;
-  color: var(--ink-faint); margin-top: 3px; text-transform: none;
-}
-
-.word-meter {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-  font-size: 12px; color: var(--ink-mute);
-}
-.word-meter .meter-track {
-  flex: 1; height: 6px; border-radius: 3px; background: var(--bg-deep);
-  position: relative; overflow: hidden; border: 1px solid var(--line-soft);
-}
-.word-meter .meter-fill {
-  position: absolute; left: 0; top: 0; bottom: 0;
-  background: linear-gradient(90deg, var(--indigo) 0%, var(--good) 100%);
-  border-radius: 3px; transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
-}
-.word-meter .meter-fill.over {
-  background: linear-gradient(90deg, var(--bad) 0%, #ff6b6b 100%);
-  box-shadow: 0 0 8px var(--bad);
-}
-.word-meter .meter-count { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); }
-
-textarea.summary-input, textarea.scratch-input {
-  width: 100%; min-height: 220px; resize: vertical;
-  font-family: var(--serif); font-size: 16.5px; line-height: 1.75;
-  padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-sm);
-  background: rgba(3, 4, 7, 0.45); color: var(--ink);
-  transition: all 0.25s ease;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-body.light-mode textarea.summary-input, body.light-mode textarea.scratch-input {
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-textarea.summary-input:focus, textarea.scratch-input:focus {
-  outline: none; border-color: var(--indigo);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25), 0 4px 20px rgba(0, 0, 0, 0.15);
-  background: rgba(3, 4, 7, 0.6);
-}
-body.light-mode textarea.summary-input:focus, body.light-mode textarea.scratch-input:focus {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-.scratch-note {
-  font-size: 12px; color: var(--ink-faint); font-style: italic; margin-top: 10px;
-}
-
-/* Writing Health panel — slim, word-band row only */
-.health-grid {
-  display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 20px;
-}
-.health-panel {
-  border: 1px solid var(--line); border-radius: var(--radius-sm);
-  padding: 16px; background: var(--card-raised);
-  max-width: 100%;
-}
-.health-panel .panel-title {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ink-mute); margin-bottom: 12px;
-}
-.health-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px; font-size: 13.5px; border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-}
-.health-row .h-icon {
-  width: 18px; height: 18px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800;
-  flex-shrink: 0;
-}
-.health-row.ok { background: var(--good-bg); border-color: rgba(16, 185, 129, 0.15); }
-.health-row.ok .h-icon { color: var(--good); background: rgba(16, 185, 129, 0.15); }
-.health-row.warn { background: var(--warn-bg); border-color: rgba(245, 158, 11, 0.15); }
-.health-row.warn .h-icon { color: var(--warn); background: rgba(245, 158, 11, 0.15); }
-.health-row .h-label { flex: 1; color: var(--ink-soft); font-weight: 500; }
-.health-row .h-label .h-sub {
-  display: block; font-size: 11px; color: var(--ink-mute); margin-top: 2px;
-}
-.health-row .h-value {
-  font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink);
-  font-size: 14.5px;
-}
-
-.write-actions {
-  display: flex; align-items: center; gap: 12px; margin-top: 20px;
-}
-.write-actions-spacer { flex: 1; }
-
-/* ─── Results screen ───────────────────────────────────────── */
-.results-hero {
-  display: flex; align-items: center; gap: 32px; margin-bottom: 28px;
-}
-.score-ring-wrap { flex-shrink: 0; text-align: center; }
-.score-ring {
-  position: relative; width: 140px; height: 140px;
-  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.3));
-}
-.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.score-ring .ring-track { fill: none; stroke: var(--line); stroke-width: 7; opacity: 0.3; }
-.score-ring .ring-fill {
-  fill: none; stroke: url(#ringGradient); stroke-width: 7; stroke-linecap: round;
-  transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1);
-}
-.score-ring .ring-value {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif); font-size: 38px; font-weight: 800;
-  text-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-}
-body.light-mode .score-ring {
-  filter: drop-shadow(0 4px 10px rgba(99, 102, 241, 0.15));
-}
-body.light-mode .score-ring .ring-value {
-  text-shadow: none;
-}
-.score-ring-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ink-mute); margin-top: 10px;
-}
-.results-hero-body { flex: 1; }
-.results-hero-body .eyebrow { margin-bottom: 8px; }
-.results-hero-body .display { margin-bottom: 12px; font-size: 34px; font-weight: 700; }
-.results-hero-body .result-summary {
-  font-size: 14.5px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 16px;
-  max-width: 580px;
-}
-.trait-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.ai-degraded-notice {
-  margin-top: 14px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--warn-bg);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  color: var(--warn);
-  font-size: 13px;
-  line-height: 1.55;
-  max-width: 580px;
-}
-
-.sync-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--ink-mute);
-  margin-top: 12px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--line-soft);
-  transition: opacity 0.3s, background 0.2s;
-  border: 1px solid var(--line);
-}
-.sync-status::before {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.sync-status.sync-saving { color: var(--ink-mute); }
-.sync-status.sync-saving::before {
-  background: var(--indigo);
-  animation: sync-pulse 1.2s ease-in-out infinite;
-  box-shadow: 0 0 6px var(--indigo);
-}
-.sync-status.sync-saved {
-  color: var(--good);
-  background: var(--good-bg);
-  border-color: rgba(16, 185, 129, 0.15);
-}
-.sync-status.sync-failed {
-  color: var(--warn);
-  background: var(--warn-bg);
-  border-color: rgba(245, 158, 11, 0.15);
-}
-@keyframes sync-pulse {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 1; }
-}
-
-.trait-chip {
-  font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
-  padding: 6px 12px; border-radius: 999px;
-  background: var(--bg-deep); color: var(--ink-soft);
-  border: 1px solid var(--line);
-}
-.results-hero-actions {
-  display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
-}
-.results-hero-actions .btn {
-  justify-content: center;
-}
-
-/* Originality checks */
-.originality {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-  margin-bottom: 28px;
-}
-.orig-cell {
-  background: var(--card);
-  padding: 16px 18px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  box-shadow: var(--shadow);
-  transition: transform 0.2s ease;
-}
-.orig-cell:hover {
-  transform: translateY(-2px);
-}
-.orig-cell.good { background: var(--good-bg); border-color: rgba(16, 185, 129, 0.25); }
-.orig-cell.warn { background: var(--warn-bg); border-color: rgba(245, 158, 11, 0.25); }
-.orig-cell .orig-head {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
-}
-.orig-cell .orig-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
-.orig-cell .orig-verdict {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ink-mute);
-}
-.orig-cell.good .orig-verdict { color: var(--good); }
-.orig-cell.warn .orig-verdict { color: var(--warn); }
-.orig-cell .orig-detail { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
-
-.results-cols {
-  display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 28px;
-  align-items: start; margin-bottom: 28px;
-}
-
-/* Side-by-side Layout */
-.side-by-side {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
-  align-items: start;
-}
-.sbs-col { min-width: 0; }
-.sbs-head {
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ink-mute); margin-bottom: 12px;
-  padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
-}
-
-/* Annotated submission */
-.section-num {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-  color: var(--ink-faint); margin-bottom: 18px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.section-num .legend {
-  display: flex; gap: 12px; font-weight: 600;
-}
-.section-num .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.section-num .legend i {
-  width: 10px; height: 10px; border-radius: 3px; display: inline-block;
-}
-.annotated-text {
-  font-family: var(--serif); font-size: 16px; line-height: 1.8; color: var(--ink);
-}
-.ann-seg { padding: 2px 4px; border-radius: 4px; transition: background 0.15s ease; }
-.ann-seg.what   { background: var(--what-bg);   border-bottom: 2px solid var(--what); }
-.ann-seg.why    { background: var(--why-bg);    border-bottom: 2px solid var(--why); }
-.ann-seg.how    { background: var(--how-bg);    border-bottom: 2px solid var(--how); }
-.ann-seg.result { background: var(--result-bg); border-bottom: 2px solid var(--result); }
-.ann-seg.spell  {
-  background: var(--bad-bg); border-bottom: 2px wavy var(--bad);
-  cursor: pointer;
-}
-.ann-seg.grammar-major {
-  background: rgba(239, 68, 68, 0.08);
-  border-bottom: 2px solid var(--bad);
-  cursor: pointer;
-}
-.ann-seg.grammar-minor {
-  background: rgba(245, 158, 11, 0.08);
-  border-bottom: 1px dashed var(--warn);
-  cursor: pointer;
-}
-.ann-seg.grammar-major:hover { background: rgba(239, 68, 68, 0.14); }
-.ann-seg.grammar-minor:hover { background: rgba(245, 158, 11, 0.14); }
-
-/* Popover details */
-.gp-popover {
-  position: absolute;
-  z-index: 5000;
-  max-width: 300px;
-  background: var(--card-raised);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 12px 30px 12px 14px;
-  font-family: var(--sans);
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ink);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(20px);
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-}
-.gp-popover.gp-shown { opacity: 1; transform: translateY(0); }
-.gp-popover.gp-closing { opacity: 0; transform: translateY(-4px); }
-.gp-popover .gp-close {
-  position: absolute; top: 8px; right: 8px;
-  background: none; border: none;
-  font-size: 18px; line-height: 1;
-  color: var(--ink-faint);
-  cursor: pointer; padding: 2px;
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-}
-.gp-popover .gp-close:hover { color: var(--ink); background: var(--line-soft); }
-.gp-popover .gp-fix {
-  font-weight: 700; color: var(--indigo);
-  margin-bottom: 6px;
-}
-.gp-popover .gp-arrow {
-  color: var(--bad); margin-right: 4px; font-weight: 700;
-}
-.gp-popover .gp-rationale {
-  color: var(--ink-soft);
-  font-size: 12.5px;
-  line-height: 1.5;
-}
-
-/* SBS toggle style */
-.sbs-toggle {
-  display: flex; gap: 4px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--line-soft);
-}
-.sbs-tab {
-  background: none; border: none;
-  font-family: var(--sans); font-size: 11px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ink-mute);
-  padding: 8px 16px; margin-bottom: -1px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-.sbs-tab:hover { color: var(--ink-soft); }
-.sbs-tab.active {
-  color: var(--ink);
-  border-bottom-color: var(--indigo);
-}
-.sample-note {
-  margin-top: 14px; padding-top: 14px;
-  border-top: 1px solid var(--line-soft);
-  font-size: 12.5px; color: var(--ink-mute);
-  font-style: italic;
-}
-.annotated-feedback {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px;
-  padding-top: 16px; border-top: 1px solid var(--line-soft);
-}
-.ann-fb-item { display: flex; gap: 8px; font-size: 12.5px; }
-.ann-fb-item .fb-icon { flex-shrink: 0; font-size: 14px; }
-.ann-fb-item.good .fb-icon { color: var(--good); }
-.ann-fb-item.warn .fb-icon { color: var(--warn); }
-.ann-fb-item .fb-text { color: var(--ink-soft); line-height: 1.5; }
-.ann-fb-item .fb-text em { font-style: italic; color: var(--ink); font-weight: 600; }
-
-/* Trait breakdown */
-.trait-breakdown .trait-row { margin-bottom: 18px; }
-.trait-breakdown .trait-row:last-child { margin-bottom: 0; }
-.trait-row .trait-head {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
-}
-.trait-row .trait-name { font-size: 14px; font-weight: 700; color: var(--ink-soft); }
-.trait-row .trait-score {
-  font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--ink-mute);
-}
-.trait-row .trait-score b { color: var(--ink); font-size: 14px; font-weight: 700; }
-.trait-row .trait-bar {
-  height: 6px; border-radius: 3px; background: var(--bg-deep); overflow: hidden;
-  border: 1px solid var(--line-soft);
-}
-.trait-row .trait-bar-fill {
-  height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--indigo) 0%, var(--good) 100%);
-  transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
-}
-.trait-row .trait-note {
-  font-size: 11.5px; color: var(--ink-faint); font-style: italic; margin-top: 6px;
-}
-
-/* Key element coverage */
-.coverage-table { margin-top: 8px; }
-.coverage-row {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 16px 0; border-bottom: 1px solid var(--line-soft);
-}
-.coverage-row:last-child { border-bottom: none; }
-.coverage-row .cov-key {
-  display: flex; align-items: center; gap: 8px;
-  width: 90px; flex-shrink: 0;
-  font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.coverage-row .cov-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-.cov-dot.what { background: var(--what); }
-.cov-dot.why { background: var(--why); }
-.cov-dot.how { background: var(--how); }
-.cov-dot.result { background: var(--result); }
-.coverage-row .cov-text { flex: 1; font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
-.coverage-row .cov-text.missing { color: var(--ink-faint); font-style: italic; }
-.coverage-row .cov-status {
-  font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 4px 10px; border-radius: 999px; flex-shrink: 0;
-}
-.cov-status.covered { background: var(--good-bg); color: var(--good); border: 1px solid rgba(16, 185, 129, 0.15); }
-.cov-status.partial { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(245, 158, 11, 0.15); }
-.cov-status.missing { background: var(--bad-bg); color: var(--bad); border: 1px solid rgba(239, 68, 68, 0.15); }
-
-/* About passage */
-.about-passage {
-  font-family: var(--serif); font-size: 15.5px; line-height: 1.7; color: var(--ink-soft);
-}
-.about-passage p { margin-bottom: 14px; }
-.about-passage p:last-child { margin-bottom: 0; }
-.about-passage .about-section {
-  margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-soft);
-}
-.about-passage .about-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
-.about-passage .about-eyebrow {
-  font-family: var(--sans);
-  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--ink-mute);
-  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-}
-.about-passage .about-eyebrow .e-dot {
-  width: 10px; height: 10px; border-radius: 3px;
-}
-.about-passage strong { color: var(--ink); font-weight: 700; }
-
-/* Vocabulary coach */
-.vocab-coach { margin-top: 8px; }
-.vocab-row {
-  display: grid; grid-template-columns: 1fr auto 1.4fr; align-items: center;
-  gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line-soft);
-}
-.vocab-row:last-child { border-bottom: none; }
-.vocab-original .vocab-word {
-  font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink);
-}
-.vocab-original .vocab-context {
-  font-size: 12.5px; color: var(--ink-faint); font-style: italic; margin-top: 6px;
-}
-.vocab-original .vocab-context b { color: var(--ink-soft); font-style: normal; font-weight: 600; }
-.vocab-arrow {
-  color: var(--ink-faint); font-size: 16px;
-}
-.vocab-syns { display: flex; flex-wrap: wrap; gap: 8px; }
-.vocab-chip {
-  font-family: var(--sans); font-size: 13px; font-weight: 600;
-  padding: 6px 14px; border-radius: 999px;
-  background: var(--bg-deep); border: 1px solid var(--line);
-  color: var(--ink-soft); cursor: pointer; transition: all 0.2s ease;
-}
-.vocab-chip:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.vocab-rationale {
-  grid-column: 1 / -1;
-  font-size: 12px; color: var(--ink-mute); font-style: italic;
-  margin-top: 8px;
-}
-.vocab-rationale b { font-style: normal; color: var(--ink-soft); font-weight: 600; }
-.vocab-empty {
-  font-size: 13.5px; color: var(--ink-faint); font-style: italic;
-  padding: 16px 0;
-}
-@media (max-width: 640px) {
-  .vocab-row { grid-template-columns: 1fr; gap: 10px; }
-  .vocab-arrow { display: none; }
-}
-
-/* Toast styling */
-.toast {
-  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--ink); color: var(--bg);
-  padding: 12px 24px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600;
-  opacity: 0; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9000; pointer-events: none;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Loading Veil */
-.loading-veil {
-  position: fixed; inset: 0; background: rgba(8, 11, 17, 0.7);
-  display: flex; align-items: center; justify-content: center; z-index: 8000;
-  backdrop-filter: blur(4px);
-  transition: opacity 0.2s ease;
-}
-body.light-mode .loading-veil {
-  background: rgba(250, 249, 245, 0.7);
-}
-.loading-veil .spinner {
-  width: 36px; height: 36px; border: 3px solid var(--line);
-  border-top-color: var(--indigo); border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--line);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ink-faint);
-}
-
-/* Page footer and items */
-.screen { display: none; }
-.screen.active { display: block; }
-.page-foot {
-  text-align: center; font-size: 11px; letter-spacing: 0.12em;
-  color: var(--ink-faint); padding: 40px 0; text-transform: uppercase;
-  font-weight: 700;
-}
-
-/* Impersonation Banner */
-.imp-banner {
-  position: sticky; top: 0; z-index: 7000;
-  background: #3c2a1a; color: #fdfaf7;
-  padding: 12px 24px;
-  display: flex; align-items: center; gap: 14px;
-  font-size: 13.5px;
-  border-bottom: 2px solid var(--why);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-.imp-banner .imp-eye { font-size: 16px; flex-shrink: 0; }
-.imp-banner .imp-text { flex: 1; line-height: 1.4; font-weight: 500; }
-.imp-banner .imp-text strong { color: var(--why); font-weight: 700; }
-.imp-banner .imp-exit {
-  background: rgba(255,255,255,0.1); color: #fdfaf7;
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 8px 16px; border-radius: 6px;
-  font-size: 12px; font-weight: 700;
-  cursor: pointer; flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-.imp-banner .imp-exit:hover { background: rgba(255,255,255,0.2); border-color: #fff; }
-
-/* Responsive adjustments */
-@media (max-width: 900px) {
-  .practice-grid { grid-template-columns: 1fr; }
-  .results-cols { grid-template-columns: 1fr; }
-  .side-by-side { grid-template-columns: 1fr; }
-  .results-hero { flex-direction: column; align-items: flex-start; gap: 20px; }
-  .results-hero-actions { flex-direction: row; width: 100%; }
-  .results-hero-actions .btn { flex: 1; }
-  .originality { grid-template-columns: 1fr; }
-  .health-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 560px) {
-  .shell { padding: 0 16px; }
-  .annotated-feedback { grid-template-columns: 1fr; }
-  .brand-sub { display: none; }
-  .results-hero-actions { flex-direction: column; }
-}
-
-/* Print optimizations */
-@media print {
-  body {
-    background: #fff !important;
-    color: #000 !important;
-  }
-  .shell {
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  .card, .card-raised {
-    background: #fff !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  .ambient-glow-blob, .theme-toggle, .avatar, .topbar-tag, .topbar-spacer, .passage-nav, .results-hero-actions, .gp-popover, .sync-status, .imp-banner, .btn, .write-tabs, .word-meter, .scratch-note, .passage-fresh-note {
-    display: none !important;
-  }
-  .brand-mark {
-    border: 1px solid #000 !important;
-    background: #000 !important;
-    color: #fff !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .ann-seg.grammar-major,
-  .ann-seg.grammar-minor,
-  .ann-seg.spell {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .ann-seg.grammar-major {
-    text-decoration: underline;
-    text-decoration-color: #ef4444;
-    text-decoration-thickness: 2px;
-    font-weight: 600;
-  }
-  .ann-seg.grammar-minor {
-    text-decoration: underline dotted;
-    text-decoration-color: #C9A24B;
-  }
-  .ann-seg.spell {
-    text-decoration: underline wavy;
-    text-decoration-color: #c94f4f;
-  }
-  .ann-seg.grammar-major[data-fix]:not([data-fix=""])::after {
-    content: " [→ " attr(data-fix) "]";
-    font-size: 0.85em;
-    font-weight: 400;
-    color: #c94f4f;
-  }
-  .side-by-side {
-    display: block !important;
-  }
-  .sbs-col {
-    margin-bottom: 30px;
-    page-break-inside: avoid;
-  }
-  .score-ring-wrap {
-    page-break-inside: avoid;
-  }
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+<script src="index.js" defer></script>
+</head>
 <body>
-<script>
-(function initTheme() {
-  const saved = localStorage.getItem('pte_theme');
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved === 'light') {
-    document.body.classList.add('light-mode');
-  } else if (saved === 'dark') {
-    document.body.classList.remove('light-mode');
-  } else if (!prefersDark) {
-    document.body.classList.add('light-mode');
-  }
-})();
-</script>
+
 <div class="ambient-glow-blob" style="top: -10%; left: -10%; width: 45vw; height: 45vw; background: rgba(99, 102, 241, 0.12);"></div>
 <div class="ambient-glow-blob" style="bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: rgba(20, 184, 166, 0.1);"></div>
-<div class="ambient-glow-blob" style="top: 25%; right: 10%; width: 35vw; height: 35vw; background: rgba(139, 92, 246, 0.08);"></div>
 
-<!-- v19.11: global impersonation banner. Sits above every screen, hidden by
-     default. Shown only when this tab was opened via /practice?impersonate=…
-     by an admin — a persistent reminder that submissions write to the
-     impersonated student's record. -->
-<div id="impersonateBanner" class="imp-banner" style="display:none;">
-  <span class="imp-eye">👁</span>
-  <span class="imp-text">Admin view — acting as <strong id="impersonateName">…</strong>. Any submission writes to this student's record.</span>
-  <button class="imp-exit" onclick="exitImpersonation()">Exit admin view</button>
-</div>
-
-<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
-<div class="screen active" id="loginScreen" style="position: relative;">
-  <button class="theme-toggle" onclick="toggleTheme()" style="position: absolute; top: 24px; right: 28px; z-index: 1000;" title="Toggle theme">☀️</button>
-  <div class="login-wrap">
-    <div class="card card-raised login-card">
-      <div class="brand" style="margin-bottom:20px;">
-        <div class="brand-mark">◐</div>
-        <div>
-          <div class="brand-name">IPT Brisbane</div>
-          <div class="eyebrow" style="margin-top:1px;">Summarize Written Text</div>
-        </div>
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="login-screen active" id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-mark">◐</div>
+      <div>
+        <div class="login-brand-name">IPT Brisbane</div>
+        <div class="login-brand-sub">PTE Writing Portal</div>
       </div>
+    </div>
 
-      <!-- Login form -->
-      <div id="loginForm">
-        <h1>Welcome back.</h1>
-        <div class="sub">Sign in to continue your practice.</div>
-        <div class="field">
-          <label>Username</label>
-          <input type="text" id="loginUser" autocomplete="username" placeholder="your username">
+    <!-- Login form -->
+    <div id="loginForm">
+      <h1 class="login-title">Welcome back</h1>
+      <p class="login-sub">Sign in to practice SWT and essays</p>
+      <div class="login-error" id="loginError"></div>
+      <form onsubmit="handleLoginSubmit(event)">
+        <div class="login-field">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" autocomplete="username" required placeholder="your username">
         </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="loginPw" autocomplete="current-password" placeholder="••••••••">
+        <div class="login-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
         </div>
-        <div class="login-err" id="loginErr"></div>
-        <div class="login-info" id="loginInfo"></div>
-        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">Sign in</button>
-        <div class="login-switch">
-          New here? <a onclick="showRegister()">Create an account</a>
-        </div>
+        <button type="submit" class="login-submit" id="loginSubmitBtn">Sign in</button>
+      </form>
+      <div class="login-toggle">
+        New here? <a onclick="toggleSignupMode(true)">Create an account</a>
       </div>
+    </div>
 
-      <!-- Register form -->
-      <div id="registerForm" class="hidden">
-        <h1>Create account.</h1>
-        <div class="sub">Start tracking your SWT progress.</div>
-        <div class="field">
-          <label>Username</label>
-          <input type="text" id="regUser" autocomplete="username" placeholder="choose a username">
+    <!-- Register form -->
+    <div id="registerForm" style="display:none;">
+      <h1 class="login-title">Create account</h1>
+      <p class="login-sub">Track your summary and essay scores</p>
+      <div class="login-error" id="registerError"></div>
+      <form onsubmit="handleRegisterSubmit(event)">
+        <div class="login-field">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" autocomplete="username" required placeholder="choose username">
         </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="regPw" autocomplete="new-password" placeholder="min 4 characters">
+        <div class="login-field">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" autocomplete="new-password" required minlength="4" placeholder="min 4 characters">
         </div>
-        <div class="field">
-          <label>Security question</label>
+        <div class="login-field">
+          <label for="regSecretQ">Security question</label>
           <select id="regSecretQ">
             <option value="pet">What was the name of your first pet?</option>
             <option value="school">What primary school did you attend?</option>
@@ -1140,2021 +72,1043 @@ body.light-mode .loading-veil {
             <option value="friend">What was your childhood best friend's name?</option>
           </select>
         </div>
-        <div class="field">
-          <label>Answer</label>
-          <input type="text" id="regSecretA" placeholder="for password recovery">
+        <div class="login-field">
+          <label for="regSecretA">Answer</label>
+          <input type="text" id="regSecretA" required placeholder="for password recovery">
         </div>
-        <div class="login-err" id="regErr"></div>
-        <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doRegister()">Create account</button>
-        <div class="login-switch">
-          Already have an account? <a onclick="showLogin()">Sign in</a>
-        </div>
+        <button type="submit" class="login-submit" id="regSubmitBtn">Create account</button>
+      </form>
+      <div class="login-toggle">
+        Already have an account? <a onclick="toggleSignupMode(false)">Sign in</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════ PRACTICE SCREEN ══════════════════ -->
-<div class="screen" id="practiceScreen">
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-mark">◐</div>
+<!-- ============ APP CORE CONTAINER ============ -->
+<div class="app-shell" style="display:none;" id="appShell">
+  
+  <!-- Collapsible Left Sidebar -->
+  <aside class="sidebar-nav">
+    <div class="sidebar-brand">
+      <div class="brand-mark">◐</div>
+      <div>
         <div class="brand-name">IPT Brisbane</div>
-        <div class="brand-sub">Summarize Written Text</div>
-      </div>
-      <div class="topbar-spacer"></div>
-      <div class="topbar-tag" id="aiStatusTag"><span class="dot"></span>Claude Live</div>
-      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
-      <div class="avatar" id="userAvatar" onclick="signOut()" title="Sign out">··</div>
-    </div>
-
-    <div class="passage-nav">
-      <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
-      <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
-      <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
-      <select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
-        <option value="all">All</option>
-        <option value="attempted">Attempted</option>
-        <option value="unattempted">Unattempted</option>
-      </select>
-      <select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select>
-      <div class="passage-nav-spacer"></div>
-      <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
-        <span id="timerState">Timed</span>
-        <span class="timer-pill" id="timerDisplay">—</span>
+        <div class="brand-sub">Writing Portal</div>
       </div>
     </div>
+    
+    <nav class="sidebar-menu">
+      <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" id="nav-swt" onclick="switchSection('swt')">
+        <span class="nav-icon">📝</span> Summarize Text (SWT)
+      </button>
+      <button class="nav-item" id="nav-library" onclick="switchSection('library')">
+        <span class="nav-icon">📚</span> Essay Library
+      </button>
+      <button class="nav-item" id="nav-practice" onclick="openPractice()">
+        <span class="nav-icon">✏️</span> Essay Practice
+      </button>
+      <button class="nav-item" id="nav-vocab" onclick="openVocab()">
+        <span class="nav-icon">📖</span> Vocab Hub
+      </button>
+      <button class="nav-item" id="nav-admin" onclick="openAdmin()" style="display:none;">
+        <span class="nav-icon">👑</span> Admin Panel
+      </button>
+    </nav>
 
-    <div class="practice-grid">
-      <!-- LEFT: passage -->
-      <div class="card passage-pane">
-        <div class="passage-meta">
-          <span class="eyebrow">Passage <span id="pasNum">01</span></span>
-          <span class="meta-tag" id="pasWordCount">261 words</span>
-          <span class="meta-tag" id="pasCategory">~10 min</span>
-        </div>
-        <div class="passage-body" id="passageBody"></div>
-        <div class="passage-fresh-note">Title &amp; key ideas appear after you submit — so you read fresh.</div>
+    <div class="sidebar-footer">
+      <div class="sync-block">
+        <span class="sync-indicator" id="syncIndicator">
+          <span class="sync-dot synced" id="syncDot"></span>
+          <span id="syncText">Synced</span>
+        </span>
       </div>
+      <button class="user-badge" id="userBadge" onclick="openUserMenu()" title="Account">
+        <span class="user-avatar" id="userAvatar">?</span>
+        <span class="user-name" id="userName">—</span>
+      </button>
+    </div>
+  </aside>
 
-      <!-- RIGHT: write -->
-      <div class="card write-pane">
-        <div class="write-tabs">
-          <div class="write-tab active" id="tabWrite" onclick="switchWriteTab('write')">
-            Write<span class="tab-sub">Your summary</span>
-          </div>
-          <div class="write-tab" id="tabPlan" onclick="switchWriteTab('plan')">
-            Plan<span class="tab-sub">Scratch notes</span>
+  <!-- Main Body Wrapper -->
+  <div class="main-body">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 id="pageTitle" class="topbar-title">Dashboard</h1>
+      </div>
+      
+      <div class="topbar-right">
+        <span class="quota-chip" id="quotaChip" title="Daily AI quota" style="display:none;">⚡ <span id="quotaText">— / —</span></span>
+        <button class="tb-icon-btn" onclick="importData()" title="Import local backup">Import ⬆</button>
+        <button class="tb-icon-btn" onclick="exportData()" title="Download backup">Backup ⬇</button>
+        <button class="tb-text-btn" id="essayTemplateBtn" style="display:none;" onclick="openTemplate()">⊞ Template</button>
+        <button class="tb-text-btn dark" style="display:none;" onclick="openExportMenu()" id="exportBtn">Export ▾</button>
+        <button class="tb-text-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 Dark</button>
+      </div>
+    </div>
+
+    <!-- Impersonation Banner -->
+    <div id="impersonateBanner" class="imp-banner" style="display:none;">
+      <span class="imp-eye">👁</span>
+      <span class="imp-text">Admin view — acting as <strong id="impersonateName">…</strong>. Any submission writes to this student's record.</span>
+      <button class="imp-exit" onclick="exitImpersonation()">Exit admin view</button>
+    </div>
+
+    <!-- Panes Container -->
+    <div class="panes-container">
+      
+      <!-- Combined Dashboard Pane -->
+      <div id="dashboardPane" class="pane active">
+        <div class="dashboard-welcome">
+          <div class="welcome-text">
+            <h2>Welcome to IPT Brisbane Writing Portal 🎓</h2>
+            <p>Your comprehensive workspace for mastering PTE/IELTS writing elements: Summarize Written Text and Band 9 Essays.</p>
           </div>
         </div>
 
-        <!-- Write tab -->
-        <div id="writeTabPane">
-          <div class="word-meter">
-            <span>Words</span>
-            <div class="meter-track"><div class="meter-fill" id="wordMeterFill"></div></div>
-            <span class="meter-count"><span id="wordCount">0</span> / 5–75</span>
-          </div>
-          <textarea class="summary-input" id="summaryInput"
-            placeholder="Write your one-sentence summary here…"
-            oninput="onSummaryInput()" spellcheck="true"></textarea>
-
-          <div class="health-grid">
-            <div class="health-panel">
-              <div class="panel-title">Writing Health</div>
-              <div class="health-row" id="hrWordBand">
-                <span class="h-icon">○</span>
-                <span class="h-label">Inside word band <span class="h-sub">target: 5–75 words</span></span>
-                <span class="h-value" id="hrWordBandVal">0</span>
+        <div class="dashboard-grid">
+          <!-- SWT summary card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-icon">📝</span>
+              <span class="dash-card-title">SWT Summary Status</span>
+            </div>
+            <div class="dash-card-body">
+              <div class="big-score"><span id="dashSwtAvgScore">—</span><span class="score-max">/90</span></div>
+              <div class="dash-progress-stats" style="margin-top: 14px;">
+                <div class="stat-row"><span>Summary Attempts:</span> <strong id="dashSwtAttempts">0</strong></div>
+                <div class="stat-row"><span>Passages Explored:</span> <strong id="dashSwtPassages">0</strong></div>
               </div>
             </div>
           </div>
 
-          <div class="write-actions">
-            <button class="btn btn-ghost" onclick="resetSummary()">Reset</button>
-            <button class="btn" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Show my answer</button>
-            <div class="write-actions-spacer"></div>
-            <button class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">
-              Score my summary <span class="btn-kbd">⌘↵</span>
-            </button>
+          <!-- Essay summary card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-icon">📚</span>
+              <span class="dash-card-title">Library Progress</span>
+            </div>
+            <div class="dash-card-body">
+              <div class="dash-progress-ring">
+                <svg class="progress-ring-svg" width="80" height="80">
+                  <circle class="progress-ring-bg" stroke="var(--line-soft)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                  <circle class="progress-ring-fill" id="dashProgressFill" stroke="var(--accent)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40" stroke-dasharray="213.628" stroke-dashoffset="213.628"/>
+                </svg>
+                <div class="progress-ring-text"><span id="dashPercent">0</span>%</div>
+              </div>
+              <div class="dash-progress-stats">
+                <div class="stat-row"><span>Written Essays:</span> <strong id="dashWrittenCount">0</strong></div>
+                <div class="stat-row"><span>Drafts:</span> <strong id="dashDraftCount">0</strong></div>
+                <div class="stat-row"><span>Empty Topics:</span> <strong id="dashEmptyCount">0</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Essay Practice card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-icon">🎯</span>
+              <span class="dash-card-title">Average Essay Practice</span>
+            </div>
+            <div class="dash-card-body score-body">
+              <div class="big-score"><span id="dashAvgScore">—</span><span class="score-max">/26</span></div>
+              <div class="score-desc" id="dashScoreDesc">Submit a practice essay to compile your evaluation profile.</div>
+            </div>
+          </div>
+
+          <!-- Vocab card -->
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <span class="dash-card-icon">📖</span>
+              <span class="dash-card-title">Vocabulary Mastery</span>
+            </div>
+            <div class="dash-card-body vocab-body">
+              <div class="big-vocab-count"><span id="dashVocabRead">0</span> <span class="vocab-total">words</span></div>
+              <p class="vocab-desc-text">Read definitions and try quizzes to master academic vocabulary.</p>
+            </div>
           </div>
         </div>
 
-        <!-- Plan tab -->
-        <div id="planTabPane" class="hidden">
-          <textarea class="scratch-input" id="scratchInput"
-            placeholder="Jot down What / Why / How / Result before you write. These notes are never scored."></textarea>
-          <div class="scratch-note">Scratch notes are saved locally and never sent for scoring.</div>
+        <div class="dashboard-sections">
+          <!-- Recent SWT attempts -->
+          <div class="dash-section">
+            <h3 class="section-heading">Recent SWT Submissions</h3>
+            <div id="dashRecentSwt" class="recent-list">
+              <div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>
+            </div>
+          </div>
+
+          <!-- Recent Essay attempts -->
+          <div class="dash-section">
+            <h3 class="section-heading">Recent Scored Essay Attempts</h3>
+            <div id="dashRecentPractice" class="recent-list">
+              <div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- SWT Practice Pane -->
+      <div id="swtPane" class="pane">
+        <!-- SWT Core practice interface -->
+        <div id="swtPracticeScreen" class="swt-sub-screen active">
+          <div class="passage-nav">
+            <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
+            <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
+            <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
+            <select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
+              <option value="all">All</option>
+              <option value="attempted">Attempted</option>
+              <option value="unattempted">Unattempted</option>
+            </select>
+            <select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select>
+            <div class="passage-nav-spacer"></div>
+            <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
+              <span id="timerState">Timed</span>
+              <span class="timer-pill" id="timerDisplay">—</span>
+            </div>
+          </div>
+
+          <div class="practice-grid">
+            <!-- Left: Original Passage -->
+            <div class="card passage-pane">
+              <div class="passage-meta">
+                <span class="eyebrow">Passage <span id="pasNum">01</span></span>
+                <span class="meta-tag" id="pasWordCount">0 words</span>
+                <span class="meta-tag" id="pasCategory">~10 min</span>
+              </div>
+              <div class="passage-body" id="passageBody">Loading passage...</div>
+              <div class="passage-fresh-note">Title & key ideas appear after you submit — so you read fresh.</div>
+            </div>
+
+            <!-- Right: Write Answer -->
+            <div class="card write-pane">
+              <div class="write-tabs">
+                <div class="write-tab active" id="tabWrite" onclick="switchWriteTab('write')">
+                  Write<span class="tab-sub">Your summary</span>
+                </div>
+                <div class="write-tab" id="tabPlan" onclick="switchWriteTab('plan')">
+                  Plan<span class="tab-sub">Scratch notes</span>
+                </div>
+              </div>
+
+              <!-- Write Editor -->
+              <div id="writeTabPane">
+                <div class="word-meter">
+                  <span>Words</span>
+                  <div class="meter-track"><div class="meter-fill" id="wordMeterFill"></div></div>
+                  <span class="meter-count"><span id="wordCount">0</span> / 5–75</span>
+                </div>
+                <textarea class="summary-input" id="summaryInput" placeholder="Write your one-sentence summary here…" oninput="onSummaryInput()" spellcheck="true"></textarea>
+
+                <div class="health-grid">
+                  <div class="health-panel">
+                    <div class="panel-title">Writing Health</div>
+                    <div class="health-row" id="hrWordBand">
+                      <span class="h-icon">○</span>
+                      <span class="h-label">Inside word band <span class="h-sub">target: 5–75 words</span></span>
+                      <span class="h-value" id="hrWordBandVal">0</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="write-actions">
+                  <button class="btn btn-ghost" onclick="resetSummary()">Reset</button>
+                  <button class="btn" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Show my answer</button>
+                  <div class="write-actions-spacer"></div>
+                  <button class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">
+                    Score my summary
+                  </button>
+                </div>
+              </div>
+
+              <!-- Scratch Pad -->
+              <div id="planTabPane" class="hidden">
+                <textarea class="scratch-input" id="scratchInput" placeholder="Jot down What / Why / How / Result before you write. These notes are never scored."></textarea>
+                <div class="scratch-note">Scratch notes are saved locally and never sent for scoring.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SWT Results Detail view -->
+        <div id="swtResultsScreen" class="swt-sub-screen">
+          <div class="passage-nav">
+            <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
+            <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
+            <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
+            <select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)">
+              <option value="all">All</option>
+              <option value="attempted">Attempted</option>
+              <option value="unattempted">Unattempted</option>
+            </select>
+            <select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select>
+            <div class="passage-nav-spacer"></div>
+            <button class="btn btn-ghost" style="padding: 4px 12px; font-size:12px;" onclick="backToPractice()">← Back to practice</button>
+          </div>
+
+          <!-- Summary Hero Section -->
+          <div class="card results-hero">
+            <div class="score-ring-wrap">
+              <div class="score-ring">
+                <svg viewBox="0 0 120 120">
+                  <circle class="ring-track" cx="60" cy="60" r="54"></circle>
+                  <circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle>
+                </svg>
+                <div class="ring-value" id="heroScore">0</div>
+              </div>
+              <div class="score-ring-label">PTE Estimate</div>
+            </div>
+            <div class="results-hero-body">
+              <div class="eyebrow">Result Summary</div>
+              <div class="display" id="heroVerdict">—</div>
+              <div class="result-summary" id="heroSummary"></div>
+              <div class="trait-chips" id="heroTraitChips"></div>
+              <div class="ai-degraded-notice" id="aiDegradedNotice" style="display:none;"></div>
+            </div>
+            <div class="results-hero-actions">
+              <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
+              <button class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button>
+              <button class="btn" onclick="switchSbsView('sample')">Compare sample</button>
+            </div>
+          </div>
+
+          <!-- Originality checks -->
+          <div class="originality" id="originalityChecks"></div>
+
+          <!-- Side-by-side view -->
+          <div class="card">
+            <div class="section-num">
+              03 · Passage &amp; Submission — Side by Side
+              <span class="legend">
+                <span><i style="background:var(--what)"></i>What</span>
+                <span><i style="background:var(--why)"></i>Why</span>
+                <span><i style="background:var(--how)"></i>How</span>
+                <span><i style="background:var(--result)"></i>Result</span>
+              </span>
+            </div>
+            <div class="side-by-side">
+              <div class="sbs-col">
+                <div class="sbs-head">Original Passage</div>
+                <div class="annotated-text" id="annotatedPassage"></div>
+              </div>
+              <div class="sbs-col">
+                <div class="sbs-toggle" role="tablist" aria-label="Right column view">
+                  <button type="button" class="sbs-tab active" id="sbsTabSummary" onclick="switchSbsView('summary')">Student Summary</button>
+                  <button type="button" class="sbs-tab" id="sbsTabSample" onclick="switchSbsView('sample')">Sample Answer</button>
+                </div>
+                <div id="sbsViewSummary">
+                  <div class="annotated-text" id="annotatedSubmission"></div>
+                  <div class="annotated-feedback" id="annotatedFeedback"></div>
+                </div>
+                <div id="sbsViewSample" style="display:none;">
+                  <div class="annotated-text" id="sampleAnswerText"></div>
+                  <div class="sample-note" id="sampleAnswerNotes"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trait breakdown -->
+          <div class="card">
+            <div class="section-num">04 · Trait Breakdown</div>
+            <div class="trait-breakdown" id="traitBreakdown"></div>
+          </div>
+
+          <!-- Key element coverage -->
+          <div class="card">
+            <div class="section-num">05 · Key Element Coverage</div>
+            <div class="coverage-table" id="coverageTable"></div>
+          </div>
+
+          <!-- About passage -->
+          <div class="card" id="aboutPassageCard" style="display:none;">
+            <div class="section-num">06 · About this passage</div>
+            <div class="about-passage" id="aboutPassageBody"></div>
+          </div>
+
+          <!-- Vocab coach -->
+          <div class="card" id="vocabCoachCard" style="display:none;">
+            <div class="section-num">07 · Vocabulary Coach</div>
+            <div class="vocab-coach" id="vocabCoachBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Library Pane -->
+      <div id="libraryPane" class="pane">
+        <div class="layout">
+          <div class="lib">
+            <div class="lib-header">
+              <div class="lib-title">Essay<br>library</div>
+              <div class="lib-count"><span id="essayCount">33</span> essays</div>
+            </div>
+            <div class="lib-search">
+              <span class="lib-search-icon">⌕</span>
+              <input type="text" id="searchInput" placeholder="Search titles & questions..." oninput="renderList()">
+            </div>
+            <div class="filter-chips">
+              <button class="chip active" data-filter="all" onclick="setFilter('all')">All <span class="chip-count" id="cnt-all">33</span></button>
+              <button class="chip" data-filter="written" onclick="setFilter('written')">Written <span class="chip-count" id="cnt-written">0</span></button>
+              <button class="chip" data-filter="draft" onclick="setFilter('draft')">Draft <span class="chip-count" id="cnt-draft">0</span></button>
+              <button class="chip" data-filter="empty" onclick="setFilter('empty')">Empty <span class="chip-count" id="cnt-empty">33</span></button>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:14px;">
+              <button class="new-essay-btn" onclick="addEssay()" style="flex:1; margin-bottom:0; width:auto;">+ New essay</button>
+              <button class="new-essay-btn" onclick="openBulkImport()" style="flex:1; margin-bottom:0; width:auto;" title="Add many essay topics at once">⊞ Bulk add</button>
+            </div>
+            <div id="essayList"></div>
+          </div>
+
+          <div class="editor" id="editorPane">
+            <div id="emptyState" style="text-align:center; padding:60px 20px; color:var(--ink-mute);">
+              <p style="font-size:14px; margin-bottom:12px;">No essay selected.</p>
+              <button class="tb-text-btn dark" onclick="addEssay()">+ Create your first essay</button>
+            </div>
+            <div id="editor" style="display:none;">
+              <div class="breadcrumb">
+                <span id="bcEssayNum">ESSAY 01</span>
+                <span class="breadcrumb-sep">/</span>
+                <span id="bcStatus">EMPTY</span>
+              </div>
+              <h1 class="editor-title" id="editorTitle">—</h1>
+
+              <div class="topic-banner" id="topicBanner" style="display:none;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+                  <div class="topic-banner-label">The question</div>
+                  <a class="practice-shortcut-link" onclick="practiceCurrentEssay()" style="font-size:12px; color:var(--accent); font-weight:600; text-decoration:underline; cursor:pointer; font-family:var(--sans);">Want to practice this essay? Click here →</a>
+                </div>
+                <div class="topic-banner-question" id="topicBannerQuestion"></div>
+              </div>
+
+              <!-- AI Writer Box -->
+              <div class="ai-card">
+                <div class="ai-card-header">
+                  <div class="ai-card-title"><span class="ai-card-title-icon">+</span> AI Essay Writer</div>
+                  <button class="ai-card-edit-link" onclick="openTemplate()">⊞ Edit template</button>
+                </div>
+                <div class="ai-card-sub">One tap to draft the full essay using your saved template — then refine in the fields below.</div>
+
+                <div class="ai-section-label">
+                  <span class="ai-section-label-text">Template</span>
+                  <span class="ai-section-label-aux" id="tplChoiceAux">Using default</span>
+                </div>
+                <div style="display:flex; gap:5px; margin-bottom:14px;" id="essayTplPicker">
+                  <button class="tpl-essay-pill active" data-tpl="default" onclick="setEssayTemplate('default')">Default</button>
+                  <button class="tpl-essay-pill" data-tpl="band6" onclick="setEssayTemplate('band6')">Band 6</button>
+                  <button class="tpl-essay-pill" data-tpl="band9" onclick="setEssayTemplate('band9')">Band 9</button>
+                  <button class="freestyle-pill" onclick="openFreestyle()" title="Write a quick essay on any question">✍️ Freestyle</button>
+                  <button class="tpl-essay-pill" data-tpl="custom" onclick="setEssayTemplate('custom')">My Custom</button>
+                </div>
+
+                <div class="ai-section-label">
+                  <span class="ai-section-label-text">Vocabulary level</span>
+                  <span class="ai-section-label-aux" id="vocabLabelAux">Band 7-8</span>
+                </div>
+                <div class="vocab-pills" id="vocabPills">
+                  <button class="vocab-pill" data-v="1" onclick="setVocab(1)">1</button>
+                  <button class="vocab-pill" data-v="2" onclick="setVocab(2)">2</button>
+                  <button class="vocab-pill active" data-v="3" onclick="setVocab(3)">3</button>
+                  <button class="vocab-pill" data-v="4" onclick="setVocab(4)">4</button>
+                  <button class="vocab-pill" data-v="5" onclick="setVocab(5)">5</button>
+                </div>
+                <div class="vocab-desc" id="vocabDesc">Mostly common words with a few stronger ones.</div>
+
+                <div class="ai-section-label">
+                  <span class="ai-section-label-text">Your own ideas</span>
+                  <span class="ai-section-label-aux">optional</span>
+                </div>
+                <textarea class="ideas-textarea" id="f_seedIdeas" placeholder="e.g. discipline, fairness, technology dependence..." oninput="saveCurrent()"></textarea>
+
+                <div class="or-divider">or</div>
+
+                <button class="suggest-btn" id="suggestIdeasBtn" onclick="aiSuggestIdeas()">
+                  💡 Let AI suggest ideas for me
+                </button>
+
+                <div class="ideas-picker" id="ideasPicker">
+                  <div class="ideas-picker-header">
+                    <div class="ideas-picker-title">Pick your ideas</div>
+                    <div class="ideas-picker-help">Choose exactly 2 positive + 2 negative</div>
+                  </div>
+                  <div id="ideasPickerBody"></div>
+                </div>
+
+                <div class="ai-write-actions">
+                  <button class="write-btn ai-write-primary" id="aiWriteBtn" onclick="aiWriteFullEssay()">Write the full essay</button>
+                  <button class="write-btn ai-write-secondary" id="aiWriteBulkBtn" onclick="openBulkWrite()" title="Write many essays in one go">📚 Write many</button>
+                </div>
+              </div>
+
+              <!-- Essay Fields -->
+              <div class="ed-section">
+                <div class="ed-section-header">
+                  <div class="ed-section-title"><span class="ed-section-numeral">i</span> Topic &amp; question</div>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Essay title</span>
+                    <span class="field-counter" id="ch_title">0 ch</span>
+                  </div>
+                  <input type="text" class="field-input" id="f_title" placeholder="e.g. Late Submission and Mark Deduction" oninput="saveCurrent(); renderPreview(); updateCounters()">
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Question prompt</span>
+                    <span class="field-counter" id="ch_question">0 words</span>
+                  </div>
+                  <textarea class="field-textarea" id="f_question" placeholder="Paste the essay question here..." oninput="saveCurrent(); renderPreview(); updateCounters()"></textarea>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Topic explanation</span>
+                    <span class="field-counter" id="ch_explanation">0 words</span>
+                  </div>
+                  <textarea class="field-textarea" id="f_explanation" placeholder="One-sentence paraphrase." oninput="saveCurrent(); renderPreview(); updateCounters()"></textarea>
+                  <button class="gen-btn" onclick="aiGenerate('explanation')">+ Generate from essay</button>
+                </div>
+              </div>
+
+              <div class="ed-section">
+                <div class="ed-section-header">
+                  <div class="ed-section-title"><span class="ed-section-numeral">ii</span> Argument map</div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <div class="field-row"><span class="field-label">Key points</span></div>
+                    <textarea class="field-textarea" id="f_pros" placeholder="Promotes discipline&#10;Develops time management" oninput="saveCurrent(); renderPreview()"></textarea>
+                  </div>
+                  <div class="field">
+                    <div class="field-row"><span class="field-label">Counter-points</span></div>
+                    <textarea class="field-textarea" id="f_cons" placeholder="Flexible extensions&#10;Capped penalties" oninput="saveCurrent(); renderPreview()"></textarea>
+                  </div>
+                </div>
+                <button class="gen-btn" onclick="aiGenerate('proscons')" style="margin-top:8px;">+ Extract pros &amp; cons</button>
+                <div class="field" style="margin-top:14px;">
+                  <div class="field-row"><span class="field-label">Approach tip</span></div>
+                  <textarea class="field-textarea" id="f_approach" placeholder="e.g. Support mark deduction while recommending flexibility..." oninput="saveCurrent(); renderPreview()"></textarea>
+                  <button class="gen-btn" onclick="aiGenerate('approach')">+ Suggest approach tip</button>
+                </div>
+              </div>
+
+              <div class="ed-section">
+                <div class="ed-section-header">
+                  <div class="ed-section-title"><span class="ed-section-numeral">iii</span> Essay paragraphs</div>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Introduction</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                      <span class="field-counter" id="ch_intro">0 words</span>
+                      <button class="regen-btn" onclick="regenerateParagraph('intro')">↻ Rewrite</button>
+                    </div>
+                  </div>
+                  <textarea class="field-textarea essay" id="f_intro" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('intro')"></textarea>
+                  <div class="sentence-list" id="sentences_intro"></div>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Body paragraph 1</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                      <span class="field-counter" id="ch_bp1">0 words</span>
+                      <button class="regen-btn" onclick="regenerateParagraph('bp1')">↻ Rewrite</button>
+                    </div>
+                  </div>
+                  <textarea class="field-textarea essay" id="f_bp1" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp1')"></textarea>
+                  <div class="sentence-list" id="sentences_bp1"></div>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Body paragraph 2</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                      <span class="field-counter" id="ch_bp2">0 words</span>
+                      <button class="regen-btn" onclick="regenerateParagraph('bp2')">↻ Rewrite</button>
+                    </div>
+                  </div>
+                  <textarea class="field-textarea essay" id="f_bp2" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp2')"></textarea>
+                  <div class="sentence-list" id="sentences_bp2"></div>
+                </div>
+                <div class="field">
+                  <div class="field-row">
+                    <span class="field-label">Conclusion</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                      <span class="field-counter" id="ch_concl">0 words</span>
+                      <button class="regen-btn" onclick="regenerateParagraph('concl')">↻ Rewrite</button>
+                    </div>
+                  </div>
+                  <textarea class="field-textarea essay" id="f_concl" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('concl')"></textarea>
+                  <div class="sentence-list" id="sentences_concl"></div>
+                </div>
+                <button class="gen-btn" onclick="aiGenerate('all')" style="margin-top:8px;">+ Re-extract outline from essay</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-pane">
+            <div class="preview-toolbar">
+              <div class="preview-label">
+                <span>LIVE PREVIEW</span>
+                <span class="preview-label-sep">·</span>
+                <span class="preview-label-essay" id="previewEssayNum">ESSAY 01</span>
+                <span class="preview-label-sep">·</span>
+                <span>A4</span>
+              </div>
+              <div class="zoom-controls">
+                <button class="zoom-btn" data-zoom="0.5" onclick="setZoom(0.5)">50%</button>
+                <button class="zoom-btn active" data-zoom="0.7" onclick="setZoom(0.7)">70%</button>
+                <button class="zoom-btn" data-zoom="0.85" onclick="setZoom(0.85)">85%</button>
+                <button class="zoom-btn" data-zoom="1" onclick="setZoom(1)">100%</button>
+                <button class="zoom-print" onclick="window.print()" title="Print">🖨</button>
+              </div>
+            </div>
+            <div class="preview-area">
+              <div class="preview-page-wrap" id="previewWrap">
+                <div id="previewArea"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- Closes #libraryPane -->
+
+    </div> <!-- Closes .panes-container -->
+  </div> <!-- Closes .main-body -->
+</div> <!-- Closes .app-shell -->
+
+<!-- ============ MODALS AND SCREENS ============ -->
+
+<!-- TEMPLATE CONFIG MODAL -->
+<div class="modal-overlay" id="templateModal">
+  <div class="modal" style="max-width: 820px;">
+    <h2>⊞ Essay Templates</h2>
+    <p>The AI uses one of these structures when auto-writing. Select your default template configuration below.</p>
+    <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:14px;">
+      <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.14em; color:var(--ink-soft); font-weight:600; margin-bottom:8px;">Default Template</div>
+      <div style="display:flex; gap:6px;" id="defaultTplPicker">
+        <button class="tpl-default-pill" data-tpl="band6" onclick="setDefaultTemplate('band6')">Band 6</button>
+        <button class="tpl-default-pill" data-tpl="band9" onclick="setDefaultTemplate('band9')">Band 9</button>
+        <button class="tpl-default-pill" data-tpl="custom" onclick="setDefaultTemplate('custom')">My Custom</button>
       </div>
     </div>
 
-    <div class="page-foot" id="practiceFootLabel">Practice Session</div>
+    <!-- Tab Selector -->
+    <div style="display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:14px; align-items:center;">
+      <button class="tpl-tab active" data-tab="band6" onclick="switchTemplateTab('band6')">Band 6 <span style="opacity:0.5; font-size:10px;">read-only</span></button>
+      <button class="tpl-tab" data-tab="band9" onclick="switchTemplateTab('band9')">Band 9 <span style="opacity:0.5; font-size:10px;">read-only</span></button>
+      <button class="tpl-tab" data-tab="custom" onclick="switchTemplateTab('custom')">My Custom <span style="opacity:0.5; font-size:10px;">editable</span></button>
+      <div style="flex:1;"></div>
+      <button class="tb-text-btn" id="tplResetBtn" onclick="resetTemplateToDefault()" style="display:none; font-size:11px; padding:4px 10px;">Reset to Band 9</button>
+      <span style="font-size:11px; color:var(--ink-mute);" id="tplCharCount">0 characters</span>
+    </div>
+
+    <div id="tplReadonlyBanner" style="display:none; background:#fff8e6; border:1px solid #f0c674; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:#5a4400;">
+      This is a read-only preset. To edit, customize the <strong>My Custom</strong> tab.
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+      <div>
+        <span class="field-label">Introduction Template</span>
+        <textarea class="field-textarea" id="tpl_intro" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+      </div>
+      <div>
+        <span class="field-label">Body Paragraph 1 Template</span>
+        <textarea class="field-textarea" id="tpl_bp1" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+      </div>
+      <div>
+        <span class="field-label">Body Paragraph 2 Template</span>
+        <textarea class="field-textarea" id="tpl_bp2" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+      </div>
+      <div>
+        <span class="field-label">Conclusion Template</span>
+        <textarea class="field-textarea" id="tpl_concl" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="copyPresetToCustom()" id="tplCopyToCustom" style="display:none;">Copy into My Custom →</button>
+      <button class="tb-text-btn" onclick="closeTemplate()">Close</button>
+      <button class="tb-text-btn dark" onclick="saveTemplate()" id="tplSaveBtn">Save Template</button>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════ RESULTS SCREEN ══════════════════ -->
-<div class="screen" id="resultsScreen">
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-mark">◐</div>
-        <div class="brand-name">IPT Brisbane</div>
-        <div class="brand-sub" id="resultsBreadcrumb">Results</div>
-      </div>
-      <div class="topbar-spacer"></div>
-      <div class="topbar-tag" id="aiStatusTag2"><span class="dot"></span>Claude Live</div>
-      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
-      <div class="avatar" id="userAvatar2" onclick="signOut()" title="Sign out">··</div>
-    </div>
-
-    <!-- v19.10.3: passage nav on the results screen too — students can move forward/back without going back to practice first -->
-    <div class="passage-nav">
-      <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
-      <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
-      <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
-      <select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)">
-        <option value="all">All</option>
-        <option value="attempted">Attempted</option>
-        <option value="unattempted">Unattempted</option>
-      </select>
-      <select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select>
-      <div class="passage-nav-spacer"></div>
-      <span class="eyebrow" id="resNavHint">Use arrows or buttons below</span>
-    </div>
-
-    <!-- Hero -->
-    <div class="card results-hero">
-      <div class="score-ring-wrap">
-        <div class="score-ring">
-          <svg viewBox="0 0 120 120">
-            <defs>
-              <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="var(--indigo)" />
-                <stop offset="100%" stop-color="var(--good)" />
-              </linearGradient>
-            </defs>
-            <circle class="ring-track" cx="60" cy="60" r="54"></circle>
-            <circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54"
-              stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle>
-          </svg>
-          <div class="ring-value" id="heroScore">0</div>
-        </div>
-        <div class="score-ring-label">PTE Estimate</div>
-      </div>
-      <div class="results-hero-body">
-        <div class="eyebrow">Result</div>
-        <div class="display" id="heroVerdict">—</div>
-        <div class="result-summary" id="heroSummary"></div>
-        <div class="trait-chips" id="heroTraitChips"></div>
-        <!-- F1 (v19.17): shown only when the AI grader was unavailable and the
-             local fallback scored the attempt. Tells the student the score is
-             accurate but detailed coaching is missing for this attempt. -->
-        <div class="ai-degraded-notice" id="aiDegradedNotice" style="display:none;"></div>
-        <!-- v19.15: small sync-state pill. Hidden by default; appears briefly
-             after each scoring to confirm the data persisted (or to alert
-             the student if it didn't). Hides itself 4s after 'saved'. -->
-        <div class="sync-status" id="syncStatus" style="display:none;"></div>
-      </div>
-      <div class="results-hero-actions">
-        <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
-        <button class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button>
-        <button class="btn" onclick="showSample()">Compare to sample</button>
+<!-- BULK WRITE MODAL -->
+<div class="modal-overlay" id="bulkWriteModal">
+  <div class="modal" style="max-width: 640px;">
+    <h2>📚 Write Many Essays at Once</h2>
+    <p>Select essays you want evaluated. They will be generated in order using your current settings.</p>
+    <div id="bulkWritePickerList" style="max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg); margin-top:14px;"></div>
+    <div id="bulkWriteProgress" style="display:none; margin-top:12px; padding:10px 12px; background:var(--bg); border-radius:6px; border:1px solid var(--line);">
+      <div style="font-size:12px; font-weight:600; margin-bottom:6px;" id="bulkWriteProgressText">Writing essay 0 of 0…</div>
+      <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;">
+        <div id="bulkWriteProgressBar" style="height:100%; background:var(--accent); width:0%;"></div>
       </div>
     </div>
+    <div class="modal-actions">
+      <span class="ideas-counter" style="margin-right:auto;"><strong id="bulkWritePickedCount">0</strong> essays selected</span>
+      <button class="tb-text-btn" onclick="closeBulkWrite()" id="bulkWriteCloseBtn">Cancel</button>
+      <button class="tb-text-btn" onclick="abortBulkWrite()" id="bulkWriteAbortBtn" style="display:none; color:var(--accent);">Stop after current</button>
+      <button class="tb-text-btn dark" onclick="doBulkWrite()" id="bulkWriteStartBtn" disabled>Write selected →</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Originality checks -->
-    <div class="originality" id="originalityChecks"></div>
+<!-- BULK IMPORT MODAL -->
+<div class="modal-overlay" id="bulkImportModal">
+  <div class="modal" style="max-width: 640px;">
+    <h2>⊞ Bulk Add Essay Topics</h2>
+    <p>Paste topics below — one per line, or pipe-separated: Title | Question | Explanation.</p>
+    <textarea id="bulkImportText" class="field-textarea" style="min-height:240px; font-family:monospace; font-size:12px;" placeholder="Paste topics here..." oninput="updateBulkPreview()"></textarea>
+    <div id="bulkPreview" style="margin-top:12px; font-size:12px; color:var(--ink-soft); font-style:italic;">
+      Paste topics to see preview.
+    </div>
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="closeBulkImport()">Cancel</button>
+      <button class="tb-text-btn dark" onclick="doBulkImport()" id="bulkImportBtn" disabled>Add 0 topics</button>
+    </div>
+  </div>
+</div>
 
-    <!-- v19.11: side-by-side passage + annotated summary, for detailed feedback.
-         The same W/W/H/R coloring runs on both sides — a green sentence in the
-         passage is the "what", and you can immediately see whether the student
-         captured it, lifted it, or missed it. -->
-    <div class="card">
-      <div class="section-num">
-        03 · Passage &amp; Submission — Side by Side
-        <span class="legend">
-          <span><i style="background:var(--what)"></i>What</span>
-          <span><i style="background:var(--why)"></i>Why</span>
-          <span><i style="background:var(--how)"></i>How</span>
-          <span><i style="background:var(--result)"></i>Result</span>
-        </span>
+<!-- FREESTYLE MODAL -->
+<div class="modal-overlay" id="freestyleModal">
+  <div class="modal" style="max-width: 640px;">
+    <h2>✍️ Freestyle Essay</h2>
+    <p>Paste any question prompt and generate a complete essay instantly. This is a temporary draft.</p>
+    <div class="field">
+      <textarea class="field-textarea" id="fsQuestion" placeholder="Type prompt here..." style="min-height:90px;"></textarea>
+    </div>
+    <div class="fs-controls" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+      <div>
+        <label class="field-label">Band Target</label>
+        <select class="field-input" id="fsBand">
+          <option value="band9" selected>Band 9</option>
+          <option value="band6">Band 6</option>
+        </select>
       </div>
-      <div class="side-by-side">
-        <div class="sbs-col">
-          <div class="sbs-head">Original Passage</div>
-          <div class="annotated-text" id="annotatedPassage"></div>
-        </div>
-        <div class="sbs-col">
-          <!-- v19.12: toggle between the student's annotated summary and the
-               sample band-9 answer, on the right side. Non-destructive — the
-               student's submission isn't touched, just hidden behind the tab. -->
-          <div class="sbs-toggle" role="tablist" aria-label="Right column view">
-            <button type="button" class="sbs-tab active" id="sbsTabSummary"
-                    role="tab" aria-selected="true"
-                    onclick="switchSbsView('summary')">Student Summary</button>
-            <button type="button" class="sbs-tab" id="sbsTabSample"
-                    role="tab" aria-selected="false"
-                    onclick="switchSbsView('sample')">Sample Answer</button>
-          </div>
-          <div id="sbsViewSummary">
-            <div class="annotated-text" id="annotatedSubmission"></div>
-            <div class="annotated-feedback" id="annotatedFeedback"></div>
-          </div>
-          <div id="sbsViewSample" style="display:none;">
-            <div class="annotated-text" id="sampleAnswerText"></div>
-            <div class="sample-note" id="sampleAnswerNotes"></div>
-          </div>
+      <div>
+        <label class="field-label">Vocab Strength</label>
+        <select class="field-input" id="fsVocab">
+          <option value="3" selected>Band 7-8</option>
+          <option value="5">Band 8-9 (Advanced)</option>
+        </select>
+      </div>
+    </div>
+    <div id="fsResultArea" style="display:none; max-height:240px; overflow-y:auto; margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--bg);">
+      <div id="fsResult"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="closeFreestyle()">Close</button>
+      <button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWrite()">Write essay</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEARN VOCABULARY OVERLAY -->
+<div class="vocab-screen" id="vocabScreen">
+  <div class="vocab-topbar">
+    <button class="vocab-back-btn" onclick="closeVocab()">← Back to dashboard</button>
+    <div class="vocab-title">📚 Vocabulary Hub</div>
+    <div class="vocab-progress-summary" id="vocabProgressSummary">0 / 0 words read</div>
+  </div>
+  <div class="vocab-body">
+    <div class="vocab-sidebar">
+      <input type="text" class="vocab-search" id="vocabSearch" placeholder="Search categories…" oninput="renderVocabCategoryList()">
+      <div class="vocab-category-list" id="vocabCategoryList"></div>
+      <div class="vocab-sidebar-actions">
+        <button class="tb-text-btn" onclick="openVocabPractice()" id="vocabPracticeBtn">🎯 Practice quiz</button>
+      </div>
+    </div>
+    <div class="vocab-main">
+      <div id="vocabMainContent">
+        <div class="vocab-welcome">
+          <div class="vocab-welcome-icon">📚</div>
+          <h2>Vocabulary Library</h2>
+          <p>Pick a category from the list to explore and study advanced C1/C2 academic terms.</p>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Trait breakdown, now on its own row -->
-    <div class="card">
-      <div class="section-num">05 · Trait Breakdown</div>
-      <div class="trait-breakdown" id="traitBreakdown"></div>
-    </div>
-
-    <!-- Key element coverage -->
-    <div class="card">
-      <div class="section-num">04 · Key Element Coverage</div>
-      <div class="coverage-table" id="coverageTable"></div>
-    </div>
-
-    <!-- v19.10.3: About this passage — explains topic + why these key elements -->
-    <div class="card" id="aboutPassageCard" style="display:none;">
-      <div class="section-num">06 · About this passage</div>
-      <div class="about-passage" id="aboutPassageBody"></div>
-    </div>
-
-    <!-- v19.10.3: Vocabulary coach — context-aware academic synonyms from the AI judge -->
-    <div class="card" id="vocabCoachCard" style="display:none;">
-      <div class="section-num">07 · Vocabulary Coach
-        <span class="legend"><span style="font-style:italic;">academic synonyms that precisely fit the context</span></span>
+<!-- PRACTICE ESSAY SIMULATOR OVERLAY -->
+<div class="practice-screen" id="practiceScreen">
+  <div class="practice-topbar">
+    <button class="practice-back-btn" onclick="closePractice()">← Back to dashboard</button>
+    <div class="practice-title-text">Practice Essay <span class="practice-title-accent">— write &amp; get scored</span></div>
+    <span class="practice-stats" id="practiceStats">0 attempts</span>
+  </div>
+  <div class="practice-body">
+    <aside class="practice-sidebar">
+      <div class="practice-sidebar-header">
+        <div class="practice-sidebar-title">Your attempts</div>
+        <div class="practice-sidebar-count" id="practiceHistoryCount">0</div>
       </div>
-      <div class="vocab-coach" id="vocabCoachBody"></div>
+      <button class="practice-new-btn" onclick="startNewPractice()">+ New attempt</button>
+      <div class="practice-history-list" id="practiceHistoryList"></div>
+    </aside>
+    <main class="practice-main">
+      <div class="practice-content" id="practiceContent">
+        <!-- Dynamic Welcome / Editor / Scoring Results -->
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- VOCAB PRACTICE MODAL -->
+<div class="modal-overlay" id="vocabPracticeModal">
+  <div class="modal" style="max-width: 720px;">
+    <div id="vocabPracticeContent"></div>
+  </div>
+</div>
+
+<!-- USER ACCOUNT MODAL -->
+<div class="modal-overlay" id="userMenuModal">
+  <div class="modal" style="max-width: 440px;">
+    <h2 id="userMenuTitle">Account</h2>
+    <p id="userMenuEmail" style="color:var(--ink-soft); margin-bottom:4px;">—</p>
+    <p style="font-size:12px; color:var(--ink-mute); font-style:italic;" id="userMenuStats">—</p>
+    <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px;">
+      <button class="tb-text-btn" onclick="manualSync()">↻ Sync now</button>
+      <button class="tb-text-btn" onclick="changePassword()">🔑 Change password</button>
+      <button class="tb-text-btn" onclick="signOutUser()" style="color:var(--accent); border-color:var(--accent-soft);">→ Sign out</button>
+    </div>
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="closeUserMenu()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PORTAL MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal" style="max-width: 820px; width: 90%;">
+    <h2>👑 Admin Control Panel</h2>
+    <div style="display:flex; gap:6px; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px;">
+      <button class="tb-text-btn" id="adminTabUsersBtn" onclick="adminSwitchTab('users')" style="background:var(--ink); color:#fff;">👥 Users</button>
+      <button class="tb-text-btn" id="adminTabPassagesBtn" onclick="adminSwitchTab('passages')">📝 SWT Passages</button>
+      <button class="tb-text-btn" id="adminTabVocabBtn" onclick="adminSwitchTab('vocab')">📚 Vocabulary</button>
     </div>
 
-    <div class="page-foot">Results &amp; Feedback</div>
+    <!-- Users Admin panel -->
+    <div id="adminTabUsers">
+      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+        <input type="text" class="field-input" id="adminSearch" placeholder="Search by email..." style="flex:1;" oninput="renderAdminUsers()">
+        <button class="tb-text-btn" onclick="loadAdminUsers()">Refresh ↻</button>
+      </div>
+      <div id="adminUserList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+    </div>
+
+    <!-- Passages Admin panel (SWT) -->
+    <div id="adminTabPassages" style="display:none;">
+      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+        <button class="tb-text-btn dark" onclick="adminAddPassage()">+ Add passage</button>
+        <button class="tb-text-btn" onclick="loadAdminPassages()">Refresh ↻</button>
+      </div>
+      <div id="adminPassageList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+    </div>
+
+    <!-- Vocab Admin panel -->
+    <div id="adminTabVocab" style="display:none;">
+      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+        <button class="tb-text-btn dark" onclick="adminAddVocabWord()">+ Add vocabulary word</button>
+        <button class="tb-text-btn" onclick="loadAdminVocab()">Refresh ↻</button>
+      </div>
+      <div id="adminVocabList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="tb-text-btn" onclick="closeAdmin()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSAGE EDIT MODAL (ADMIN) -->
+<div class="modal-overlay" id="passageEditModal">
+  <div class="modal" style="max-width: 820px; width: 90%; max-height: 85vh; overflow-y: auto;">
+    <h3 id="passageEditTitle">Edit Passage</h3>
+    <input type="hidden" id="peId">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+      <div class="field">
+        <label class="field-label">Title</label>
+        <input type="text" class="field-input" id="peTitle" placeholder="e.g. Climate Change Economics">
+      </div>
+      <div class="field">
+        <label class="field-label">Category</label>
+        <input type="text" class="field-input" id="peCategory" placeholder="e.g. Science / Environment">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Passage Content</label>
+      <textarea class="field-textarea" id="peText" style="min-height:140px;" placeholder="Paste the full passage here..."></textarea>
+    </div>
+
+    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
+      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 6px;">Key Elements</h4>
+      <div style="font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.4;">
+        The scoring system checks for each of these in the student's summary. <strong>Keep each field to one atomic fact</strong> — don't combine facts with "and"/"but".
+      </div>
+
+      <!-- AI auto-extraction -->
+      <div class="extract-bar" style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="tb-text-btn dark" id="extractBtn" onclick="runExtraction()">✨ Auto-extract with AI</button>
+        <span class="extract-hint" style="font-size: 12px; color: var(--ink-soft);">Claude reads the passage and drafts elements for review.</span>
+      </div>
+      <div class="extract-draft" id="extractDraft" style="margin-bottom: 12px;"></div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="field" id="field_what">
+          <label class="field-label" id="lbl_what">What (Primary Subject)</label>
+          <textarea class="field-textarea" id="peWhat" style="min-height:50px;"></textarea>
+        </div>
+        <div class="field" id="field_why">
+          <label class="field-label" id="lbl_why">Why (Motivation)</label>
+          <textarea class="field-textarea" id="peWhy" style="min-height:50px;"></textarea>
+        </div>
+        <div class="field" id="field_how">
+          <label class="field-label" id="lbl_how">How (Action/Method)</label>
+          <textarea class="field-textarea" id="peHow" style="min-height:50px;"></textarea>
+        </div>
+        <div class="field" id="field_result">
+          <label class="field-label" id="lbl_result">Result (Outcome)</label>
+          <textarea class="field-textarea" id="peResult" style="min-height:50px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
+      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">About This Passage (Student Explanations)</h4>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="field">
+          <label class="field-label">Topic — what the passage is about</label>
+          <textarea class="field-textarea" id="peRatTopic" style="min-height:50px;" placeholder="2–3 sentences explaining the topic structure"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Importance — why these are the critical ideas</label>
+          <textarea class="field-textarea" id="peRatImportance" style="min-height:50px;" placeholder="2–3 sentences explaining why these elements are key"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
+      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">Model Sample Answer</h4>
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+        <div class="field">
+          <label class="field-label">Sample Response</label>
+          <textarea class="field-textarea" id="peSampleResponse" style="min-height:50px;" placeholder="A high-scoring model summary of this passage"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Sample Notes (Optional)</label>
+          <textarea class="field-textarea" id="peSampleNotes" style="min-height:50px;" placeholder="e.g. Verbatim Method — 3 connectors."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:20px; border-top: 1px solid var(--line); padding-top: 14px;">
+      <button class="tb-text-btn" onclick="closePassageEdit()">Cancel</button>
+      <button class="tb-text-btn dark" onclick="savePassageEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ADD WORD MODAL -->
+<div class="modal-overlay" id="addWordModal">
+  <div class="modal" style="max-width: 560px;">
+    <h2 id="addWordTitle">+ Add Vocabulary Word</h2>
+    <p style="font-size:12.5px; color:var(--ink-soft);">Word goes live for all students after you save.</p>
+    <input type="hidden" id="addWordCatId">
+    <input type="hidden" id="addWordEditId">
+
+    <div style="display:flex; gap:8px; margin-bottom:8px;">
+      <div style="flex:2;">
+        <div class="field-label">Word *</div>
+        <input type="text" class="field-input" id="addWordWord" placeholder="e.g. perseverance">
+      </div>
+      <div style="flex:1.5;">
+        <div class="field-label">Part of speech</div>
+        <input type="text" class="field-input" id="addWordPos" placeholder="noun / verb / adjective">
+      </div>
+      <div style="flex:0.6;">
+        <div class="field-label">Level</div>
+        <select id="addWordLevel" class="field-input">
+          <option>C1</option>
+          <option>C2</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-label">Meaning *</div>
+    <textarea class="field-textarea" id="addWordMeaning" rows="2" placeholder="A clear, plain-English definition."></textarea>
+
+    <div class="field-label" style="margin-top:8px;">Example sentence 1 *</div>
+    <textarea class="field-textarea" id="addWordEx1" rows="2" placeholder="Use the word in a natural context."></textarea>
+    <div class="field-label" style="margin-top:8px;">Example sentence 2 *</div>
+    <textarea class="field-textarea" id="addWordEx2" rows="2"></textarea>
+    <div class="field-label" style="margin-top:8px;">Example sentence 3</div>
+    <textarea class="field-textarea" id="addWordEx3" rows="2"></textarea>
+
+    <div class="field-label" style="margin-top:8px;">Compare with (optional)</div>
+    <textarea class="field-textarea" id="addWordCompare" rows="2" placeholder="e.g. vs. persistence: 'perseverance' suggests longer-term effort despite hardship."></textarea>
+
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="closeAddWord()">Cancel</button>
+      <button class="tb-text-btn dark" onclick="saveNewWord()">Save word</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI SUGGEST WORDS MODAL -->
+<div class="modal-overlay" id="suggestWordsModal">
+  <div class="modal" style="max-width: 680px;">
+    <h2 id="suggestTitle">🤖 Suggest Vocabulary Words</h2>
+    <input type="hidden" id="suggestCatId">
+
+    <!-- STAGE 1: loading 20 word suggestions -->
+    <div id="suggestStage1" style="display:none;">
+      <div style="text-align:center; padding:40px 0; color:var(--ink-soft);">
+        <div class="spinner-dark" style="width:24px; height:24px; margin:0 auto 16px; display:block;"></div>
+        <div id="suggestStage1Msg">Asking AI for 20 new word ideas…</div>
+      </div>
+    </div>
+
+    <!-- STAGE 2: pick which words to keep -->
+    <div id="suggestStage2" style="display:none;">
+      <p style="font-size:13px; color:var(--ink-soft);">AI suggested these 20 words. Tick which ones to keep, then click <strong>Generate details</strong>. (Already-existing words shown greyed out.)</p>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button class="tb-text-btn" onclick="toggleAllSuggestions(true)" style="font-size:11px; padding:4px 10px;">Select all</button>
+        <button class="tb-text-btn" onclick="toggleAllSuggestions(false)" style="font-size:11px; padding:4px 10px;">None</button>
+        <span style="flex:1;"></span>
+        <span id="suggestPickedCount" style="font-size:12px; color:var(--ink-soft); font-family:var(--serif);">0 selected</span>
+      </div>
+      <div id="suggestList" style="max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg);"></div>
+    </div>
+
+    <!-- STAGE 3: generating details -->
+    <div id="suggestStage3" style="display:none;">
+      <div style="text-align:center; padding:40px 0; color:var(--ink-soft);">
+        <div class="spinner-dark" style="width:24px; height:24px; margin:0 auto 16px; display:block;"></div>
+        <div id="suggestStage3Msg">Generating definitions and examples…</div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: preview generated cards + save -->
+    <div id="suggestStage4" style="display:none;">
+      <p style="font-size:13px; color:var(--ink-soft);">Here are the full word cards. Untick any you don't want, then click <strong>Save all</strong> to publish to all students.</p>
+      <div id="suggestPreview" style="max-height:380px; overflow-y:auto; padding-right:6px;"></div>
+    </div>
+
+    <div class="modal-actions" id="suggestActions">
+      <button class="tb-text-btn" onclick="closeSuggestWords()">Cancel</button>
+      <button class="tb-text-btn dark" id="suggestNextBtn" onclick="suggestNextStep()" style="display:none;">Generate details →</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 <div class="loading-veil hidden" id="loadingVeil"><div class="spinner"></div></div>
 
-<script>
-/* ═══════════════════════════════════════════════════════════════
-   API CONTRACT — same backend as index.html, no server changes
-   ═══════════════════════════════════════════════════════════════ */
-const RAILWAY_URL = 'https://swt.up.railway.app';
-const isLocal = ['localhost','127.0.0.1'].includes(location.hostname)
-  || location.hostname.startsWith('192.168.')
-  || location.hostname.startsWith('10.')
-  || location.hostname.startsWith('172.');
-const API_URL = isLocal ? '' : RAILWAY_URL;
-
-const BASE_KEYS = { USER_ID: 'pte_user_id' };
-function getUserKeys(uid) {
-  const u = (uid || 'default').toLowerCase().trim();
-  return { ATTEMPTED:`pte_${u}_attempted`, SCORES:`pte_${u}_scores`, SUMMARIES:`pte_${u}_summaries`, HISTORY:`pte_${u}_history`, SCRATCH:`pte_${u}_scratch` };
-}
-let STORAGE_KEYS = getUserKeys('');
-
-const LocalStore = {
-  get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
-  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
-  remove(k){ try{ localStorage.removeItem(k); return true; }catch(e){ return false; } },
-  getUserId(){ return localStorage.getItem(BASE_KEYS.USER_ID) || ''; },
-  setUserId(id){ try{ localStorage.setItem(BASE_KEYS.USER_ID, id); }catch(e){} }
-};
-
-// C3 (v19.17): session token used to authorize sync calls. Stored in memory
-// AND localStorage so it survives a page refresh. During impersonation we hold
-// the admin's short-lived impersonation token here instead (the server accepts
-// both on the sync endpoints).
-let sessionToken = (function(){ try { return localStorage.getItem('pte_session_token') || ''; } catch(e){ return ''; } })();
-function setSessionToken(t){ sessionToken = t || ''; try { if(t) localStorage.setItem('pte_session_token', t); else localStorage.removeItem('pte_session_token'); } catch(e){} }
-function getSessionToken(){ return sessionToken; }
-
-function escapeHtml(t){ if(typeof t!=='string')return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
-
-/* ─── State ─────────────────────────────────────────────────── */
-let passages = [];
-let currentId = 1;
-let currentUserId = '';
-let attempted = new Set();
-let timerOn = false, timerSeconds = 0, timerInterval = null;
-let lastSpellData = null;
-let writeTab = 'write';
-
-const CONNECTORS = ['however','moreover','therefore','consequently','furthermore','whereas','thus'];
-
-/* ═══════════════════════════════════════════════════════════════
-   AUTH
-   ═══════════════════════════════════════════════════════════════ */
-function showRegister(){ document.getElementById('loginForm').classList.add('hidden'); document.getElementById('registerForm').classList.remove('hidden'); }
-function showLogin(){ document.getElementById('registerForm').classList.add('hidden'); document.getElementById('loginForm').classList.remove('hidden'); }
-function loginErr(msg){ const e=document.getElementById('loginErr'); e.textContent=msg; e.style.display='block'; }
-function regErr(msg){ const e=document.getElementById('regErr'); e.textContent=msg; e.style.display='block'; }
-
-async function doLogin(){
-  const u = document.getElementById('loginUser').value.trim();
-  const pw = document.getElementById('loginPw').value;
-  document.getElementById('loginErr').style.display='none';
-  if(!u || !pw){ loginErr('Enter username and password.'); return; }
-  try {
-    const r = await fetch(API_URL+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw})});
-    const d = await r.json();
-    if(d.success){ if(d.token) setSessionToken(d.token); enterApp(u); }
-    else { loginErr(d.error || 'Login failed.'); }
-  } catch(e){ loginErr('Connection error. Try again.'); }
-}
-
-async function doRegister(){
-  const u = document.getElementById('regUser').value.trim();
-  const pw = document.getElementById('regPw').value;
-  const sq = document.getElementById('regSecretQ').value;
-  const sa = document.getElementById('regSecretA').value.trim();
-  document.getElementById('regErr').style.display='none';
-  if(!u || !pw){ regErr('Enter username and password.'); return; }
-  if(pw.length < 4){ regErr('Password must be at least 4 characters.'); return; }
-  try {
-    const r = await fetch(API_URL+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa})});
-    const d = await r.json();
-    if(d.success){ if(d.token) setSessionToken(d.token); enterApp(u); }
-    else { regErr(d.error || 'Registration failed.'); }
-  } catch(e){ regErr('Connection error. Try again.'); }
-}
-
-async function enterApp(uid, opts){
-  const impersonating = !!(opts && opts.impersonating);
-  currentUserId = uid;
-  STORAGE_KEYS = getUserKeys(uid);
-  // Persist the session ONLY for a real login. When impersonating, deliberately
-  // skip setUserId so a refresh or new tab doesn't keep showing the student's
-  // portal — the impersonation must come fresh from a clicked admin link.
-  if (!impersonating) LocalStore.setUserId(uid);
-  isImpersonating = impersonating;
-  attempted = new Set();
-  const initials = uid.slice(0,2).toUpperCase();
-  document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('userAvatar2').textContent = initials;
-  // Show the impersonation banner if active, hide otherwise.
-  const banner = document.getElementById('impersonateBanner');
-  if (banner) {
-    if (impersonating) {
-      banner.style.display = 'block';
-      document.getElementById('impersonateName').textContent = uid;
-    } else {
-      banner.style.display = 'none';
-    }
-  }
-  showScreen('practiceScreen');
-  await loadPassages();
-  loadStoredData();
-  // v19.15: if there's leftover unsynced state in localStorage from a previous
-  // session (tab closed mid-push, network failed, etc), push it BEFORE pulling.
-  // Otherwise the pull would overwrite local-only changes with the older
-  // server state. The push endpoint merges histories, so this is safe.
-  await retryUnsyncedFromPriorSession();
-  await pullFromServer();
-  loadPassage(1);
-  checkAIStatus();
-}
-
-let isImpersonating = false;
-
-function exitImpersonation(){
-  // Close the impersonating tab. (If we can't close — e.g. it wasn't opened by
-  // script — fall back to navigating back to the admin panel.)
-  try { window.close(); } catch(e){}
-  setTimeout(() => { window.location.href = '/admin'; }, 200);
-}
-
-function signOut(){
-  currentUserId = '';
-  STORAGE_KEYS = getUserKeys('');
-  LocalStore.setUserId('');
-  setSessionToken('');  // C3: drop the session token
-  showScreen('loginScreen');
-  showLogin();
-}
-
-// C3 (v19.17): called when a sync request returns 401/403 (expired or missing
-// session). Drops the user to the login screen with a gentle message. Their
-// local data is untouched and will re-sync once they log in again.
-let _authExpiredHandled = false;
-function handleAuthExpired(){
-  if(_authExpiredHandled) return;  // avoid double-firing from parallel calls
-  if(isImpersonating) return;      // impersonation uses its own token; don't bounce
-  _authExpiredHandled = true;
-  setSessionToken('');
-  currentUserId = '';
-  STORAGE_KEYS = getUserKeys('');
-  LocalStore.setUserId('');
-  showScreen('loginScreen');
-  showLogin();
-  if(typeof loginErr === 'function') loginErr('Your session expired — please sign in again. Your work is saved.');
-  setTimeout(() => { _authExpiredHandled = false; }, 3000);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PASSAGES
-   ═══════════════════════════════════════════════════════════════ */
-async function loadPassages(){
-  try {
-    const r = await fetch(API_URL+'/api/passages',{cache:'no-store'});
-    const d = await r.json();
-    if(Array.isArray(d) && d.length){ passages = d; }
-    else if(d.passages && Array.isArray(d.passages)){ passages = d.passages; }
-  } catch(e){ /* fall through */ }
-  if(!passages.length){
-    passages = [{ id:1, title:'Sample', category:'General', text:'Passage unavailable — check your connection.', keyElements:{what:'',why:'',how:'',result:''} }];
-  }
-  document.getElementById('navTotal').textContent = passages.length;
-  document.getElementById('practiceFootLabel').textContent =
-    String(passages.length).padStart(2,'0') + ' · Practice Session';
-  populatePassageDropdowns();
-}
-
-let activeFilter = 'all';
-let activeResFilter = 'all';
-
-function populatePassageDropdowns() {
-  // Practice dropdown
-  const select1 = document.getElementById('passageSelect');
-  if (select1) {
-    select1.innerHTML = '';
-    passages.forEach((p, idx) => {
-      const isAttempted = attempted.has(p.id);
-      if (activeFilter === 'attempted' && !isAttempted) return;
-      if (activeFilter === 'unattempted' && isAttempted) return;
-      
-      const opt = document.createElement('option');
-      opt.value = idx + 1;
-      const statusSuffix = isAttempted ? ' (Attempted)' : ' (Unattempted)';
-      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}${statusSuffix}`;
-      select1.appendChild(opt);
-    });
-  }
-
-  // Results dropdown
-  const select2 = document.getElementById('resPassageSelect');
-  if (select2) {
-    select2.innerHTML = '';
-    passages.forEach((p, idx) => {
-      const isAttempted = attempted.has(p.id);
-      if (activeResFilter === 'attempted' && !isAttempted) return;
-      if (activeResFilter === 'unattempted' && isAttempted) return;
-      
-      const opt = document.createElement('option');
-      opt.value = idx + 1;
-      const statusSuffix = isAttempted ? ' (Attempted)' : ' (Unattempted)';
-      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}${statusSuffix}`;
-      select2.appendChild(opt);
-    });
-  }
-}
-
-function changePassageFilter(val) {
-  activeFilter = val;
-  populatePassageDropdowns();
-  const select = document.getElementById('passageSelect');
-  if (select) {
-    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
-    if (hasCurrent) {
-      select.value = currentId;
-    } else if (select.options.length > 0) {
-      jumpToPassage(parseInt(select.options[0].value));
-    }
-  }
-}
-
-function changeResultsPassageFilter(val) {
-  activeResFilter = val;
-  populatePassageDropdowns();
-  const select = document.getElementById('resPassageSelect');
-  if (select) {
-    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
-    if (hasCurrent) {
-      select.value = currentId;
-    } else if (select.options.length > 0) {
-      jumpToResultsPassage(parseInt(select.options[0].value));
-    }
-  }
-}
-
-function jumpToPassage(target) {
-  if (target < 1 || target > passages.length) return;
-  loadPassage(target);
-  const select1 = document.getElementById('passageSelect');
-  if (select1) select1.value = target;
-}
-
-function jumpToResultsPassage(target) {
-  if (target < 1 || target > passages.length) return;
-  const select2 = document.getElementById('resPassageSelect');
-  if (select2) select2.value = target;
-  
-  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-  const p = passages.find(x => x.id === target) || passages[target-1];
-  if (!p) return;
-  
-  if (scores[target] && typeof scores[target].overall_score === 'number') {
-    currentId = target;
-    updateResultsNav();
-    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
-  } else {
-    loadPassage(target);
-    showScreen('practiceScreen');
-  }
-}
-
-function loadStoredData(){
-  const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
-  att.forEach(id => attempted.add(id));
-  const h = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-  Object.keys(h).forEach(id => { if(h[id] && h[id].length) attempted.add(parseInt(id)); });
-}
-
-function loadPassage(id){
-  if(id < 1 || id > passages.length) return;
-  currentId = id;
-  const p = passages.find(x => x.id === id) || passages[id-1];
-  if(!p) return;
-
-  const num = String(id).padStart(2,'0');
-  document.getElementById('navCurrent').textContent = num;
-  document.getElementById('pasNum').textContent = num;
-
-  const wordCount = (p.text || '').trim().split(/\s+/).filter(Boolean).length;
-  document.getElementById('pasWordCount').textContent = wordCount + ' words';
-  const mins = Math.max(1, Math.round(wordCount / 26));
-  document.getElementById('pasCategory').textContent = '~' + mins + ' min';
-
-  const paras = (p.text || '').split(/\n\n+/).filter(Boolean);
-  document.getElementById('passageBody').innerHTML =
-    (paras.length ? paras : [p.text]).map(t => '<p>' + escapeHtml(t) + '</p>').join('');
-
-  document.getElementById('navPrev').toggleAttribute('disabled', id === 1);
-  document.getElementById('navNext').toggleAttribute('disabled', id === passages.length);
-
-  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-  document.getElementById('summaryInput').value = (summaries[id] && summaries[id].text) || '';
-  const scratch = LocalStore.get(STORAGE_KEYS.SCRATCH) || {};
-  document.getElementById('scratchInput').value = scratch[id] || '';
-
-  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-  document.getElementById('prevAnswerBtn').style.display =
-    (scores[id] && typeof scores[id].overall_score === 'number') ? 'inline-flex' : 'none';
-
-  switchWriteTab('write');
-  onSummaryInput();
-  resetTimer();
-  const select1 = document.getElementById('passageSelect');
-  if (select1) select1.value = id;
-}
-
-function prevPassage(){ if(currentId > 1) loadPassage(currentId - 1); }
-function nextPassage(){ if(currentId < passages.length) loadPassage(currentId + 1); }
-
-/* ═══════════════════════════════════════════════════════════════
-   WRITE TAB / WRITING HEALTH
-   ═══════════════════════════════════════════════════════════════ */
-function switchWriteTab(tab){
-  writeTab = tab;
-  document.getElementById('tabWrite').classList.toggle('active', tab === 'write');
-  document.getElementById('tabPlan').classList.toggle('active', tab === 'plan');
-  document.getElementById('writeTabPane').classList.toggle('hidden', tab !== 'write');
-  document.getElementById('planTabPane').classList.toggle('hidden', tab !== 'plan');
-}
-
-function countWords(t){ return (t || '').trim().split(/\s+/).filter(Boolean).length; }
-
-function countSentences(t){
-  const trimmed = (t || '').trim();
-  if(!trimmed) return 0;
-  const matches = trimmed.match(/[.!?]+(?=\s|$)/g);
-  return matches ? matches.length : 1;
-}
-
-function detectConnectors(t){
-  const lower = (t || '').toLowerCase();
-  return CONNECTORS.filter(c => new RegExp('\\b' + c + '\\b').test(lower));
-}
-
-function onSummaryInput(){
-  const text = document.getElementById('summaryInput').value;
-  const words = countWords(text);
-
-  document.getElementById('wordCount').textContent = words;
-  const fill = document.getElementById('wordMeterFill');
-  const pct = Math.min(100, (words / 75) * 100);
-  fill.style.width = pct + '%';
-  fill.classList.toggle('over', words > 75);
-
-  setHealthRow('hrWordBand', words >= 5 && words <= 75, words, (words >= 5 && words <= 75) ? 'ok' : 'warn');
-
-  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-  if(text.trim()){
-    summaries[currentId] = { text, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
-  } else if(summaries[currentId]) {
-    delete summaries[currentId];
-  }
-  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
-}
-
-function setHealthRow(rowId, ok, value, cls){
-  const row = document.getElementById(rowId);
-  if(!row) return;
-  row.classList.remove('ok','warn');
-  row.classList.add(cls);
-  row.querySelector('.h-icon').textContent = ok ? '✓' : '!';
-  document.getElementById(rowId + 'Val').textContent = value;
-}
-
-function resetSummary(){
-  document.getElementById('summaryInput').value = '';
-  onSummaryInput();
-}
-
-document.addEventListener('input', function(e){
-  if(e.target && e.target.id === 'scratchInput'){
-    const scratch = LocalStore.get(STORAGE_KEYS.SCRATCH) || {};
-    scratch[currentId] = e.target.value;
-    LocalStore.set(STORAGE_KEYS.SCRATCH, scratch);
-  }
-});
-
-/* ═══════════════════════════════════════════════════════════════
-   TIMER — countdown from 10:00 (PTE Academic standard SWT time).
-   Resets fresh on every toggle-on AND when navigating to a new passage.
-   At 00:00 the timer stops on its own; no auto-submit (preserves the user's
-   in-progress work — they can still hit Score when ready).
-   ═══════════════════════════════════════════════════════════════ */
-const TIMER_START_SECONDS = 10 * 60;   // 10 minutes
-function toggleTimer(){
-  timerOn = !timerOn;
-  document.getElementById('timerState').textContent = timerOn ? 'Timed' : 'Off';
-  if(timerOn){
-    // Always start fresh — don't resume from a previous remaining time.
-    timerSeconds = TIMER_START_SECONDS;
-    startTimer();
-  } else {
-    stopTimer();
-    const disp = document.getElementById('timerDisplay');
-    disp.textContent = '—';
-    disp.classList.remove('expired');
-  }
-}
-function startTimer(){
-  stopTimer();
-  renderTimer();  // paint immediately so user sees 10:00, not a 1-second blank
-  timerInterval = setInterval(() => {
-    timerSeconds--;
-    if(timerSeconds <= 0){
-      timerSeconds = 0;
-      renderTimer();
-      stopTimer();
-      document.getElementById('timerDisplay').classList.add('expired');
-      toast('Time up — submit when you\'re ready.');
-      return;
-    }
-    renderTimer();
-  }, 1000);
-}
-function renderTimer(){
-  const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
-  const s = String(timerSeconds%60).padStart(2,'0');
-  const disp = document.getElementById('timerDisplay');
-  disp.textContent = m + ':' + s;
-  // Warn when under 60 seconds remain
-  disp.classList.toggle('warning', timerSeconds > 0 && timerSeconds <= 60);
-}
-function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
-function resetTimer(){
-  // Fresh window for each passage. If the timer is currently on, restart at 10:00.
-  // If off, leave the display showing '—'.
-  if(timerOn){
-    timerSeconds = TIMER_START_SECONDS;
-    document.getElementById('timerDisplay').classList.remove('expired');
-    startTimer();
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SCORING
-   ═══════════════════════════════════════════════════════════════ */
-async function scoreSummary(){
-  const text = document.getElementById('summaryInput').value.trim();
-  if(!text){ toast('Write a summary first.'); return; }
-  const words = countWords(text);
-  if(words < 5){ toast('Too short — minimum 5 words.'); return; }
-  if(words > 75){ toast('Too long — maximum 75 words.'); return; }
-
-  const p = passages.find(x => x.id === currentId);
-  if(!p){ toast('Passage not loaded.'); return; }
-
-  showLoading(true);
-  document.getElementById('scoreBtn').setAttribute('disabled','');
-
-  try {
-    const payload = { type: 'swt', prompt: p.text, keyPoints: p.keyElements, text: text };
-    if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentId; }
-
-    const [gradeRes, spellRes] = await Promise.allSettled([
-      fetch(API_URL+'/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),
-      fetch(API_URL+'/api/spellcheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})})
-    ]);
-
-    if(gradeRes.status !== 'fulfilled' || !gradeRes.value.ok){ throw new Error('Grading failed'); }
-    const data = await gradeRes.value.json();
-
-    let spellData = null;
-    if(spellRes.status === 'fulfilled' && spellRes.value.ok){
-      try { spellData = await spellRes.value.json(); } catch(e){ spellData = null; }
-    }
-    lastSpellData = spellData;
-
-    saveAttempt(currentId, text, data, spellData);  // fire-and-forget visually; sync happens asynchronously inside
-    attempted.add(currentId);
-    populatePassageDropdowns();
-    stopTimer();
-    // v19.11: if the server returned the live passage (current key elements +
-    // rationale), use THAT for the results screen — the local `p` may be stale
-    // if an admin edited the passage after this page loaded. Also refresh the
-    // in-memory copy so subsequent views are current.
-    let resultPassage = p;
-    if(data.passage_current){
-      resultPassage = Object.assign({}, p, data.passage_current);
-      const idx = passages.findIndex(x => x.id === currentId);
-      if(idx >= 0) passages[idx] = Object.assign({}, passages[idx], data.passage_current);
-    }
-    showResults(data, resultPassage, spellData, text);
-    showScreen('resultsScreen');
-  } catch(e){
-    toast('Scoring failed — check your connection and try again.');
-  } finally {
-    showLoading(false);
-    document.getElementById('scoreBtn').removeAttribute('disabled');
-  }
-}
-
-async function saveAttempt(pid, text, data, spellData){
-  const ts = new Date().toISOString();
-  // H3 (v19.17): track whether any local write fails (quota exceeded, private
-  // mode, etc). If so, the data isn't safe locally, so we must rely on the
-  // server sync — and we tell the student.
-  let localWriteOk = true;
-  const att = LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [];
-  if(!att.includes(pid)){ att.push(pid); if(!LocalStore.set(STORAGE_KEYS.ATTEMPTED, att)) localWriteOk = false; }
-
-  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-  summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
-  if(!LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries)) localWriteOk = false;
-
-  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-  scores[pid] = Object.assign({}, data, { __text: text, __timestamp: ts, __spellData: spellData || null });
-  if(!LocalStore.set(STORAGE_KEYS.SCORES, scores)) localWriteOk = false;
-
-  const h = LocalStore.get(STORAGE_KEYS.HISTORY) || {};
-  if(!h[pid]) h[pid] = [];
-  h[pid].unshift({
-    text, timestamp: ts,
-    overall_score: data.overall_score || 0, band: data.band || 'Band 5',
-    trait_scores: data.trait_scores || {}, word_count: data.word_count || 0,
-    content_details: data.content_details || {},
-    scoring_version: data.scoring_version || 'unknown'
-  });
-  if(h[pid].length > 10) h[pid] = h[pid].slice(0,10);
-  if(!LocalStore.set(STORAGE_KEYS.HISTORY, h)) localWriteOk = false;
-
-  // v19.15: previously this was fire-and-forget (no await), so a slow tab-close
-  // would lose the network request mid-flight. Now we await the push and
-  // surface failures to the student. Their local data is safe regardless —
-  // the issue we're fixing is "data shows up on this device but not when they
-  // log in elsewhere", which means we need to confirm the server actually
-  // persisted it.
-  updateSyncStatus('saving');
-  const result = await pushToServer();
-  if(result.ok){
-    updateSyncStatus('saved');
-    // H3: if local writes failed but the server save succeeded, the data is
-    // safe on the server — let the student know it's stored but device storage
-    // is full.
-    if(!localWriteOk && typeof toast === 'function'){
-      toast("Your device storage is full — saved to the server instead. Clear some space to keep working offline.");
-    }
-  } else {
-    updateSyncStatus('failed');
-    // H3: worst case — both local AND server failed. Be explicit.
-    if(!localWriteOk && typeof toast === 'function'){
-      toast("⚠ Could not save this attempt — device storage is full and the server is unreachable. Please copy your summary somewhere safe.");
-    } else if(typeof toast === 'function'){
-      toast("Couldn't save to server — your work is safe on this device. Will retry.");
-    }
-  }
-}
-
-// v19.15: small status pill near the score showing sync state.
-// States: 'saving' | 'saved' | 'failed'. Updates the #syncStatus element
-// in the results header (added in the HTML). Auto-hides after 'saved' for
-// 4 seconds so the UI doesn't stay cluttered.
-let syncStatusHideTimer = null;
-function updateSyncStatus(state){
-  const el = document.getElementById('syncStatus');
-  if(!el) return;
-  clearTimeout(syncStatusHideTimer);
-  el.className = 'sync-status sync-' + state;
-  if(state === 'saving'){
-    el.textContent = 'Saving…';
-    el.style.display = '';
-  } else if(state === 'saved'){
-    const ts = LocalStore.get('pte_last_synced_at');
-    el.textContent = ts ? 'Saved' : 'Saved';
-    el.style.display = '';
-    // Fade out after a beat
-    syncStatusHideTimer = setTimeout(() => {
-      if(el) el.style.display = 'none';
-    }, 4000);
-  } else if(state === 'failed'){
-    el.textContent = 'Save failed — will retry';
-    el.style.display = '';
-  } else {
-    el.style.display = 'none';
-  }
-}
-
-// H4/F4 (v19.17): human-friendly relative/absolute time for a stored attempt.
-// "just now" / "2 hours ago" / "May 27, 2:14 PM" for older ones.
-function formatAttemptTime(iso){
-  if(!iso) return '';
-  const then = new Date(iso);
-  if(isNaN(then.getTime())) return '';
-  const now = new Date();
-  const diffMs = now - then;
-  const diffMin = Math.round(diffMs / 60000);
-  if(diffMin < 1) return 'just now';
-  if(diffMin < 60) return diffMin + (diffMin === 1 ? ' minute ago' : ' minutes ago');
-  const diffHr = Math.round(diffMin / 60);
-  if(diffHr < 24) return diffHr + (diffHr === 1 ? ' hour ago' : ' hours ago');
-  // Older — show an absolute date/time.
-  try {
-    return then.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  } catch(e){
-    return then.toISOString().slice(0,16).replace('T',' ');
-  }
-}
-
-function loadPreviousAnswer(){
-  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-  const stored = scores[currentId];
-  if(!stored){ toast('No previous answer for this passage.'); return; }
-  const p = passages.find(x => x.id === currentId);
-  if(!p){ return; }
-  if(stored.__text){ document.getElementById('summaryInput').value = stored.__text; onSummaryInput(); }
-  showResults(stored, p, stored.__spellData || null, stored.__text || '');
-  showScreen('resultsScreen');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESULTS RENDERING
-   ═══════════════════════════════════════════════════════════════ */
-function showResults(data, passage, spellData, submittedText){
-  const pte = data.overall_score || 0;
-  const band = data.band || 'Band 5';
-  const traits = data.trait_scores || {};
-
-  // H4/F4 (v19.17): when re-viewing a stored attempt (via the ← / → arrows or
-  // "show previous answer"), the data carries a __timestamp. Surface it so it's
-  // obvious this is a saved attempt from a past session, not a fresh score —
-  // this was the cause of the "wrong summary on results" confusion.
-  let crumb = 'Results · ' + (passage.title || 'Passage ' + currentId);
-  if(data.__timestamp){
-    const when = formatAttemptTime(data.__timestamp);
-    if(when) crumb += '  ·  your attempt from ' + when;
-  }
-  document.getElementById('resultsBreadcrumb').textContent = crumb;
-
-  const ringCirc = 339.29;
-  const heroRing = document.getElementById('heroRing');
-  heroRing.style.strokeDasharray = ringCirc;
-  heroRing.style.strokeDashoffset = ringCirc * (1 - Math.min(1, pte/90));
-  document.getElementById('heroScore').textContent = pte;
-
-  document.getElementById('heroVerdict').innerHTML = verdictLine(pte, band);
-  document.getElementById('heroSummary').textContent = buildResultSummary(data, traits);
-
-  // F1 (v19.17): if the server flagged this attempt as AI-degraded (Claude was
-  // unavailable and the local fallback scored it), tell the student plainly.
-  // The score is still valid; the detailed grammar/vocab coaching just isn't
-  // available for this attempt.
-  const degradedEl = document.getElementById('aiDegradedNotice');
-  if(degradedEl){
-    if(data.ai_feedback_degraded){
-      degradedEl.style.display = '';
-      degradedEl.textContent = 'Detailed grammar and vocabulary feedback was unavailable for this attempt (the AI grader was busy). Your score is accurate — try again in a moment for full coaching.';
-    } else {
-      degradedEl.style.display = 'none';
-    }
-  }
-
-  const cMax = traits.content_max || 4;
-  document.getElementById('heroTraitChips').innerHTML = [
-    `Content ${fmtNum(traits.content)}/${cMax}`,
-    `Form ${fmtNum(traits.form)}/1`,
-    `Grammar ${fmtNum(traits.grammar)}/2`,
-    `Vocab ${fmtNum(traits.vocabulary)}/2`,
-    `${data.word_count || countWords(submittedText)} / 5–75 words`
-  ].map(t => `<span class="trait-chip">${t}</span>`).join('');
-
-  renderOriginality(data, passage, submittedText);
-  renderAnnotatedSubmission(data, passage, spellData, submittedText);
-  renderAnnotatedPassage(passage);
-  renderTraitBreakdown(data, traits);
-  renderCoverage(data, passage);
-
-  // v19.12: render the sample answer for the right-column toggle. The text
-  // shows even if missing — students see "(none authored)" rather than the
-  // toggle appearing broken. Reset the view to "summary" so each new result
-  // starts on the student's own work.
-  const sampleEl = document.getElementById('sampleAnswerText');
-  const sampleNotes = document.getElementById('sampleAnswerNotes');
-  if(sampleEl){
-    const sample = (passage && passage.sampleResponse) || '';
-    sampleEl.textContent = sample || '(No sample answer authored for this passage yet.)';
-  }
-  if(sampleNotes){
-    const notes = (passage && passage.sampleNotes) || '';
-    sampleNotes.textContent = notes;
-    sampleNotes.style.display = notes ? '' : 'none';
-  }
-  // Reset to summary view whenever new results render
-  switchSbsView('summary');
-
-  // v19.10.3: new feedback sections
-  renderAboutPassage(passage);
-  renderVocabCoach(data);
-  updateResultsNav();
-}
-
-function fmtNum(n){
-  if(n == null) return '0';
-  return Number.isInteger(n) ? String(n) : n.toFixed(1);
-}
-
-function verdictLine(pte, band){
-  let word;
-  if(pte >= 86) word = 'Excellent';
-  else if(pte >= 79) word = 'Strong attempt';
-  else if(pte >= 65) word = 'Solid attempt';
-  else if(pte >= 50) word = 'Developing';
-  else word = 'Needs work';
-  return escapeHtml(word) + ' — <em>' + escapeHtml(band) + '</em>';
-}
-
-function buildResultSummary(data, traits){
-  const cd = data.content_details || {};
-  const captured = (cd.key_ideas_present || []).length;
-  const cMax = traits.content_max || 4;
-  const parts = [];
-  if(captured === cMax){
-    parts.push('You captured all ' + cMax + ' key ideas in one well-formed sentence.');
-  } else {
-    parts.push('You captured ' + captured + ' of ' + cMax + ' key ideas in one sentence with appropriate connectors.');
-  }
-  if((traits.vocabulary || 0) < 2){
-    parts.push('Vocabulary range is the lever that will push you higher — try swapping high-frequency words for academic alternatives.');
-  } else if((traits.grammar || 0) < 2){
-    parts.push('Tightening grammar will lift the score — check connector punctuation and article use.');
-  } else if(captured < cMax){
-    parts.push('Add the missing key element to move up a band.');
-  }
-  return parts.join(' ');
-}
-
-function renderOriginality(data, passage, submittedText){
-  const el = document.getElementById('originalityChecks');
-  const overlap = computeCopyMetrics(submittedText, passage.text || '');
-
-  let copyVerdict, copyClass, copyDetail;
-  if(overlap.pct <= 15 && overlap.longestRun < 6){
-    copyVerdict = 'Original'; copyClass = 'good';
-  } else if(overlap.pct <= 40 && overlap.longestRun <= 10){
-    copyVerdict = 'Some lifting'; copyClass = 'warn';
-  } else {
-    copyVerdict = 'Heavy lifting'; copyClass = 'warn';
-  }
-  copyDetail = 'Longest run: ' + overlap.longestRun + ' words · ' + overlap.pct + '% verbatim';
-
-  const aiVerdict = 'Likely Human';
-  const aiDetail = 'Burstiness signal · written in-session';
-
-  el.innerHTML = `
-    <div class="orig-cell">
-      <div class="orig-head">
-        <span class="orig-name">AI Detector</span>
-        <span class="orig-verdict">${aiVerdict}</span>
-      </div>
-      <div class="orig-detail">${aiDetail}</div>
-    </div>
-    <div class="orig-cell ${copyClass}">
-      <div class="orig-head">
-        <span class="orig-name">Copy Detector</span>
-        <span class="orig-verdict">${escapeHtml(copyVerdict)}</span>
-      </div>
-      <div class="orig-detail">${escapeHtml(copyDetail)}</div>
-    </div>
-    <div class="orig-cell">
-      <div class="orig-head">
-        <span class="orig-name">Plagiarism Web</span>
-        <span class="orig-verdict">Not Checked</span>
-      </div>
-      <div class="orig-detail">Web plagiarism check not enabled</div>
-    </div>`;
-}
-
-function computeCopyMetrics(student, passage){
-  function words(s){ return (s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean); }
-  const sw = words(student), pw = words(passage);
-  if(sw.length === 0) return { pct: 0, longestRun: 0 };
-
-  const pGrams = new Set();
-  for(let i = 0; i <= pw.length - 4; i++) pGrams.add(pw.slice(i,i+4).join(' '));
-  let hits = 0;
-  const total = Math.max(1, sw.length - 3);
-  for(let i = 0; i <= sw.length - 4; i++){
-    if(pGrams.has(sw.slice(i,i+4).join(' '))) hits++;
-  }
-  const pct = Math.round((hits / total) * 100);
-
-  let longest = 0;
-  const pJoined = ' ' + pw.join(' ') + ' ';
-  for(let i = 0; i < sw.length; i++){
-    for(let len = Math.min(25, sw.length - i); len >= 4; len--){
-      if(pJoined.includes(' ' + sw.slice(i,i+len).join(' ') + ' ')){
-        if(len > longest) longest = len;
-        break;
-      }
-    }
-  }
-  return { pct, longestRun: longest };
-}
-
-function renderAnnotatedSubmission(data, passage, spellData, submittedText){
-  const el = document.getElementById('annotatedSubmission');
-  const text = submittedText || '';
-  if(!text.trim()){ el.textContent = '—'; return; }
-
-  const cd = data.content_details || {};
-  const captured = new Set(cd.key_ideas_present || []);
-  const keyEls = passage.keyElements || {};
-
-  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
-  function toks(s){ return (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w)); }
-  function headline(t){
-    if(!t) return '';
-    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
-    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
-  }
-
-  const segments = text.split(/(;|\.|!|\?)/).filter(s => s !== '');
-  const clauses = [];
-  for(let i = 0; i < segments.length; i++){
-    if(/^[;.!?]$/.test(segments[i])){
-      if(clauses.length) clauses[clauses.length-1] += segments[i];
-    } else {
-      clauses.push(segments[i]);
-    }
-  }
-
-  const labels = ['what','why','how','result'];
-  const clauseLabel = {};
-  const usedLabels = new Set();
-  for(const lbl of labels){
-    if(!keyEls[lbl]) continue;
-    const hTok = toks(headline(keyEls[lbl]));
-    if(hTok.length < 2) continue;
-    let bestIdx = -1, bestHits = 0;
-    for(let i = 0; i < clauses.length; i++){
-      if(clauseLabel[i]) continue;
-      const cTok = new Set(toks(clauses[i]));
-      let hits = 0;
-      for(const t of hTok){
-        if(cTok.has(t)){ hits++; continue; }
-        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
-        if(stem.length >= 4){ for(const ct of cTok){ if(ct.startsWith(stem)){ hits++; break; } } }
-      }
-      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
-    }
-    if(bestIdx >= 0 && bestHits >= 2){ clauseLabel[bestIdx] = lbl; usedLabels.add(lbl); }
-  }
-
-  let spellWords = {};
-  const errs = (spellData && Array.isArray(spellData.errors)) ? spellData.errors
-             : (data.spelling_details && data.spelling_details.errors) || [];
-  for(const e of errs){
-    const w = (e.misspelled || '').toLowerCase().trim();
-    if(w) spellWords[w] = e.suggestion || (e.suggestions && e.suggestions[0]) || '';
-  }
-
-  // v19.12: grammar annotations (from Claude). Chain grammar first, then
-  // spelling — spelling walks text nodes between grammar spans so they don't
-  // collide.
-  const grammarIssues = (data.grammar_details && Array.isArray(data.grammar_details.grammar_annotations))
-    ? data.grammar_details.grammar_annotations : [];
-
-  let html = '';
-  for(let i = 0; i < clauses.length; i++){
-    const lbl = clauseLabel[i];
-    let inner = annotateGrammar(clauses[i], grammarIssues);
-    inner = annotateSpelling(inner, spellWords, true);  // HTML mode
-    if(lbl){ html += `<span class="ann-seg ${lbl}">${inner}</span>`; }
-    else { html += inner; }
-  }
-  el.innerHTML = html;
-
-  const fb = document.getElementById('annotatedFeedback');
-  const items = [];
-  const connectors = detectConnectors(text);
-  const sentences = countSentences(text);
-  if(sentences === 1 && connectors.length >= 2){
-    items.push({ cls:'good', icon:'✓', text:'One sentence, ' + connectors.length + ' connectors (' + connectors.join(' / ') + '), inside the 5–75 word band.' });
-  } else if(sentences === 1){
-    items.push({ cls:'good', icon:'✓', text:'Single well-formed sentence within the word band.' });
-  } else {
-    items.push({ cls:'warn', icon:'!', text:'Summary should be a <em>single sentence</em> — found ' + sentences + '.' });
-  }
-  const cMax = (data.trait_scores||{}).content_max || 4;
-  const missing = labels.filter(l => keyEls[l] && !captured.has(l) && !usedLabels.has(l));
-  if(missing.length){
-    const missLabel = missing[0].charAt(0).toUpperCase() + missing[0].slice(1);
-    items.push({ cls:'warn', icon:'!', text:'Missing the <em>' + missLabel + '</em> element — work it into your summary.' });
-  } else if((captured.size || usedLabels.size) >= cMax){
-    items.push({ cls:'good', icon:'✓', text:'All key elements present and accounted for.' });
-  }
-  fb.innerHTML = items.map(it =>
-    `<div class="ann-fb-item ${it.cls}"><span class="fb-icon">${it.icon}</span><span class="fb-text">${it.text}</span></div>`
-  ).join('');
-}
-
-// v19.11: render the ORIGINAL PASSAGE with each sentence colored by its W/W/H/R
-// role — sage if it carries the "what", amber the "why", etc. Sentences that
-// aren't load-bearing stay uncolored. Sits beside the annotated summary so an
-// admin/teacher can see at a glance which passage sentences the student covered,
-// which they lifted, and which they missed.
-function renderAnnotatedPassage(passage){
-  const el = document.getElementById('annotatedPassage');
-  if(!el) return;
-  const text = (passage && passage.text) || '';
-  if(!text.trim()){ el.textContent = '—'; return; }
-  const keyEls = (passage && passage.keyElements) || {};
-
-  // Same tokenization + matching as renderAnnotatedSubmission, applied to
-  // passage sentences. Threshold lowered slightly because passage sentences
-  // are full while summary clauses are abbreviated.
-  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
-  const toks = s => (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w));
-  const headline = t => {
-    if(!t) return '';
-    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
-    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
-  };
-
-  // Split into sentences (period/!/? followed by space). Preserve the delimiter
-  // so the rendered output reads naturally.
-  const parts = text.split(/([.!?])\s+/);
-  const sentences = [];
-  for(let i = 0; i < parts.length; i += 2){
-    const body = parts[i];
-    const delim = parts[i+1] || '';
-    if(body && body.trim()) sentences.push(body + delim);
-  }
-  if(!sentences.length) sentences.push(text);
-
-  // Support both wwhr (what/why/how/result) and tpc (topic/pivot/conclusion).
-  const labels = keyEls.topic || keyEls.pivot || keyEls.conclusion
-    ? ['topic','pivot','conclusion']
-    : ['what','why','how','result'];
-  // For tpc, color them with their semantic equivalents: topic->what, pivot->why, conclusion->result.
-  const colorOf = (lbl) => ({topic:'what', pivot:'why', conclusion:'result'}[lbl] || lbl);
-
-  const sentLabel = {};
-  for(const lbl of labels){
-    if(!keyEls[lbl]) continue;
-    const hTok = toks(headline(keyEls[lbl]));
-    if(hTok.length < 2) continue;
-    let bestIdx = -1, bestHits = 0;
-    for(let i = 0; i < sentences.length; i++){
-      if(sentLabel[i]) continue;
-      const sTok = new Set(toks(sentences[i]));
-      let hits = 0;
-      for(const t of hTok){
-        if(sTok.has(t)){ hits++; continue; }
-        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
-        if(stem.length >= 4){
-          for(const st of sTok){ if(st.startsWith(stem)){ hits++; break; } }
-        }
-      }
-      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
-    }
-    if(bestIdx >= 0 && bestHits >= 2){ sentLabel[bestIdx] = colorOf(lbl); }
-  }
-
-  // Render — colored sentences get the same .ann-seg.<color> classes used in the
-  // submission side, so the legend and visual mapping are identical.
-  let html = '';
-  for(let i = 0; i < sentences.length; i++){
-    const lbl = sentLabel[i];
-    const safe = escapeHtml(sentences[i]);
-    if(lbl){ html += `<span class="ann-seg ${lbl}">${safe}</span> `; }
-    else { html += safe + ' '; }
-  }
-  el.innerHTML = html;
-}
-
-// v19.12: grammar annotations. Wraps the verbatim phrase Claude flagged in a
-// tooltipped span. Major severity → red solid underline; minor → amber dashed.
-// Phrases are matched case-insensitively but the original text casing is
-// preserved in the output. Overlapping issues are handled by sorting phrases
-// longest-first so the longer span wins (a sub-phrase inside an already-
-// annotated phrase would be unreachable anyway).
-function annotateGrammar(clause, issues){
-  if(!issues || issues.length === 0) return escapeHtml(clause);
-  // Sort longest first to prevent a short phrase being shadowed by a longer one
-  // that contains it.
-  const sorted = [...issues].sort((a,b) => (b.phrase||'').length - (a.phrase||'').length);
-  // Build a result by repeatedly slicing out the first remaining match. This
-  // avoids messy regex escaping and handles overlap deterministically.
-  let result = escapeHtml(clause);
-  // We need to operate on the ORIGINAL text for matching (case-insensitive),
-  // but output HTML-escaped wrapped spans. Two-pass: first find positions in
-  // the raw text, then rebuild the escaped output with insertions.
-  const lowerClause = clause.toLowerCase();
-  const insertions = [];  // { start, end, html }
-  const claimed = new Array(clause.length).fill(false);
-  for(const issue of sorted){
-    if(!issue.phrase) continue;
-    const needle = issue.phrase.toLowerCase();
-    let pos = 0;
-    while(pos < lowerClause.length){
-      const idx = lowerClause.indexOf(needle, pos);
-      if(idx < 0) break;
-      // Skip if any character in this span is already claimed by a longer issue
-      let conflict = false;
-      for(let i = idx; i < idx + needle.length; i++){ if(claimed[i]){ conflict = true; break; } }
-      if(!conflict){
-        for(let i = idx; i < idx + needle.length; i++) claimed[i] = true;
-        const sev = (issue.severity === 'major') ? 'grammar-major' : 'grammar-minor';
-        // v19.13: hover tooltip is plain-English only — no [type] tag.
-        // Fix and rationale are also stored as data-attrs so the click handler
-        // can build a richer pinned popover.
-        const tipParts = [];
-        if(issue.fix) tipParts.push('→ ' + issue.fix);
-        if(issue.rationale) tipParts.push(issue.rationale);
-        insertions.push({
-          start: idx, end: idx + needle.length, sev,
-          tip: tipParts.join('  '),
-          fix: issue.fix || '',
-          rationale: issue.rationale || ''
-        });
-      }
-      pos = idx + needle.length;
-    }
-  }
-  // Sort insertions left-to-right and rebuild
-  insertions.sort((a,b) => a.start - b.start);
-  let out = '';
-  let cursor = 0;
-  // v19.13: attribute-context escaping. escapeHtml uses textContent/innerHTML
-  // which doesn't escape quotes — fine for text content but unsafe in
-  // attributes. attrEscape replaces &, <, ", and ' explicitly.
-  const attrEscape = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  for(const ins of insertions){
-    out += escapeHtml(clause.slice(cursor, ins.start));
-    out += `<span class="ann-seg ${ins.sev}" title="${attrEscape(ins.tip)}" data-fix="${attrEscape(ins.fix)}" data-rationale="${attrEscape(ins.rationale)}">${escapeHtml(clause.slice(ins.start, ins.end))}</span>`;
-    cursor = ins.end;
-  }
-  out += escapeHtml(clause.slice(cursor));
-  return out;
-}
-
-// v19.13: click-to-pin popover for grammar annotations. Hover gives a quick
-// tooltip peek (browser-native, from the title attribute). Click pins a
-// richer popover with the fix and a plain-English rationale, which stays open
-// until the student dismisses it. Multiple popovers can be pinned at once.
-// Uses event delegation on the annotated submission, so it auto-rewires on
-// every re-render — no setup needed after each scoring.
-(function setupGrammarPopovers(){
-  // Track open popovers so we can dismiss them on outside-click / Escape.
-  // We don't pre-build any DOM — popovers are created on demand and appended
-  // to document.body so they escape any container's overflow:hidden.
-  const open = new Set();
-
-  function closePopover(pop){
-    if(!pop) return;
-    pop.classList.add('gp-closing');
-    setTimeout(() => { if(pop.parentNode) pop.parentNode.removeChild(pop); }, 120);
-    open.delete(pop);
-  }
-
-  function closeAll(){
-    [...open].forEach(closePopover);
-  }
-
-  function buildPopover(target){
-    const fix = target.getAttribute('data-fix') || '';
-    const rationale = target.getAttribute('data-rationale') || '';
-    // If there's nothing to show, do nothing.
-    if(!fix && !rationale) return null;
-
-    const pop = document.createElement('div');
-    pop.className = 'gp-popover';
-    pop.setAttribute('role', 'dialog');
-    pop.setAttribute('aria-label', 'Grammar feedback');
-
-    const close = document.createElement('button');
-    close.className = 'gp-close';
-    close.type = 'button';
-    close.setAttribute('aria-label', 'Close');
-    close.textContent = '×';
-    close.addEventListener('click', (e) => { e.stopPropagation(); closePopover(pop); });
-    pop.appendChild(close);
-
-    if(fix){
-      const fixEl = document.createElement('div');
-      fixEl.className = 'gp-fix';
-      // Render as an arrow + the fix. The arrow is a visual cue, not a label.
-      const arrow = document.createElement('span');
-      arrow.className = 'gp-arrow';
-      arrow.textContent = '→';
-      fixEl.appendChild(arrow);
-      fixEl.appendChild(document.createTextNode(' ' + fix));
-      pop.appendChild(fixEl);
-    }
-
-    if(rationale){
-      const ratEl = document.createElement('div');
-      ratEl.className = 'gp-rationale';
-      ratEl.textContent = rationale;
-      pop.appendChild(ratEl);
-    }
-
-    return pop;
-  }
-
-  function positionPopover(pop, target){
-    // Position the popover below the target by default. If that would clip
-    // below the viewport, flip above. If it would clip to the right, shift
-    // left to stay on screen.
-    document.body.appendChild(pop);  // need it in the DOM to measure
-    const rect = target.getBoundingClientRect();
-    const popRect = pop.getBoundingClientRect();
-    const margin = 6;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const scrollY = window.scrollY || window.pageYOffset;
-    const scrollX = window.scrollX || window.pageXOffset;
-
-    let top = rect.bottom + scrollY + margin;
-    let left = rect.left + scrollX;
-
-    // Flip above if the popover would go off the bottom of the viewport
-    if(rect.bottom + popRect.height + margin > vh){
-      top = rect.top + scrollY - popRect.height - margin;
-    }
-    // Shift left if it would go off the right edge
-    if(left + popRect.width > scrollX + vw - 12){
-      left = scrollX + vw - popRect.width - 12;
-    }
-    // Don't push past the left edge either
-    if(left < scrollX + 8) left = scrollX + 8;
-
-    pop.style.top = top + 'px';
-    pop.style.left = left + 'px';
-  }
-
-  // Click delegation — listen on document so we catch clicks anywhere.
-  document.addEventListener('click', (e) => {
-    const target = e.target.closest('.ann-seg.grammar-major, .ann-seg.grammar-minor');
-    if(target){
-      e.stopPropagation();
-      // If this exact phrase already has a popover open, close it (toggle).
-      for(const pop of open){
-        if(pop._target === target){ closePopover(pop); return; }
-      }
-      // v19.14: only ONE popover open at a time. Close any other open ones
-      // before showing this new one. (Previously multiple could stack — but
-      // that gets visually busy on summaries with several errors. A student
-      // typically wants to read one explanation at a time anyway.)
-      closeAll();
-      const pop = buildPopover(target);
-      if(!pop) return;
-      pop._target = target;
-      positionPopover(pop, target);
-      open.add(pop);
-      // Pulse animation in
-      requestAnimationFrame(() => { pop.classList.add('gp-shown'); });
-      return;
-    }
-    // Click outside any open popover dismisses ALL of them. We check that
-    // the click target isn't inside an existing popover before closing.
-    if(open.size > 0){
-      const inside = e.target.closest('.gp-popover');
-      if(!inside) closeAll();
-    }
-  });
-
-  // Escape key dismisses all open popovers.
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape' && open.size > 0){ closeAll(); }
-  });
-
-  // Re-reposition popovers if the page scrolls or resizes (otherwise they
-  // float in mid-air detached from their phrase).
-  window.addEventListener('scroll', () => {
-    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
-  }, { passive: true });
-  window.addEventListener('resize', () => {
-    for(const pop of open){ if(pop._target) positionPopover(pop, pop._target); }
-  });
-})();
-
-// v19.12: annotateSpelling now operates on either raw text OR already-annotated
-// HTML. When the input contains <span> tags (from grammar annotation), we walk
-// only the text *between* tags so we don't shred them. This lets the renderer
-// chain grammar-first, then spelling, on the same clause.
-function annotateSpelling(clauseOrHtml, spellWords, alreadyHtml){
-  if(Object.keys(spellWords).length === 0) return alreadyHtml ? clauseOrHtml : escapeHtml(clauseOrHtml);
-  if(!alreadyHtml){
-    // Original path — raw text. Tokenize and annotate.
-    const parts = clauseOrHtml.split(/(\s+|[.,;:!?"'()])/);
-    return parts.map(tok => {
-      const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
-      if(stripped && spellWords[stripped] !== undefined){
-        const fix = spellWords[stripped];
-        return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${escapeHtml(tok)}</span>`;
-      }
-      return escapeHtml(tok);
-    }).join('');
-  }
-  // HTML mode — walk text nodes between <span>…</span> blocks. Plain split on
-  // tag boundaries works because annotateGrammar only ever produces <span>…</span>.
-  const parts = clauseOrHtml.split(/(<span[^>]*>[\s\S]*?<\/span>)/);
-  return parts.map(p => {
-    if(p.startsWith('<span')) return p;  // pass-through, do not mutate
-    if(!p) return p;
-    // p is already escaped HTML of raw text — un-escape just enough to tokenize,
-    // re-escape on output. Simplest: treat p as text and re-escape it through
-    // the raw path. Since p was produced by escapeHtml originally, the round-trip
-    // is safe for ASCII.
-    const tokParts = p.split(/(\s+|[.,;:!?"'()]|&[a-z]+;)/);
-    return tokParts.map(tok => {
-      // Skip entities and pure whitespace/punct.
-      if(tok.startsWith('&') && tok.endsWith(';')) return tok;
-      const stripped = tok.toLowerCase().replace(/[^a-z']/g,'');
-      if(stripped && spellWords[stripped] !== undefined){
-        const fix = spellWords[stripped];
-        return `<span class="ann-seg spell" title="${escapeHtml(fix ? 'Suggested: ' + fix : 'Possible misspelling')}">${tok}</span>`;
-      }
-      return tok;
-    }).join('');
-  }).join('');
-}
-
-// v19.12: tab switcher for the right-side panel (Student Summary <-> Sample
-// Answer). Non-destructive — both views are rendered; we just toggle display.
-function switchSbsView(view){
-  const isSample = (view === 'sample');
-  const vSum = document.getElementById('sbsViewSummary');
-  const vSam = document.getElementById('sbsViewSample');
-  const tSum = document.getElementById('sbsTabSummary');
-  const tSam = document.getElementById('sbsTabSample');
-  if(!vSum || !vSam || !tSum || !tSam) return;
-  vSum.style.display = isSample ? 'none' : '';
-  vSam.style.display = isSample ? '' : 'none';
-  tSum.classList.toggle('active', !isSample);
-  tSam.classList.toggle('active', isSample);
-  tSum.setAttribute('aria-selected', isSample ? 'false' : 'true');
-  tSam.setAttribute('aria-selected', isSample ? 'true' : 'false');
-}
-
-function renderTraitBreakdown(data, traits){
-  const el = document.getElementById('traitBreakdown');
-  const cMax = traits.content_max || 4;
-  const cd = data.content_details || {};
-  const captured = (cd.key_ideas_present || []).length;
-
-  const rows = [
-    { name:'Content', score:traits.content||0, max:cMax,
-      note: captured >= cMax ? 'All key elements present.' : captured + ' of ' + cMax + ' key elements present — add the missing one(s).' },
-    { name:'Form', score:traits.form||0, max:1,
-      note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
-    { name:'Grammar', score:traits.grammar||0, max:2,
-      note: (traits.grammar >= 2) ? 'Clean grammar and connector punctuation.' : 'Check connector punctuation (semicolons) and article use.' },
-    { name:'Vocabulary', score:traits.vocabulary||0, max:2,
-      note: (traits.vocabulary >= 2) ? 'Good academic range.' : 'Range could be wider — swap high-frequency words for academic alternatives.' }
-  ];
-
-  el.innerHTML = rows.map(r => {
-    const pct = r.max > 0 ? Math.min(100, (r.score / r.max) * 100) : 0;
-    let barColor = 'var(--good)';
-    if(pct < 50) barColor = 'var(--bad)';
-    else if(pct < 100) barColor = 'var(--warn)';
-    return `
-      <div class="trait-row">
-        <div class="trait-head">
-          <span class="trait-name">${r.name}</span>
-          <span class="trait-score"><b>${fmtNum(r.score)}</b> / ${r.max}</span>
-        </div>
-        <div class="trait-bar"><div class="trait-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
-        <div class="trait-note">${escapeHtml(r.note)}</div>
-      </div>`;
-  }).join('');
-}
-
-function renderCoverage(data, passage){
-  const el = document.getElementById('coverageTable');
-  const keyEls = passage.keyElements || {};
-  const cd = data.content_details || {};
-  const captured = new Set(cd.key_ideas_present || []);
-  const missing = new Set(cd.key_ideas_missing || []);
-
-  const labels = [['what','What'],['why','Why'],['how','How'],['result','Result']];
-  el.innerHTML = labels.filter(([k]) => keyEls[k]).map(([k, label]) => {
-    let status, statusCls;
-    if(captured.has(k)){ status = 'Covered'; statusCls = 'covered'; }
-    else if(missing.has(k)){ status = 'Missing'; statusCls = 'missing'; }
-    else { status = 'Partial'; statusCls = 'partial'; }
-    const txt = String(keyEls[k] || '').replace(/<[^>]+>/g,'');
-    return `
-      <div class="coverage-row">
-        <div class="cov-key"><span class="cov-dot ${k}"></span>${label.toUpperCase()}</div>
-        <div class="cov-text ${statusCls === 'missing' ? 'missing' : ''}">${escapeHtml(txt)}</div>
-        <div class="cov-status ${statusCls}">${status}</div>
-      </div>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   v19.10.3: ABOUT-THIS-PASSAGE — explains topic and why these key elements
-   are the critical ones to capture. Prefers a hand-authored rationale on the
-   passage object (passage.keyElementsRationale); falls back to a generic
-   explanation when missing, so passages without rationale still produce
-   something useful instead of an empty card.
-   ═══════════════════════════════════════════════════════════════ */
-function renderAboutPassage(passage){
-  const card = document.getElementById('aboutPassageCard');
-  const body = document.getElementById('aboutPassageBody');
-  if(!card || !body || !passage){ return; }
-
-  const r = passage.keyElementsRationale || {};
-  const topic = r.topic || generateTopicFallback(passage);
-  const importance = r.importance || generateImportanceFallback(passage);
-  const elementsExplained = r.elements || generateElementsFallback(passage);
-
-  const sections = [];
-  sections.push(`
-    <div class="about-section">
-      <div class="about-eyebrow">📖 What this passage is about</div>
-      <p>${escapeHtml(topic)}</p>
-    </div>`);
-  sections.push(`
-    <div class="about-section">
-      <div class="about-eyebrow">🎯 Why these are the critical ideas</div>
-      <p>${escapeHtml(importance)}</p>
-    </div>`);
-  if(elementsExplained && Object.keys(elementsExplained).length){
-    const order = [['what','What','what'],['why','Why','why'],['how','How','how'],['result','Result','result']];
-    sections.push(`
-      <div class="about-section">
-        <div class="about-eyebrow">🧩 Why each element matters</div>
-        ${order.filter(([k]) => elementsExplained[k]).map(([k,label,cls]) => `
-          <p><strong style="display:inline-flex;align-items:center;gap:6px;">
-            <span class="e-dot" style="background:var(--${cls});display:inline-block;width:9px;height:9px;border-radius:2px;"></span>${label}:
-          </strong> ${escapeHtml(elementsExplained[k])}</p>
-        `).join('')}
-      </div>`);
-  }
-  body.innerHTML = sections.join('');
-  card.style.display = 'block';
-}
-
-// Fallbacks generate something readable when keyElementsRationale isn't filled in
-// for a passage yet. They're intentionally generic — the hand-authored version
-// (in passages.json) is always better and should override these.
-function generateTopicFallback(passage){
-  const title = passage.title || 'this passage';
-  const cat = passage.category ? ' (' + passage.category + ')' : '';
-  return `This passage covers ${title}${cat}. It presents a topic, supporting evidence or reasoning, and a result or implication — the four elements you're asked to capture map to those structural parts.`;
-}
-function generateImportanceFallback(passage){
-  const keys = passage.keyElements || {};
-  const count = ['what','why','how','result'].filter(k => keys[k]).length;
-  return `Of all the sentences in the passage, ${count} carry the load: the topic claim, the reasons supporting it, the mechanism or evidence, and the consequence. Other sentences add colour or restate — they're not required for a Band 8+ summary and can safely be left out.`;
-}
-function generateElementsFallback(passage){
-  // Use the keyElements text itself as the "why this matters" — it's at least relevant.
-  // The hand-authored field overrides this entirely.
-  const keys = passage.keyElements || {};
-  const out = {};
-  if(keys.what)   out.what   = 'States the central claim or topic — without this, the summary has no subject.';
-  if(keys.why)    out.why    = 'Supplies the reason or evidence that makes the claim credible.';
-  if(keys.how)    out.how    = 'Describes the mechanism or process — how the claim plays out in practice.';
-  if(keys.result) out.result = 'Captures the consequence or implication — what follows from the claim.';
-  return out;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   v19.10.3: VOCABULARY COACH — context-aware academic synonyms
-   from the server's recommended_swaps (vocabulary_swap_suggestions).
-   Each row shows the original phrase, the surrounding context, the
-   AI's rationale, and clickable synonyms that apply on click.
-   ═══════════════════════════════════════════════════════════════ */
-function renderVocabCoach(data){
-  const card = document.getElementById('vocabCoachCard');
-  const body = document.getElementById('vocabCoachBody');
-  if(!card || !body) return;
-
-  const suggestions = (data && Array.isArray(data.vocabulary_swap_suggestions))
-    ? data.vocabulary_swap_suggestions : [];
-
-  if(!suggestions.length){
-    // Don't show the card at all if there's nothing meaningful — avoids an
-    // empty-state that adds visual noise without value.
-    card.style.display = 'none';
-    body.innerHTML = '';
-    return;
-  }
-
-  body.innerHTML = suggestions.map(s => {
-    const word = s.word || '';
-    const context = s.context || '';
-    const syns = Array.isArray(s.synonyms) ? s.synonyms.filter(Boolean) : [];
-    const rationale = s.rationale || '';
-    if(!word || !syns.length) return '';
-    // Highlight the original word inside its context
-    let highlightedContext = context;
-    if(context && word){
-      const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-      highlightedContext = escapeHtml(context).replace(re, m => '<b>' + m + '</b>');
-    }
-    return `
-      <div class="vocab-row">
-        <div class="vocab-original">
-          <div class="vocab-word">${escapeHtml(word)}</div>
-          ${context ? '<div class="vocab-context">in: "' + highlightedContext + '"</div>' : ''}
-        </div>
-        <div class="vocab-arrow">→</div>
-        <div class="vocab-syns">
-          ${syns.map(syn => `<span class="vocab-chip" onclick="applyVocabSwap('${escapeHtml(word).replace(/'/g, "\\'")}','${escapeHtml(syn).replace(/'/g, "\\'")}')">${escapeHtml(syn)}</span>`).join('')}
-        </div>
-        ${rationale ? '<div class="vocab-rationale"><b>Why:</b> ' + escapeHtml(rationale) + '</div>' : ''}
-      </div>`;
-  }).join('');
-  card.style.display = 'block';
-}
-
-// Apply a synonym swap into the user's textarea. Preserves capitalisation
-// of the first letter and replaces only the first whole-word occurrence —
-// so re-attempting won't run the swap on every instance accidentally.
-function applyVocabSwap(original, replacement){
-  const ta = document.getElementById('summaryInput');
-  if(!ta){ toast('Summary not available.'); return; }
-  const re = new RegExp('\\b' + original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-  const match = ta.value.match(re);
-  if(!match){ toast('"' + original + '" is no longer in your summary.'); return; }
-  let repl = replacement;
-  if(match[0][0] === match[0][0].toUpperCase()){
-    repl = replacement.charAt(0).toUpperCase() + replacement.slice(1);
-  }
-  ta.value = ta.value.replace(re, repl);
-  // Persist the edit
-  const summaries = LocalStore.get(STORAGE_KEYS.SUMMARIES) || {};
-  summaries[currentId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
-  LocalStore.set(STORAGE_KEYS.SUMMARIES, summaries);
-  toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SAMPLE / NAVIGATION
-   ═══════════════════════════════════════════════════════════════ */
-function showSample(){
-  const p = passages.find(x => x.id === currentId);
-  if(!p || !p.sampleResponse){ toast('No sample available for this passage.'); return; }
-  document.getElementById('summaryInput').value = p.sampleResponse;
-  showScreen('practiceScreen');
-  switchWriteTab('write');
-  onSummaryInput();
-  toast('Band-9 sample loaded — compare it to your attempt.');
-}
-
-function backToPractice(){
-  showScreen('practiceScreen');
-  switchWriteTab('write');
-  document.getElementById('summaryInput').focus();
-}
-
-/* v19.10.3: Results-screen passage navigation.
-   - "Next passage →" button moves forward and lands on the practice screen
-     (the user is going to attempt the next one).
-   - The nav-strip arrows let users move backward/forward to view a previously-
-     scored attempt's results directly, OR jump to the practice screen for a
-     fresh passage. Behavior: if the target passage has a stored result, show
-     it; otherwise drop into practice for that passage. */
-function navResultsPassage(delta){
-  const target = currentId + delta;
-  if(target < 1 || target > passages.length) return;
-  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
-  const p = passages.find(x => x.id === target) || passages[target-1];
-  if(!p) return;
-  if(scores[target] && typeof scores[target].overall_score === 'number'){
-    // Show the stored result without re-scoring
-    currentId = target;
-    updateResultsNav();
-    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
-  } else {
-    // No prior attempt — go to practice for this passage
-    loadPassage(target);
-    showScreen('practiceScreen');
-  }
-}
-function goToNextPassage(){
-  if(currentId >= passages.length){ toast('You\'re on the last passage.'); return; }
-  loadPassage(currentId + 1);
-  showScreen('practiceScreen');
-  document.getElementById('summaryInput').focus();
-}
-function updateResultsNav(){
-  const cur = document.getElementById('resNavCurrent');
-  const tot = document.getElementById('resNavTotal');
-  const prev = document.getElementById('resNavPrev');
-  const next = document.getElementById('resNavNext');
-  const nextBtn = document.getElementById('nextPassageBtn');
-  if(cur) cur.textContent = String(currentId).padStart(2,'0');
-  if(tot) tot.textContent = passages.length;
-  if(prev) prev.toggleAttribute('disabled', currentId === 1);
-  if(next) next.toggleAttribute('disabled', currentId === passages.length);
-  if(nextBtn) nextBtn.style.display = (currentId === passages.length) ? 'none' : 'inline-flex';
-  const select = document.getElementById('resPassageSelect');
-  if(select) select.value = currentId;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SERVER SYNC
-   ═══════════════════════════════════════════════════════════════ */
-async function pullFromServer(){
-  if(!currentUserId) return;
-  try {
-    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId), {
-      headers: { 'x-session-token': getSessionToken() }
-    });
-    if(r.status === 401 || r.status === 403){ handleAuthExpired(); return; }
-    const d = await r.json();
-    if(d.success && d.data){
-      if(d.data.attempted) LocalStore.set(STORAGE_KEYS.ATTEMPTED, d.data.attempted);
-      if(d.data.summaries) LocalStore.set(STORAGE_KEYS.SUMMARIES, d.data.summaries);
-      if(d.data.scores)    LocalStore.set(STORAGE_KEYS.SCORES, d.data.scores);
-      if(d.data.history)   LocalStore.set(STORAGE_KEYS.HISTORY, d.data.history);
-      loadStoredData();
-    }
-  } catch(e){ /* offline — local data still works */ }
-}
-
-// v19.15: pushToServer returns a result object {ok, status, error} so the
-// caller can react to failures (instead of silently swallowing them, which
-// was the v19.10 behaviour and the cause of data-loss-between-devices).
-//
-// The "sync_dirty" flag in localStorage records that there's unsynced state.
-// It's set BEFORE the push starts (so a tab-close mid-flight doesn't clear it)
-// and only cleared on a confirmed-successful response. On page load, we look
-// at this flag and retry the push.
-async function pushToServer(){
-  if(!currentUserId) return { ok: false, status: 'no_user' };
-  // Mark dirty before attempting the push. If the push succeeds, we clear it;
-  // if it fails or the tab closes mid-request, we keep it so the next load
-  // knows to retry.
-  LocalStore.set('pte_sync_dirty', { userId: currentUserId, at: Date.now() });
-  try {
-    const payload = {
-      attempted: LocalStore.get(STORAGE_KEYS.ATTEMPTED) || [],
-      summaries: LocalStore.get(STORAGE_KEYS.SUMMARIES) || {},
-      scores: LocalStore.get(STORAGE_KEYS.SCORES) || {},
-      history: LocalStore.get(STORAGE_KEYS.HISTORY) || {}
-    };
-    const r = await fetch(API_URL+'/api/sync/'+encodeURIComponent(currentUserId),{
-      method:'POST',headers:{'Content-Type':'application/json','x-session-token':getSessionToken()},body:JSON.stringify(payload)
-    });
-    if(r.status === 401 || r.status === 403){
-      // v19.18.1: auth failure on push. This is the "saved locally but not on
-      // server" symptom — almost always an OLD SESSION with no token (logged in
-      // before token-auth was deployed) or an expired token. Keep the dirty
-      // flag set (so nothing is lost) AND prompt re-login: once they sign in
-      // again they get a fresh token, and retryUnsyncedFromPriorSession pushes
-      // everything that was stranded.
-      if(typeof handleAuthExpired === 'function' && !isImpersonating){ handleAuthExpired(); }
-      return { ok: false, status: 'auth_error', error: 'HTTP ' + r.status };
-    }
-    if(!r.ok){
-      return { ok: false, status: 'server_error', error: 'HTTP ' + r.status };
-    }
-    const d = await r.json();
-    // The server returns either {success:true, stats, passageCount, attemptCount}
-    // or {error: '...'}. Accept any non-error response as success.
-    if(d && d.error){
-      return { ok: false, status: 'server_error', error: d.error };
-    }
-    // Successful — clear the dirty flag and record when we last synced.
-    LocalStore.remove('pte_sync_dirty');
-    LocalStore.set('pte_last_synced_at', Date.now());
-    return { ok: true, status: 'saved', stats: d.stats };
-  } catch(e){
-    // Network failure — dirty flag stays set, next page load will retry.
-    return { ok: false, status: 'network_error', error: e.message };
-  }
-}
-
-// v19.15: on page load (or login), retry pushing any unsynced state from a
-// previous session that didn't complete. Silent unless something's wrong.
-async function retryUnsyncedFromPriorSession(){
-  if(!currentUserId) return;
-  const dirty = LocalStore.get('pte_sync_dirty');
-  if(!dirty || dirty.userId !== currentUserId) return;
-  // Don't retry if dirty is older than 7 days — at that point the data is
-  // stale enough that we trust the server-side state more.
-  if(Date.now() - (dirty.at || 0) > 7 * 24 * 3600 * 1000){
-    LocalStore.remove('pte_sync_dirty');
-    return;
-  }
-  const result = await pushToServer();
-  if(result.ok && typeof toast === 'function'){
-    // Quiet confirmation — only if the retry actually saved something.
-    // Don't bother the student with a banner if everything was already in sync.
-  }
-}
-
-async function checkAIStatus(){
-  try {
-    const r = await fetch(API_URL+'/api/health');
-    const d = await r.json();
-    const live = !!d.anthropicConfigured;
-    ['aiStatusTag','aiStatusTag2'].forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
-    });
-  } catch(e){ /* leave default */ }
-}
-
-function toggleTheme() {
-  const isLight = document.body.classList.toggle('light-mode');
-  localStorage.setItem('pte_theme', isLight ? 'light' : 'dark');
-  updateThemeToggles();
-}
-function updateThemeToggles() {
-  const isLight = document.body.classList.contains('light-mode');
-  document.querySelectorAll('.theme-toggle').forEach(btn => {
-    btn.innerHTML = isLight ? '🌙' : '☀️';
-    btn.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
-  });
-}
-document.addEventListener('DOMContentLoaded', updateThemeToggles);
-
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3200);
-}
-function showLoading(on){
-  document.getElementById('loadingVeil').classList.toggle('hidden', !on);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   KEYBOARD + INIT
-   ═══════════════════════════════════════════════════════════════ */
-document.addEventListener('keydown', function(e){
-  if((e.metaKey || e.ctrlKey) && e.key === 'Enter'){
-    if(document.getElementById('practiceScreen').classList.contains('active') && writeTab === 'write'){
-      e.preventDefault();
-      scoreSummary();
-    }
-  }
-  // F9 (v19.17): results-screen keyboard navigation.
-  // Don't hijack keys while the user is typing in a field.
-  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-  const typing = tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable);
-  const onResults = document.getElementById('resultsScreen') && document.getElementById('resultsScreen').classList.contains('active');
-  if(onResults && !typing){
-    if(e.key === 'Escape'){ e.preventDefault(); if(typeof backToPractice === 'function') backToPractice(); }
-    else if(e.key === 'ArrowLeft'){ if(typeof navResultsPassage === 'function' && currentId > 1){ e.preventDefault(); navResultsPassage(-1); } }
-    else if(e.key === 'ArrowRight'){ if(typeof navResultsPassage === 'function' && currentId < passages.length){ e.preventDefault(); navResultsPassage(1); } }
-  }
-});
-
-['loginPw','loginUser'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
-});
-['regSecretA'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => { if(e.key === 'Enter') doRegister(); });
-});
-
-/* ═══════════════════════════════════════════════════════════════
-   SESSION RESTORE — on page load, if a username was saved from a
-   previous login, re-enter the app instead of showing the login
-   screen. The server is asked to confirm the account still exists
-   and isn't blocked.
-   - valid account      -> enter the app directly
-   - blocked / deleted  -> clear the session, show login
-   - server unreachable -> trust the saved session and enter anyway
-     (the app works offline from localStorage; locking a user out on
-     a dropped connection would be worse than letting them continue)
-   ═══════════════════════════════════════════════════════════════ */
-(async function init(){
-  // v19.11: impersonation entry. If the URL has ?impersonate=<token>, redeem
-  // it server-side and enter the portal as that user with a persistent banner.
-  // The token is short-lived (5 min) and signed with ADMIN_KEY — a student
-  // cannot forge one or replay one for a different username.
-  const params = new URLSearchParams(window.location.search);
-  const impToken = params.get('impersonate');
-  if (impToken) {
-    showLoading(true);
-    try {
-      const r = await fetch(API_URL + '/api/impersonate/redeem?token=' + encodeURIComponent(impToken),
-                            { cache: 'no-store' });
-      const d = await r.json();
-      if (r.ok && d.success && d.username) {
-        // Clean the token out of the URL so it isn't bookmarked or refresh-replayed.
-        try { history.replaceState({}, '', window.location.pathname); } catch(e){}
-        // C3: the server's sync endpoints accept the impersonation token too, so
-        // hold it as the session token while acting as this student. (It expires
-        // in 5 min, which is fine for an admin spot-check.)
-        setSessionToken(impToken);
-        await enterApp(d.username, { impersonating: true });
-        showLoading(false);
-        return;
-      } else {
-        showLoading(false);
-        loginErr(d.error || 'Impersonation token is invalid or has expired.');
-        showLogin();
-        return;
-      }
-    } catch (e) {
-      showLoading(false);
-      loginErr('Could not verify impersonation token: ' + e.message);
-      showLogin();
-      return;
-    }
-  }
-
-  const last = LocalStore.getUserId();
-  if(!last){
-    // No saved session — normal login screen.
-    showLogin();
-    return;
-  }
-  // Pre-fill the username in case we fall through to the login screen.
-  document.getElementById('loginUser').value = last;
-
-  // Show the loading veil while we check — avoids a flash of the login screen.
-  showLoading(true);
-  let verdict = 'enter';   // enter | login
-  try {
-    const r = await fetch(API_URL + '/api/auth/check/' + encodeURIComponent(last),
-      { cache: 'no-store' });
-    if(r.ok){
-      const d = await r.json();
-      if(d && d.exists === false){
-        verdict = 'login';                       // account no longer exists
-      } else if(d && d.blocked === true){
-        verdict = 'login';                       // account blocked
-        setTimeout(() => loginErr('This account has been blocked. Contact your administrator.'), 50);
-      }
-      // d.valid true (or any ambiguous response) -> enter
-    }
-    // Non-OK HTTP -> treat as unreachable, fall through to "enter"
-  } catch(e){
-    // Network error — trust the saved session, enter offline.
-    verdict = 'enter';
-  }
-
-  if(verdict === 'login'){
-    showLoading(false);
-    LocalStore.setUserId('');                    // clear the dead session
-    showScreen('loginScreen');
-    showLogin();
-  } else {
-    // Keep the veil on through enterApp's loads, then drop it.
-    await enterApp(last);
-    showLoading(false);
-  }
-})();
-</script>
 </body>
 </html>
