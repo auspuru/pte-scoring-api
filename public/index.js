@@ -242,6 +242,7 @@ async function enterApp(uid) {
 
   await loadPassages();
   loadStoredData();
+  if (typeof loadPassage === 'function') loadPassage(1);
   
   if (!currentId || !getCurrent()) {
     currentId = essays[0]?.id || null;
@@ -8192,6 +8193,25 @@ function togglePracticeErrorTip(ev, el) {
 
 function getPteStorageKey(suffix) {
   return `pte_${currentUserId}_${suffix}`;
+}
+
+async function loadPassages(){
+  try {
+    const r = await fetch(API_URL+'/api/passages',{cache:'no-store'});
+    const d = await r.json();
+    if(Array.isArray(d) && d.length){ passages = d; }
+    else if(d.passages && Array.isArray(d.passages)){ passages = d.passages; }
+  } catch(e){ /* fall through */ }
+  if(!passages.length){
+    passages = [{ id:1, title:'Sample', category:'General', text:'Passage unavailable — check your connection.', keyElements:{what:'',why:'',how:'',result:''} }];
+  }
+  const navTotalEl = document.getElementById('navTotal');
+  if (navTotalEl) navTotalEl.textContent = passages.length;
+  const practiceFootLabelEl = document.getElementById('practiceFootLabel');
+  if (practiceFootLabelEl) {
+    practiceFootLabelEl.textContent = String(passages.length).padStart(2,'0') + ' · Practice Session';
+  }
+  populatePassageDropdowns();
 }
 
 function showSwtScreen(id) {
