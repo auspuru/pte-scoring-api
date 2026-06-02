@@ -308,6 +308,33 @@ body.light-mode .btn-kbd {
 .passage-nav .nav-arrow:hover { border-color: var(--ink-mute); color: var(--ink); background: var(--line-soft); }
 .passage-nav .nav-arrow[disabled] { opacity: 0.25; cursor: not-allowed; }
 .passage-nav .nav-label { font-weight: 700; color: var(--ink); }
+.passage-select-dropdown {
+  background: var(--card-raised);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  max-width: 280px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  margin-left: 8px;
+}
+.passage-select-dropdown:hover {
+  border-color: var(--indigo);
+  background: var(--line-soft);
+}
+.passage-select-dropdown:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+.passage-select-dropdown option {
+  background: var(--card);
+  color: var(--ink);
+}
 .passage-nav-spacer { flex: 1; }
 .timer-toggle {
   display: flex; align-items: center; gap: 8px; font-size: 12.5px;
@@ -1119,6 +1146,7 @@ body.light-mode .loading-veil {
       <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
       <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
       <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
+      <select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select>
       <div class="passage-nav-spacer"></div>
       <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
         <span id="timerState">Timed</span>
@@ -1214,6 +1242,7 @@ body.light-mode .loading-veil {
       <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
       <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
       <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
+      <select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select>
       <div class="passage-nav-spacer"></div>
       <span class="eyebrow" id="resNavHint">Use arrows or buttons below</span>
     </div>
@@ -1509,6 +1538,47 @@ async function loadPassages(){
   document.getElementById('navTotal').textContent = passages.length;
   document.getElementById('practiceFootLabel').textContent =
     String(passages.length).padStart(2,'0') + ' · Practice Session';
+  populatePassageDropdowns();
+}
+
+function populatePassageDropdowns() {
+  const selects = [document.getElementById('passageSelect'), document.getElementById('resPassageSelect')];
+  selects.forEach(sel => {
+    if (!sel) return;
+    sel.innerHTML = '';
+    passages.forEach((p, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx + 1;
+      opt.textContent = `Passage ${String(idx + 1).padStart(2, '0')}: ${p.title || 'Untitled'}`;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+function jumpToPassage(target) {
+  if (target < 1 || target > passages.length) return;
+  loadPassage(target);
+  const select1 = document.getElementById('passageSelect');
+  if (select1) select1.value = target;
+}
+
+function jumpToResultsPassage(target) {
+  if (target < 1 || target > passages.length) return;
+  const select2 = document.getElementById('resPassageSelect');
+  if (select2) select2.value = target;
+  
+  const scores = LocalStore.get(STORAGE_KEYS.SCORES) || {};
+  const p = passages.find(x => x.id === target) || passages[target-1];
+  if (!p) return;
+  
+  if (scores[target] && typeof scores[target].overall_score === 'number') {
+    currentId = target;
+    updateResultsNav();
+    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
+  } else {
+    loadPassage(target);
+    showScreen('practiceScreen');
+  }
 }
 
 function loadStoredData(){
@@ -1552,6 +1622,8 @@ function loadPassage(id){
   switchWriteTab('write');
   onSummaryInput();
   resetTimer();
+  const select1 = document.getElementById('passageSelect');
+  if (select1) select1.value = id;
 }
 
 function prevPassage(){ if(currentId > 1) loadPassage(currentId - 1); }
@@ -2734,6 +2806,8 @@ function updateResultsNav(){
   if(prev) prev.toggleAttribute('disabled', currentId === 1);
   if(next) next.toggleAttribute('disabled', currentId === passages.length);
   if(nextBtn) nextBtn.style.display = (currentId === passages.length) ? 'none' : 'inline-flex';
+  const select = document.getElementById('resPassageSelect');
+  if(select) select.value = currentId;
 }
 
 /* ═══════════════════════════════════════════════════════════════
