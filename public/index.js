@@ -286,8 +286,12 @@ async function loadUserData(uid) {
         quotaUsed: data.quotaUsed || { essay: 0, idea: 0 },
         quotaDate: data.quotaDate || todayStamp(),
         practiceHistory: data.practiceHistory || [],
-        vocabProgress: data.vocabProgress || {}
+        vocabProgress: data.vocabProgress || {},
+        templates: data.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
       };
+      if (userProfile.templates && userProfile.templates.band9TemplateVersion) {
+        userProfile.band9TemplateVersion = userProfile.templates.band9TemplateVersion;
+      }
       
       // Seed first time if essays are empty
       if (essays.length === 0) {
@@ -357,6 +361,9 @@ async function flushSync() {
 
 async function flushSyncDirect() {
   try {
+    if (userProfile && userProfile.templates) {
+      userProfile.templates.band9TemplateVersion = userProfile.band9TemplateVersion || 0;
+    }
     const payload = {
       // SWT progress fields
       attempted: Array.from(attempted),
@@ -5490,10 +5497,10 @@ function getVocabProgress() {
     try { return JSON.parse(safeLSGet('ipt_vocab') || '{}'); } catch (e) { return {}; }
   }
   if (!userProfile) return {};
-  if (!userProfile.vocab) userProfile.vocab = { read: {}, attempts: {} };
-  if (!userProfile.vocab.read) userProfile.vocab.read = {};
-  if (!userProfile.vocab.attempts) userProfile.vocab.attempts = {};
-  return userProfile.vocab;
+  if (!userProfile.vocabProgress) userProfile.vocabProgress = { read: {}, attempts: {} };
+  if (!userProfile.vocabProgress.read) userProfile.vocabProgress.read = {};
+  if (!userProfile.vocabProgress.attempts) userProfile.vocabProgress.attempts = {};
+  return userProfile.vocabProgress;
 }
 async function saveVocabProgress() {
   if (offlineMode) {
