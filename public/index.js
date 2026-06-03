@@ -119,7 +119,7 @@ function showLogin() {
 }
 function hideLogin() {
   document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appShell').style.display = 'flex';
+  document.getElementById('appShell').style.display = 'grid';
   document.body.style.overflow = '';
 }
 
