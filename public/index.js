@@ -2701,6 +2701,18 @@ function maybeOfferDraftRecovery() {
 
 function getCurrent() { return essays.find(e => e.id === currentId); }
 
+async function checkAIStatus(){
+  try {
+    const r = await fetch(API_URL+'/api/health');
+    const d = await r.json();
+    const live = !!d.anthropicConfigured;
+    ['aiStatusTag','aiStatusTag2'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
+    });
+  } catch(e){ /* leave default */ }
+}
+
 function essayStatus(e) {
   const body = (e.intro || '') + (e.bp1 || '') + (e.bp2 || '') + (e.concl || '');
   if (!body.trim()) return 'empty';

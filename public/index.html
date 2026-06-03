@@ -726,6 +726,10 @@
         <textarea class="field-textarea" id="tpl_concl" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
       </div>
     </div>
+    <details style="margin-bottom:10px;">
+      <summary>▸ Advanced: extra AI instructions</summary>
+      <textarea class="field-textarea" id="tpl_notes" style="min-height:60px; font-size:12px; margin-top:6px;" placeholder="Style notes, banned words, etc."></textarea>
+    </details>
     <div class="modal-actions">
       <button class="tb-text-btn" onclick="copyPresetToCustom()" id="tplCopyToCustom" style="display:none;">Copy into My Custom →</button>
       <button class="tb-text-btn" onclick="closeTemplate()">Close</button>
@@ -776,6 +780,12 @@
   <div class="modal" style="max-width: 640px;">
     <h2>✍️ Freestyle Essay</h2>
     <p>Paste any question prompt and generate a complete essay instantly. This is a temporary draft.</p>
+    <div class="field" style="margin-bottom:10px;">
+      <div class="field-row"><span class="field-label">Pick a saved topic</span><span class="field-counter">fills the question below</span></div>
+      <select class="field-input" id="fsLibrarySelect" onchange="fsPickFromLibrary(this.value)">
+        <option value="">— Choose from your library —</option>
+      </select>
+    </div>
     <div class="field">
       <textarea class="field-textarea" id="fsQuestion" placeholder="Type prompt here..." style="min-height:90px;"></textarea>
     </div>
@@ -798,7 +808,7 @@
     <div id="fsResultArea" style="display:none; max-height:240px; overflow-y:auto; margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--bg);">
       <div id="fsResult"></div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions" id="fsActions">
       <button class="tb-text-btn" onclick="closeFreestyle()">Close</button>
       <button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWrite()">Write essay</button>
     </div>
