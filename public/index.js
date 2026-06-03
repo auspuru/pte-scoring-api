@@ -6784,54 +6784,8 @@ function renderDashboardRecentSwt() {
       <div class="dash-list-item" onclick="switchSection('swt'); loadPassage(${h.passageId});">
         <div class="item-main">
           <div class="item-title">${escapeHtml(title)}</div>
-          <div class="item-date">Completed on ${date}</div>
-        </div>
-        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
-          ${h.overall_score}/90
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderDashboardRecentEssays() {
-  const container = document.getElementById('dashRecentEssays');
-  if (!container) return;
-
-  // Get active essays (draft or empty) first, then written
-  const activeEssays = [...essays]
-    .sort((a, b) => {
-      const scoreA = essayStatus(a) === 'written' ? 1 : 0;
-      const scoreB = essayStatus(b) === 'written' ? 1 : 0;
-      return scoreA - scoreB;
-    })
-    .slice(0, 3);
-
-  if (activeEssays.length === 0) {
-    container.innerHTML = '<div class="list-empty-state">No active essays in progress.</div>';
-    return;
-  }
-
-  container.innerHTML = activeEssays.map(e => {
-    const estatus = essayStatus(e);
-    let badgeClass = 'status-empty';
-    if (estatus === 'written') badgeClass = 'status-written';
-    else if (estatus === 'draft') badgeClass = 'status-draft';
-    
-    return `
-      <div class="dash-list-item" onclick="switchSection('library'); selectEssay('${e.id}')">
-        <div class="item-main">
-          <div class="item-title">${escapeHtml(e.title || 'Untitled Essay')}</div>
-          <div class="item-date">${escapeHtml(e.question || '').slice(0, 75)}${e.question && e.question.length > 75 ? '...' : ''}</div>
-        </div>
-        <div class="item-status ${badgeClass}">
-          ${estatus.toUpperCase()}
-        </div>
-      </div>
-    `;
-  }).join('');
-}ml(h.title || 'Untitled Practice')}</div>
-          <div class="item-date">Completed on ${date}</div>
+          <div clas  }).join('');
+}         <div class="item-date">Completed on ${date}</div>
         </div>
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
           ${h.score}/26
