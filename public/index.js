@@ -65,6 +65,41 @@ const RAILWAY_URL = 'https://swt.up.railway.app';
 const isLocalFile = location.protocol === 'file:';
 const API_URL = isLocalFile ? RAILWAY_URL : '';
 
+const BAND9_TEMPLATE = {
+  intro: `The topic of [paraphrase topic] has become increasingly important in recent years, prompting varied opinions. Its significance lies in its influence on [specific group/area] across multiple dimensions. This essay will examine the [causes and effects / problems and solutions / advantages and disadvantages / positive and negative impacts] of [topic name] incorporating different perspectives and practical examples. [In my view, [insert your own opinion here — e.g., television offers both relaxation and entertainment, but should also be used in moderation].] (Include this line only when the question asks for your opinion.)`,
+  bp1: `To begin with, one major [merit / cause / problem] is [point 1], as it leads to [explanation]. For example, [give a specific, topic-relevant example — name a real place, study, statistic, or scenario; NOT generic phrasing like "in many cases"] shows its [benefits / effects] in practice. Additionally, another significant [point in favour / reason / challenge] is [point 2], which [promotes / impacts] [explanation]. This can be illustrated by [give a SECOND specific, topic-relevant example], highlighting how [topic] contributes [positively / negatively] to [society / field].`,
+  bp2: `On the other hand, one notable [demerit / negative effect / solution] is [point 1], which may [cause / prevent] [explanation]. For instance, [give a specific, topic-relevant example — a real place, study, statistic, or scenario] illustrates this [drawback / consequence] clearly. Furthermore, another [limitation / adverse consequence / measure to be taken] is [point 2], which results in [explanation]. A clear example of this is [give a SECOND specific, topic-relevant example], demonstrating the impact on [affected group / outcome].`,
+  concl: `To conclude, [reword topic] presents [compelling advantages and disadvantages / notable causes and consequences / key problems and remedies] that significantly influence outcomes. Hence, prioritising [name the specific positive aspect of THIS topic — e.g., "well-planned public transport investment" or "supporting student mental health"] while addressing [name the specific drawback to mitigate for THIS topic — e.g., "the funding burden on local councils" or "the disruption to students from underprivileged backgrounds"] is essential for [topic-specific desired outcome — what good thing this leads to]. [Therefore, this reaffirms my earlier view that [echo the specific opinion from the introduction in fresh words — do NOT copy the intro verbatim, restate the same stance with a forward-looking framing].] (Include this Therefore sentence whenever the introduction stated an opinion — it gives the conclusion a stronger, more personal finish.)`,
+  notes: `Use sophisticated Band 9 vocabulary (yet still student-friendly — words students recognize from class). Replace [square brackets] with topic-specific content. Choose ONE option when brackets show slashed alternatives based on question type. The "In my view..." line is optional — omit if the question doesn't ask for opinion. CRITICAL: Each body paragraph must contain TWO concrete topic-specific examples (one per supporting idea). Generic phrases like "in many places" or "as research shows" are NOT acceptable examples — use named places, real studies, named populations, or specific scenarios. CRITICAL: The conclusion's middle sentence ("Hence, prioritising...") must be REWRITTEN with topic-specific nouns — never copy it verbatim. If the introduction states an opinion, the conclusion must end with a "Therefore..." sentence that echoes that opinion in fresh wording.`
+};
+const BAND9_TEMPLATE_VERSION = 2;
+
+const BAND9_TEMPLATE_LEGACY_V1 = {
+  intro: `The topic of [paraphrase topic] has become increasingly important in recent years, prompting varied opinions. Its significance lies in its influence on [specific group/area] across multiple dimensions. This essay will examine the [causes and effects / problems and solutions / advantages and disadvantages / positive and negative impacts] of [topic name] incorporating different perspectives and practical examples. [In my view, [insert your own opinion here — e.g., television offers both relaxation and entertainment, but should also be used in moderation].] (Include this line only when the question asks for your opinion.)`,
+  bp1: `To begin with, one major [merit / cause / problem] is [point 1], as it leads to [explanation]. For example, [example] shows its [benefits / effects] in practice. Additionally, another significant [point in favour / reason / challenge] is [point 2], which [promotes / impacts] [explanation]. This can be illustrated by [example], highlighting how [topic] contributes [positively / negatively] to [society / field].`,
+  bp2: `On the other hand, one notable [demerit / negative effect / solution] is [point 1], which may [cause / prevent] [explanation], as seen in [example]. Furthermore, another [limitation / adverse consequence / measure to be taken] is [point 2], which results in [explanation].`,
+  concl: `To conclude, [reword topic] presents [compelling advantages and disadvantages / notable causes and consequences / key problems and remedies] that significantly influence outcomes. Hence, prioritising the maximisation of its (advantages) and the alleviation of its (drawbacks) is essential for fostering long-term progress and collective well-being. [Therefore, [insert your own solution-oriented closing sentence — e.g., with the right strategies and proactive measures, these challenges can be transformed into opportunities for practical solutions and long-term improvement].] (This Therefore line is OPTIONAL — if you've already met the required word count, you can completely skip this sentence.)`
+};
+
+const BAND6_TEMPLATE = {
+  intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Its significance lies in its impact on individuals and society in various ways. This essay will discuss the advantages and disadvantages of [topic], supported by relevant examples.`,
+  bp1: `To begin with, one important benefit of [topic] is that [positive idea 1]. For example, [insert specific example related to positive idea 1]. Additionally, another key advantage is that [positive idea 2], leading to long-term growth and an improved quality of life. This can be clearly seen in modern society, where such positive impacts are becoming more common.`,
+  bp2: `On the other hand, a major concern regarding [topic] is that [negative idea 1], as seen in various sectors today. Furthermore, this issue can result in [negative idea 2], including financial burden or reduced well-being for certain groups. However, with effective planning and appropriate measures, these challenges can be controlled and reduced.`,
+  concl: `In conclusion, [topic rephrased] has both benefits and drawbacks that strongly influence outcomes. Therefore, it is essential to maximise the positive aspects while minimising the negative ones to achieve long-term progress.`,
+  notes: `Use simple, clear Band 6 vocabulary. Keep sentences short and direct. Use everyday words students know. Avoid academic phrases like "incorporating different perspectives" or "fostering long-term progress" — use plain English instead. Do not include any "[EXTRA IDEA]" line in BP1. Do not include any "Therefore," solution line at the end of BP2. Keep paragraphs around 80-100 words each.`
+};
+
+const DEFAULT_TEMPLATE = BAND9_TEMPLATE;
+
+function getDefaultTemplates() {
+  return {
+    band6: BAND6_TEMPLATE,
+    band9: BAND9_TEMPLATE,
+    custom: BAND9_TEMPLATE,
+    default: 'band9'
+  };
+}
+
 const LocalStore = {
   get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
@@ -2408,23 +2443,7 @@ const VOCAB_DATA = {
 };
 
 
-const BAND9_TEMPLATE = {
-  intro: `The topic of [paraphrase topic] has become increasingly important in recent years, prompting varied opinions. Its significance lies in its influence on [specific group/area] across multiple dimensions. This essay will examine the [causes and effects / problems and solutions / advantages and disadvantages / positive and negative impacts] of [topic name] incorporating different perspectives and practical examples. [In my view, [insert your own opinion here — e.g., television offers both relaxation and entertainment, but should also be used in moderation].] (Include this line only when the question asks for your opinion.)`,
-  bp1: `To begin with, one major [merit / cause / problem] is [point 1], as it leads to [explanation]. For example, [give a specific, topic-relevant example — name a real place, study, statistic, or scenario; NOT generic phrasing like "in many cases"] shows its [benefits / effects] in practice. Additionally, another significant [point in favour / reason / challenge] is [point 2], which [promotes / impacts] [explanation]. This can be illustrated by [give a SECOND specific, topic-relevant example], highlighting how [topic] contributes [positively / negatively] to [society / field].`,
-  bp2: `On the other hand, one notable [demerit / negative effect / solution] is [point 1], which may [cause / prevent] [explanation]. For instance, [give a specific, topic-relevant example — a real place, study, statistic, or scenario] illustrates this [drawback / consequence] clearly. Furthermore, another [limitation / adverse consequence / measure to be taken] is [point 2], which results in [explanation]. A clear example of this is [give a SECOND specific, topic-relevant example], demonstrating the impact on [affected group / outcome].`,
-  concl: `To conclude, [reword topic] presents [compelling advantages and disadvantages / notable causes and consequences / key problems and remedies] that significantly influence outcomes. Hence, prioritising [name the specific positive aspect of THIS topic — e.g., "well-planned public transport investment" or "supporting student mental health"] while addressing [name the specific drawback to mitigate for THIS topic — e.g., "the funding burden on local councils" or "the disruption to students from underprivileged backgrounds"] is essential for [topic-specific desired outcome — what good thing this leads to]. [Therefore, this reaffirms my earlier view that [echo the specific opinion from the introduction in fresh words — do NOT copy the intro verbatim, restate the same stance with a forward-looking framing].] (Include this Therefore sentence whenever the introduction stated an opinion — it gives the conclusion a stronger, more personal finish.)`,
-  notes: `Use sophisticated Band 9 vocabulary (yet still student-friendly — words students recognize from class). Replace [square brackets] with topic-specific content. Choose ONE option when brackets show slashed alternatives based on question type. The "In my view..." line is optional — omit if the question doesn't ask for opinion. CRITICAL: Each body paragraph must contain TWO concrete topic-specific examples (one per supporting idea). Generic phrases like "in many places" or "as research shows" are NOT acceptable examples — use named places, real studies, named populations, or specific scenarios. CRITICAL: The conclusion's middle sentence ("Hence, prioritising...") must be REWRITTEN with topic-specific nouns — never copy it verbatim. If the introduction states an opinion, the conclusion must end with a "Therefore..." sentence that echoes that opinion in fresh wording.`
-};
-const BAND9_TEMPLATE_VERSION = 2;  // bump this whenever BAND9_TEMPLATE changes meaningfully
 
-// Previous versions of BAND9_TEMPLATE — used to detect if a user's saved templates are
-// byte-identical to an older default (safe to auto-migrate) vs customised (must keep theirs).
-const BAND9_TEMPLATE_LEGACY_V1 = {
-  intro: `The topic of [paraphrase topic] has become increasingly important in recent years, prompting varied opinions. Its significance lies in its influence on [specific group/area] across multiple dimensions. This essay will examine the [causes and effects / problems and solutions / advantages and disadvantages / positive and negative impacts] of [topic name] incorporating different perspectives and practical examples. [In my view, [insert your own opinion here — e.g., television offers both relaxation and entertainment, but should also be used in moderation].] (Include this line only when the question asks for your opinion.)`,
-  bp1: `To begin with, one major [merit / cause / problem] is [point 1], as it leads to [explanation]. For example, [example] shows its [benefits / effects] in practice. Additionally, another significant [point in favour / reason / challenge] is [point 2], which [promotes / impacts] [explanation]. This can be illustrated by [example], highlighting how [topic] contributes [positively / negatively] to [society / field].`,
-  bp2: `On the other hand, one notable [demerit / negative effect / solution] is [point 1], which may [cause / prevent] [explanation], as seen in [example]. Furthermore, another [limitation / adverse consequence / measure to be taken] is [point 2], which results in [explanation].`,
-  concl: `To conclude, [reword topic] presents [compelling advantages and disadvantages / notable causes and consequences / key problems and remedies] that significantly influence outcomes. Hence, prioritising the maximisation of its (advantages) and the alleviation of its (drawbacks) is essential for fostering long-term progress and collective well-being. [Therefore, [insert your own solution-oriented closing sentence — e.g., with the right strategies and proactive measures, these challenges can be transformed into opportunities for practical solutions and long-term improvement].] (This Therefore line is OPTIONAL — if you've already met the required word count, you can completely skip this sentence.)`
-};
 
 // Check whether a saved template object is byte-identical to a known legacy version (any field).
 function isLegacyBand9(t) {
@@ -2483,26 +2502,7 @@ function isCurrentBand9(t) {
   return ['intro','bp1','bp2','concl'].every(f => (t[f] || '') === (BAND9_TEMPLATE[f] || ''));
 }
 
-const BAND6_TEMPLATE = {
-  intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Its significance lies in its impact on individuals and society in various ways. This essay will discuss the advantages and disadvantages of [topic], supported by relevant examples.`,
-  bp1: `To begin with, one important benefit of [topic] is that [positive idea 1]. For example, [insert specific example related to positive idea 1]. Additionally, another key advantage is that [positive idea 2], leading to long-term growth and an improved quality of life. This can be clearly seen in modern society, where such positive impacts are becoming more common.`,
-  bp2: `On the other hand, a major concern regarding [topic] is that [negative idea 1], as seen in various sectors today. Furthermore, this issue can result in [negative idea 2], including financial burden or reduced well-being for certain groups. However, with effective planning and appropriate measures, these challenges can be controlled and reduced.`,
-  concl: `In conclusion, [topic rephrased] has both benefits and drawbacks that strongly influence outcomes. Therefore, it is essential to maximise the positive aspects while minimising the negative ones to achieve long-term progress.`,
-  notes: `Use simple, clear Band 6 vocabulary. Keep sentences short and direct. Use everyday words students know. Avoid academic phrases like "incorporating different perspectives" or "fostering long-term progress" — use plain English instead. Do not include any "[EXTRA IDEA]" line in BP1. Do not include any "Therefore," solution line at the end of BP2. Keep paragraphs around 80-100 words each.`
-};
 
-// Legacy default for backward compatibility (used to seed Custom slot on first run)
-const DEFAULT_TEMPLATE = BAND9_TEMPLATE;
-
-// ----- Templates wrapper: { band6, band9, custom, default: 'band6'|'band9'|'custom' } -----
-function getDefaultTemplates() {
-  return {
-    band6: BAND6_TEMPLATE,
-    band9: BAND9_TEMPLATE,
-    custom: BAND9_TEMPLATE,  // start custom as a copy of band9
-    default: 'band9'
-  };
-}
 
 // Migrate legacy single-template state to new shape + apply Band 9 version migration
 function getTemplatesBag() {
