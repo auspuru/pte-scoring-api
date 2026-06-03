@@ -2120,6 +2120,20 @@ body.light-mode .loading-veil {
 .btn-ghost { background: transparent; border-color: transparent; color: var(--ink-mute); }
 .btn-ghost:hover { background: var(--line-soft); color: var(--ink); transform: none; }
 
+.ambient-glow-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.15;
+  transition: all 0.5s ease;
+}
+body.light-mode .ambient-glow-blob {
+  opacity: 0.06;
+  filter: blur(100px);
+}
+
 @media print {
   /* Hide all UI navigation, sidebars, editors, toolbars, and controls */
   .sidebar-nav, 
@@ -3701,12 +3715,12 @@ body.dark .practice-grammar-hint {
 /* Override old overlay layout constraints */
 .vocab-screen,
 .practice-screen {
-  position: absolute !important;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 60;
+  z-index: 9000 !important;
   width: 100%;
   height: 100%;
   background: var(--bg) !important;
