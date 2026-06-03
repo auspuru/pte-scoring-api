@@ -6631,45 +6631,40 @@ async function initApp() {
   }
 }
 
-// Nav Section Switching
-function switchSection(sectionId) {
-  // Update sidebar active state
+// Switch between main panes (dashboard / swt / library)
+function switchSection(section) {
+  // Close any full-screen overlays (vocab / practice) so the pane is visible
+  ['vocabScreen', 'practiceScreen'].forEach(id => {
+    const ov = document.getElementById(id);
+    if (ov) ov.classList.remove('show');
+  });
+
+  // Show the target pane, hide the rest
+  const paneMap = { dashboard: 'dashboardPane', swt: 'swtPane', library: 'libraryPane' };
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById(paneMap[section]);
+  if (pane) pane.classList.add('active');
+
+  // Sidebar active state
+  const navMap = { dashboard: 'nav-dashboard', swt: 'nav-swt', library: 'nav-library' };
   document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === `nav-${sectionId}`);
+    item.classList.toggle('active', item.id === navMap[section]);
   });
 
-  // Switch between panes
-  document.querySelectorAll('.pane').forEach(pane => {
-    pane.classList.toggle('active', pane.id === `${sectionId}Pane`);
-  });
-
-  // Update Topbar page title
-  const titleMap = {
-    dashboard: 'Dashboard',
-    swt: 'Summarize Written Text (SWT)',
-    library: 'Essay Library',
-    vocab: 'Vocabulary Hub',
-    practice: 'Practice Center'
-  };
+  // Page title
+  const titles = { dashboard: 'Dashboard', swt: 'Summarize Written Text (SWT)', library: 'Essay Library' };
   const titleEl = document.getElementById('pageTitle');
-  if (titleEl) {
-    titleEl.textContent = titleMap[sectionId] || 'Essay Builder';
-  }
+  if (titleEl) titleEl.textContent = titles[section] || 'Dashboard';
 
-  // Handle overlay screen close triggers
-  if (sectionId === 'dashboard' || sectionId === 'library' || sectionId === 'swt') {
-    document.getElementById('vocabScreen').classList.remove('show');
-    document.getElementById('practiceScreen').classList.remove('show');
-    stopPracticeTimer();
-  }
-  if (sectionId !== 'swt') {
-    if (typeof stopTimer === 'function') stopTimer();
-  }
+  // Essay-only topbar controls appear only on the library/essay section
+  const isLibrary = section === 'library';
+  const tplBtn = document.getElementById('essayTemplateBtn');
+  const expBtn = document.getElementById('exportBtn');
+  if (tplBtn) tplBtn.style.display = isLibrary ? '' : 'none';
+  if (expBtn) expBtn.style.display = isLibrary ? '' : 'none';
 
-  // Trigger metrics update if switching to dashboard
-  if (sectionId === 'dashboard') {
-    updateDashboard();
-  }
+  // Refresh dashboard stats when landing on it
+  if (section === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
 }
 
 // Dashboard statistics renderer
