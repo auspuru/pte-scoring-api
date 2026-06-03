@@ -2701,6 +2701,18 @@ function maybeOfferDraftRecovery() {
 
 function getCurrent() { return essays.find(e => e.id === currentId); }
 
+async function checkAIStatus(){
+  try {
+    const r = await fetch(API_URL+'/api/health');
+    const d = await r.json();
+    const live = !!d.anthropicConfigured;
+    ['aiStatusTag','aiStatusTag2'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
+    });
+  } catch(e){ /* leave default */ }
+}
+
 function essayStatus(e) {
   const body = (e.intro || '') + (e.bp1 || '') + (e.bp2 || '') + (e.concl || '');
   if (!body.trim()) return 'empty';
@@ -6659,9 +6671,9 @@ function updateDashboard() {
   if (!document.getElementById('dashboardPane')) return;
 
   const total = essays.length;
-  const written = essays.filter(e => e.status === 'written').length;
-  const draft = essays.filter(e => e.status === 'draft').length;
-  const empty = essays.filter(e => !e.status || e.status === 'empty').length;
+  const written = essays.filter(e => essayStatus(e) === 'written').length;
+  const draft = essays.filter(e => essayStatus(e) === 'draft').length;
+  const empty = essays.filter(e => essayStatus(e) === 'empty').length;
 
   // Calculate percentage
   const percent = total > 0 ? Math.round((written / total) * 100) : 0;
@@ -6692,7 +6704,7 @@ function updateDashboard() {
   const scoreDescEl = document.getElementById('dashScoreDesc');
   
   if (history.length > 0) {
-    const sum = history.reduce((acc, h) => acc + (h.score || 0), 0);
+    const sum = history.reduce((acc, h) => acc + (h.scores?.total || 0), 0);
     const avg = (sum / history.length).toFixed(1);
     avgScoreEl.textContent = avg;
     
@@ -6709,12 +6721,44 @@ function updateDashboard() {
     scoreDescEl.textContent = 'Submit a practice attempt to calculate your scoring profile.';
   }
 
+  // SWT stats
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  let totalSwtAttempts = 0;
+  let swtScoresSum = 0;
+  let swtScoresCount = 0;
+  
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      totalSwtAttempts += list.length;
+      list.forEach(att => {
+        if (typeof att.overall_score === 'number') {
+          swtScoresSum += att.overall_score;
+          swtScoresCount++;
+        }
+      });
+    }
+  });
+
+  const swtAvg = swtScoresCount > 0 ? Math.round(swtScoresSum / swtScoresCount) : 0;
+  const swtPassagesCount = Object.keys(swtHistory).length;
+  
+  const avgSwtScoreEl = document.getElementById('dashSwtAvgScore');
+  if (avgSwtScoreEl) avgSwtScoreEl.textContent = swtScoresCount > 0 ? swtAvg : '—';
+  
+  const swtAttemptsEl = document.getElementById('dashSwtAttempts');
+  if (swtAttemptsEl) swtAttemptsEl.textContent = totalSwtAttempts;
+
+  const swtPassagesEl = document.getElementById('dashSwtPassages');
+  if (swtPassagesEl) swtPassagesEl.textContent = swtPassagesCount;
+
   // Quota Status
   updateDashboardQuota();
 
   // Render lists
   renderDashboardRecentPractice();
   renderDashboardRecentEssays();
+  renderDashboardRecentSwt();
 }
 
 function updateDashboardQuota() {
@@ -6735,24 +6779,25 @@ function renderDashboardRecentPractice() {
   const container = document.getElementById('dashRecentPractice');
   if (!container) return;
   
-  const history = [...getPracticeHistory()].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 3);
+  const history = [...getPracticeHistory()].sort((a, b) => (b.date || 0) - (a.date || 0)).slice(0, 3);
   if (history.length === 0) {
     container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Practice tab to begin.</div>';
     return;
   }
 
   container.innerHTML = history.map(h => {
-    const date = h.timestamp ? new Date(h.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
-    const scoreColor = h.score >= 22 ? 'var(--accent)' : h.score >= 18 ? '#b45309' : 'var(--ink-soft)';
+    const date = h.date ? new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const score = h.scores?.total || 0;
+    const scoreColor = score >= 22 ? 'var(--accent)' : score >= 18 ? '#b45309' : 'var(--ink-soft)';
     
     return `
       <div class="dash-list-item" onclick="openPractice(); viewPracticeAttempt('${h.id || ''}')">
         <div class="item-main">
-          <div class="item-title">${escapeHtml(h.title || 'Untitled Practice')}</div>
+          <div class="item-title">${escapeHtml(h.questionTitle || 'Untitled Practice')}</div>
           <div class="item-date">Completed on ${date}</div>
         </div>
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
-          ${h.score}/26
+          ${score}/26
         </div>
       </div>
     `;
@@ -6766,8 +6811,10 @@ function renderDashboardRecentEssays() {
   // Get active essays (draft or empty) first, then written
   const activeEssays = [...essays]
     .sort((a, b) => {
-      const scoreA = a.status === 'written' ? 1 : 0;
-      const scoreB = b.status === 'written' ? 1 : 0;
+      const statusA = essayStatus(a);
+      const statusB = essayStatus(b);
+      const scoreA = statusA === 'written' ? 1 : 0;
+      const scoreB = statusB === 'written' ? 1 : 0;
       return scoreA - scoreB;
     })
     .slice(0, 3);
@@ -6778,9 +6825,10 @@ function renderDashboardRecentEssays() {
   }
 
   container.innerHTML = activeEssays.map(e => {
+    const estatus = essayStatus(e);
     let badgeClass = 'status-empty';
-    if (e.status === 'written') badgeClass = 'status-written';
-    else if (e.status === 'draft') badgeClass = 'status-draft';
+    if (estatus === 'written') badgeClass = 'status-written';
+    else if (estatus === 'draft') badgeClass = 'status-draft';
     
     return `
       <div class="dash-list-item" onclick="switchSection('library'); selectEssay('${e.id}')">
@@ -6789,7 +6837,55 @@ function renderDashboardRecentEssays() {
           <div class="item-date">${escapeHtml(e.question || '').slice(0, 75)}${e.question && e.question.length > 75 ? '...' : ''}</div>
         </div>
         <div class="item-status ${badgeClass}">
-          ${(e.status || 'empty').toUpperCase()}
+          ${estatus.toUpperCase()}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardRecentSwt() {
+  const container = document.getElementById('dashRecentSwt');
+  if (!container) return;
+
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  const allAttempts = [];
+
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      list.forEach(att => {
+        allAttempts.push({
+          ...att,
+          passageId: pid
+        });
+      });
+    }
+  });
+
+  // Sort by timestamp descending
+  allAttempts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  const recent = allAttempts.slice(0, 3);
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="list-empty-state">No recent SWT attempts. Go to the SWT tab to begin.</div>';
+    return;
+  }
+
+  container.innerHTML = recent.map(h => {
+    const passage = passages.find(p => String(p.id) === String(h.passageId));
+    const title = passage ? passage.title : `Passage ${h.passageId}`;
+    const date = h.timestamp ? new Date(h.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const scoreColor = h.overall_score >= 79 ? 'var(--accent)' : h.overall_score >= 58 ? '#b45309' : 'var(--ink-soft)';
+    
+    return `
+      <div class="dash-list-item" onclick="switchSection('swt'); if (typeof loadPassage === 'function') loadPassage(${h.passageId});">
+        <div class="item-main">
+          <div class="item-title">${escapeHtml(title)}</div>
+          <div class="item-date">Completed on ${date}</div>
+        </div>
+        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
+          ${h.overall_score}/90
         </div>
       </div>
     `;
