@@ -35,6 +35,7 @@
 // ============================================================
 let essays = [];
 let currentId = null;
+let currentPassageId = 1;
 let currentFilter = 'all';
 let currentZoom = 0.7;
 let currentUserId = '';       // Custom session username
@@ -8283,9 +8284,9 @@ function changePassageFilter(val) {
   populatePassageDropdowns();
   const select = document.getElementById('passageSelect');
   if (select) {
-    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
+    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentPassageId);
     if (hasCurrent) {
-      select.value = currentId;
+      select.value = currentPassageId;
     } else if (select.options.length > 0) {
       jumpToPassage(parseInt(select.options[0].value));
     }
@@ -8297,9 +8298,9 @@ function changeResultsPassageFilter(val) {
   populatePassageDropdowns();
   const select = document.getElementById('resPassageSelect');
   if (select) {
-    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentId);
+    const hasCurrent = Array.from(select.options).some(opt => parseInt(opt.value) === currentPassageId);
     if (hasCurrent) {
-      select.value = currentId;
+      select.value = currentPassageId;
     } else if (select.options.length > 0) {
       jumpToResultsPassage(parseInt(select.options[0].value));
     }
@@ -8324,7 +8325,7 @@ function jumpToResultsPassage(target) {
   
   switchSection('swt');
   if (scores[target] && typeof scores[target].overall_score === 'number') {
-    currentId = target;
+    currentPassageId = target;
     updateResultsNav();
     showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
   } else {
@@ -8342,7 +8343,7 @@ function loadStoredData(){
 
 function loadPassage(id){
   if(id < 1 || id > passages.length) return;
-  currentId = id;
+  currentPassageId = id;
   const p = passages.find(x => x.id === id) || passages[id-1];
   if(!p) return;
 
@@ -8390,8 +8391,8 @@ function loadPassage(id){
   if (select1) select1.value = id;
 }
 
-function prevPassage(){ if(currentId > 1) loadPassage(currentId - 1); }
-function nextPassage(){ if(currentId < passages.length) loadPassage(currentId + 1); }
+function prevPassage(){ if(currentPassageId > 1) loadPassage(currentPassageId - 1); }
+function nextPassage(){ if(currentPassageId < passages.length) loadPassage(currentPassageId + 1); }
 
 function switchWriteTab(tab){
   writeTab = tab;
@@ -8440,9 +8441,9 @@ function onSummaryInput(){
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
   if(text.trim()){
-    summaries[currentId] = { text, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
-  } else if(summaries[currentId]) {
-    delete summaries[currentId];
+    summaries[currentPassageId] = { text, timestamp: new Date().toISOString(), score: (summaries[currentPassageId]||{}).score || 0 };
+  } else if(summaries[currentPassageId]) {
+    delete summaries[currentPassageId];
   }
   LocalStore.set(getPteStorageKey('summaries'), summaries);
 }
@@ -8468,7 +8469,7 @@ function resetSummary(){
 document.addEventListener('input', function(e){
   if(e.target && e.target.id === 'scratchInput'){
     const scratch = LocalStore.get(getPteStorageKey('scratch')) || {};
-    scratch[currentId] = e.target.value;
+    scratch[currentPassageId] = e.target.value;
     LocalStore.set(getPteStorageKey('scratch'), scratch);
   }
 });
@@ -8535,7 +8536,7 @@ async function scoreSummary(){
   if(words < 5){ toast('Too short — minimum 5 words.'); return; }
   if(words > 75){ toast('Too long — maximum 75 words.'); return; }
 
-  const p = passages.find(x => x.id === currentId);
+  const p = passages.find(x => x.id === currentPassageId);
   if(!p){ toast('Passage not loaded.'); return; }
 
   showLoading(true);
@@ -8544,7 +8545,7 @@ async function scoreSummary(){
 
   try {
     const payload = { type: 'swt', prompt: p.text, keyPoints: p.keyElements, text: text };
-    if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentId; }
+    if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentPassageId; }
 
     const [gradeRes, spellRes] = await Promise.allSettled([
       fetch(API_URL+'/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),
@@ -8560,15 +8561,15 @@ async function scoreSummary(){
     }
     lastSpellData = spellData;
 
-    await saveAttempt(currentId, text, data, spellData);
-    attempted.add(currentId);
+    await saveAttempt(currentPassageId, text, data, spellData);
+    attempted.add(currentPassageId);
     populatePassageDropdowns();
     stopTimer();
     
     let resultPassage = p;
     if(data.passage_current){
       resultPassage = Object.assign({}, p, data.passage_current);
-      const idx = passages.findIndex(x => x.id === currentId);
+      const idx = passages.findIndex(x => x.id === currentPassageId);
       if(idx >= 0) passages[idx] = Object.assign({}, passages[idx], data.passage_current);
     }
     showResults(data, resultPassage, spellData, text);
@@ -8612,9 +8613,9 @@ async function saveAttempt(pid, text, data, spellData){
 
 function loadPreviousAnswer(){
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
-  const stored = scores[currentId];
+  const stored = scores[currentPassageId];
   if(!stored){ toast('No previous answer for this passage.'); return; }
-  const p = passages.find(x => x.id === currentId);
+  const p = passages.find(x => x.id === currentPassageId);
   if(!p){ return; }
   const summaryInputEl = document.getElementById('summaryInput');
   if(stored.__text && summaryInputEl){ summaryInputEl.value = stored.__text; onSummaryInput(); }
@@ -8645,7 +8646,7 @@ function showResults(data, passage, spellData, submittedText){
   const band = data.band || 'Band 5';
   const traits = data.trait_scores || {};
 
-  let crumb = 'Results · ' + (passage.title || 'Passage ' + currentId);
+  let crumb = 'Results · ' + (passage.title || 'Passage ' + currentPassageId);
   if(data.__timestamp){
     const when = formatAttemptTime(data.__timestamp);
     if(when) crumb += '  ·  your attempt from ' + when;
@@ -9344,13 +9345,13 @@ function applyVocabSwap(original, replacement){
   }
   ta.value = ta.value.replace(re, repl);
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  summaries[currentId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentId]||{}).score || 0 };
+  summaries[currentPassageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentPassageId]||{}).score || 0 };
   LocalStore.set(getPteStorageKey('summaries'), summaries);
   toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
 }
 
 function showSample(){
-  const p = passages.find(x => x.id === currentId);
+  const p = passages.find(x => x.id === currentPassageId);
   if(!p || !p.sampleResponse){ toast('No sample available for this passage.'); return; }
   const summaryInputEl = document.getElementById('summaryInput');
   if (summaryInputEl) summaryInputEl.value = p.sampleResponse;
@@ -9368,13 +9369,13 @@ function backToPractice(){
 }
 
 function navResultsPassage(delta){
-  const target = currentId + delta;
+  const target = currentPassageId + delta;
   if(target < 1 || target > passages.length) return;
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
   const p = passages.find(x => x.id === target) || passages[target-1];
   if(!p) return;
   if(scores[target] && typeof scores[target].overall_score === 'number'){
-    currentId = target;
+    currentPassageId = target;
     updateResultsNav();
     showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
   } else {
@@ -9384,8 +9385,8 @@ function navResultsPassage(delta){
 }
 
 function goToNextPassage(){
-  if(currentId >= passages.length){ toast('You\'re on the last passage.'); return; }
-  loadPassage(currentId + 1);
+  if(currentPassageId >= passages.length){ toast('You\'re on the last passage.'); return; }
+  loadPassage(currentPassageId + 1);
   showSwtScreen('swtPracticeScreen');
   const summaryInputEl = document.getElementById('summaryInput');
   if (summaryInputEl) summaryInputEl.focus();
@@ -9397,13 +9398,13 @@ function updateResultsNav(){
   const prev = document.getElementById('resNavPrev');
   const next = document.getElementById('resNavNext');
   const nextBtn = document.getElementById('nextPassageBtn');
-  if(cur) cur.textContent = String(currentId).padStart(2,'0');
+  if(cur) cur.textContent = String(currentPassageId).padStart(2,'0');
   if(tot) tot.textContent = passages.length;
-  if(prev) prev.toggleAttribute('disabled', currentId === 1);
-  if(next) next.toggleAttribute('disabled', currentId === passages.length);
-  if(nextBtn) nextBtn.style.display = (currentId === passages.length) ? 'none' : 'inline-flex';
+  if(prev) prev.toggleAttribute('disabled', currentPassageId === 1);
+  if(next) next.toggleAttribute('disabled', currentPassageId === passages.length);
+  if(nextBtn) nextBtn.style.display = (currentPassageId === passages.length) ? 'none' : 'inline-flex';
   const select = document.getElementById('resPassageSelect');
-  if(select) select.value = currentId;
+  if(select) select.value = currentPassageId;
 }
 
 // Keyboard listeners for SWT
@@ -9421,8 +9422,8 @@ document.addEventListener('keydown', function(e){
   const resultsActive = document.getElementById('swtResultsScreen') && document.getElementById('swtResultsScreen').classList.contains('active');
   if(resultsActive && !typing){
     if(e.key === 'Escape'){ e.preventDefault(); if(typeof backToPractice === 'function') backToPractice(); }
-    else if(e.key === 'ArrowLeft'){ if(typeof navResultsPassage === 'function' && currentId > 1){ e.preventDefault(); navResultsPassage(-1); } }
-    else if(e.key === 'ArrowRight'){ if(typeof navResultsPassage === 'function' && currentId < passages.length){ e.preventDefault(); navResultsPassage(1); } }
+    else if(e.key === 'ArrowLeft'){ if(typeof navResultsPassage === 'function' && currentPassageId > 1){ e.preventDefault(); navResultsPassage(-1); } }
+    else if(e.key === 'ArrowRight'){ if(typeof navResultsPassage === 'function' && currentPassageId < passages.length){ e.preventDefault(); navResultsPassage(1); } }
   }
 });
 
