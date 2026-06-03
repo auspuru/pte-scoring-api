@@ -6747,8 +6747,16 @@ function renderDashboardRecentEssays() {
 
 // Theme Toggle
 function toggleTheme() {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('ipt-theme', isDark ? 'dark' : 'light');
+  const isDark = document.body.classList.contains('dark');
+  if (isDark) {
+    document.body.classList.remove('dark');
+    document.body.classList.add('light-mode');
+    localStorage.setItem('ipt-theme', 'light');
+  } else {
+    document.body.classList.add('dark');
+    document.body.classList.remove('light-mode');
+    localStorage.setItem('ipt-theme', 'dark');
+  }
   updateThemeToggleButton();
 }
 function updateThemeToggleButton() {
@@ -6760,10 +6768,22 @@ function updateThemeToggleButton() {
 // Initialize theme
 (function initTheme() {
   const savedTheme = localStorage.getItem('ipt-theme');
-  if (savedTheme === 'dark') {
-    document.body.classList.add('dark');
-  } else {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
     document.body.classList.remove('dark');
+  } else if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+    document.body.classList.remove('light-mode');
+  } else {
+    if (prefersDark) {
+      document.body.classList.add('dark');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark');
+    }
   }
   updateThemeToggleButton();
 })();

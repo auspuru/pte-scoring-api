@@ -2148,16 +2148,16 @@ details code {
   font-weight: 700;
   margin-bottom: 6px;
 }
-.login-field input {
+.login-field input, .login-field select {
   width: 100%;
   background: var(--bg);
-  border: 1px solid var(--line-soft);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 11px 14px;
   font-size: 14px;
   color: var(--ink);
 }
-.login-field input:focus { outline: none; border-color: var(--accent); }
+.login-field input:focus, .login-field select:focus { outline: none; border-color: var(--accent); }
 .login-submit {
   width: 100%;
   background: var(--accent);
@@ -4369,7 +4369,7 @@ body.light-mode .btn-kbd {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;
   padding: 28px;
 }
-.login-card { width: 100%; max-width: 420px; border-color: rgba(255,255,255,0.12); }
+.login-card { width: 100%; max-width: 420px; border-color: var(--line); }
 .login-card h1 { font-size: 28px; margin-bottom: 6px; }
 .login-card .sub { color: var(--ink-mute); font-size: 14px; margin-bottom: 24px; }
 .field { margin-bottom: 18px; }
