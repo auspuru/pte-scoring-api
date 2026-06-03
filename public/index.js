@@ -6607,73 +6607,14 @@ async function initApp() {
         verdict = 'login';
       } else if (d && d.blocked === true) {
         verdict = 'login';
-        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), 50);
-      }
-    } else if (r.status === 401 || r.status === 403) {
-      verdict = 'login';
-    }
-  } catch (e) {
-    // Network error — trust the saved session, enter offline
-    verdict = 'enter';
-  }
-
-  showLoading(false);
-  if (verdict === 'login') {
-    signOut();
-  } else {
-    await enterApp(last);
-  }
-}
-
-// Nav Section Switching
-function switchSection(sectionId) {
-  // Update sidebar active state
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === `nav-${sectionId}`);
-  });
-
-  // Switch between panes
-  document.querySelectorAll('.pane').forEach(pane => {
-    pane.classList.toggle('active', pane.id === `${sectionId}Pane`);
-  });
-
-  // Update Topbar page title
-  const titleMap = {
-    dashboard: 'Dashboard',
-    swt: 'Summarize Written Text (SWT)',
-    library: 'Essay Library',
-    vocab: 'Vocabulary Hub',
-    practice: 'Practice Center'
-  };
-  const titleEl = document.getElementById('pageTitle');
-  if (titleEl) {
-    titleEl.textContent = titleMap[sectionId] || 'Essay Builder';
-  }
-
-  // Handle overlay screen close triggers
-  if (sectionId === 'dashboard' || sectionId === 'library' || sectionId === 'swt') {
-    document.getElementById('vocabScreen').classList.remove('show');
-    document.getElementById('practiceScreen').classList.remove('show');
-    stopPracticeTimer();
-  }
-  if (sectionId !== 'swt') {
-    if (typeof stopTimer === 'function') stopTimer();
-  }
-
-  // Trigger metrics update if switching to dashboard
-  if (sectionId === 'dashboard') {
-    updateDashboard();
-  }
-}
-
-// Dashboard statistics renderer
+        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), // Dashboard statistics renderer
 function updateDashboard() {
   if (!document.getElementById('dashboardPane')) return;
 
   const total = essays.length;
-  const written = essays.filter(e => e.status === 'written').length;
-  const draft = essays.filter(e => e.status === 'draft').length;
-  const empty = essays.filter(e => !e.status || e.status === 'empty').length;
+  const written = essays.filter(e => essayStatus(e) === 'written').length;
+  const draft = essays.filter(e => essayStatus(e) === 'draft').length;
+  const empty = essays.filter(e => essayStatus(e) === 'empty').length;
 
   // Calculate percentage
   const percent = total > 0 ? Math.round((written / total) * 100) : 0;
@@ -6704,7 +6645,7 @@ function updateDashboard() {
   const scoreDescEl = document.getElementById('dashScoreDesc');
   
   if (history.length > 0) {
-    const sum = history.reduce((acc, h) => acc + (h.score || 0), 0);
+    const sum = history.reduce((acc, h) => acc + (h.scores?.total || 0), 0);
     const avg = (sum / history.length).toFixed(1);
     avgScoreEl.textContent = avg;
     
@@ -6721,11 +6662,43 @@ function updateDashboard() {
     scoreDescEl.textContent = 'Submit a practice attempt to calculate your scoring profile.';
   }
 
+  // SWT stats
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  let totalSwtAttempts = 0;
+  let swtScoresSum = 0;
+  let swtScoresCount = 0;
+  
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      totalSwtAttempts += list.length;
+      list.forEach(att => {
+        if (typeof att.overall_score === 'number') {
+          swtScoresSum += att.overall_score;
+          swtScoresCount++;
+        }
+      });
+    }
+  });
+
+  const swtAvg = swtScoresCount > 0 ? Math.round(swtScoresSum / swtScoresCount) : 0;
+  const swtPassagesCount = Object.keys(swtHistory).length;
+  
+  const avgSwtScoreEl = document.getElementById('dashSwtAvgScore');
+  if (avgSwtScoreEl) avgSwtScoreEl.textContent = swtScoresCount > 0 ? swtAvg : '—';
+  
+  const swtAttemptsEl = document.getElementById('dashSwtAttempts');
+  if (swtAttemptsEl) swtAttemptsEl.textContent = totalSwtAttempts;
+  
+  const swtPassagesEl = document.getElementById('dashSwtPassages');
+  if (swtPassagesEl) swtPassagesEl.textContent = swtPassagesCount;
+
   // Quota Status
   updateDashboardQuota();
 
   // Render lists
   renderDashboardRecentPractice();
+  renderDashboardRecentSwt();
   renderDashboardRecentEssays();
 }
 
@@ -6747,20 +6720,117 @@ function renderDashboardRecentPractice() {
   const container = document.getElementById('dashRecentPractice');
   if (!container) return;
   
-  const history = [...getPracticeHistory()].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 3);
+  const history = [...getPracticeHistory()].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 3);
   if (history.length === 0) {
-    container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Practice tab to begin.</div>';
+    container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>';
     return;
   }
 
   container.innerHTML = history.map(h => {
-    const date = h.timestamp ? new Date(h.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
-    const scoreColor = h.score >= 22 ? 'var(--accent)' : h.score >= 18 ? '#b45309' : 'var(--ink-soft)';
+    const dVal = h.date ? new Date(h.date) : null;
+    const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const totalScore = h.scores?.total || 0;
+    const scoreColor = totalScore >= 22 ? 'var(--accent)' : totalScore >= 18 ? '#b45309' : 'var(--ink-soft)';
     
     return `
       <div class="dash-list-item" onclick="openPractice(); viewPracticeAttempt('${h.id || ''}')">
         <div class="item-main">
-          <div class="item-title">${escapeHtml(h.title || 'Untitled Practice')}</div>
+          <div class="item-title">${escapeHtml(h.questionTitle || 'Untitled Practice')}</div>
+          <div class="item-date">Completed on ${date}</div>
+        </div>
+        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
+          ${totalScore}/26
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardRecentSwt() {
+  const container = document.getElementById('dashRecentSwt');
+  if (!container) return;
+
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  const allAttempts = [];
+
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      list.forEach(att => {
+        allAttempts.push(Object.assign({}, att, { passageId: Number(pid) }));
+      });
+    }
+  });
+
+  // Sort by timestamp desc
+  allAttempts.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  const recent = allAttempts.slice(0, 3);
+
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>';
+    return;
+  }
+
+  container.innerHTML = recent.map(h => {
+    const dVal = h.timestamp ? new Date(h.timestamp) : null;
+    const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const scoreColor = h.overall_score >= 70 ? 'var(--accent)' : h.overall_score >= 50 ? '#b45309' : 'var(--ink-soft)';
+    
+    // Find passage title
+    const passage = passages.find(x => x.id === h.passageId);
+    const title = passage ? (passage.title || `Passage ${h.passageId}`) : `Passage ${h.passageId}`;
+
+    return `
+      <div class="dash-list-item" onclick="switchSection('swt'); loadPassage(${h.passageId});">
+        <div class="item-main">
+          <div class="item-title">${escapeHtml(title)}</div>
+          <div class="item-date">Completed on ${date}</div>
+        </div>
+        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
+          ${h.overall_score}/90
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardRecentEssays() {
+  const container = document.getElementById('dashRecentEssays');
+  if (!container) return;
+
+  // Get active essays (draft or empty) first, then written
+  const activeEssays = [...essays]
+    .sort((a, b) => {
+      const scoreA = essayStatus(a) === 'written' ? 1 : 0;
+      const scoreB = essayStatus(b) === 'written' ? 1 : 0;
+      return scoreA - scoreB;
+    })
+    .slice(0, 3);
+
+  if (activeEssays.length === 0) {
+    container.innerHTML = '<div class="list-empty-state">No active essays in progress.</div>';
+    return;
+  }
+
+  container.innerHTML = activeEssays.map(e => {
+    const estatus = essayStatus(e);
+    let badgeClass = 'status-empty';
+    if (estatus === 'written') badgeClass = 'status-written';
+    else if (estatus === 'draft') badgeClass = 'status-draft';
+    
+    return `
+      <div class="dash-list-item" onclick="switchSection('library'); selectEssay('${e.id}')">
+        <div class="item-main">
+          <div class="item-title">${escapeHtml(e.title || 'Untitled Essay')}</div>
+          <div class="item-date">${escapeHtml(e.question || '').slice(0, 75)}${e.question && e.question.length > 75 ? '...' : ''}</div>
+        </div>
+        <div class="item-status ${badgeClass}">
+          ${estatus.toUpperCase()}
+        </div>
+      </div>
+    `;
+  }).join('');
+}ml(h.title || 'Untitled Practice')}</div>
           <div class="item-date">Completed on ${date}</div>
         </div>
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
