@@ -4277,6 +4277,13 @@ body.dark .practice-grammar-hint {
 
 /* === SWT STYLES === */
 
+.swt-sub-screen {
+  display: none !important;
+}
+.swt-sub-screen.active {
+  display: block !important;
+}
+
 /* ─────────────────────────────────────────────────────────────
    DESIGN SYSTEM — obsidian dark / ambient glow / glassmorphism
    Vibrant neon colors, smooth layout transitions, high readability
