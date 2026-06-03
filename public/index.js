@@ -6631,6 +6631,47 @@ async function initApp() {
   }
 }
 
+// Nav Section Switching
+function switchSection(sectionId) {
+  // Update sidebar active state
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.id === `nav-${sectionId}`);
+  });
+
+  // Switch between panes
+  document.querySelectorAll('.pane').forEach(pane => {
+    pane.classList.toggle('active', pane.id === `${sectionId}Pane`);
+  });
+
+  // Update Topbar page title
+  const titleMap = {
+    dashboard: 'Dashboard',
+    swt: 'Summarize Written Text (SWT)',
+    library: 'Essay Library',
+    vocab: 'Vocabulary Hub',
+    practice: 'Practice Center'
+  };
+  const titleEl = document.getElementById('pageTitle');
+  if (titleEl) {
+    titleEl.textContent = titleMap[sectionId] || 'Essay Builder';
+  }
+
+  // Handle overlay screen close triggers
+  if (sectionId === 'dashboard' || sectionId === 'library' || sectionId === 'swt') {
+    document.getElementById('vocabScreen').classList.remove('show');
+    document.getElementById('practiceScreen').classList.remove('show');
+    stopPracticeTimer();
+  }
+  if (sectionId !== 'swt') {
+    if (typeof stopTimer === 'function') stopTimer();
+  }
+
+  // Trigger metrics update if switching to dashboard
+  if (sectionId === 'dashboard') {
+    updateDashboard();
+  }
+}
+
 // Dashboard statistics renderer
 function updateDashboard() {
   if (!document.getElementById('dashboardPane')) return;
