@@ -240,7 +240,7 @@ function signOut() {
 async function changePassword() {
   const newPw = prompt('Enter your new password (minimum 4 characters):');
   if (!newPw) return;
-  if (newPw.length < 4) { alert('Password must be at least 4 characters.'); return; }
+  if (newPw.length < 4) { toast('Password must be at least 4 characters.', true); return; }
   try {
     const r = await fetch(API_URL+'/api/auth/change-password',{
       method:'POST',
@@ -6611,7 +6611,27 @@ async function initApp() {
         verdict = 'login';
       } else if (d && d.blocked === true) {
         verdict = 'login';
-        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), // Dashboard statistics renderer
+        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), 50);
+      }
+    } else if (r.status === 401 || r.status === 403) {
+      verdict = 'login';
+    }
+  } catch (e) {
+    // Network error — trust the saved session, enter offline
+    verdict = 'enter';
+  }
+
+  if (verdict === 'login') {
+    showLoading(false);
+    LocalStore.setUserId('');
+    showLogin();
+  } else {
+    await enterApp(last);
+    showLoading(false);
+  }
+}
+
+// Dashboard statistics renderer
 function updateDashboard() {
   if (!document.getElementById('dashboardPane')) return;
 
@@ -6693,11 +6713,7 @@ function updateDashboard() {
   
   const swtAttemptsEl = document.getElementById('dashSwtAttempts');
   if (swtAttemptsEl) swtAttemptsEl.textContent = totalSwtAttempts;
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
   const swtPassagesEl = document.getElementById('dashSwtPassages');
   if (swtPassagesEl) swtPassagesEl.textContent = swtPassagesCount;
 
@@ -6708,7 +6724,6 @@ function updateDashboard() {
   renderDashboardRecentPractice();
   renderDashboardRecentSwt();
   renderDashboardRecentEssays();
-  renderDashboardRecentSwt();
 }
 
 function updateDashboardQuota() {
@@ -6729,27 +6744,17 @@ function renderDashboardRecentPractice() {
   const container = document.getElementById('dashRecentPractice');
   if (!container) return;
   
-<<<<<<< HEAD
-  const history = [...getPracticeHistory()].sort((a, b) => (b.date || 0) - (a.date || 0)).slice(0, 3);
-=======
   const history = [...getPracticeHistory()].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 3);
->>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
   if (history.length === 0) {
     container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>';
     return;
   }
 
   container.innerHTML = history.map(h => {
-<<<<<<< HEAD
-    const date = h.date ? new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
-    const score = h.scores?.total || 0;
-    const scoreColor = score >= 22 ? 'var(--accent)' : score >= 18 ? '#b45309' : 'var(--ink-soft)';
-=======
     const dVal = h.date ? new Date(h.date) : null;
     const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
     const totalScore = h.scores?.total || 0;
     const scoreColor = totalScore >= 22 ? 'var(--accent)' : totalScore >= 18 ? '#b45309' : 'var(--ink-soft)';
->>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
     
     return `
       <div class="dash-list-item" onclick="openPractice(); viewPracticeAttempt('${h.id || ''}')">
@@ -6758,60 +6763,7 @@ function renderDashboardRecentPractice() {
           <div class="item-date">Completed on ${date}</div>
         </div>
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
-<<<<<<< HEAD
-          ${score}/26
-=======
           ${totalScore}/26
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderDashboardRecentSwt() {
-  const container = document.getElementById('dashRecentSwt');
-  if (!container) return;
-
-  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
-  const allAttempts = [];
-
-  Object.keys(swtHistory).forEach(pid => {
-    const list = swtHistory[pid];
-    if (Array.isArray(list)) {
-      list.forEach(att => {
-        allAttempts.push(Object.assign({}, att, { passageId: Number(pid) }));
-      });
-    }
-  });
-
-  // Sort by timestamp desc
-  allAttempts.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
-  const recent = allAttempts.slice(0, 3);
-
-  if (recent.length === 0) {
-    container.innerHTML = '<div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>';
-    return;
-  }
-
-  container.innerHTML = recent.map(h => {
-    const dVal = h.timestamp ? new Date(h.timestamp) : null;
-    const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
-    const scoreColor = h.overall_score >= 70 ? 'var(--accent)' : h.overall_score >= 50 ? '#b45309' : 'var(--ink-soft)';
-    
-    // Find passage title
-    const passage = passages.find(x => x.id === h.passageId);
-    const title = passage ? (passage.title || `Passage ${h.passageId}`) : `Passage ${h.passageId}`;
-
-    return `
-      <div class="dash-list-item" onclick="switchSection('swt'); loadPassage(${h.passageId});">
-        <div class="item-main">
-          <div class="item-title">${escapeHtml(title)}</div>
-          <div clas  }).join('');
-}         <div class="item-date">Completed on ${date}</div>
-        </div>
-        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
-          ${h.score}/26
->>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
         </div>
       </div>
     `;
@@ -6952,8 +6904,10 @@ function updateThemeToggleButton() {
 // Boot immediately
 initApp();
 
-// Boot a minimal state IMMEDIATELY so the login screen can render
-showLogin();
+// Boot a minimal state IMMEDIATELY so the login screen can render only if no saved session
+if (!LocalStore.getUserId() || !localStorage.getItem('pte_session_token')) {
+  showLogin();
+}
 
 
 // ============================================================
@@ -7018,7 +6972,7 @@ function practiceCurrentEssay() {
   const e = getCurrent();
   if (!e) return;
   if (!e.question || !e.question.trim()) {
-    alert('Please enter a question prompt for this essay before practicing.');
+    toast('Please enter a question prompt for this essay before practicing.', true);
     return;
   }
   
@@ -7209,7 +7163,7 @@ function startNewPractice() {
 
 function startExamSimulator() {
   if (!practiceState.questionText || practiceState.questionText.trim().length < 10) {
-    alert('Please pick a question or enter your own custom prompt first.');
+    toast('Please pick a question or enter your own custom prompt first.', true);
     return;
   }
   practiceState.writeStep = 2;
