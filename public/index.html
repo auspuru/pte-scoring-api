@@ -726,6 +726,10 @@
         <textarea class="field-textarea" id="tpl_concl" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
       </div>
     </div>
+    <details style="margin-bottom:10px;">
+      <summary>▸ Advanced: extra AI instructions</summary>
+      <textarea class="field-textarea" id="tpl_notes" style="min-height:60px; font-size:12px; margin-top:6px;" placeholder="Style notes, banned words, etc."></textarea>
+    </details>
     <div class="modal-actions">
       <button class="tb-text-btn" onclick="copyPresetToCustom()" id="tplCopyToCustom" style="display:none;">Copy into My Custom →</button>
       <button class="tb-text-btn" onclick="closeTemplate()">Close</button>
@@ -776,6 +780,12 @@
   <div class="modal" style="max-width: 640px;">
     <h2>✍️ Freestyle Essay</h2>
     <p>Paste any question prompt and generate a complete essay instantly. This is a temporary draft.</p>
+    <div class="field" style="margin-bottom:10px;">
+      <div class="field-row"><span class="field-label">Pick a saved topic</span><span class="field-counter">fills the question below</span></div>
+      <select class="field-input" id="fsLibrarySelect" onchange="fsPickFromLibrary(this.value)">
+        <option value="">— Choose from your library —</option>
+      </select>
+    </div>
     <div class="field">
       <textarea class="field-textarea" id="fsQuestion" placeholder="Type prompt here..." style="min-height:90px;"></textarea>
     </div>
@@ -798,7 +808,7 @@
     <div id="fsResultArea" style="display:none; max-height:240px; overflow-y:auto; margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--bg);">
       <div id="fsResult"></div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions" id="fsActions">
       <button class="tb-text-btn" onclick="closeFreestyle()">Close</button>
       <button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWrite()">Write essay</button>
     </div>
@@ -910,8 +920,12 @@
 
     <!-- Vocab Admin panel -->
     <div id="adminTabVocab" style="display:none;">
-      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
-        <button class="tb-text-btn dark" onclick="adminAddVocabWord()">+ Add vocabulary word</button>
+      <div style="display:flex; gap:10px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+          <select class="field-input" id="adminVocabCat" onchange="renderAdminVocabList()" style="font-weight:600; font-family:var(--serif);"></select>
+        </div>
+        <button class="tb-text-btn dark" onclick="adminAddVocabWord()">+ Add Word</button>
+        <button class="tb-text-btn" onclick="openSuggestWords()">🤖 AI Suggest Words</button>
         <button class="tb-text-btn" onclick="loadAdminVocab()">Refresh ↻</button>
       </div>
       <div id="adminVocabList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
@@ -1103,6 +1117,70 @@
     <div class="modal-actions" id="suggestActions">
       <button class="tb-text-btn" onclick="closeSuggestWords()">Cancel</button>
       <button class="tb-text-btn dark" id="suggestNextBtn" onclick="suggestNextStep()" style="display:none;">Generate details →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal" style="max-width: 600px;">
+    <h2>📥 Export Essays</h2>
+    <p style="font-size:13px; color:var(--ink-soft); margin-bottom: 16px;">Download your written essays as PDFs or send them directly to your email inbox.</p>
+    
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <!-- PDF Download Options -->
+      <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px;">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">PDF Download</div>
+        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+          <button class="tb-text-btn dark" onclick="doExportCurrent()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
+            <div style="font-weight:600;">Download Current Essay</div>
+            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px;" id="exportCurrentName">Current essay only</div>
+          </button>
+          <button class="tb-text-btn dark" onclick="doExportBook()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
+            <div style="font-weight:600;">Download Complete Essay Book</div>
+            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px;" id="exportBookCount">All written essays with cover page</div>
+          </button>
+          <button class="tb-text-btn" onclick="openExportPicker()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
+            <div style="font-weight:600; color:var(--accent);">Select specific essays...</div>
+            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px; color:var(--ink-soft);">Choose which essays to compile into a PDF</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Email Delivery Options -->
+      <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px;">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">Email Delivery</div>
+        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
+          <div id="emailOption" style="border:1px solid var(--line); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="doEmailCurrent()">
+            <div>
+              <div style="font-weight:600; font-size:13px;">Email Current Essay</div>
+              <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;" id="emailRecipient">Sign in with an email account</div>
+            </div>
+            <span style="font-size:18px;">✉️</span>
+          </div>
+          <div id="emailBookOption" style="border:1px solid var(--line); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="doEmailBook()">
+            <div>
+              <div style="font-weight:600; font-size:13px;">Email Complete Book</div>
+              <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;" id="emailBookRecipient">All written essays compiled</div>
+            </div>
+            <span style="font-size:18px;">📚</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Essay Selection Picker -->
+      <div id="exportPicker" style="display:none; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px; margin-top:4px;">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">Select Essays to Export</div>
+        <div id="exportPickerList" style="max-height:200px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg-card); display:flex; flex-direction:column; gap:4px; margin-bottom:10px;"></div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button class="tb-text-btn" id="emailPickedBtn" onclick="doEmailPicked()">Email Selection</button>
+          <button class="tb-text-btn dark" id="exportPickedBtn" onclick="doExportPicked()">Download Selection (<span id="exportPickedCount">0</span>)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:20px; border-top:1px solid var(--line); padding-top:14px;">
+      <button class="tb-text-btn" onclick="closeExportMenu()">Close</button>
     </div>
   </div>
 </div>

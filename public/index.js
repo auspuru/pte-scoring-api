@@ -233,6 +233,8 @@ function signOut() {
   document.getElementById('loginPassword').value = '';
   document.getElementById('loginSubmitBtn').disabled = false;
   document.getElementById('loginSubmitBtn').textContent = 'Sign in';
+  const adminBtn = document.getElementById('nav-admin');
+  if (adminBtn) adminBtn.style.display = 'none';
 }
 
 async function changePassword() {
@@ -289,6 +291,8 @@ async function enterApp(uid) {
   setZoom(0.7);
   updateDashboard();
   checkAIStatus();
+  const adminBtn = document.getElementById('nav-admin');
+  if (adminBtn) adminBtn.style.display = isAdmin() ? '' : 'none';
 }
 
 async function loadUserData(uid) {
@@ -6607,66 +6611,7 @@ async function initApp() {
         verdict = 'login';
       } else if (d && d.blocked === true) {
         verdict = 'login';
-        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), 50);
-      }
-    } else if (r.status === 401 || r.status === 403) {
-      verdict = 'login';
-    }
-  } catch (e) {
-    // Network error — trust the saved session, enter offline
-    verdict = 'enter';
-  }
-
-  showLoading(false);
-  if (verdict === 'login') {
-    signOut();
-  } else {
-    await enterApp(last);
-  }
-}
-
-// Nav Section Switching
-function switchSection(sectionId) {
-  // Update sidebar active state
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === `nav-${sectionId}`);
-  });
-
-  // Switch between panes
-  document.querySelectorAll('.pane').forEach(pane => {
-    pane.classList.toggle('active', pane.id === `${sectionId}Pane`);
-  });
-
-  // Update Topbar page title
-  const titleMap = {
-    dashboard: 'Dashboard',
-    swt: 'Summarize Written Text (SWT)',
-    library: 'Essay Library',
-    vocab: 'Vocabulary Hub',
-    practice: 'Practice Center'
-  };
-  const titleEl = document.getElementById('pageTitle');
-  if (titleEl) {
-    titleEl.textContent = titleMap[sectionId] || 'Essay Builder';
-  }
-
-  // Handle overlay screen close triggers
-  if (sectionId === 'dashboard' || sectionId === 'library' || sectionId === 'swt') {
-    document.getElementById('vocabScreen').classList.remove('show');
-    document.getElementById('practiceScreen').classList.remove('show');
-    stopPracticeTimer();
-  }
-  if (sectionId !== 'swt') {
-    if (typeof stopTimer === 'function') stopTimer();
-  }
-
-  // Trigger metrics update if switching to dashboard
-  if (sectionId === 'dashboard') {
-    updateDashboard();
-  }
-}
-
-// Dashboard statistics renderer
+        setTimeout(() => toast('This account has been blocked. Contact your administrator.', true), // Dashboard statistics renderer
 function updateDashboard() {
   if (!document.getElementById('dashboardPane')) return;
 
@@ -6748,7 +6693,11 @@ function updateDashboard() {
   
   const swtAttemptsEl = document.getElementById('dashSwtAttempts');
   if (swtAttemptsEl) swtAttemptsEl.textContent = totalSwtAttempts;
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
   const swtPassagesEl = document.getElementById('dashSwtPassages');
   if (swtPassagesEl) swtPassagesEl.textContent = swtPassagesCount;
 
@@ -6757,6 +6706,7 @@ function updateDashboard() {
 
   // Render lists
   renderDashboardRecentPractice();
+  renderDashboardRecentSwt();
   renderDashboardRecentEssays();
   renderDashboardRecentSwt();
 }
@@ -6779,16 +6729,27 @@ function renderDashboardRecentPractice() {
   const container = document.getElementById('dashRecentPractice');
   if (!container) return;
   
+<<<<<<< HEAD
   const history = [...getPracticeHistory()].sort((a, b) => (b.date || 0) - (a.date || 0)).slice(0, 3);
+=======
+  const history = [...getPracticeHistory()].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0)).slice(0, 3);
+>>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
   if (history.length === 0) {
-    container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Practice tab to begin.</div>';
+    container.innerHTML = '<div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>';
     return;
   }
 
   container.innerHTML = history.map(h => {
+<<<<<<< HEAD
     const date = h.date ? new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
     const score = h.scores?.total || 0;
     const scoreColor = score >= 22 ? 'var(--accent)' : score >= 18 ? '#b45309' : 'var(--ink-soft)';
+=======
+    const dVal = h.date ? new Date(h.date) : null;
+    const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const totalScore = h.scores?.total || 0;
+    const scoreColor = totalScore >= 22 ? 'var(--accent)' : totalScore >= 18 ? '#b45309' : 'var(--ink-soft)';
+>>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
     
     return `
       <div class="dash-list-item" onclick="openPractice(); viewPracticeAttempt('${h.id || ''}')">
@@ -6797,7 +6758,60 @@ function renderDashboardRecentPractice() {
           <div class="item-date">Completed on ${date}</div>
         </div>
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
+<<<<<<< HEAD
           ${score}/26
+=======
+          ${totalScore}/26
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDashboardRecentSwt() {
+  const container = document.getElementById('dashRecentSwt');
+  if (!container) return;
+
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  const allAttempts = [];
+
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      list.forEach(att => {
+        allAttempts.push(Object.assign({}, att, { passageId: Number(pid) }));
+      });
+    }
+  });
+
+  // Sort by timestamp desc
+  allAttempts.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+  const recent = allAttempts.slice(0, 3);
+
+  if (recent.length === 0) {
+    container.innerHTML = '<div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>';
+    return;
+  }
+
+  container.innerHTML = recent.map(h => {
+    const dVal = h.timestamp ? new Date(h.timestamp) : null;
+    const date = dVal ? dVal.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—';
+    const scoreColor = h.overall_score >= 70 ? 'var(--accent)' : h.overall_score >= 50 ? '#b45309' : 'var(--ink-soft)';
+    
+    // Find passage title
+    const passage = passages.find(x => x.id === h.passageId);
+    const title = passage ? (passage.title || `Passage ${h.passageId}`) : `Passage ${h.passageId}`;
+
+    return `
+      <div class="dash-list-item" onclick="switchSection('swt'); loadPassage(${h.passageId});">
+        <div class="item-main">
+          <div class="item-title">${escapeHtml(title)}</div>
+          <div clas  }).join('');
+}         <div class="item-date">Completed on ${date}</div>
+        </div>
+        <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
+          ${h.score}/26
+>>>>>>> 7e8ece1a27fc79683d4930315faee19b26ad8cf1
         </div>
       </div>
     `;
@@ -7600,10 +7614,10 @@ function updateSubmitBtnState() {
   const btn = document.getElementById('practiceSubmitBtn');
   if (btn) {
     const ready = practiceState.questionText.trim().length >= 10 &&
-                  countWords(practiceState.essayText) >= 50;
+                  countWords(practiceState.essayText) >= 200;
     btn.disabled = !ready;
-    if (countWords(practiceState.essayText) < 50) {
-      btn.innerHTML = '🤖 Write at least 50 words to score';
+    if (countWords(practiceState.essayText) < 200) {
+      btn.innerHTML = '🤖 Write at least 200 words to score';
     } else if (practiceState.questionText.trim().length < 10) {
       btn.innerHTML = '🤖 Pick or write a question first';
     } else {
@@ -8552,7 +8566,7 @@ function switchWriteTab(tab){
   if (planTabPaneEl) planTabPaneEl.classList.toggle('hidden', tab !== 'plan');
 }
 
-function countWords(t){ return (t || '').trim().split(/\s+/).filter(Boolean).length; }
+
 
 function countSentences(t){
   const trimmed = (t || '').trim();
