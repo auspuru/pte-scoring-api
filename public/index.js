@@ -6645,6 +6645,11 @@ function switchSection(section) {
   const pane = document.getElementById(paneMap[section]);
   if (pane) pane.classList.add('active');
 
+  // If entering SWT section, show practice screen by default
+  if (section === 'swt' && typeof showSwtScreen === 'function') {
+    showSwtScreen('swtPracticeScreen');
+  }
+
   // Sidebar active state
   const navMap = { dashboard: 'nav-dashboard', swt: 'nav-swt', library: 'nav-library' };
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -6881,7 +6886,7 @@ function renderDashboardRecentSwt() {
     const scoreColor = h.overall_score >= 79 ? 'var(--accent)' : h.overall_score >= 58 ? '#b45309' : 'var(--ink-soft)';
     
     return `
-      <div class="dash-list-item" onclick="switchSection('swt'); if (typeof loadPassage === 'function') loadPassage(${h.passageId});">
+      <div class="dash-list-item" onclick="if (typeof jumpToResultsPassage === 'function') jumpToResultsPassage(${h.passageId});">
         <div class="item-main">
           <div class="item-title">${escapeHtml(title)}</div>
           <div class="item-date">Completed on ${date}</div>
@@ -8478,6 +8483,7 @@ function jumpToResultsPassage(target) {
     currentPassageId = target;
     updateResultsNav();
     showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
+    showSwtScreen('swtResultsScreen');
   } else {
     loadPassage(target);
     showSwtScreen('swtPracticeScreen');
