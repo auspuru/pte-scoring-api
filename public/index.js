@@ -2649,6 +2649,56 @@ function safeLSRemove(key) {
     localStorage.removeItem(key);
   } catch (e) { /* ignore */ }
 }
+
+function showLoading(on){
+  const el = document.getElementById('loadingVeil');
+  if(el) el.classList.toggle('hidden', !on);
+}
+
+// If beforeunload stashed a backup that's newer than what we loaded, offer to restore it.
+function maybeOfferDraftRecovery() {
+  try {
+    const raw = safeLSGet('ipt_unsaved_backup');
+    if (!raw) return;
+    const backup = JSON.parse(raw);
+    // Only offer if backup is recent (< 24h) and has essays
+    if (!backup || !Array.isArray(backup.essays) || !backup.ts) {
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    const ageMs = Date.now() - backup.ts;
+    if (ageMs > 24 * 60 * 60 * 1000) {
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    // Compare: does the backup differ from what we just loaded?
+    const sameLength = backup.essays.length === essays.length;
+    const backupStr = JSON.stringify(backup.essays);
+    const loadedStr = JSON.stringify(essays);
+    if (backupStr === loadedStr) {
+      // No difference — backup is stale, clear it
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    // There's a meaningful difference — offer recovery
+    setTimeout(() => {
+      const mins = Math.max(1, Math.round(ageMs / 60000));
+      if (confirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`)) {
+        essays = backup.essays;
+        if (backup.currentId) currentId = backup.currentId;
+        renderList();
+        if (typeof loadEssay === 'function' && currentId) loadEssay(currentId);
+        queueSync();
+        toast('Unsaved changes restored ✓');
+      }
+      safeLSRemove('ipt_unsaved_backup');
+    }, 800);
+  } catch (e) {
+    console.warn('Draft recovery check failed:', e);
+    safeLSRemove('ipt_unsaved_backup');
+  }
+}
+
 function getCurrent() { return essays.find(e => e.id === currentId); }
 
 function essayStatus(e) {
