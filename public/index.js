@@ -482,26 +482,12 @@ function getQuota() {
 }
 
 function updateQuotaChip() {
-  const q = getQuota();
   const el = document.getElementById('quotaChip');
-  if (!el) return;
-  el.style.display = '';
-  document.getElementById('quotaText').textContent = `${q.essay} essays · ${q.idea} ideas`;
-  el.className = 'quota-chip';
-  if (q.essay <= 0 || q.idea <= 0) el.classList.add('danger');
-  else if (q.essay <= 3 || q.idea <= 5) el.classList.add('warning');
+  if (el) el.style.display = 'none'; // Hide quota chip completely since quota is unlimited
 }
 
 async function consumeQuota(kind) {
-  const q = getQuota();
-  if (kind === 'essay' && q.essay <= 0) {
-    toast('Daily essay quota reached. Resets at midnight.', true);
-    return false;
-  }
-  if (kind === 'idea' && q.idea <= 0) {
-    toast('Daily idea-suggestion quota reached. Resets at midnight.', true);
-    return false;
-  }
+  // Enforce no limits (unlimited practice attempts)
   if (userProfile) {
     if (!userProfile.quotaUsed) userProfile.quotaUsed = {};
     userProfile.quotaUsed[kind] = (userProfile.quotaUsed[kind] || 0) + 1;
@@ -517,9 +503,8 @@ async function consumeQuota(kind) {
 function openUserMenu() {
   document.getElementById('userMenuEmail').textContent = currentUserId + '@ptewriting.com';
   const written = essays.filter(e => essayStatus(e) === 'written').length;
-  const q = getQuota();
   document.getElementById('userMenuStats').innerHTML =
-    `${essays.length} essays · ${written} written · quota today: ${q.essay}/${q.essayMax} essays, ${q.idea}/${q.ideaMax} ideas`;
+    `${essays.length} essays · ${written} written · Unlimited practice attempts`;
   document.getElementById('userMenuModal').classList.add('show');
 }
 function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('show'); }
