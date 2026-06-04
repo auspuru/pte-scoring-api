@@ -4653,11 +4653,22 @@ function stopWriteButtonMessages() {
 //  FREESTYLE — quick AI essay on ANY question (not saved unless chosen)
 // ============================================================
 let freestyleLast = null;
+let fsSuggestedLeftIdeas = [];
+let fsSuggestedRightIdeas = [];
+let fsSuggestedThirdIdeas = [];
+let fsPickedLeftIdeas = new Set();
+let fsPickedRightIdeas = new Set();
+let fsPickedThirdIdeas = new Set();
+let fsDetectedQuestionType = null;
+let fsChosenSide = null;
+let fsPickedCols = {};
 
 function openFreestyle() {
   document.getElementById('fsQuestion').value = '';
   document.getElementById('fsResultArea').style.display = 'none';
   document.getElementById('fsResult').innerHTML = '';
+  document.getElementById('fsIdeasArea').style.display = 'none';
+  document.getElementById('fsIdeasArea').innerHTML = '';
   populateFreestyleLibrary();
   freestyleResetActions();
   freestyleLast = null;
@@ -4692,6 +4703,8 @@ function fsPickFromLibrary(id) {
   if (freestyleLast) {
     document.getElementById('fsResultArea').style.display = 'none';
     document.getElementById('fsResult').innerHTML = '';
+    document.getElementById('fsIdeasArea').style.display = 'none';
+    document.getElementById('fsIdeasArea').innerHTML = '';
     freestyleLast = null;
     freestyleResetActions();
   }
@@ -4704,19 +4717,407 @@ function closeFreestyle() {
 function freestyleResetActions() {
   document.getElementById('fsActions').innerHTML =
     '<button class="tb-text-btn" onclick="closeFreestyle()">Close</button>' +
-    '<button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWrite()">Write essay</button>';
+    '<button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleSuggestIdeas()">💡 Suggest Ideas</button>';
 }
 
 function freestyleReset() {
   document.getElementById('fsResultArea').style.display = 'none';
   document.getElementById('fsResult').innerHTML = '';
+  document.getElementById('fsIdeasArea').style.display = 'none';
+  document.getElementById('fsIdeasArea').innerHTML = '';
   freestyleLast = null;
   freestyleResetActions();
   const q = document.getElementById('fsQuestion');
   if (q) q.focus();
 }
 
-async function freestyleWrite() {
+async function freestyleSuggestIdeas() {
+  const question = document.getElementById('fsQuestion').value.trim();
+  if (!question) { toast('Paste an essay question first', true); return; }
+  if (!await consumeQuota('idea')) return;
+
+  const band = document.getElementById('fsBand').value === 'band6' ? 'band6' : 'band9';
+  const isBand6 = band === 'band6';
+  const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+
+  const btn = document.getElementById('fsWriteBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Suggesting ideas...';
+  }
+
+  const ideasArea = document.getElementById('fsIdeasArea');
+  ideasArea.style.display = 'block';
+  ideasArea.innerHTML = '<div class="ideas-loading" style="padding:16px; text-align:center;"><div class="spinner-dark" style="margin:0 auto 8px auto; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite;"></div>Analyzing the question and finding ideas...</div>';
+
+  const typeOptions = Object.entries(QUESTION_TYPES)
+    .map(([key, t]) => `  "${key}" — ${t.detect}`)
+    .join('\n');
+
+  const bandVocabRule = isBand6
+    ? `- Use SIMPLE, PLAIN ENGLISH — the kind of words a Band 6 student already knows from everyday life.
+- Stay in A2-B1 territory (CEFR). Words like "good", "important", "helpful", "hard", "easy", "save money", "stay healthy", "learn faster".
+- AVOID any academic vocabulary, sophisticated phrasing, formal Latinate words, or anything a Band 7+ student would use.
+- BANNED words: foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted.
+- Keep phrases short and direct: "saves money", "helps students learn" — NOT "yields substantial economic benefits".`
+    : `- Use simple Band 7-8 vocabulary students recognise from class.
+- Avoid fancy academic words students don't know — favour everyday phrasing over Latinate vocabulary.`;
+
+  const prompt = `You are helping a tutor at IPT Brisbane prepare a high-scoring ${isBand6 ? 'Band 6 (simple, plain English)' : 'Band 9'} IELTS/PTE essay. There are TWO tasks:
+
+TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
+${typeOptions}
+
+TASK 2 — Generate ideas for the columns that match the chosen type.
+
+For MOST types, generate 5 ideas for EACH of TWO columns (leftIdeas + rightIdeas):
+- "causes_solutions": left = 5 causes, right = 5 solutions/measures
+- "agree_disagree": left = 5 reasons to agree, right = 5 reasons to disagree
+- "problems_solutions": left = 5 problems, right = 5 solutions
+- "advantages_disadvantages": left = 5 advantages, right = 5 disadvantages
+- "causes_effects": left = 5 causes, right = 5 effects
+- "problems_benefits": left = 5 benefits, right = 5 problems
+- "positive_negative_impacts": left = 5 positive impacts, right = 5 negative impacts
+- "discuss_both_views": left = 5 reasons for view A, right = 5 reasons for view B
+
+For TWO SPECIAL types, generate THREE columns (leftIdeas + rightIdeas + thirdIdeas):
+- "opinion_alternatives": left = 5 reasons to AGREE with the practice, right = 5 reasons to DISAGREE, third = 5 ALTERNATIVE ACTIONS to take instead
+- "single_focus": left = 5 reasons for Option A, right = 5 reasons for Option B, third = 5 supporting examples
+
+ESSAY DETAILS:
+QUESTION: ${question}
+TEMPLATE BAND: ${isBand6 ? 'Band 6' : 'Band 9'}
+VOCABULARY LEVEL: ${vocabSpec.label}
+
+RULES FOR IDEAS:
+- Each idea is a short phrase, 3-7 words.
+- Concrete and topic-specific — NOT generic (BAD: "it's good for society"; GOOD: "boosts career opportunities").
+${bandVocabRule}
+- Each idea is a distinct angle — no overlap.
+- For "solution / measure / alternative action" columns: write ACTIONABLE items (start with a verb where natural).
+- For "cause" or "problem" columns: state the cause/problem clearly as a noun phrase.
+
+RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format for TWO-column types:
+{
+  "questionType": "causes_solutions",
+  "reasoning": "Question asks about causes and measures to improve",
+  "leftIdeas": ["population growth in cities", "...", "...", "...", "..."],
+  "rightIdeas": ["invest in sustainable agriculture", "...", "...", "...", "..."]
+}
+
+Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas:
+{
+  "questionType": "opinion_alternatives",
+  "reasoning": "Asks opinion + suggest alternatives",
+  "leftIdeas": ["upholds academic fairness", "...", "...", "...", "..."],
+  "rightIdeas": ["penalises genuine hardship", "...", "...", "...", "..."],
+  "thirdIdeas": ["offer formal extension requests", "...", "...", "...", "..."]
+}`;
+
+  try {
+    const res = await fetch('/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('\n').trim();
+    
+    let parsed;
+    try {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
+    } catch (e) {
+      console.error('Failed to parse Claude ideas JSON:', text);
+      throw new Error('Could not parse the suggested ideas. Please try again.');
+    }
+
+    fsDetectedQuestionType = parsed.questionType || 'advantages_disadvantages';
+    fsSuggestedLeftIdeas = parsed.leftIdeas || [];
+    fsSuggestedRightIdeas = parsed.rightIdeas || [];
+    fsSuggestedThirdIdeas = parsed.thirdIdeas || [];
+    fsPickedLeftIdeas = new Set();
+    fsPickedRightIdeas = new Set();
+    fsPickedThirdIdeas = new Set();
+    fsChosenSide = null;
+    fsPickedCols = {};
+
+    renderFreestyleIdeasPicker();
+  } catch (err) {
+    console.error(err);
+    ideasArea.innerHTML = `<div style="text-align:center; padding:16px; color:var(--bad); font-size:12px;">${escapeHtml(err.message)}</div>`;
+    toast('Failed to get ideas: ' + err.message, true);
+    freestyleResetActions();
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '💡 Suggest Ideas';
+    }
+  }
+}
+
+function renderFreestyleIdeasPicker() {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const area = document.getElementById('fsIdeasArea');
+  if (!area) return;
+
+  const writeBtnHtml = `<button class="tb-text-btn" onclick="closeFreestyle()">Close</button>` +
+                       `<button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWriteWithIdeas()" disabled>Write essay</button>`;
+  document.getElementById('fsActions').innerHTML = writeBtnHtml;
+
+  if (type.pickMode === 'sided' && Array.isArray(type.columns)) {
+    renderFreestyleSidedPicker(type);
+    return;
+  }
+
+  area.innerHTML = `
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:14px;">🤖</span>
+      <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
+    </div>
+    <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
+      <div>
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">A</span>
+          ${escapeHtml(type.leftLabel)}
+        </div>
+        ${fsSuggestedLeftIdeas.map((p, i) => `
+          <div class="idea-item ${fsPickedLeftIdeas.has(i) ? 'selected' : ''}" onclick="toggleFreestyleIdea('left', ${i})" id="fs-left-${i}">
+            <div class="idea-checkbox"></div>
+            <div class="idea-text">${escapeHtml(p)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div>
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">B</span>
+          ${escapeHtml(type.rightLabel)}
+        </div>
+        ${fsSuggestedRightIdeas.map((c, i) => `
+          <div class="idea-item ${fsPickedRightIdeas.has(i) ? 'selected' : ''}" onclick="toggleFreestyleIdea('right', ${i})" id="fs-right-${i}">
+            <div class="idea-checkbox"></div>
+            <div class="idea-text">${escapeHtml(c)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+      <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">Pick <strong>2 from each side</strong> (4 total)</div>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+    </div>
+  `;
+  updateFreestyleIdeasCounter();
+}
+
+function toggleFreestyleIdea(side, idx) {
+  if (side === 'left') {
+    if (fsPickedLeftIdeas.has(idx)) {
+      fsPickedLeftIdeas.delete(idx);
+    } else {
+      if (fsPickedLeftIdeas.size >= 2) {
+        const first = fsPickedLeftIdeas.values().next().value;
+        fsPickedLeftIdeas.delete(first);
+      }
+      fsPickedLeftIdeas.add(idx);
+    }
+  } else if (side === 'right') {
+    if (fsPickedRightIdeas.has(idx)) {
+      fsPickedRightIdeas.delete(idx);
+    } else {
+      if (fsPickedRightIdeas.size >= 2) {
+        const first = fsPickedRightIdeas.values().next().value;
+        fsPickedRightIdeas.delete(first);
+      }
+      fsPickedRightIdeas.add(idx);
+    }
+  }
+
+  fsSuggestedLeftIdeas.forEach((_, i) => {
+    const el = document.getElementById(`fs-left-${i}`);
+    if (el) {
+      if (fsPickedLeftIdeas.has(i)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    }
+  });
+  fsSuggestedRightIdeas.forEach((_, i) => {
+    const el = document.getElementById(`fs-right-${i}`);
+    if (el) {
+      if (fsPickedRightIdeas.has(i)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    }
+  });
+
+  updateFreestyleIdeasCounter();
+}
+
+function updateFreestyleIdeasCounter() {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const isSided = type.pickMode === 'sided';
+  const writeBtn = document.getElementById('fsWriteBtn');
+
+  if (isSided) {
+    const sideCol = type.columns.find(c => c.key === fsChosenSide);
+    const fixedCol = type.columns.find(c => !c.side);
+    const sidePicks = fsChosenSide ? (fsPickedCols[fsChosenSide] || new Set()) : new Set();
+    const fixedPicks = fsPickedCols[fixedCol.key] || new Set();
+
+    const sideCount = sidePicks.size;
+    const fixedCount = fixedPicks.size;
+    const isComplete = sideCount === 2 && fixedCount === 2;
+
+    const labelEl = document.getElementById('fsIdeasCounter');
+    if (labelEl) {
+      if (!fsChosenSide) {
+        labelEl.innerHTML = '👈 First, click an idea to choose your stance.';
+      } else {
+        const sideLabel = sideCol.label.replace('Reasons to ', '');
+        const sideColor = fsChosenSide === 'agree' || fsChosenSide === 'optionA' ? '#16803d' : '#b91c1c';
+        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (${sideCount}/2) &amp; ${escapeHtml(fixedCol.label)} (${fixedCount}/2)`;
+      }
+    }
+
+    if (writeBtn) {
+      writeBtn.disabled = !isComplete;
+    }
+  } else {
+    const lCount = fsPickedLeftIdeas.size;
+    const rCount = fsPickedRightIdeas.size;
+    const isComplete = lCount === 2 && rCount === 2;
+
+    const labelEl = document.getElementById('fsIdeasCounter');
+    if (labelEl) {
+      labelEl.innerHTML = `Picked: <strong>${escapeHtml(type.leftLabel)}</strong> (${lCount}/2) &amp; <strong>${escapeHtml(type.rightLabel)}</strong> (${rCount}/2)`;
+      if (isComplete) {
+        labelEl.classList.add('complete');
+      } else {
+        labelEl.classList.remove('complete');
+      }
+    }
+
+    if (writeBtn) {
+      writeBtn.disabled = !isComplete;
+    }
+  }
+}
+
+function renderFreestyleSidedPicker(type) {
+  const area = document.getElementById('fsIdeasArea');
+  if (!area) return;
+
+  const cols = type.columns;
+  const sideCols = cols.filter(c => c.side);
+  const fixedCol = cols.find(c => !c.side);
+
+  cols.forEach(c => {
+    if (!fsPickedCols[c.key]) {
+      fsPickedCols[c.key] = new Set();
+    }
+  });
+
+  const palette = [
+    { bg: '#d4ebf5', fg: '#2a5577' },
+    { bg: '#f5dbd4', fg: '#7a4030' },
+  ];
+  const thirdPalette = { bg: '#d8ecd8', fg: '#2a5a3a' };
+
+  function colHtml(col, badge, badgeColor) {
+    let ideas = [];
+    if (col.key === 'agree' || col.key === 'optionA') {
+      ideas = fsSuggestedLeftIdeas;
+    } else if (col.key === 'disagree' || col.key === 'optionB') {
+      ideas = fsSuggestedRightIdeas;
+    } else {
+      ideas = fsSuggestedThirdIdeas;
+    }
+
+    const picks = fsPickedCols[col.key] || new Set();
+    const isDisabledSide = col.side && fsChosenSide && fsChosenSide !== col.key;
+
+    return `
+      <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="fs-col-${col.key}" style="opacity:${isDisabledSide ? '0.4' : '1'}; pointer-events:${isDisabledSide ? 'none' : 'auto'};">
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
+          ${escapeHtml(col.label)}
+          <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+        </div>
+        ${ideas.map((idea, i) => `
+          <div class="idea-item ${picks.has(i) ? 'selected' : ''}" onclick="toggleFreestyleSidedIdea('${col.key}', ${i})" id="fs-sided-${col.key}-${i}">
+            <div class="idea-checkbox"></div>
+            <div class="idea-text">${escapeHtml(idea)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  const sideColsHtml = sideCols.map((c, i) => colHtml(c, String.fromCharCode(65 + i), palette[i])).join('');
+  const fixedColHtml = colHtml(fixedCol, '+', thirdPalette);
+
+  area.innerHTML = `
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:14px;">🤖</span>
+      <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
+    </div>
+    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
+      <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(sideCols[0].label)}</strong> or <strong>${escapeHtml(sideCols[1].label)}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(fixedCol.label)}</strong>.
+    </div>
+    <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
+      <div style="display:flex; flex-col; gap:16px; grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        ${sideColsHtml}
+      </div>
+      <div style="grid-column:span 2; margin-top:8px;">
+        ${fixedColHtml}
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+      <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">👈 First, click an idea to choose your stance.</div>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+    </div>
+  `;
+  updateFreestyleIdeasCounter();
+}
+
+function toggleFreestyleSidedIdea(colKey, idx) {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const cols = type.columns;
+  const targetCol = cols.find(c => c.key === colKey);
+
+  if (targetCol.side) {
+    if (fsChosenSide && fsChosenSide !== colKey) {
+      if (fsPickedCols[fsChosenSide]) {
+        fsPickedCols[fsChosenSide].clear();
+      }
+    }
+    fsChosenSide = colKey;
+  }
+
+  const picks = fsPickedCols[colKey] || new Set();
+  if (picks.has(idx)) {
+    picks.delete(idx);
+    if (targetCol.side && picks.size === 0) {
+      fsChosenSide = null;
+    }
+  } else {
+    if (picks.size >= 2) {
+      const first = picks.values().next().value;
+      picks.delete(first);
+    }
+    picks.add(idx);
+  }
+
+  renderFreestyleSidedPicker(type);
+}
+
+async function freestyleWriteWithIdeas() {
   const question = document.getElementById('fsQuestion').value.trim();
   if (!question) { toast('Paste an essay question first', true); return; }
   if (!await consumeQuota('essay')) return;
@@ -4734,8 +5135,53 @@ async function freestyleWrite() {
     startWriteButtonMessages(btn);
   }
 
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  let bp1Ideas = [];
+  let bp2Ideas = [];
+  let sidedNote = '';
+
+  if (type.pickMode === 'sided') {
+    const sideCol = type.columns.find(c => c.key === fsChosenSide);
+    const fixedCol = type.columns.find(c => !c.side);
+    
+    let sideSource = [];
+    if (fsChosenSide === 'agree' || fsChosenSide === 'optionA') {
+      sideSource = fsSuggestedLeftIdeas;
+    } else {
+      sideSource = fsSuggestedRightIdeas;
+    }
+    const sidePicks = fsPickedCols[fsChosenSide] || new Set();
+    bp1Ideas = Array.from(sidePicks).map(idx => sideSource[idx]);
+
+    const fixedPicks = fsPickedCols[fixedCol.key] || new Set();
+    bp2Ideas = Array.from(fixedPicks).map(idx => fsSuggestedThirdIdeas[idx]);
+
+    sidedNote = `
+=== STANCE INFORMATION ===
+The student has taken a clear position: "${sideCol.label}".
+- The WHOLE essay must argue consistently for this stance. Do NOT present the opposing side as if it were equally valid.
+- Body Paragraph 1: develop the chosen stance using these specific ideas: ${bp1Ideas.map(x => `"${x}"`).join(' and ')}.
+- Body Paragraph 2: present the ${fixedCol.label} using these specific ideas: ${bp2Ideas.map(x => `"${x}"`).join(' and ')}.
+- The introduction's opinion sentence must clearly state this stance.
+- The conclusion must reaffirm this stance.`;
+  } else {
+    bp1Ideas = Array.from(fsPickedLeftIdeas).map(idx => fsSuggestedLeftIdeas[idx]);
+    bp2Ideas = Array.from(fsPickedRightIdeas).map(idx => fsSuggestedRightIdeas[idx]);
+  }
+
+  const ideasBlock = `
+=== CRITICAL — USER-CHOSEN IDEAS (HIGHEST PRIORITY) ===
+You MUST write the essay using exactly these chosen ideas. Do NOT substitute synonyms. Do NOT skip them.
+- Body Paragraph 1: You MUST base the two supporting points on these ideas:
+  1. "${bp1Ideas[0] || ''}"
+  2. "${bp1Ideas[1] || ''}"
+- Body Paragraph 2: You MUST base the two supporting points on these ideas:
+  1. "${bp2Ideas[0] || ''}"
+  2. "${bp2Ideas[1] || ''}"
+${sidedNote}`;
+
   const prompt = `You are writing a custom, high-scoring ${qLabel} IELTS/PTE essay for IPT Brisbane tutoring.
-Write naturally and avoid standard templates or rigid, formulaic transitions (such as starting paragraphs with "The topic of X has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or strictly mirroring templated text). Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+Write naturally and avoid standard templates or rigid, formulaic transitions. Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
 
 CRITICAL WARNING: Do NOT use formulaic transitional boilerplate.
 - Do NOT start the introduction with "The topic of [X] has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or any variation of it.
@@ -4745,19 +5191,18 @@ These formulaic templates make the essay look robotic and rehearsed. Write a com
 
 ESSAY QUESTION: ${question}
 
-=== FIRST, SILENTLY DETERMINE THE QUESTION TYPE ===
-Read the question and decide what it is actually asking (for example: advantages/disadvantages, agree/disagree, causes/solutions, causes/effects, problems/solutions, problems & benefits, discuss both views, or opinion + alternative actions). Frame the two body paragraphs to match THAT question — do NOT default to "advantages/disadvantages" if the question is really about causes, solutions, opinions, or both views.
-→ Body Paragraph 1 = the FIRST thing the question asks for (e.g. the first view, the causes, the problems, the reasons to agree).
-→ Body Paragraph 2 = the SECOND thing the question asks for (e.g. the second view, the solutions, the benefits, the reasons to disagree).
+${ideasBlock}
 
 VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
 
-=== LENGTH LIMIT (CRITICAL — DO NOT EXCEED) ===
-The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total. Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
-This 300-word limit OVERRIDES any other length guidance.
+=== LENGTH LIMIT (CRITICAL — STRICTLY UNDER 300 WORDS) ===
+The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total.
+Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
+This 300-word limit is a HARD CAP. If the essay is 300 words or more, it is a FAILURE.
 HOW TO STAY UNDER 300:
 - Write concisely. Avoid filler and repetitive transition phrases.
 - Keep the actual content rich: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
+- Do NOT write long explanations. Make the point and move directly to the example.
 
 === STRUCTURAL REQUIREMENTS ===
 A. INTRODUCTION:
@@ -4766,7 +5211,7 @@ A. INTRODUCTION:
 - Wrap the topic paraphrase and the essay-type phrase (e.g., "examine the benefits and drawbacks of this practice") in ==double equals==.
 
 B. BODY PARAGRAPHS (BP1 and BP2):
-- Each paragraph must present exactly TWO supporting ideas.
+- Each paragraph must present exactly the TWO supporting ideas chosen by the user.
 - Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
 - Wrap the main clauses of the two supporting ideas in ==double equals== (do not wrap the examples or transitions).
 
@@ -4815,6 +5260,9 @@ Respond with EXACTLY these sections, nothing else, no preamble:
     if (!sections.intro || !sections.bp1 || !sections.bp2 || !sections.concl) {
       throw new Error('The essay came back incomplete. Please try again.');
     }
+
+    document.getElementById('fsIdeasArea').style.display = 'none';
+
     freestyleLast = { question, band, vocab: vocabIdx + 1, title, sections };
     renderFreestyleResult(sections);
   } catch (err) {
