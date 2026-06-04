@@ -4650,7 +4650,7 @@ app.post('/api/grade', async (req, res) => {
               fix: String(a.fix).slice(0, 200),
               severity: (a.severity === 'major' || a.severity === 'minor') ? a.severity : 'minor',
               type: typeof a.type === 'string' ? a.type.slice(0, 30) : 'style',
-              rationale: typeof a.rationale === 'string' ? a.rationale.slice(0, 120) : ''
+              rationale: typeof a.rationale === 'string' ? a.rationale.slice(0, 500) : ''
             }))
             .slice(0, 20);
         })(),
