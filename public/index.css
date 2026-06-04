@@ -5672,3 +5672,19 @@ body.dark .card, body.dark .dash-card, body.dark .login-card, body.dark .modal, 
   }
 }
 
+/* Constrain screen overlays and bodies to fix page scrolling bugs */
+.vocab-screen, .practice-screen {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+.vocab-body, .practice-body {
+  height: calc(100vh - 65px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.vocab-main, .practice-main {
+  height: 100% !important;
+  overflow-y: auto !important;
+}
+
+
