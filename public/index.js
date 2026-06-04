@@ -7624,6 +7624,7 @@ let practiceState = {
   essayText: '',
   currentAttempt: null,      // the in-memory attempt object (post-scoring)
   viewingAttemptId: null,    // ID of the history attempt being viewed
+  expandedQuestions: {},     // accordion expand state mapping questionKey -> boolean
   // Timer (exam-mode simulation)
   timerEnabled: false,       // user-toggled
   timerStartedAt: null,      // ms timestamp when writing started
@@ -7707,6 +7708,26 @@ function getCleanSampleResponse(html) {
   const temp = document.createElement('textarea');
   temp.innerHTML = clean;
   return temp.value.trim();
+}
+
+function prunePracticeAttempts(history, newAttempt) {
+  const qKey = newAttempt.questionId || newAttempt.questionTitle || newAttempt.questionText;
+  if (!qKey) return history;
+  
+  const questionAttempts = [];
+  for (let i = 0; i < history.length; i++) {
+    const a = history[i];
+    const key = a.questionId || a.questionTitle || a.questionText;
+    if (key === qKey) {
+      questionAttempts.push(i);
+    }
+  }
+  
+  if (questionAttempts.length > 10) {
+    const indexesToRemove = questionAttempts.slice(10);
+    return history.filter((_, idx) => !indexesToRemove.includes(idx));
+  }
+  return history;
 }
 
 function copyToClipboardFallback(text) {
@@ -7807,24 +7828,87 @@ function renderPracticeHistory() {
     </div>`;
     return;
   }
-  // Newest first
-  const sorted = [...h].sort((a, b) => (b.date || 0) - (a.date || 0));
-  list.innerHTML = sorted.map(a => {
-    const isActive = (a.id === practiceState.viewingAttemptId);
-    const total = a.scores?.total || 0;
-    const scoreBand = total >= 22 ? 'high' : (total >= 15 ? 'mid' : 'low');
-    const dateStr = a.date ? formatPracticeDate(a.date) : '';
-    return `
-      <div class="practice-history-item ${isActive ? 'active' : ''}" onclick="viewPracticeAttempt('${a.id}')">
-        <div class="practice-history-meta">
-          <span>${dateStr}</span>
-          <span class="practice-history-score ${scoreBand}">${total}/${PRACTICE_MAX_TOTAL}</span>
+  
+  // Group attempts by question
+  const groups = {};
+  h.forEach(a => {
+    const qKey = a.questionId || a.questionTitle || a.questionText;
+    if (!groups[qKey]) {
+      groups[qKey] = {
+        title: a.questionTitle || (a.questionText.slice(0, 50) + '...'),
+        id: a.questionId || '',
+        attempts: []
+      };
+    }
+    groups[qKey].attempts.push(a);
+  });
+  
+  // Sort attempts within each group by date (newest first)
+  Object.values(groups).forEach(g => {
+    g.attempts.sort((a, b) => (b.date || 0) - (a.date || 0));
+  });
+  
+  // Sort groups by their most recent attempt date
+  const sortedGroups = Object.values(groups).sort((g1, g2) => {
+    const d1 = g1.attempts[0]?.date || 0;
+    const d2 = g2.attempts[0]?.date || 0;
+    return d2 - d1;
+  });
+  
+  list.innerHTML = sortedGroups.map(g => {
+    const qKey = g.id || g.title;
+    const hasActiveAttempt = g.attempts.some(a => a.id === practiceState.viewingAttemptId);
+    const isExpanded = practiceState.expandedQuestions[qKey] !== undefined 
+      ? practiceState.expandedQuestions[qKey] 
+      : hasActiveAttempt;
+      
+    const attemptsHtml = g.attempts.map(a => {
+      const isActive = (a.id === practiceState.viewingAttemptId);
+      const total = a.scores?.total || 0;
+      const scoreBand = total >= 22 ? 'high' : (total >= 15 ? 'mid' : 'low');
+      const dateStr = a.date ? formatPracticeDate(a.date) : '';
+      return `
+        <div class="practice-history-item ${isActive ? 'active' : ''}" style="margin-left: 8px; padding: 10px 14px; position: relative;" onclick="event.stopPropagation(); viewPracticeAttempt('${a.id}')">
+          <div class="practice-history-meta" style="margin-bottom: 2px;">
+            <span>${dateStr}</span>
+            <span class="practice-history-score ${scoreBand}">${total}/${PRACTICE_MAX_TOTAL}</span>
+          </div>
+          <div style="font-size: 11.5px; color: var(--ink-soft); line-height: 1.4;">
+            Attempt with ${a.wordCount} words
+          </div>
+          <button class="practice-history-del" style="right: 6px; top: 8px;" onclick="event.stopPropagation(); deletePracticeAttempt('${a.id}')" title="Delete">✕</button>
         </div>
-        <div class="practice-history-question">${escapeHtml(a.questionTitle || a.questionText.slice(0, 70) + '...')}</div>
-        <button class="practice-history-del" onclick="event.stopPropagation(); deletePracticeAttempt('${a.id}')" title="Delete">✕</button>
+      `;
+    }).join('');
+    
+    return `
+      <div class="practice-history-group" style="margin-bottom: 12px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; background: var(--bg-card); box-shadow: var(--shadow);">
+        <div class="practice-history-group-header" style="padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--card-raised); border-bottom: ${isExpanded ? '1px solid var(--line-soft)' : 'none'};" onclick="toggleQuestionExpanded('${escapeHtmlString(qKey)}')">
+          <div style="flex: 1; min-width: 0; padding-right: 8px;">
+            <div style="font-family: var(--serif); font-size: 13.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(g.title)}">
+              ${escapeHtml(g.title)}
+            </div>
+            <div style="font-size: 11px; color: var(--ink-soft); margin-top: 2px;">
+              ${g.attempts.length} attempt${g.attempts.length === 1 ? '' : 's'}
+            </div>
+          </div>
+          <span style="font-size: 12px; color: var(--ink-soft); transition: transform 0.2s; transform: ${isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'};">▶</span>
+        </div>
+        <div class="practice-history-group-attempts" style="display: ${isExpanded ? 'block' : 'none'}; padding: 8px; background: var(--bg-list);">
+          ${attemptsHtml}
+        </div>
       </div>
     `;
   }).join('');
+}
+
+function toggleQuestionExpanded(qKey) {
+  practiceState.expandedQuestions[qKey] = !practiceState.expandedQuestions[qKey];
+  renderPracticeHistory();
+}
+
+function escapeHtmlString(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
 function formatPracticeDate(ts) {
@@ -8631,6 +8715,7 @@ CRITICAL for the "errors" array:
     const attempt = {
       id: 'pr_' + Date.now() + Math.random().toString(36).slice(2, 6),
       date: Date.now(),
+      questionId: practiceState.selectedQuestionId || '',
       questionTitle: practiceState.questionTitle,
       questionText: practiceState.questionText,
       essayText: practiceState.essayText,
@@ -8653,9 +8738,10 @@ CRITICAL for the "errors" array:
       attempt.elapsedMs = elapsedMsAtSubmit;
     }
 
-    // Save to history (cap at 50)
-    const history = getPracticeHistory();
+    // Save to history (cap at 10 per question, cap at 50 total)
+    let history = getPracticeHistory();
     history.unshift(attempt);
+    history = prunePracticeAttempts(history, attempt);
     if (history.length > 50) history.length = 50;
     await savePracticeHistory(history);
 
