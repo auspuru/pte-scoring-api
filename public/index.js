@@ -4726,7 +4726,6 @@ async function freestyleWrite() {
   const qLabel = isBand6 ? 'Band 6' : 'Band 9';
   const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
   const vocabSpec = VOCAB_LEVELS[vocabIdx];
-  const template = getTemplateForEssay({ templateChoice: band });
 
   const btn = document.getElementById('fsWriteBtn');
   if (btn) {
@@ -4735,7 +4734,14 @@ async function freestyleWrite() {
     startWriteButtonMessages(btn);
   }
 
-  const prompt = `You are writing a ${qLabel} IELTS/PTE essay for IPT Brisbane tutoring. Follow the user's template closely — fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions, but you MAY shorten its wordy/boilerplate phrasing where needed to stay under the word limit (see LENGTH LIMIT below) — never at the expense of a key idea or an example.
+  const prompt = `You are writing a custom, high-scoring ${qLabel} IELTS/PTE essay for IPT Brisbane tutoring.
+Write naturally and avoid standard templates or rigid, formulaic transitions (such as starting paragraphs with "The topic of X has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or strictly mirroring templated text). Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+
+CRITICAL WARNING: Do NOT use formulaic transitional boilerplate.
+- Do NOT start the introduction with "The topic of [X] has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or any variation of it.
+- Do NOT start body paragraphs with "To begin with, one major reason/merit/cause/problem is..." or "On the other hand, one notable solution/demerit/negative effect is...".
+- Do NOT start the conclusion with "To conclude, [X] presents key problems and remedies..." or "Hence, prioritising... is essential for...".
+These formulaic templates make the essay look robotic and rehearsed. Write a completely fresh, organically structured essay where ideas are connected logically with diverse, natural transitions (e.g. 'First and foremost', 'A primary consideration', 'Conversely', 'Another approach worth exploring', 'In sum', 'Ultimately', etc., used naturally).
 
 ESSAY QUESTION: ${question}
 
@@ -4743,59 +4749,35 @@ ESSAY QUESTION: ${question}
 Read the question and decide what it is actually asking (for example: advantages/disadvantages, agree/disagree, causes/solutions, causes/effects, problems/solutions, problems & benefits, discuss both views, or opinion + alternative actions). Frame the two body paragraphs to match THAT question — do NOT default to "advantages/disadvantages" if the question is really about causes, solutions, opinions, or both views.
 → Body Paragraph 1 = the FIRST thing the question asks for (e.g. the first view, the causes, the problems, the reasons to agree).
 → Body Paragraph 2 = the SECOND thing the question asks for (e.g. the second view, the solutions, the benefits, the reasons to disagree).
-When the template offers slash-choices like [merit / cause / problem / reason], pick the word that matches the question type.
 
 VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
 
 === LENGTH LIMIT (CRITICAL — DO NOT EXCEED) ===
 The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total. Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
-This 300-word limit OVERRIDES any other length guidance, including any per-paragraph word counts in the template or its notes.
+This 300-word limit OVERRIDES any other length guidance.
 HOW TO STAY UNDER 300:
-- If you need to cut words, TRIM THE TEMPLATE'S wording — shorten or drop filler and boilerplate connecting phrases (e.g. compress "has become increasingly important in recent years, prompting varied opinions" to a few words).
-- NEVER cut the actual content to save words: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion. Trim the scaffolding, never the substance.
+- Write concisely. Avoid filler and repetitive transition phrases.
+- Keep the actual content rich: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
 
-=== THE TEMPLATE (FOLLOW EXACTLY) ===
+=== STRUCTURAL REQUIREMENTS ===
+A. INTRODUCTION:
+- Introduce the topic and paraphrase the question naturally.
+- State a clear opinion/thesis statement if the question asks for your view or opinion.
+- Wrap the topic paraphrase and the essay-type phrase (e.g., "examine the benefits and drawbacks of this practice") in ==double equals==.
 
-INTRODUCTION TEMPLATE:
-${template.intro}
+B. BODY PARAGRAPHS (BP1 and BP2):
+- Each paragraph must present exactly TWO supporting ideas.
+- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
+- Wrap the main clauses of the two supporting ideas in ==double equals== (do not wrap the examples or transitions).
 
-BODY PARAGRAPH 1 TEMPLATE:
-${template.bp1}
+C. CONCLUSION:
+- Summarize the main arguments using topic-specific nouns. Avoid boilerplate sentences like "maximising the positive aspects while minimising the negative ones".
+- If the introduction stated an opinion, conclude the paragraph and add a final sentence starting with "Therefore, [echo the opinion in fresh, forward-looking wording]" on a new line.
 
-BODY PARAGRAPH 2 TEMPLATE:
-${template.bp2}
-
-CONCLUSION TEMPLATE:
-${template.concl}
-
-${template.notes ? `=== ADDITIONAL INSTRUCTIONS FROM THE TUTOR ===\n${template.notes}\n` : ''}
-=== RULES FOR FILLING THE TEMPLATE ===
-1. Keep the template's structure and transitions, but you MAY shorten or simplify its wordy connecting/boilerplate phrases when needed to meet the 300-word limit (see LENGTH LIMIT). Never trim in a way that removes a key idea or an example.
-2. Replace each [bracketed placeholder] with content that fits the topic AND the question type.
-3. Slash options: pick the ONE that matches the question type.
-4. (Parentheses) = guidance for you. Apply and remove from the output.
-5. Outer [square brackets] around a whole sentence = OPTIONAL. Include the opinion sentence if the question asks for an opinion or your view; otherwise omit it.
-6. Vocabulary: ${vocabSpec.label} (${vocabSpec.desc}). ${isBand6 ? 'Use simple, plain, everyday English only.' : 'Avoid obscure words: paramount, deleterious, ubiquitous, salient, exacerbate, mitigate (unless truly Band 9+).'}
-7. No idioms, no metaphors, no flowery language.
-
-=== ${qLabel} QUALITY RULES (MANDATORY) ===
-A. EXAMPLES — Each body paragraph MUST contain TWO examples, one per supporting idea. Use EVERYDAY, RELATABLE examples a student can instantly picture from their own life — things they see around them at home, school, work, or in their community: common apps, familiar daily habits, ordinary situations. GOOD: "many people message relatives overseas for free on WhatsApp instead of paying for calls", "a traveller translating a menu with Google Translate on their phone", "people scrolling their phones at the dinner table instead of talking". DO NOT use academic citations, named studies, research reports, surveys, or statistics. If the template's placeholder asks for a study or statistic, IGNORE that and give an everyday relatable example instead. Keep each example to one short, concrete sentence.
-B. CONCLUSION — Use topic-specific nouns in the conclusion, not generic boilerplate like "maximisation of its advantages and the alleviation of its drawbacks". Name the specific thing to prioritise and the specific issue to address for THIS topic.
-C. OPINION ECHO — If the introduction includes an opinion sentence, the conclusion must end with a "Therefore..." sentence that restates that stance in fresh, forward-looking wording (not copied verbatim). If the introduction has no opinion sentence, omit it.
-
-=== HIGHLIGHTING MARKERS ===
-Wrap the key clauses in ==double equals== (used for highlighting):
-- INTRO: wrap the topic paraphrase (after "topic of") and the essay-type phrase (after "examine the").
-- BP1: wrap KEY IDEA 1 clause and KEY IDEA 2 clause.
-- BP2: wrap KEY IDEA 1 clause and KEY IDEA 2 clause.
-Do NOT wrap "This is because...", "For example...", or the Therefore line.
-
-=== STRUCTURAL ADDITIONS ===
-${isBand6
-? 'A. Do NOT add an "[EXTRA IDEA]" line. B. Do NOT add a "Therefore," line. C. End each section exactly as the template specifies.'
-: `A. Do NOT add an "[EXTRA IDEA]" line in BP1. End BP1 with the template's final sentence.
-B. End BP2 naturally — do NOT add a "Therefore," line at the end of BP2.
-C. End of CONCLUSION, on a NEW LINE: "Therefore, [closing sentence echoing the introduction's opinion in fresh wording]." Include this only if the introduction had an opinion sentence.`}
+=== QUALITY RULES (MANDATORY) ===
+1. Vocabulary: ${vocabSpec.label} (${vocabSpec.desc}). ${isBand6 ? 'Use simple, plain, everyday English only.' : 'Avoid obscure words: paramount, deleterious, ubiquitous, salient, exacerbate, mitigate (unless truly Band 9+).'}
+2. No idioms, no metaphors, no flowery language.
+3. Wrapping markers: Make sure to wrap the exact key clauses in ==double equals== as defined in STRUCTURAL REQUIREMENTS.
 
 === OUTPUT FORMAT ===
 Respond with EXACTLY these sections, nothing else, no preamble:
@@ -4805,11 +4787,11 @@ Respond with EXACTLY these sections, nothing else, no preamble:
 ===INTRO===
 [filled introduction with ==markers==]
 ===BP1===
-[filled BP1 with ==markers== — TWO concrete named examples]
+[filled BP1 with ==markers== — TWO concrete everyday examples]
 ===BP2===
-[filled BP2 with ==markers== — TWO concrete named examples — NO Therefore line]
+[filled BP2 with ==markers== — TWO concrete everyday examples]
 ===CONCL===
-[filled conclusion${isBand6 ? '' : ' — topic-specific nouns; add the Therefore line only if the intro had an opinion sentence'}]`;
+[filled conclusion — topic-specific nouns; add the Therefore line on a new line if the intro had an opinion sentence]`;
 
   try {
     const res = await fetch('/api/claude', {
