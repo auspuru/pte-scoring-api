@@ -5627,6 +5627,38 @@ function selectVocabCategory(catId) {
   renderVocabMain();
 }
 
+function jumpToVocabWord(catId, word) {
+  // 1. Open Vocab Pane
+  openVocab();
+  // 2. Select the category
+  selectVocabCategory(catId);
+  // 3. Find the word index
+  const cat = VOCAB_DATA[catId];
+  if (!cat) return;
+  const idx = cat.words.findIndex(w => w.word.toLowerCase() === word.toLowerCase());
+  if (idx !== -1) {
+    // 4. Force List view
+    setVocabViewState('list');
+    // 5. Scroll to the card element
+    setTimeout(() => {
+      const cardEl = document.getElementById(`word-card-${idx}`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight card temporarily with a beautiful frosted accent glow
+        cardEl.style.transition = 'all 0.4s ease';
+        cardEl.style.boxShadow = '0 0 25px var(--accent)';
+        cardEl.style.borderColor = 'var(--accent)';
+        cardEl.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          cardEl.style.boxShadow = '';
+          cardEl.style.borderColor = '';
+          cardEl.style.transform = '';
+        }, 2500);
+      }
+    }, 150);
+  }
+}
+
 let vocabViewState = 'list'; // 'list' or 'flashcard'
 
 function renderVocabMain() {
@@ -10171,14 +10203,22 @@ function renderDashboardCharts(metricType) {
   const previousPlotElements = svg.querySelectorAll('.chart-dynamic-el');
   previousPlotElements.forEach(el => el.remove());
   
-  // Define coordinate bounds mapping for SVG (viewBox="0 0 800 200")
+  // Define coordinate bounds mapping for SVG (responsive layout based on SVG client dimensions)
+  const width = svg.clientWidth || 800;
+  const height = svg.clientHeight || 240;
+  
+  const padLeft = 45;
+  const padRight = 30;
+  const padTop = 25;
+  const padBottom = 35;
+  
   function getY(val) {
-    return 20 + (1 - val / maxScore) * 145;
+    return padTop + (1 - val / maxScore) * (height - padTop - padBottom);
   }
   
   function getX(idx) {
-    if (points.length <= 1) return 400;
-    return 50 + (idx / (points.length - 1)) * 720;
+    if (points.length <= 1) return width / 2;
+    return padLeft + (idx / (points.length - 1)) * (width - padLeft - padRight);
   }
   
   let gridHtml = '';
@@ -10188,14 +10228,14 @@ function renderDashboardCharts(metricType) {
   gridVals.forEach(g => {
     const yVal = getY(g);
     gridHtml += `
-      <line class="chart-grid-line chart-dynamic-el" x1="50" y1="${yVal}" x2="770" y2="${yVal}"></line>
-      <text class="chart-grid-text chart-dynamic-el" x="15" y="${yVal + 4}">${g}</text>
+      <line class="chart-grid-line chart-dynamic-el" x1="${padLeft}" y1="${yVal}" x2="${width - padRight}" y2="${yVal}"></line>
+      <text class="chart-grid-text chart-dynamic-el" x="${padLeft - 25}" y="${yVal + 4}">${g}</text>
     `;
   });
   
   if (points.length === 0) {
     gridHtml += `
-      <text class="chart-dynamic-el" x="400" y="100" text-anchor="middle" fill="var(--ink-mute)" font-weight="600" font-size="13px">
+      <text class="chart-dynamic-el" x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="var(--ink-mute)" font-weight="600" font-size="13px">
         No scored attempts found. Submit a practice task to compile trend analytics.
       </text>
     `;
@@ -10224,7 +10264,7 @@ function renderDashboardCharts(metricType) {
       <circle class="chart-point chart-dynamic-el" cx="${cx}" cy="${cy}" 
         onmouseover="showChartTooltip(${cx}, ${cy}, '${safeTitle}', ${p.score}, '${safeDate}', ${maxScore})" 
         onmouseout="hideChartTooltip()"></circle>
-      <text class="chart-grid-text chart-dynamic-el" x="${cx}" y="185" text-anchor="middle">${p.date}</text>
+      <text class="chart-grid-text chart-dynamic-el" x="${cx}" y="${height - padBottom + 20}" text-anchor="middle">${p.date}</text>
     `;
   });
   
@@ -10279,7 +10319,20 @@ function updateDailyVocabChallenge() {
   const defEl = document.getElementById('challengeDefinition');
   if (defEl) {
     defEl.style.display = 'none';
-    defEl.innerHTML = `<strong>(${currentChallengeWordObj.pos})</strong> ${escapeHtml(currentChallengeWordObj.meaning)}`;
+    const exHtml = currentChallengeWordObj.examples && currentChallengeWordObj.examples.length > 0 
+      ? `<div class="challenge-example" style="margin-top: 8px; font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; color: var(--ink-soft);">"${escapeHtml(currentChallengeWordObj.examples[0])}"</div>`
+      : '';
+    const hubLinkHtml = `<div style="margin-top: 10px; font-size: 12px;">
+      <a href="#" onclick="jumpToVocabWord('${currentChallengeWordObj.catId}', '${currentChallengeWordObj.word}'); return false;" style="color:var(--accent); font-weight:700; text-decoration:underline;">
+        🔗 View & practice in Vocabulary Hub →
+      </a>
+    </div>`;
+    defEl.innerHTML = `
+      <div style="font-weight: 600; color: var(--ink);">(${escapeHtml(currentChallengeWordObj.pos)})</div>
+      <div>${escapeHtml(currentChallengeWordObj.meaning)}</div>
+      ${exHtml}
+      ${hubLinkHtml}
+    `;
   }
   
   const inputEl = document.getElementById('challengeInput');
@@ -10328,7 +10381,7 @@ function checkChallengeSentence() {
   }
   
   fb.className = 'vocab-try-feedback show ok';
-  fb.innerHTML = `✓ Nice! You used <strong>"${escapeHtml(word)}"</strong>. Go to <a href="#" onclick="openVocab(); selectVocabCategory('${currentChallengeWordObj.catId}'); return false;" style="color:var(--accent); font-weight:700; text-decoration:underline;">Vocabulary Hub</a> for deeper AI review.`;
+  fb.innerHTML = `✓ Nice! You used <strong>"${escapeHtml(word)}"</strong>. Go to <a href="#" onclick="jumpToVocabWord('${currentChallengeWordObj.catId}', '${currentChallengeWordObj.word}'); return false;" style="color:var(--accent); font-weight:700; text-decoration:underline;">Vocabulary Hub</a> for deeper AI review.`;
 }
 
 // --- Smart Action Items Planner ---
