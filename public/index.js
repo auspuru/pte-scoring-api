@@ -10271,11 +10271,29 @@ function renderDashboardCharts(metricType) {
   svg.insertAdjacentHTML('beforeend', gridHtml);
 }
 
+// Debounced resize listener to redraw active chart responsively without stretching
+let chartResizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(chartResizeTimeout);
+  chartResizeTimeout = setTimeout(() => {
+    const pane = document.getElementById('dashboardPane');
+    if (pane && pane.classList.contains('active')) {
+      const activeBtn = document.querySelector('.chart-toggle-btn.active');
+      const metric = (activeBtn && activeBtn.id === 'chartToggleEssay') ? 'essay' : 'swt';
+      renderDashboardCharts(metric);
+    }
+  }, 150);
+});
+
 function showChartTooltip(x, y, title, score, date, maxScore) {
   const tooltip = document.getElementById('chartTooltip');
   if (!tooltip) return;
-  const xPct = (x / 800) * 100;
-  const yPct = (y / 200) * 100;
+  const svg = document.getElementById('analyticsSvg');
+  const width = svg ? (svg.clientWidth || 800) : 800;
+  const height = svg ? (svg.clientHeight || 240) : 240;
+  
+  const xPct = (x / width) * 100;
+  const yPct = (y / height) * 100;
   
   tooltip.innerHTML = `
     <div style="font-weight:800; color:var(--accent); font-size:13px; margin-bottom:2px;">${score} / ${maxScore}</div>
