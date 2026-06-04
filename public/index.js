@@ -5592,33 +5592,61 @@ function totalWordsAvailable() {
 function updateVocabProgressSummary() {
   const r = totalWordsRead();
   const total = totalWordsAvailable();
-  document.getElementById('vocabProgressSummary').textContent = `${r} / ${total} words read`;
+  const el = document.getElementById('vocabProgressSummary');
+  if (el) el.textContent = `${r} / ${total} words read`;
+  
+  // Update streak text in vocab hub from dashboard
+  const dashStreakText = document.getElementById('dashStreakCurrent')?.textContent || '0 days';
+  const vocabStreakEl = document.getElementById('vocabStreak');
+  if (vocabStreakEl) {
+    vocabStreakEl.textContent = dashStreakText;
+  }
 }
 
 function renderVocabCategoryList() {
   const q = (document.getElementById('vocabSearch')?.value || '').toLowerCase().trim();
-  const list = document.getElementById('vocabCategoryList');
+  const list = document.getElementById('vocabCategoryTabs');
+  if (!list) return;
   const progress = getVocabProgress();
   const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
-  list.innerHTML = sorted
-    .filter(([id, cat]) => !q || cat.label.toLowerCase().includes(q))
-    .map(([id, cat]) => {
-      const read = cat.words.filter(w => progress.read[vocabKey(id, w.word)]).length;
-      const total = cat.words.length;
-      const isActive = (currentVocabCategory === id);
-      return `
-        <div class="vocab-cat-item ${isActive ? 'active' : ''}" onclick="selectVocabCategory('${id}')">
-          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <span class="vocab-cat-icon">${cat.icon || '📖'}</span>
-            <span class="vocab-cat-label" style="flex:1; margin-left: 8px;">${escapeHtml(cat.label)}</span>
-            <span class="vocab-cat-progress">${read}/${total}</span>
-          </div>
-          <div class="vocab-cat-bar-container">
-            <div class="vocab-cat-bar-fill" style="width: ${(read / total) * 100}%"></div>
-          </div>
-        </div>
-      `;
-    }).join('');
+  
+  let html = '<div class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-2 rounded-2xl border border-outline-variant/20 shadow-xl flex flex-col gap-2">';
+  
+  sorted.forEach(([catId, cat]) => {
+    // If search term matches category title or id
+    if (q && !cat.label.toLowerCase().includes(q) && !catId.toLowerCase().includes(q)) {
+      return;
+    }
+    
+    const read = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+    const total = cat.words.length;
+    const percent = total > 0 ? Math.round((read / total) * 100) : 0;
+    const isActive = (currentVocabCategory === catId);
+    
+    const activeClasses = isActive 
+      ? 'bg-primary text-white shadow-lg scale-105' 
+      : 'bg-surface-container hover:bg-primary hover:text-white dark:bg-zinc-800 dark:text-zinc-300';
+      
+    html += `
+      <button class="w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeClasses}" 
+              onclick="selectVocabCategory('${catId}')" 
+              title="${escapeHtml(cat.label)} (${percent}% done)">
+        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' ${isActive ? '1' : '0'};">${escapeHtml(cat.icon || 'home')}</span>
+      </button>
+    `;
+  });
+  
+  // Practice Quiz button at the bottom of the floating tab
+  html += `
+    <div class="h-[1px] bg-outline-variant/20 w-full mx-auto"></div>
+    <button class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-all text-secondary" 
+            onclick="openVocabPractice()" 
+            title="Practice Quiz">
+      <span class="material-symbols-outlined text-[20px]">grid_view</span>
+    </button>
+  </div>`;
+  
+  list.innerHTML = html;
 }
 
 function selectVocabCategory(catId) {
@@ -5666,33 +5694,73 @@ function renderVocabMain() {
   if (!cat) return;
   const progress = getVocabProgress();
   const main = document.getElementById('vocabMainContent');
+  if (!main) return;
   const readCount = cat.words.filter(w => progress.read[vocabKey(currentVocabCategory, w.word)]).length;
+  const percent = cat.words.length > 0 ? Math.round((readCount / cat.words.length) * 100) : 0;
   
-  let contentHtml = '';
+  // 1. Update Hero Statistics
+  const catTitleEl = document.getElementById('vocabCatTitle');
+  if (catTitleEl) catTitleEl.textContent = cat.label;
   
-  if (vocabViewState === 'list') {
-    contentHtml = cat.words.map((w, i) => renderVocabWordCard(w, i)).join('');
-  } else {
-    contentHtml = renderVocabFlashcardContainer();
+  const catDescEl = document.getElementById('vocabCatDesc');
+  if (catDescEl) {
+    const descriptions = {
+      law: "Master technical vocabulary related to criminal justice, court proceedings, and legal rights for PTE/IELTS writing.",
+      tech: "Explore academic terms surrounding technological advancements, digital societies, and data systems.",
+      env: "Study critical language for natural ecology, climate policies, urban architecture, and resource conservation.",
+      health: "Master advanced vocabulary for public health, medical research, ethics, and wellness ecosystems.",
+      edu: "Understand advanced terminology for learning frameworks, pedagogical systems, and academic performance.",
+      econ: "Gain mastery over terms describing financial systems, market trends, social policies, and corporate responsibility."
+    };
+    catDescEl.textContent = descriptions[currentVocabCategory] || `Improve vocabulary in the ${cat.label} domain.`;
   }
   
-  main.innerHTML = `
-    <div class="vocab-cat-header">
-      <div style="display: flex; flex-direction: column; gap: 4px;">
-        <h2 class="vocab-cat-header-title"><span>${cat.icon || '📖'}</span> ${escapeHtml(cat.label)}</h2>
-        <div class="vocab-cat-header-sub">${cat.words.length} words · ${readCount} read</div>
-      </div>
-      <div class="vocab-view-toggles">
-        <button class="vocab-view-toggle ${vocabViewState === 'list' ? 'active' : ''}" onclick="setVocabViewState('list')">List View</button>
-        <button class="vocab-view-toggle ${vocabViewState === 'flashcard' ? 'active' : ''}" onclick="setVocabViewState('flashcard')">Flashcards</button>
-      </div>
-    </div>
-    <div class="vocab-view-content-body">
-      ${contentHtml}
-    </div>
-  `;
+  const catStatsEl = document.getElementById('vocabCatStats');
+  if (catStatsEl) catStatsEl.textContent = `${readCount} / ${cat.words.length}`;
   
-  if (vocabViewState === 'flashcard') {
+  const catPercentEl = document.getElementById('vocabCatPercent');
+  if (catPercentEl) catPercentEl.textContent = `${percent}%`;
+  
+  const progressRing = document.getElementById('vocabCatProgressRing');
+  if (progressRing) {
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius; // ~439.82
+    const offset = circumference - (percent / 100) * circumference;
+    progressRing.style.strokeDasharray = `${circumference}`;
+    progressRing.style.strokeDashoffset = `${offset}`;
+  }
+  
+  // 2. Update toggle visual states
+  const btnList = document.getElementById('vocabToggleList');
+  const btnFlashcard = document.getElementById('vocabToggleFlashcard');
+  if (btnList && btnFlashcard) {
+    if (vocabViewState === 'list') {
+      btnList.className = "bg-white dark:bg-zinc-800 p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all";
+      btnList.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-primary";
+      btnList.querySelector('span:last-child').className = "font-label-caps text-label-caps text-primary";
+      
+      btnFlashcard.className = "bg-surface-container-highest/30 dark:bg-zinc-900/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white dark:hover:bg-zinc-800 transition-all group";
+      btnFlashcard.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-on-surface-variant";
+      btnFlashcard.querySelector('span:last-child').className = "font-label-caps text-label-caps text-on-surface-variant";
+    } else {
+      btnFlashcard.className = "bg-white dark:bg-zinc-800 p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all";
+      btnFlashcard.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-primary";
+      btnFlashcard.querySelector('span:last-child').className = "font-label-caps text-label-caps text-primary";
+      
+      btnList.className = "bg-surface-container-highest/30 dark:bg-zinc-900/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white dark:hover:bg-zinc-800 transition-all group";
+      btnList.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-on-surface-variant";
+      btnList.querySelector('span:last-child').className = "font-label-caps text-label-caps text-on-surface-variant";
+    }
+  }
+  
+  // 3. Render content HTML
+  let contentHtml = '';
+  if (vocabViewState === 'list') {
+    contentHtml = cat.words.map((w, i) => renderVocabWordCard(w, i)).join('');
+    main.innerHTML = `<div class="flex flex-col gap-6 w-full">${contentHtml}</div>`;
+  } else {
+    contentHtml = renderVocabFlashcardContainer();
+    main.innerHTML = contentHtml;
     showVocabFlashcard();
   }
 }
@@ -5702,43 +5770,110 @@ function setVocabViewState(state) {
   renderVocabMain();
 }
 
+function speakWord(word) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  } else {
+    toast('Text-to-speech not supported in this browser.');
+  }
+}
+
 function renderVocabWordCard(w, idx) {
   const read = isWordRead(currentVocabCategory, w.word);
   const safeWord = w.word.replace(/'/g, "\\'");
   const safeCat = currentVocabCategory.replace(/'/g, "\\'");
   
-  // Dynamic class for POS badge
   const posVal = (w.pos || '').toLowerCase().trim();
-  let posClass = '';
-  if (posVal.includes('noun')) posClass = ' pos-noun';
-  else if (posVal.includes('verb')) posClass = ' pos-verb';
-  else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = ' pos-adjective';
-  else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = ' pos-adverb';
+  let posHtml = '';
+  if (posVal.includes('noun')) {
+    posHtml = `<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-[10px] text-on-surface-variant uppercase">NOUN</span>`;
+  } else if (posVal.includes('verb')) {
+    posHtml = `<span class="bg-secondary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-secondary font-bold uppercase">VERB</span>`;
+  } else if (posVal.includes('adj') || posVal.includes('adjective')) {
+    posHtml = `<span class="bg-tertiary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-tertiary font-bold uppercase">ADJ</span>`;
+  } else if (posVal.includes('adv') || posVal.includes('adverb')) {
+    posHtml = `<span class="bg-outline-variant/30 px-3 py-1 rounded-full font-label-caps text-[10px] text-outline font-bold uppercase">ADV</span>`;
+  } else {
+    posHtml = `<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-[10px] text-on-surface-variant uppercase">${escapeHtml(w.pos || '')}</span>`;
+  }
   
+  const readBtnHtml = read 
+    ? `<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-white border border-primary transition-all text-label-caps font-label-caps" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined text-[18px]">done_all</span>
+         ✓ Read
+       </button>`
+    : `<button class="flex items-center gap-2 px-4 py-1.5 rounded-full border border-outline-variant/30 text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:border-primary-container transition-all text-label-caps font-label-caps" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined text-[18px]">done_all</span>
+         Mark as Read
+       </button>`;
+
+  const regex = new RegExp(`\\b(${w.word})\\b`, 'i');
+  const examplesHtml = (w.examples || []).map(ex => {
+    const bolded = escapeHtml(ex).replace(regex, '<span class="font-bold text-on-background not-italic">$1</span>');
+    return `
+      <li class="flex gap-3 text-on-surface-variant font-body-sm italic">
+        <span class="text-primary mt-1">•</span>
+        "${bolded}"
+      </li>
+    `;
+  }).join('');
+
   return `
-    <div class="vocab-word-card ${read ? 'read' : ''}" id="word-card-${idx}">
-      <div class="vocab-word-header">
-        <span class="vocab-word-text">${escapeHtml(w.word)}</span>
-        <span class="pos-badge${posClass}">${escapeHtml(w.pos || '')}</span>
-        <span class="vocab-word-level">${escapeHtml(w.level || 'C1')}</span>
-        <div style="flex:1;"></div>
-        <button class="vocab-mark-read ${read ? 'read' : ''}" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
-          ${read ? '✓ Read' : 'Mark as read'}
-        </button>
-      </div>
-      <div class="vocab-word-meaning">${escapeHtml(w.meaning || '')}</div>
-      ${w.compare ? `<div class="vocab-word-compare"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
-      <ul class="vocab-word-examples">
-        ${(w.examples || []).map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}
-      </ul>
-      <div class="vocab-try">
-        <div class="vocab-try-label">Try using "${escapeHtml(w.word)}" in your own sentence</div>
-        <div class="vocab-try-row">
-          <input type="text" id="try-${idx}" placeholder="Write your sentence here…" onkeydown="if(event.key==='Enter') checkSentence(${idx}, '${safeWord}')">
-          <button class="vocab-try-check" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
-          <button class="vocab-try-ai" onclick="aiGradeSentence(${idx}, '${safeWord}', '${safeCat}')">🤖 AI grade</button>
+    <div class="vocab-card bg-surface-lowest border border-outline-variant/10 rounded-3xl shadow-sm overflow-hidden flex flex-col" id="word-card-${idx}">
+      <div class="p-8 border-b border-outline-variant/5">
+        <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
+          <div class="flex items-center gap-3 flex-wrap">
+            <h4 class="font-display-lg text-headline-md text-on-background">${escapeHtml(w.word)}</h4>
+            <div class="flex gap-2">
+              ${posHtml}
+              <span class="bg-primary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-primary font-bold">${escapeHtml(w.level || 'C1')}</span>
+            </div>
+            <button class="w-8 h-8 rounded-full hover:bg-surface-container transition-colors text-primary flex items-center justify-center" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
+              <span class="material-symbols-outlined text-[20px]">volume_up</span>
+            </button>
+          </div>
+          ${readBtnHtml}
         </div>
-        <div class="vocab-try-feedback" id="try-fb-${idx}"></div>
+        <p class="text-on-surface-variant font-body-base leading-relaxed max-w-3xl">
+          ${escapeHtml(w.meaning)}
+        </p>
+        ${w.compare ? `
+        <div class="bg-tertiary-fixed/30 border border-tertiary-fixed-dim rounded-xl p-4 flex items-start gap-3 mt-4">
+          <span class="material-symbols-outlined text-tertiary">compare_arrows</span>
+          <p class="text-body-sm text-on-tertiary-fixed-variant">
+            <span class="font-bold">Compare:</span> ${escapeHtml(w.compare)}
+          </p>
+        </div>` : ''}
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2">
+        <div class="p-8 bg-surface-bright/50">
+          <h5 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase tracking-widest">In Context</h5>
+          <ul class="space-y-4">
+            ${examplesHtml}
+          </ul>
+        </div>
+        <div class="p-8 border-l border-outline-variant/10 flex flex-col justify-between">
+          <div>
+            <h5 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
+              Practice Bench
+              <span class="bg-secondary-container/10 text-secondary-container px-2 py-0.5 rounded text-[10px]">AI ENABLED</span>
+            </h5>
+            <div class="relative group">
+              <textarea class="w-full h-32 bg-surface-container-low border border-outline-variant/20 rounded-2xl p-4 font-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" placeholder="Try using '${escapeHtml(w.word)}' in your own sentence..." id="try-${idx}" onfocus="this.parentElement.classList.add('scale-[1.01]', 'transition-transform')" onblur="this.parentElement.classList.remove('scale-[1.01]')"></textarea>
+              <div class="absolute bottom-4 right-4 flex gap-2 opacity-0 group-focus-within:opacity-100 transition-opacity z-10">
+                <button class="px-4 py-2 bg-on-background text-white rounded-xl font-label-caps text-label-caps hover:bg-black transition-colors" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
+                <button class="px-4 py-2 bg-primary text-white rounded-xl font-label-caps text-label-caps flex items-center gap-2 shadow-sm hover:brightness-110 transition-all" onclick="aiGradeSentence(${idx}, '${safeWord}', '${safeCat}')">
+                  <span class="material-symbols-outlined text-[16px]">psychology</span>
+                  AI Grade
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="vocab-try-feedback" id="try-fb-${idx}" style="margin-top: 10px;"></div>
+        </div>
       </div>
     </div>
   `;
