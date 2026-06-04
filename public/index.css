@@ -5592,3 +5592,83 @@ body.dark .card, body.dark .dash-card, body.dark .login-card, body.dark .modal, 
 .vocab-cat-item.active .vocab-cat-bar-fill {
   background: #fff;
 }
+
+/* ==========================================================================
+   DASHBOARD COLUMNS REBALANCE & LAYOUT IMPROVEMENTS
+   ========================================================================== */
+
+/* Main 2-Column Dashboard Container */
+.dashboard-layout-main {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+/* Left Column: Analytics Chart & Interactions */
+.dashboard-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Right Column: Stats & Recent Activities Stack */
+.dashboard-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Stacked list layout for Recent SWT & Essay attempts */
+.dashboard-sections-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Re-adjust stats grid inside the narrow right column (2x2) */
+.dashboard-col-right .dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+/* Clean up unused grid properties and margins for layout consistency */
+.dashboard-col-left .chart-card {
+  grid-column: auto;
+  margin-top: 0;
+}
+.dashboard-col-left .dashboard-interaction-row {
+  grid-column: auto;
+  margin-top: 0;
+}
+
+/* Override padding on the full-height Essay Library pane */
+#libraryPane {
+  padding: 0 !important;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1200px) {
+  .dashboard-layout-main {
+    grid-template-columns: 1.8fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-layout-main {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-col-right .dashboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-col-right .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

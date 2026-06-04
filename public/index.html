@@ -187,149 +187,167 @@
           </div>
         </div>
 
-        <div class="dashboard-grid">
-          <!-- SWT summary card -->
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <span class="dash-card-icon">📝</span>
-              <span class="dash-card-title">SWT Summary Status</span>
-            </div>
-            <div class="dash-card-body">
-              <div class="big-score"><span id="dashSwtAvgScore">—</span><span class="score-max">/90</span></div>
-              <div class="dash-progress-stats" style="margin-top: 14px;">
-                <div class="stat-row"><span>Summary Attempts:</span> <strong id="dashSwtAttempts">0</strong></div>
-                <div class="stat-row"><span>Passages Explored:</span> <strong id="dashSwtPassages">0</strong></div>
+        <!-- Main Dashboard Layout Grid (Two Columns) -->
+        <div class="dashboard-layout-main">
+          
+          <!-- Left Column: Chart & Interactions -->
+          <div class="dashboard-col-left">
+            
+            <!-- Score Trend Analytics Chart -->
+            <div class="dash-card chart-card" id="analyticsChartCard">
+              <div class="chart-header">
+                <div class="chart-title-area">
+                  <h3>📈 Performance Analytics</h3>
+                  <p style="font-size: 12px; color: var(--ink-soft); margin-top: 2px;">Visual score history over your last 10 attempts</p>
+                </div>
+                <div class="chart-toggles">
+                  <button class="chart-toggle-btn active" id="chartToggleSwt" onclick="setDashboardChartMetric('swt')">SWT Summary</button>
+                  <button class="chart-toggle-btn" id="chartToggleEssay" onclick="setDashboardChartMetric('essay')">Band 9 Essay</button>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Essay summary card -->
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <span class="dash-card-icon">📚</span>
-              <span class="dash-card-title">Library Progress</span>
-            </div>
-            <div class="dash-card-body">
-              <div class="dash-progress-ring">
-                <svg class="progress-ring-svg" width="80" height="80">
-                  <circle class="progress-ring-bg" stroke="var(--line-soft)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
-                  <circle class="progress-ring-fill" id="dashProgressFill" stroke="var(--accent)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40" stroke-dasharray="213.628" stroke-dashoffset="213.628"/>
+              <div class="chart-svg-container">
+                <svg id="analyticsSvg" viewBox="0 0 800 200" preserveAspectRatio="none">
+                  <!-- Linear Gradients for Area Fills -->
+                  <defs>
+                    <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
+                      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Drawn dynamically via JS -->
                 </svg>
-                <div class="progress-ring-text"><span id="dashPercent">0</span>%</div>
-              </div>
-              <div class="dash-progress-stats">
-                <div class="stat-row"><span>Written Essays:</span> <strong id="dashWrittenCount">0</strong></div>
-                <div class="stat-row"><span>Drafts:</span> <strong id="dashDraftCount">0</strong></div>
-                <div class="stat-row"><span>Empty Topics:</span> <strong id="dashEmptyCount">0</strong></div>
+                <div class="chart-tooltip" id="chartTooltip"></div>
               </div>
             </div>
-          </div>
 
-          <!-- Essay Practice card -->
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <span class="dash-card-icon">🎯</span>
-              <span class="dash-card-title">Average Essay Practice</span>
-            </div>
-            <div class="dash-card-body score-body">
-              <div class="big-score"><span id="dashAvgScore">—</span><span class="score-max">/26</span></div>
-              <div class="score-desc" id="dashScoreDesc">Submit a practice essay to compile your evaluation profile.</div>
-            </div>
-          </div>
-
-          <!-- Vocab card -->
-          <div class="dash-card">
-            <div class="dash-card-header">
-              <span class="dash-card-icon">📖</span>
-              <span class="dash-card-title">Vocabulary Mastery</span>
-            </div>
-            <div class="dash-card-body vocab-body">
-              <div class="big-vocab-count"><span id="dashVocabRead">0</span> <span class="vocab-total">words</span></div>
-              <p class="vocab-desc-text">Read definitions and try quizzes to master academic vocabulary.</p>
-            </div>
-        </div>
-
-        <!-- Score Trend Analytics Chart -->
-        <div class="dash-card chart-card" id="analyticsChartCard">
-          <div class="chart-header">
-            <div class="chart-title-area">
-              <h3>📈 Performance Analytics</h3>
-              <p style="font-size: 12px; color: var(--ink-soft); margin-top: 2px;">Visual score history over your last 10 attempts</p>
-            </div>
-            <div class="chart-toggles">
-              <button class="chart-toggle-btn active" id="chartToggleSwt" onclick="setDashboardChartMetric('swt')">SWT Summary</button>
-              <button class="chart-toggle-btn" id="chartToggleEssay" onclick="setDashboardChartMetric('essay')">Band 9 Essay</button>
-            </div>
-          </div>
-          <div class="chart-svg-container">
-            <svg id="analyticsSvg">
-              <!-- Linear Gradients for Area Fills -->
-              <defs>
-                <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
-                  <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0"/>
-                </linearGradient>
-              </defs>
-              <!-- Drawn dynamically via JS -->
-            </svg>
-            <div class="chart-tooltip" id="chartTooltip"></div>
-          </div>
-        </div>
-
-        <!-- Daily Vocab Challenge & Actions Grid -->
-        <div class="dashboard-interaction-row">
-          <!-- Daily Challenge -->
-          <div class="dash-card daily-challenge-card">
-            <div class="dash-card-header" style="margin-bottom: 8px;">
-              <span class="dash-card-icon">💡</span>
-              <span class="dash-card-title">Daily Vocab Challenge</span>
-            </div>
-            <div class="challenge-word-box">
-              <span class="challenge-word" id="challengeWord">—</span>
-              <button class="reveal-btn" id="challengeRevealBtn" onclick="revealChallengeWord()">Reveal meaning</button>
-            </div>
-            <div class="challenge-definition" id="challengeDefinition" style="display: none; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); min-height: 38px; margin-bottom: 12px;">
-              Definition will appear here.
-            </div>
-            <div class="vocab-try" style="margin-top: auto; padding-top: 10px;">
-              <div class="vocab-try-row">
-                <input type="text" id="challengeInput" placeholder="Try using it in a sentence…" onkeydown="if(event.key==='Enter') checkChallengeSentence()">
-                <button class="vocab-try-check" onclick="checkChallengeSentence()">Check</button>
+            <!-- Daily Vocab Challenge & Actions Grid -->
+            <div class="dashboard-interaction-row">
+              <!-- Daily Challenge -->
+              <div class="dash-card daily-challenge-card">
+                <div class="dash-card-header" style="margin-bottom: 8px;">
+                  <span class="dash-card-icon">💡</span>
+                  <span class="dash-card-title">Daily Vocab Challenge</span>
+                </div>
+                <div class="challenge-word-box">
+                  <span class="challenge-word" id="challengeWord">—</span>
+                  <button class="reveal-btn" id="challengeRevealBtn" onclick="revealChallengeWord()">Reveal meaning</button>
+                </div>
+                <div class="challenge-definition" id="challengeDefinition" style="display: none; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); min-height: 38px; margin-bottom: 12px;">
+                  Definition will appear here.
+                </div>
+                <div class="vocab-try" style="margin-top: auto; padding-top: 10px;">
+                  <div class="vocab-try-row">
+                    <input type="text" id="challengeInput" placeholder="Try using it in a sentence…" onkeydown="if(event.key==='Enter') checkChallengeSentence()">
+                    <button class="vocab-try-check" onclick="checkChallengeSentence()">Check</button>
+                  </div>
+                  <div class="vocab-try-feedback" id="challengeFeedback" style="margin-top: 8px;"></div>
+                </div>
               </div>
-              <div class="vocab-try-feedback" id="challengeFeedback" style="margin-top: 8px;"></div>
-            </div>
-          </div>
 
-          <!-- Recommended Actions List -->
-          <div class="dash-card action-items-card" id="dashActionCard" style="justify-content: flex-start; gap: 0;">
-            <div class="dash-card-header" style="margin-bottom: 8px;">
-              <span class="dash-card-icon">⚡</span>
-              <span class="dash-card-title">Recommended Next Steps</span>
-            </div>
-            <div class="action-items-list" id="dashActionItems">
-              <!-- Dynamically populated via JS -->
+              <!-- Recommended Actions List -->
+              <div class="dash-card action-items-card" id="dashActionCard" style="justify-content: flex-start; gap: 0;">
+                <div class="dash-card-header" style="margin-bottom: 8px;">
+                  <span class="dash-card-icon">⚡</span>
+                  <span class="dash-card-title">Recommended Next Steps</span>
+                </div>
+                <div class="action-items-list" id="dashActionItems">
+                  <!-- Dynamically populated via JS -->
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          
+          <!-- Right Column: Stats & Recent Activity -->
+          <div class="dashboard-col-right">
+            
+            <!-- Quick Stats Grid (2x2) -->
+            <div class="dashboard-grid">
+              <!-- SWT summary card -->
+              <div class="dash-card">
+                <div class="dash-card-header">
+                  <span class="dash-card-icon">📝</span>
+                  <span class="dash-card-title">SWT Summary Status</span>
+                </div>
+                <div class="dash-card-body">
+                  <div class="big-score"><span id="dashSwtAvgScore">—</span><span class="score-max">/90</span></div>
+                  <div class="dash-progress-stats" style="margin-top: 14px;">
+                    <div class="stat-row"><span>Summary Attempts:</span> <strong id="dashSwtAttempts">0</strong></div>
+                    <div class="stat-row"><span>Passages Explored:</span> <strong id="dashSwtPassages">0</strong></div>
+                  </div>
+                </div>
+              </div>
 
-        <div class="dashboard-sections">
-          <!-- Recent SWT attempts -->
-          <div class="dash-section">
-            <h3 class="section-heading">Recent SWT Submissions</h3>
-            <div id="dashRecentSwt" class="recent-list">
-              <div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>
-            </div>
-          </div>
+              <!-- Essay summary card -->
+              <div class="dash-card">
+                <div class="dash-card-header">
+                  <span class="dash-card-icon">📚</span>
+                  <span class="dash-card-title">Library Progress</span>
+                </div>
+                <div class="dash-card-body">
+                  <div class="dash-progress-ring">
+                    <svg class="progress-ring-svg" width="80" height="80">
+                      <circle class="progress-ring-bg" stroke="var(--line-soft)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                      <circle class="progress-ring-fill" id="dashProgressFill" stroke="var(--accent)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40" stroke-dasharray="213.628" stroke-dashoffset="213.628"/>
+                    </svg>
+                    <div class="progress-ring-text"><span id="dashPercent">0</span>%</div>
+                  </div>
+                  <div class="dash-progress-stats">
+                    <div class="stat-row"><span>Written Essays:</span> <strong id="dashWrittenCount">0</strong></div>
+                    <div class="stat-row"><span>Drafts:</span> <strong id="dashDraftCount">0</strong></div>
+                    <div class="stat-row"><span>Empty Topics:</span> <strong id="dashEmptyCount">0</strong></div>
+                  </div>
+                </div>
+              </div>
 
-          <!-- Recent Essay attempts -->
-          <div class="dash-section">
-            <h3 class="section-heading">Recent Scored Essay Attempts</h3>
-            <div id="dashRecentPractice" class="recent-list">
-              <div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>
+              <!-- Essay Practice card -->
+              <div class="dash-card">
+                <div class="dash-card-header">
+                  <span class="dash-card-icon">🎯</span>
+                  <span class="dash-card-title">Average Essay Practice</span>
+                </div>
+                <div class="dash-card-body score-body">
+                  <div class="big-score"><span id="dashAvgScore">—</span><span class="score-max">/26</span></div>
+                  <div class="score-desc" id="dashScoreDesc">Submit a practice essay to compile your evaluation profile.</div>
+                </div>
+              </div>
+
+              <!-- Vocab card -->
+              <div class="dash-card">
+                <div class="dash-card-header">
+                  <span class="dash-card-icon">📖</span>
+                  <span class="dash-card-title">Vocabulary Mastery</span>
+                </div>
+                <div class="dash-card-body vocab-body">
+                  <div class="big-vocab-count"><span id="dashVocabRead">0</span> <span class="vocab-total">words</span></div>
+                  <p class="vocab-desc-text">Read definitions and try quizzes to master academic vocabulary.</p>
+                </div>
+              </div>
             </div>
+
+            <!-- Recent Activity lists stacked vertically -->
+            <div class="dashboard-sections-stacked">
+              <!-- Recent SWT attempts -->
+              <div class="dash-section">
+                <h3 class="section-heading">Recent SWT Submissions</h3>
+                <div id="dashRecentSwt" class="recent-list">
+                  <div class="list-empty-state">No summaries scored yet. Select the SWT tab to begin.</div>
+                </div>
+              </div>
+
+              <!-- Recent Essay attempts -->
+              <div class="dash-section">
+                <h3 class="section-heading">Recent Scored Essay Attempts</h3>
+                <div id="dashRecentPractice" class="recent-list">
+                  <div class="list-empty-state">No recent scored essays. Go to the Essay Practice tab to begin.</div>
+                </div>
+              </div>
+            </div>
+            
           </div>
+          
         </div>
       </div>
+
 
       <!-- SWT Practice Pane -->
       <div id="swtPane" class="pane">
