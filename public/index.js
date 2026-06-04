@@ -502,9 +502,12 @@ async function consumeQuota(kind) {
     toast('Daily idea-suggestion quota reached. Resets at midnight.', true);
     return false;
   }
-  userProfile.quotaUsed[kind] = (userProfile.quotaUsed[kind] || 0) + 1;
-  updateQuotaChip();
-  queueSync();
+  if (userProfile) {
+    if (!userProfile.quotaUsed) userProfile.quotaUsed = {};
+    userProfile.quotaUsed[kind] = (userProfile.quotaUsed[kind] || 0) + 1;
+    updateQuotaChip();
+    queueSync();
+  }
   return true;
 }
 
