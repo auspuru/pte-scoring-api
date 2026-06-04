@@ -8365,7 +8365,7 @@ SCORING RUBRIC (total = 26 points):
    - 2-3: Partial answer, weak development
    - 0-1: Off-topic or very thin
 
-• form (0-2): Word count check ONLY (don't penalise here for content issues).
+• form (0-2): Word count check ONLY. The exact word count is exactly ${wordCount} words. You MUST use this exact number and do NOT count the words yourself.
    - 2: Word count is 200-300
    - 1: Word count is 120-199 OR 301-380
    - 0: Word count outside 120-380
@@ -8517,6 +8517,34 @@ CRITICAL for the "errors" array:
       if (!match) throw new Error('AI response was not valid JSON');
       result = JSON.parse(match[0]);
     }
+
+    // Programmatic override for Form score and feedback to prevent LLM word counting errors
+    let calculatedFormScore = 0;
+    let formFeedbackText = '';
+    if (wordCount >= 200 && wordCount <= 300) {
+      calculatedFormScore = 2;
+      formFeedbackText = `Your essay is ${wordCount} words, which is within the required 200–300 word limit. Well done on meeting the length requirement!`;
+    } else if ((wordCount >= 120 && wordCount < 200) || (wordCount > 300 && wordCount <= 380)) {
+      calculatedFormScore = 1;
+      if (wordCount < 200) {
+        formFeedbackText = `Your essay is ${wordCount} words, which is slightly below the 200-word minimum limit. Try to write a bit more to land between 200 and 300 words next time.`;
+      } else {
+        formFeedbackText = `Your essay is ${wordCount} words, which is slightly above the 300-word limit. Try to trim about ${wordCount - 300} words to land between 200 and 300 words next time.`;
+      }
+    } else {
+      calculatedFormScore = 0;
+      if (wordCount < 120) {
+        formFeedbackText = `Your essay is only ${wordCount} words, which is far below the 200-word limit. You must write at least 200 words to avoid heavy form penalties.`;
+      } else {
+        formFeedbackText = `Your essay is ${wordCount} words, which is far above the 300-word limit. You must trim it to land between 200 and 300 words next time.`;
+      }
+    }
+    
+    if (!result.scores) result.scores = {};
+    if (!result.feedback) result.feedback = {};
+    
+    result.scores.form = calculatedFormScore;
+    result.feedback.form = formFeedbackText;
 
     // Calculate total
     let total = 0;
