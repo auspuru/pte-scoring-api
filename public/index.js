@@ -5608,9 +5608,14 @@ function renderVocabCategoryList() {
       const isActive = (currentVocabCategory === id);
       return `
         <div class="vocab-cat-item ${isActive ? 'active' : ''}" onclick="selectVocabCategory('${id}')">
-          <span class="vocab-cat-icon">${cat.icon || '📖'}</span>
-          <span class="vocab-cat-label">${escapeHtml(cat.label)}</span>
-          <span class="vocab-cat-progress">${read}/${total}</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <span class="vocab-cat-icon">${cat.icon || '📖'}</span>
+            <span class="vocab-cat-label" style="flex:1; margin-left: 8px;">${escapeHtml(cat.label)}</span>
+            <span class="vocab-cat-progress">${read}/${total}</span>
+          </div>
+          <div class="vocab-cat-bar-container">
+            <div class="vocab-cat-bar-fill" style="width: ${(read / total) * 100}%"></div>
+          </div>
         </div>
       `;
     }).join('');
@@ -5622,19 +5627,47 @@ function selectVocabCategory(catId) {
   renderVocabMain();
 }
 
+let vocabViewState = 'list'; // 'list' or 'flashcard'
+
 function renderVocabMain() {
   const cat = VOCAB_DATA[currentVocabCategory];
   if (!cat) return;
   const progress = getVocabProgress();
   const main = document.getElementById('vocabMainContent');
   const readCount = cat.words.filter(w => progress.read[vocabKey(currentVocabCategory, w.word)]).length;
+  
+  let contentHtml = '';
+  
+  if (vocabViewState === 'list') {
+    contentHtml = cat.words.map((w, i) => renderVocabWordCard(w, i)).join('');
+  } else {
+    contentHtml = renderVocabFlashcardContainer();
+  }
+  
   main.innerHTML = `
     <div class="vocab-cat-header">
-      <h2 class="vocab-cat-header-title"><span>${cat.icon || '📖'}</span> ${escapeHtml(cat.label)}</h2>
-      <div class="vocab-cat-header-sub">${cat.words.length} words · ${readCount} read</div>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <h2 class="vocab-cat-header-title"><span>${cat.icon || '📖'}</span> ${escapeHtml(cat.label)}</h2>
+        <div class="vocab-cat-header-sub">${cat.words.length} words · ${readCount} read</div>
+      </div>
+      <div class="vocab-view-toggles">
+        <button class="vocab-view-toggle ${vocabViewState === 'list' ? 'active' : ''}" onclick="setVocabViewState('list')">List View</button>
+        <button class="vocab-view-toggle ${vocabViewState === 'flashcard' ? 'active' : ''}" onclick="setVocabViewState('flashcard')">Flashcards</button>
+      </div>
     </div>
-    ${cat.words.map((w, i) => renderVocabWordCard(w, i)).join('')}
+    <div class="vocab-view-content-body">
+      ${contentHtml}
+    </div>
   `;
+  
+  if (vocabViewState === 'flashcard') {
+    showVocabFlashcard();
+  }
+}
+
+function setVocabViewState(state) {
+  vocabViewState = state;
+  renderVocabMain();
 }
 
 function renderVocabWordCard(w, idx) {
@@ -5793,7 +5826,6 @@ let quizWords = [];
 let quizUserAnswers = {};
 
 function openVocabPractice() {
-  // Build pool: read words first, then unread to fill if needed
   const progress = getVocabProgress();
   const allWords = [];
   for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
@@ -5805,21 +5837,33 @@ function openVocabPractice() {
   const unreadPool = allWords.filter(w => !w.read);
 
   document.getElementById('vocabPracticeContent').innerHTML = `
-    <h2>🎯 Practice Quiz</h2>
-    <p>Test yourself on the words you've been learning.</p>
-    <div style="background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin-bottom:14px;">
-      <div style="font-size:13px; margin-bottom:10px;">
-        <strong>${readPool.length}</strong> words you've marked read · <strong>${unreadPool.length}</strong> unread
+    <h2>🎯 Vocabulary Practice Center</h2>
+    <p style="margin-bottom: 20px;">Choose a practice mode to test your C1/C2 vocabulary knowledge.</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+      <!-- Quiz Panel -->
+      <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+        <h3 style="font-size:15px; margin-bottom:6px; color:var(--accent);">🎯 Definition Quiz</h3>
+        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
+        <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+          <button class="tb-text-btn dark" onclick="startQuizMode('spelling')">Start Spelling Quiz</button>
+          <button class="tb-text-btn dark" onclick="startQuizMode('mcq')">Start Multiple Choice</button>
+        </div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="tb-text-btn" onclick="startQuiz(10, 'read')" ${readPool.length < 1 ? 'disabled' : ''}>10 from words I've read</button>
-        <button class="tb-text-btn" onclick="startQuiz(20, 'read')" ${readPool.length < 1 ? 'disabled' : ''}>20 from words I've read</button>
-        <button class="tb-text-btn" onclick="startQuiz(10, 'all')">10 from all words (mixed)</button>
+      
+      <!-- Matching Game Panel -->
+      <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+        <h3 style="font-size:15px; margin-bottom:6px; color:#10b981;">⚡ Synonyms Matcher</h3>
+        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
+        <div style="margin-top:14px;">
+          <button class="tb-text-btn dark" onclick="startSynonymsMatcher()" style="background:#10b981; border-color:#10b981; width:100%;">Play Matcher Game</button>
+        </div>
       </div>
-      ${readPool.length < 5 ? `<div style="margin-top:10px; font-size:11.5px; color:var(--ink-mute); font-style:italic;">Tip: read a few more words first for the best practice experience.</div>` : ''}
     </div>
-    <div class="modal-actions">
-      <button class="tb-text-btn" onclick="closeVocabPractice()">Cancel</button>
+    
+    <div style="font-size:12.5px; color:var(--ink-mute); border-top:1px solid var(--line-soft); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+      <span>Pool: <strong>${readPool.length}</strong> read words · <strong>${unreadPool.length}</strong> unread</span>
+      <button class="tb-text-btn" onclick="closeVocabPractice()">Close</button>
     </div>
   `;
   document.getElementById('vocabPracticeModal').classList.add('show');
@@ -6765,6 +6809,16 @@ function updateDashboard() {
   renderDashboardRecentPractice();
   renderDashboardRecentSwt();
   renderDashboardRecentEssays();
+
+  // Glassmorphism dashboard interactive widgets
+  try {
+    updateDashboardStreak();
+    renderDashboardCharts(currentDashboardChartMetric || 'swt');
+    updateDailyVocabChallenge();
+    renderDashboardActionItems();
+  } catch (err) {
+    console.error('Error rendering interactive widgets:', err);
+  }
 }
 
 function updateDashboardQuota() {
@@ -9934,4 +9988,934 @@ function setEditorFramework(fw) {
   if (howField) howField.style.display = (fw === 'tpc') ? 'none' : '';
   document.getElementById('passageEditModal').dataset.editorFramework = fw;
 }
+
+// ============================================================
+//  CUSTOM GLASSMORPHISM DASHBOARD & VOCABULARY ENGINE FUNCTIONS
+// ============================================================
+
+function localDateStamp(dateInput) {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return null;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formatDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function updateDashboardStreak() {
+  const activeDates = new Set();
+  
+  // 1. Collect SWT history dates
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  Object.keys(swtHistory).forEach(pid => {
+    const list = swtHistory[pid];
+    if (Array.isArray(list)) {
+      list.forEach(att => {
+        if (att.timestamp) {
+          const stamp = localDateStamp(att.timestamp);
+          if (stamp) activeDates.add(stamp);
+        }
+      });
+    }
+  });
+  
+  // 2. Collect Essay history dates
+  const essayHistory = getPracticeHistory() || [];
+  essayHistory.forEach(h => {
+    if (h.date) {
+      const stamp = localDateStamp(h.date);
+      if (stamp) activeDates.add(stamp);
+    }
+  });
+  
+  const sortedDates = Array.from(activeDates).sort();
+  
+  // 3. Compute current streak
+  let currentStreak = 0;
+  const todayVal = new Date();
+  const todayStr = formatDate(todayVal);
+  const hasToday = activeDates.has(todayStr);
+  
+  let yesterdayVal = new Date();
+  yesterdayVal.setDate(yesterdayVal.getDate() - 1);
+  const yesterdayStr = formatDate(yesterdayVal);
+  const hasYesterday = activeDates.has(yesterdayStr);
+  
+  if (hasToday || hasYesterday) {
+    let curr = hasToday ? todayVal : yesterdayVal;
+    while (true) {
+      const currStr = formatDate(curr);
+      if (activeDates.has(currStr)) {
+        currentStreak++;
+        curr.setDate(curr.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+  }
+  
+  // 4. Compute best streak
+  let bestStreak = 0;
+  if (sortedDates.length > 0) {
+    let tempStreak = 1;
+    bestStreak = 1;
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prevDate = new Date(sortedDates[i - 1] + 'T12:00:00');
+      const currDate = new Date(sortedDates[i] + 'T12:00:00');
+      const diffTime = Math.abs(currDate - prevDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) {
+        tempStreak++;
+      } else if (diffDays > 1) {
+        tempStreak = 1;
+      }
+      if (tempStreak > bestStreak) {
+        bestStreak = tempStreak;
+      }
+    }
+  }
+  if (currentStreak > bestStreak) {
+    bestStreak = currentStreak;
+  }
+  
+  // 5. Update DOM values
+  const currEl = document.getElementById('dashStreakCurrent');
+  const bestEl = document.getElementById('dashStreakBest');
+  if (currEl) currEl.textContent = `${currentStreak} day${currentStreak === 1 ? '' : 's'}`;
+  if (bestEl) bestEl.textContent = `${bestStreak} day${bestStreak === 1 ? '' : 's'}`;
+  
+  // 6. Draw 7-day grid ending with today
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const gridContainer = document.getElementById('dashStreakGrid');
+  if (gridContainer) {
+    let gridHtml = '';
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dStr = formatDate(d);
+      const isToday = (i === 0);
+      const isActive = activeDates.has(dStr);
+      const label = isToday ? 'Today' : dayLabels[d.getDay()];
+      
+      gridHtml += `
+        <div class="streak-day-cell ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}">
+          <span class="day-name">${label}</span>
+          <div class="day-dot"></div>
+        </div>
+      `;
+    }
+    gridContainer.innerHTML = gridHtml;
+  }
+}
+
+// --- Analytics Chart Toggle & Generator ---
+let currentDashboardChartMetric = 'swt';
+function setDashboardChartMetric(metric) {
+  currentDashboardChartMetric = metric;
+  
+  const swtBtn = document.getElementById('chartToggleSwt');
+  const essayBtn = document.getElementById('chartToggleEssay');
+  if (swtBtn) swtBtn.classList.toggle('active', metric === 'swt');
+  if (essayBtn) essayBtn.classList.toggle('active', metric === 'essay');
+  
+  renderDashboardCharts(metric);
+}
+
+function renderDashboardCharts(metricType) {
+  const svg = document.getElementById('analyticsSvg');
+  if (!svg) return;
+  
+  let points = [];
+  const maxScore = (metricType === 'swt') ? 90 : 26;
+  
+  if (metricType === 'swt') {
+    const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+    const swtAttempts = [];
+    Object.keys(swtHistory).forEach(pid => {
+      const list = swtHistory[pid];
+      if (Array.isArray(list)) {
+        list.forEach(att => {
+          if (att.timestamp && typeof att.overall_score === 'number') {
+            const passage = passages.find(p => String(p.id) === String(pid));
+            swtAttempts.push({
+              title: passage ? passage.title : `Passage ${pid}`,
+              score: att.overall_score,
+              date: new Date(att.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+              timestamp: att.timestamp
+            });
+          }
+        });
+      }
+    });
+    swtAttempts.sort((a, b) => a.timestamp - b.timestamp);
+    points = swtAttempts.slice(-10);
+  } else {
+    const essayHistory = getPracticeHistory() || [];
+    const essayAttempts = [];
+    essayHistory.forEach(h => {
+      if (h.date && h.scores && typeof h.scores.total === 'number') {
+        essayAttempts.push({
+          title: h.questionTitle || 'Practice Essay',
+          score: h.scores.total,
+          date: new Date(h.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+          timestamp: new Date(h.date).getTime()
+        });
+      }
+    });
+    essayAttempts.sort((a, b) => a.timestamp - b.timestamp);
+    points = essayAttempts.slice(-10);
+  }
+  
+  // Clean dynamic content from previous renderings
+  const previousPlotElements = svg.querySelectorAll('.chart-dynamic-el');
+  previousPlotElements.forEach(el => el.remove());
+  
+  // Define coordinate bounds mapping for SVG (viewBox="0 0 800 200")
+  function getY(val) {
+    return 20 + (1 - val / maxScore) * 145;
+  }
+  
+  function getX(idx) {
+    if (points.length <= 1) return 400;
+    return 50 + (idx / (points.length - 1)) * 720;
+  }
+  
+  let gridHtml = '';
+  
+  // Draw standard horizontal grids
+  const gridVals = (metricType === 'swt') ? [0, 30, 60, 90] : [0, 10, 20, 26];
+  gridVals.forEach(g => {
+    const yVal = getY(g);
+    gridHtml += `
+      <line class="chart-grid-line chart-dynamic-el" x1="50" y1="${yVal}" x2="770" y2="${yVal}"></line>
+      <text class="chart-grid-text chart-dynamic-el" x="15" y="${yVal + 4}">${g}</text>
+    `;
+  });
+  
+  if (points.length === 0) {
+    gridHtml += `
+      <text class="chart-dynamic-el" x="400" y="100" text-anchor="middle" fill="var(--ink-mute)" font-weight="600" font-size="13px">
+        No scored attempts found. Submit a practice task to compile trend analytics.
+      </text>
+    `;
+    svg.insertAdjacentHTML('beforeend', gridHtml);
+    return;
+  }
+  
+  // Construct line and area paths
+  const pathCoordinates = points.map((p, idx) => `${getX(idx)},${getY(p.score)}`).join(' ');
+  const dLine = points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${getX(idx)} ${getY(p.score)}`).join(' ');
+  const dArea = `${dLine} L ${getX(points.length - 1)} ${getY(0)} L ${getX(0)} ${getY(0)} Z`;
+  
+  gridHtml += `
+    <path class="chart-path-area chart-dynamic-el" d="${dArea}"></path>
+    <path class="chart-path-line chart-dynamic-el" d="${dLine}"></path>
+  `;
+  
+  // Render points and labels
+  points.forEach((p, idx) => {
+    const cx = getX(idx);
+    const cy = getY(p.score);
+    const safeTitle = p.title.replace(/'/g, "\\'");
+    const safeDate = p.date.replace(/'/g, "\\'");
+    
+    gridHtml += `
+      <circle class="chart-point chart-dynamic-el" cx="${cx}" cy="${cy}" 
+        onmouseover="showChartTooltip(${cx}, ${cy}, '${safeTitle}', ${p.score}, '${safeDate}', ${maxScore})" 
+        onmouseout="hideChartTooltip()"></circle>
+      <text class="chart-grid-text chart-dynamic-el" x="${cx}" y="185" text-anchor="middle">${p.date}</text>
+    `;
+  });
+  
+  svg.insertAdjacentHTML('beforeend', gridHtml);
+}
+
+function showChartTooltip(x, y, title, score, date, maxScore) {
+  const tooltip = document.getElementById('chartTooltip');
+  if (!tooltip) return;
+  const xPct = (x / 800) * 100;
+  const yPct = (y / 200) * 100;
+  
+  tooltip.innerHTML = `
+    <div style="font-weight:800; color:var(--accent); font-size:13px; margin-bottom:2px;">${score} / ${maxScore}</div>
+    <div style="font-weight:700; max-width:180px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:var(--ink); font-size:11px;">${escapeHtml(title)}</div>
+    <div style="font-size:9.5px; color:var(--ink-mute); margin-top:2px;">${date}</div>
+  `;
+  tooltip.style.left = `${xPct}%`;
+  tooltip.style.top = `${yPct}%`;
+  tooltip.classList.add('show');
+}
+
+function hideChartTooltip() {
+  const tooltip = document.getElementById('chartTooltip');
+  if (tooltip) tooltip.classList.remove('show');
+}
+
+// --- Daily Vocabulary Challenge Widget ---
+let currentChallengeWordObj = null;
+
+function updateDailyVocabChallenge() {
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push({ ...w, catId });
+    }
+  }
+  
+  if (allWords.length === 0) return;
+  
+  // Deterministic daily lookup index
+  const d = new Date();
+  const dayIndex = (d.getFullYear() * 365 + d.getMonth() * 31 + d.getDate()) % allWords.length;
+  currentChallengeWordObj = allWords[dayIndex];
+  
+  const wordEl = document.getElementById('challengeWord');
+  if (wordEl) wordEl.textContent = currentChallengeWordObj.word;
+  
+  const revealBtn = document.getElementById('challengeRevealBtn');
+  if (revealBtn) revealBtn.style.display = 'inline-block';
+  
+  const defEl = document.getElementById('challengeDefinition');
+  if (defEl) {
+    defEl.style.display = 'none';
+    defEl.innerHTML = `<strong>(${currentChallengeWordObj.pos})</strong> ${escapeHtml(currentChallengeWordObj.meaning)}`;
+  }
+  
+  const inputEl = document.getElementById('challengeInput');
+  if (inputEl) inputEl.value = '';
+  
+  const fbEl = document.getElementById('challengeFeedback');
+  if (fbEl) {
+    fbEl.className = 'vocab-try-feedback';
+    fbEl.innerHTML = '';
+  }
+}
+
+function revealChallengeWord() {
+  const revealBtn = document.getElementById('challengeRevealBtn');
+  if (revealBtn) revealBtn.style.display = 'none';
+  const defEl = document.getElementById('challengeDefinition');
+  if (defEl) defEl.style.display = 'block';
+}
+
+function checkChallengeSentence() {
+  if (!currentChallengeWordObj) return;
+  const input = document.getElementById('challengeInput');
+  const fb = document.getElementById('challengeFeedback');
+  if (!input || !fb) return;
+  
+  const text = (input.value || '').trim();
+  if (!text) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'Write a sentence first.';
+    return;
+  }
+  
+  const word = currentChallengeWordObj.word;
+  const stem = word.toLowerCase().replace(/(ation|isation|ing|ed|ies|es|s)$/, '').slice(0, Math.max(4, word.length - 3));
+  const re = new RegExp(`\\b${stem}[a-z]*\\b`, 'i');
+  
+  if (!re.test(text)) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.innerHTML = `Hmm — I couldn't find <strong>"${escapeHtml(word)}"</strong> (or a form of it) in your sentence. Try again.`;
+    return;
+  }
+  if (text.length < 15) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'Your sentence is very short. Try a sentence with more context.';
+    return;
+  }
+  
+  fb.className = 'vocab-try-feedback show ok';
+  fb.innerHTML = `✓ Nice! You used <strong>"${escapeHtml(word)}"</strong>. Go to <a href="#" onclick="openVocab(); selectVocabCategory('${currentChallengeWordObj.catId}'); return false;" style="color:var(--accent); font-weight:700; text-decoration:underline;">Vocabulary Hub</a> for deeper AI review.`;
+}
+
+// --- Smart Action Items Planner ---
+function renderDashboardActionItems() {
+  const container = document.getElementById('dashActionItems');
+  if (!container) return;
+  
+  const actions = [];
+  
+  // 1. Next unattempted SWT passage
+  const swtHistory = LocalStore.get(getPteStorageKey('history')) || {};
+  const unattemptedSwt = passages.find(p => !swtHistory[p.id] || swtHistory[p.id].length === 0);
+  if (unattemptedSwt) {
+    actions.push({
+      icon: '📝',
+      title: `Practice SWT: ${unattemptedSwt.title}`,
+      desc: 'Master summarizing complex academic texts in a single sentence.',
+      action: `switchSection('swt'); jumpToPassage(${unattemptedSwt.id});`
+    });
+  }
+  
+  // 2. Next unwritten Essay Topic
+  const unwrittenEssay = essays.find(e => essayStatus(e) === 'empty' || essayStatus(e) === 'draft');
+  if (unwrittenEssay) {
+    actions.push({
+      icon: '✍️',
+      title: `Write Essay: ${unwrittenEssay.title}`,
+      desc: essayStatus(unwrittenEssay) === 'draft' ? 'Finish your saved draft essay.' : 'Develop a Band 9 essay using advanced academic structure.',
+      action: `switchSection('library'); selectEssay('${unwrittenEssay.id}');`
+    });
+  }
+  
+  // 3. Vocab category with lowest progress
+  const progress = getVocabProgress();
+  let lowestCat = null;
+  let lowestRatio = 1.0;
+  
+  Object.entries(VOCAB_DATA).forEach(([catId, cat]) => {
+    const readCount = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+    const ratio = readCount / cat.words.length;
+    if (ratio < 1.0 && ratio < lowestRatio) {
+      lowestRatio = ratio;
+      lowestCat = { id: catId, ...cat };
+    }
+  });
+  
+  if (lowestCat) {
+    actions.push({
+      icon: '📖',
+      title: `Learn Vocab: ${lowestCat.label}`,
+      desc: `Master C1/C2 terms. Current category progress: ${Math.round(lowestRatio * 100)}%.`,
+      action: `openVocab(); selectVocabCategory('${lowestCat.id}');`
+    });
+  }
+  
+  if (actions.length === 0) {
+    actions.push({
+      icon: '🎉',
+      title: 'All tasks completed!',
+      desc: 'Excellent job. You have explored all current passages and vocabulary files.',
+      action: ''
+    });
+  }
+  
+  container.innerHTML = actions.map(act => `
+    <div class="action-item-card" onclick="${act.action ? act.action : ''}">
+      <div class="action-icon">${act.icon}</div>
+      <div class="action-details">
+        <div class="action-title">${escapeHtml(act.title)}</div>
+        <div class="action-desc">${escapeHtml(act.desc)}</div>
+      </div>
+      <div class="action-arrow">→</div>
+    </div>
+  `).join('');
+}
+
+// --- Flashcards Mode Functions ---
+let flashcardIndex = 0;
+let flashcardFlipped = false;
+
+function renderVocabFlashcardContainer() {
+  return `
+    <div class="flashcard-wrapper" id="flashcardWrapper" onclick="toggleFlashcardFlip()">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="fcFront">
+          <!-- Populated via JS -->
+        </div>
+        <div class="flashcard-back" id="fcBack">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+    </div>
+    <div class="fc-progress" id="fcProgress">Card 1 of 1</div>
+    <div class="flashcard-controls" id="fcControls" style="visibility: hidden;">
+      <button class="fc-btn again" onclick="handleFlashcardAction(false); event.stopPropagation();">Again (Study)</button>
+      <button class="fc-btn good" onclick="handleFlashcardAction(true); event.stopPropagation();">Good (Got it)</button>
+    </div>
+  `;
+}
+
+function showVocabFlashcard() {
+  const cat = VOCAB_DATA[currentVocabCategory];
+  if (!cat || cat.words.length === 0) return;
+  
+  if (flashcardIndex >= cat.words.length) {
+    flashcardIndex = 0;
+  }
+  
+  const w = cat.words[flashcardIndex];
+  flashcardFlipped = false;
+  
+  const wrapper = document.getElementById('flashcardWrapper');
+  if (wrapper) wrapper.classList.remove('flipped');
+  
+  const front = document.getElementById('fcFront');
+  const back = document.getElementById('fcBack');
+  const progress = document.getElementById('fcProgress');
+  const controls = document.getElementById('fcControls');
+  
+  if (front) {
+    front.innerHTML = `
+      <div class="fc-word">${escapeHtml(w.word)}</div>
+      <div class="pos-badge" style="background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:12px; margin-top:10px;">${escapeHtml(w.pos || '')}</div>
+      <div class="fc-hint">Tap card to reveal definition</div>
+    `;
+  }
+  
+  if (back) {
+    back.innerHTML = `
+      <div style="font-weight: 800; font-size: 18px; color: var(--accent); margin-bottom: 8px;">${escapeHtml(w.word)}</div>
+      <div style="font-size: 13px; line-height: 1.5; color: var(--ink); margin-bottom: 12px;">
+        <strong>Meaning:</strong> ${escapeHtml(w.meaning)}
+      </div>
+      ${w.compare ? `<div style="font-size: 12px; margin-bottom: 12px; padding: 6px 10px; background: rgba(99, 102, 241, 0.05); border-radius: 6px;"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
+      <div style="font-size: 12px; color: var(--ink-soft);">
+        <strong>Examples:</strong>
+        <ul style="margin: 6px 0 0 16px; padding: 0;">
+          ${(w.examples || []).map(ex => `<li style="margin-bottom: 4px;">${escapeHtml(ex)}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+  
+  if (progress) {
+    progress.textContent = `Card ${flashcardIndex + 1} of ${cat.words.length}`;
+  }
+  
+  if (controls) {
+    controls.style.visibility = 'hidden';
+  }
+}
+
+function toggleFlashcardFlip() {
+  const wrapper = document.getElementById('flashcardWrapper');
+  if (!wrapper) return;
+  
+  flashcardFlipped = !flashcardFlipped;
+  wrapper.classList.toggle('flipped', flashcardFlipped);
+  
+  const controls = document.getElementById('fcControls');
+  if (controls) {
+    controls.style.visibility = flashcardFlipped ? 'visible' : 'hidden';
+  }
+}
+
+async function handleFlashcardAction(gotIt) {
+  const cat = VOCAB_DATA[currentVocabCategory];
+  if (!cat) return;
+  const w = cat.words[flashcardIndex];
+  
+  const progress = getVocabProgress();
+  const key = vocabKey(currentVocabCategory, w.word);
+  
+  if (gotIt) {
+    if (!progress.read[key]) {
+      progress.read[key] = Date.now();
+      await saveVocabProgress();
+    }
+  } else {
+    if (progress.read[key]) {
+      delete progress.read[key];
+      await saveVocabProgress();
+    }
+  }
+  
+  flashcardIndex++;
+  if (flashcardIndex >= cat.words.length) {
+    flashcardIndex = 0;
+    toast('Finished this category review! Starting again.');
+  }
+  
+  renderVocabCategoryList();
+  updateVocabProgressSummary();
+  showVocabFlashcard();
+}
+
+// --- Practice Hub Game Logic Router ---
+let quizType = 'spelling';
+
+function startQuizMode(type) {
+  quizType = type;
+  
+  const progress = getVocabProgress();
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push({ ...w, catId, catLabel: cat.label, read: !!progress.read[vocabKey(catId, w.word)] });
+    }
+  }
+  const readPool = allWords.filter(w => w.read);
+  
+  document.getElementById('vocabPracticeContent').innerHTML = `
+    <h2>🎯 Select Quiz Length & Pool</h2>
+    <p style="margin-bottom: 16px;">Configure your ${type === 'spelling' ? 'Spelling' : 'Multiple Choice'} quiz.</p>
+    
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom: 20px;">
+      <button class="tb-text-btn dark" onclick="setupAndStartQuiz(10, 'read')" ${readPool.length < 1 ? 'disabled' : ''}>10 words I've read</button>
+      <button class="tb-text-btn dark" onclick="setupAndStartQuiz(20, 'read')" ${readPool.length < 1 ? 'disabled' : ''}>20 words I've read</button>
+      <button class="tb-text-btn dark" onclick="setupAndStartQuiz(10, 'all')">10 mixed words (all)</button>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="openVocabPractice()">← Back</button>
+    </div>
+  `;
+}
+
+function setupAndStartQuiz(n, pool) {
+  const progress = getVocabProgress();
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push({ ...w, catId, catLabel: cat.label, read: !!progress.read[vocabKey(catId, w.word)] });
+    }
+  }
+  const source = (pool === 'read') ? allWords.filter(w => w.read) : allWords;
+  if (source.length === 0) { toast('No words available — read some first', true); return; }
+  
+  const shuffled = [...source].sort(() => Math.random() - 0.5).slice(0, Math.min(n, source.length));
+  quizWords = shuffled;
+  quizUserAnswers = {};
+  
+  if (quizType === 'spelling') {
+    renderQuiz();
+  } else {
+    startMCQQuiz();
+  }
+}
+
+// --- Multiple-Choice Quiz Engine ---
+let mcqCurrentIndex = 0;
+let mcqScore = 0;
+let mcqChoices = [];
+let mcqAnswerChecked = false;
+
+function startMCQQuiz() {
+  mcqCurrentIndex = 0;
+  mcqScore = 0;
+  renderMCQQuestion();
+}
+
+function renderMCQQuestion() {
+  if (mcqCurrentIndex >= quizWords.length) {
+    renderMCQFinished();
+    return;
+  }
+  
+  mcqAnswerChecked = false;
+  const w = quizWords[mcqCurrentIndex];
+  
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const item of cat.words) {
+      if (item.word !== w.word) {
+        allWords.push(item.word);
+      }
+    }
+  }
+  
+  const distractors = [...new Set(allWords)].sort(() => Math.random() - 0.5).slice(0, 3);
+  mcqChoices = [w.word, ...distractors].sort(() => Math.random() - 0.5);
+  
+  const c = document.getElementById('vocabPracticeContent');
+  c.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line-soft); padding-bottom:8px; margin-bottom:14px;">
+      <h3 style="margin:0; font-size:15px; color:var(--accent);">🎯 Multiple Choice Quiz</h3>
+      <span style="font-size:12px; color:var(--ink-soft); font-weight:700;">Question ${mcqCurrentIndex + 1} of ${quizWords.length}</span>
+    </div>
+    
+    <div style="margin: 16px 0; background:rgba(99, 102, 241, 0.03); border:1px solid var(--line-soft); padding:16px; border-radius:8px;">
+      <div style="font-size:11px; text-transform:uppercase; font-weight:700; color:var(--ink-mute); margin-bottom:6px;">Meaning:</div>
+      <div style="font-size:14px; font-weight:600; line-height:1.5; color:var(--ink);">${escapeHtml(w.meaning)}</div>
+    </div>
+    
+    <div class="quiz-choices-grid" id="mcqChoicesGrid">
+      ${mcqChoices.map((choice, i) => `
+        <button class="quiz-choice-btn" onclick="submitMCQAnswer('${choice.replace(/'/g, "\\'")}', ${i})">${escapeHtml(choice)}</button>
+      `).join('')}
+    </div>
+    
+    <div id="mcqFeedback" style="margin-top:16px; min-height:48px;"></div>
+    
+    <div class="modal-actions" style="margin-top:16px; border-top:1px solid var(--line-soft); padding-top:12px;">
+      <span style="font-size:12.5px; color:var(--ink-soft);">Score: <strong>${mcqScore}</strong></span>
+      <button class="tb-text-btn" onclick="closeVocabPractice()" style="margin-left:auto;">Quit</button>
+      <button class="tb-text-btn dark" id="mcqNextBtn" disabled onclick="nextMCQQuestion()">Next →</button>
+    </div>
+  `;
+}
+
+function submitMCQAnswer(choice, choiceIndex) {
+  if (mcqAnswerChecked) return;
+  mcqAnswerChecked = true;
+  
+  const w = quizWords[mcqCurrentIndex];
+  const buttons = document.querySelectorAll('#mcqChoicesGrid .quiz-choice-btn');
+  const fb = document.getElementById('mcqFeedback');
+  const isCorrect = (choice === w.word);
+  
+  if (isCorrect) {
+    mcqScore++;
+    buttons[choiceIndex].classList.add('correct');
+    fb.innerHTML = `
+      <div style="color:#10b981; font-weight:700; font-size:13px; display:flex; align-items:center; gap:6px;">
+        <span>✓ Correct!</span>
+      </div>
+    `;
+  } else {
+    buttons[choiceIndex].classList.add('incorrect');
+    buttons.forEach((btn, idx) => {
+      if (mcqChoices[idx] === w.word) {
+        btn.classList.add('correct');
+      }
+    });
+    fb.innerHTML = `
+      <div style="color:#ef4444; font-weight:700; font-size:13px; display:flex; align-items:center; gap:6px;">
+        <span>✗ Incorrect. The correct word is "${escapeHtml(w.word)}".</span>
+      </div>
+    `;
+  }
+  
+  const nextBtn = document.getElementById('mcqNextBtn');
+  if (nextBtn) nextBtn.disabled = false;
+}
+
+function nextMCQQuestion() {
+  mcqCurrentIndex++;
+  renderMCQQuestion();
+}
+
+function renderMCQFinished() {
+  const c = document.getElementById('vocabPracticeContent');
+  
+  const progress = getVocabProgress();
+  if (!progress.practiceHistory) progress.practiceHistory = [];
+  progress.practiceHistory.push({
+    date: Date.now(),
+    total: quizWords.length,
+    correct: mcqScore,
+    pct: Math.round(mcqScore / quizWords.length * 100),
+    mode: 'mcq'
+  });
+  if (progress.practiceHistory.length > 50) progress.practiceHistory = progress.practiceHistory.slice(-50);
+  saveVocabProgress();
+  
+  c.innerHTML = `
+    <div style="text-align:center; padding:16px 0;">
+      <div style="font-size:48px; margin-bottom:12px;">🎉</div>
+      <h2>Multiple Choice Quiz Completed!</h2>
+      <p style="color:var(--ink-soft); margin-bottom:20px;">You scored <strong>${mcqScore} out of ${quizWords.length}</strong> correct definitions.</p>
+      
+      <div style="background:var(--bg-list); border:1px solid var(--line-soft); border-radius:8px; padding:14px; display:inline-block; min-width:240px; margin-bottom:24px;">
+        <div style="font-size:24px; font-weight:800; color:var(--accent);">${Math.round(mcqScore/quizWords.length*100)}%</div>
+        <div style="font-size:12px; color:var(--ink-mute); margin-top:4px;">Accuracy Score</div>
+      </div>
+      
+      <div class="modal-actions" style="justify-content:center; gap:12px;">
+        <button class="tb-text-btn" onclick="openVocabPractice()">Practice Hub</button>
+        <button class="tb-text-btn dark" onclick="startMCQQuiz()">Try Again</button>
+      </div>
+    </div>
+  `;
+}
+
+// --- Synonyms Matching Game Engine ---
+let matcherCards = [];
+let matcherSelected = null;
+let matcherTimer = null;
+let matcherTimeLeft = 45;
+let matcherScore = 0;
+let matcherMatchesCount = 0;
+
+function startSynonymsMatcher() {
+  matcherScore = 0;
+  matcherMatchesCount = 0;
+  matcherTimeLeft = 45;
+  matcherSelected = null;
+  
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push(w);
+    }
+  }
+  
+  if (allWords.length < 6) {
+    toast('Not enough vocabulary words to start matching game.', true);
+    return;
+  }
+  
+  const selectedWords = [...allWords].sort(() => Math.random() - 0.5).slice(0, 6);
+  
+  matcherCards = [];
+  selectedWords.forEach((w, idx) => {
+    matcherCards.push({
+      id: `word-${idx}`,
+      pairId: idx,
+      type: 'word',
+      text: w.word,
+      matched: false
+    });
+    
+    let shortMeaning = w.meaning;
+    if (shortMeaning.length > 40) {
+      shortMeaning = shortMeaning.slice(0, 38) + '...';
+    }
+    
+    matcherCards.push({
+      id: `mean-${idx}`,
+      pairId: idx,
+      type: 'meaning',
+      text: shortMeaning,
+      matched: false
+    });
+  });
+  
+  matcherCards.sort(() => Math.random() - 0.5);
+  
+  if (matcherTimer) clearInterval(matcherTimer);
+  
+  matcherTimer = setInterval(() => {
+    matcherTimeLeft--;
+    const timeEl = document.getElementById('matcherTime');
+    if (timeEl) timeEl.textContent = `${matcherTimeLeft}s`;
+    
+    if (matcherTimeLeft <= 0) {
+      clearInterval(matcherTimer);
+      renderMatcherGameOver();
+    }
+  }, 1000);
+  
+  renderMatcherGrid();
+}
+
+function renderMatcherGrid() {
+  const c = document.getElementById('vocabPracticeContent');
+  c.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line-soft); padding-bottom:8px; margin-bottom:14px;">
+      <h3 style="margin:0; font-size:15px; color:#10b981;">⚡ Synonyms Matcher Game</h3>
+      <div style="display:flex; gap:12px; font-size:12px; font-weight:700;">
+        <span>Matches: <strong id="matcherCount" style="color:#10b981;">0/6</strong></span>
+        <span>Time Left: <strong id="matcherTime" class="game-time-val">45s</strong></span>
+      </div>
+    </div>
+    
+    <p style="font-size:12px; color:var(--ink-soft); margin-top:0;">Match the academic word to its corresponding definition snippet.</p>
+    
+    <div class="matcher-grid" id="matcherGrid">
+      ${matcherCards.map((card, idx) => `
+        <div class="matcher-card" id="card-${card.id}" onclick="handleMatcherCardClick('${card.id}', ${idx})">
+          ${escapeHtml(card.text)}
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="modal-actions" style="margin-top:20px; border-top:1px solid var(--line-soft); padding-top:12px;">
+      <button class="tb-text-btn" onclick="quitMatcherGame()">Quit Game</button>
+    </div>
+  `;
+}
+
+function handleMatcherCardClick(cardId, index) {
+  const card = matcherCards[index];
+  if (card.matched) return;
+  
+  const el = document.getElementById(`card-${cardId}`);
+  if (!el || el.classList.contains('selected') || el.classList.contains('incorrect')) return;
+  
+  el.classList.add('selected');
+  
+  if (matcherSelected === null) {
+    matcherSelected = { card, index, el };
+  } else {
+    const first = matcherSelected;
+    const second = { card, index, el };
+    matcherSelected = null;
+    
+    if (first.card.pairId === second.card.pairId && first.card.type !== second.card.type) {
+      first.card.matched = true;
+      second.card.matched = true;
+      
+      setTimeout(() => {
+        first.el.className = 'matcher-card matched';
+        second.el.className = 'matcher-card matched';
+        
+        matcherMatchesCount++;
+        const countEl = document.getElementById('matcherCount');
+        if (countEl) countEl.textContent = `${matcherMatchesCount}/6`;
+        
+        if (matcherMatchesCount === 6) {
+          clearInterval(matcherTimer);
+          renderMatcherSuccess();
+        }
+      }, 300);
+    } else {
+      first.el.classList.remove('selected');
+      first.el.classList.add('incorrect');
+      second.el.classList.remove('selected');
+      second.el.classList.add('incorrect');
+      
+      setTimeout(() => {
+        first.el.classList.remove('incorrect');
+        second.el.classList.remove('incorrect');
+      }, 800);
+    }
+  }
+}
+
+function quitMatcherGame() {
+  if (matcherTimer) clearInterval(matcherTimer);
+  openVocabPractice();
+}
+
+function renderMatcherSuccess() {
+  const c = document.getElementById('vocabPracticeContent');
+  const scoreGained = 100 + matcherTimeLeft * 10;
+  
+  const progress = getVocabProgress();
+  if (!progress.practiceHistory) progress.practiceHistory = [];
+  progress.practiceHistory.push({
+    date: Date.now(),
+    total: 6,
+    correct: 6,
+    pct: 100,
+    score: scoreGained,
+    mode: 'matcher'
+  });
+  saveVocabProgress();
+  
+  c.innerHTML = `
+    <div style="text-align:center; padding:16px 0;">
+      <div style="font-size:48px; margin-bottom:12px;">🏆</div>
+      <h2>Superb Matching!</h2>
+      <p style="color:var(--ink-soft); margin-bottom:20px;">You cleared the board with <strong>${matcherTimeLeft} seconds</strong> remaining.</p>
+      
+      <div style="background:var(--bg-list); border:1px solid var(--line-soft); border-radius:8px; padding:14px; display:inline-block; min-width:240px; margin-bottom:24px;">
+        <div style="font-size:24px; font-weight:800; color:#10b981;">+${scoreGained} points</div>
+        <div style="font-size:12px; color:var(--ink-mute); margin-top:4px;">High Score logged to database</div>
+      </div>
+      
+      <div class="modal-actions" style="justify-content:center; gap:12px;">
+        <button class="tb-text-btn" onclick="openVocabPractice()">Practice Hub</button>
+        <button class="tb-text-btn dark" onclick="startSynonymsMatcher()" style="background:#10b981; border-color:#10b981;">Play Again</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderMatcherGameOver() {
+  const c = document.getElementById('vocabPracticeContent');
+  c.innerHTML = `
+    <div style="text-align:center; padding:16px 0;">
+      <div style="font-size:48px; margin-bottom:12px;">⏰</div>
+      <h2>Time's Up!</h2>
+      <p style="color:var(--ink-soft); margin-bottom:20px;">The timer ran out before you could match all pairs.</p>
+      
+      <div style="background:var(--bg-list); border:1px solid var(--line-soft); border-radius:8px; padding:14px; display:inline-block; min-width:240px; margin-bottom:24px;">
+        <div style="font-size:20px; font-weight:800; color:#ef4444;">Game Over</div>
+        <div style="font-size:12px; color:var(--ink-mute); margin-top:4px;">Keep practising to improve speed!</div>
+      </div>
+      
+      <div class="modal-actions" style="justify-content:center; gap:12px;">
+        <button class="tb-text-btn" onclick="openVocabPractice()">Practice Hub</button>
+        <button class="tb-text-btn dark" onclick="startSynonymsMatcher()">Try Again</button>
+      </div>
+    </div>
+  `;
+}
+
 
