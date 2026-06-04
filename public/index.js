@@ -10353,7 +10353,10 @@ function renderDashboardCharts(metricType) {
   
   function getX(idx) {
     if (points.length <= 1) return width / 2;
-    return padLeft + (idx / (points.length - 1)) * (width - padLeft - padRight);
+    const maxSpacing = 100; // max px between points to prevent stretching
+    const defaultSpacing = (width - padLeft - padRight) / (points.length - 1);
+    const spacing = Math.min(defaultSpacing, maxSpacing);
+    return padLeft + idx * spacing;
   }
   
   let gridHtml = '';
