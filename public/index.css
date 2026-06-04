@@ -2147,11 +2147,39 @@ body.light-mode .ambient-glow-blob {
   .practice-form-banner,
   .practice-template-banner,
   .vocab-screen,
-  .practice-screen,
   .login-screen,
   #dashboardPane,
   #adminPane { 
     display: none !important; 
+  }
+
+  /* Support printing the Practice Screen when active */
+  body:not(.has-active-practice) .practice-screen {
+    display: none !important;
+  }
+  body.has-active-practice .app-shell,
+  body.has-active-practice .vocab-screen {
+    display: none !important;
+  }
+  body.has-active-practice .practice-screen {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+  body.has-active-practice .practice-topbar,
+  body.has-active-practice .practice-sidebar,
+  body.has-active-practice .practice-actions,
+  body.has-active-practice .practice-new-btn {
+    display: none !important;
+  }
+  body.has-active-practice .practice-main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
   }
   
   /* Reset app shell wrappers to allow full-height scrolling print container */
@@ -3459,6 +3487,33 @@ body.dark .practice-grammar-hint {
 }
 .practice-error:hover { background: rgba(239, 68, 68, 0.12); }
 .practice-error.grammar:hover { background: rgba(245, 158, 11, 0.12); }
+
+.diff-ins {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #065f46;
+  text-decoration: none;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+  display: inline;
+}
+body.dark .diff-ins {
+  background-color: rgba(16, 185, 129, 0.25);
+  color: #a7f3d0;
+}
+.diff-del {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #991b1b;
+  text-decoration: line-through;
+  padding: 1px 4px;
+  border-radius: 4px;
+  opacity: 0.7;
+  display: inline;
+}
+body.dark .diff-del {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
 
 .practice-actions {
   display: flex;

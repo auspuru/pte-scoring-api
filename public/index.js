@@ -7646,6 +7646,7 @@ const PRACTICE_MAX_TOTAL = 26;
 
 function openPractice(defaultToWelcome = true) {
   document.getElementById('practiceScreen').classList.add('show');
+  document.body.classList.add('has-active-practice');
   renderPracticeHistory();
   if (defaultToWelcome) {
     practiceState.view = 'welcome';
@@ -7686,6 +7687,7 @@ function practiceCurrentEssay() {
 
 function closePractice() {
   document.getElementById('practiceScreen').classList.remove('show');
+  document.body.classList.remove('has-active-practice');
   // Stop the live timer interval — don't keep it running in the background
   stopPracticeTimer();
   switchSection('library');
@@ -8481,7 +8483,8 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
   "spellingErrors": ["wrod1", "wrod2"],
   "grammarIssues": ["short phrase showing the issue", "another"],
   "strengths": ["You clearly answered both parts of the question.", "Good use of specific examples like X."],
-  "improvements": ["Vary sentence length — most of yours start with 'The'.", "Add one linking word per paragraph (e.g. however, as a result)."]
+  "improvements": ["Vary sentence length — most of yours start with 'The'.", "Add one linking word per paragraph (e.g. however, as a result)."],
+  "sampleResponse": "Rewrite the student's essay completely to incorporate all your feedback and recommendations. Highlight the changes in the text: wrap any added or improved words/phrases in <span class=\"diff-ins\">...</span> and any deleted or replaced words/phrases in <span class=\"diff-del\">...</span>. Example: 'This is <span class=\"diff-del\">bad</span><span class=\"diff-ins\">suboptimal</span>.'"
 }
 
 CRITICAL for the "errors" array:
@@ -8573,7 +8576,8 @@ CRITICAL for the "errors" array:
       spellingErrors: Array.isArray(result.spellingErrors) ? result.spellingErrors : [],
       grammarIssues: Array.isArray(result.grammarIssues) ? result.grammarIssues : [],
       strengths: Array.isArray(result.strengths) ? result.strengths : [],
-      improvements: Array.isArray(result.improvements) ? result.improvements : []
+      improvements: Array.isArray(result.improvements) ? result.improvements : [],
+      sampleResponse: result.sampleResponse || ''
     };
 
     // Save elapsed (if timer was running) onto the attempt
@@ -8752,6 +8756,30 @@ function resultsView() {
   // Grammar & Spelling inline-error section
   const grammarSection = renderGrammarSpellingSection(a);
 
+  // AI Sample Response (if available)
+  let sampleResponseSection = '';
+  if (a.sampleResponse) {
+    sampleResponseSection = `
+      <div class="practice-grammar-section" style="margin-top:20px;">
+        <div class="practice-grammar-header">
+          <div class="practice-grammar-title">🤖 AI Rewrite &amp; Sample Response</div>
+          <div style="font-size:11px; color:var(--ink-soft); font-weight:normal; font-style:italic;">
+            Showing your essay rewritten to incorporate all recommendations.
+          </div>
+        </div>
+        <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
+          <div style="display:flex; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
+            <div style="display:flex; align-items:center; gap:6px;"><span class="diff-ins" style="font-size:10px; padding:2px 6px; font-weight:700;">ins</span> <span>Added / Improved</span></div>
+            <div style="display:flex; align-items:center; gap:6px;"><span class="diff-del" style="font-size:10px; padding:2px 6px; font-weight:700;">del</span> <span>Replaced / Removed</span></div>
+          </div>
+          <div style="white-space:pre-wrap; font-family:var(--serif); font-size:13.5px; line-height:1.75; color:var(--ink);">
+            ${a.sampleResponse}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   // Show the original question + essay for context
   const questionPanel = `
     <details style="margin-bottom:18px; background:var(--bg-card); border:1px solid var(--line); border-radius:8px; padding:10px 14px;">
@@ -8780,6 +8808,8 @@ function resultsView() {
 
       ${grammarSection}
 
+      ${sampleResponseSection}
+
       <div class="practice-feedback-title">Detailed feedback</div>
       ${feedbackCards}
 
@@ -8788,6 +8818,7 @@ function resultsView() {
       <div class="practice-actions">
         <button class="practice-action-btn primary" onclick="reattemptPractice()">↻ Re-attempt this question</button>
         <button class="practice-action-btn" onclick="startNewPractice()">+ Try a different question</button>
+        <button class="practice-action-btn" onclick="window.print()"><span style="margin-right: 4px;">🖨</span> Print / Save PDF</button>
         <button class="practice-action-btn" onclick="closePractice()">← Back to essays</button>
       </div>
     </div>
