@@ -7707,23 +7707,56 @@ function getCleanSampleResponse(html) {
   return temp.value.trim();
 }
 
+function copyToClipboardFallback(text) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      toast('Essay copied to clipboard! ✓');
+    } else {
+      toast('Failed to copy essay', true);
+    }
+  } catch (err) {
+    console.error('Fallback copy failed: ', err);
+    toast('Failed to copy essay', true);
+  }
+  document.body.removeChild(textArea);
+}
+
 function copyPracticeText(type) {
   const a = practiceState.currentAttempt;
-  if (!a) return;
+  if (!a) {
+    toast('No attempt active', true);
+    return;
+  }
   let text = '';
   if (type === 'attempted') {
     text = a.essayText;
   } else if (type === 'rewritten') {
     text = getCleanSampleResponse(a.sampleResponse);
   }
-  if (!text) return;
+  if (!text) {
+    toast('No essay text to copy', true);
+    return;
+  }
   
-  navigator.clipboard.writeText(text).then(() => {
-    toast('Essay copied to clipboard! ✓');
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-    toast('Failed to copy essay', true);
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      toast('Essay copied to clipboard! ✓');
+    }).catch(err => {
+      console.warn('Clipboard API failed, trying fallback...', err);
+      copyToClipboardFallback(text);
+    });
+  } else {
+    copyToClipboardFallback(text);
+  }
 }
 
 // ---------- History (Firestore-synced via user profile, or localStorage offline) ----------
