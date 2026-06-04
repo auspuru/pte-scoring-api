@@ -7883,7 +7883,7 @@ function renderPracticeHistory() {
     
     return `
       <div class="practice-history-group" style="margin-bottom: 12px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; background: var(--bg-card); box-shadow: var(--shadow);">
-        <div class="practice-history-group-header" style="padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--card-raised); border-bottom: ${isExpanded ? '1px solid var(--line-soft)' : 'none'};" onclick="toggleQuestionExpanded('${escapeHtmlString(qKey)}')">
+        <div class="practice-history-group-header" style="padding: 12px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--card-raised); border-bottom: ${isExpanded ? '1px solid var(--line-soft)' : 'none'};" data-qkey="${escapeHtml(qKey)}" onclick="toggleGroupHeader(this)">
           <div style="flex: 1; min-width: 0; padding-right: 8px;">
             <div style="font-family: var(--serif); font-size: 13.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(g.title)}">
               ${escapeHtml(g.title)}
@@ -7902,13 +7902,10 @@ function renderPracticeHistory() {
   }).join('');
 }
 
-function toggleQuestionExpanded(qKey) {
+function toggleGroupHeader(el) {
+  const qKey = el.getAttribute('data-qkey');
   practiceState.expandedQuestions[qKey] = !practiceState.expandedQuestions[qKey];
   renderPracticeHistory();
-}
-
-function escapeHtmlString(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
 
 function formatPracticeDate(ts) {
