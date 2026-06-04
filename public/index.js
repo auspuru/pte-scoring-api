@@ -5993,13 +5993,48 @@ function closeVocab() {
 function getVocabProgress() {
   let progress = {};
   if (offlineMode) {
-    try { progress = JSON.parse(safeLSGet('ipt_vocab') || '{}'); } catch (e) { progress = {}; }
+    try {
+      const raw = safeLSGet('ipt_vocab');
+      progress = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      progress = {};
+    }
   } else if (userProfile) {
-    if (!userProfile.vocabProgress) userProfile.vocabProgress = { read: {}, attempts: {} };
+    if (!userProfile.vocabProgress) {
+      userProfile.vocabProgress = { read: {}, attempts: {} };
+    }
     progress = userProfile.vocabProgress;
   }
-  if (!progress.read) progress.read = {};
-  if (!progress.attempts) progress.attempts = {};
+
+  // Ensure progress is parsed if it was loaded or synced as a JSON string
+  if (typeof progress === 'string') {
+    try {
+      progress = JSON.parse(progress);
+    } catch (e) {
+      progress = {};
+    }
+  }
+
+  // Ensure progress is a valid plain object
+  if (!progress || typeof progress !== 'object') {
+    progress = {};
+  }
+
+  // Ensure read property is a valid plain object
+  if (!progress.read || typeof progress.read !== 'object') {
+    progress.read = {};
+  }
+
+  // Ensure attempts property is a valid plain object
+  if (!progress.attempts || typeof progress.attempts !== 'object') {
+    progress.attempts = {};
+  }
+
+  // Sync back to userProfile reference to keep them in sync
+  if (userProfile && typeof userProfile === 'object') {
+    userProfile.vocabProgress = progress;
+  }
+
   return progress;
 }
 async function saveVocabProgress() {
@@ -8738,10 +8773,10 @@ CRITICAL for the "errors" array:
       attempt.elapsedMs = elapsedMsAtSubmit;
     }
 
-    // Save to history (cap at 10 per question, cap at 50 total)
+    // Save to history (cap at 50 total, but no per-question limit)
     let history = getPracticeHistory();
     history.unshift(attempt);
-    history = prunePracticeAttempts(history, attempt);
+    // history = prunePracticeAttempts(history, attempt);
     if (history.length > 50) history.length = 50;
     await savePracticeHistory(history);
 
@@ -11226,7 +11261,7 @@ function renderDashboardActionItems() {
   let lowestRatio = 1.0;
   
   Object.entries(VOCAB_DATA).forEach(([catId, cat]) => {
-    const readCount = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+    const readCount = cat.words.filter(w => (progress.read || {})[vocabKey(catId, w.word)]).length;
     const ratio = readCount / cat.words.length;
     if (ratio < 1.0 && ratio < lowestRatio) {
       lowestRatio = ratio;
