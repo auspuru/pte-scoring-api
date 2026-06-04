@@ -8485,7 +8485,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
 }
 
 CRITICAL for the "errors" array:
-- Include EVERY spelling and grammar issue you find (up to 10 most important).
+- Include EVERY single spelling and grammar issue you find in the entire essay. Do not cap it or limit it to 10; list all of them so the user can fix everything in one go.
 - "phrase" MUST be the exact text from the essay (verbatim — same spelling, same capitalisation). I will search-and-replace it to highlight it. If the same misspelling appears twice, list it once.
 - "type" is "spelling" OR "grammar" — nothing else.
 - If the essay has zero errors, return "errors": [].`;
