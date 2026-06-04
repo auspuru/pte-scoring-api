@@ -8449,10 +8449,10 @@ function updateSubmitBtnState() {
   const btn = document.getElementById('practiceSubmitBtn');
   if (btn) {
     const ready = practiceState.questionText.trim().length >= 10 &&
-                  countWords(practiceState.essayText) >= 200;
+                  countWords(practiceState.essayText) >= 50;
     btn.disabled = !ready;
-    if (countWords(practiceState.essayText) < 200) {
-      btn.innerHTML = '🤖 Write at least 200 words to score';
+    if (countWords(practiceState.essayText) < 50) {
+      btn.innerHTML = '🤖 Write at least 50 words to score';
     } else if (practiceState.questionText.trim().length < 10) {
       btn.innerHTML = '🤖 Pick or write a question first';
     } else {
