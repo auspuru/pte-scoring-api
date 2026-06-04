@@ -7693,6 +7693,39 @@ function closePractice() {
   switchSection('library');
 }
 
+function getCleanSampleResponse(html) {
+  if (!html) return '';
+  // Replace deletions with empty string
+  let clean = html.replace(/<span class=["']diff-del["']>[\s\S]*?<\/span>/g, '');
+  // Strip the insertion tags but keep the content inside them
+  clean = clean.replace(/<span class=["']diff-ins["']>([\s\S]*?)<\/span>/g, '$1');
+  // Strip any other HTML tags
+  clean = clean.replace(/<[^>]*>/g, '');
+  // Unescape any HTML entities if needed (e.g. &amp;, &lt;, &gt;, &quot;)
+  const temp = document.createElement('textarea');
+  temp.innerHTML = clean;
+  return temp.value.trim();
+}
+
+function copyPracticeText(type) {
+  const a = practiceState.currentAttempt;
+  if (!a) return;
+  let text = '';
+  if (type === 'attempted') {
+    text = a.essayText;
+  } else if (type === 'rewritten') {
+    text = getCleanSampleResponse(a.sampleResponse);
+  }
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Essay copied to clipboard! ✓');
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+    toast('Failed to copy essay', true);
+  });
+}
+
 // ---------- History (Firestore-synced via user profile, or localStorage offline) ----------
 
 function getPracticeHistory() {
@@ -8761,11 +8794,14 @@ function resultsView() {
   if (a.sampleResponse) {
     sampleResponseSection = `
       <div class="practice-grammar-section" style="margin-top:20px;">
-        <div class="practice-grammar-header">
-          <div class="practice-grammar-title">🤖 AI Rewrite &amp; Sample Response</div>
-          <div style="font-size:11px; color:var(--ink-soft); font-weight:normal; font-style:italic;">
-            Showing your essay rewritten to incorporate all recommendations.
+        <div class="practice-grammar-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div class="practice-grammar-title">🤖 AI Rewrite &amp; Sample Response</div>
+            <div style="font-size:11px; color:var(--ink-soft); font-weight:normal; font-style:italic;">
+              Showing your essay rewritten to incorporate all recommendations.
+            </div>
           </div>
+          <button class="admin-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">📋 Copy Polished Essay</button>
         </div>
         <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
           <div style="display:flex; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
@@ -8787,7 +8823,10 @@ function resultsView() {
       <div style="margin-top:10px; font-size:12.5px; color:var(--ink-soft); line-height:1.6;">
         <div style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Question</div>
         <div style="margin-bottom:10px; color:var(--ink);">${escapeHtml(a.questionText)}</div>
-        <div style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Your essay</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;">Your essay</span>
+          <button class="admin-btn" style="padding:2px 8px; font-size:11px; cursor:pointer;" onclick="copyPracticeText('attempted')">📋 Copy Original</button>
+        </div>
         <div style="white-space:pre-wrap; color:var(--ink); font-family:var(--serif); font-size:13px; line-height:1.7;">${escapeHtml(a.essayText)}</div>
       </div>
     </details>
