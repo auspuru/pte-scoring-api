@@ -8485,7 +8485,9 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
 }
 
 CRITICAL for the "errors" array:
-- Include EVERY single spelling and grammar issue you find in the entire essay. Do not cap it or limit it to 10; list all of them so the user can fix everything in one go.
+- Include EVERY single objective spelling and grammatical mistake you find in the entire essay. Do not cap it or limit it to 10; list all of them so the user can fix everything in one go.
+- ONLY flag objective mistakes (e.g., typos, misspelling, subject-verb agreement, incorrect verb tense, missing articles, wrong prepositions, punctuation errors). 
+- DO NOT flag style preferences, optional vocabulary enhancements, or subjective rewrites. If a phrase is grammatically correct and spelled correctly, do not flag it under "errors" even if you think it could be written in a better style.
 - "phrase" MUST be the exact text from the essay (verbatim — same spelling, same capitalisation). I will search-and-replace it to highlight it. If the same misspelling appears twice, list it once.
 - "type" is "spelling" OR "grammar" — nothing else.
 - If the essay has zero errors, return "errors": [].`;
