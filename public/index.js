@@ -5988,14 +5988,16 @@ function closeVocab() {
 
 // Get user's vocab progress object: { read: {"cat:word": true}, attempts: {...} }
 function getVocabProgress() {
+  let progress = {};
   if (offlineMode) {
-    try { return JSON.parse(safeLSGet('ipt_vocab') || '{}'); } catch (e) { return {}; }
+    try { progress = JSON.parse(safeLSGet('ipt_vocab') || '{}'); } catch (e) { progress = {}; }
+  } else if (userProfile) {
+    if (!userProfile.vocabProgress) userProfile.vocabProgress = { read: {}, attempts: {} };
+    progress = userProfile.vocabProgress;
   }
-  if (!userProfile) return {};
-  if (!userProfile.vocabProgress) userProfile.vocabProgress = { read: {}, attempts: {} };
-  if (!userProfile.vocabProgress.read) userProfile.vocabProgress.read = {};
-  if (!userProfile.vocabProgress.attempts) userProfile.vocabProgress.attempts = {};
-  return userProfile.vocabProgress;
+  if (!progress.read) progress.read = {};
+  if (!progress.attempts) progress.attempts = {};
+  return progress;
 }
 async function saveVocabProgress() {
   if (offlineMode) {
