@@ -3353,7 +3353,7 @@ async function doEmailCurrent() {
   const html = buildFullPdfHtml([renderEssayPageHTML(e, idx)], fileName);
 
   try {
-    const res = await fetch('/api/email-essay', {
+    const res = await fetch(API_URL + '/api/email-essay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -3415,7 +3415,7 @@ async function generateAndEmailBook(essayList, fileName, displayTitle) {
 
     // Send HTML to server; server renders + emails. ~3-8s for 30 essays.
     showProgressToast(`Server is rendering ${essayList.length} essays to PDF…`);
-    const res = await fetch('/api/email-essay', {
+    const res = await fetch(API_URL + '/api/email-essay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -4080,7 +4080,7 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
 The "questionType" MUST be one of the exact keys listed in TASK 1.`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -4585,7 +4585,7 @@ Respond with EXACTLY four sections, nothing else, no preamble:
 [filled conclusion${isBand6 ? '' : ' — middle sentence MUST have topic-specific nouns, not generic boilerplate\nTherefore, ... (include whenever intro had an opinion sentence)'}]`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -4819,7 +4819,7 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
 }`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5242,7 +5242,7 @@ Respond with EXACTLY these sections, nothing else, no preamble:
 [filled conclusion — topic-specific nouns; add the Therefore line on a new line if the intro had an opinion sentence]`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5624,7 +5624,7 @@ ${which === 'bp2' ? '- Do NOT add a "Therefore" line at the end of BP2.' : ''}
 - Output ONLY the rewritten paragraph text. No preamble, no labels, no markdown headers.`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5696,7 +5696,7 @@ INSTRUCTIONS:
 - Output ONLY the rewritten sentence. No preamble, no quotes, no labels.`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5855,7 +5855,7 @@ APPROACH_TIP: ...`;
   }
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -6393,7 +6393,7 @@ Evaluate it in 2-3 short bullet points:
 Keep total response under 80 words. Be encouraging but accurate. Plain text, no markdown.`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -6841,7 +6841,7 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
 ]`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -6974,7 +6974,7 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
 ]`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -7220,7 +7220,7 @@ async function initApp() {
 
   // Fetch server config (admin email override from Railway env var, if set)
   try {
-    const res = await fetch('/api/config');
+    const res = await fetch(API_URL + '/api/config');
     if (res.ok) {
       const cfg = await res.json();
       if (cfg.adminEmail) {
@@ -8636,7 +8636,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
   "grammarIssues": ["short phrase showing the issue", "another"],
   "strengths": ["You clearly answered both parts of the question.", "Good use of specific examples like X."],
   "improvements": ["Vary sentence length — most of yours start with 'The'.", "Add one linking word per paragraph (e.g. however, as a result)."],
-  "sampleResponse": "Rewrite the student's essay completely to incorporate all your feedback and recommendations. Highlight the changes in the text: wrap any added or improved words/phrases in <span class=\"diff-ins\">...</span> and any deleted or replaced words/phrases in <span class=\"diff-del\">...</span>. Example: 'This is <span class=\"diff-del\">bad</span><span class=\"diff-ins\">suboptimal</span>.'"
+  "sampleResponse": "Rewrite the student's essay completely to incorporate all your feedback and recommendations. Highlight the changes in the text: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
 }
 
 CRITICAL for the "errors" array:
@@ -8647,7 +8647,7 @@ CRITICAL for the "errors" array:
 - If the essay has zero errors, return "errors": [].`;
 
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch(API_URL + '/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -10469,7 +10469,7 @@ async function loadAdminPassages() {
   if (!list) return;
   list.innerHTML = '<div style="text-align:center; color:var(--ink-mute); padding:24px; font-style:italic; font-family:var(--serif);">Loading passages...</div>';
   try {
-    const r = await fetch('/api/admin/passages', {
+    const r = await fetch(API_URL + '/api/admin/passages', {
       headers: { 'x-admin-key': adminKey }
     });
     const d = await r.json();
@@ -10617,7 +10617,7 @@ async function savePassageEdit() {
   }
 
   try {
-    const r = await fetch('/api/admin/passages', {
+    const r = await fetch(API_URL + '/api/admin/passages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -10639,7 +10639,7 @@ async function savePassageEdit() {
 async function adminDeletePassage(id) {
   if (!confirm(`Delete passage #${id}? This action cannot be undone.`)) return;
   try {
-    const r = await fetch(`/api/admin/passages/${id}`, {
+    const r = await fetch(API_URL + `/api/admin/passages/${id}`, {
       method: 'DELETE',
       headers: { 'x-admin-key': adminKey }
     });
@@ -10673,7 +10673,7 @@ async function runExtraction() {
   draftBox.innerHTML = '<div class="draft-reason">Claude is reading the passage and drafting key elements…</div>';
 
   try {
-    const r = await fetch('/api/admin/passages/extract', {
+    const r = await fetch(API_URL + '/api/admin/passages/extract', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
