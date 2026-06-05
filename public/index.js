@@ -8764,7 +8764,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
   "spellingErrors": ["wrod1", "wrod2"],
   "grammarIssues": ["short phrase showing the issue", "another"],
   "strengths": ["You clearly answered both parts of the question.", "Good use of specific examples like X."],
-  "sampleResponse": "A revised version of the essay focusing on the key paragraphs that need improvement (keep it concise, max 150 words total, rather than rewriting the entire essay). Highlight the changes: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
+  "sampleResponse": "A revised version of the essay focusing on the key paragraphs that need improvement (keep it concise, max 150 words total, rather than rewriting the entire essay). If the essay scores a perfect overall score (26/26, equivalent to PTE 90), you do NOT need to rewrite the essay — simply set 'sampleResponse' to 'Congratulations! Your essay is already perfect, so no rewrite is needed.' Highlight the changes: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
 }
 
 CRITICAL for the "errors" array:
