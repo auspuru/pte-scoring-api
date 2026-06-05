@@ -6192,11 +6192,27 @@ function renderVocabCategoryList() {
   
   if (!q) {
     const isHubActive = (currentVocabCategory === null);
+    const isMasterActive = (currentVocabCategory === 'master1000');
     html += `
       <div class="vocab-cat-item ${isHubActive ? 'active' : ''}" onclick="selectVocabCategory(null)">
         <span class="vocab-cat-icon">🏠</span>
         <span class="vocab-cat-label">Vocabulary Hub</span>
         <span class="vocab-cat-progress">All</span>
+      </div>
+      <div class="vocab-cat-item ${isMasterActive ? 'active' : ''}" onclick="selectVocabCategory('master1000')">
+        <span class="vocab-cat-icon">🏆</span>
+        <span class="vocab-cat-label">1000 Exam Words</span>
+        <span class="vocab-cat-progress">C1/C2</span>
+      </div>
+      <div class="h-[1px] bg-outline-variant/20 w-full my-2"></div>
+    `;
+  } else if ("1000 exam words".includes(q) || "master list".includes(q) || "exam essentials".includes(q)) {
+    const isMasterActive = (currentVocabCategory === 'master1000');
+    html += `
+      <div class="vocab-cat-item ${isMasterActive ? 'active' : ''}" onclick="selectVocabCategory('master1000')">
+        <span class="vocab-cat-icon">🏆</span>
+        <span class="vocab-cat-label">1000 Exam Words</span>
+        <span class="vocab-cat-progress">C1/C2</span>
       </div>
       <div class="h-[1px] bg-outline-variant/20 w-full my-2"></div>
     `;
@@ -6265,10 +6281,20 @@ function jumpToVocabWord(catId, word) {
 
 let vocabViewState = 'list'; // 'list' or 'flashcard'
 
+let masterSearchQuery = '';
+let masterPage = 0;
+const masterPageSize = 15;
+let masterLevelFilter = 'all';
+
 function renderVocabMain() {
   const progress = getVocabProgress();
   const main = document.getElementById('vocabMainContent');
   if (!main) return;
+
+  if (currentVocabCategory === 'master1000') {
+    renderMaster1000Vocab();
+    return;
+  }
 
   const descriptions = {
     law: "Criminal justice, court proceedings, and legal rights.",
@@ -6527,6 +6553,295 @@ function renderVocabWordCard(w, idx) {
   `;
 }
 
+function renderMaster1000Vocab() {
+  const main = document.getElementById('vocabMainContent');
+  if (!main) return;
+  
+  // 1. Update Hero Statistics to show Master List info
+  const progress = getVocabProgress();
+  const readMasterKeys = Object.keys(progress.read).filter(k => k.startsWith('master1000:'));
+  const totalRead = readMasterKeys.length;
+  const totalAvail = typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000.length : 0;
+  const totalPercent = totalAvail > 0 ? Math.round((totalRead / totalAvail) * 100) : 0;
+  
+  const catTitleEl = document.getElementById('vocabCatTitle');
+  if (catTitleEl) catTitleEl.textContent = "1000 Exam Essentials";
+  
+  const catDescEl = document.getElementById('vocabCatDesc');
+  if (catDescEl) catDescEl.textContent = "Interactive master list of the 1,000 most repeated C1 & C2 words for IELTS, PTE, and TOEFL. Click on any word to load its definitions in different contexts, plus 5 example sentences.";
+  
+  const catStatsEl = document.getElementById('vocabCatStats');
+  if (catStatsEl) catStatsEl.textContent = `${totalRead} / ${totalAvail}`;
+  
+  const catPercentEl = document.getElementById('vocabCatPercent');
+  if (catPercentEl) catPercentEl.textContent = `${totalPercent}%`;
+  
+  const progressRing = document.getElementById('vocabCatProgressRing');
+  if (progressRing) {
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius; // ~314.16
+    const offset = circumference - (totalPercent / 100) * circumference;
+    progressRing.style.strokeDasharray = `${circumference}`;
+    progressRing.style.strokeDashoffset = `${offset}`;
+  }
+  
+  // Hide study mode block for category view since master list has custom built-in controls
+  const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+  if (studyModeBlock) studyModeBlock.style.display = 'none';
+  const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+  if (studyModePlaceholder) studyModePlaceholder.style.display = 'block';
+
+  // 2. Filter words
+  let filtered = typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000 : [];
+  if (masterLevelFilter !== 'all') {
+    filtered = filtered.filter(w => w.l === masterLevelFilter);
+  }
+  if (masterSearchQuery) {
+    const q = masterSearchQuery.toLowerCase().trim();
+    filtered = filtered.filter(w => w.w.toLowerCase().includes(q) || w.p.toLowerCase().includes(q));
+  }
+  
+  // Pagination math
+  const totalFiltered = filtered.length;
+  const maxPage = Math.max(0, Math.ceil(totalFiltered / masterPageSize) - 1);
+  if (masterPage > maxPage) masterPage = maxPage;
+  
+  const startIdx = masterPage * masterPageSize;
+  const endIdx = Math.min(startIdx + masterPageSize, totalFiltered);
+  const pageWords = filtered.slice(startIdx, endIdx);
+  
+  // Build controls HTML
+  let controlsHtml = `
+    <div class="vocab-control-card" style="margin-bottom: 24px; padding: 20px; display: flex; flex-direction: row; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+      <div style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 280px;">
+        <input type="text" id="masterSearch" class="vocab-search" style="margin: 0; flex: 1;" placeholder="Search 1000 words..." value="${escapeHtml(masterSearchQuery)}" oninput="handleMasterSearch(this.value)">
+        
+        <select id="masterLevelSelect" onchange="handleMasterLevelFilter(this.value)" style="padding: 8px 12px; border: 1px solid var(--line-soft); border-radius: 6px; background: var(--bg-card); color: var(--ink); font-size: 13px;">
+          <option value="all" ${masterLevelFilter === 'all' ? 'selected' : ''}>All Levels</option>
+          <option value="C1" ${masterLevelFilter === 'C1' ? 'selected' : ''}>C1 Words</option>
+          <option value="C2" ${masterLevelFilter === 'C2' ? 'selected' : ''}>C2 Words</option>
+        </select>
+      </div>
+      
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="vocab-action-btn" onclick="changeMasterPage(-1)" ${masterPage === 0 ? 'disabled style="opacity: 0.5; cursor: default;"' : ''}>
+          <span class="material-symbols-outlined">chevron_left</span> Prev
+        </button>
+        <span style="font-size: 13px; font-weight: 700; color: var(--ink-soft); min-width: 90px; text-align: center;">
+          ${totalFiltered > 0 ? `${startIdx + 1} - ${endIdx} of ${totalFiltered}` : '0 of 0'}
+        </span>
+        <button class="vocab-action-btn" onclick="changeMasterPage(1)" ${masterPage >= maxPage ? 'disabled style="opacity: 0.5; cursor: default;"' : ''}>
+          Next <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Build list HTML
+  let listHtml = '';
+  if (totalFiltered === 0) {
+    listHtml = `<div class="list-empty-state">No matching words found. Try adjusting your search query.</div>`;
+  } else {
+    listHtml = `<div class="vocab-word-list" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      ${pageWords.map((w, i) => renderMasterWordCard(w, startIdx + i)).join('')}
+    </div>`;
+  }
+  
+  main.innerHTML = controlsHtml + listHtml;
+}
+
+function handleMasterSearch(q) {
+  masterSearchQuery = q;
+  masterPage = 0;
+  renderMaster1000Vocab();
+}
+
+function handleMasterLevelFilter(lvl) {
+  masterLevelFilter = lvl;
+  masterPage = 0;
+  renderMaster1000Vocab();
+}
+
+function changeMasterPage(delta) {
+  masterPage += delta;
+  renderMaster1000Vocab();
+  // Scroll to top of content
+  document.getElementById('vocabMainContent')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderMasterWordCard(w, idx) {
+  const cacheKey = `cached_master_vocab_${w.w}`;
+  const cached = localStorage.getItem(cacheKey);
+  const data = cached ? JSON.parse(cached) : null;
+  
+  const read = isWordRead('master1000', w.w);
+  const safeWord = w.w.replace(/'/g, "\\'");
+  
+  const posVal = (w.p || '').toLowerCase().trim();
+  let posClass = 'pos-noun';
+  if (posVal.includes('verb')) posClass = 'pos-verb';
+  else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = 'pos-adjective';
+  else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = 'pos-adverb';
+  
+  const posHtml = `<span class="pos-badge ${posClass}">${escapeHtml(w.p || '')}</span>`;
+  
+  const readBtnHtml = read 
+    ? `<button class="vocab-read-btn read vocab-mark-read" onclick="toggleWordRead('master1000', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>✓ Read</span>
+       </button>`
+    : `<button class="vocab-read-btn vocab-mark-read" onclick="toggleWordRead('master1000', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>Mark as read</span>
+       </button>`;
+
+  let innerHtml = '';
+  if (data) {
+    const contextsHtml = (data.contexts || []).map(ctx => {
+      const examplesList = (ctx.examples || []).map(ex => {
+        const regex = new RegExp(`\\b(${w.w})\\b`, 'i');
+        const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
+        return `<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
+          <span style="position: absolute; left: 0; color: var(--accent);">•</span>
+          "${bolded}"
+        </li>`;
+      }).join('');
+      return `
+        <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+          <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
+          <ul style="margin: 0; padding: 0;">${examplesList}</ul>
+        </div>
+      `;
+    }).join('');
+
+    innerHtml = `
+      <div class="vocab-word-meaning" style="margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; text-align: left;">
+        <strong>Definition:</strong> ${escapeHtml(data.meaning || '')}
+      </div>
+      
+      ${data.compare ? `
+      <div style="font-size: 12px; margin-top: 8px; color: var(--ink-soft); font-style: italic; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; text-align: left;">
+        <strong>Compare:</strong> ${escapeHtml(data.compare)}
+      </div>` : ''}
+      
+      <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+          ${contextsHtml}
+        </div>
+        <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="vocab-try-label" style="text-align: left;">Practice Bench</div>
+            <div class="vocab-try-row">
+              <input type="text" placeholder="Write a sentence using '${safeWord}'..." id="try-${idx}" onkeypress="if(event.key==='Enter') checkSentence(${idx}, '${safeWord}')">
+              <button class="vocab-try-check" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
+              <button class="vocab-try-ai" onclick="aiGradeSentence(${idx}, '${safeWord}', 'master1000')">🤖 AI Grade</button>
+            </div>
+          </div>
+          <div class="vocab-try-feedback" id="try-fb-${idx}" style="text-align: left;"></div>
+        </div>
+      </div>
+    `;
+  } else {
+    innerHtml = `
+      <div style="margin-top: 12px; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); border: 1px dashed var(--line-soft); border-radius: 12px;">
+        <button class="vocab-action-btn coach" id="load-btn-${idx}" onclick="loadMasterWordDetails('${safeWord}', ${idx})" style="padding: 10px 20px; gap: 8px; border-radius: 30px;">
+          <span class="material-symbols-outlined">psychology</span>
+          <span>💡 Load AI Definitions &amp; 5 Examples</span>
+        </button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="vocab-word-card" id="word-card-${idx}">
+      <div class="vocab-card-top">
+        <div class="vocab-word-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span>${escapeHtml(w.w)}</span>
+          <div class="vocab-badges" style="display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 4px;">
+            ${posHtml}
+            <span class="level-badge">${escapeHtml(w.l || 'C1')}</span>
+          </div>
+          <button class="vocab-audio-btn" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
+            <span class="material-symbols-outlined" style="font-size: 18px;">volume_up</span>
+          </button>
+        </div>
+        ${readBtnHtml}
+      </div>
+      
+      ${innerHtml}
+    </div>
+  `;
+}
+
+async function loadMasterWordDetails(word, idx) {
+  const btn = document.getElementById(`load-btn-${idx}`);
+  if (!btn) return;
+  
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner-dark" style="border-color: var(--accent); border-top-color: transparent; width: 14px; height: 14px; margin-right: 6px;"></span><span>Loading details...</span>`;
+  
+  if (offlineMode) {
+    const data = {
+      meaning: `High-frequency C1/C2 vocabulary word.`,
+      compare: `Connect to the internet to trigger AI generation of comparison notes and context examples.`,
+      contexts: [
+        { name: "General Usage", meaning: "Standard academic vocabulary item.", examples: [`Please practice using "${word}" in your own sentences.`] }
+      ]
+    };
+    localStorage.setItem(`cached_master_vocab_${word}`, JSON.stringify(data));
+    renderMaster1000Vocab();
+    return;
+  }
+  
+  const prompt = `Define the C1/C2 academic word "${word}" for English tests (PTE/IELTS). Provide:
+1. One general formal meaning.
+2. A comparison note (e.g. versus a similar word).
+3. Context-specific meanings for 2-3 different academic/professional contexts.
+4. Exactly 5 example sentences total demonstrating the word in these contexts.
+
+Return ONLY a valid JSON object matching this structure (do not include markdown outside JSON, just output the JSON plain text):
+{
+  "meaning": "general meaning here",
+  "compare": "comparison note here",
+  "contexts": [
+    { "name": "Academic Writing", "meaning": "meaning in this context", "examples": ["example sentence 1", "example sentence 2"] },
+    { "name": "Professional/Business", "meaning": "meaning in this context", "examples": ["example sentence 3", "example sentence 4"] },
+    { "name": "General/Scientific", "meaning": "meaning in this context", "examples": ["example sentence 5"] }
+  ]
+}`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const resData = await res.json();
+    const text = (resData.content || []).map(c => c.text || '').join('\n').trim();
+    
+    let jsonText = text;
+    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/```\s*([\s\S]*?)\s*```/);
+    if (jsonMatch) jsonText = jsonMatch[1];
+    
+    const data = JSON.parse(jsonText.trim());
+    localStorage.setItem(`cached_master_vocab_${word}`, JSON.stringify(data));
+    renderMaster1000Vocab();
+  } catch (err) {
+    console.error('Failed to load AI vocab details:', err);
+    toast('AI generation failed: ' + err.message, true);
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
 async function toggleWordRead(catId, word, idx) {
   const progress = getVocabProgress();
   const key = vocabKey(catId, word);
@@ -6536,6 +6851,13 @@ async function toggleWordRead(catId, word, idx) {
     progress.read[key] = Date.now();
   }
   await saveVocabProgress();
+  
+  if (catId === 'master1000') {
+    renderMaster1000Vocab();
+    updateVocabProgressSummary();
+    return;
+  }
+  
   // Update UI in place
   const card = document.getElementById(`word-card-${idx}`);
   if (card) card.classList.toggle('read', !!progress.read[key]);
@@ -6590,7 +6912,21 @@ async function aiGradeSentence(idx, word, catId) {
   // Quota
   if (!await consumeQuota('idea')) return;
 
-  const wordData = (VOCAB_DATA[catId]?.words || []).find(w => w.word === word);
+  let wordData = null;
+  if (catId === 'master1000') {
+    const found = (typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000 : []).find(w => w.w === word);
+    if (found) {
+      const cached = localStorage.getItem(`cached_master_vocab_${word}`);
+      const cachedData = cached ? JSON.parse(cached) : null;
+      wordData = {
+        word: found.w,
+        pos: found.p,
+        meaning: cachedData ? cachedData.meaning : "C1/C2 Academic vocabulary word"
+      };
+    }
+  } else {
+    wordData = (VOCAB_DATA[catId]?.words || []).find(w => w.word === word);
+  }
   fb.className = 'vocab-try-feedback show thinking';
   fb.innerHTML = '<span class="spinner-dark"></span> AI is reviewing your sentence…';
 
