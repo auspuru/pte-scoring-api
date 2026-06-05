@@ -6304,10 +6304,7 @@ function renderVocabMain() {
   };
 
   if (!currentVocabCategory) {
-    // 1. Render Categories Hub / Welcome Grid View
     const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
-    
-    // Update Hero Statistics to show Global Totals
     const totalRead = totalWordsRead();
     const totalAvail = totalWordsAvailable();
     const totalPercent = totalAvail > 0 ? Math.round((totalRead / totalAvail) * 100) : 0;
@@ -6326,25 +6323,23 @@ function renderVocabMain() {
     
     const progressRing = document.getElementById('vocabCatProgressRing');
     if (progressRing) {
-      const radius = 70;
-      const circumference = 2 * Math.PI * radius; // ~439.82
+      const radius = 50;
+      const circumference = 2 * Math.PI * radius; // ~314.16
       const offset = circumference - (totalPercent / 100) * circumference;
       progressRing.style.strokeDasharray = `${circumference}`;
       progressRing.style.strokeDashoffset = `${offset}`;
     }
     
-    // Toggle Study Mode layout controls (hide them when in Hub mode)
     const studyModeBlock = document.getElementById('vocabStudyModeBlock');
     if (studyModeBlock) studyModeBlock.style.display = 'none';
     const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
     if (studyModePlaceholder) studyModePlaceholder.style.display = 'block';
 
-    // Render Grid of category cards
     let gridHtml = `
       <div style="margin-bottom: 8px;">
-        <h3 class="font-title-sm text-title-sm text-on-surface-variant mb-4 uppercase tracking-widest text-[11px] font-bold">Categories</h3>
+        <h3 class="vocab-grid-title">Categories</h3>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+      <div class="vocab-grid">
     `;
     
     sorted.forEach(([catId, cat]) => {
@@ -6353,23 +6348,23 @@ function renderVocabMain() {
       const percent = total > 0 ? Math.round((read / total) * 100) : 0;
       
       gridHtml += `
-        <div class="bg-surface-lowest border border-outline-variant/10 rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between" onclick="selectVocabCategory('${catId}')" style="min-height: 160px;">
+        <div class="vocab-grid-card" onclick="selectVocabCategory('${catId}')">
           <div>
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-2xl">${escapeHtml(cat.icon || '📚')}</span>
-              <h4 class="font-title-sm text-title-sm text-on-background font-bold">${escapeHtml(cat.label)}</h4>
+            <div class="vocab-grid-card-header">
+              <span class="vocab-grid-card-icon">${escapeHtml(cat.icon || '📚')}</span>
+              <h4 class="vocab-grid-card-label">${escapeHtml(cat.label)}</h4>
             </div>
-            <p class="text-body-sm text-on-surface-variant/80 mb-4 line-clamp-2 leading-relaxed" style="font-size: 13px;">
+            <p class="vocab-grid-card-desc">
               ${escapeHtml(descriptions[catId] || cat.desc || `Practice vocabulary in the ${cat.label} domain.`)}
             </p>
           </div>
-          <div class="mt-auto pt-4">
-            <div class="flex justify-between font-label-caps text-[10px] text-on-surface-variant mb-1 font-bold">
+          <div class="vocab-grid-card-progress">
+            <div class="vocab-grid-card-progress-text">
               <span>PROGRESS</span>
               <span>${read} / ${total} words (${percent}%)</span>
             </div>
-            <div class="w-full bg-surface-container-high dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-primary h-full transition-all duration-500" style="width: ${percent}%"></div>
+            <div class="vocab-grid-card-progress-bar-bg">
+              <div class="vocab-grid-card-progress-bar" style="width: ${percent}%"></div>
             </div>
           </div>
         </div>
@@ -6387,14 +6382,11 @@ function renderVocabMain() {
   const readCount = cat.words.filter(w => progress.read[vocabKey(currentVocabCategory, w.word)]).length;
   const percent = cat.words.length > 0 ? Math.round((readCount / cat.words.length) * 100) : 0;
   
-  // 1. Update Hero Statistics
   const catTitleEl = document.getElementById('vocabCatTitle');
   if (catTitleEl) catTitleEl.textContent = cat.label;
   
   const catDescEl = document.getElementById('vocabCatDesc');
-  if (catDescEl) {
-    catDescEl.textContent = descriptions[currentVocabCategory] || `Improve vocabulary in the ${cat.label} domain.`;
-  }
+  if (catDescEl) catDescEl.textContent = descriptions[currentVocabCategory] || `Improve vocabulary in the ${cat.label} domain.`;
   
   const catStatsEl = document.getElementById('vocabCatStats');
   if (catStatsEl) catStatsEl.textContent = `${readCount} / ${cat.words.length}`;
@@ -6404,14 +6396,13 @@ function renderVocabMain() {
   
   const progressRing = document.getElementById('vocabCatProgressRing');
   if (progressRing) {
-    const radius = 70;
-    const circumference = 2 * Math.PI * radius; // ~439.82
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius; // ~314.16
     const offset = circumference - (percent / 100) * circumference;
     progressRing.style.strokeDasharray = `${circumference}`;
     progressRing.style.strokeDashoffset = `${offset}`;
   }
   
-  // 2. Update toggle visual states
   const studyModeBlock = document.getElementById('vocabStudyModeBlock');
   if (studyModeBlock) studyModeBlock.style.display = 'block';
   const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
@@ -6421,29 +6412,18 @@ function renderVocabMain() {
   const btnFlashcard = document.getElementById('vocabToggleFlashcard');
   if (btnList && btnFlashcard) {
     if (vocabViewState === 'list') {
-      btnList.className = "bg-white dark:bg-zinc-800 p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all";
-      btnList.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-primary";
-      btnList.querySelector('span:last-child').className = "font-label-caps text-label-caps text-primary";
-      
-      btnFlashcard.className = "bg-surface-container-highest/30 dark:bg-zinc-900/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white dark:hover:bg-zinc-800 transition-all group";
-      btnFlashcard.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-on-surface-variant";
-      btnFlashcard.querySelector('span:last-child').className = "font-label-caps text-label-caps text-on-surface-variant";
+      btnList.className = "vocab-mode-btn active";
+      btnFlashcard.className = "vocab-mode-btn";
     } else {
-      btnFlashcard.className = "bg-white dark:bg-zinc-800 p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all";
-      btnFlashcard.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-primary";
-      btnFlashcard.querySelector('span:last-child').className = "font-label-caps text-label-caps text-primary";
-      
-      btnList.className = "bg-surface-container-highest/30 dark:bg-zinc-900/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white dark:hover:bg-zinc-800 transition-all group";
-      btnList.querySelector('.material-symbols-outlined').className = "material-symbols-outlined text-on-surface-variant";
-      btnList.querySelector('span:last-child').className = "font-label-caps text-label-caps text-on-surface-variant";
+      btnFlashcard.className = "vocab-mode-btn active";
+      btnList.className = "vocab-mode-btn";
     }
   }
   
-  // 3. Render content HTML
   let contentHtml = '';
   if (vocabViewState === 'list') {
     contentHtml = cat.words.map((w, i) => renderVocabWordCard(w, i)).join('');
-    main.innerHTML = `<div class="flex flex-col gap-6 w-full">${contentHtml}</div>`;
+    main.innerHTML = `<div class="vocab-word-list">${contentHtml}</div>`;
   } else {
     contentHtml = renderVocabFlashcardContainer();
     main.innerHTML = contentHtml;
@@ -6473,92 +6453,74 @@ function renderVocabWordCard(w, idx) {
   const safeCat = currentVocabCategory.replace(/'/g, "\\'");
   
   const posVal = (w.pos || '').toLowerCase().trim();
-  let posHtml = '';
-  if (posVal.includes('noun')) {
-    posHtml = `<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-[10px] text-on-surface-variant uppercase">NOUN</span>`;
-  } else if (posVal.includes('verb')) {
-    posHtml = `<span class="bg-secondary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-secondary font-bold uppercase">VERB</span>`;
-  } else if (posVal.includes('adj') || posVal.includes('adjective')) {
-    posHtml = `<span class="bg-tertiary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-tertiary font-bold uppercase">ADJ</span>`;
-  } else if (posVal.includes('adv') || posVal.includes('adverb')) {
-    posHtml = `<span class="bg-outline-variant/30 px-3 py-1 rounded-full font-label-caps text-[10px] text-outline font-bold uppercase">ADV</span>`;
-  } else {
-    posHtml = `<span class="bg-surface-container-high px-3 py-1 rounded-full font-label-caps text-[10px] text-on-surface-variant uppercase">${escapeHtml(w.pos || '')}</span>`;
-  }
+  let posClass = 'pos-noun';
+  if (posVal.includes('verb')) posClass = 'pos-verb';
+  else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = 'pos-adjective';
+  else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = 'pos-adverb';
+  
+  const posHtml = `<span class="pos-badge ${posClass}">${escapeHtml(w.pos || '')}</span>`;
   
   const readBtnHtml = read 
-    ? `<button class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary text-white border border-primary transition-all text-label-caps font-label-caps" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
-         <span class="material-symbols-outlined text-[18px]">done_all</span>
-         ✓ Read
+    ? `<button class="vocab-read-btn read vocab-mark-read" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>✓ Read</span>
        </button>`
-    : `<button class="flex items-center gap-2 px-4 py-1.5 rounded-full border border-outline-variant/30 text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:border-primary-container transition-all text-label-caps font-label-caps" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
-         <span class="material-symbols-outlined text-[18px]">done_all</span>
-         Mark as Read
+    : `<button class="vocab-read-btn vocab-mark-read" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>Mark as read</span>
        </button>`;
 
   const regex = new RegExp(`\\b(${w.word})\\b`, 'i');
   const examplesHtml = (w.examples || []).map(ex => {
-    const bolded = escapeHtml(ex).replace(regex, '<span class="font-bold text-on-background not-italic">$1</span>');
-    return `
-      <li class="flex gap-3 text-on-surface-variant font-body-sm italic">
-        <span class="text-primary mt-1">•</span>
-        "${bolded}"
-      </li>
-    `;
+    const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
+    return `<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
+      <span style="position: absolute; left: 0; color: var(--accent);">•</span>
+      "${bolded}"
+    </li>`;
   }).join('');
 
   return `
-    <div class="vocab-card bg-surface-lowest border border-outline-variant/10 rounded-3xl shadow-sm overflow-hidden flex flex-col" id="word-card-${idx}">
-      <div class="p-8 border-b border-outline-variant/5">
-        <div class="flex justify-between items-start mb-4 flex-wrap gap-2">
-          <div class="flex items-center gap-3 flex-wrap">
-            <h4 class="font-display-lg text-headline-md text-on-background">${escapeHtml(w.word)}</h4>
-            <div class="flex gap-2">
-              ${posHtml}
-              <span class="bg-primary-container/10 px-3 py-1 rounded-full font-label-caps text-[10px] text-primary font-bold">${escapeHtml(w.level || 'C1')}</span>
-            </div>
-            <button class="w-8 h-8 rounded-full hover:bg-surface-container transition-colors text-primary flex items-center justify-center" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
-              <span class="material-symbols-outlined text-[20px]">volume_up</span>
-            </button>
+    <div class="vocab-word-card" id="word-card-${idx}">
+      <div class="vocab-card-top">
+        <div class="vocab-word-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span>${escapeHtml(w.word)}</span>
+          <div class="vocab-badges" style="display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 4px;">
+            ${posHtml}
+            <span class="level-badge">${escapeHtml(w.level || 'C1')}</span>
           </div>
-          ${readBtnHtml}
+          <button class="vocab-audio-btn" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
+            <span class="material-symbols-outlined" style="font-size: 18px;">volume_up</span>
+          </button>
         </div>
-        <p class="text-on-surface-variant font-body-base leading-relaxed max-w-3xl">
-          ${escapeHtml(w.meaning)}
-        </p>
-        ${w.compare ? `
-        <div class="bg-tertiary-fixed/30 border border-tertiary-fixed-dim rounded-xl p-4 flex items-start gap-3 mt-4">
-          <span class="material-symbols-outlined text-tertiary">compare_arrows</span>
-          <p class="text-body-sm text-on-tertiary-fixed-variant">
-            <span class="font-bold">Compare:</span> ${escapeHtml(w.compare)}
-          </p>
-        </div>` : ''}
+        ${readBtnHtml}
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2">
-        <div class="p-8 bg-surface-bright/50">
-          <h5 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase tracking-widest">In Context</h5>
-          <ul class="space-y-4">
+      
+      <div class="vocab-word-meaning" style="margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5;">
+        ${escapeHtml(w.meaning)}
+      </div>
+      
+      ${w.compare ? `
+      <div style="font-size: 12px; margin-top: 8px; color: var(--ink-soft); font-style: italic; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 6px; padding: 10px 14px;">
+        <strong>Compare:</strong> ${escapeHtml(w.compare)}
+      </div>` : ''}
+      
+      <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; display: flex; flex-direction: column;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
+          <ul style="margin: 0; padding: 0;">
             ${examplesHtml}
           </ul>
         </div>
-        <div class="p-8 border-l border-outline-variant/10 flex flex-col justify-between">
+        <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <h5 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase tracking-widest flex items-center gap-2">
-              Practice Bench
-              <span class="bg-secondary-container/10 text-secondary-container px-2 py-0.5 rounded text-[10px]">AI ENABLED</span>
-            </h5>
-            <div class="relative group">
-              <textarea class="w-full h-32 bg-surface-container-low border border-outline-variant/20 rounded-2xl p-4 font-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none" placeholder="Try using '${escapeHtml(w.word)}' in your own sentence..." id="try-${idx}" onfocus="this.parentElement.classList.add('scale-[1.01]', 'transition-transform')" onblur="this.parentElement.classList.remove('scale-[1.01]')"></textarea>
-              <div class="absolute bottom-4 right-4 flex gap-2 opacity-0 group-focus-within:opacity-100 transition-opacity z-10">
-                <button class="px-4 py-2 bg-on-background text-white rounded-xl font-label-caps text-label-caps hover:bg-black transition-colors" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
-                <button class="px-4 py-2 bg-primary text-white rounded-xl font-label-caps text-label-caps flex items-center gap-2 shadow-sm hover:brightness-110 transition-all" onclick="aiGradeSentence(${idx}, '${safeWord}', '${safeCat}')">
-                  <span class="material-symbols-outlined text-[16px]">psychology</span>
-                  AI Grade
-                </button>
-              </div>
+            <div class="vocab-try-label">Practice Bench</div>
+            <div class="vocab-try-row">
+              <input type="text" placeholder="Write a sentence using '${safeWord}'..." id="try-${idx}" onkeypress="if(event.key==='Enter') checkSentence(${idx}, '${safeWord}')">
+              <button class="vocab-try-check" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
+              <button class="vocab-try-ai" onclick="aiGradeSentence(${idx}, '${safeWord}', '${safeCat}')">🤖 AI Grade</button>
             </div>
           </div>
-          <div class="vocab-try-feedback" id="try-fb-${idx}" style="margin-top: 10px;"></div>
+          <div class="vocab-try-feedback" id="try-fb-${idx}"></div>
         </div>
       </div>
     </div>
@@ -11351,6 +11313,7 @@ function hideChartTooltip() {
 
 // --- Daily Vocabulary Challenge Widget ---
 let currentChallengeWordObj = null;
+let challengeOffset = 0;
 
 function updateDailyVocabChallenge() {
   const allWords = [];
@@ -11362,9 +11325,10 @@ function updateDailyVocabChallenge() {
   
   if (allWords.length === 0) return;
   
-  // Deterministic daily lookup index
+  // Deterministic daily lookup index + custom offset
   const d = new Date();
-  const dayIndex = (d.getFullYear() * 365 + d.getMonth() * 31 + d.getDate()) % allWords.length;
+  const baseIndex = d.getFullYear() * 365 + d.getMonth() * 31 + d.getDate();
+  const dayIndex = (baseIndex + challengeOffset) % allWords.length;
   currentChallengeWordObj = allWords[dayIndex];
   
   const wordEl = document.getElementById('challengeWord');
@@ -11400,6 +11364,11 @@ function updateDailyVocabChallenge() {
     fbEl.className = 'vocab-try-feedback';
     fbEl.innerHTML = '';
   }
+}
+
+function loadNextChallengeWord() {
+  challengeOffset++;
+  updateDailyVocabChallenge();
 }
 
 function revealChallengeWord() {
