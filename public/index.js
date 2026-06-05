@@ -664,9 +664,17 @@ function closeAdmin() { document.getElementById('adminModal').classList.remove('
 
 function isAdmin() {
   if (offlineMode || !currentUser) return false;
+  const username = (currentUser.uid || '').trim().toLowerCase();
+  if (username === 'admin') return true;
+
   const userEmailLc = (currentUser.email || '').trim().toLowerCase();
   const adminEmailLc = (window.FB?.adminEmail || 'admin@ptewriting.com').trim().toLowerCase();
-  return userEmailLc === adminEmailLc;
+  if (userEmailLc === adminEmailLc) return true;
+
+  const adminPrefix = adminEmailLc.split('@')[0];
+  if (username === adminPrefix) return true;
+
+  return false;
 }
 
 async function loadAdminUsers() {
@@ -707,7 +715,8 @@ function renderAdminUsers() {
   }
   list.innerHTML = filtered.map(u => {
     const adminEmailLc = (window.FB?.adminEmail || 'admin@ptewriting.com').trim().toLowerCase();
-    const isThisAdmin = u.uid.toLowerCase() === 'admin' || (u.uid + '@ptewriting.com').toLowerCase() === adminEmailLc;
+    const adminPrefix = adminEmailLc.split('@')[0];
+    const isThisAdmin = u.uid.toLowerCase() === 'admin' || (u.uid + '@ptewriting.com').toLowerCase() === adminEmailLc || u.uid.toLowerCase() === adminPrefix;
     return `
     <div class="admin-user-row">
       <div>
@@ -7416,10 +7425,11 @@ async function bootForUser(user) {
   document.getElementById('userBadge').style.display = '';
   document.getElementById('userName').textContent = user.email.split('@')[0];
   document.getElementById('userAvatar').textContent = (user.email[0] || '?').toUpperCase();
-  // Case-insensitive admin check (Firebase stores emails as-entered)
   const userEmailLc = (user.email || '').trim().toLowerCase();
   const adminEmailLc = (window.FB.adminEmail || '').trim().toLowerCase();
-  if (userEmailLc === adminEmailLc) {
+  const username = (user.uid || '').trim().toLowerCase();
+  const adminPrefix = adminEmailLc.split('@')[0];
+  if (userEmailLc === adminEmailLc || username === 'admin' || username === adminPrefix) {
     document.getElementById('adminBtn').style.display = '';
     console.log('Admin mode: enabled for', user.email);
   } else {
