@@ -3622,9 +3622,9 @@ body.dark .diff-del {
 }
 
 @media (max-width: 900px) {
-  .practice-body { grid-template-columns: 1fr; }
-  .practice-sidebar { display: none; }
-  .practice-main { padding: 22px 16px 80px; }
+  .practice-body, .vocab-body { grid-template-columns: 1fr; }
+  .practice-sidebar, .vocab-sidebar { display: none; }
+  .practice-main, .vocab-main { padding: 22px 16px 80px; }
   .practice-score-grid { grid-template-columns: repeat(2, 1fr); }
   .practice-summary-row { grid-template-columns: 1fr; }
 }

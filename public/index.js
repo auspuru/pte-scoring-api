@@ -5962,6 +5962,7 @@ function openVocab() {
   document.getElementById('vocabScreen').classList.add('show');
   renderVocabCategoryList();
   updateVocabProgressSummary();
+  renderVocabMain(); // Populates initial view (Hub overview)
   // Sidebar navigation active state updates
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.id === 'nav-vocab');
@@ -6060,12 +6061,24 @@ function updateVocabProgressSummary() {
 
 function renderVocabCategoryList() {
   const q = (document.getElementById('vocabSearch')?.value || '').toLowerCase().trim();
-  const list = document.getElementById('vocabCategoryTabs');
+  const list = document.getElementById('vocabCategoryList');
   if (!list) return;
   const progress = getVocabProgress();
   const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
   
-  let html = '<div class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-2 rounded-2xl border border-outline-variant/20 shadow-xl flex flex-col gap-2">';
+  let html = '';
+  
+  if (!q) {
+    const isHubActive = (currentVocabCategory === null);
+    html += `
+      <div class="vocab-cat-item ${isHubActive ? 'active' : ''}" onclick="selectVocabCategory(null)">
+        <span class="vocab-cat-icon">🏠</span>
+        <span class="vocab-cat-label">Vocabulary Hub</span>
+        <span class="vocab-cat-progress">All</span>
+      </div>
+      <div class="h-[1px] bg-outline-variant/20 w-full my-2"></div>
+    `;
+  }
   
   sorted.forEach(([catId, cat]) => {
     // If search term matches category title or id
@@ -6078,28 +6091,14 @@ function renderVocabCategoryList() {
     const percent = total > 0 ? Math.round((read / total) * 100) : 0;
     const isActive = (currentVocabCategory === catId);
     
-    const activeClasses = isActive 
-      ? 'bg-primary text-white shadow-lg scale-105' 
-      : 'bg-surface-container hover:bg-primary hover:text-white dark:bg-zinc-800 dark:text-zinc-300';
-      
     html += `
-      <button class="w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeClasses}" 
-              onclick="selectVocabCategory('${catId}')" 
-              title="${escapeHtml(cat.label)} (${percent}% done)">
-        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' ${isActive ? '1' : '0'};">${escapeHtml(cat.icon || 'home')}</span>
-      </button>
+      <div class="vocab-cat-item ${isActive ? 'active' : ''}" onclick="selectVocabCategory('${catId}')" title="${escapeHtml(cat.label)}">
+        <span class="vocab-cat-icon">${escapeHtml(cat.icon || '📚')}</span>
+        <span class="vocab-cat-label">${escapeHtml(cat.label)}</span>
+        <span class="vocab-cat-progress">${percent}%</span>
+      </div>
     `;
   });
-  
-  // Practice Quiz button at the bottom of the floating tab
-  html += `
-    <div class="h-[1px] bg-outline-variant/20 w-full mx-auto"></div>
-    <button class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-surface-container-high dark:hover:bg-zinc-800 transition-all text-secondary" 
-            onclick="openVocabPractice()" 
-            title="Practice Quiz">
-      <span class="material-symbols-outlined text-[20px]">grid_view</span>
-    </button>
-  </div>`;
   
   list.innerHTML = html;
 }
@@ -6145,11 +6144,124 @@ function jumpToVocabWord(catId, word) {
 let vocabViewState = 'list'; // 'list' or 'flashcard'
 
 function renderVocabMain() {
-  const cat = VOCAB_DATA[currentVocabCategory];
-  if (!cat) return;
   const progress = getVocabProgress();
   const main = document.getElementById('vocabMainContent');
   if (!main) return;
+
+  const descriptions = {
+    law: "Criminal justice, court proceedings, and legal rights.",
+    education: "Learning frameworks, pedagogical systems, and academic performance.",
+    tech: "Technological advancements, digital societies, and data systems.",
+    env: "Natural ecology, climate policies, urban architecture, and resource conservation.",
+    health: "Public health, medical research, ethics, and wellness ecosystems.",
+    econ: "Financial systems, market trends, social policies, and corporate responsibility.",
+    society: "Social structures, community relations, demographics, and cultural norms.",
+    science: "Scientific inquiry, experimental research, methodologies, and natural phenomena.",
+    media: "Information dissemination, journalism, advertising, and digital communication.",
+    culture: "Artistic expression, societal values, heritage, and modern beliefs.",
+    politics: "Government structures, policy formulation, civil liberties, and international relations.",
+    history: "Historical events, cultural evolutions, societal shifts, and chronological eras.",
+    philosophy: "Theoretical frameworks, ethical dilemmas, cognitive logic, and abstract reasoning.",
+    psychology: "Human behavior, cognitive functions, mental health, and social psychology.",
+    business: "Commerce, corporate strategies, organizational structures, and entrepreneurship.",
+    art: "Visual arts, architecture, aesthetics, creative expression, and design principles.",
+    sports: "Athletic activities, wellness, competition dynamics, and physical performance.",
+    travel: "Tourism, migration patterns, cultural exploration, and globalization.",
+    food: "Gastronomy, nutrition science, global supply chains, and culinary traditions.",
+    fashion: "Textile industries, design trends, visual identity, and cultural style expressions.",
+    music: "Acoustics, cultural significance, auditory art, and historical genres.",
+    nature: "Biodiversity, ecosystems, botanical studies, and environmental dynamics.",
+    space: "Cosmology, space exploration, astrophysics, and orbital systems.",
+    weather: "Meteorological systems, climate patterns, atmospheric conditions, and forecasting.",
+    family: "Kinship systems, domestic structures, child development, and social cohesion.",
+    communication: "Linguistics, interpersonal dynamics, structural semiotics, and language acquisition.",
+    transport: "Logistical infrastructure, transit systems, urban planning, and mechanical systems.",
+    shopping: "Consumer patterns, marketing strategies, e-commerce, and retail economics.",
+    hobbies: "Recreational activities, cognitive engagement, skill development, and leisure studies.",
+    work: "Labor markets, professional ethics, workplace dynamics, and human resource management."
+  };
+
+  if (!currentVocabCategory) {
+    // 1. Render Categories Hub / Welcome Grid View
+    const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
+    
+    // Update Hero Statistics to show Global Totals
+    const totalRead = totalWordsRead();
+    const totalAvail = totalWordsAvailable();
+    const totalPercent = totalAvail > 0 ? Math.round((totalRead / totalAvail) * 100) : 0;
+    
+    const catTitleEl = document.getElementById('vocabCatTitle');
+    if (catTitleEl) catTitleEl.textContent = "Vocabulary Vault";
+    
+    const catDescEl = document.getElementById('vocabCatDesc');
+    if (catDescEl) catDescEl.textContent = "Master academic C1/C2 vocabulary. Practice using advanced terms in context, grade sentences using AI, and pass writing quizzes.";
+    
+    const catStatsEl = document.getElementById('vocabCatStats');
+    if (catStatsEl) catStatsEl.textContent = `${totalRead} / ${totalAvail}`;
+    
+    const catPercentEl = document.getElementById('vocabCatPercent');
+    if (catPercentEl) catPercentEl.textContent = `${totalPercent}%`;
+    
+    const progressRing = document.getElementById('vocabCatProgressRing');
+    if (progressRing) {
+      const radius = 70;
+      const circumference = 2 * Math.PI * radius; // ~439.82
+      const offset = circumference - (totalPercent / 100) * circumference;
+      progressRing.style.strokeDasharray = `${circumference}`;
+      progressRing.style.strokeDashoffset = `${offset}`;
+    }
+    
+    // Toggle Study Mode layout controls (hide them when in Hub mode)
+    const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+    if (studyModeBlock) studyModeBlock.style.display = 'none';
+    const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+    if (studyModePlaceholder) studyModePlaceholder.style.display = 'block';
+
+    // Render Grid of category cards
+    let gridHtml = `
+      <div style="margin-bottom: 8px;">
+        <h3 class="font-title-sm text-title-sm text-on-surface-variant mb-4 uppercase tracking-widest text-[11px] font-bold">Categories</h3>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+    `;
+    
+    sorted.forEach(([catId, cat]) => {
+      const read = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+      const total = cat.words.length;
+      const percent = total > 0 ? Math.round((read / total) * 100) : 0;
+      
+      gridHtml += `
+        <div class="bg-surface-lowest border border-outline-variant/10 rounded-3xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between" onclick="selectVocabCategory('${catId}')" style="min-height: 160px;">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-2xl">${escapeHtml(cat.icon || '📚')}</span>
+              <h4 class="font-title-sm text-title-sm text-on-background font-bold">${escapeHtml(cat.label)}</h4>
+            </div>
+            <p class="text-body-sm text-on-surface-variant/80 mb-4 line-clamp-2 leading-relaxed" style="font-size: 13px;">
+              ${escapeHtml(descriptions[catId] || cat.desc || `Practice vocabulary in the ${cat.label} domain.`)}
+            </p>
+          </div>
+          <div class="mt-auto pt-4">
+            <div class="flex justify-between font-label-caps text-[10px] text-on-surface-variant mb-1 font-bold">
+              <span>PROGRESS</span>
+              <span>${read} / ${total} words (${percent}%)</span>
+            </div>
+            <div class="w-full bg-surface-container-high dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-primary h-full transition-all duration-500" style="width: ${percent}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    gridHtml += `</div>`;
+    
+    main.innerHTML = gridHtml;
+    return;
+  }
+
+  const cat = VOCAB_DATA[currentVocabCategory];
+  if (!cat) return;
   const readCount = cat.words.filter(w => progress.read[vocabKey(currentVocabCategory, w.word)]).length;
   const percent = cat.words.length > 0 ? Math.round((readCount / cat.words.length) * 100) : 0;
   
@@ -6159,14 +6271,6 @@ function renderVocabMain() {
   
   const catDescEl = document.getElementById('vocabCatDesc');
   if (catDescEl) {
-    const descriptions = {
-      law: "Master technical vocabulary related to criminal justice, court proceedings, and legal rights for PTE/IELTS writing.",
-      tech: "Explore academic terms surrounding technological advancements, digital societies, and data systems.",
-      env: "Study critical language for natural ecology, climate policies, urban architecture, and resource conservation.",
-      health: "Master advanced vocabulary for public health, medical research, ethics, and wellness ecosystems.",
-      edu: "Understand advanced terminology for learning frameworks, pedagogical systems, and academic performance.",
-      econ: "Gain mastery over terms describing financial systems, market trends, social policies, and corporate responsibility."
-    };
     catDescEl.textContent = descriptions[currentVocabCategory] || `Improve vocabulary in the ${cat.label} domain.`;
   }
   
@@ -6186,6 +6290,11 @@ function renderVocabMain() {
   }
   
   // 2. Update toggle visual states
+  const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+  if (studyModeBlock) studyModeBlock.style.display = 'block';
+  const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+  if (studyModePlaceholder) studyModePlaceholder.style.display = 'none';
+
   const btnList = document.getElementById('vocabToggleList');
   const btnFlashcard = document.getElementById('vocabToggleFlashcard');
   if (btnList && btnFlashcard) {

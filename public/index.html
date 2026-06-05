@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="index.css?v=20.0.8">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
@@ -1034,142 +1035,141 @@
 
 <!-- LEARN VOCABULARY OVERLAY -->
 <div class="vocab-screen" id="vocabScreen">
-  <!-- SideNavBar inside Vocab Screen -->
-  <aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant/10 flex flex-col p-gutter gap-4 z-50">
-    <div class="flex items-center gap-3 px-2 py-4">
-      <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history_edu</span>
-      </div>
+  <!-- SideNavBar inside Vocab Screen (matches main sidebar navigation layout) -->
+  <aside class="sidebar-nav fixed left-0 top-0 h-screen w-[260px] z-50">
+    <div class="sidebar-brand">
+      <div class="brand-mark">◐</div>
       <div>
-        <h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed leading-none">ScholarPulse</h1>
-        <p class="font-label-caps text-[10px] text-on-surface-variant tracking-widest mt-1 uppercase">Academic Mastery</p>
+        <div class="brand-name">IPT Brisbane</div>
+        <div class="brand-sub">Writing Portal</div>
       </div>
     </div>
-    <nav class="flex-1 flex flex-col gap-1 mt-4">
-      <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all rounded-xl group" href="#" onclick="closeVocab(); switchSection('dashboard'); return false;">
-        <span class="material-symbols-outlined text-[22px]">dashboard</span>
-        <span class="font-label-caps text-label-caps">Dashboard</span>
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all rounded-xl group" href="#" onclick="closeVocab(); switchSection('swt'); return false;">
-        <span class="material-symbols-outlined text-[22px]">edit_document</span>
-        <span class="font-label-caps text-label-caps">Summarize Text</span>
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all rounded-xl group" href="#" onclick="closeVocab(); switchSection('library'); return false;">
-        <span class="material-symbols-outlined text-[22px]">library_books</span>
-        <span class="font-label-caps text-label-caps">Essay Library</span>
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all rounded-xl group" href="#" onclick="closeVocab(); openPractice(); return false;">
-        <span class="material-symbols-outlined text-[22px]">edit_note</span>
-        <span class="font-label-caps text-label-caps">Essay Practice</span>
-      </a>
-      <a class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-on-primary-container rounded-xl font-bold scale-95 shadow-sm" href="#" onclick="return false;">
-        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
-        <span class="font-label-caps text-label-caps">Vocab Vault</span>
-      </a>
+    
+    <nav class="sidebar-menu">
+      <button class="nav-item" onclick="closeVocab(); switchSection('dashboard');">
+        <span class="material-symbols-outlined text-[20px] mr-2">dashboard</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="closeVocab(); switchSection('swt');">
+        <span class="material-symbols-outlined text-[20px] mr-2">edit_document</span> Summarize Text
+      </button>
+      <button class="nav-item" onclick="closeVocab(); switchSection('library');">
+        <span class="material-symbols-outlined text-[20px] mr-2">library_books</span> Essay Library
+      </button>
+      <button class="nav-item" onclick="closeVocab(); openPractice();">
+        <span class="material-symbols-outlined text-[20px] mr-2">edit_note</span> Essay Practice
+      </button>
+      <button class="nav-item active" onclick="return false;">
+        <span class="material-symbols-outlined text-[20px] mr-2" style="font-variation-settings: 'FILL' 1;">auto_stories</span> Vocab Vault
+      </button>
     </nav>
-    <div class="mt-auto border-t border-outline-variant/10 pt-4 flex flex-col gap-1">
-      <a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all rounded-xl" href="#" onclick="closeVocab(); return false;">
-        <span class="material-symbols-outlined text-[22px]">logout</span>
-        <span class="font-label-caps text-label-caps">Back to Portal</span>
-      </a>
+    
+    <div class="sidebar-footer">
+      <button class="nav-item" onclick="closeVocab(); return false;" style="border: 1px solid var(--line-soft);">
+        <span class="material-symbols-outlined text-[20px] mr-2">logout</span> Back to Portal
+      </button>
     </div>
   </aside>
 
   <!-- Main Content Canvas -->
-  <main class="ml-sidebar-width flex-1 h-screen relative overflow-y-auto bg-background text-on-background">
+  <main class="ml-sidebar-width flex-1 h-screen relative overflow-hidden bg-background text-on-background flex flex-col">
     <!-- TopNavBar -->
-    <header class="sticky top-0 z-40 w-full h-16 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 px-container-padding flex items-center justify-between">
+    <header class="sticky top-0 z-40 w-full h-16 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 px-container-padding flex items-center justify-between flex-shrink-0">
       <div class="flex items-center gap-6">
         <div class="flex items-center gap-2 text-primary font-bold cursor-pointer" onclick="closeVocab()">
           <span class="material-symbols-outlined">chevron_left</span>
           <span class="font-label-caps text-label-caps">Back to Dashboard</span>
         </div>
         <div class="h-6 w-[1px] bg-outline-variant/30"></div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="selectVocabCategory(null)">
           <span class="material-symbols-outlined text-tertiary">explore</span>
           <span class="font-title-sm text-title-sm">Vocabulary Hub</span>
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <div class="hidden md:flex bg-surface-container-low border border-outline-variant/20 rounded-full px-4 py-1.5 items-center gap-2">
-          <span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
-          <input class="bg-transparent border-none focus:ring-0 text-body-sm w-64 placeholder:text-on-surface-variant/50" placeholder="Search academic terms..." type="text" id="vocabSearch" oninput="renderVocabCategoryList()"/>
-        </div>
         <div class="flex items-center gap-2">
           <div class="vocab-progress-summary" id="vocabProgressSummary" style="font-size:12px; font-weight:700; color:var(--ink-soft); background:var(--bg); border:1px solid var(--line-soft); border-radius:100px; padding:6px 16px;">0 / 0 words read</div>
         </div>
       </div>
     </header>
 
-    <div class="p-container-padding max-w-[1400px] mx-auto">
-      <!-- Hero Stats / Progress -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-10">
-        <div class="col-span-12 md:col-span-8 bg-primary text-white rounded-[2rem] p-8 flex items-center justify-between relative overflow-hidden">
-          <div class="absolute right-0 top-0 w-1/3 h-full radial-dots pointer-events-none"></div>
-          <div class="relative z-10">
-            <h2 class="font-display-lg text-display-lg mb-2" id="vocabCatTitle">Housing &amp; Architecture</h2>
-            <p class="font-body-base opacity-80 mb-6" id="vocabCatDesc">Master technical vocabulary related to urban planning, building design, and real estate for PTE/IELTS writing tasks.</p>
-            <div class="flex gap-4">
-              <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
-                <span class="font-label-caps text-[10px] block opacity-70">WORDS LEARNED</span>
-                <span class="font-display-lg text-headline-md block font-bold" id="vocabCatStats">0 / 0</span>
-              </div>
-              <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
-                <span class="font-label-caps text-[10px] block opacity-70">VAULT STREAK</span>
-                <span class="font-display-lg text-headline-md block font-bold text-streak-fire flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-                  <span id="vocabStreak">0 days</span>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div class="hidden lg:block" id="vocabCatProgressRingContainer">
-            <div class="relative w-40 h-40">
-              <svg class="w-full h-full transform -rotate-90">
-                <circle cx="80" cy="80" fill="transparent" r="70" stroke="rgba(255,255,255,0.1)" stroke-width="12"></circle>
-                <circle class="transition-all duration-1000" id="vocabCatProgressRing" cx="80" cy="80" fill="transparent" r="70" stroke="white" stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round" stroke-width="12"></circle>
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="font-display-lg text-headline-md font-extrabold leading-none" id="vocabCatPercent">0%</span>
-                <span class="font-label-caps text-[10px] opacity-70">DONE</span>
-              </div>
-            </div>
-          </div>
+    <!-- Refactored Dual-Pane Layout -->
+    <div class="vocab-body flex-1 flex overflow-hidden">
+      <!-- Category Navigation Left Sidebar -->
+      <aside class="vocab-sidebar">
+        <input type="text" class="vocab-search" placeholder="Search categories..." id="vocabSearch" oninput="renderVocabCategoryList()"/>
+        <div class="vocab-category-list" id="vocabCategoryList">
+          <!-- Rendered dynamically via JS -->
         </div>
-        <div class="col-span-12 md:col-span-4 bg-surface-container-low border border-outline-variant/10 rounded-[2rem] p-6 flex flex-col justify-between">
-          <div>
-            <h3 class="font-title-sm text-title-sm mb-4">Study Mode</h3>
-            <div class="grid grid-cols-2 gap-3">
-              <button class="bg-white p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all" id="vocabToggleList" onclick="setVocabViewState('list')">
-                <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">list_alt</span>
-                <span class="font-label-caps text-label-caps text-primary">List View</span>
-              </button>
-              <button class="bg-surface-container-highest/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white transition-all group" id="vocabToggleFlashcard" onclick="setVocabViewState('flashcard')">
-                <span class="material-symbols-outlined text-on-surface-variant group-hover:scale-110 transition-transform">style</span>
-                <span class="font-label-caps text-label-caps text-on-surface-variant">Flashcards</span>
-              </button>
-            </div>
-          </div>
-          <button class="w-full py-4 bg-secondary-container text-on-secondary-container font-bold rounded-2xl flex items-center justify-center gap-2 hover:brightness-110 transition-all mt-4" onclick="openVocabPractice()">
-            <span class="material-symbols-outlined">play_arrow</span>
-            Start Quick Quiz
-          </button>
-        </div>
-      </div>
-      
-      <!-- Content Area: List / Flashcards -->
-      <div id="vocabMainContent" class="flex flex-col gap-6 w-full">
-        <div class="vocab-welcome" style="max-width: 480px; margin: 60px auto; text-align: center;">
-          <div class="vocab-welcome-icon" style="font-size: 56px; margin-bottom: 18px;">📚</div>
-          <h2 style="font-family: var(--serif); font-size: 26px; font-weight: 700; margin-bottom: 12px;">Vocabulary Library</h2>
-          <p style="color: var(--ink-soft); font-size: 14px; line-height: 1.7; margin-bottom: 12px;">Pick a category from the list on the right to explore and study advanced C1/C2 academic terms.</p>
-        </div>
-      </div>
-    </div>
+      </aside>
 
-    <!-- Floating Side Tab for Categories (Responsive Pivot) -->
-    <div class="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-30" id="vocabCategoryTabs">
-      <!-- Rendered dynamically via JS -->
+      <!-- Main Scrollable Vocabulary Section -->
+      <div class="vocab-main flex-1 overflow-y-auto">
+        <div class="p-container-padding max-w-[1200px] mx-auto">
+          <!-- Hero Stats / Progress -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap mb-10">
+            <div class="col-span-12 md:col-span-8 bg-primary text-white rounded-[2rem] p-8 flex items-center justify-between relative overflow-hidden">
+              <div class="absolute right-0 top-0 w-1/3 h-full radial-dots pointer-events-none"></div>
+              <div class="relative z-10">
+                <h2 class="font-display-lg text-display-lg mb-2" id="vocabCatTitle">Housing &amp; Architecture</h2>
+                <p class="font-body-base opacity-80 mb-6" id="vocabCatDesc">Master technical vocabulary related to urban planning, building design, and real estate for PTE/IELTS writing tasks.</p>
+                <div class="flex gap-4">
+                  <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
+                    <span class="font-label-caps text-[10px] block opacity-70">WORDS LEARNED</span>
+                    <span class="font-display-lg text-headline-md block font-bold" id="vocabCatStats">0 / 0</span>
+                  </div>
+                  <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
+                    <span class="font-label-caps text-[10px] block opacity-70">VAULT STREAK</span>
+                    <span class="font-display-lg text-headline-md block font-bold text-streak-fire flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                      <span id="vocabStreak">0 days</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="hidden lg:block" id="vocabCatProgressRingContainer">
+                <div class="relative w-40 h-40">
+                  <svg class="w-full h-full transform -rotate-90">
+                    <circle cx="80" cy="80" fill="transparent" r="70" stroke="rgba(255,255,255,0.1)" stroke-width="12"></circle>
+                    <circle class="transition-all duration-1000" id="vocabCatProgressRing" cx="80" cy="80" fill="transparent" r="70" stroke="white" stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round" stroke-width="12"></circle>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="font-display-lg text-headline-md font-extrabold leading-none" id="vocabCatPercent">0%</span>
+                    <span class="font-label-caps text-[10px] opacity-70">DONE</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-span-12 md:col-span-4 bg-surface-container-low border border-outline-variant/10 rounded-[2rem] p-6 flex flex-col justify-between">
+              <div id="vocabStudyModeBlock">
+                <h3 class="font-title-sm text-title-sm mb-4">Study Mode</h3>
+                <div class="grid grid-cols-2 gap-3">
+                  <button class="bg-white p-4 rounded-2xl border-2 border-primary flex flex-col items-center gap-2 group transition-all" id="vocabToggleList" onclick="setVocabViewState('list')">
+                    <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">list_alt</span>
+                    <span class="font-label-caps text-label-caps text-primary">List View</span>
+                  </button>
+                  <button class="bg-surface-container-highest/30 p-4 rounded-2xl border border-outline-variant/20 flex flex-col items-center gap-2 hover:bg-white transition-all group" id="vocabToggleFlashcard" onclick="setVocabViewState('flashcard')">
+                    <span class="material-symbols-outlined text-on-surface-variant group-hover:scale-110 transition-transform">style</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">Flashcards</span>
+                  </button>
+                </div>
+              </div>
+              <div id="vocabStudyModePlaceholder" style="display:none; text-align:center; padding: 20px 0; color: var(--ink-soft); font-size:13px; margin-bottom:12px;">
+                Select a category on the left to start learning words.
+              </div>
+              <button class="w-full py-4 bg-secondary-container text-on-secondary-container font-bold rounded-2xl flex items-center justify-center gap-2 hover:brightness-110 transition-all mt-4" onclick="openVocabPractice()">
+                <span class="material-symbols-outlined">play_arrow</span>
+                Start Quick Quiz
+              </button>
+            </div>
+          </div>
+          
+          <!-- Content Area: List / Flashcards / Category Grid -->
+          <div id="vocabMainContent" class="flex flex-col gap-6 w-full">
+            <!-- Rendered dynamically via JS -->
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>
