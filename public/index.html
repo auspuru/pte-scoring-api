@@ -220,22 +220,28 @@
     
     <nav class="sidebar-menu">
       <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')">
-        <span class="nav-icon">📊</span> Dashboard
+        <span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span>
+        <span>Dashboard</span>
       </button>
       <button class="nav-item" id="nav-swt" onclick="switchSection('swt')">
-        <span class="nav-icon">📝</span> Summarize Text (SWT)
+        <span class="nav-icon material-symbols-outlined text-[22px]">edit_document</span>
+        <span>Summarize Text (SWT)</span>
       </button>
       <button class="nav-item" id="nav-library" onclick="switchSection('library')">
-        <span class="nav-icon">📚</span> Essay Library
+        <span class="nav-icon material-symbols-outlined text-[22px]">library_books</span>
+        <span>Essay Library</span>
       </button>
       <button class="nav-item" id="nav-practice" onclick="openPractice()">
-        <span class="nav-icon">✏️</span> Essay Practice
+        <span class="nav-icon material-symbols-outlined text-[22px]">edit_note</span>
+        <span>Essay Practice</span>
       </button>
       <button class="nav-item" id="nav-vocab" onclick="openVocab()">
-        <span class="nav-icon">📖</span> Vocab Hub
+        <span class="nav-icon material-symbols-outlined text-[22px]">auto_stories</span>
+        <span>Vocab Hub</span>
       </button>
       <button class="nav-item" id="nav-admin" onclick="openAdmin()" style="display:none;">
-        <span class="nav-icon">👑</span> Admin Panel
+        <span class="nav-icon material-symbols-outlined text-[22px]">admin_panel_settings</span>
+        <span>Admin Panel</span>
       </button>
     </nav>
 
@@ -1047,25 +1053,31 @@
     
     <nav class="sidebar-menu">
       <button class="nav-item" onclick="closeVocab(); switchSection('dashboard');">
-        <span class="material-symbols-outlined text-[20px] mr-2">dashboard</span> Dashboard
+        <span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span>
+        <span>Dashboard</span>
       </button>
       <button class="nav-item" onclick="closeVocab(); switchSection('swt');">
-        <span class="material-symbols-outlined text-[20px] mr-2">edit_document</span> Summarize Text
+        <span class="nav-icon material-symbols-outlined text-[22px]">edit_document</span>
+        <span>Summarize Text</span>
       </button>
       <button class="nav-item" onclick="closeVocab(); switchSection('library');">
-        <span class="material-symbols-outlined text-[20px] mr-2">library_books</span> Essay Library
+        <span class="nav-icon material-symbols-outlined text-[22px]">library_books</span>
+        <span>Essay Library</span>
       </button>
       <button class="nav-item" onclick="closeVocab(); openPractice();">
-        <span class="material-symbols-outlined text-[20px] mr-2">edit_note</span> Essay Practice
+        <span class="nav-icon material-symbols-outlined text-[22px]">edit_note</span>
+        <span>Essay Practice</span>
       </button>
       <button class="nav-item active" onclick="return false;">
-        <span class="material-symbols-outlined text-[20px] mr-2" style="font-variation-settings: 'FILL' 1;">auto_stories</span> Vocab Vault
+        <span class="nav-icon material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+        <span>Vocab Vault</span>
       </button>
     </nav>
     
     <div class="sidebar-footer">
       <button class="nav-item" onclick="closeVocab(); return false;" style="border: 1px solid var(--line-soft);">
-        <span class="material-symbols-outlined text-[20px] mr-2">logout</span> Back to Portal
+        <span class="nav-icon material-symbols-outlined text-[22px]">logout</span>
+        <span>Back to Portal</span>
       </button>
     </div>
   </aside>
