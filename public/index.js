@@ -128,8 +128,10 @@ function toggleSignupMode(signup) {
   isSignupMode = signup;
   document.getElementById('loginForm').style.display = isSignupMode ? 'none' : 'block';
   document.getElementById('registerForm').style.display = isSignupMode ? 'block' : 'none';
+  document.getElementById('forgotPasswordForm').style.display = 'none';
   hideLoginError();
   hideRegisterError();
+  hideForgotPasswordError();
 }
 
 function showLoginError(msg) {
@@ -145,6 +147,117 @@ function showRegisterError(msg) {
   el.classList.add('show');
 }
 function hideRegisterError() { document.getElementById('registerError').classList.remove('show'); }
+
+const SECRET_QUESTIONS_MAP = {
+  pet: "What was the name of your first pet?",
+  school: "What primary school did you attend?",
+  city: "What city were you born in?",
+  mother: "What is your mother's maiden name?",
+  food: "What is your favourite food?",
+  friend: "What was your childhood best friend's name?"
+};
+
+function toggleForgotPasswordMode(show) {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const forgotForm = document.getElementById('forgotPasswordForm');
+  
+  if (show) {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'none';
+    forgotForm.style.display = 'block';
+    
+    document.getElementById('forgotPassFormStep1').style.display = 'block';
+    document.getElementById('forgotPassFormStep2').style.display = 'none';
+    document.getElementById('forgotUsername').disabled = false;
+    document.getElementById('forgotUsername').value = '';
+    document.getElementById('forgotAnswer').value = '';
+    document.getElementById('forgotNewPassword').value = '';
+    hideForgotPasswordError();
+  } else {
+    forgotForm.style.display = 'none';
+    registerForm.style.display = 'none';
+    loginForm.style.display = 'block';
+    hideLoginError();
+  }
+}
+
+function showForgotPasswordError(msg) {
+  const el = document.getElementById('forgotPasswordError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function hideForgotPasswordError() {
+  const el = document.getElementById('forgotPasswordError');
+  if (el) el.classList.remove('show');
+}
+
+async function handleRequestSecretQuestion(ev) {
+  ev.preventDefault();
+  const u = document.getElementById('forgotUsername').value.trim();
+  const btn = document.getElementById('forgotStep1Btn');
+  btn.disabled = true;
+  btn.textContent = 'Searching...';
+  hideForgotPasswordError();
+  
+  try {
+    const r = await fetch(API_URL + '/api/auth/secret-question/' + encodeURIComponent(u));
+    const d = await r.json();
+    if (d.success) {
+      const questionKey = d.secretQ;
+      const questionText = SECRET_QUESTIONS_MAP[questionKey] || questionKey || "Please answer your security question";
+      
+      document.getElementById('forgotQuestionDisplay').textContent = questionText;
+      document.getElementById('forgotPassFormStep1').style.display = 'none';
+      document.getElementById('forgotPassFormStep2').style.display = 'block';
+      document.getElementById('forgotUsername').disabled = true;
+    } else {
+      showForgotPasswordError(d.error || 'Username not found or has no security question.');
+    }
+  } catch (e) {
+    showForgotPasswordError('Connection error. Try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Continue';
+  }
+}
+
+async function handleResetPasswordSubmit(ev) {
+  ev.preventDefault();
+  const u = document.getElementById('forgotUsername').value.trim();
+  const sa = document.getElementById('forgotAnswer').value.trim();
+  const npw = document.getElementById('forgotNewPassword').value;
+  const btn = document.getElementById('forgotStep2Btn');
+  
+  if (npw.length < 4) {
+    showForgotPasswordError('Password must be at least 4 characters.');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = 'Resetting...';
+  hideForgotPasswordError();
+  
+  try {
+    const r = await fetch(API_URL + '/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, secretAnswer: sa, newPassword: npw })
+    });
+    const d = await r.json();
+    if (d.success) {
+      alert('Password reset successfully! You can now log in.');
+      toggleForgotPasswordMode(false);
+    } else {
+      showForgotPasswordError(d.error || 'Reset failed.');
+    }
+  } catch (e) {
+    showForgotPasswordError('Connection error. Try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Reset password';
+  }
+}
 
 async function handleLoginSubmit(ev) {
   ev.preventDefault();

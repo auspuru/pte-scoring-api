@@ -157,7 +157,10 @@
           <input type="text" id="loginUsername" autocomplete="username" required placeholder="your username">
         </div>
         <div class="login-field">
-          <label for="loginPassword">Password</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label for="loginPassword" style="margin-bottom: 0;">Password</label>
+            <a onclick="toggleForgotPasswordMode(true)" style="font-size: 11px; font-weight: 700; color: var(--accent); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none;">Forgot?</a>
+          </div>
           <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
         </div>
         <button type="submit" class="login-submit" id="loginSubmitBtn">Sign in</button>
@@ -200,6 +203,43 @@
       </form>
       <div class="login-toggle">
         Already have an account? <a onclick="toggleSignupMode(false)">Sign in</a>
+      </div>
+    </div>
+
+    <!-- Forgot Password form -->
+    <div id="forgotPasswordForm" style="display:none;">
+      <h1 class="login-title">Reset password</h1>
+      <p class="login-sub">Recover your account credentials</p>
+      <div class="login-error" id="forgotPasswordError"></div>
+      
+      <!-- Step 1: Find Username -->
+      <form id="forgotPassFormStep1" onsubmit="handleRequestSecretQuestion(event)">
+        <div class="login-field">
+          <label for="forgotUsername">Username</label>
+          <input type="text" id="forgotUsername" required placeholder="your username">
+        </div>
+        <button type="submit" class="login-submit" id="forgotStep1Btn">Continue</button>
+      </form>
+      
+      <!-- Step 2: Answer & Reset (Initially Hidden) -->
+      <form id="forgotPassFormStep2" style="display:none;" onsubmit="handleResetPasswordSubmit(event)">
+        <div class="login-field">
+          <label>Security Question</label>
+          <div id="forgotQuestionDisplay" style="font-size: 13.5px; color: var(--ink); margin-bottom: 12px; font-weight: 500; padding: 11px 14px; background: rgba(99, 102, 241, 0.06); border-radius: 8px; border: 1px solid var(--line); line-height: 1.4;"></div>
+        </div>
+        <div class="login-field">
+          <label for="forgotAnswer">Answer</label>
+          <input type="text" id="forgotAnswer" required placeholder="your security answer">
+        </div>
+        <div class="login-field">
+          <label for="forgotNewPassword">New Password</label>
+          <input type="password" id="forgotNewPassword" required minlength="4" placeholder="min 4 characters">
+        </div>
+        <button type="submit" class="login-submit" id="forgotStep2Btn">Reset password</button>
+      </form>
+      
+      <div class="login-toggle">
+        Remembered your password? <a onclick="toggleForgotPasswordMode(false)">Sign in</a>
       </div>
     </div>
   </div>
