@@ -8764,8 +8764,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
   "spellingErrors": ["wrod1", "wrod2"],
   "grammarIssues": ["short phrase showing the issue", "another"],
   "strengths": ["You clearly answered both parts of the question.", "Good use of specific examples like X."],
-  "improvements": ["Vary sentence length — most of yours start with 'The'.", "Add one linking word per paragraph (e.g. however, as a result)."],
-  "sampleResponse": "Rewrite the student's essay completely to incorporate all your feedback and recommendations. Highlight the changes in the text: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
+  "sampleResponse": "A revised version of the essay focusing on the key paragraphs that need improvement (keep it concise, max 150 words total, rather than rewriting the entire essay). Highlight the changes: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
 }
 
 CRITICAL for the "errors" array:
@@ -8780,7 +8779,7 @@ CRITICAL for the "errors" array:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 2500,
         messages: [{ role: 'user', content: prompt }]
       })
