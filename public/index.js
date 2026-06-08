@@ -332,14 +332,28 @@ function signOutUser() {
   signOut();
 }
 
+function exitImpersonation() {
+  sessionStorage.removeItem('pte_impersonate_token');
+  const url = new URL(window.location);
+  url.searchParams.delete('impersonate');
+  window.history.replaceState({}, document.title, url.pathname + url.search);
+  window.location.reload();
+}
+window.exitImpersonation = exitImpersonation;
+
 function signOut() {
   currentUserId = '';
   sessionToken = '';
   localStorage.removeItem('pte_session_token');
+  sessionStorage.removeItem('pte_impersonate_token');
   LocalStore.setUserId('');
   userProfile = null;
   essays = [];
   currentId = null;
+
+  const banner = document.getElementById('impersonateBanner');
+  if (banner) banner.style.display = 'none';
+
   showLogin();
   toggleSignupMode(false);
   document.getElementById('loginUsername').value = '';
@@ -6412,8 +6426,8 @@ function renderVocabMain() {
   }
 
   const cat = VOCAB_DATA[currentVocabCategory];
-  if (!cat) return;
-  const readCount = cat.words.filter(w => progress.read[vocabKey(currentVocabCategory, w.word)]).length;
+  if (!cat || !Array.isArray(cat.words)) return;
+  const readCount = cat.words.filter(w => w && w.word && progress.read[vocabKey(currentVocabCategory, w.word)]).length;
   const percent = cat.words.length > 0 ? Math.round((readCount / cat.words.length) * 100) : 0;
   
   const catTitleEl = document.getElementById('vocabCatTitle');
@@ -6456,7 +6470,7 @@ function renderVocabMain() {
   
   let contentHtml = '';
   if (vocabViewState === 'list') {
-    contentHtml = cat.words.map((w, i) => renderVocabWordCard(w, i)).join('');
+    contentHtml = cat.words.filter(w => w && w.word).map((w, i) => renderVocabWordCard(w, i)).join('');
     main.innerHTML = `<div class="vocab-word-list">${contentHtml}</div>`;
   } else {
     contentHtml = renderVocabFlashcardContainer();
@@ -6482,9 +6496,11 @@ function speakWord(word) {
 }
 
 function renderVocabWordCard(w, idx) {
-  const read = isWordRead(currentVocabCategory, w.word);
-  const safeWord = w.word.replace(/'/g, "\\'");
-  const safeCat = currentVocabCategory.replace(/'/g, "\\'");
+  if (!w || !w.word) return '';
+  const wordText = w.word;
+  const read = isWordRead(currentVocabCategory, wordText);
+  const safeWord = wordText.replace(/'/g, "\\'");
+  const safeCat = (currentVocabCategory || '').replace(/'/g, "\\'");
   
   const posVal = (w.pos || '').toLowerCase().trim();
   let posClass = 'pos-noun';
@@ -6504,7 +6520,7 @@ function renderVocabWordCard(w, idx) {
          <span>Mark as read</span>
        </button>`;
 
-  const regex = new RegExp(`\\b(${w.word})\\b`, 'i');
+  const regex = new RegExp(`\\b(${wordText})\\b`, 'i');
   const examplesHtml = (w.examples || []).map(ex => {
     const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
     return `<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
@@ -6601,12 +6617,13 @@ function renderMaster1000Vocab() {
 
   // 2. Filter words
   let filtered = typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000 : [];
+  filtered = filtered.filter(w => w && w.w);
   if (masterLevelFilter !== 'all') {
     filtered = filtered.filter(w => w.l === masterLevelFilter);
   }
   if (masterSearchQuery) {
     const q = masterSearchQuery.toLowerCase().trim();
-    filtered = filtered.filter(w => w.w.toLowerCase().includes(q) || w.p.toLowerCase().includes(q));
+    filtered = filtered.filter(w => (w.w || '').toLowerCase().includes(q) || (w.p || '').toLowerCase().includes(q));
   }
   
   // Pagination math
@@ -6678,12 +6695,14 @@ function changeMasterPage(delta) {
 }
 
 function renderMasterWordCard(w, idx) {
-  const cacheKey = `cached_master_vocab_${w.w}`;
+  if (!w || !w.w) return '';
+  const wordText = w.w;
+  const cacheKey = `cached_master_vocab_${wordText}`;
   const cached = localStorage.getItem(cacheKey);
   const data = cached ? JSON.parse(cached) : null;
   
-  const read = isWordRead('master1000', w.w);
-  const safeWord = w.w.replace(/'/g, "\\'");
+  const read = isWordRead('master1000', wordText);
+  const safeWord = wordText.replace(/'/g, "\\'");
   
   const posVal = (w.p || '').toLowerCase().trim();
   let posClass = 'pos-noun';
@@ -7827,6 +7846,40 @@ async function initApp() {
     console.log('Could not fetch /api/config — using hardcoded admin email');
   }
 
+  // Check for admin impersonation token
+  const urlParams = new URLSearchParams(window.location.search);
+  let impToken = urlParams.get('impersonate') || sessionStorage.getItem('pte_impersonate_token');
+  if (impToken) {
+    showLoading(true);
+    try {
+      const r = await fetch(API_URL + '/api/impersonate/redeem?token=' + encodeURIComponent(impToken));
+      if (r.ok) {
+        const d = await r.json();
+        if (d.success && d.username) {
+          sessionStorage.setItem('pte_impersonate_token', impToken);
+          sessionToken = impToken;
+          
+          const banner = document.getElementById('impersonateBanner');
+          if (banner) banner.style.display = 'flex';
+          const nameEl = document.getElementById('impersonateName');
+          if (nameEl) nameEl.textContent = d.username;
+          
+          await enterApp(d.username);
+          showLoading(false);
+          return;
+        }
+      }
+    } catch (e) {
+      console.error('Impersonation token verification failed:', e);
+    }
+    // Clear stale or invalid impersonation session
+    sessionStorage.removeItem('pte_impersonate_token');
+    const url = new URL(window.location);
+    url.searchParams.delete('impersonate');
+    window.history.replaceState({}, document.title, url.pathname + url.search);
+    showLoading(false);
+  }
+
   const last = LocalStore.getUserId();
   if (!last) {
     showLogin();
@@ -8197,7 +8250,9 @@ function updateThemeToggleButton() {
 initApp();
 
 // Boot a minimal state IMMEDIATELY so the login screen can render only if no saved session
-if (!LocalStore.getUserId() || !localStorage.getItem('pte_session_token')) {
+const urlParams = new URLSearchParams(window.location.search);
+const hasImpersonate = urlParams.get('impersonate') || sessionStorage.getItem('pte_impersonate_token');
+if (!hasImpersonate && (!LocalStore.getUserId() || !localStorage.getItem('pte_session_token'))) {
   showLogin();
 }
 
