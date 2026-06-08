@@ -6581,6 +6581,15 @@ function renderMaster1000Vocab() {
   const main = document.getElementById('vocabMainContent');
   if (!main) return;
   
+  // Save focus and cursor selection state
+  const activeElId = document.activeElement ? document.activeElement.id : null;
+  let selectionStart = null;
+  let selectionEnd = null;
+  if (activeElId && document.activeElement instanceof HTMLInputElement) {
+    selectionStart = document.activeElement.selectionStart;
+    selectionEnd = document.activeElement.selectionEnd;
+  }
+  
   // 1. Update Hero Statistics to show Master List info
   const progress = getVocabProgress();
   const readMasterKeys = Object.keys(progress.read).filter(k => k.startsWith('master1000:'));
@@ -6665,7 +6674,25 @@ function renderMaster1000Vocab() {
   // Build list HTML
   let listHtml = '';
   if (totalFiltered === 0) {
-    listHtml = `<div class="list-empty-state">No matching words found. Try adjusting your search query.</div>`;
+    const qClean = (masterSearchQuery || '').trim();
+    if (qClean) {
+      listHtml = `
+        <div class="vocab-word-card" style="border: 1px dashed var(--line-soft); text-align: center; padding: 30px; width: 100%;">
+          <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+          <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">"${escapeHtml(qClean)}" not found in Exam Essentials</h4>
+          <p style="color: var(--ink-soft); font-size: 13.5px; margin-bottom: 16px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            We couldn't find this exact word in our 1,000 IELTS/PTE database. You can query Claude AI to generate layman-friendly definition contexts and examples, or suggest spell-checks if it was mistyped.
+          </p>
+          <button class="vocab-action-btn coach" onclick="queryExternalWord('${escapeHtml(qClean.replace(/'/g, "\\'"))}')" style="padding: 10px 24px; border-radius: 30px; margin: 0 auto; display: inline-flex; gap: 8px;">
+            <span class="material-symbols-outlined">psychology</span>
+            <span>Ask Claude AI for Definitions &amp; Options</span>
+          </button>
+          <div id="externalWordResult" style="margin-top: 20px; text-align: left; width: 100%;"></div>
+        </div>
+      `;
+    } else {
+      listHtml = `<div class="list-empty-state">No matching words found. Try adjusting your search query.</div>`;
+    }
   } else {
     listHtml = `<div class="vocab-word-list" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
       ${pageWords.map((w, i) => renderMasterWordCard(w, startIdx + i)).join('')}
@@ -6673,6 +6700,17 @@ function renderMaster1000Vocab() {
   }
   
   main.innerHTML = controlsHtml + listHtml;
+  
+  // Restore focus and cursor selection state
+  if (activeElId) {
+    const el = document.getElementById(activeElId);
+    if (el) {
+      el.focus();
+      if (selectionStart !== null && selectionEnd !== null && typeof el.setSelectionRange === 'function') {
+        try { el.setSelectionRange(selectionStart, selectionEnd); } catch (e) {}
+      }
+    }
+  }
 }
 
 function handleMasterSearch(q) {
@@ -6951,6 +6989,12 @@ async function aiGradeSentence(idx, word, catId) {
         meaning: cachedData ? cachedData.meaning : "C1/C2 Academic vocabulary word"
       };
     }
+  } else if (catId === 'external') {
+    wordData = {
+      word: word,
+      pos: lastExternalWordData ? lastExternalWordData.pos : '',
+      meaning: lastExternalWordData ? lastExternalWordData.meaning : 'Vocabulary word'
+    };
   } else {
     wordData = (VOCAB_DATA[catId]?.words || []).find(w => w.word === word);
   }
@@ -12432,5 +12476,210 @@ function renderMatcherGameOver() {
     </div>
   `;
 }
+
+let lastExternalWordData = null;
+
+async function queryExternalWord(word) {
+  const resultContainer = document.getElementById('externalWordResult');
+  if (!resultContainer) return;
+  
+  resultContainer.innerHTML = \`
+    <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); border: 1px dashed var(--line-soft); border-radius: 12px;">
+      <span class="spinner-dark" style="border-color: var(--accent); border-top-color: transparent; width: 18px; height: 18px; margin-right: 8px;"></span>
+      <span style="font-size: 13.5px; color: var(--ink-soft);">Claude AI is analyzing "\${escapeHtml(word)}"...</span>
+    </div>
+  \`;
+  
+  if (offlineMode) {
+    resultContainer.innerHTML = \`
+      <div style="margin-top: 14px; padding: 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; color: var(--ink-soft); font-size: 13px;">
+        Offline mode enabled. Connect to the internet to query Claude AI.
+      </div>
+    \`;
+    return;
+  }
+  
+  const prompt = \\\`The student searched for the word "\\\${word}" in an English vocabulary prep app (IELTS/PTE), but it was not found in the database.
+Identify if the word is spelled correctly or if it is a typo/misspelling.
+
+Case 1: If the word is spelled correctly (or is a valid English word):
+Provide:
+1. One general formal meaning (defined in simple, layman-friendly plain English).
+2. Part of speech.
+3. 2-3 different context-specific meanings.
+4. Exactly 5 natural example sentences demonstrating the word in these contexts.
+
+Case 2: If the word seems to be a typo or misspelled:
+Provide:
+1. A note explaining that the word might be misspelled.
+2. A list of 2-4 possible correct spellings/suggestions.
+3. For each suggestion, provide its part of speech and a very brief definition.
+
+Return ONLY a valid JSON object matching one of these structures (do not include markdown outside JSON, just output the JSON plain text):
+
+For Case 1 (Valid Word):
+{
+  "status": "valid",
+  "word": "\\\${word}",
+  "pos": "noun/verb/etc",
+  "meaning": "general meaning here",
+  "contexts": [
+    { "name": "Academic", "meaning": "meaning here", "examples": ["example 1", "example 2"] },
+    { "name": "General", "meaning": "meaning here", "examples": ["example 3", "example 4", "example 5"] }
+  ]
+}
+
+For Case 2 (Typo/Suggestions):
+{
+  "status": "typo",
+  "suggestions": [
+    { "word": "correctWord1", "pos": "noun", "meaning": "brief meaning here" },
+    { "word": "correctWord2", "pos": "verb", "meaning": "brief meaning here" }
+  ]
+}
+\\\`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error(\\\`Server returned \\\${res.status}\\\`);
+    const resData = await res.json();
+    const text = (resData.content || []).map(c => c.text || '').join('\\\\n').trim();
+    
+    let jsonText = text;
+    const jsonMatch = text.match(/```json\\\\s*([\\\\s\\\\S]*?)\\\\s*```/) || text.match(/```\\\\s*([\\\\s\\\\S]*?)\\\\s*```/);
+    if (jsonMatch) jsonText = jsonMatch[1];
+    
+    const data = JSON.parse(jsonText.trim());
+    
+    if (data.status === 'valid') {
+      lastExternalWordData = data;
+      const safeWord = data.word.replace(/'/g, "\\\\\\\\'");
+      
+      const posVal = (data.pos || '').toLowerCase().trim();
+      let posClass = 'pos-noun';
+      if (posVal.includes('verb')) posClass = 'pos-verb';
+      else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = 'pos-adjective';
+      else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = 'pos-adverb';
+      
+      const posHtml = \\\`<span class="pos-badge \\\${posClass}">\\\${escapeHtml(data.pos || '')}</span>\\\`;
+      
+      const contextsHtml = (data.contexts || []).map(ctx => {
+        const examplesList = (ctx.examples || []).map(ex => {
+          const regex = new RegExp(\\\`\\\\\\\\b(\\\${data.word})\\\\\\\\b\\\`, 'i');
+          const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
+          return \\\`<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
+            <span style="position: absolute; left: 0; color: var(--accent);">•</span>
+            "\\\${bolded}"
+          </li>\\\`;
+        }).join('');
+        return \\\`
+          <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">\\\${escapeHtml(ctx.name)} Context</div>
+            <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">\\\${escapeHtml(ctx.meaning)}</div>
+            <ul style="margin: 0; padding: 0;">\\\${examplesList}</ul>
+          </div>
+        \\\`;
+      }).join('');
+      
+      resultContainer.innerHTML = \\\`
+        <div class="vocab-word-card" id="word-card-external" style="margin-top: 14px; border: 1px solid var(--accent); text-align: left;">
+          <div class="vocab-card-top">
+            <div class="vocab-word-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span>\\\${escapeHtml(data.word)}</span>
+              <div class="vocab-badges" style="display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 4px;">
+                \\\${posHtml}
+                <span class="level-badge" style="background: var(--accent); color: #fff;">AI Suggested</span>
+              </div>
+              <button class="vocab-audio-btn" onclick="speakWord('\\\\&apos;\\\${safeWord}\\\\&apos;')" title="Listen to pronunciation">
+                <span class="material-symbols-outlined" style="font-size: 18px;">volume_up</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="vocab-word-meaning" style="margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; text-align: left;">
+            <strong>Definition:</strong> \\\${escapeHtml(data.meaning || '')}
+          </div>
+          
+          <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div>
+              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+              \\\${contextsHtml}
+            </div>
+            <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div class="vocab-try-label" style="text-align: left;">Practice Bench</div>
+                <div class="vocab-try-row">
+                  <input type="text" placeholder="Write a sentence using '\\\\&apos;\\\${safeWord}\\\&apos;'..." id="try-external" onkeypress="if(event.key==='Enter') checkSentence('external', '\\\\&apos;\\\${safeWord}\\\&apos;')">
+                  <button class="vocab-try-check" onclick="checkSentence('external', '\\\\&apos;\\\${safeWord}\\\&apos;')">Check</button>
+                  <button class="vocab-try-ai" onclick="aiGradeSentence('external', '\\\\&apos;\\\${safeWord}\\\&apos;', 'external')">🤖 AI Grade</button>
+                </div>
+              </div>
+              <div class="vocab-try-feedback" id="try-fb-external" style="text-align: left;"></div>
+            </div>
+          </div>
+        </div>
+      \\\`;
+    } else if (data.status === 'typo') {
+      const suggestionsHtml = (data.suggestions || []).map(s => {
+        const sWord = s.word.replace(/'/g, "\\\\\\\\'");
+        return \\\`
+          <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <div>
+              <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
+                <strong style="font-family: var(--serif); font-size: 14px; color: var(--ink);">\\\${escapeHtml(s.word)}</strong>
+                <span class="pos-badge pos-noun" style="font-size: 10px; padding: 1px 4px;">\\\${escapeHtml(s.pos)}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--ink-soft);">\\\${escapeHtml(s.meaning)}</div>
+            </div>
+            <button class="vocab-action-btn" onclick="applyExternalSuggestion('\\\\&apos;\\\${sWord}\\\\&apos;')" style="font-size: 12px; padding: 6px 12px; flex-shrink: 0;">
+              Use Suggestion
+            </button>
+          </div>
+        \\\`;
+      }).join('');
+      
+      resultContainer.innerHTML = \\\`
+        <div style="margin-top: 14px; background: var(--bg-card); border: 1px solid var(--line-soft); border-radius: 12px; padding: 20px; text-align: left;">
+          <div style="color: #ea580c; font-weight: 700; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">warning</span>
+            <span>Spelling suggestion or typo detected</span>
+          </div>
+          <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 14px;">"\\\${escapeHtml(word)}" might be misspelled. Did you mean one of these?</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            \\\${suggestionsHtml}
+          </div>
+        </div>
+      \\\`;
+    } else {
+      throw new Error("Invalid response status from AI");
+    }
+  } catch (err) {
+    console.error('Failed to load external word details:', err);
+    resultContainer.innerHTML = \`
+      <div style="margin-top: 14px; padding: 14px; background: var(--bg); border: 1px solid #fca5a5; border-radius: 8px; color: #b91c1c; font-size: 13px;">
+        AI query failed: \\\${escapeHtml(err.message)}
+      </div>
+    \`;
+  }
+}
+
+function applyExternalSuggestion(word) {
+  const searchInput = document.getElementById('masterSearch');
+  if (searchInput) {
+    searchInput.value = word;
+    handleMasterSearch(word);
+  }
+}
+
+window.queryExternalWord = queryExternalWord;
+window.applyExternalSuggestion = applyExternalSuggestion;
 
 
