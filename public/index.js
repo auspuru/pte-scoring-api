@@ -451,6 +451,7 @@ async function loadUserData(uid) {
           title: t.title,
           question: t.question,
           explanation: t.explanation,
+          badge: t.badge || '',
           pros: '', cons: '', approach: '',
           intro: '', bp1: '', bp2: '', concl: '',
           vocab: 3,
@@ -463,6 +464,11 @@ async function loadUserData(uid) {
         
         // Sync the newly seeded profile to cloud
         await flushSyncDirect();
+      } else {
+        const changed = syncSeedTopics();
+        if (changed) {
+          await flushSyncDirect();
+        }
       }
 
       // Reset daily quota if it's a new day
@@ -778,7 +784,7 @@ async function adminDeleteUser(uid, email) {
 }
 
 // ============================================================
-//  ALL 33 PRE-LOADED TOPICS
+//  ALL 34 PRE-LOADED TOPICS
 // ============================================================
 const SEED_TOPICS = [
   { title: "Late Submission and Mark Deduction", question: "Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.", explanation: "Examine deducting marks for late submissions and propose your opinion with alternative recommendations.", type: "opinion_alternatives" },
@@ -813,7 +819,8 @@ const SEED_TOPICS = [
   { title: "Travel and Quality of Education", question: "Some believe the value of travel is overrated. 'One brilliant scholar never leaves the home bases.' People argue whether travel is a necessary component of quality education or not. To what extent do you agree with it?", explanation: "Ask whether travel is essential for quality education.", type: "agree_disagree" },
   { title: "City vs Countryside Living", question: "Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.", explanation: "Compare city and countryside living and justify personal preference.", type: "discuss_both_views" },
   { title: "Growing Up in the 21st Century", question: "It is harder for children to grow up in the 21st century than it was in the past. How far do you agree with this statement? Give your opinions.", explanation: "Evaluate whether growing up today is more difficult than in previous generations.", type: "agree_disagree" },
-  { title: "Historic Buildings vs Modern Housing", question: "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.", explanation: "Evaluate whether governments should prioritise historic building restoration over modern housing.", type: "advantages_disadvantages" }
+  { title: "Historic Buildings vs Modern Housing", question: "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.", explanation: "Evaluate whether governments should prioritise historic building restoration over modern housing.", type: "advantages_disadvantages" },
+  { title: "Communication Methods in Modern Society", question: "The means of communicating in society today has changed markedly over the last ten years. In your opinion, what are the positive and negative impacts of this change?", explanation: "Evaluate the positive and negative impacts of modern communication technology changes over the last decade.", type: "positive_negative_impacts", badge: "Pearson Mock Test v1" }
 ];
 
 const VOCAB_LEVELS = [
@@ -2893,6 +2900,7 @@ function renderList() {
       <div class="essay-item ${isActive ? 'active' : ''}" onclick="selectEssay('${e.id}')">
         <div class="essay-item-meta">
           <span>ESSAY ${String(i + 1).padStart(2, '0')}</span>
+          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
           <span class="essay-item-status ${statusClass}">${statusLabel}</span>
         </div>
         <div class="essay-item-title">${escapeHtml(e.title || 'Untitled')}</div>
@@ -3765,7 +3773,7 @@ async function renderBookToPdfBase64(essayList, onProgress) {
   // Add hyperlinks on the TOC page(s).
   // The TOC may span multiple pages if there are many essays — but typical case is 1 page.
   // If TOC fits on one page (tocPagesUsed === 1), all rows map to page tocStartPage.
-  // For simplicity we assume TOC fits on 1 page (33 essays in 2 columns fits comfortably on A4).
+  // For simplicity we assume TOC fits on 1 page (34 essays in 2 columns fits comfortably on A4).
   if (tocRowRects.length > 0 && essayStartPages.length === tocRowRects.length) {
     pdf.setPage(tocStartPage);
     for (let i = 0; i < tocRowRects.length; i++) {
@@ -7675,6 +7683,36 @@ function closeSuggestWords() {
 }
 
 
+function syncSeedTopics() {
+  let changed = false;
+  SEED_TOPICS.forEach((t, i) => {
+    const seedId = 'seed_' + i;
+    const item = essays.find(e => e.id === seedId);
+    if (!item) {
+      essays.push({
+        id: seedId,
+        title: t.title,
+        question: t.question,
+        explanation: t.explanation,
+        badge: t.badge || '',
+        pros: '', cons: '', approach: '',
+        intro: '', bp1: '', bp2: '', concl: '',
+        vocab: 3,
+        seedIdeas: '',
+        questionType: t.type || ''
+      });
+      changed = true;
+    } else {
+      if (item.title !== t.title) { item.title = t.title; changed = true; }
+      if (item.question !== t.question) { item.question = t.question; changed = true; }
+      if (item.explanation !== t.explanation) { item.explanation = t.explanation; changed = true; }
+      if ((item.badge || '') !== (t.badge || '')) { item.badge = t.badge || ''; changed = true; }
+      if (!item.questionType && t.type) { item.questionType = t.type; changed = true; }
+    }
+  });
+  return changed;
+}
+
 // ============================================================
 function initOfflineMode() {
   // Pure browser-local mode (Firebase not configured OR user chose offline)
@@ -7683,12 +7721,17 @@ function initOfflineMode() {
   if (raw) {
     try { essays = JSON.parse(raw) || []; } catch (e) { essays = []; }
     currentId = safeLSGet('ipt_current_v2') || essays[0]?.id || null;
+    const changed = syncSeedTopics();
+    if (changed) {
+      safeLSSet('ipt_essays_v2', JSON.stringify(essays));
+    }
   } else {
     essays = SEED_TOPICS.map((t, i) => ({
       id: 'seed_' + i,
       title: t.title,
       question: t.question,
       explanation: t.explanation,
+      badge: t.badge || '',
       pros: '', cons: '', approach: '',
       intro: '', bp1: '', bp2: '', concl: '',
       vocab: 3,
@@ -7708,7 +7751,8 @@ function initOfflineMode() {
   document.getElementById('userBadge').style.display = 'none';
   document.getElementById('syncIndicator').style.display = 'none';
   document.getElementById('quotaChip').style.display = 'none';
-  document.getElementById('adminBtn').style.display = 'none';
+  const adminBtn = document.getElementById('nav-admin');
+  if (adminBtn) adminBtn.style.display = 'none';
   // Boot the app
   renderList();
   loadCurrent();
@@ -7727,11 +7771,12 @@ async function bootForUser(user) {
   const adminEmailLc = (window.FB.adminEmail || '').trim().toLowerCase();
   const username = (user.uid || '').trim().toLowerCase();
   const adminPrefix = adminEmailLc.split('@')[0];
+  const adminBtn = document.getElementById('nav-admin');
   if (userEmailLc === adminEmailLc || username === 'admin' || username === adminPrefix) {
-    document.getElementById('adminBtn').style.display = '';
+    if (adminBtn) adminBtn.style.display = '';
     console.log('Admin mode: enabled for', user.email);
   } else {
-    document.getElementById('adminBtn').style.display = 'none';
+    if (adminBtn) adminBtn.style.display = 'none';
     console.log('Not admin. Signed in as:', user.email, '| Admin set to:', window.FB.adminEmail);
   }
   // Load their data
