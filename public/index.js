@@ -6824,9 +6824,9 @@ async function loadMasterWordDetails(word, idx) {
   }
   
   const prompt = `Define the C1/C2 academic word "${word}" for English tests (PTE/IELTS). Provide:
-1. One general formal meaning.
+1. One general formal meaning (written in simple, clear, layman-friendly plain English so that a student can easily grasp it without looking up other difficult words).
 2. A comparison note (e.g. versus a similar word).
-3. Context-specific meanings for 2-3 different academic/professional contexts.
+3. Context-specific meanings for 2-3 different academic/professional contexts (explained in clear, layman-friendly language).
 4. Exactly 5 example sentences total demonstrating the word in these contexts.
 
 Return ONLY a valid JSON object matching this structure (do not include markdown outside JSON, just output the JSON plain text):
@@ -6961,12 +6961,12 @@ async function aiGradeSentence(idx, word, catId) {
 
 The student's sentence: "${sentence}"
 
-Evaluate it in 2-3 short bullet points:
-1. Did they USE the word correctly (right meaning + grammar)? Yes/No + brief why.
-2. Is the sentence grammatically correct overall? Brief note.
-3. ONE concrete improvement if relevant (or a "well done" if it's already great).
+Evaluate it in 2-3 short bullet points, written in very simple, clear, layman-friendly plain English. Avoid complex grammatical jargon; explain any mistakes in a straightforward way that a beginner can easily understand:
+1. Did they USE the word correctly (right meaning + grammar)? Yes/No + brief, simple explanation of why.
+2. Is the sentence grammatically correct overall? Brief note in simple terms.
+3. ONE concrete, easy-to-understand improvement if relevant (or a "well done" if it's already great).
 
-Keep total response under 80 words. Be encouraging but accurate. Plain text, no markdown.`;
+Keep total response under 80 words. Be encouraging, simple, and accurate. Plain text, no markdown.`;
 
   try {
     const res = await fetch(API_URL + '/api/claude', {
