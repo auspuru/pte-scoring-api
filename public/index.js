@@ -11017,8 +11017,28 @@ function renderVocabCoach(data){
   const body = document.getElementById('vocabCoachBody');
   if(!card || !body) return;
 
-  const suggestions = (data && Array.isArray(data.vocabulary_swap_suggestions))
-    ? data.vocabulary_suggestions || data.vocabulary_swap_suggestions : [];
+  // Gather raw suggestions, prioritizing Claude's context-aware suggestions if present
+  let rawSuggestions = [];
+  if (data) {
+    if (Array.isArray(data.vocabulary_swap_suggestions) && data.vocabulary_swap_suggestions.length > 0) {
+      rawSuggestions = data.vocabulary_swap_suggestions;
+    } else if (Array.isArray(data.vocabulary_suggestions) && data.vocabulary_suggestions.length > 0) {
+      rawSuggestions = data.vocabulary_suggestions;
+    }
+  }
+
+  // Normalize suggestions to { word, context, synonyms, rationale }
+  const suggestions = rawSuggestions.map(s => {
+    if (s.original && s.upgrades) {
+      return {
+        word: s.original,
+        context: '',
+        synonyms: s.upgrades,
+        rationale: 'Local thesaurus upgrade recommendation.'
+      };
+    }
+    return s;
+  }).filter(s => s && s.word && Array.isArray(s.synonyms) && s.synonyms.filter(Boolean).length > 0);
 
   if(!suggestions.length){
     card.style.display = 'none';
@@ -11029,9 +11049,8 @@ function renderVocabCoach(data){
   body.innerHTML = suggestions.map(s => {
     const word = s.word || '';
     const context = s.context || '';
-    const syns = Array.isArray(s.synonyms) ? s.synonyms.filter(Boolean) : [];
+    const syns = s.synonyms.filter(Boolean);
     const rationale = s.rationale || '';
-    if(!word || !syns.length) return '';
     let highlightedContext = context;
     if(context && word){
       const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
