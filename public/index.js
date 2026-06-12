@@ -4483,13 +4483,13 @@ function updateSidedCounter() {
 
   if (!chosenSide) {
     ready = false;
-    parts.push('choose a stance');
+    parts.push('a stance (and 2 reasons)');
   } else {
     const sideCol = cols.find(c => c.key === chosenSide);
     const got = (pickedCols[chosenSide] || new Set()).size;
     if (got !== sideCol.pick) ready = false;
     const sideLabel = getColLabel(sideCol).replace('Reasons to ', '').replace('If you choose ', '');
-    parts.push(`<strong>${got}/${sideCol.pick}</strong> ${escapeHtml(sideLabel)}`);
+    parts.push(`<strong>${got}/${sideCol.pick}</strong> reasons for ${escapeHtml(sideLabel)}`);
   }
   for (const fc of fixedCols) {
     const got = (pickedCols[fc.key] || new Set()).size;
@@ -5177,7 +5177,7 @@ function updateFreestyleIdeasCounter() {
       } else {
         const sideLabel = getFsColLabel(sideCol).replace('Reasons to ', '').replace('If you choose ', '');
         const sideColor = fsChosenSide === 'agree' || fsChosenSide === 'optionA' ? '#16803d' : '#b91c1c';
-        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (${sideCount}/2) &amp; ${escapeHtml(getFsColLabel(fixedCol))} (${fixedCount}/2)`;
+        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (reasons: ${sideCount}/2) &amp; ${escapeHtml(getFsColLabel(fixedCol))} (${fixedCount}/2)`;
       }
     }
 
