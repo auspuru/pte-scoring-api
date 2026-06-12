@@ -394,7 +394,7 @@ async function changePassword() {
 
 async function enterApp(uid) {
   currentUserId = uid;
-  currentUser = { uid: uid, email: uid + '@ptewriting.com' };
+  currentUser = { uid: uid, email: uid.includes('@') ? uid : (uid + '@ptewriting.com') };
   LocalStore.setUserId(uid);
   document.getElementById('userAvatar').textContent = uid.slice(0, 2).toUpperCase();
   document.getElementById('userName').textContent = uid;
@@ -634,7 +634,7 @@ async function consumeQuota(kind) {
 //  USER MENU
 // ============================================================
 function openUserMenu() {
-  document.getElementById('userMenuEmail').textContent = currentUserId + '@ptewriting.com';
+  document.getElementById('userMenuEmail').textContent = (currentUser && currentUser.email) || (currentUserId.includes('@') ? currentUserId : (currentUserId + '@ptewriting.com'));
   const written = essays.filter(e => essayStatus(e) === 'written').length;
   document.getElementById('userMenuStats').innerHTML =
     `${essays.length} essays · ${written} written · Unlimited practice attempts`;
@@ -708,7 +708,7 @@ async function loadAdminUsers() {
     const d = await r.json();
     adminUsersCache = (d.users || []).map(u => ({
       uid: u.username,
-      email: u.username + '@ptewriting.com',
+      email: u.username.includes('@') ? u.username : (u.username + '@ptewriting.com'),
       disabled: !!u.blocked,
       createdAt: u.created_at,
       essayCount: (u.essays || []).length,
@@ -736,7 +736,7 @@ function renderAdminUsers() {
   list.innerHTML = filtered.map(u => {
     const adminEmailLc = (window.FB?.adminEmail || 'admin@ptewriting.com').trim().toLowerCase();
     const adminPrefix = adminEmailLc.split('@')[0];
-    const isThisAdmin = u.uid.toLowerCase() === 'admin' || (u.uid + '@ptewriting.com').toLowerCase() === adminEmailLc || u.uid.toLowerCase() === adminPrefix;
+    const isThisAdmin = u.uid.toLowerCase() === 'admin' || (u.uid.includes('@') ? u.uid : (u.uid + '@ptewriting.com')).toLowerCase() === adminEmailLc || u.uid.toLowerCase() === adminPrefix;
     return `
     <div class="admin-user-row">
       <div>
@@ -3484,16 +3484,23 @@ function doExportBook() {
   downloadBook();
 }
 
-function getValidatedRecipientEmail() {
+function getValidatedRecipientEmail(confirmMessagePrefix = "Send this essay as a PDF to") {
   if (offlineMode || !currentUser) {
     toast('Sign in to email essays', true);
     return null;
   }
-  let defaultEmail = localStorage.getItem('pte_preferred_email') || '';
-  if (!defaultEmail || defaultEmail.endsWith('@ptewriting.com')) {
-    defaultEmail = currentUser.email || '';
+  let email = localStorage.getItem('pte_preferred_email') || '';
+  if (!email || email.toLowerCase().endsWith('@ptewriting.com')) {
+    email = currentUser.email || '';
   }
-  const userEmail = prompt("Please enter the email address to send the PDF to:", defaultEmail);
+  // If the email is a real one (contains @ and is not ptewriting.com), confirm it directly.
+  if (email && email.includes('@') && !email.toLowerCase().endsWith('@ptewriting.com')) {
+    if (confirm(`${confirmMessagePrefix} ${email}?`)) {
+      return email;
+    }
+    // If they cancel, they might want to enter a different one, so fall through to prompt.
+  }
+  const userEmail = prompt("Please enter the email address to send the PDF to:", email.toLowerCase().endsWith('@ptewriting.com') ? "" : email);
   if (!userEmail) return null; // cancelled
   const trimmedEmail = userEmail.trim();
   if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
@@ -3514,7 +3521,7 @@ async function doEmailCurrent() {
   if (essayStatus(e) === 'empty') { toast('This essay is empty — write it first', true); return; }
   if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
 
-  const recipient = getValidatedRecipientEmail();
+  const recipient = getValidatedRecipientEmail("Send this essay as a PDF to");
   if (!recipient) return;
 
   closeExportMenu();
@@ -3552,7 +3559,7 @@ async function doEmailBook() {
   const written = essays.filter(e => essayStatus(e) !== 'empty');
   if (written.length === 0) { toast('No written essays to include in the book', true); return; }
 
-  const recipient = getValidatedRecipientEmail();
+  const recipient = getValidatedRecipientEmail(`Send the whole book (${written.length} essays + cover + table of contents) as a PDF to`);
   if (!recipient) return;
 
   closeExportMenu();
@@ -3564,7 +3571,7 @@ async function doEmailPicked() {
   if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
   if (exportPicked.size === 0) { toast('Pick at least one essay first', true); return; }
   const selected = essays.filter(e => exportPicked.has(e.id));
-  const recipient = getValidatedRecipientEmail();
+  const recipient = getValidatedRecipientEmail(`Send ${selected.length} selected essay${selected.length === 1 ? '' : 's'} as a PDF to`);
   if (!recipient) return;
   closeExportMenu();
   await generateAndEmailBook(selected, `IPT_Essays_Selection_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Selection', recipient);
