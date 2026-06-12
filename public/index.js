@@ -3484,14 +3484,38 @@ function doExportBook() {
   downloadBook();
 }
 
+function getValidatedRecipientEmail() {
+  if (offlineMode || !currentUser) {
+    toast('Sign in to email essays', true);
+    return null;
+  }
+  let defaultEmail = localStorage.getItem('pte_preferred_email') || '';
+  if (!defaultEmail || defaultEmail.endsWith('@ptewriting.com')) {
+    defaultEmail = currentUser.email || '';
+  }
+  const userEmail = prompt("Please enter the email address to send the PDF to:", defaultEmail);
+  if (!userEmail) return null; // cancelled
+  const trimmedEmail = userEmail.trim();
+  if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+    toast('Invalid email address', true);
+    return null;
+  }
+  if (trimmedEmail.toLowerCase().endsWith('@ptewriting.com')) {
+    toast('Cannot send to ptewriting.com addresses. Please use your real email.', true);
+    return null;
+  }
+  localStorage.setItem('pte_preferred_email', trimmedEmail);
+  return trimmedEmail;
+}
+
 async function doEmailCurrent() {
   const e = getCurrent();
   if (!e) { toast('No essay selected', true); return; }
   if (essayStatus(e) === 'empty') { toast('This essay is empty — write it first', true); return; }
   if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
 
-  const recipient = currentUser.email;
-  if (!confirm(`Send this essay as a PDF to ${recipient}?`)) return;
+  const recipient = getValidatedRecipientEmail();
+  if (!recipient) return;
 
   closeExportMenu();
   toast('Sending to server for PDF render…');
@@ -3528,11 +3552,11 @@ async function doEmailBook() {
   const written = essays.filter(e => essayStatus(e) !== 'empty');
   if (written.length === 0) { toast('No written essays to include in the book', true); return; }
 
-  const recipient = currentUser.email;
-  if (!confirm(`Send the whole book (${written.length} essays + cover + table of contents) as a PDF to ${recipient}?\n\nThis takes about ${Math.round(written.length * 3)} seconds to generate.`)) return;
+  const recipient = getValidatedRecipientEmail();
+  if (!recipient) return;
 
   closeExportMenu();
-  await generateAndEmailBook(written, `IPT_Essay_Book_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Book');
+  await generateAndEmailBook(written, `IPT_Essay_Book_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Book', recipient);
 }
 
 // Email a custom selection of essays
@@ -3540,15 +3564,16 @@ async function doEmailPicked() {
   if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
   if (exportPicked.size === 0) { toast('Pick at least one essay first', true); return; }
   const selected = essays.filter(e => exportPicked.has(e.id));
-  const recipient = currentUser.email;
-  if (!confirm(`Send ${selected.length} selected essay${selected.length === 1 ? '' : 's'} as a PDF to ${recipient}?`)) return;
+  const recipient = getValidatedRecipientEmail();
+  if (!recipient) return;
   closeExportMenu();
-  await generateAndEmailBook(selected, `IPT_Essays_Selection_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Selection');
+  await generateAndEmailBook(selected, `IPT_Essays_Selection_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Selection', recipient);
 }
 
 // Shared: build a multi-essay PDF + email it (server-side render via Puppeteer)
-async function generateAndEmailBook(essayList, fileName, displayTitle) {
-  const recipient = currentUser.email;
+async function generateAndEmailBook(essayList, fileName, displayTitle, recipient) {
+  const targetEmail = recipient || getValidatedRecipientEmail();
+  if (!targetEmail) return;
   const t0 = Date.now();
   showProgressToast(`Preparing ${essayList.length} essays…`);
   try {
@@ -3567,7 +3592,7 @@ async function generateAndEmailBook(essayList, fileName, displayTitle) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        to: recipient,
+        to: targetEmail,
         essayTitle: displayTitle,
         fileName: fileName,
         html: html
@@ -3584,7 +3609,7 @@ async function generateAndEmailBook(essayList, fileName, displayTitle) {
       : Math.round(pdfSize / 1024) + 'KB';
     hideProgressToast();
     const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
-    toast(`PDF book (${essayList.length} essays, ${pdfSizeStr}) emailed to ${recipient} ✓ (${elapsed}s)`);
+    toast(`PDF book (${essayList.length} essays, ${pdfSizeStr}) emailed to ${targetEmail} ✓ (${elapsed}s)`);
   } catch (err) {
     console.error(err);
     hideProgressToast();
