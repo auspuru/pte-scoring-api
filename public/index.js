@@ -989,6 +989,25 @@ let detectedQuestionType = 'advantages_disadvantages';
 let suggestedCols = {};
 let pickedCols = {};
 let chosenSide = null;   // which side column the student picked (e.g. 'agree')
+let dynamicLabels = {};
+let fsDynamicLabels = {};
+
+function getColLabel(col, e) {
+  if (e && e.dynamicLabels && e.dynamicLabels[col.key]) {
+    return e.dynamicLabels[col.key];
+  }
+  if (dynamicLabels && dynamicLabels[col.key]) {
+    return dynamicLabels[col.key];
+  }
+  return col.label;
+}
+
+function getFsColLabel(col) {
+  if (fsDynamicLabels && fsDynamicLabels[col.key]) {
+    return fsDynamicLabels[col.key];
+  }
+  return col.label;
+}
 
 
 // ============================================================
@@ -4168,6 +4187,12 @@ For TWO SPECIAL types, generate THREE columns (leftIdeas + rightIdeas + thirdIde
 - "opinion_alternatives": left = 5 reasons to AGREE with the practice, right = 5 reasons to DISAGREE, third = 5 ALTERNATIVE ACTIONS to take instead
 - "single_focus": left = 5 reasons for Option A, right = 5 reasons for Option B, third = 5 supporting examples
 
+For the "single_focus" type, the question asks the student to choose between two focus areas/options (Option A or Option B) and justify it.
+For "single_focus" specifically, you MUST identify what Option A and Option B actually represent for this question, and output:
+1. "optionALabel": A short, clear label for Option A (e.g. "Focus on rising sea levels" or "Governments should act").
+2. "optionBLabel": A short, clear label for Option B (e.g. "Focus on extreme weather" or "Individuals should act").
+Additionally, because the student will choose either Option A or Option B, the "thirdIdeas" column (supporting examples) MUST contain a balanced mix of examples (at least 2-3 examples supporting Option A and at least 2-3 examples supporting Option B), so that whichever stance the student chooses, they can select 2 relevant examples from the list.
+
 ═══════════════════════════════════════════════════
 ESSAY DETAILS:
 TITLE: ${e.title}
@@ -4196,14 +4221,16 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format for TWO-co
   "rightIdeas": ["invest in sustainable agriculture", "reduce food waste globally", "...", "...", "..."]
 }
 
-Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas:
+Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas. For "single_focus", also include "optionALabel" and "optionBLabel":
 
 {
-  "questionType": "opinion_alternatives",
-  "reasoning": "Asks opinion + suggest alternatives",
-  "leftIdeas": ["upholds academic fairness", "...", "...", "...", "..."],
-  "rightIdeas": ["penalises genuine hardship", "...", "...", "...", "..."],
-  "thirdIdeas": ["offer formal extension requests", "introduce capped late penalties", "...", "...", "..."]
+  "questionType": "single_focus",
+  "reasoning": "Select one focus area and justify it",
+  "optionALabel": "Focus on rising sea levels",
+  "optionBLabel": "Focus on extreme weather events",
+  "leftIdeas": ["rising sea levels threaten coastal cities", "...", "...", "...", "..."],
+  "rightIdeas": ["extreme weather events increasing globally", "...", "...", "...", "..."],
+  "thirdIdeas": ["Miami and Bangladesh already flood regularly", "...", "...", "...", "..."]
 }
 
 The "questionType" MUST be one of the exact keys listed in TASK 1.`;
@@ -4247,9 +4274,15 @@ The "questionType" MUST be one of the exact keys listed in TASK 1.`;
     suggestedRightIdeas = result.rightIdeas.slice(0, 5).map(s => String(s).trim()).filter(Boolean);
     pickedLeftIdeas = new Set();
     pickedRightIdeas = new Set();
+    dynamicLabels = {};
 
     // For 3-column "sided" types, populate the multi-column state
     if (typeCfg.pickMode === 'sided' && Array.isArray(typeCfg.columns)) {
+      if (result.optionALabel) dynamicLabels['optionA'] = String(result.optionALabel).trim();
+      if (result.optionBLabel) dynamicLabels['optionB'] = String(result.optionBLabel).trim();
+      if (result.agreeLabel) dynamicLabels['agree'] = String(result.agreeLabel).trim();
+      if (result.disagreeLabel) dynamicLabels['disagree'] = String(result.disagreeLabel).trim();
+
       const third = Array.isArray(result.thirdIdeas)
         ? result.thirdIdeas.slice(0, 5).map(s => String(s).trim()).filter(Boolean)
         : [];
@@ -4280,6 +4313,12 @@ The "questionType" MUST be one of the exact keys listed in TASK 1.`;
 
 function renderIdeasPicker() {
   const type = QUESTION_TYPES[detectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  
+  const helpEl = document.getElementById('ideasPickerHelp');
+  if (helpEl) {
+    helpEl.innerHTML = `Choose exactly 2 ${escapeHtml(type.leftPlural)} + 2 ${escapeHtml(type.rightPlural)}`;
+  }
+
   // Route to the 3-column sided renderer when applicable
   if (type.pickMode === 'sided' && Array.isArray(type.columns)) {
     renderSidedPicker(type);
@@ -4333,6 +4372,13 @@ function renderSidedPicker(type) {
   const sideCols = cols.filter(c => c.side);     // the two stance columns
   const fixedCols = cols.filter(c => !c.side);   // e.g. alternatives / examples
 
+  const helpEl = document.getElementById('ideasPickerHelp');
+  if (helpEl) {
+    const fixedCol = type.columns.find(c => !c.side);
+    const fixedLabel = getColLabel(fixedCol);
+    helpEl.innerHTML = `Choose 1 stance (pick 2) + 2 ${escapeHtml(fixedLabel.toLowerCase())}`;
+  }
+
   // Column badge colours
   const palette = [
     { bg: '#d4ebf5', fg: '#2a5577' },  // A
@@ -4346,11 +4392,12 @@ function renderSidedPicker(type) {
     const picks = pickedCols[col.key] || new Set();
     // A side column is disabled if the user chose the OTHER side
     const isDisabledSide = col.side && chosenSide && chosenSide !== col.key;
+    const colLabel = getColLabel(col);
     return `
       <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="col-${col.key}">
         <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
           <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
-          ${escapeHtml(col.label)}
+          ${escapeHtml(colLabel)}
           <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick ${col.pick}</span>
         </div>
         ${ideas.map((idea, i) => `
@@ -4372,7 +4419,7 @@ function renderSidedPicker(type) {
       <span><strong>Question type detected:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:9px 13px; margin-bottom:14px; font-size:11.5px; color:var(--accent-deep);">
-      <strong>👉 First, choose your stance.</strong> Click a heading or an idea in <strong>${escapeHtml(sideCols[0].label)}</strong> OR <strong>${escapeHtml(sideCols[1].label)}</strong> — then pick ${sideCols[0].pick} ideas from that side, plus ${fixedCols[0].pick} from <strong>${escapeHtml(fixedCols[0].label)}</strong>.
+      <strong>👉 First, choose your stance.</strong> Click a heading or an idea in <strong>${escapeHtml(getColLabel(sideCols[0]))}</strong> OR <strong>${escapeHtml(getColLabel(sideCols[1]))}</strong> — then pick ${sideCols[0].pick} ideas from that side, plus ${fixedCols[0].pick} from <strong>${escapeHtml(getColLabel(fixedCols[0]))}</strong>.
     </div>
     <div class="ideas-cols ideas-cols-3">
       ${sideColsHtml}
@@ -4441,12 +4488,14 @@ function updateSidedCounter() {
     const sideCol = cols.find(c => c.key === chosenSide);
     const got = (pickedCols[chosenSide] || new Set()).size;
     if (got !== sideCol.pick) ready = false;
-    parts.push(`<strong>${got}/${sideCol.pick}</strong> ${escapeHtml(sideCol.plural)}`);
+    const sideLabel = getColLabel(sideCol).replace('Reasons to ', '').replace('If you choose ', '');
+    parts.push(`<strong>${got}/${sideCol.pick}</strong> ${escapeHtml(sideLabel)}`);
   }
   for (const fc of fixedCols) {
     const got = (pickedCols[fc.key] || new Set()).size;
     if (got !== fc.pick) ready = false;
-    parts.push(`<strong>${got}/${fc.pick}</strong> ${escapeHtml(fc.plural)}`);
+    const fcLabel = getColLabel(fc);
+    parts.push(`<strong>${got}/${fc.pick}</strong> ${escapeHtml(fcLabel.toLowerCase())}`);
   }
 
   c.innerHTML = ready ? `<strong>Ready! ${parts.join(' + ').replace(/<\/?strong>/g,'')} selected.</strong>` : `Pick ${parts.join(' and ')}`;
@@ -4471,17 +4520,20 @@ function useSelectedSidedIdeas() {
   if (!e) return;
 
   const sideIdeas = [...pickedCols[chosenSide]].map(i => suggestedCols[chosenSide][i]);
-  let lines = [`QUESTION TYPE: ${detectedQuestionType}`, `STANCE: ${sideCol.label}`];
-  lines.push(`${sideCol.label.toUpperCase()}: ${sideIdeas.join('; ')}`);
+  const sideLabel = getColLabel(sideCol);
+  let lines = [`QUESTION TYPE: ${detectedQuestionType}`, `STANCE: ${sideLabel}`];
+  lines.push(`${sideLabel.toUpperCase()}: ${sideIdeas.join('; ')}`);
   for (const fc of fixedCols) {
     const ideas = [...pickedCols[fc.key]].map(i => suggestedCols[fc.key][i]);
-    lines.push(`${fc.label.toUpperCase()}: ${ideas.join('; ')}`);
+    const fcLabel = getColLabel(fc);
+    lines.push(`${fcLabel.toUpperCase()}: ${ideas.join('; ')}`);
   }
   const joined = lines.join('\n');
 
   e.seedIdeas = joined;
   e.questionType = detectedQuestionType;
   e.chosenStance = chosenSide;  // remember the stance for essay writing
+  e.dynamicLabels = { ...dynamicLabels };  // save the dynamic labels to the essay object
   document.getElementById('f_seedIdeas').value = joined;
   saveAll();
   document.getElementById('ideasPicker').classList.remove('show');
@@ -4581,18 +4633,25 @@ async function aiWriteFullEssay(opts = {}) {
   let bp1Frame = typeCfg.bp1Frame;
   let bp2Frame = typeCfg.bp2Frame;
   let sidedNote = '';
+  let bp1Label = typeCfg.leftLabel;
+  let bp2Label = typeCfg.rightLabel;
+
   if (typeCfg.pickMode === 'sided' && e.chosenStance && Array.isArray(typeCfg.columns)) {
     const sideCol = typeCfg.columns.find(c => c.key === e.chosenStance);
     const fixedCol = typeCfg.columns.find(c => !c.side);
     if (sideCol && fixedCol) {
-      bp1Frame = `the student's chosen stance — ${sideCol.label} (the essay must clearly argue THIS position, not both sides)`;
-      bp2Frame = `${fixedCol.label} — concrete ${fixedCol.plural} that follow from that stance`;
+      const sideLabel = getColLabel(sideCol, e);
+      const fixedLabel = getColLabel(fixedCol, e);
+      bp1Label = sideLabel;
+      bp2Label = fixedLabel;
+      bp1Frame = `the student's chosen stance — ${sideLabel} (the essay must clearly argue THIS position, not both sides)`;
+      bp2Frame = `${fixedLabel} — concrete ${fixedCol.plural} that follow from that stance`;
       sidedNote = `
 === IMPORTANT: THIS IS AN OPINION ESSAY WITH A CHOSEN STANCE ===
-The student has taken a clear position: "${sideCol.label}".
+The student has taken a clear position: "${sideLabel}".
 - The WHOLE essay must argue consistently for this stance. Do NOT present the opposing side as if it were equally valid.
-- Body Paragraph 1: develop the chosen-stance reasons (from the user-provided ideas).
-- Body Paragraph 2: present the ${fixedCol.label} (the user-provided ${fixedCol.plural}).
+- Body Paragraph 1: develop the chosen-stance reasons (from the user-provided ideas). You must explicitly explain WHY this choice was made based on these ideas.
+- Body Paragraph 2: present the ${fixedLabel} (the user-provided ${fixedCol.plural}) that support the stance.
 - The introduction's opinion sentence must clearly state this stance.
 - The conclusion must reaffirm this stance.
 `;
@@ -4609,8 +4668,8 @@ ${seedIdeas.split('\n').map(l => '║  ' + l.padEnd(64).slice(0, 64) + ' ║').j
 ╚═══════════════════════════════════════════════════════════════════╝
 
 The two sets of ideas above should appear in the body paragraphs:
-- BP1 should use the FIRST set of ideas (${typeCfg.leftLabel}).
-- BP2 should use the SECOND set of ideas (${typeCfg.rightLabel}).
+- BP1 should use the FIRST set of ideas (${bp1Label}).
+- BP2 should use the SECOND set of ideas (${bp2Label}).
 ${sidedNote}` : '';
 
   const prompt = `You are writing a${isBand6 ? ' Band 6' : ' Band 9'} IELTS/PTE essay for IPT Brisbane tutoring. Follow the user's template closely — fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions, but you MAY shorten its wordy/boilerplate phrasing where needed to stay under the word limit (see LENGTH LIMIT below) — never at the expense of a key idea or an example.
@@ -4982,6 +5041,11 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
     fsPickedThirdIdeas = new Set();
     fsChosenSide = null;
     fsPickedCols = {};
+    fsDynamicLabels = {};
+    if (parsed.optionALabel) fsDynamicLabels['optionA'] = String(parsed.optionALabel).trim();
+    if (parsed.optionBLabel) fsDynamicLabels['optionB'] = String(parsed.optionBLabel).trim();
+    if (parsed.agreeLabel) fsDynamicLabels['agree'] = String(parsed.agreeLabel).trim();
+    if (parsed.disagreeLabel) fsDynamicLabels['disagree'] = String(parsed.disagreeLabel).trim();
 
     renderFreestyleIdeasPicker();
   } catch (err) {
@@ -5111,9 +5175,9 @@ function updateFreestyleIdeasCounter() {
       if (!fsChosenSide) {
         labelEl.innerHTML = '👈 First, click an idea to choose your stance.';
       } else {
-        const sideLabel = sideCol.label.replace('Reasons to ', '');
+        const sideLabel = getFsColLabel(sideCol).replace('Reasons to ', '').replace('If you choose ', '');
         const sideColor = fsChosenSide === 'agree' || fsChosenSide === 'optionA' ? '#16803d' : '#b91c1c';
-        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (${sideCount}/2) &amp; ${escapeHtml(fixedCol.label)} (${fixedCount}/2)`;
+        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (${sideCount}/2) &amp; ${escapeHtml(getFsColLabel(fixedCol))} (${fixedCount}/2)`;
       }
     }
 
@@ -5173,12 +5237,13 @@ function renderFreestyleSidedPicker(type) {
 
     const picks = fsPickedCols[col.key] || new Set();
     const isDisabledSide = col.side && fsChosenSide && fsChosenSide !== col.key;
+    const colLabel = getFsColLabel(col);
 
     return `
       <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="fs-col-${col.key}" style="opacity:${isDisabledSide ? '0.4' : '1'}; pointer-events:${isDisabledSide ? 'none' : 'auto'};">
         <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
           <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
-          ${escapeHtml(col.label)}
+          ${escapeHtml(colLabel)}
           <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
         </div>
         ${ideas.map((idea, i) => `
@@ -5200,7 +5265,7 @@ function renderFreestyleSidedPicker(type) {
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
-      <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(sideCols[0].label)}</strong> or <strong>${escapeHtml(sideCols[1].label)}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(fixedCol.label)}</strong>.
+      <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(getFsColLabel(sideCols[0]))}</strong> or <strong>${escapeHtml(getFsColLabel(sideCols[1]))}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(getFsColLabel(fixedCol))}</strong>.
     </div>
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
       <div style="display:flex; flex-col; gap:16px; grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
@@ -5288,12 +5353,15 @@ async function freestyleWriteWithIdeas() {
     const fixedPicks = fsPickedCols[fixedCol.key] || new Set();
     bp2Ideas = Array.from(fixedPicks).map(idx => fsSuggestedThirdIdeas[idx]);
 
+    const sideLabel = getFsColLabel(sideCol);
+    const fixedLabel = getFsColLabel(fixedCol);
+
     sidedNote = `
 === STANCE INFORMATION ===
-The student has taken a clear position: "${sideCol.label}".
+The student has taken a clear position: "${sideLabel}".
 - The WHOLE essay must argue consistently for this stance. Do NOT present the opposing side as if it were equally valid.
-- Body Paragraph 1: develop the chosen stance using these specific ideas: ${bp1Ideas.map(x => `"${x}"`).join(' and ')}.
-- Body Paragraph 2: present the ${fixedCol.label} using these specific ideas: ${bp2Ideas.map(x => `"${x}"`).join(' and ')}.
+- Body Paragraph 1: develop the chosen stance and explicitly explain WHY this choice was made, using these specific ideas: ${bp1Ideas.map(x => `"${x}"`).join(' and ')}.
+- Body Paragraph 2: present the ${fixedLabel} using these specific ideas: ${bp2Ideas.map(x => `"${x}"`).join(' and ')}.
 - The introduction's opinion sentence must clearly state this stance.
 - The conclusion must reaffirm this stance.`;
   } else {
