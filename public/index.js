@@ -4191,7 +4191,11 @@ For the "single_focus" type, the question asks the student to choose between two
 For "single_focus" specifically, you MUST identify what Option A and Option B actually represent for this question, and output:
 1. "optionALabel": A short, clear label for Option A (e.g. "Focus on rising sea levels" or "Governments should act").
 2. "optionBLabel": A short, clear label for Option B (e.g. "Focus on extreme weather" or "Individuals should act").
-Additionally, because the student will choose either Option A or Option B, the "thirdIdeas" column (supporting examples) MUST contain a balanced mix of examples (at least 2-3 examples supporting Option A and at least 2-3 examples supporting Option B), so that whichever stance the student chooses, they can select 2 relevant examples from the list.
+Additionally, because the student will choose either Option A or Option B, the "thirdIdeas" column (supporting examples) MUST contain exactly 5 examples total:
+- Exactly 2 examples that specifically and clearly support Option A (the first option).
+- Exactly 2 examples that specifically and clearly support Option B (the second option).
+- Exactly 1 general/neutral example that can relate to either focus or is neutral.
+Do NOT make it one-sided (e.g. do NOT provide 3 examples for one side and 2 for the other side, or 4 and 1). It must be an exact 2-2-1 split, and the examples must clearly correspond to the two option labels you defined.
 
 ═══════════════════════════════════════════════════
 ESSAY DETAILS:
@@ -4976,6 +4980,16 @@ For TWO SPECIAL types, generate THREE columns (leftIdeas + rightIdeas + thirdIde
 - "opinion_alternatives": left = 5 reasons to AGREE with the practice, right = 5 reasons to DISAGREE, third = 5 ALTERNATIVE ACTIONS to take instead
 - "single_focus": left = 5 reasons for Option A, right = 5 reasons for Option B, third = 5 supporting examples
 
+For the "single_focus" type, the question asks the student to choose between two focus areas/options (Option A or Option B) and justify it.
+For "single_focus" specifically, you MUST identify what Option A and Option B actually represent for this question, and output:
+1. "optionALabel": A short, clear label for Option A (e.g. "Focus on rising sea levels" or "Governments should act").
+2. "optionBLabel": A short, clear label for Option B (e.g. "Focus on extreme weather" or "Individuals should act").
+Additionally, because the student will choose either Option A or Option B, the "thirdIdeas" column (supporting examples) MUST contain exactly 5 examples total:
+- Exactly 2 examples that specifically and clearly support Option A (the first option).
+- Exactly 2 examples that specifically and clearly support Option B (the second option).
+- Exactly 1 general/neutral example that can relate to either focus or is neutral.
+Do NOT make it one-sided (e.g. do NOT provide 3 examples for one side and 2 for the other side, or 4 and 1). It must be an exact 2-2-1 split, and the examples must clearly correspond to the two option labels you defined.
+
 ESSAY DETAILS:
 QUESTION: ${question}
 TEMPLATE BAND: ${isBand6 ? 'Band 6' : 'Band 9'}
@@ -4997,13 +5011,15 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format for TWO-co
   "rightIdeas": ["invest in sustainable agriculture", "...", "...", "...", "..."]
 }
 
-Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas:
+Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas. For "single_focus", also include "optionALabel" and "optionBLabel":
 {
-  "questionType": "opinion_alternatives",
-  "reasoning": "Asks opinion + suggest alternatives",
-  "leftIdeas": ["upholds academic fairness", "...", "...", "...", "..."],
-  "rightIdeas": ["penalises genuine hardship", "...", "...", "...", "..."],
-  "thirdIdeas": ["offer formal extension requests", "...", "...", "...", "..."]
+  "questionType": "single_focus",
+  "reasoning": "Select one focus area and justify it",
+  "optionALabel": "Focus on rising sea levels",
+  "optionBLabel": "Focus on extreme weather events",
+  "leftIdeas": ["rising sea levels threaten coastal cities", "...", "...", "...", "..."],
+  "rightIdeas": ["extreme weather events increasing globally", "...", "...", "...", "..."],
+  "thirdIdeas": ["Miami and Bangladesh already flood regularly", "...", "...", "...", "..."]
 }`;
 
   try {
