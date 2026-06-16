@@ -1360,12 +1360,38 @@ function normalizeIdeasArray(arr, e) {
     } else if (item && typeof item === 'object') {
       const txt = (item.text || '').trim();
       if (txt === '[object Object]' || !txt) return null;
+
+      const origCategory = item.category || '';
+      const catNorm = ideaCategoryNormalize(origCategory);
+
+      let supports = item.supports || [];
+      let opposes = item.opposes || [];
+
+      if (supports.length === 0 && opposes.length === 0) {
+        const catLower = origCategory.toLowerCase();
+        if (catLower === 'counter_point' || catLower === 'disadvantage' || catLower === 'con' || catLower === 'oppose') {
+          supports = ['disagree', 'right'];
+          opposes = ['agree', 'left'];
+        } else if (catLower === 'main_support' || catLower === 'advantage' || catLower === 'pro' || catLower === 'support') {
+          supports = ['agree', 'left'];
+          opposes = ['disagree', 'right'];
+        } else if (catLower === 'example') {
+          if (item.id && String(item.id).startsWith('right')) {
+            supports = ['disagree', 'right'];
+            opposes = ['agree', 'left'];
+          } else if (item.id && String(item.id).startsWith('left')) {
+            supports = ['agree', 'left'];
+            opposes = ['disagree', 'right'];
+          }
+        }
+      }
+
       return {
         id: item.id || `idea_${idx}`,
         text: txt,
-        category: ideaCategoryNormalize(item.category),
-        supports: item.supports || [],
-        opposes: item.opposes || [],
+        category: catNorm,
+        supports: supports,
+        opposes: opposes,
         pairedText: item.pairedText || item.pairedSolutionOrEffect || '',
         pairedType: item.pairedType || '',
         pairedId: item.pairedId || '',
@@ -1384,6 +1410,16 @@ function ideaCategoryNormalize(cat) {
   return 'main_support';
 }
 
+function stanceMatches(stance, target) {
+  if (!stance || !target) return false;
+  const s = stance.toLowerCase();
+  const t = target.toLowerCase();
+  if (t === 'agree') {
+    return s.includes('agree') && !s.includes('disagree');
+  }
+  return s.includes(t);
+}
+
 function filterIdeasForStance(activeType, chosenStance, allIdeas) {
   const alignedIdeas = [];
   const optionalContrastIdeas = [];
@@ -1395,13 +1431,12 @@ function filterIdeasForStance(activeType, chosenStance, allIdeas) {
   allIdeas.forEach(idea => {
     let isOpposed = false;
     if (chosenStance) {
-      const stanceLower = chosenStance.toLowerCase();
-      if (idea.opposes && idea.opposes.some(o => stanceLower.includes(o.toLowerCase()))) {
+      if (idea.opposes && idea.opposes.some(o => stanceMatches(chosenStance, o))) {
         isOpposed = true;
       }
       if (activeType === 'two_option_preference') {
-        const opposesStance = idea.opposes && idea.opposes.some(o => stanceLower.includes(o.toLowerCase()));
-        const supportsOpposite = idea.supports && idea.supports.some(s => !stanceLower.includes(s.toLowerCase()));
+        const opposesStance = idea.opposes && idea.opposes.some(o => stanceMatches(chosenStance, o));
+        const supportsOpposite = idea.supports && idea.supports.some(s => !stanceMatches(chosenStance, s));
         if (opposesStance || supportsOpposite) {
           isOpposed = true;
         }
