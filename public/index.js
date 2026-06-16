@@ -1342,7 +1342,9 @@ function normalizeSingleIdea(item, fallbackId, side, e) {
 
 function normalizeIdeasArray(arr, e) {
   if (!arr || !Array.isArray(arr)) return [];
-  return arr.map((item, idx) => {
+  
+  // Step 1: convert all string/object items to basic object structures
+  const objArr = arr.map((item, idx) => {
     if (typeof item === 'string') {
       const txt = item.trim();
       if (txt === '[object Object]' || !txt) return null;
@@ -1357,25 +1359,72 @@ function normalizeIdeasArray(arr, e) {
         pairedId: '',
         supportsStance: ''
       };
-    } else if (item && typeof item === 'object') {
+    }
+    if (item && typeof item === 'object') {
       const txt = (item.text || '').trim();
       if (txt === '[object Object]' || !txt) return null;
+      return {
+        id: item.id || `idea_${idx}`,
+        text: txt,
+        category: ideaCategoryNormalize(item.category),
+        supports: item.supports || [],
+        opposes: item.opposes || [],
+        pairedText: item.pairedText || item.pairedSolutionOrEffect || '',
+        pairedType: item.pairedType || '',
+        pairedId: item.pairedId || '',
+        supportsStance: item.supportsStance || ''
+      };
+    }
+    return null;
+  }).filter(Boolean);
 
-      const origCategory = item.category || '';
-      const catNorm = ideaCategoryNormalize(origCategory);
+  // Step 2: heal missing supports/opposes dynamically
+  return objArr.map((item, idx) => {
+    const origCategory = item.category || '';
+    let supports = [...(item.supports || [])];
+    let opposes = [...(item.opposes || [])];
 
-      let supports = item.supports || [];
-      let opposes = item.opposes || [];
+    if (supports.length === 0 || opposes.length === 0) {
+      const catLower = origCategory.toLowerCase();
+      if (catLower === 'counter_point' || catLower === 'disadvantage' || catLower === 'con' || catLower === 'oppose') {
+        supports = ['disagree', 'right'];
+        opposes = ['agree', 'left'];
+      } else if (catLower === 'main_support' || catLower === 'advantage' || catLower === 'pro' || catLower === 'support') {
+        supports = ['agree', 'left'];
+        opposes = ['disagree', 'right'];
+      } else if (catLower === 'example') {
+        // Find nearest reason in the object array
+        let nearestReason = null;
+        let minDistance = Infinity;
+        for (let j = 0; j < objArr.length; j++) {
+          if (j === idx) continue;
+          const other = objArr[j];
+          const otherCat = (other.category || '').toLowerCase();
+          if (otherCat === 'main_support' || otherCat === 'advantage' || otherCat === 'disadvantage' || otherCat === 'counter_point' || otherCat === 'cause' || otherCat === 'problem' || otherCat === 'challenge' || otherCat === 'pro' || otherCat === 'con' || otherCat === 'support' || otherCat === 'oppose') {
+            const dist = Math.abs(idx - j);
+            if (dist < minDistance) {
+              minDistance = dist;
+              nearestReason = other;
+            }
+          }
+        }
+        
+        if (nearestReason) {
+          const nrCat = nearestReason.category.toLowerCase();
+          if (nrCat === 'counter_point' || nrCat === 'disadvantage' || nrCat === 'con' || nrCat === 'oppose') {
+            supports = ['disagree', 'right'];
+            opposes = ['agree', 'left'];
+          } else if (nrCat === 'main_support' || nrCat === 'advantage' || nrCat === 'pro' || nrCat === 'support') {
+            supports = ['agree', 'left'];
+            opposes = ['disagree', 'right'];
+          } else {
+            supports = nearestReason.supports || [];
+            opposes = nearestReason.opposes || [];
+          }
+        }
 
-      if (supports.length === 0 && opposes.length === 0) {
-        const catLower = origCategory.toLowerCase();
-        if (catLower === 'counter_point' || catLower === 'disadvantage' || catLower === 'con' || catLower === 'oppose') {
-          supports = ['disagree', 'right'];
-          opposes = ['agree', 'left'];
-        } else if (catLower === 'main_support' || catLower === 'advantage' || catLower === 'pro' || catLower === 'support') {
-          supports = ['agree', 'left'];
-          opposes = ['disagree', 'right'];
-        } else if (catLower === 'example') {
+        // Fallback to ID-prefix if no nearest reason found or it didn't have supports/opposes
+        if (supports.length === 0 && opposes.length === 0) {
           if (item.id && String(item.id).startsWith('right')) {
             supports = ['disagree', 'right'];
             opposes = ['agree', 'left'];
@@ -1385,21 +1434,12 @@ function normalizeIdeasArray(arr, e) {
           }
         }
       }
-
-      return {
-        id: item.id || `idea_${idx}`,
-        text: txt,
-        category: catNorm,
-        supports: supports,
-        opposes: opposes,
-        pairedText: item.pairedText || item.pairedSolutionOrEffect || '',
-        pairedType: item.pairedType || '',
-        pairedId: item.pairedId || '',
-        supportsStance: item.supportsStance || ''
-      };
     }
-    return null;
-  }).filter(Boolean);
+
+    item.supports = supports;
+    item.opposes = opposes;
+    return item;
+  });
 }
 
 function ideaCategoryNormalize(cat) {
@@ -1414,9 +1454,27 @@ function stanceMatches(stance, target) {
   if (!stance || !target) return false;
   const s = stance.toLowerCase();
   const t = target.toLowerCase();
-  if (t === 'agree') {
-    return s.includes('agree') && !s.includes('disagree');
+  const e = getCurrent();
+  
+  let leftOpt = '';
+  let rightOpt = '';
+  if (e && e.detectedOptions && e.detectedOptions.length >= 2) {
+    leftOpt = e.detectedOptions[0].toLowerCase();
+    rightOpt = e.detectedOptions[1].toLowerCase();
   }
+
+  if (t === 'left' || t === 'agree') {
+    const matchesAgree = s.includes('agree') && !s.includes('disagree');
+    const matchesLeftOpt = leftOpt && s.includes(leftOpt);
+    return matchesAgree || matchesLeftOpt;
+  }
+  
+  if (t === 'right' || t === 'disagree') {
+    const matchesDisagree = s.includes('disagree');
+    const matchesRightOpt = rightOpt && s.includes(rightOpt);
+    return matchesDisagree || matchesRightOpt;
+  }
+
   return s.includes(t);
 }
 
@@ -6035,18 +6093,34 @@ async function aiWriteFullEssay(opts = {}) {
   const activeType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
 
-  // Adapt BP2 transition for strong stances on the client-side
+  // Adapt BP2 transition and structural placeholders for strong/one-sided stances on the client-side
   let bp2Template = template.bp2 || '';
   const isStrong = isStrongStance(activeType, e.chosenStance);
   if (isStrong) {
-    if (bp2Template.trim().startsWith("On the other hand,")) {
-      bp2Template = bp2Template.replace("On the other hand,", "Furthermore,");
-    } else if (bp2Template.trim().startsWith("On the other hand")) {
-      bp2Template = bp2Template.replace("On the other hand", "Furthermore");
-    } else if (bp2Template.trim().startsWith("However,")) {
-      bp2Template = bp2Template.replace("However,", "In addition,");
-    } else if (bp2Template.trim().startsWith("Conversely,")) {
-      bp2Template = bp2Template.replace("Conversely,", "Furthermore,");
+    if (isBand6) {
+      // Band 6 BP2 template adaptation
+      bp2Template = bp2Template
+        .replace("On the other hand, a major concern regarding [topic] is that [negative idea 1]", "Furthermore, another key advantage of [topic] is that [positive idea 1]")
+        .replace("this issue can result in [negative idea 2], including financial burden or reduced well-being", "this can lead to [positive idea 2], including financial benefits or improved well-being")
+        .replace("However, with effective planning and appropriate measures, these challenges can be controlled and reduced.", "Hence, with proper implementation, these advantages can be further maximised.");
+    } else {
+      // Band 9 / Custom BP2 template adaptation
+      if (bp2Template.includes("On the other hand, one notable [demerit / negative effect / solution] is [point 1]")) {
+        bp2Template = bp2Template.replace("On the other hand, one notable [demerit / negative effect / solution] is [point 1]", "Furthermore, another significant [merit / benefit / positive effect] is [point 1]");
+      } else if (bp2Template.trim().startsWith("On the other hand,")) {
+        bp2Template = bp2Template.replace("On the other hand,", "Furthermore,");
+      } else if (bp2Template.trim().startsWith("On the other hand")) {
+        bp2Template = bp2Template.replace("On the other hand", "Furthermore");
+      } else if (bp2Template.trim().startsWith("However,")) {
+        bp2Template = bp2Template.replace("However,", "In addition,");
+      } else if (bp2Template.trim().startsWith("Conversely,")) {
+        bp2Template = bp2Template.replace("Conversely,", "Furthermore,");
+      }
+
+      bp2Template = bp2Template
+        .replace("illustrates this [drawback / consequence] clearly", "illustrates this [benefit / outcome] clearly")
+        .replace("another [limitation / adverse consequence / measure to be taken] is [point 2]", "another [advantage / positive consequence / further point in support] is [point 2]")
+        .replace("demonstrating the impact on [affected group / outcome]", "demonstrating the positive impact on [affected group / outcome]");
     }
   }
 
