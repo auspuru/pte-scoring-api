@@ -101,6 +101,68 @@ function getDefaultTemplates() {
   };
 }
 
+function cleanAndParseJSON(text) {
+  if (typeof text !== 'string') return text;
+  let cleaned = text.trim();
+  
+  // Remove markdown code block markers
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  
+  // Find first '{' or '[' and last '}' or ']'
+  const firstBrace = cleaned.indexOf('{');
+  const firstBracket = cleaned.indexOf('[');
+  let startIndex = -1;
+  let endIndex = -1;
+  
+  if (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) {
+    startIndex = firstBrace;
+    endIndex = cleaned.lastIndexOf('}');
+  } else if (firstBracket !== -1) {
+    startIndex = firstBracket;
+    endIndex = cleaned.lastIndexOf(']');
+  }
+  
+  if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+    cleaned = cleaned.substring(startIndex, endIndex + 1);
+  }
+  
+  // Strip JavaScript-style comments line-by-line
+  cleaned = cleaned.split('\n').map(line => {
+    const idx = line.indexOf('//');
+    if (idx !== -1) {
+      const before = line.substring(0, idx);
+      // Ensure we don't chop off URLs inside values
+      if (!before.match(/https?:/)) {
+        return before;
+      }
+    }
+    return line;
+  }).join('\n');
+
+  // Strip block comments: /* ... */
+  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  // Strip trailing commas before closing braces/brackets
+  cleaned = cleaned.replace(/,\s*([\]}])/g, '$1');
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.warn("Standard JSON parse failed, attempting quote/smart quote healing. Error:", err.message);
+    
+    // Attempt to replace smart quotes
+    cleaned = cleaned
+      .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
+      .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+
+    try {
+      return JSON.parse(cleaned);
+    } catch (err2) {
+      throw new Error(`JSON parsing failed: ${err2.message}. Response snippet: ${text.slice(0, 200)}...`);
+    }
+  }
+}
+
 const LocalStore = {
   get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
@@ -5496,7 +5558,14 @@ ${bandVocabRule}
 - For "cause", "problem" or "challenge" categories: state them clearly as a noun phrase.
 
 ═══════════════════════════════════════════════════
-RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
+RETURN ONLY A JSON OBJECT — no preamble, no markdown fences.
+CRITICAL:
+1. Do NOT use smart quotes (like “ or ”). Use standard straight double quotes (").
+2. Do NOT write nested double quotes inside any string properties. If you want to quote a word inside a string, use single quotes (e.g. "better access to 'smart' devices").
+3. Do NOT add any comments (like // or /* */) or trailing commas.
+4. Ensure the JSON is 100% syntactically correct and fully complete.
+
+Format:
 
 {
   "primaryQuestionType": "two_option_preference",
@@ -5527,7 +5596,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1500,
+        max_tokens: 3500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -5537,15 +5606,7 @@ RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
     }
     const data = await res.json();
     let text = data.content.map(c => c.text || '').join('').trim();
-    text = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-    let result;
-    try {
-      result = JSON.parse(text);
-    } catch (parseErr) {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('AI response was not valid JSON');
-      result = JSON.parse(match[0]);
-    }
+    let result = cleanAndParseJSON(text);
     
     if (!result.ideas || !Array.isArray(result.ideas)) {
       throw new Error('AI did not return the expected ideas format');
@@ -6591,8 +6652,7 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
     
     let parsed;
     try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
+      parsed = cleanAndParseJSON(text);
     } catch (e) {
       console.error('Failed to parse Claude ideas JSON:', text);
       throw new Error('Could not parse the suggested ideas. Please try again.');
@@ -8546,11 +8606,7 @@ Return ONLY a valid JSON object matching this structure (do not include markdown
     const resData = await res.json();
     const text = (resData.content || []).map(c => c.text || '').join('\n').trim();
     
-    let jsonText = text;
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/```\s*([\s\S]*?)\s*```/);
-    if (jsonMatch) jsonText = jsonMatch[1];
-    
-    const data = JSON.parse(jsonText.trim());
+    const data = cleanAndParseJSON(text);
     localStorage.setItem(`cached_master_vocab_${word}`, JSON.stringify(data));
     renderMaster1000Vocab();
   } catch (err) {
@@ -9132,15 +9188,7 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
     const data = await res.json();
     const text = (data.content || []).map(c => c.text || '').join('').trim();
     const jsonText = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-    let words;
-    try {
-      words = JSON.parse(jsonText);
-    } catch (e) {
-      // Try to recover from trailing commas or stray text
-      const match = jsonText.match(/\[[\s\S]*\]/);
-      if (!match) throw new Error('AI response was not valid JSON');
-      words = JSON.parse(match[0]);
-    }
+    let words = cleanAndParseJSON(text);
     if (!Array.isArray(words) || words.length === 0) throw new Error('AI returned no suggestions');
 
     // Mark which words already exist in this category
@@ -9261,14 +9309,7 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
     const data = await res.json();
     const text = (data.content || []).map(c => c.text || '').join('').trim();
     const jsonText = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-    let details;
-    try {
-      details = JSON.parse(jsonText);
-    } catch (e) {
-      const match = jsonText.match(/\[[\s\S]*\]/);
-      if (!match) throw new Error('AI response was not valid JSON');
-      details = JSON.parse(match[0]);
-    }
+    let details = cleanAndParseJSON(text);
     if (!Array.isArray(details)) throw new Error('AI response was not a list');
 
     // Normalise / validate each entry
@@ -11011,15 +11052,7 @@ CRITICAL for the "errors" array:
     let text = (data.content || []).map(c => c.text || '').join('').trim();
     // Strip markdown fences if AI added them
     text = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-    let result;
-    try {
-      result = JSON.parse(text);
-    } catch (e) {
-      // Try to extract JSON object from text
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error('AI response was not valid JSON');
-      result = JSON.parse(match[0]);
-    }
+    let result = cleanAndParseJSON(text);
 
     // Programmatic override for Form score and feedback to prevent LLM word counting errors
     let calculatedFormScore = 0;
@@ -14226,11 +14259,7 @@ For Case 2 (Typo/Suggestions):
     const resData = await res.json();
     const text = (resData.content || []).map(c => c.text || '').join('\n').trim();
     
-    let jsonText = text;
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/```\s*([\s\S]*?)\s*```/);
-    if (jsonMatch) jsonText = jsonMatch[1];
-    
-    const data = JSON.parse(jsonText.trim());
+    const data = cleanAndParseJSON(text);
     
     if (data.status === 'valid') {
       lastExternalWordData = data;
