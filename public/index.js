@@ -126,18 +126,8 @@ function cleanAndParseJSON(text) {
     cleaned = cleaned.substring(startIndex, endIndex + 1);
   }
   
-  // Strip JavaScript-style comments line-by-line
-  cleaned = cleaned.split('\n').map(line => {
-    const idx = line.indexOf('//');
-    if (idx !== -1) {
-      const before = line.substring(0, idx);
-      // Ensure we don't chop off URLs inside values
-      if (!before.match(/https?:/)) {
-        return before;
-      }
-    }
-    return line;
-  }).join('\n');
+  // Strip lines starting with // (comment lines)
+  cleaned = cleaned.replace(/^\s*\/\/.*$/gm, '');
 
   // Strip block comments: /* ... */
   cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
