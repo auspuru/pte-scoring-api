@@ -1538,6 +1538,10 @@ function filterIdeasForStance(activeType, chosenStance, allIdeas) {
   if (!allIdeas || !Array.isArray(allIdeas)) {
     return { alignedIdeas, optionalContrastIdeas, blockedIdeas, warnings };
   }
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  if (typeCfg.stanceRequired && !chosenStance) {
+    return { alignedIdeas, optionalContrastIdeas, blockedIdeas, warnings };
+  }
   allIdeas.forEach(idea => {
     let isOpposed = false;
     if (chosenStance) {
