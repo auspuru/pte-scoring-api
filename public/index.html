@@ -790,6 +790,15 @@
                 <div class="vocab-desc" id="vocabDesc">Mostly common words with a few stronger ones.</div>
 
                 <div class="ai-section-label">
+                  <span class="ai-section-label-text">Writing Style</span>
+                  <span class="ai-section-label-aux" id="generationModeAux">Exam Template Mode</span>
+                </div>
+                <select class="field-input" id="generationModeSelect" onchange="setGenerationMode(this.value)" style="width:100%; margin-bottom:14px; padding:8px; border-radius:6px; border:1px solid var(--line-soft); background:var(--bg); color:var(--ink-soft); font-weight:700; font-size:12.5px;">
+                  <option value="template">Exam Template Mode</option>
+                  <option value="natural">Natural Band 8/9 Mode</option>
+                </select>
+
+                <div class="ai-section-label">
                   <span class="ai-section-label-text">Your own ideas</span>
                   <span class="ai-section-label-aux">optional</span>
                 </div>
@@ -1060,7 +1069,7 @@
     <div class="field">
       <textarea class="field-textarea" id="fsQuestion" placeholder="Type prompt here..." style="min-height:90px;"></textarea>
     </div>
-    <div class="fs-controls" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+    <div class="fs-controls" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
       <div>
         <label class="field-label">Band Target</label>
         <select class="field-input" id="fsBand">
@@ -1073,6 +1082,13 @@
         <select class="field-input" id="fsVocab">
           <option value="3" selected>Band 7-8</option>
           <option value="5">Band 8-9 (Advanced)</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Writing Style</label>
+        <select class="field-input" id="fsStyle" onchange="setGenerationModeFromFs(this.value)">
+          <option value="template">Exam Template Mode</option>
+          <option value="natural">Natural Band 8/9 Mode</option>
         </select>
       </div>
     </div>

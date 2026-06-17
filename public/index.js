@@ -1646,27 +1646,60 @@ function buildStructuredEssayPlan(e) {
   const typeCfg = QUESTION_TYPES[qType] || QUESTION_TYPES.advantages_disadvantages;
   const bag = getTemplatesBag();
   const templateChoice = e.templateChoice || bag.default || 'band9';
-  
+  const manualIdeas = parseManualIdeas(e.seedIdeas || '');
+
+  // Compile paired ideas if they are paired in the question type
+  const paired_ideas = [];
+  if (typeCfg.ideasPaired) {
+    const leftIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left'))) : [];
+    
+    (e.selectedReasonIds || []).forEach(leftText => {
+      const leftIdea = leftIdeas.find(i => i.text === leftText) || { text: leftText };
+      const leftIdx = leftIdeas.findIndex(i => i.text === leftText);
+      const pairedText = getPairedTextForIdea(e, leftIdea, leftIdx > -1 ? leftIdx : 0);
+      
+      if (qType === 'problem_solution') {
+        paired_ideas.push({ problem: leftText, solution: pairedText });
+      } else if (qType === 'cause_solution') {
+        paired_ideas.push({ cause: leftText, solution: pairedText });
+      } else if (qType === 'cause_effect') {
+        paired_ideas.push({ cause: leftText, effect: pairedText });
+      } else if (qType === 'problem_effect') {
+        paired_ideas.push({ problem: leftText, effect: pairedText });
+      } else if (qType === 'single_best_option') {
+        paired_ideas.push({ cause: leftText, solution: pairedText });
+      }
+    });
+  }
+
   return {
-    question_type: qType,
-    secondary_features: e.secondaryFeatures || [],
+    id: e.id || '',
     topic: e.title || '',
-    required_task: e.question || '',
-    stance_required: typeCfg.stanceRequired || false,
-    selected_stance: e.chosenStance || '',
-    option_A: (e.detectedOptions && e.detectedOptions[0]) || '',
-    option_B: (e.detectedOptions && e.detectedOptions[1]) || '',
-    BP1_role: typeCfg.bp1Role || '',
-    BP2_role: typeCfg.bp2Role || '',
-    conclusion_role: typeCfg.conclusionRole || '',
-    selected_main_ideas: e.selectedReasonIds || [],
-    selected_examples: e.selectedExampleIds || [],
-    selected_solutions: e.selectedSolutionIds || [],
-    optional_contrast: e.optionalContrastIds || [],
-    final_recommendation: '',
-    template_mode: templateChoice,
-    vocabulary_level: e.vocab || 3,
-    consistency_risks: typeCfg.validationRules || []
+    band6Mode: e.band6Mode || '',
+    question: e.question || '',
+    question_type: qType,
+    stance: e.chosenStance || '',
+    selected_ideas: {
+      reasons: e.selectedReasonIds || [],
+      examples: e.selectedExampleIds || [],
+      advantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedReasonIds || []) : [],
+      disadvantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedExampleIds || []) : [],
+      problems: qType === 'problem_solution' || qType === 'problem_effect' ? (e.selectedReasonIds || []) : [],
+      solutions: qType === 'problem_solution' || qType === 'cause_solution' || qType === 'single_best_option' ? (e.selectedSolutionIds || []) : [],
+      causes: qType === 'cause_solution' || qType === 'cause_effect' ? (e.selectedReasonIds || []) : [],
+      effects: qType === 'cause_effect' || qType === 'problem_effect' ? (e.selectedExampleIds || []) : []
+    },
+    manual_ideas: manualIdeas,
+    paired_ideas: paired_ideas,
+    paragraph_roles: {
+      intro: "Introduce the topic and state a clear opinion or paraphrase the essay question",
+      bp1: typeCfg.bp1Role || "Discuss body paragraph 1 arguments",
+      bp2: typeCfg.bp2Role || "Discuss body paragraph 2 arguments",
+      conclusion: typeCfg.conclusionRole || "Summarise the main arguments and provide a final recommendation"
+    },
+    target_band_level: templateChoice,
+    generation_mode: e.generationMode || 'template',
+    vocabulary_level: e.vocab || 3
   };
 }
 
@@ -1836,6 +1869,108 @@ function validateEssayConsistency(e) {
   return results;
 }
 
+function parseManualIdeas(text) {
+  if (!text || typeof text !== "string") return [];
+
+  return text
+    .split(/\n|;/)
+    .map(item => item.trim())
+    .map(item => item.replace(/^[-*•\d.)\s]+/, "").trim())
+    .filter(item => item.length >= 6);
+}
+
+function detectUnsupportedClaims(text, question, sourceText, plan) {
+  const essayLower = text.toLowerCase();
+  const qLower = (question || '').toLowerCase();
+  const sLower = (sourceText || '').toLowerCase();
+  
+  const allowedTokens = new Set();
+  
+  const addAllowedText = (txt) => {
+    if (!txt) return;
+    const words = txt.toLowerCase().split(/[\s,.:;?!"'()]+/);
+    words.forEach(w => {
+      if (w.length > 2) allowedTokens.add(w);
+    });
+  };
+
+  addAllowedText(question);
+  addAllowedText(sourceText);
+  if (plan) {
+    if (plan.manual_ideas) {
+      plan.manual_ideas.forEach(i => addAllowedText(i));
+    }
+    if (plan.selected_ideas) {
+      Object.values(plan.selected_ideas).forEach(arr => {
+        if (Array.isArray(arr)) {
+          arr.forEach(i => addAllowedText(i));
+        }
+      });
+    }
+  }
+
+  const detected = [];
+
+  // 1. Check for invented percentages (e.g. "85%")
+  const pctRegex = /\b(\d+)\s*(?:%|percent\b|percentage\b)/gi;
+  let match;
+  while ((match = pctRegex.exec(essayLower)) !== null) {
+    const num = match[1];
+    if (!allowedTokens.has(num)) {
+      detected.push(`Invented percentage: "${match[0]}"`);
+    }
+  }
+
+  // 2. Check for fake citation phrases
+  const fakePhrases = [
+    "studies show", "research shows", "research proves", "experts say", "survey found",
+    "according to researchers", "a recent study", "harvard study", "university of",
+    "university researchers", "experts suggest", "scientists prove", "scientists say",
+    "researchers say", "according to a survey", "according to a study", "according to research",
+    "according to experts", "according to scientists", "according to statistics", "statistical analysis",
+    "survey of", "researchers at", "study by"
+  ];
+  for (const phrase of fakePhrases) {
+    if (essayLower.includes(phrase) && !qLower.includes(phrase) && !sLower.includes(phrase)) {
+      detected.push(`Unsupported citation claim: "${phrase}"`);
+    }
+  }
+
+  // 3. Named organizations
+  const orgs = [
+    "oecd", "pew research", "who", "world health organization", "un", "united nations", "unesco",
+    "world bank", "imf", "harvard", "stanford", "oxford", "cambridge", "mit", "apa", "american psychological association",
+    "nasa", "fda", "yale", "princeton"
+  ];
+  for (const org of orgs) {
+    const orgRegex = new RegExp(`\\b${org}\\b`, 'i');
+    if (orgRegex.test(essayLower) && !orgRegex.test(qLower) && !orgRegex.test(sLower) && !allowedTokens.has(org)) {
+      detected.push(`Unsupported organization citation: "${org.toUpperCase()}"`);
+    }
+  }
+
+  // 4. University or research center regex patterns (e.g. "University of [name]")
+  const patterns = [
+    /\buniversity of [a-z]+/gi,
+    /\b[a-z]+ university\b/gi,
+    /\b[a-z]+ research (?:center|centre|institute)\b/gi,
+    /\b[a-z]+ association\b/gi
+  ];
+  for (const regex of patterns) {
+    let patMatch;
+    while ((patMatch = regex.exec(essayLower)) !== null) {
+      const matchedText = patMatch[0].toLowerCase();
+      const words = matchedText.split(/\s+/).filter(w => !['university', 'of', 'research', 'center', 'centre', 'institute', 'association'].includes(w));
+      const isAllowed = words.every(w => allowedTokens.has(w)) || qLower.includes(matchedText) || sLower.includes(matchedText);
+      if (!isAllowed) {
+        detected.push(`Unsupported institution citation: "${patMatch[0]}"`);
+      }
+    }
+  }
+
+  return detected;
+}
+
 function validateEssayStateBeforeGeneration(e) {
   const activeType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
@@ -1847,31 +1982,55 @@ function validateEssayStateBeforeGeneration(e) {
     errors.push("A stance/opinion selection is required for this question type.");
   }
 
-  // Ideas check
-  const pickedReasonsCount = (e.selectedReasonIds || []).length;
-  const pickedExamplesCount = (e.selectedExampleIds || []).length;
-  const pickedSolutionsCount = (e.selectedSolutionIds || []).length;
-
-  const relationTypes = ['problem_solution', 'cause_solution', 'cause_effect', 'problem_effect', 'causes_solutions', 'causes_effects'];
-  const isSingleBestSolution = (activeType === 'single_best_option');
-  const isRel = relationTypes.includes(activeType) || isSingleBestSolution;
-
-  if (isRel) {
-    if (pickedReasonsCount !== 2) {
-      errors.push("Please select exactly 2 causes/problems/challenges.");
-    }
-  } else if (activeType === 'problem_solution') {
-    if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
-      errors.push("Please select exactly 2 problems and 2 solutions.");
+  // Ideas check (check manual path first)
+  if (e.seedIdeas && e.seedIdeas.trim().length > 0) {
+    const manualIdeas = parseManualIdeas(e.seedIdeas);
+    if (manualIdeas.length === 0) {
+      errors.push("Your manual idea is too short. Please write at least one clear idea, such as 'traffic congestion slows down public transport.'");
     }
   } else {
-    // Other types, require 2 reasons and 2 examples/solutions/etc.
-    if (pickedReasonsCount !== 2) {
-      errors.push("Please select exactly 2 supporting reasons.");
-    }
-    const rightCategory = (activeType === 'advantages_disadvantages' || activeType === 'advantages_disadvantages_opinion') ? 'disadvantages' : 'examples';
-    if (pickedExamplesCount !== 2 && pickedSolutionsCount !== 2) {
-      errors.push(`Please select exactly 2 supporting ${rightCategory} or solutions.`);
+    // Validate selected AI ideas
+    const pickedReasonsCount = (e.selectedReasonIds || []).length;
+    const pickedExamplesCount = (e.selectedExampleIds || []).length;
+    const pickedSolutionsCount = (e.selectedSolutionIds || []).length;
+
+    if (activeType === 'problem_solution') {
+      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+        errors.push("Please select two problems and two matching solutions.");
+      }
+    } else if (activeType === 'cause_solution') {
+      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+        errors.push("Please select two causes and two matching solutions.");
+      }
+    } else if (activeType === 'cause_effect' || activeType === 'problem_effect') {
+      const relationName = activeType === 'cause_effect' ? 'effects' : 'effects';
+      const leftName = activeType === 'cause_effect' ? 'causes' : 'problems';
+      if (pickedReasonsCount !== 2 || pickedExamplesCount !== 2) {
+        errors.push(`Please select two ${leftName} and two matching ${relationName}.`);
+      }
+    } else if (activeType === 'single_best_option') {
+      if (pickedReasonsCount !== 2) {
+        errors.push("Please select exactly 2 causes/challenges.");
+      }
+    } else {
+      // Standard check based on columns
+      const schema = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+      if (schema.ideaColumns) {
+        schema.ideaColumns.forEach(col => {
+          if (col.optional) return;
+          let count = 0;
+          if (col.key === 'reasons' || col.key === 'advantages' || col.key === 'viewA' || col.key === 'positive' || col.key === 'blessing' || col.key === 'sideA') {
+            count = pickedReasonsCount;
+          } else if (col.key === 'examples' || col.key === 'disadvantages' || col.key === 'viewB' || col.key === 'negative' || col.key === 'curse' || col.key === 'sideB' || col.key === 'effects') {
+            count = pickedExamplesCount;
+          } else if (col.key === 'solutions') {
+            count = pickedSolutionsCount;
+          }
+          if (count !== col.requiredCount) {
+            errors.push(`Please select exactly ${col.requiredCount} ${col.label.toLowerCase()}.`);
+          }
+        });
+      }
     }
   }
 
@@ -1882,16 +2041,153 @@ function validateEssayStateBeforeGeneration(e) {
   };
 }
 
-function validateGeneratedEssayText(e, text) {
+function generateEssayPrompt(plan, template) {
+  const isBand6 = (plan.target_band_level === 'band6');
+  const isNatural = (plan.generation_mode === 'natural');
+
+  const vocabSpec = VOCAB_LEVELS[(plan.vocabulary_level || 3) - 1] || VOCAB_LEVELS[2];
+
+  let ideasBlock = '';
+  if (plan.manual_ideas && plan.manual_ideas.length > 0) {
+    ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+You MUST write the essay using these manual ideas. Address them clearly.
+- Manual ideas: ${plan.manual_ideas.map(x => `"${x}"`).join(' and ')}
+`;
+  } else {
+    const reasons = plan.selected_ideas.reasons || [];
+    const solutions = plan.selected_ideas.solutions || [];
+    const examples = plan.selected_ideas.examples || [];
+    const contrast = plan.selected_ideas.contrast || [];
+    
+    ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+You MUST write the essay using exactly these chosen ideas. Do NOT substitute synonyms. Do NOT skip them.
+- Body Paragraph 1 ideas: ${reasons.map(x => `"${x}"`).join(' and ')}
+- Body Paragraph 2 ideas: ${solutions.length > 0 ? solutions.map(x => `"${x}"`).join(' and ') : examples.map(x => `"${x}"`).join(' and ')}
+${contrast.length > 0 ? `- Optional Contrast: "${contrast[0]}"` : ''}
+`;
+  }
+
+  const naturalStyleInstruction = `
+=== WRITING STYLE: NATURAL MODE (CRITICAL) ===
+Write naturally and avoid standard templates or rigid, formulaic transitions. Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+- Do NOT use formulaic transitional boilerplate.
+- Do NOT start the introduction with "The topic of [X] has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or any variation of it.
+- Do NOT start body paragraphs with "To begin with, one major reason/merit/cause/problem is..." or "On the other hand, one notable solution/demerit/negative effect is...".
+- Do NOT start the conclusion with "To conclude, [X] presents key problems and remedies..." or "Hence, prioritising... is essential for...".
+These formulaic templates make the essay look robotic and rehearsed. Write a completely fresh, organically structured essay where ideas are connected logically with diverse, natural transitions (e.g. 'First and foremost', 'A primary consideration', 'Conversely', 'Another approach worth exploring', 'In sum', 'Ultimately', etc., used naturally).
+`;
+
+  const templateStyleInstruction = `
+=== WRITING STYLE: EXAM TEMPLATE MODE (FOLLOW TEMPLATE CLOSELY) ===
+Fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions. You may shorten wordy/boilerplate phrasing when needed to stay under the 300-word limit.
+  
+INTRODUCTION TEMPLATE:
+${template.intro}
+
+BODY PARAGRAPH 1 TEMPLATE:
+${template.bp1}
+
+BODY PARAGRAPH 2 TEMPLATE:
+${template.bp2}
+
+CONCLUSION TEMPLATE:
+${template.concl}
+`;
+
+  const band6VocabRule = `
+=== STRICT RULES FOR VOCABULARY (BAND 6 LEVEL) ===
+- Use SIMPLE, PLAIN ENGLISH only — CEFR A2-B1 level.
+- Keep sentences short, direct, and easy to understand.
+- AVOID all academic, sophisticated, or formal words (e.g. avoid foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted).
+- Use everyday words like "helps", "makes", "gives", "saves", "easy", "good", "important".
+`;
+
+  const band9VocabRule = `
+=== VOCABULARY LEVEL: ${vocabSpec.label} ===
+- Desc: ${vocabSpec.desc}
+- Avoid obscure/overly flowery words unless they fit naturally (e.g. avoid paramount, deleterious, ubiquitous, salient, exacerbate, mitigate unless truly Band 9+).
+`;
+
+  return `You are a professional PTE / IELTS essay writer writing a high-scoring ${plan.target_band_level === 'band6' ? 'Band 6' : 'Band 9'} essay for IPT Brisbane tutoring.
+  
+ESSAY TOPIC: ${plan.topic || ''}
+QUESTION: ${plan.question}
+
+=== STANCE INFORMATION ===
+Stance/Opinion: "${plan.stance || 'None'}"
+- The essay must align with this stance consistently from intro to conclusion.
+
+${ideasBlock}
+
+${isNatural ? naturalStyleInstruction : templateStyleInstruction}
+
+${isBand6 ? band6VocabRule : band9VocabRule}
+
+=== LENGTH LIMIT (CRITICAL — STRICTLY UNDER 300 WORDS) ===
+The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total.
+Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
+Target length range is 240-285 words. This is the ideal target.
+This 300-word limit is a HARD CAP. If the essay is 300 words or more, it is a FAILURE.
+To stay under 300:
+- Write concisely. Avoid filler and repetitive transition phrases.
+- Keep the actual content rich: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
+- Do NOT write long explanations. Make the point and move directly to the example.
+
+=== STRUCTURAL REQUIREMENTS ===
+A. INTRODUCTION:
+- Introduce the topic and paraphrase the question naturally.
+- State a clear opinion/thesis statement if the question asks for your view or opinion.
+- Wrap the topic paraphrase and the essay-type phrase (e.g., "examine the benefits and drawbacks of this practice") in ==double equals==.
+
+B. BODY PARAGRAPHS (BP1 and BP2):
+- BP1 Role: ${plan.paragraph_roles.bp1}
+- BP2 Role: ${plan.paragraph_roles.bp2}
+- Each paragraph must develop exactly the two ideas specified in the plan (either selected or manual).
+- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
+- Wrap the main clauses of the two supporting ideas/points in ==double equals== (do not wrap the examples or transitions).
+
+C. CONCLUSION:
+- Conclusion Role: ${plan.paragraph_roles.conclusion}
+- Summarize the main arguments using topic-specific nouns. Avoid boilerplate sentences like "maximising the positive aspects while minimising the negative ones".
+- If the introduction stated an opinion, conclude the paragraph and add a final sentence starting with "Therefore, [echo the opinion in fresh, forward-looking wording]" on a new line.
+
+=== HIGHLIGHTING MARKERS (CRITICAL) ===
+Wrap clauses in ==double equals== so the PDF can highlight them in yellow:
+INTRO: wrap the topic paraphrase (after "topic of"), and the essay-type phrase (after "examine the").
+BP1: wrap KEY IDEA 1 clause (after "is" before period), wrap KEY IDEA 2 clause.
+BP2: wrap KEY IDEA 1 clause, wrap KEY IDEA 2 clause.
+DO NOT wrap: "This is because...", "For example...", "Another problem is...", or the Therefore line.
+
+=== OUTPUT FORMAT ===
+Respond with EXACTLY these sections, nothing else, no preamble:
+
+===TITLE===
+[a short 3-6 word title for this essay]
+===INTRO===
+[filled introduction paragraph with ==markers==]
+===BP1===
+[filled BP1 paragraph with ==markers== — MUST contain TWO concrete everyday examples]
+===BP2===
+[filled BP2 paragraph with ==markers== — MUST contain TWO concrete everyday examples — NO Therefore line here]
+===CONCL===
+[filled conclusion paragraph — topic-specific nouns; add the Therefore line on a new line if the intro had an opinion sentence]`;
+}
+
+function validateGeneratedEssayText(plan, text) {
+  if (plan && plan.id && typeof plan.id === 'string' && !plan.question_type) {
+    plan = buildStructuredEssayPlan(plan);
+  }
+
   const errors = [];
   const warnings = [];
 
   if (!text) {
     errors.push("Generated essay text is empty.");
-    return { valid: false, errors, warnings };
+    return { ok: false, errors, warnings };
   }
 
-  // 1. Sections check
   const introIdx = text.indexOf('===INTRO===');
   const bp1Idx = text.indexOf('===BP1===');
   const bp2Idx = text.indexOf('===BP2===');
@@ -1899,17 +2195,9 @@ function validateGeneratedEssayText(e, text) {
 
   if (introIdx === -1 || bp1Idx === -1 || bp2Idx === -1 || conclIdx === -1) {
     errors.push("The generated essay is missing some of the required section headers (===INTRO===, ===BP1===, ===BP2===, ===CONCL===).");
+    return { ok: false, errors, warnings };
   }
 
-  if (e.band6Mode === 'just_phrases') {
-    return {
-      valid: errors.length === 0,
-      errors,
-      warnings
-    };
-  }
-
-  // Helper to extract section text
   const getSectionText = (startHeader, nextHeader) => {
     const start = text.indexOf(startHeader);
     if (start === -1) return '';
@@ -1925,16 +2213,28 @@ function validateGeneratedEssayText(e, text) {
   const bp2 = getSectionText('===BP2===', '===CONCL===');
   const concl = getSectionText('===CONCL===', null);
 
+  if (intro.length < 15 || bp1.length < 15 || bp2.length < 15 || concl.length < 15) {
+    errors.push("One or more of the required paragraph sections are empty or too short.");
+  }
+
+  if (plan && plan.band6Mode === 'just_phrases') {
+    return {
+      ok: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
   const fullEssayClean = `${intro} ${bp1} ${bp2} ${concl}`.replace(/==/g, '').trim();
   const words = fullEssayClean.split(/\s+/).filter(Boolean);
   const wordCount = words.length;
 
-  // 2. Word count check (PTE/IELTS target is under 300 words)
-  if (wordCount > 300) {
-    warnings.push(`The generated essay has ${wordCount} words, which exceeds the strict 300-word limit.`);
+  if (wordCount >= 300 && wordCount <= 319) {
+    errors.push("The generated essay is too long (300-319 words). Please regenerate a shorter version.");
+  } else if (wordCount >= 320) {
+    errors.push("The generated essay is too long. Please regenerate a shorter version.");
   }
 
-  // 3. Yellow highlighting markers check
   const countMarkers = (str) => (str.match(/==/g) || []).length;
   const introMarkers = countMarkers(intro);
   const bp1Markers = countMarkers(bp1);
@@ -1950,22 +2250,101 @@ function validateGeneratedEssayText(e, text) {
     errors.push("Body Paragraph 2 has mismatched yellow highlighting markers (==).");
   }
 
-  if (introMarkers === 0 && bp1Markers === 0 && bp2Markers === 0) {
-    warnings.push("No yellow highlighting markers (==) were detected in the generated essay.");
+  const unsupportedClaims = detectUnsupportedClaims(fullEssayClean, plan.question, '', plan);
+  if (unsupportedClaims.length > 0) {
+    errors.push("The essay contains unsupported statistics or research claims. Please regenerate without invented data.");
   }
 
-  // 4. Fake statistics check
-  const lowerText = fullEssayClean.toLowerCase();
-  const fakeStatsKeywords = [
-    'oecd', 'pew research', 'survey found', 'survey of', 'percent of', 'percentage of', '70%', '80%', '90%', 'researchers at', 'study by', 'studies show', 'statistical analysis'
-  ];
-  const detectedKeywords = fakeStatsKeywords.filter(k => lowerText.includes(k));
-  if (detectedKeywords.length > 0) {
-    warnings.push(`Possible fake statistics/academic citation keywords detected: ${detectedKeywords.join(', ')}.`);
+  if (plan.stance) {
+    const stanceLower = plan.stance.toLowerCase();
+    const conclLower = concl.toLowerCase();
+    const introLower = intro.toLowerCase();
+
+    const stopwords = ['the', 'a', 'an', 'and', 'but', 'or', 'for', 'nor', 'so', 'yet', 'at', 'by', 'in', 'of', 'on', 'to', 'with', 'is', 'are', 'was', 'were', 'been', 'being', 'better', 'mostly', 'largely', 'strongly', 'should', 'pressing', 'problem', 'most', 'issue', 'agree', 'disagree', 'opinion'];
+    const stanceWords = stanceLower.split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
+    
+    const introHasStance = stanceWords.length === 0 || stanceWords.some(w => introLower.includes(w));
+    const conclHasStance = stanceWords.length === 0 || stanceWords.some(w => conclLower.includes(w));
+
+    if (!introHasStance || !conclHasStance) {
+      errors.push("The essay’s conclusion does not clearly match your selected stance.");
+    }
+
+    const isStrong = stanceLower.includes('strongly') || stanceLower.includes('largely') || stanceLower.includes('is better') || stanceLower.includes('most pressing') || stanceLower.includes('mainly responsible');
+    if (isStrong && plan.question_type !== 'discuss_both_views') {
+      const bp2Lower = bp2.toLowerCase();
+      const contrastTransitions = ['on the other hand', 'however', 'nevertheless', 'conversely', 'yet'];
+      const usesContrast = contrastTransitions.some(t => bp2Lower.includes(t));
+      if (usesContrast) {
+        errors.push("Stance consistency error: A strong one-sided stance was selected, but Body Paragraph 2 contains contrasting transitions (like 'On the other hand' or 'However').");
+      }
+    }
+  }
+
+  const stopwords = ['the', 'a', 'an', 'and', 'but', 'or', 'for', 'nor', 'so', 'yet', 'at', 'by', 'in', 'of', 'on', 'to', 'with', 'is', 'are', 'was', 'were', 'been', 'being'];
+  const textLower = fullEssayClean.toLowerCase();
+
+  if (plan.manual_ideas && plan.manual_ideas.length > 0) {
+    plan.manual_ideas.forEach(idea => {
+      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
+      if (keywords.length > 0) {
+        const hasMatch = keywords.some(w => textLower.includes(w));
+        if (!hasMatch) {
+          errors.push(`Your manual idea "${idea}" was not used in the generated essay.`);
+        }
+      }
+    });
+  } else {
+    const reasons = plan.selected_ideas.reasons || [];
+    const solutions = plan.selected_ideas.solutions || [];
+    const examples = plan.selected_ideas.examples || [];
+
+    reasons.forEach(idea => {
+      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
+      if (keywords.length > 0) {
+        const hasMatch = keywords.some(w => textLower.includes(w));
+        if (!hasMatch) {
+          errors.push(`Selected idea "${idea}" was not used in the generated essay.`);
+        }
+      }
+    });
+    
+    const secondParaIdeas = solutions.length > 0 ? solutions : examples;
+    secondParaIdeas.forEach(idea => {
+      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
+      if (keywords.length > 0) {
+        const hasMatch = keywords.some(w => textLower.includes(w));
+        if (!hasMatch) {
+          errors.push(`Selected idea "${idea}" was not used in the generated essay.`);
+        }
+      }
+    });
+  }
+
+  const bp1Sentences = splitSentences(bp1);
+  const bp2Sentences = splitSentences(bp2);
+  const allSentences = bp1Sentences.concat(bp2Sentences);
+
+  const exampleSentences = allSentences.filter(s => {
+    const l = s.toLowerCase();
+    return l.includes('for example') || l.includes('for instance') || l.includes('to illustrate') || l.includes('illustrates this') || l.includes('such as');
+  });
+
+  const qWords = plan.question.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !['good', 'help', 'make', 'people', 'many', 'some', 'more', 'less', 'should', 'would', 'could', 'about', 'question', 'opinion', 'example'].includes(w));
+  const weakPhrases = ["in many places", "in modern society", "in some countries", "people can benefit", "this can be seen everywhere"];
+
+  for (const ex of exampleSentences) {
+    const exLower = ex.toLowerCase();
+    const hasTopicWord = qWords.some(w => exLower.includes(w));
+    const isWeak = weakPhrases.some(p => exLower.includes(p));
+    
+    if (!hasTopicWord || isWeak || ex.split(/\s+/).length < 5) {
+      warnings.push(`The essay example is too generic. Try regenerating for a more topic-specific example.`);
+    }
   }
 
   return {
-    valid: errors.length === 0,
+    ok: errors.length === 0,
     errors,
     warnings
   };
@@ -4349,6 +4728,7 @@ function loadCurrent() {
 
   setVocab(e.vocab || 3, true);
   updateEssayTplPills();
+  updateGenerationModeUI();
   updateCounters();
   
   // Restore and render ideas picker if we have suggested ideas
@@ -5450,6 +5830,42 @@ function updateTplDefaultNote() {
   if (note) note.textContent = `(${tplLabel(bag.default || 'band9')})`;
 }
 
+function setGenerationMode(mode) {
+  const e = getCurrent();
+  if (!e) return;
+  e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  saveAll();
+  updateGenerationModeUI();
+  renderPreview();
+}
+
+function setGenerationModeFromFs(mode) {
+  const e = getCurrent();
+  if (!e) return;
+  e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  saveAll();
+  updateGenerationModeUI();
+}
+
+function updateGenerationModeUI() {
+  const e = getCurrent();
+  if (!e) return;
+  const mode = e.generationMode || 'template';
+  
+  const mainSelect = document.getElementById('generationModeSelect');
+  if (mainSelect) {
+    mainSelect.value = mode;
+  }
+  const labelAux = document.getElementById('generationModeAux');
+  if (labelAux) {
+    labelAux.textContent = mode === 'natural' ? 'Natural Band 8/9 Mode' : 'Exam Template Mode';
+  }
+  const fsSelect = document.getElementById('fsStyle');
+  if (fsSelect) {
+    fsSelect.value = mode;
+  }
+}
+
 // ============================================================
 //  AI: SUGGEST IDEAS (5 pros + 5 cons → pick 2+2)
 // ============================================================
@@ -6130,9 +6546,7 @@ async function aiWriteFullEssay(opts = {}) {
   }
   // Quota check
   if (!await consumeQuota('essay')) return false;
-  const vocabIdx = (e.vocab || 3) - 1;
-  const vocabSpec = VOCAB_LEVELS[vocabIdx];
-  const seedIdeas = (e.seedIdeas || '').trim();
+  
   const template = getTemplateForEssay(e);
   const btn = opts.silent ? null : document.getElementById('aiWriteBtn');
   if (btn) {
@@ -6175,17 +6589,9 @@ async function aiWriteFullEssay(opts = {}) {
     }
   }
 
+  const templateCopy = { ...template, bp2: bp2Template };
   const plan = buildStructuredEssayPlan(e);
   const planString = JSON.stringify(plan, null, 2);
-
-  const planBlock = `
-╔═══════════════════════════════════════════════════════════════════╗
-║  STRUCTURED ESSAY PLAN (MANDATORY INSTRUCTION)                    ║
-║  You MUST follow this plan EXACTLY. Do not deviate.               ║
-║  Your chosen stance and selected ideas must control the essay.    ║
-╚═══════════════════════════════════════════════════════════════════╝
-${planString}
-`;
 
   let prompt = '';
   if (isBand6 && mode === 'just_phrases') {
@@ -6242,145 +6648,73 @@ Example Phrases:
 ===CONCL===
 [A very simple, clear Band 6 conclusion paragraph following this template: "${template.concl}"]`;
   } else {
-    prompt = `You are a PTE / IELTS Band 9 essay writer. Follow the user's template closely — fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions, but you MAY shorten its wordy/boilerplate phrasing where needed to stay under the word limit (see LENGTH LIMIT below) — never at the expense of a key idea or an example.
-
-Use the IPT Brisbane PDF style for paragraph logic, clarity, and academic tone.
-
-${planBlock}
-
-=== STRICT RULES FOR WRITING (CRITICAL) ===
-1. Stance Fidelity & Question Type Approach: The selected stance ("${e.chosenStance || 'None'}") is the single source of truth. The introduction, BP1, BP2, and conclusion must maintain and support this stance consistently. Do NOT override the student's selected stance or opinion.
-- For all opinion-based essays, analyze the approach of the question type.
-- If the question asks to "discuss both views": BP1 must explain View A, BP2 must explain View B, and the conclusion delivers the opinion (if stance is chosen).
-- If the selected stance is partial (e.g. partially agree/disagree): BP1 must support the statements/side, BP2 must discuss a limitation, opposite view, or balanced contrast, and the conclusion reiterates the partial/balanced stance.
-- If the selected stance is strong or largely one-sided (e.g. strongly agree/disagree, largely agree/disagree): BP1 must present Reason 1 and Reason 2 supporting the stance. BP2 must present further support, practical benefits, or brief contrast only (never a drawback of the chosen option). The conclusion must reaffirm the same stance.
-- For agree_disagree essays: if the stance is strongly agree/disagree or largely agree/disagree, do NOT include opposing arguments or discuss the other side in BP2. BP2 must focus entirely on supporting the chosen stance further and must not contradict the stance.
-- For two-option preference essays: 70-80% of the content must support the chosen option, and 20-30% may briefly contrast the opposite option. Never make both options equal. Never make BP2 a drawback of the chosen option unless the stance is balanced.
-
-2. Template Transition Adaptation: Follow the transition provided in the BODY PARAGRAPH 2 TEMPLATE exactly.
-- If the template starts with "Furthermore," or "In addition,", do NOT change it to a contrasting transition. Focus BP2 entirely on supporting the chosen stance further (e.g., additional reasons, benefits, or implications) and must not contradict the stance.
-- If the template starts with "On the other hand," or another contrasting transition, you may write about the other side, drawbacks, or solutions as required by the question type.
-
-3. Selected Ideas: You MUST use the selected main ideas, examples, and solutions specified in the plan. Do not substitute them.
-4. No Contradictions: Do not include any points that contradict the selected stance.
-5. No Fake Statistics: Do not use fake statistics, OECD reports, study citations, or survey numbers (e.g., "70% of people..."). Use everyday, relatable examples instead.
-6. Balanced vs One-sided: Do not write a balanced essay for a one-sided preference question. Do not write a one-sided essay for a balanced advantages/disadvantages question.
-7. Personal Experience: If the plan specifies "personal_experience_required" in secondary_features, you must include a personal reason or example in the first person ("I", "my", "me").
-8. Relationship-based Questions (problem_solution, cause_solution, cause_effect, problem_effect, causes_solutions, causes_effects):
-- The student selects two problems (or two causes/challenges) in BP1.
-- You MUST automatically generate/use the solutions (or effects/consequences) in BP2 that correspond directly to those specific two problems (or causes/challenges) in a strict 1-to-1 sequential order (Problem 1 -> Solution 1, Problem 2 -> Solution 2).
-- The solutions (or effects/consequences) must directly address the problems (or causes/challenges) raised in BP1. Do not introduce solutions for problems that were not discussed in BP1.
-
-ESSAY TOPIC: ${e.title}
-QUESTION: ${e.question}
-${e.explanation ? `TOPIC EXPLANATION: ${e.explanation}` : ''}
-VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
-
-=== LENGTH LIMIT (CRITICAL — DO NOT EXCEED) ===
-The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total. Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
-This 300-word limit OVERRIDES any other length guidance.
-
-=== HOW TO FRAME THE BODY PARAGRAPHS ===
-→ Body Paragraph 1 should present: ${typeCfg.bp1Role || typeCfg.bp1Frame || 'supporting reasons'}.
-→ Body Paragraph 2 should present: ${typeCfg.bp2Role || typeCfg.bp2Frame || 'further support/drawbacks'}.
-
-When the template offers slash-choices like [merit / cause / problem], pick the word that matches the paragraph roles.
-
-=== THE TEMPLATE (FOLLOW EXACTLY) ===
-
-INTRODUCTION TEMPLATE:
-${template.intro}
-
-BODY PARAGRAPH 1 TEMPLATE:
-${template.bp1}
-
-BODY PARAGRAPH 2 TEMPLATE:
-${bp2Template}
-
-CONCLUSION TEMPLATE:
-${template.concl}
-
-${template.notes ? `=== ADDITIONAL INSTRUCTIONS FROM THE TUTOR ===\n${template.notes}\n` : ''}
-
-=== RULES FOR FILLING THE TEMPLATE ===
-
-1. Keep the template's structure and transitions, but you MAY shorten or simplify its wordy connecting/boilerplate phrases when needed to meet the 300-word limit (see LENGTH LIMIT). Never trim in a way that removes a key idea or an example.
-2. Replace each [bracketed placeholder] with content that fits the topic AND the question type.
-3. Slash options (e.g. [merit / cause / problem]): pick the ONE that matches the question type as instructed above.
-4. (Parentheses) = guidance for you. Apply and remove from output.
-5. Outer [square brackets] around a sentence = OPTIONAL. Include if question asks for opinion, omit otherwise.
-6. Vocabulary: ${vocabSpec.label} (${vocabSpec.desc}). Avoid: paramount, deleterious, ubiquitous, salient, exacerbate, mitigate (unless Band 9+).
-7. No idioms, no metaphors, no flowery language.
-
-=== BAND 9 QUALITY RULES (MANDATORY — do not skip) ===
-
-A. EXAMPLES — Each body paragraph MUST contain TWO examples, one per supporting idea. Use EVERYDAY, RELATABLE examples that a student can instantly picture from their own life — the kind of thing they see around them at home, school, work, or in their community: common apps, familiar daily habits, ordinary everyday situations. GOOD: "many people now message relatives overseas for free on WhatsApp instead of paying for calls", "a traveller quickly translating a menu with Google Translate on their phone", "people scrolling their phones at the dinner table instead of talking to each other". DO NOT use academic citations, named studies, research reports, surveys, or statistics (NOT "a 2019 OECD report found...", NOT "a study by the American Psychological Association showed..."). If the template's placeholder asks for a study, statistic, or report, IGNORE that and give an everyday relatable example instead. Keep each example to one short, concrete sentence.
-
-B. CONCLUSION — The conclusion's middle sentence (starting "Hence, prioritising...") must be REWRITTEN with topic-specific nouns. Do NOT output the generic phrase "maximisation of its advantages and the alleviation of its drawbacks" — replace those abstract nouns with the specific positive aspect of THIS topic to maximise, and the specific drawback to address. Example for a public-transport essay: "Hence, prioritising sustained investment in reliable public transit while addressing the funding burden on local councils is essential for cleaner, more equitable cities."
-
-C. CONCLUSION OPINION ECHO — If the introduction includes the "In my view..." opinion sentence, the conclusion MUST end with the "Therefore..." sentence that echoes that opinion in fresh wording. Do not copy the introduction's opinion verbatim — restate the same stance with a forward-looking framing. If the introduction has NO opinion sentence, omit the Therefore line.
-
-=== HIGHLIGHTING MARKERS (CRITICAL) ===
-
-Wrap clauses in ==double equals== so the PDF can highlight them in yellow:
-
-INTRO: wrap the topic paraphrase (after "topic of"), and the essay-type phrase (after "examine the").
-BP1: wrap KEY IDEA 1 clause (after "is" before period), wrap KEY IDEA 2 clause.
-BP2: wrap KEY IDEA 1 clause, wrap KEY IDEA 2 clause.
-
-DO NOT wrap: "This is because...", "For example...", "Another problem is...", or the Therefore line.
-
-=== STRUCTURAL ADDITIONS ===
-
-${isBand6
-? `A. Do NOT add any "[EXTRA IDEA]" line in BP1. Just end BP1 with the template's final sentence.
-B. Do NOT add any "Therefore," solution line in BP2.
-C. End the conclusion as the template specifies — no repeated Therefore line.`
-: `A. Do NOT add any "[EXTRA IDEA]" line in BP1. End BP1 with the template's final sentence.
-B. End BP2 naturally as the template specifies — DO NOT add a "Therefore," line at the end of BP2.
-C. End of CONCL, NEW LINE: "Therefore, [closing sentence that echoes the opinion from the introduction in fresh wording]." NO ==markers== inside.
-   INCLUDE this Therefore line whenever the introduction contained the "In my view..." opinion sentence — it gives the conclusion a stronger, personal finish that echoes the writer's stance.
-   OMIT this Therefore line only if the introduction had NO opinion sentence (i.e. the question doesn't ask for opinion).
-   The Therefore line must NOT copy the introduction's opinion verbatim — restate the same stance with a forward-looking framing.`}
-
-=== OUTPUT FORMAT ===
-
-Respond with EXACTLY four sections, nothing else, no preamble:
-
-===INTRO===
-[filled intro with ==yellow markers==]
-===BP1===
-[filled BP1 with ==markers== — MUST contain TWO concrete topic-specific examples]
-===BP2===
-[filled BP2 with ==markers== — MUST contain TWO concrete topic-specific examples — NO Therefore line here]
-===CONCL===
-[filled conclusion${isBand6 ? '' : ' — middle sentence MUST have topic-specific nouns, not generic boilerplate\nTherefore, ... (include whenever intro had an opinion sentence)'}]`;
+    prompt = generateEssayPrompt(plan, templateCopy);
   }
 
-  try {
-    const res = await fetch(API_URL + '/api/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(`API error ${res.status}: ${t.slice(0, 300)}`);
-    }
-    const data = await res.json();
-    const text = data.content.map(c => c.text || '').join('\n').trim();
+  const MAX_RETRIES = 3;
+  let lastErrors = [];
+  let success = false;
+  let text = '';
+  let finalValidation = null;
 
-    const textValidation = validateGeneratedEssayText(e, text);
-    if (!textValidation.valid) {
-      throw new Error('Generated text validation failed: ' + textValidation.errors.join(' '));
+  try {
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      let promptForAttempt = prompt;
+      if (attempt > 1 && lastErrors.length > 0) {
+        promptForAttempt += `
+
+=== RETRY CORRECTION (ATTEMPT ${attempt}) ===
+Your previous attempt failed validation for the following reason(s):
+${lastErrors.map(err => `- ${err}`).join('\n')}
+
+Please rewrite the essay to completely fix these issues. Ensure all instructions, word limits, and highlighting rules are fully satisfied.`;
+      }
+
+      try {
+        const res = await fetch(API_URL + '/api/claude', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 2000,
+            messages: [{ role: 'user', content: promptForAttempt }]
+          })
+        });
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`API error ${res.status}: ${t.slice(0, 300)}`);
+        }
+        const data = await res.json();
+        text = data.content.map(c => c.text || '').join('\n').trim();
+
+        if (isBand6 && mode === 'just_phrases') {
+          finalValidation = { ok: true, errors: [], warnings: [] };
+        } else {
+          finalValidation = validateGeneratedEssayText(plan, text);
+        }
+
+        if (finalValidation.ok) {
+          success = true;
+          break;
+        }
+        lastErrors = finalValidation.errors;
+      } catch (err) {
+        console.error(`Attempt ${attempt} failed:`, err);
+        lastErrors = [err.message];
+      }
     }
-    if (textValidation.warnings.length > 0 && !opts.silent) {
-      console.warn("Generated essay warnings:", textValidation.warnings);
-      toast("Warning: " + textValidation.warnings[0], false);
+
+    if (!success) {
+      if (!opts.silent) {
+        const specificMsg = lastErrors.length > 0 ? '\nDetails: ' + lastErrors.join(' | ') : '';
+        toast('The essay could not be generated cleanly after several attempts. Please try again with shorter or clearer ideas.' + specificMsg, true);
+      }
+      return false;
+    }
+
+    if (finalValidation && finalValidation.warnings && finalValidation.warnings.length > 0 && !opts.silent) {
+      console.warn("Generated essay warnings:", finalValidation.warnings);
+      toast("Warning: " + finalValidation.warnings[0], false);
     }
 
     const sections = parseEssaySections(text);
@@ -6467,6 +6801,10 @@ function openFreestyle() {
   populateFreestyleLibrary();
   freestyleResetActions();
   freestyleLast = null;
+  const e = getCurrent();
+  const currentMode = e ? (e.generationMode || 'template') : 'template';
+  const fsStyle = document.getElementById('fsStyle');
+  if (fsStyle) fsStyle.value = currentMode;
   document.getElementById('freestyleModal').classList.add('show');
   setTimeout(() => { const q = document.getElementById('fsQuestion'); if (q) q.focus(); }, 50);
 }
@@ -6957,7 +7295,6 @@ async function freestyleWriteWithIdeas() {
 
   const band = document.getElementById('fsBand').value === 'band6' ? 'band6' : 'band9';
   const isBand6 = band === 'band6';
-  const qLabel = isBand6 ? 'Band 6' : 'Band 9';
   const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
   const vocabSpec = VOCAB_LEVELS[vocabIdx];
 
@@ -7005,91 +7342,119 @@ The student has taken a clear position: "${sideLabel}".
     bp2Ideas = Array.from(fsPickedRightIdeas).map(idx => fsSuggestedRightIdeas[idx]);
   }
 
-  const ideasBlock = `
-=== CRITICAL — USER-CHOSEN IDEAS (HIGHEST PRIORITY) ===
-You MUST write the essay using exactly these chosen ideas. Do NOT substitute synonyms. Do NOT skip them.
-- Body Paragraph 1: You MUST base the two supporting points on these ideas:
-  1. "${bp1Ideas[0] || ''}"
-  2. "${bp1Ideas[1] || ''}"
-- Body Paragraph 2: You MUST base the two supporting points on these ideas:
-  1. "${bp2Ideas[0] || ''}"
-  2. "${bp2Ideas[1] || ''}"
-${sidedNote}`;
+  const plan = {
+    question: question,
+    question_type: fsDetectedQuestionType || 'advantages_disadvantages',
+    stance: fsChosenSide || '',
+    selected_ideas: {
+      reasons: bp1Ideas,
+      examples: bp2Ideas,
+      advantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp1Ideas : [],
+      disadvantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp2Ideas : [],
+      problems: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'problem_effect') ? bp1Ideas : [],
+      solutions: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'single_best_option') ? bp2Ideas : [],
+      causes: (fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'cause_effect') ? bp1Ideas : [],
+      effects: (fsDetectedQuestionType === 'cause_effect' || fsDetectedQuestionType === 'problem_effect') ? bp2Ideas : []
+    },
+    manual_ideas: [],
+    paired_ideas: [],
+    paragraph_roles: {
+      intro: "Introduce the topic and state a clear opinion or paraphrase the essay question",
+      bp1: type.bp1Role || "Discuss body paragraph 1 arguments",
+      bp2: type.bp2Role || "Discuss body paragraph 2 arguments",
+      conclusion: type.conclusionRole || "Summarise the main arguments and provide a final recommendation"
+    },
+    target_band_level: band,
+    generation_mode: document.getElementById('fsStyle').value || 'template',
+    vocabulary_level: vocabIdx + 1
+  };
 
-  const prompt = `You are writing a custom, high-scoring ${qLabel} IELTS/PTE essay for IPT Brisbane tutoring.
-Write naturally and avoid standard templates or rigid, formulaic transitions. Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+  const paired_ideas = [];
+  if (type.ideasPaired) {
+    for (let i = 0; i < bp1Ideas.length; i++) {
+      const leftText = bp1Ideas[i];
+      const rightText = bp2Ideas[i] || '';
+      if (fsDetectedQuestionType === 'problem_solution') {
+        paired_ideas.push({ problem: leftText, solution: rightText });
+      } else if (fsDetectedQuestionType === 'cause_solution') {
+        paired_ideas.push({ cause: leftText, solution: rightText });
+      } else if (fsDetectedQuestionType === 'cause_effect') {
+        paired_ideas.push({ cause: leftText, effect: rightText });
+      } else if (fsDetectedQuestionType === 'problem_effect') {
+        paired_ideas.push({ problem: leftText, effect: rightText });
+      } else if (fsDetectedQuestionType === 'single_best_option') {
+        paired_ideas.push({ cause: leftText, solution: rightText });
+      }
+    }
+  }
+  plan.paired_ideas = paired_ideas;
 
-CRITICAL WARNING: Do NOT use formulaic transitional boilerplate.
-- Do NOT start the introduction with "The topic of [X] has become increasingly important in recent years, prompting varied opinions. Its significance lies in..." or any variation of it.
-- Do NOT start body paragraphs with "To begin with, one major reason/merit/cause/problem is..." or "On the other hand, one notable solution/demerit/negative effect is...".
-- Do NOT start the conclusion with "To conclude, [X] presents key problems and remedies..." or "Hence, prioritising... is essential for...".
-These formulaic templates make the essay look robotic and rehearsed. Write a completely fresh, organically structured essay where ideas are connected logically with diverse, natural transitions (e.g. 'First and foremost', 'A primary consideration', 'Conversely', 'Another approach worth exploring', 'In sum', 'Ultimately', etc., used naturally).
+  const template = getTemplateForEssay({ templateChoice: band });
 
-ESSAY QUESTION: ${question}
-
-${ideasBlock}
-
-VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
-
-=== LENGTH LIMIT (CRITICAL — STRICTLY UNDER 300 WORDS) ===
-The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total.
-Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
-This 300-word limit is a HARD CAP. If the essay is 300 words or more, it is a FAILURE.
-HOW TO STAY UNDER 300:
-- Write concisely. Avoid filler and repetitive transition phrases.
-- Keep the actual content rich: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
-- Do NOT write long explanations. Make the point and move directly to the example.
-
-=== STRUCTURAL REQUIREMENTS ===
-A. INTRODUCTION:
-- Introduce the topic and paraphrase the question naturally.
-- State a clear opinion/thesis statement if the question asks for your view or opinion.
-- Wrap the topic paraphrase and the essay-type phrase (e.g., "examine the benefits and drawbacks of this practice") in ==double equals==.
-
-B. BODY PARAGRAPHS (BP1 and BP2):
-- Each paragraph must present exactly the TWO supporting ideas chosen by the user.
-- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
-- Wrap the main clauses of the two supporting ideas in ==double equals== (do not wrap the examples or transitions).
-
-C. CONCLUSION:
-- Summarize the main arguments using topic-specific nouns. Avoid boilerplate sentences like "maximising the positive aspects while minimising the negative ones".
-- If the introduction stated an opinion, conclude the paragraph and add a final sentence starting with "Therefore, [echo the opinion in fresh, forward-looking wording]" on a new line.
-
-=== QUALITY RULES (MANDATORY) ===
-1. Vocabulary: ${vocabSpec.label} (${vocabSpec.desc}). ${isBand6 ? 'Use simple, plain, everyday English only.' : 'Avoid obscure words: paramount, deleterious, ubiquitous, salient, exacerbate, mitigate (unless truly Band 9+).'}
-2. No idioms, no metaphors, no flowery language.
-3. Wrapping markers: Make sure to wrap the exact key clauses in ==double equals== as defined in STRUCTURAL REQUIREMENTS.
-
-=== OUTPUT FORMAT ===
-Respond with EXACTLY these sections, nothing else, no preamble:
-
-===TITLE===
-[a short 3-6 word title for this essay]
-===INTRO===
-[filled introduction with ==markers==]
-===BP1===
-[filled BP1 with ==markers== — TWO concrete everyday examples]
-===BP2===
-[filled BP2 with ==markers== — TWO concrete everyday examples]
-===CONCL===
-[filled conclusion — topic-specific nouns; add the Therefore line on a new line if the intro had an opinion sentence]`;
+  const MAX_RETRIES = 3;
+  let lastErrors = [];
+  let success = false;
+  let text = '';
+  let finalValidation = null;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      let promptForAttempt = generateEssayPrompt(plan, template);
+      if (sidedNote) {
+        promptForAttempt += `\n\n${sidedNote}`;
+      }
+
+      if (attempt > 1 && lastErrors.length > 0) {
+        promptForAttempt += `
+
+=== RETRY CORRECTION (ATTEMPT ${attempt}) ===
+Your previous attempt failed validation for the following reason(s):
+${lastErrors.map(err => `- ${err}`).join('\n')}
+
+Please rewrite the essay to completely fix these issues. Ensure all instructions, word limits, and highlighting rules are fully satisfied.`;
+      }
+
+      try {
+        const res = await fetch(API_URL + '/api/claude', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 2000,
+            messages: [{ role: 'user', content: promptForAttempt }]
+          })
+        });
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+        }
+        const data = await res.json();
+        text = data.content.map(c => c.text || '').join('\n').trim();
+
+        finalValidation = validateGeneratedEssayText(plan, text);
+
+        if (finalValidation.ok) {
+          success = true;
+          break;
+        }
+        lastErrors = finalValidation.errors;
+      } catch (err) {
+        console.error(`Freestyle Attempt ${attempt} failed:`, err);
+        lastErrors = [err.message];
+      }
     }
-    const data = await res.json();
-    const text = data.content.map(c => c.text || '').join('\n').trim();
+
+    if (!success) {
+      const specificMsg = lastErrors.length > 0 ? '\nDetails: ' + lastErrors.join(' | ') : '';
+      toast('The essay could not be generated cleanly after several attempts. Please try again with shorter or clearer ideas.' + specificMsg, true);
+      return;
+    }
+
+    if (finalValidation && finalValidation.warnings && finalValidation.warnings.length > 0) {
+      console.warn("Generated essay warnings:", finalValidation.warnings);
+      toast("Warning: " + finalValidation.warnings[0], false);
+    }
+
     const titleMatch = text.match(/===TITLE===\s*([\s\S]*?)(?====INTRO===)/);
     const title = titleMatch ? titleMatch[1].trim().replace(/^["']|["']$/g, '').slice(0, 80) : '';
     const sections = parseEssaySections(text);
@@ -7425,12 +7790,27 @@ async function regenerateParagraph(which) {
   const vocabIdx = (e.vocab || 3) - 1;
   const vocabSpec = VOCAB_LEVELS[vocabIdx];
   const seedIdeas = (e.seedIdeas || '').trim();
+  const isNatural = (e.generationMode === 'natural');
 
   // Build context: the OTHER paragraphs so AI knows what it's connecting to
   const others = ['intro', 'bp1', 'bp2', 'concl']
     .filter(p => p !== which)
     .map(p => `[${PARA_LABELS[p].toUpperCase()}]\n${e[p] || '(empty)'}`)
     .join('\n\n');
+
+  const naturalStyleInstruction = `
+=== WRITING STYLE: NATURAL MODE (CRITICAL) ===
+Write naturally and avoid standard templates or rigid, formulaic transitions. Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+- Do NOT use formulaic transitional boilerplate.
+- Do NOT use robotic, rehearsed transitions.
+- Smoothly connect ideas with diverse, natural transitions.
+- AVOID adding unsupported statistics or research claims.
+`;
+
+  const templateStyleInstruction = `
+=== WRITING STYLE: EXAM TEMPLATE MODE (FOLLOW TEMPLATE CLOSELY) ===
+Follow the template structure closely (transition phrases like "To begin with, one major merit is..." must be preserved if they appear in the template). Preserve exam-safe wording.
+`;
 
   const prompt = `You are rewriting ONE paragraph of an IELTS/PTE essay for IPT Brisbane tutoring. Keep the same overall meaning and key points, but rephrase the language so it differs from the existing version.
 
@@ -7439,21 +7819,24 @@ QUESTION: ${e.question}
 ${seedIdeas ? `KEY IDEAS TO USE: ${seedIdeas}` : ''}
 VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
 
+${isNatural ? naturalStyleInstruction : templateStyleInstruction}
+
 EXISTING ${PARA_LABELS[which].toUpperCase()} (rewrite this):
 ${existing}
 
 OTHER PARAGRAPHS (do NOT rewrite — for context only):
 ${others}
 
-TEMPLATE FOR ${PARA_LABELS[which].toUpperCase()}:
+TEMPLATE FOR ${PARA_LABELS[which].toUpperCase()} (only relevant in Exam Template Mode):
 ${template[which]}
 
 INSTRUCTIONS:
-- Follow the template structure (transition phrases like "To begin with, one major merit is..." must be preserved if they appear in the template).
+- Rewrite the paragraph text according to the selected WRITING STYLE.
 - Wrap key idea clauses in ==yellow markers==.
 ${which === 'bp1' && !isBand6 ? '- Keep the [EXTRA IDEA] Moreover, ... line at the end.' : ''}
 ${which === 'concl' && !isBand6 ? '- The "Therefore, [solution]" line is OPTIONAL. Include it only if the conclusion would otherwise be under the target word count.' : ''}
 ${which === 'bp2' ? '- Do NOT add a "Therefore" line at the end of BP2.' : ''}
+- Do NOT introduce any unsupported claims or fake statistics (e.g. invented percentages or citations).
 - Output ONLY the rewritten paragraph text. No preamble, no labels, no markdown headers.`;
 
   try {
@@ -7507,6 +7890,19 @@ async function regenerateSentence(which, sentenceIdx) {
   const vocabIdx = (e.vocab || 3) - 1;
   const vocabSpec = VOCAB_LEVELS[vocabIdx];
   const seedIdeas = (e.seedIdeas || '').trim();
+  const isNatural = (e.generationMode === 'natural');
+
+  const naturalStyleInstruction = `
+=== WRITING STYLE: NATURAL MODE ===
+- Make the sentence smoother and improve fluency.
+- Reduce robotic, rehearsed phrasing.
+- AVOID adding unsupported statistics or research claims.
+`;
+
+  const templateStyleInstruction = `
+=== WRITING STYLE: EXAM TEMPLATE MODE ===
+- Preserve exam-safe wording and clear template transitions.
+`;
 
   const prompt = `You are rewriting ONE sentence inside an essay paragraph. Keep the same meaning and any specific facts/examples. Just rephrase the language naturally.
 
@@ -7515,6 +7911,8 @@ QUESTION: ${e.question}
 ${seedIdeas ? `KEY IDEAS: ${seedIdeas}` : ''}
 VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
 
+${isNatural ? naturalStyleInstruction : templateStyleInstruction}
+
 FULL PARAGRAPH (for context — do not rewrite this whole paragraph):
 ${text}
 
@@ -7522,10 +7920,11 @@ THE SENTENCE TO REWRITE:
 ${original}
 
 INSTRUCTIONS:
-- Rewrite ONLY this single sentence.
+- Rewrite ONLY this single sentence according to the WRITING STYLE.
 - Preserve any ==yellow markers== if they exist in the original.
 - Preserve [EXTRA IDEA] prefix if present.
 - Match the surrounding paragraph's tone and complexity.
+- Do NOT introduce any unsupported claims or fake statistics.
 - Output ONLY the rewritten sentence. No preamble, no quotes, no labels.`;
 
   try {
