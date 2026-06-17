@@ -2064,13 +2064,37 @@ You MUST write the essay using these manual ideas. Address them clearly.
     const examples = plan.selected_ideas.examples || [];
     const contrast = plan.selected_ideas.contrast || [];
     
-    ideasBlock = `
+    const isOpinionOrPreference = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
+    
+    if (isOpinionOrPreference) {
+      ideasBlock = `
+=== KEY IDEAS AND EXAMPLES TO USE (MANDATORY) ===
+You MUST write the essay using exactly these chosen reasons and examples:
+- Body Paragraph 1:
+  * Supporting Reason 1: "${reasons[0] || ''}" (MUST be supported by Example 1: "${examples[0] || ''}")
+  * Supporting Reason 2: "${reasons[1] || ''}" (MUST be supported by Example 2: "${examples[1] || ''}")
+`;
+      if (contrast && contrast.length > 0) {
+        ideasBlock += `
+- Body Paragraph 2:
+  * Develop the Optional Contrast point: "${contrast[0]}" (provide a supporting explanation and a short relatable example for it).
+  * If the stance is strong and one-sided, write another supporting reason and example instead of contrasting, or present the contrast point briefly without weakening the stance.
+`;
+      } else {
+        ideasBlock += `
+- Body Paragraph 2:
+  * Since no contrast point is selected, write two further supporting reasons/points and short relatable examples that reinforce the stance: "${plan.stance || ''}". Do NOT repeat or reuse the examples or reasons from Body Paragraph 1.
+`;
+      }
+    } else {
+      ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using exactly these chosen ideas. Do NOT substitute synonyms. Do NOT skip them.
 - Body Paragraph 1 ideas: ${reasons.map(x => `"${x}"`).join(' and ')}
 - Body Paragraph 2 ideas: ${solutions.length > 0 ? solutions.map(x => `"${x}"`).join(' and ') : examples.map(x => `"${x}"`).join(' and ')}
 ${contrast.length > 0 ? `- Optional Contrast: "${contrast[0]}"` : ''}
 `;
+    }
   }
 
   const naturalStyleInstruction = `
@@ -2148,7 +2172,7 @@ A. INTRODUCTION:
 B. BODY PARAGRAPHS (BP1 and BP2):
 - BP1 Role: ${plan.paragraph_roles.bp1}
 - BP2 Role: ${plan.paragraph_roles.bp2}
-- Each paragraph must develop exactly the two ideas specified in the plan (either selected or manual).
+- For opinion, agree_disagree, and two_option_preference question types, develop the reasons and examples in Body Paragraph 1 and Body Paragraph 2 as specified in the KEY IDEAS AND EXAMPLES section. For other question types, each paragraph must develop exactly the two ideas specified in the plan (either selected or manual).
 - Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
 - Wrap the main clauses of the two supporting ideas/points in ==double equals== (do not wrap the examples or transitions).
 
