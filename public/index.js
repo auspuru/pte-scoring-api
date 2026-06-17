@@ -1575,6 +1575,60 @@ function revalidateSelectedIdeas(e) {
   if (!e.selectedSolutionIds) e.selectedSolutionIds = [];
   if (!e.optionalContrastIds) e.optionalContrastIds = [];
   
+  let didAutopopulate = false;
+  if (e.suggestedIdeas && e.suggestedIdeas.length > 0) {
+    const relationTypes = ['problem_solution', 'cause_solution', 'cause_effect', 'problem_effect', 'causes_solutions', 'causes_effects'];
+    const isRel = relationTypes.includes(activeType) || (activeType === 'single_best_option' && e.secondaryFeatures && e.secondaryFeatures.includes('solution_required'));
+
+    if (isRel) {
+      if (e.selectedReasonIds.length === 0) {
+        const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+        e.selectedReasonIds = leftIdeas.slice(0, 2).map(i => i.text);
+        didAutopopulate = true;
+      }
+    } else if (typeCfg.stanceRequired) {
+      if (e.chosenStance) {
+        const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+        const mainSupport = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'cause' || i.category === 'problem');
+        const examples = alignedIdeas.filter(i => i.category === 'example');
+        
+        if (e.selectedReasonIds.length === 0) {
+          e.selectedReasonIds = mainSupport.slice(0, 2).map(i => i.text);
+          didAutopopulate = true;
+        }
+        if (e.selectedExampleIds.length === 0) {
+          e.selectedExampleIds = examples.slice(0, 2).map(i => i.text);
+          didAutopopulate = true;
+        }
+      }
+    } else {
+      const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
+      const rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+      
+      if (e.selectedReasonIds.length === 0) {
+        e.selectedReasonIds = leftIdeas.slice(0, 2).map(i => i.text);
+        didAutopopulate = true;
+      }
+      
+      const isSolution = (activeType === 'problem_solution' || activeType === 'causes_solutions' || activeType === 'cause_solution');
+      if (isSolution) {
+        if (e.selectedSolutionIds.length === 0) {
+          e.selectedSolutionIds = rightIdeas.slice(0, 2).map(i => i.text);
+          didAutopopulate = true;
+        }
+      } else {
+        if (e.selectedExampleIds.length === 0) {
+          e.selectedExampleIds = rightIdeas.slice(0, 2).map(i => i.text);
+          didAutopopulate = true;
+        }
+      }
+    }
+  }
+  
+  if (didAutopopulate) {
+    setTimeout(() => saveAll(), 0);
+  }
+  
   let warnings = [];
   let errors = [];
   
@@ -4814,6 +4868,7 @@ function setVocab(v, suppressSave) {
     e.previewSignature = '';
     saveAll();
     renderPreview();
+    renderIdeasPicker();
   }
 }
 
@@ -5835,6 +5890,7 @@ async function setEssayTemplate(choice) {
   saveAll();
   updateEssayTplPills();
   renderPreview();
+  renderIdeasPicker();
 }
 
 function updateEssayTplPills() {
@@ -5956,6 +6012,11 @@ If the question prompt asks about the "most pressing problem", "most important i
 
 ═══════════════════════════════════════════════════
 TASK 2 — Generate 10-15 high-quality, topic-specific ideas.
+You MUST generate:
+- At least 5 supporting reasons (category "main_support" or "advantage").
+- At least 5 supporting examples (category "example"). These examples must be extremely simple, concrete, everyday, and relatable scenarios that students can easily relate to (e.g. "employees using translation apps", "students submitting homework online", "travelers taking buses in cities", "people buying groceries online"). Avoid academic, formal, or abstract examples.
+- At least 2 optional contrast points (category "optional_contrast").
+
 Each idea must be represented as a JSON object with:
 - id: short unique string (e.g. "city_hospitals")
 - text: a concrete 3-7 word phrase (no filler)
@@ -6116,8 +6177,28 @@ function renderStanceController(e) {
     return '';
   }
   
+  const vocabIdx = (e.vocab || 3) - 1;
+  const bag = getTemplatesBag();
+  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+  const isBand6 = (effectiveTplKey === 'band6' || e.vocab === 1);
+  const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
+
+  if (isBand6 && isAgreementType) {
+    if (e.chosenStance !== 'partially disagree') {
+      e.chosenStance = 'partially disagree';
+      setTimeout(() => {
+        saveAll();
+        revalidateSelectedIdeas(e);
+        renderIdeasPicker();
+        renderPreview();
+      }, 0);
+    }
+  }
+
   let options = [];
-  if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+  if (isBand6 && isAgreementType) {
+    options = ["partially disagree"];
+  } else if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
     options = [
       `${e.detectedOptions[0]} is better`,
       `${e.detectedOptions[1]} is better`
