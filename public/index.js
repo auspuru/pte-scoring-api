@@ -6607,10 +6607,117 @@ function renderIdeasPicker() {
 // ============================================================
 //  AI: WRITE FULL ESSAY
 // ============================================================
+function autoSelectIdeas(e) {
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  
+  const leftIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left'))) : [];
+  const rightIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right'))) : [];
+  
+  e.selectedReasonIds = [];
+  e.selectedExampleIds = [];
+  e.selectedSolutionIds = [];
+  e.optionalContrastIds = [];
+  
+  const isSolution = ['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType);
+  const isEffect = ['cause_effect', 'problem_effect', 'causes_effects', 'problems_effects'].includes(activeType);
+  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType);
+  
+  if (isSolution) {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => {
+      e.selectedReasonIds.push(i.text);
+      if (i.pairedText) {
+        e.selectedSolutionIds.push(i.pairedText);
+      }
+    });
+  } else if (isEffect) {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => {
+      e.selectedReasonIds.push(i.text);
+      if (i.pairedText) {
+        e.selectedExampleIds.push(i.pairedText);
+      }
+    });
+  } else if (activeType === 'single_best_option') {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
+  } else if (isStanceAgreement) {
+    let aligned = leftIdeas;
+    if (e.chosenStance) {
+      const stanceLower = e.chosenStance.toLowerCase();
+      aligned = leftIdeas.filter(i => i.supports && i.supports.some(s => s.toLowerCase() === stanceLower));
+      if (aligned.length < 2) {
+        aligned = leftIdeas;
+      }
+    }
+    const toPick = aligned.slice(0, 2);
+    toPick.forEach(i => e.selectedReasonIds.push(i.text));
+  } else {
+    const leftToPick = leftIdeas.slice(0, 2);
+    const rightToPick = rightIdeas.slice(0, 2);
+    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
+    rightToPick.forEach(i => e.selectedExampleIds.push(i.text));
+  }
+  
+  pickedLeftIdeas = new Set(e.selectedReasonIds);
+  if (isSolution) {
+    pickedRightIdeas = new Set(e.selectedSolutionIds);
+  } else {
+    pickedRightIdeas = new Set(e.selectedExampleIds);
+  }
+  
+  saveAll();
+  renderIdeasPicker();
+}
+
 async function aiWriteFullEssay(opts = {}) {
   const e = opts.essay || getCurrent();
   if (!e) { if (!opts.silent) toast('No essay selected', true); return false; }
   if (!e.title || !e.question) { if (!opts.silent) toast('Need essay title and question first', true); return false; }
+
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+
+  // Auto-select stance if required but missing
+  if (typeCfg.stanceRequired && !e.chosenStance) {
+    let options = [];
+    if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+      options = [`${e.detectedOptions[0]} is better`, `${e.detectedOptions[1]} is better`];
+    } else if (activeType === 'discuss_both_views' && e.detectedOptions && e.detectedOptions.length === 2) {
+      options = [`strongly support ${e.detectedOptions[0]}`, `strongly support ${e.detectedOptions[1]}`, `balanced perspective/neutral`];
+    } else if (activeType === 'single_best_option') {
+      const opts = (e.detectedOptions && e.detectedOptions.length > 0) ? e.detectedOptions : (typeCfg.stanceOptions || []);
+      options = opts.map(opt => opt.toLowerCase().includes('pressing problem') || opt.toLowerCase().includes('is best') ? opt : `${opt} is the most pressing problem`);
+    } else {
+      options = typeCfg.stanceOptions || [];
+    }
+    const bag = getTemplatesBag();
+    const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+    const isBand6 = (effectiveTplKey === 'band6');
+    const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
+
+    if (isBand6 && isAgreementType) {
+      e.chosenStance = 'partially disagree';
+    } else if (options.length > 0) {
+      e.chosenStance = options[0];
+    }
+    if (e.chosenStance) {
+      saveAll();
+      if (!opts.silent) toast(`Auto-selected stance: "${e.chosenStance}"`);
+    }
+  }
+
+  // Auto-suggest and auto-select ideas if missing
+  const hasIdeas = (e.seedIdeas && e.seedIdeas.trim().length > 0) || 
+                    (e.selectedReasonIds && e.selectedReasonIds.length > 0);
+  if (!hasIdeas) {
+    if (!opts.silent) toast('Auto-suggesting and selecting ideas...');
+    if (!e.suggestedIdeas || e.suggestedIdeas.length === 0) {
+      await aiSuggestIdeas();
+    }
+    autoSelectIdeas(e);
+  }
 
   const stateValidation = validateEssayStateBeforeGeneration(e);
   if (!stateValidation.valid) {
@@ -6624,7 +6731,6 @@ async function aiWriteFullEssay(opts = {}) {
   const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
   const isBand6 = (effectiveTplKey === 'band6');
 
-  // Intercept if Band 6 template is selected and no mode is specified yet (and not a silent background call)
   const mode = opts.band6Mode || (opts.silent ? (e.band6Mode || 'full_essay') : null);
   if (isBand6 && !mode && !opts.silent) {
     document.getElementById('band6ModeModal').classList.add('show');
@@ -6638,7 +6744,6 @@ async function aiWriteFullEssay(opts = {}) {
   if (hasContent && !opts.skipConfirm) {
     if (!confirm('This essay already has content. Overwrite it with a new AI-written essay?')) return false;
   }
-  // Quota check
   if (!await consumeQuota('essay')) return false;
   
   const template = getTemplateForEssay(e);
@@ -6649,21 +6754,15 @@ async function aiWriteFullEssay(opts = {}) {
     startWriteButtonMessages(btn);
   }
 
-  const activeType = getActiveQuestionType(e);
-  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
-
-  // Adapt BP2 transition and structural placeholders for strong/one-sided stances on the client-side
   let bp2Template = template.bp2 || '';
   const isStrong = isStrongStance(activeType, e.chosenStance);
   if (isStrong) {
     if (isBand6) {
-      // Band 6 BP2 template adaptation
       bp2Template = bp2Template
         .replace("On the other hand, a major concern regarding [topic] is that [negative idea 1]", "Furthermore, another key advantage of [topic] is that [positive idea 1]")
         .replace("this issue can result in [negative idea 2], including financial burden or reduced well-being", "this can lead to [positive idea 2], including financial benefits or improved well-being")
         .replace("However, with effective planning and appropriate measures, these challenges can be controlled and reduced.", "Hence, with proper implementation, these advantages can be further maximised.");
     } else {
-      // Band 9 / Custom BP2 template adaptation
       if (bp2Template.includes("On the other hand, one notable [demerit / negative effect / solution] is [point 1]")) {
         bp2Template = bp2Template.replace("On the other hand, one notable [demerit / negative effect / solution] is [point 1]", "Furthermore, another significant [merit / benefit / positive effect] is [point 1]");
       } else if (bp2Template.trim().startsWith("On the other hand,")) {
@@ -6685,130 +6784,34 @@ async function aiWriteFullEssay(opts = {}) {
 
   const templateCopy = { ...template, bp2: bp2Template };
   const plan = buildStructuredEssayPlan(e);
-  const planString = JSON.stringify(plan, null, 2);
-
-  let prompt = '';
-  if (isBand6 && mode === 'just_phrases') {
-    prompt = `You are an IELTS/PTE tutor helping a Band 6 student prepare their essay.
-Instead of writing a full model essay for the body paragraphs, you will provide them with a simple introduction and conclusion (using their template), but for both body paragraphs you will provide the selected idea, a simple explanation, and everyday example phrases based on the ideas they have selected.
-
-=== STANCE & IDEAS ===
-Selected Stance: "${e.chosenStance || 'None'}"
-Selected Ideas Plan:
-${planString}
-
-ESSAY TOPIC: ${e.title}
-QUESTION: ${e.question}
-${e.explanation ? `TOPIC EXPLANATION: ${e.explanation}` : ''}
-
-=== STRICT RULES FOR VOCABULARY (BAND 6 LEVEL) ===
-- Use SIMPLE, PLAIN ENGLISH only — CEFR A2-B1 level.
-- Keep sentences short, direct, and easy to understand.
-- AVOID all academic, sophisticated, or formal words (e.g. avoid foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted).
-- Use everyday words like "helps", "makes", "gives", "saves", "easy", "good", "important".
-
-=== OUTPUT FORMAT ===
-Respond with EXACTLY four sections, nothing else, no preamble:
-
-===INTRO===
-[A very simple, clear Band 6 introduction paragraph following this template: "${template.intro}"]
-
-===BP1===
-Idea 1: [The exact text of the first selected idea for BP1]
-Explanation: [A complete simple explanation of why/how this idea works in plain English]
-Example Phrases:
-- [A simple everyday phrase/sentence starter related to Idea 1]
-- [Another simple everyday phrase/sentence starter related to Idea 1]
-
-Idea 2: [The exact text of the second selected idea for BP1]
-Explanation: [A complete simple explanation of why/how this idea works in plain English]
-Example Phrases:
-- [A simple everyday phrase/sentence starter related to Idea 2]
-- [Another simple everyday phrase/sentence starter related to Idea 2]
-
-===BP2===
-Idea 1: [The exact text of the first selected idea/solution/effect for BP2]
-Explanation: [A complete simple explanation of why/how this idea works in plain English]
-Example Phrases:
-- [A simple everyday phrase/sentence starter related to Idea 1]
-- [Another simple everyday phrase/sentence starter related to Idea 1]
-
-Idea 2: [The exact text of the second selected idea/solution/effect for BP2]
-Explanation: [A complete simple explanation of why/how this idea works in plain English]
-Example Phrases:
-- [A simple everyday phrase/sentence starter related to Idea 2]
-- [Another simple everyday phrase/sentence starter related to Idea 2]
-
-===CONCL===
-[A very simple, clear Band 6 conclusion paragraph following this template: "${template.concl}"]`;
-  } else {
-    prompt = generateEssayPrompt(plan, templateCopy);
-  }
-
-  const MAX_RETRIES = 3;
-  let lastErrors = [];
-  let success = false;
-  let text = '';
-  let finalValidation = null;
 
   try {
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      let promptForAttempt = prompt;
-      if (attempt > 1 && lastErrors.length > 0) {
-        promptForAttempt += `
-
-=== RETRY CORRECTION (ATTEMPT ${attempt}) ===
-Your previous attempt failed validation for the following reason(s):
-${lastErrors.map(err => `- ${err}`).join('\n')}
-
-Please rewrite the essay to completely fix these issues. Ensure all instructions, word limits, and highlighting rules are fully satisfied.`;
-      }
-
+    const res = await fetch(API_URL + '/api/generate-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, template: templateCopy })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      let errDetail = '';
       try {
-        const res = await fetch(API_URL + '/api/claude', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 2000,
-            messages: [{ role: 'user', content: promptForAttempt }]
-          })
-        });
-        if (!res.ok) {
-          const t = await res.text();
-          throw new Error(`API error ${res.status}: ${t.slice(0, 300)}`);
-        }
-        const data = await res.json();
-        text = data.content.map(c => c.text || '').join('\n').trim();
-
-        if (isBand6 && mode === 'just_phrases') {
-          finalValidation = { ok: true, errors: [], warnings: [] };
-        } else {
-          finalValidation = validateGeneratedEssayText(plan, text);
-        }
-
-        if (finalValidation.ok) {
-          success = true;
-          break;
-        }
-        lastErrors = finalValidation.errors;
-      } catch (err) {
-        console.error(`Attempt ${attempt} failed:`, err);
-        lastErrors = [err.message];
+        const parsed = JSON.parse(t);
+        if (parsed.details) errDetail = '\nDetails: ' + parsed.details.join(' | ');
+        else if (parsed.error) errDetail = '\n' + parsed.error;
+      } catch (e) {
+        errDetail = `\nAPI error ${res.status}: ${t.slice(0, 300)}`;
       }
+      throw new Error(errDetail || `Server failed to generate essay`);
     }
-
-    if (!success) {
-      if (!opts.silent) {
-        const specificMsg = lastErrors.length > 0 ? '\nDetails: ' + lastErrors.join(' | ') : '';
-        toast('The essay could not be generated cleanly after several attempts. Please try again with shorter or clearer ideas.' + specificMsg, true);
-      }
-      return false;
+    const data = await res.json();
+    if (!data.success || !data.text) {
+      throw new Error(data.error || 'Server returned empty generation');
     }
+    const text = data.text;
 
-    if (finalValidation && finalValidation.warnings && finalValidation.warnings.length > 0 && !opts.silent) {
-      console.warn("Generated essay warnings:", finalValidation.warnings);
-      toast("Warning: " + finalValidation.warnings[0], false);
+    if (data.warnings && data.warnings.length > 0 && !opts.silent) {
+      console.warn("Generated essay warnings:", data.warnings);
+      toast("Warning: " + data.warnings[0], false);
     }
 
     const sections = parseEssaySections(text);
@@ -7485,68 +7488,33 @@ The student has taken a clear position: "${sideLabel}".
 
   const template = getTemplateForEssay({ templateChoice: band });
 
-  const MAX_RETRIES = 3;
-  let lastErrors = [];
-  let success = false;
-  let text = '';
-  let finalValidation = null;
-
   try {
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      let promptForAttempt = generateEssayPrompt(plan, template);
-      if (sidedNote) {
-        promptForAttempt += `\n\n${sidedNote}`;
-      }
-
-      if (attempt > 1 && lastErrors.length > 0) {
-        promptForAttempt += `
-
-=== RETRY CORRECTION (ATTEMPT ${attempt}) ===
-Your previous attempt failed validation for the following reason(s):
-${lastErrors.map(err => `- ${err}`).join('\n')}
-
-Please rewrite the essay to completely fix these issues. Ensure all instructions, word limits, and highlighting rules are fully satisfied.`;
-      }
-
+    const res = await fetch(API_URL + '/api/generate-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, template, sidedNote })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      let errDetail = '';
       try {
-        const res = await fetch(API_URL + '/api/claude', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 2000,
-            messages: [{ role: 'user', content: promptForAttempt }]
-          })
-        });
-        if (!res.ok) {
-          const t = await res.text();
-          throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
-        }
-        const data = await res.json();
-        text = data.content.map(c => c.text || '').join('\n').trim();
-
-        finalValidation = validateGeneratedEssayText(plan, text);
-
-        if (finalValidation.ok) {
-          success = true;
-          break;
-        }
-        lastErrors = finalValidation.errors;
-      } catch (err) {
-        console.error(`Freestyle Attempt ${attempt} failed:`, err);
-        lastErrors = [err.message];
+        const parsed = JSON.parse(t);
+        if (parsed.details) errDetail = '\nDetails: ' + parsed.details.join(' | ');
+        else if (parsed.error) errDetail = '\n' + parsed.error;
+      } catch (e) {
+        errDetail = `\nAPI error ${res.status}: ${t.slice(0, 300)}`;
       }
+      throw new Error(errDetail || `Server failed to generate essay`);
     }
-
-    if (!success) {
-      const specificMsg = lastErrors.length > 0 ? '\nDetails: ' + lastErrors.join(' | ') : '';
-      toast('The essay could not be generated cleanly after several attempts. Please try again with shorter or clearer ideas.' + specificMsg, true);
-      return;
+    const data = await res.json();
+    if (!data.success || !data.text) {
+      throw new Error(data.error || 'Server returned empty generation');
     }
+    const text = data.text;
 
-    if (finalValidation && finalValidation.warnings && finalValidation.warnings.length > 0) {
-      console.warn("Generated essay warnings:", finalValidation.warnings);
-      toast("Warning: " + finalValidation.warnings[0], false);
+    if (data.warnings && data.warnings.length > 0) {
+      console.warn("Generated essay warnings:", data.warnings);
+      toast("Warning: " + data.warnings[0], false);
     }
 
     const titleMatch = text.match(/===TITLE===\s*([\s\S]*?)(?====INTRO===)/);
