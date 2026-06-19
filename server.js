@@ -5448,6 +5448,7 @@ Please rewrite the essay to completely fix these issues. Ensure all instructions
           break;
         }
         lastErrors = finalValidation.errors;
+        console.warn(`[generate-essay] attempt ${attempt} validation failed -> ${JSON.stringify(lastErrors)}`);
       } catch (err) {
         console.error(`Backend Attempt ${attempt} failed:`, err);
         lastErrors = [err.message];
@@ -5455,6 +5456,25 @@ Please rewrite the essay to completely fix these issues. Ensure all instructions
     }
 
     if (!success) {
+      // The validator never returned fully clean. Most remaining failures are quality/formatting
+      // heuristics (e.g. "selected idea not used", stance keyword matching, == marker parity) and do
+      // NOT make the essay unusable. As long as the four section headers are present we return the
+      // essay anyway, surfacing the issues as warnings, instead of blanking the output with a 422.
+      const STRUCTURE_HEADERS = ['===INTRO===', '===BP1===', '===BP2===', '===CONCL==='];
+      const structurallyUsable = !!text && STRUCTURE_HEADERS.every(h => text.includes(h));
+
+      if (structurallyUsable) {
+        console.warn(`[generate-essay] returning essay with ${lastErrors.length} unresolved note(s) after ${MAX_RETRIES} attempts.`);
+        return res.json({
+          success: true,
+          text,
+          warnings: [...((finalValidation && finalValidation.warnings) || []), ...lastErrors]
+        });
+      }
+
+      // Genuinely unusable (missing section headers, empty response, or an API/SDK error captured in
+      // lastErrors). Surface the real reason so it can be diagnosed from the response body.
+      console.error(`[generate-essay] giving up after ${MAX_RETRIES} attempts -> ${JSON.stringify(lastErrors)}`);
       return res.status(422).json({
         error: 'The essay could not be generated cleanly after several attempts.',
         details: lastErrors
