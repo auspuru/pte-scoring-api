@@ -4833,11 +4833,33 @@ const VOCAB_LEVELS = [
 
 function parseManualIdeas(text) {
   if (!text || typeof text !== "string") return [];
-  return text
-    .split(/\n|;/)
-    .map(item => item.trim())
-    .map(item => item.replace(/^[-*•\d.)\s]+/, "").trim())
-    .filter(item => item.length >= 6);
+  const lines = text.split(/\n/);
+  const ideas = [];
+  lines.forEach(line => {
+    let clean = line.trim();
+    if (!clean) return;
+    
+    if (clean.toUpperCase().startsWith("QUESTION TYPE:") || clean.toUpperCase().startsWith("STANCE:")) {
+      return;
+    }
+    
+    const prefixes = ["MAIN REASONS:", "EXAMPLES:", "SOLUTIONS:", "OPTIONAL CONTRAST:"];
+    for (const prefix of prefixes) {
+      if (clean.toUpperCase().startsWith(prefix)) {
+        clean = clean.slice(prefix.length).trim();
+        break;
+      }
+    }
+    
+    const parts = clean.split(/;/);
+    parts.forEach(part => {
+      const item = part.trim().replace(/^[-*•\d.)\s]+/, "").trim();
+      if (item.length >= 6) {
+        ideas.push(item);
+      }
+    });
+  });
+  return ideas;
 }
 
 function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
@@ -4964,9 +4986,36 @@ You MUST write the essay using these manual ideas. Address them clearly.
     const examples = plan.selected_ideas.examples || [];
     const contrast = plan.selected_ideas.contrast || [];
     
+    const isOpinionAlts = (plan.question_type === 'opinion_alternatives');
+    const isOpinionOrAgreeDisagree = ['opinion', 'agree_disagree'].includes(plan.question_type);
     const isOpinionOrPreference = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
     
-    if (isOpinionOrPreference) {
+    if (isOpinionAlts) {
+      ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+You MUST write the essay using exactly these chosen supporting reasons and alternative actions:
+- Body Paragraph 1 (Supporting Stance): Focus on supporting the stance: "${plan.stance || ''}".
+  * Supporting Reason 1: "${reasons[0] || ''}" (You MUST autogenerate a short, concrete, everyday example to support this reason, e.g. "employees using translation apps")
+  * Supporting Reason 2: "${reasons[1] || ''}" (You MUST autogenerate a short, concrete, everyday example to support this reason, e.g. "students submitting homework online")
+
+- Body Paragraph 2 (Alternative Actions): Suggest and discuss alternative actions to take instead:
+  * Alternative Action 1: "${solutions[0] || 'a relevant alternative action'}" (provide a supporting explanation and a short relatable example for it).
+  * Alternative Action 2: "${solutions[1] || 'another alternative action'}" (provide a supporting explanation and a short relatable example for it).
+  * Keep the discussion very simple, presenting the opinion/stance in Body Paragraph 1 and the alternative actions in Body Paragraph 2.
+`;
+    } else if (isOpinionOrAgreeDisagree) {
+      ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+For all opinion-based essays, keep it very simple and present both the positives and negatives of the topic:
+- Body Paragraph 1 (Positives / Supporting Side): Focus on the positive aspects or supporting reasons for the stance.
+  * Supporting Reason 1: "${reasons[0] || ''}" (You MUST autogenerate a short, concrete, everyday, and relatable example for this reason, e.g. "employees using translation apps")
+  * Supporting Reason 2: "${reasons[1] || ''}" (You MUST autogenerate a short, concrete, everyday, and relatable example for this reason, e.g. "students submitting homework online")
+
+- Body Paragraph 2 (Negatives / Drawbacks / Limitations): Focus on the negative aspects, drawbacks, or limitations of the topic to present a balanced view.
+  * Develop the Contrast point: "${contrast[0] || 'a relevant drawback or limitation of the topic'}" (provide a supporting explanation and a short relatable example for it, e.g. "some people feeling isolated"). If no contrast point is selected, you MUST automatically generate a simple, common negative aspect or drawback of the topic yourself.
+  * Keep the discussion very simple, presenting the positives in Body Paragraph 1 and the negatives/limitations in Body Paragraph 2, regardless of how strong the chosen stance is.
+`;
+    } else if (isOpinionOrPreference) {
       ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using exactly these chosen supporting reasons. You MUST automatically generate a very simple, concrete, everyday, and relatable supporting example for each reason yourself (do NOT use academic/unsupported statistics or citations):
@@ -5009,7 +5058,7 @@ These formulaic templates make the essay look robotic and rehearsed. Write a com
 
   const templateStyleInstruction = `
 === WRITING STYLE: EXAM TEMPLATE MODE (FOLLOW TEMPLATE CLOSELY) ===
-Fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions. You may shorten wordy/boilerplate phrasing when needed to stay under the 300-word limit.
+Fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions. You may tighten wordy or boilerplate phrasing where it improves clarity, but do not cut content to hit a specific word count.
   
 INTRODUCTION TEMPLATE:
 ${template.intro}
@@ -5053,15 +5102,9 @@ ${isNatural ? naturalStyleInstruction : templateStyleInstruction}
 
 ${isBand6 ? band6VocabRule : band9VocabRule}
 
-=== LENGTH LIMIT (CRITICAL — STRICTLY UNDER 300 WORDS) ===
-The COMPLETE essay (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion) must be UNDER 300 words in total.
-Target roughly: introduction ~45 words, each body paragraph ~100 words, conclusion ~45 words.
-Target length range is 240-285 words. This is the ideal target.
-This 300-word limit is a HARD CAP. If the essay is 300 words or more, it is a FAILURE.
-To stay under 300:
-- Write concisely. Avoid filler and repetitive transition phrases.
-- Keep the actual content rich: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
-- Do NOT write long explanations. Make the point and move directly to the example.
+=== LENGTH GUIDANCE ===
+Aim for a well-developed essay of roughly 250-330 words in total (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion). As a rough guide: introduction ~45-55 words, each body paragraph ~90-110 words, conclusion ~45-55 words.
+There is NO hard upper limit and the essay will not be rejected for length, so prioritise complete, well-supported paragraphs over hitting an exact count. Do not pad with filler or repetitive transitions, and do not compress the content: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
 
 === STRUCTURAL REQUIREMENTS ===
 A. INTRODUCTION:
@@ -5073,7 +5116,10 @@ B. BODY PARAGRAPHS (BP1 and BP2):
 - BP1 Role: ${plan.paragraph_roles.bp1}
 - BP2 Role: ${plan.paragraph_roles.bp2}
 - For opinion, agree_disagree, and two_option_preference question types, develop the reasons and examples in Body Paragraph 1 and Body Paragraph 2 as specified in the KEY IDEAS AND EXAMPLES section. For other question types, each paragraph must develop exactly the two ideas specified in the plan (either selected or manual).
-- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
+- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal).
+- CRITICAL WARNING: You MUST NOT use any percentages (e.g. 10%, 80%), numbers representing statistics, or words like "percent" / "percentage". Doing so will cause a validation failure.
+- CRITICAL WARNING: You MUST NOT use phrases like "studies show", "research shows", "research proves", "according to researchers", "a recent study", "harvard study", "university of ...", "survey found", or "according to a survey".
+- Any mention of studies, research, surveys, statistics, or organizations (like WHO, OECD, UN, etc.) is STRICTLY FORBIDDEN.
 - Wrap the main clauses of the two supporting ideas/points in ==double equals== (do not wrap the examples or transitions).
 
 C. CONCLUSION:
@@ -5153,11 +5199,9 @@ function validateGeneratedEssayText(plan, text) {
   const words = fullEssayClean.split(/\s+/).filter(Boolean);
   const wordCount = words.length;
 
-  if (wordCount >= 300 && wordCount <= 319) {
-    errors.push("The generated essay is too long (300-319 words). Please regenerate a shorter version.");
-  } else if (wordCount >= 320) {
-    errors.push("The generated essay is too long. Please regenerate a shorter version.");
-  }
+  // (Length cap removed) Essays are no longer rejected for exceeding 300 words, so a longer
+  // generation is returned to the user instead of failing validation and stopping the output.
+  void wordCount;
 
   const countMarkers = (str) => (str.match(/==/g) || []).length;
   const introMarkers = countMarkers(intro);
@@ -5179,7 +5223,7 @@ function validateGeneratedEssayText(plan, text) {
     errors.push("The essay contains unsupported statistics or research claims. Please regenerate without invented data.");
   }
 
-  const isOneSidedType = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
+  const isOneSidedType = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(plan.question_type);
   if (plan.stance && isOneSidedType) {
     const isBand6Template = (plan.target_band_level === 'band6' && plan.generation_mode === 'template');
     if (!isBand6Template) {
@@ -5198,7 +5242,7 @@ function validateGeneratedEssayText(plan, text) {
       }
     }
 
-    const isStrong = plan.stance.toLowerCase().includes('strongly') || plan.stance.toLowerCase().includes('largely') || plan.stance.toLowerCase().includes('is better') || plan.stance.toLowerCase().includes('most pressing') || plan.stance.toLowerCase().includes('mainly responsible');
+    const isStrong = !['opinion', 'agree_disagree', 'opinion_alternatives'].includes(plan.question_type) && (plan.stance.toLowerCase().includes('strongly') || plan.stance.toLowerCase().includes('largely') || plan.stance.toLowerCase().includes('is better') || plan.stance.toLowerCase().includes('most pressing') || plan.stance.toLowerCase().includes('mainly responsible'));
     if (isStrong) {
       const bp2Lower = bp2.toLowerCase();
       const contrastTransitions = ['on the other hand', 'however', 'nevertheless', 'conversely', 'yet'];
@@ -5286,6 +5330,18 @@ app.post('/api/generate-essay', async (req, res) => {
   const { plan, template, sidedNote } = req.body;
   if (!plan || !template) {
     return res.status(400).json({ error: 'Missing plan or template in request body.' });
+  }
+
+  if (plan && plan.manual_ideas) {
+    plan.manual_ideas = plan.manual_ideas.filter(idea => {
+      const upper = idea.trim().toUpperCase();
+      return !upper.startsWith("QUESTION TYPE:") && 
+             !upper.startsWith("STANCE:") && 
+             !upper.startsWith("MAIN REASONS:") && 
+             !upper.startsWith("EXAMPLES:") && 
+             !upper.startsWith("SOLUTIONS:") && 
+             !upper.startsWith("OPTIONAL CONTRAST:");
+    });
   }
 
   const isBand6 = (plan.target_band_level === 'band6');
