@@ -1740,7 +1740,7 @@ function revalidateSelectedIdeas(e) {
     if (pickedReasonsCount !== 2) {
       warnings.push(`Please select exactly 2 causes/problems/challenges.`);
     }
-  } else if (activeType === 'opinion_alternatives' || activeType === 'agree_disagree') {
+  } else if (activeType === 'opinion_alternatives') {
     const hasAltActions = (e.suggestedIdeas || []).some(i => i.category === 'solution');
     if (pickedReasonsCount !== 2 && hasAltActions && pickedSolutionsCount !== 2) {
       warnings.push("Please select 2 supporting reasons and 2 alternative actions.");
@@ -1749,7 +1749,7 @@ function revalidateSelectedIdeas(e) {
     } else if (hasAltActions && pickedSolutionsCount !== 2) {
       warnings.push("Now select 2 alternative actions (right-hand column).");
     }
-  } else if (['opinion', 'two_option_preference'].includes(activeType)) {
+  } else if (['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType)) {
     if (pickedReasonsCount !== 2) {
       warnings.push("Please select exactly 2 supporting reasons.");
     }
@@ -2236,7 +2236,7 @@ You MUST write the essay using these manual ideas. Address them clearly.
     const isOpinionOrAgreeDisagree = ['opinion', 'agree_disagree'].includes(plan.question_type);
     const isOpinionOrPreference = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
     
-    if (isOpinionAlts || isAgreeDisagreeLong) {
+    if (isOpinionAlts) {
       ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using exactly these chosen supporting reasons and alternative actions:
@@ -6125,6 +6125,7 @@ async function aiSuggestIdeas() {
   const bag = getTemplatesBag();
   const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
   const isBand6 = (effectiveTplKey === 'band6');
+  const forcedType = e.manualQuestionTypeOverride || '';
 
   const picker = document.getElementById('ideasPicker');
   const body = document.getElementById('ideasPickerBody');
@@ -6158,6 +6159,9 @@ async function aiSuggestIdeas() {
 TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
 
 ${typeOptions}
+${forcedType ? `
+*** MANUAL TYPE LOCK ***: The tutor has manually set the question type to "${forcedType}". You MUST use exactly "${forcedType}" as primaryQuestionType and generate ideas for THAT type via the Per-Type Structure Guide below. Do not choose any other type.
+` : ''}
 
 *SPECIAL RULE FOR "MOST PRESSING PROBLEM" QUESTIONS*:
 If the question prompt asks about the "most pressing problem", "most important issue", "biggest problem", "most serious global issue", or similar:
@@ -6165,11 +6169,8 @@ If the question prompt asks about the "most pressing problem", "most important i
 - The detectedOptions array should contain the main problem/option chosen (e.g. ["climate change"]).
 
 ═══════════════════════════════════════════════════
-TASK 2 — Generate 10-15 high-quality, topic-specific ideas.
-You MUST generate:
-- At least 5 supporting reasons (category "main_support" or "advantage").
-- At least 5 supporting examples (category "example"). These examples must be extremely simple, concrete, everyday, and relatable scenarios that students can easily relate to (e.g. "employees using translation apps", "students submitting homework online", "travelers taking buses in cities", "people buying groceries online"). Avoid academic, formal, or abstract examples.
-- At least 2 optional contrast points (category "optional_contrast").
+TASK 2 — Generate 12-16 high-quality, topic-specific ideas whose STRUCTURE matches the question type you chose in TASK 1.
+Do NOT produce a one-size-fits-all set. Read the PER-TYPE STRUCTURE GUIDE below and generate exactly the categories the matching type needs. Whenever you write an "example" or everyday illustration, keep it extremely simple, concrete and relatable (e.g. "employees using translation apps", "students submitting homework online", "travellers taking buses in cities"); avoid academic, formal, or abstract examples.
 
 Each idea must be represented as a JSON object with:
 - id: short unique string (e.g. "city_hospitals")
@@ -6180,25 +6181,44 @@ Each idea must be represented as a JSON object with:
 - essayTypes: array of matching essay types.
 - strength: integer 1 to 5.
 
-*RULES FOR "OPINION_ALTERNATIVES" AND "AGREE_DISAGREE" QUESTIONS*:
-If the question is classified as "opinion_alternatives" or "agree_disagree":
-- The "ideas" array MUST contain:
-  - At least 5 supporting reasons to agree with the topic/practice (category "advantage").
-  - At least 5 supporting reasons to disagree with the topic/practice (category "disadvantage").
-  - At least 5-6 alternative actions (category "solution") representing alternative actions to take instead.
-- For each reason (category "advantage" or "disadvantage"), define "supports" and "opposes" arrays using the stance choices:
-  - Agreeing ideas: supports = ["strongly agree", "largely agree", "partially agree"], opposes = ["strongly disagree", "largely disagree", "partially disagree"]
-  - Disagreeing ideas: supports = ["strongly disagree", "largely disagree", "partially disagree"], opposes = ["strongly agree", "largely agree", "partially agree"]
-- For alternative action ideas (category "solution"), set supports array to contain all stance choices: ["strongly agree", "largely agree", "partially agree", "strongly disagree", "largely disagree", "partially disagree"].
+═══════════════════════════════════════════════════
+PER-TYPE STRUCTURE GUIDE — the categories you generate MUST match the type chosen in TASK 1.
+Find the matching family and generate ONLY that structure. NEVER apply the stance-plus-alternative-actions pattern to a type that does not call for it.
 
-*RELATIONSHIP PAIRING FIELD RULES*:
-If the question is relation-based (problem_solution, cause_solution, cause_effect, problem_effect, causes_solutions, causes_effects) or is a "most pressing problem" single_best_option question requiring solutions:
-- Each left-side idea (of category "problem", "cause", or "challenge") MUST include these extra fields:
-  - pairedText: a concrete 3-7 word phrase representing the matching solution, effect, or consequence for this problem/cause.
-  - pairedType: "solution", "effect", or "consequence".
-  - pairedId: a unique string for the paired solution/effect/consequence.
-  - supportsStance: the stance/option this pair is associated with (if any).
-- If the question is about a "most pressing problem" (single_best_option + solution_required), select exactly ONE main problem as the choice, and generate 5-6 cause/challenge ideas under that problem, where each has a "pairedText" solution. Do NOT suggest multiple unrelated problems.
+FAMILY 1 — STANCE, REASONS ONLY  -> types: "opinion", "agree_disagree"
+  - At least 5 reasons to AGREE with the statement/practice (category "advantage").
+  - At least 5 reasons to DISAGREE with the statement/practice (category "disadvantage").
+  - At least 2 "optional_contrast" points.
+  - DO NOT generate any "solution" / alternative-action ideas for these two types.
+  - supports / opposes for each reason:
+      Agree reasons:    supports = ["strongly agree","largely agree","partially agree"],          opposes = ["strongly disagree","largely disagree","partially disagree"]
+      Disagree reasons: supports = ["strongly disagree","largely disagree","partially disagree"], opposes = ["strongly agree","largely agree","partially agree"]
+
+FAMILY 2 — STANCE, REASONS + ALTERNATIVE ACTIONS  -> type: "opinion_alternatives" ONLY
+  - Everything in FAMILY 1 (agree reasons + disagree reasons), PLUS
+  - At least 5-6 alternative actions to take instead (category "solution"); for each, supports = all six stance choices ["strongly agree","largely agree","partially agree","strongly disagree","largely disagree","partially disagree"].
+  (Only opinion_alternatives gets alternative actions - never plain opinion and never agree_disagree.)
+
+FAMILY 3 — TWO SIDES / WEIGH BOTH  -> types: "advantages_disadvantages", "advantages_disadvantages_opinion", "discuss_both_views", "compare_two_sides", "two_option_preference", "positive_negative_impact", "blessing_curse", "responsibility", "social_impact"
+  - At least 5 ideas for the FIRST side (category "advantage"): the advantages / first view / first option / positive impacts / "blessing" reasons / first responsible party.
+  - At least 5 ideas for the SECOND side (category "disadvantage"): the disadvantages / second view / second option / negative impacts / "curse" reasons / second responsible party.
+  - DO NOT generate "solution"/alternative-action ideas and DO NOT add pairedText (the essay generator writes the examples later).
+  - If the type asks the writer to choose or give a verdict (advantages_disadvantages_opinion, discuss_both_views, two_option_preference), set "supports"/"opposes" on each side using the relevant stanceOptions / detectedOptions, and for two_option_preference also add at least 2 "optional_contrast" points; otherwise leave supports and opposes as empty arrays.
+
+FAMILY 4 — PROBLEM/CAUSE -> SOLUTION/EFFECT (PAIRED)  -> types: "problem_solution", "cause_solution", "causes_solutions", "cause_effect", "problem_effect", "causes_effects"
+  - Generate at least 5 left-side items: category "problem" for problem_* types, "cause" for cause_* types.
+  - EACH left item MUST include paired fields:
+      pairedText: a concrete 3-7 word phrase for the matching item.
+      pairedType: "solution" for *_solution types, "effect" for *_effect types.
+      pairedId: a unique string.
+  - DO NOT generate stance "advantage"/"disadvantage" reasons for these types.
+
+FAMILY 5 — SINGLE BEST OPTION ("most pressing problem")  -> type: "single_best_option"
+  - Choose EXACTLY ONE main problem/option and put it in detectedOptions.
+  - Under it, generate 5-6 items of category "cause" or "challenge", EACH with pairedText (a solution), pairedType "solution", and a unique pairedId.
+  - DO NOT suggest multiple unrelated problems.
+
+If you classify the question as any other stance type not named above (e.g. "rights_ethics", "policy_recommendation", "future_prediction", "education_effectiveness", "example_specific"), use FAMILY 3.
 
 ESSAY DETAILS:
 TITLE: ${e.title}
@@ -6272,7 +6292,7 @@ Format:
       throw new Error('AI did not return the expected ideas format');
     }
     
-    let activeType = result.primaryQuestionType || 'advantages_disadvantages';
+    let activeType = e.manualQuestionTypeOverride || result.primaryQuestionType || 'advantages_disadvantages';
     const lowerQ = (e.question || '').toLowerCase();
     const isMostPressing = (lowerQ.includes('most pressing problem') || lowerQ.includes('most important issue') || lowerQ.includes('biggest problem') || lowerQ.includes('most serious global issue') || lowerQ.includes('most serious problem'));
     if (isMostPressing) {
@@ -6423,8 +6443,6 @@ function renderIdeasPicker() {
       helpEl.innerHTML = `Choose a stance, pick exactly 2 causes/challenges`;
     } else if (activeType === 'opinion_alternatives') {
       helpEl.innerHTML = `Choose a stance, pick exactly 2 supporting reasons and 2 alternative actions`;
-    } else if (activeType === 'agree_disagree') {
-      helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons and 2 alternative actions`;
     } else if (isStanceAgreement) {
       helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons`;
     } else if (typeCfg.stanceRequired) {
@@ -6532,7 +6550,7 @@ function renderIdeasPicker() {
   } else if (isStanceAgreement) {
     const isOpinionAlts = (activeType === 'opinion_alternatives');
     const isAgreeDisagreeLong = (activeType === 'agree_disagree');
-    if (isOpinionAlts || isAgreeDisagreeLong) {
+    if (isOpinionAlts) {
       // 3-column layout: Column A (Agree Reasons), Column B (Disagree Reasons), Column C (Alternative Actions)
       const agreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'advantage') : [];
       const disagreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'disadvantage') : [];
@@ -6824,7 +6842,7 @@ function renderIdeasPicker() {
   
   if (activeType === 'single_best_option') {
     isReady = e.chosenStance && pickedReasonsCount === 2;
-  } else if (activeType === 'opinion_alternatives' || activeType === 'agree_disagree') {
+  } else if (activeType === 'opinion_alternatives') {
     isReady = e.chosenStance && pickedReasonsCount === 2 && (!hasAltActions || pickedSolutionsCount === 2) && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
   } else if (isStanceAgreement) {
     isReady = e.chosenStance && pickedReasonsCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
@@ -6840,7 +6858,7 @@ function renderIdeasPicker() {
     ? `<strong>Ready! All required ideas selected.</strong>` 
     : (activeType === 'single_best_option')
       ? `Pick a stance/option, then select exactly 2 causes/challenges.`
-      : (activeType === 'opinion_alternatives' || activeType === 'agree_disagree')
+      : (activeType === 'opinion_alternatives')
         ? (hasAltActions ? `Pick a stance, then select exactly 2 reasons and 2 alternative actions.` : `Pick a stance, then select exactly 2 supporting reasons.`)
         : isStanceAgreement
           ? `Pick a stance, then select exactly 2 supporting reasons.`
