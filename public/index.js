@@ -878,7 +878,7 @@ async function adminDeleteUser(uid, email) {
 //  ALL 34 PRE-LOADED TOPICS
 // ============================================================
 const SEED_TOPICS = [
-  { title: "Late Submission and Mark Deduction", question: "Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.", explanation: "Examine deducting marks for late submissions and propose your opinion with alternative recommendations.", type: "opinion" },
+  { title: "Late Submission and Mark Deduction", question: "Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.", explanation: "Examine deducting marks for late submissions and propose your opinion with alternative recommendations.", type: "opinion_alternatives" },
   { title: "Television as a Relaxation Tool and Companion", question: "Television serves many useful functions. It helps people to relax. Besides, it can also be seen as a companion for the lonely. To what extent do you agree with this? Explain why with your own experience.", explanation: "Evaluate whether television effectively helps people relax and acts as a companion for lonely individuals.", type: "agree_disagree" },
   { title: "Studying Old Plays and Theatre Works", question: "What are the problems and the benefits for high school students of studying plays and other works for theatre that were written centuries ago? Do you agree with it? Use your own experience to discuss it.", explanation: "Examine the benefits and problems of studying historical theatre in high schools using personal experience.", type: "advantages_disadvantages" },
   { title: "Combining Study and Employment", question: "Effective study requires time, comfort and peace. It is impossible to study with employment because one may distract the other. To what extent do you think the statements are realistic? Give your opinion with examples.", explanation: "Explore whether students can effectively combine work and study.", type: "agree_disagree" },
@@ -952,13 +952,14 @@ const QUESTION_TYPES = {
     stanceType: "agreement",
     stanceOptions: ["strongly agree", "largely agree", "partially agree", "partially disagree", "largely disagree", "strongly disagree"],
     bp1Role: "support selected degree of agreement",
-    bp2Role: "support stance further or show limited contrast",
-    conclusionRole: "selected degree of agreement",
+    bp2Role: "suggest alternative actions",
+    conclusionRole: "selected degree of agreement and summary of alternatives",
     detect: "To what extent do you agree or disagree?",
     validationRules: [
       "Stance must match the selected degree of agreement",
       "BP1 must strongly support the chosen agreement side",
-      "Disagreement points must not dominate the essay if agreement is chosen"
+      "Must select exactly 2 alternative actions to suggest",
+      "Conclusion must summarize both stance and alternatives"
     ]
   },
   advantages_disadvantages: {
@@ -1252,6 +1253,25 @@ const QUESTION_TYPES = {
       "BP1 must analyze the positive educational outcomes",
       "BP2 must analyze the limits or alternative methods"
     ]
+  },
+  opinion_alternatives: {
+    id: "opinion_alternatives",
+    displayName: "Opinion + Alternatives",
+    stanceRequired: true,
+    stanceType: "agreement",
+    stanceOptions: ["strongly agree", "largely agree", "partially agree", "partially disagree", "largely disagree", "strongly disagree"],
+    leftLabel: "Supporting Reasons",
+    rightLabel: "Alternative Actions",
+    bp1Role: "reasons supporting opinion",
+    bp2Role: "suggest alternative actions",
+    conclusionRole: "clear opinion and summary of alternatives",
+    detect: "Express your opinion and suggest alternative actions",
+    validationRules: [
+      "Must take a clear stance (agree/disagree) in introduction",
+      "BP1 must support the chosen stance",
+      "BP2 must suggest practical alternative actions",
+      "Conclusion must reiterate the opinion and summarize alternatives"
+    ]
   }
 };
 
@@ -1262,7 +1282,6 @@ QUESTION_TYPES.causes_solutions = QUESTION_TYPES.problem_solution;
 QUESTION_TYPES.causes_effects = QUESTION_TYPES.cause_effect;
 QUESTION_TYPES.problems_benefits = QUESTION_TYPES.advantages_disadvantages;
 QUESTION_TYPES.positive_negative_impacts = QUESTION_TYPES.positive_negative_impact;
-QUESTION_TYPES.opinion_alternatives = QUESTION_TYPES.opinion;
 
 
 // ============================================================
@@ -1272,18 +1291,26 @@ QUESTION_TYPES.opinion_alternatives = QUESTION_TYPES.opinion;
 function getActiveQuestionType(e) {
   if (!e) return 'advantages_disadvantages';
   let t = e.manualQuestionTypeOverride || e.questionType || e.detectedQuestionType || 'advantages_disadvantages';
+  // Auto-detect "opinion + alternatives" ONLY when the user hasn't explicitly chosen a type
+  // via the "Change" button; an explicit manual override must always win.
+  if (!e.manualQuestionTypeOverride) {
+    const qLower = (e.question || '').toLowerCase();
+    if (qLower.includes('opinion') && qLower.includes('alternative')) {
+      t = 'opinion_alternatives';
+    }
+  }
   if (t === 'single_focus') t = 'two_option_preference';
   if (t === 'problems_solutions' || t === 'causes_solutions') t = 'problem_solution';
   if (t === 'causes_effects') t = 'cause_effect';
   if (t === 'problems_benefits') t = 'advantages_disadvantages';
   if (t === 'positive_negative_impacts') t = 'positive_negative_impact';
-  if (t === 'opinion_alternatives') t = 'opinion';
   return t;
 }
 
 function isStrongStance(activeType, stance) {
   if (!stance) return false;
   if (activeType === 'discuss_both_views') return false;
+  if (activeType === 'opinion' || activeType === 'agree_disagree' || activeType === 'opinion_alternatives') return false;
   
   const stanceLower = stance.toLowerCase();
   
@@ -1315,6 +1342,7 @@ function staticClassifyQuestion(q) {
   if (lower.includes('positive') && lower.includes('negative')) return 'positive_negative_impact';
   if (lower.includes('responsibility') || lower.includes('responsible')) return 'responsibility';
   if (lower.includes('which') && (lower.includes('better') || lower.includes('prefer'))) return 'two_option_preference';
+  if (lower.includes('opinion') && lower.includes('alternative')) return 'opinion_alternatives';
   if (lower.includes('opinion')) return 'opinion';
   return 'opinion';
 }
@@ -1512,6 +1540,28 @@ function ideaCategoryNormalize(cat) {
   return 'main_support';
 }
 
+function getAgreementSide(stance) {
+  const s = (stance || '').toLowerCase().trim();
+
+  const agreeStances = [
+    'strongly agree',
+    'largely agree',
+    'partially agree',
+    'agree'
+  ];
+
+  const disagreeStances = [
+    'strongly disagree',
+    'largely disagree',
+    'partially disagree',
+    'disagree'
+  ];
+
+  if (disagreeStances.includes(s)) return 'disagree';
+  if (agreeStances.includes(s)) return 'agree';
+  return '';
+}
+
 function stanceMatches(stance, target) {
   if (!stance || !target) return false;
   const s = stance.toLowerCase();
@@ -1596,6 +1646,31 @@ function revalidateSelectedIdeas(e) {
         e.selectedReasonIds = leftIdeas.slice(0, 2).map(i => i.text);
         didAutopopulate = true;
       }
+    } else if (activeType === 'opinion_alternatives') {
+      const stanceSide = getAgreementSide(e.chosenStance);
+      if (stanceSide) {
+        const allowedCategory = stanceSide === 'agree' ? 'advantage' : 'disadvantage';
+        const allowedReasonTexts = new Set(
+          e.suggestedIdeas
+            .filter(i => i.category === allowedCategory)
+            .map(i => i.text)
+        );
+        const originalLength = e.selectedReasonIds.length;
+        e.selectedReasonIds = e.selectedReasonIds
+          .filter(txt => allowedReasonTexts.has(txt))
+          .slice(0, 2);
+        if (e.selectedReasonIds.length !== originalLength) {
+          didAutopopulate = true;
+        }
+      }
+      if (e.selectedExampleIds && e.selectedExampleIds.length > 0) {
+        e.selectedExampleIds = [];
+        didAutopopulate = true;
+      }
+      if (e.selectedSolutionIds.length > 2) {
+        e.selectedSolutionIds = e.selectedSolutionIds.slice(0, 2);
+        didAutopopulate = true;
+      }
     } else if (['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType)) {
       if (e.chosenStance) {
         const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
@@ -1665,7 +1740,16 @@ function revalidateSelectedIdeas(e) {
     if (pickedReasonsCount !== 2) {
       warnings.push(`Please select exactly 2 causes/problems/challenges.`);
     }
-  } else if (['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType)) {
+  } else if (activeType === 'opinion_alternatives' || activeType === 'agree_disagree') {
+    const hasAltActions = (e.suggestedIdeas || []).some(i => i.category === 'solution');
+    if (pickedReasonsCount !== 2 && hasAltActions && pickedSolutionsCount !== 2) {
+      warnings.push("Please select 2 supporting reasons and 2 alternative actions.");
+    } else if (pickedReasonsCount !== 2) {
+      warnings.push("Please select 2 supporting reasons.");
+    } else if (hasAltActions && pickedSolutionsCount !== 2) {
+      warnings.push("Now select 2 alternative actions (right-hand column).");
+    }
+  } else if (['opinion', 'two_option_preference'].includes(activeType)) {
     if (pickedReasonsCount !== 2) {
       warnings.push("Please select exactly 2 supporting reasons.");
     }
@@ -1752,7 +1836,7 @@ function buildStructuredEssayPlan(e) {
       advantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedReasonIds || []) : [],
       disadvantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedExampleIds || []) : [],
       problems: qType === 'problem_solution' || qType === 'problem_effect' ? (e.selectedReasonIds || []) : [],
-      solutions: qType === 'problem_solution' || qType === 'cause_solution' || qType === 'single_best_option' ? (e.selectedSolutionIds || []) : [],
+      solutions: ['problem_solution', 'cause_solution', 'single_best_option', 'opinion_alternatives'].includes(qType) ? (e.selectedSolutionIds || []) : [],
       causes: qType === 'cause_solution' || qType === 'cause_effect' ? (e.selectedReasonIds || []) : [],
       effects: qType === 'cause_effect' || qType === 'problem_effect' ? (e.selectedExampleIds || []) : [],
       contrast: e.optionalContrastIds || []
@@ -1939,12 +2023,33 @@ function validateEssayConsistency(e) {
 
 function parseManualIdeas(text) {
   if (!text || typeof text !== "string") return [];
-
-  return text
-    .split(/\n|;/)
-    .map(item => item.trim())
-    .map(item => item.replace(/^[-*•\d.)\s]+/, "").trim())
-    .filter(item => item.length >= 6);
+  const lines = text.split(/\n/);
+  const ideas = [];
+  lines.forEach(line => {
+    let clean = line.trim();
+    if (!clean) return;
+    
+    if (clean.toUpperCase().startsWith("QUESTION TYPE:") || clean.toUpperCase().startsWith("STANCE:")) {
+      return;
+    }
+    
+    const prefixes = ["MAIN REASONS:", "EXAMPLES:", "SOLUTIONS:", "OPTIONAL CONTRAST:"];
+    for (const prefix of prefixes) {
+      if (clean.toUpperCase().startsWith(prefix)) {
+        clean = clean.slice(prefix.length).trim();
+        break;
+      }
+    }
+    
+    const parts = clean.split(/;/);
+    parts.forEach(part => {
+      const item = part.trim().replace(/^[-*•\d.)\s]+/, "").trim();
+      if (item.length >= 6) {
+        ideas.push(item);
+      }
+    });
+  });
+  return ideas;
 }
 
 function detectUnsupportedClaims(text, question, sourceText, plan) {
@@ -2064,7 +2169,7 @@ function validateEssayStateBeforeGeneration(e) {
 
     const isSolution = ['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType);
     const isEffect = ['cause_effect', 'problem_effect', 'causes_effects', 'problems_effects'].includes(activeType);
-    const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType);
+    const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
 
     if (isSolution) {
       if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
@@ -2077,6 +2182,14 @@ function validateEssayStateBeforeGeneration(e) {
     } else if (activeType === 'single_best_option') {
       if (pickedReasonsCount !== 2) {
         errors.push("Please select exactly 2 causes/challenges.");
+      }
+    } else if (activeType === 'opinion_alternatives') {
+      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+        errors.push("Please select exactly 2 supporting reasons and 2 alternative actions.");
+      }
+    } else if (activeType === 'agree_disagree') {
+      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+        errors.push("Please select exactly 2 reasons and 2 alternative actions.");
       }
     } else if (isStanceAgreement) {
       if (pickedReasonsCount !== 2) {
@@ -2118,9 +2231,37 @@ You MUST write the essay using these manual ideas. Address them clearly.
     const examples = plan.selected_ideas.examples || [];
     const contrast = plan.selected_ideas.contrast || [];
     
+    const isOpinionAlts = (plan.question_type === 'opinion_alternatives');
+    const isAgreeDisagreeLong = (plan.question_type === 'agree_disagree');
+    const isOpinionOrAgreeDisagree = ['opinion', 'agree_disagree'].includes(plan.question_type);
     const isOpinionOrPreference = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
     
-    if (isOpinionOrPreference) {
+    if (isOpinionAlts || isAgreeDisagreeLong) {
+      ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+You MUST write the essay using exactly these chosen supporting reasons and alternative actions:
+- Body Paragraph 1 (Supporting Stance): Focus on supporting the stance: "${plan.stance || ''}".
+  * Supporting Reason 1: "${reasons[0] || ''}" (You MUST autogenerate a short, concrete, everyday example to support this reason, e.g. "employees using translation apps")
+  * Supporting Reason 2: "${reasons[1] || ''}" (You MUST autogenerate a short, concrete, everyday example to support this reason, e.g. "students submitting homework online")
+
+- Body Paragraph 2 (Alternative Actions): Suggest and discuss alternative actions to take instead:
+  * Alternative Action 1: "${solutions[0] || 'a relevant alternative action'}" (provide a supporting explanation and a short relatable example for it).
+  * Alternative Action 2: "${solutions[1] || 'another alternative action'}" (provide a supporting explanation and a short relatable example for it).
+  * Keep the discussion very simple, presenting the opinion/stance in Body Paragraph 1 and the alternative actions in Body Paragraph 2.
+`;
+    } else if (isOpinionOrAgreeDisagree) {
+      ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+For all opinion-based essays, keep it very simple and present both the positives and negatives of the topic:
+- Body Paragraph 1 (Positives / Supporting Side): Focus on the positive aspects or supporting reasons for the stance.
+  * Supporting Reason 1: "${reasons[0] || ''}" (You MUST autogenerate a short, concrete, everyday, and relatable example for this reason, e.g. "employees using translation apps")
+  * Supporting Reason 2: "${reasons[1] || ''}" (You MUST autogenerate a short, concrete, everyday, and relatable example for this reason, e.g. "students submitting homework online")
+
+- Body Paragraph 2 (Negatives / Drawbacks / Limitations): Focus on the negative aspects, drawbacks, or limitations of the topic to present a balanced view.
+  * Develop the Contrast point: "${contrast[0] || 'a relevant drawback or limitation of the topic'}" (provide a supporting explanation and a short relatable example for it, e.g. "some people feeling isolated"). If no contrast point is selected, you MUST automatically generate a simple, common negative aspect or drawback of the topic yourself.
+  * Keep the discussion very simple, presenting the positives in Body Paragraph 1 and the negatives/limitations in Body Paragraph 2, regardless of how strong the chosen stance is.
+`;
+    } else if (isOpinionOrPreference) {
       ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using exactly these chosen supporting reasons. You MUST automatically generate a very simple, concrete, everyday, and relatable supporting example for each reason yourself (do NOT use academic/unsupported statistics or citations):
@@ -2227,7 +2368,10 @@ B. BODY PARAGRAPHS (BP1 and BP2):
 - BP1 Role: ${plan.paragraph_roles.bp1}
 - BP2 Role: ${plan.paragraph_roles.bp2}
 - For opinion, agree_disagree, and two_option_preference question types, develop the reasons and examples in Body Paragraph 1 and Body Paragraph 2 as specified in the KEY IDEAS AND EXAMPLES section. For other question types, each paragraph must develop exactly the two ideas specified in the plan (either selected or manual).
-- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal). Do NOT use academic citations, named studies, research papers, or statistics. Keep each example to one short sentence.
+- Each supporting idea must be followed by a short, concrete, everyday, relatable example (e.g., a student submitting late due to a sudden laptop crash, a traveler using a translation app, or people checking their phones during a meal).
+- CRITICAL WARNING: You MUST NOT use any percentages (e.g. 10%, 80%), numbers representing statistics, or words like "percent" / "percentage". Doing so will cause a validation failure.
+- CRITICAL WARNING: You MUST NOT use phrases like "studies show", "research shows", "research proves", "according to researchers", "a recent study", "harvard study", "university of ...", "survey found", or "according to a survey".
+- Any mention of studies, research, surveys, statistics, or organizations (like WHO, OECD, UN, etc.) is STRICTLY FORBIDDEN.
 - Wrap the main clauses of the two supporting ideas/points in ==double equals== (do not wrap the examples or transitions).
 
 C. CONCLUSION:
@@ -2585,7 +2729,13 @@ function toggleIdeaText(category, text) {
   }
   
   let targetList;
-  if (category === 'main_support' || category === 'advantage' || category === 'problem' || category === 'cause') {
+  if (activeType === 'opinion_alternatives') {
+    if (category === 'solution') {
+      targetList = e.selectedSolutionIds;
+    } else {
+      targetList = e.selectedReasonIds;
+    }
+  } else if (category === 'main_support' || category === 'advantage' || category === 'problem' || category === 'cause') {
     const typeCfg = QUESTION_TYPES[activeType];
     if (typeCfg && typeCfg.stanceRequired && e.chosenStance) {
       const { blockedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
@@ -6030,6 +6180,17 @@ Each idea must be represented as a JSON object with:
 - essayTypes: array of matching essay types.
 - strength: integer 1 to 5.
 
+*RULES FOR "OPINION_ALTERNATIVES" AND "AGREE_DISAGREE" QUESTIONS*:
+If the question is classified as "opinion_alternatives" or "agree_disagree":
+- The "ideas" array MUST contain:
+  - At least 5 supporting reasons to agree with the topic/practice (category "advantage").
+  - At least 5 supporting reasons to disagree with the topic/practice (category "disadvantage").
+  - At least 5-6 alternative actions (category "solution") representing alternative actions to take instead.
+- For each reason (category "advantage" or "disadvantage"), define "supports" and "opposes" arrays using the stance choices:
+  - Agreeing ideas: supports = ["strongly agree", "largely agree", "partially agree"], opposes = ["strongly disagree", "largely disagree", "partially disagree"]
+  - Disagreeing ideas: supports = ["strongly disagree", "largely disagree", "partially disagree"], opposes = ["strongly agree", "largely agree", "partially agree"]
+- For alternative action ideas (category "solution"), set supports array to contain all stance choices: ["strongly agree", "largely agree", "partially agree", "strongly disagree", "largely disagree", "partially disagree"].
+
 *RELATIONSHIP PAIRING FIELD RULES*:
 If the question is relation-based (problem_solution, cause_solution, cause_effect, problem_effect, causes_solutions, causes_effects) or is a "most pressing problem" single_best_option question requiring solutions:
 - Each left-side idea (of category "problem", "cause", or "challenge") MUST include these extra fields:
@@ -6254,12 +6415,16 @@ function renderIdeasPicker() {
   
   const activeType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
-  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType);
+  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
   
   const helpEl = document.getElementById('ideasPickerHelp');
   if (helpEl) {
     if (activeType === 'single_best_option') {
       helpEl.innerHTML = `Choose a stance, pick exactly 2 causes/challenges`;
+    } else if (activeType === 'opinion_alternatives') {
+      helpEl.innerHTML = `Choose a stance, pick exactly 2 supporting reasons and 2 alternative actions`;
+    } else if (activeType === 'agree_disagree') {
+      helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons and 2 alternative actions`;
     } else if (isStanceAgreement) {
       helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons`;
     } else if (typeCfg.stanceRequired) {
@@ -6365,56 +6530,144 @@ function renderIdeasPicker() {
     `;
     
   } else if (isStanceAgreement) {
-    // Stance-based layout (2-column: reasons and optional contrast)
-    const { alignedIdeas, optionalContrastIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
-    const mainSupport = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'cause' || i.category === 'problem');
-    
-    const pickedReasons = e.selectedReasonIds || [];
-    const pickedContrast = e.optionalContrastIds || [];
-    
-    listsHtml = `
-      <div class="ideas-cols">
-        <!-- Main reasons -->
-        <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
-            Supporting Reasons
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
-          </div>
-          ${mainSupport.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
-            const isSelected = pickedReasons.includes(idea.text);
-            return `
-              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
-                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+    const isOpinionAlts = (activeType === 'opinion_alternatives');
+    const isAgreeDisagreeLong = (activeType === 'agree_disagree');
+    if (isOpinionAlts || isAgreeDisagreeLong) {
+      // 3-column layout: Column A (Agree Reasons), Column B (Disagree Reasons), Column C (Alternative Actions)
+      const agreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'advantage') : [];
+      const disagreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'disadvantage') : [];
+      const alternativeActions = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'solution') : [];
+      
+      const pickedReasons = e.selectedReasonIds || [];
+      const pickedSolutions = e.selectedSolutionIds || [];
+      
+      // Determine columns state based on stance
+      const stanceLower = (e.chosenStance || '').toLowerCase();
+      const isAgreeStance = e.chosenStance && ['strongly agree', 'largely agree', 'partially agree', 'agree'].some(s => stanceLower.includes(s));
+      const isDisagreeStance = e.chosenStance && ['strongly disagree', 'largely disagree', 'partially disagree', 'disagree'].some(s => stanceLower.includes(s));
+      
+      const agreeColDisabled = e.chosenStance && !isAgreeStance;
+      const disagreeColDisabled = e.chosenStance && !isDisagreeStance;
+      
+      listsHtml = `
+        <div class="ideas-cols ideas-cols-3">
+          <!-- Column A: Reasons to Agree -->
+          <div class="ideas-side-col ${agreeColDisabled ? 'col-disabled' : ''}" style="${agreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+              Reasons to Agree
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+            </div>
+            ${agreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
-                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-        
-        <!-- Optional Contrast -->
-        <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
-            Optional Contrast
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 1</span>
+              `;
+            }).join('')}
           </div>
-          ${optionalContrastIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No contrast points.</div>` : optionalContrastIdeas.map((idea) => {
-            const isSelected = pickedContrast.includes(idea.text);
-            return `
-              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('optional_contrast', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: 0.8; transition:all 0.2s;">
-                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+          
+          <!-- Column B: Reasons to Disagree -->
+          <div class="ideas-side-col ${disagreeColDisabled ? 'col-disabled' : ''}" style="${disagreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+              Reasons to Disagree
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+            </div>
+            ${disagreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
-                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
-              </div>
-            `;
-          }).join('')}
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- Column C: Alternative Actions -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">C</span>
+              Alternative Actions
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${alternativeActions.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
+              const isSelected = pickedSolutions.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      // Stance-based layout (2-column: reasons and optional contrast)
+      const { alignedIdeas, optionalContrastIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+      const mainSupport = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage' || i.category === 'cause' || i.category === 'problem');
+      
+      const pickedReasons = e.selectedReasonIds || [];
+      const pickedSecondCol = e.optionalContrastIds || [];
+      const secondColIdeas = optionalContrastIdeas;
+      const secondColLabel = 'Optional Contrast';
+      const secondColCategory = 'optional_contrast';
+      const secondColLimit = 1;
+      
+      listsHtml = `
+        <div class="ideas-cols">
+          <!-- Main reasons -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+              Supporting Reasons
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${mainSupport.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- Second Column (Optional Contrast) -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+              ${secondColLabel}
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
+            </div>
+            ${secondColIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
+              const isSelected = pickedSecondCol.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${secondColCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: 0.8; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
     
   } else if (relationTypes.includes(activeType)) {
     // Relation-pair layout (2-column)
@@ -6565,9 +6818,16 @@ function renderIdeasPicker() {
   const pickedReasonsCount = (e.selectedReasonIds || []).length;
   const pickedExamplesCount = (e.selectedExampleIds || []).length;
   const pickedSolutionsCount = (e.selectedSolutionIds || []).length;
+  // If the AI produced no "Alternative Actions" (solution) ideas, that column is empty and the
+  // user physically cannot pick any - don't lock the button behind an impossible requirement.
+  const hasAltActions = (e.suggestedIdeas || []).some(i => i.category === 'solution');
   
   if (activeType === 'single_best_option') {
     isReady = e.chosenStance && pickedReasonsCount === 2;
+  } else if (activeType === 'opinion_alternatives' || activeType === 'agree_disagree') {
+    isReady = e.chosenStance && pickedReasonsCount === 2 && (!hasAltActions || pickedSolutionsCount === 2) && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
+  } else if (isStanceAgreement) {
+    isReady = e.chosenStance && pickedReasonsCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
   } else if (typeCfg.stanceRequired) {
     isReady = e.chosenStance && pickedReasonsCount === 2 && pickedExamplesCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
   } else if (relationTypes.includes(activeType)) {
@@ -6580,11 +6840,15 @@ function renderIdeasPicker() {
     ? `<strong>Ready! All required ideas selected.</strong>` 
     : (activeType === 'single_best_option')
       ? `Pick a stance/option, then select exactly 2 causes/challenges.`
-      : typeCfg.stanceRequired
-        ? `Pick a stance, then select 2 reasons and 2 examples.` 
-        : relationTypes.includes(activeType)
-          ? `Select exactly 2 causes/problems/challenges.` 
-          : `Select 2 left-side and 2 right-side ideas.`;
+      : (activeType === 'opinion_alternatives' || activeType === 'agree_disagree')
+        ? (hasAltActions ? `Pick a stance, then select exactly 2 reasons and 2 alternative actions.` : `Pick a stance, then select exactly 2 supporting reasons.`)
+        : isStanceAgreement
+          ? `Pick a stance, then select exactly 2 supporting reasons.`
+          : typeCfg.stanceRequired
+            ? `Pick a stance, then select 2 reasons and 2 examples.` 
+            : relationTypes.includes(activeType)
+              ? `Select exactly 2 causes/problems/challenges.` 
+              : `Select 2 left-side and 2 right-side ideas.`;
 
   body.innerHTML = `
     ${typeHeaderHtml}
@@ -6621,7 +6885,7 @@ function autoSelectIdeas(e) {
   
   const isSolution = ['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType);
   const isEffect = ['cause_effect', 'problem_effect', 'causes_effects', 'problems_effects'].includes(activeType);
-  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType);
+  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
   
   if (isSolution) {
     const leftToPick = leftIdeas.slice(0, 2);
@@ -6642,6 +6906,18 @@ function autoSelectIdeas(e) {
   } else if (activeType === 'single_best_option') {
     const leftToPick = leftIdeas.slice(0, 2);
     leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
+  } else if (activeType === 'opinion_alternatives') {
+    let aligned = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage') : [];
+    if (e.chosenStance) {
+      const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+      aligned = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage');
+    }
+    const reasonsToPick = aligned.slice(0, 2);
+    reasonsToPick.forEach(i => e.selectedReasonIds.push(i.text));
+
+    const alts = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'solution') : [];
+    const altsToPick = alts.slice(0, 2);
+    altsToPick.forEach(i => e.selectedSolutionIds.push(i.text));
   } else if (isStanceAgreement) {
     let aligned = leftIdeas;
     if (e.chosenStance) {
@@ -6661,7 +6937,7 @@ function autoSelectIdeas(e) {
   }
   
   pickedLeftIdeas = new Set(e.selectedReasonIds);
-  if (isSolution) {
+  if (isSolution || activeType === 'opinion_alternatives') {
     pickedRightIdeas = new Set(e.selectedSolutionIds);
   } else {
     pickedRightIdeas = new Set(e.selectedExampleIds);
