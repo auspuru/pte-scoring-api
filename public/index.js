@@ -889,7 +889,7 @@ const SEED_TOPICS = [
   { title: "Formal Written Examinations", question: "Many education systems assess students' learning using formal written examinations. Those kinds of exams are a valid method. To what extent do you agree or disagree? Give examples with your own experience.", explanation: "Evaluate formal written examinations as an assessment method using personal experience.", type: "agree_disagree" },
   { title: "Compulsory Foreign Language Learning", question: "Some people think learning a foreign language at school should be compulsory. To what extent do you agree with it? Use your experience or examples to support your viewpoint.", explanation: "Evaluate whether foreign language learning should be compulsory in schools.", type: "agree_disagree" },
   { title: "The Most Pressing Global Problem", question: "In today's world, different government and international organisations are confronting many global problems. What is the most pressing problem among them and give solutions?", explanation: "Select one global problem as most pressing and justify your choice with practical solutions.", type: "single_best_option" },
-  { title: "Medical Technology and Life Expectancy", question: "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?", explanation: "Determine whether increasing life expectancy through medical technology is beneficial or harmful.", type: "positive_negative_impact" },
+  { title: "Medical Technology and Life Expectancy", question: "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?", explanation: "Determine whether increasing life expectancy through medical technology is beneficial or harmful.", type: "blessing_curse" },
   { title: "Parental Legal Responsibility", question: "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.", explanation: "Evaluate whether parents should bear legal responsibility for their children's behaviour.", type: "agree_disagree" },
   { title: "Building Design and Daily Life", question: "Do you think the design of buildings affects, positively or negatively, where people live and work?", explanation: "Evaluate how building design influences living and working environments.", type: "positive_negative_impact" },
   { title: "Mass Media Influence on Young People", question: "The mass media, such as TV, radio and newspapers, have an influence on people, particularly on younger generations. It plays a pivotal role in shaping the opinions of people, especially teenagers and young people. To what extent do you agree with this? Please give examples.", explanation: "Evaluate the extent to which mass media shapes the opinions of teenagers and young people.", type: "agree_disagree" },
@@ -903,8 +903,8 @@ const SEED_TOPICS = [
   { title: "Fewer Working Hours in the Future", question: "\"In the future, people will work fewer hours at their jobs than they do now.\" Do you agree with the statement? Please support your opinion with your own experience.", explanation: "Evaluate whether future working hours will decrease compared to present levels.", type: "agree_disagree" },
   { title: "Maximum Wage for High-Paying Jobs", question: "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?", explanation: "Evaluate whether maximum wage caps should be applied to high-paying jobs.", type: "agree_disagree" },
   { title: "Famous People and the Right to Privacy", question: "People who are famous entertainers or sportspeople should give up the right to privacy, because this is the price of fame. To what extent do you agree/disagree with this point of view? Give your opinion with your experiences.", explanation: "Evaluate whether celebrities should sacrifice privacy as the price of fame.", type: "agree_disagree" },
-  { title: "Studying Climate Change", question: "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.", explanation: "Choose a specific area of climate change to study and justify your choice with examples.", type: "single_best_option" },
-  { title: "Work-Life Balance", question: "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?", explanation: "Explore the importance of work-life balance and reasons why it is difficult to maintain.", type: "cause_effect" },
+  { title: "Studying Climate Change", question: "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.", explanation: "Choose a specific area of climate change to study and justify your choice with examples.", type: "example_specific" },
+  { title: "Work-Life Balance", question: "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?", explanation: "Explore the importance of work-life balance and reasons why it is difficult to maintain.", type: "importance_reasons" },
   { title: "Experience is the Best Teacher", question: "Some people argue that experience is the best teacher. Life experiences can teach more effectively than books or formal school education. How far do you agree with this idea? Support your opinion with reasons and/or your personal experience.", explanation: "Evaluate whether life experience teaches more effectively than formal education.", type: "agree_disagree" },
   { title: "AI and Foreign Language Learning", question: "While artificial intelligence becomes so advanced, people can use computers to translate foreign languages that makes learning a foreign language unnecessary. To what extent do you agree with it?", explanation: "Examine whether AI translation makes foreign language learning unnecessary.", type: "agree_disagree" },
   { title: "Travel and Quality of Education", question: "Some believe the value of travel is overrated. 'One brilliant scholar never leaves the home bases.' People argue whether travel is a necessary component of quality education or not. To what extent do you agree with it?", explanation: "Ask whether travel is essential for quality education.", type: "agree_disagree" },
@@ -975,6 +975,22 @@ const QUESTION_TYPES = {
       "BP1 must focus entirely on advantages",
       "BP2 must focus entirely on disadvantages",
       "Must not be one-sided"
+    ]
+  },
+  importance_reasons: {
+    id: "importance_reasons",
+    displayName: "Importance + reasons it is hard",
+    stanceRequired: false,
+    leftLabel: "Why It Matters",
+    rightLabel: "Why It's Hard",
+    bp1Role: "how important it is / why it matters",
+    bp2Role: "the reasons it is hard to achieve",
+    conclusionRole: "restate how important it is and close",
+    detect: "Question asks HOW IMPORTANT something is AND the reasons it is hard/difficult to achieve (importance + obstacles, NOT effects or solutions)",
+    validationRules: [
+      "BP1 must explain how/why it matters",
+      "BP2 must give the reasons it is difficult to achieve",
+      "Must NOT turn the obstacles into solutions"
     ]
   },
   advantages_disadvantages_opinion: {
@@ -1172,6 +1188,8 @@ const QUESTION_TYPES = {
     stanceRequired: true,
     stanceType: "example_choice",
     stanceOptions: ["custom selected example"],
+    leftLabel: "Reasons / Justification",
+    rightLabel: "Impact / Limitations",
     bp1Role: "selected example and main justification",
     bp2Role: "impact, limitation, or recommendation",
     conclusionRole: "final judgement",
@@ -1288,16 +1306,47 @@ QUESTION_TYPES.positive_negative_impacts = QUESTION_TYPES.positive_negative_impa
 //  UNIVERSAL ESSAY STATE HELPERS & MODULES
 // ============================================================
 
+function questionAsksForAlternatives(q) {
+  // True only when the question actually asks the writer to suggest alternative
+  // actions / measures (the defining feature of an opinion_alternatives prompt).
+  const s = (q || '').toLowerCase();
+  return /\balternativ/.test(s)
+    || /\binstead\b/.test(s)
+    || /\bwhat (other|else|measures|actions|steps|solutions)\b/.test(s)
+    || /\bother (ways|measures|actions|solutions|steps|approaches|methods)\b/.test(s)
+    || /\b(suggest|recommend|propose|provide|offer|give)\b[^.?!]{0,40}\b(action|actions|measure|measures|solution|solutions|step|steps|approach|approaches|method|methods)\b/.test(s);
+}
+
+function detectStrongType(question) {
+  // Unambiguous question patterns that LOCK the type so the model's free re-classification
+  // at idea-generation cannot silently override a curated/expected type.
+  const s = (question || '').toLowerCase();
+  if (/\bcurse\b|\bblessing\b/.test(s)) return 'blessing_curse';
+  if (/how important\b/.test(s) && /\breasons?\b/.test(s) && /\b(hard|difficult|challeng)/.test(s)) return 'importance_reasons';
+  if (/\bwhich\s+(area|aspect|part|field|topic|kind|type|one)\b/.test(s) && /\b(focus|study|choose|select|concentrate|specialise|specialize)\b/.test(s) && /\bwhy\b/.test(s)) return 'example_specific';
+  return '';
+}
+
 function getActiveQuestionType(e) {
   if (!e) return 'advantages_disadvantages';
   let t = e.manualQuestionTypeOverride || e.questionType || e.detectedQuestionType || 'advantages_disadvantages';
   // Auto-detect "opinion + alternatives" ONLY when the user hasn't explicitly chosen a type
   // via the "Change" button; an explicit manual override must always win.
   if (!e.manualQuestionTypeOverride) {
-    const qLower = (e.question || '').toLowerCase();
-    if (qLower.includes('opinion') && qLower.includes('alternative')) {
-      t = 'opinion_alternatives';
+    const strong = detectStrongType(e.question);
+    if (strong) {
+      t = strong;
+    } else {
+      const qLower = (e.question || '').toLowerCase();
+      if (qLower.includes('opinion') && qLower.includes('alternative')) {
+        t = 'opinion_alternatives';
+      }
     }
+  }
+  // "Opinion + Alternatives" is only valid when the question actually asks for alternative
+  // actions/measures. Otherwise treat it as a plain stance essay (no alternatives column).
+  if (t === 'opinion_alternatives' && !e.manualQuestionTypeOverride && !questionAsksForAlternatives(e.question)) {
+    t = 'agree_disagree';
   }
   if (t === 'single_focus') t = 'two_option_preference';
   if (t === 'problems_solutions' || t === 'causes_solutions') t = 'problem_solution';
@@ -4665,7 +4714,7 @@ function maybeOfferDraftRecovery() {
         essays = backup.essays;
         if (backup.currentId) currentId = backup.currentId;
         renderList();
-        if (typeof loadEssay === 'function' && currentId) loadEssay(currentId);
+        if (typeof selectEssay === 'function' && currentId) selectEssay(currentId);
         queueSync();
         toast('Unsaved changes restored ✓');
       }
@@ -6125,7 +6174,7 @@ async function aiSuggestIdeas() {
   const bag = getTemplatesBag();
   const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
   const isBand6 = (effectiveTplKey === 'band6');
-  const forcedType = e.manualQuestionTypeOverride || '';
+  const forcedType = e.manualQuestionTypeOverride || detectStrongType(e.question) || '';
 
   const picker = document.getElementById('ideasPicker');
   const body = document.getElementById('ideasPickerBody');
@@ -6160,7 +6209,7 @@ TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE 
 
 ${typeOptions}
 ${forcedType ? `
-*** MANUAL TYPE LOCK ***: The tutor has manually set the question type to "${forcedType}". You MUST use exactly "${forcedType}" as primaryQuestionType and generate ideas for THAT type via the Per-Type Structure Guide below. Do not choose any other type.
+*** QUESTION TYPE LOCK ***: The question type for this essay is "${forcedType}". You MUST use exactly "${forcedType}" as primaryQuestionType and generate ideas for THAT type via the Per-Type Structure Guide below. Do not choose any other type.
 ` : ''}
 
 *SPECIAL RULE FOR "MOST PRESSING PROBLEM" QUESTIONS*:
@@ -6217,6 +6266,12 @@ FAMILY 5 — SINGLE BEST OPTION ("most pressing problem")  -> type: "single_best
   - Choose EXACTLY ONE main problem/option and put it in detectedOptions.
   - Under it, generate 5-6 items of category "cause" or "challenge", EACH with pairedText (a solution), pairedType "solution", and a unique pairedId.
   - DO NOT suggest multiple unrelated problems.
+
+FAMILY 6 — IMPORTANCE + REASONS IT IS HARD  -> type: "importance_reasons"
+  - At least 5 ideas for WHY IT MATTERS / how important it is (category "advantage").
+  - At least 5 ideas for the REASONS IT IS HARD TO ACHIEVE (category "disadvantage").
+  - DO NOT generate "solution"/alternative-action ideas and DO NOT add pairedText (these are obstacles, NOT solutions).
+  - Leave supports and opposes as empty arrays.
 
 If you classify the question as any other stance type not named above (e.g. "rights_ethics", "policy_recommendation", "future_prediction", "education_effectiveness", "example_specific"), use FAMILY 3.
 
@@ -6293,6 +6348,11 @@ Format:
     }
     
     let activeType = e.manualQuestionTypeOverride || result.primaryQuestionType || 'advantages_disadvantages';
+    // Don't let the model promote a plain opinion question to opinion_alternatives unless it
+    // genuinely asks for alternative actions.
+    if (activeType === 'opinion_alternatives' && !e.manualQuestionTypeOverride && !questionAsksForAlternatives(e.question)) {
+      activeType = 'agree_disagree';
+    }
     const lowerQ = (e.question || '').toLowerCase();
     const isMostPressing = (lowerQ.includes('most pressing problem') || lowerQ.includes('most important issue') || lowerQ.includes('biggest problem') || lowerQ.includes('most serious global issue') || lowerQ.includes('most serious problem'));
     if (isMostPressing) {
@@ -11785,7 +11845,7 @@ CRITICAL for the "errors" array:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2500,
+        max_tokens: 4096,
         messages: [{ role: 'user', content: prompt }]
       })
     });

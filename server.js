@@ -1624,7 +1624,7 @@ const SAFE_SYNONYMS = {
   'demonstrate':['illustrate','show','reveal','exhibit','display'],
   'achieve':['attain','accomplish','realize','secure','obtain'],
   'integrate':['combine','incorporate','merge','unify','blend'],
-  'establish':['create','found','institute','set','build'],
+  'establish':['create','found','institute','set','build','set up'],
   'enable':['facilitate','empower','allow','permit','equip'],
   'transform':['convert','restructure','reshape','revolutionise','overhaul'],
   'embed':['incorporate','integrate','instil','ingrain','entrench'],
@@ -1666,7 +1666,6 @@ const SAFE_SYNONYMS = {
   'suggest':['propose','recommend','indicate','imply'],
   'claim':['assert','maintain','contend','argue'],
   'reveal':['disclose','expose','uncover','show'],
-  'establish':['create','found','set up','institute'],
   'reduce':['decrease','lower','diminish','cut','minimize'],
   // Adjectives
   'many':['numerous','several','various','multiple','diverse'],
@@ -4967,8 +4966,167 @@ function splitSentences(text) {
   return out;
 }
 
+/* ---------------------------------------------------------------------
+   PER-QUESTION-TYPE TEMPLATE STRUCTURES
+   A concrete intro/BP1/BP2/conclusion skeleton per question type, so the exam
+   template structure matches the actual question instead of one generic slashed
+   skeleton. The opinion / agree_disagree skeletons deliberately mirror the
+   ideasBlock framing (BP1 = supporting side, BP2 = drawbacks/balance) so the two
+   halves of the prompt never contradict each other. getTypeTemplateStructure()
+   falls back to the band skeleton the client sent, so any uncovered type keeps
+   its previous behaviour.
+   --------------------------------------------------------------------- */
+const QUESTION_TYPE_TEMPLATES = {
+  agree_disagree: {
+    bp1Role: "supporting reasons for the chosen stance (the positive / supporting side)",
+    bp2Role: "drawbacks, limitations, or the opposing side, for a balanced view",
+    intro: `Introduce [paraphrase the topic] and note briefly why it matters. State your position clearly in one sentence — whether you AGREE or DISAGREE (and how strongly) with [the statement]. [State your stance here.]`,
+    bp1: `Present the SUPPORTING side of your stance. Give [supporting reason 1] with a concrete everyday example — [a specific scenario] — then [supporting reason 2] with its own short example. Keep this paragraph positive and aligned with your stance.`,
+    bp2: `Present the other side for BALANCE: a drawback, limitation, or the main opposing point — [the contrast point] — explained with a short example. Acknowledge it fairly, but make clear your overall stance still stands. (BP1 = supporting side, BP2 = drawbacks / balance.)`,
+    concl: `Restate your position in fresh words, briefly weigh the supporting reasons against the drawback, and finish with a forward-looking sentence that reaffirms your stance. [End on your stance.]`
+  },
+  opinion: { __aliasOf: "agree_disagree" },
+
+  opinion_alternatives: {
+    bp1Role: "support the chosen stance with two reasons",
+    bp2Role: "propose alternative actions to take instead",
+    intro: `Introduce [paraphrase the practice/policy] and why it matters. State your opinion clearly — whether you AGREE or DISAGREE with [the practice] — and signal that you will suggest better alternatives. [State your stance.]`,
+    bp1: `Justify your stance with [reason 1] (short everyday example) and [reason 2] (its own example). This paragraph is only about WHY you hold your opinion, not the alternatives.`,
+    bp2: `Propose ALTERNATIVE ACTIONS instead of [the practice]: [alternative action 1] with a brief example of how it helps, then [alternative action 2] with its own example. Keep them practical and specific.`,
+    concl: `Restate your opinion in new wording, recap your main reason, and summarise the alternative actions you recommend. [Close on stance + alternatives.]`
+  },
+
+  advantages_disadvantages: {
+    bp1Role: "the main advantages",
+    bp2Role: "the main disadvantages",
+    intro: `Introduce [paraphrase the topic] and why it is discussed. State that this essay will weigh the main ADVANTAGES against the main DISADVANTAGES of [the topic]. Add an opinion sentence only if the question asks for your view.`,
+    bp1: `Focus entirely on ADVANTAGES: [advantage 1] with a concrete example — [a specific scenario] — then [advantage 2] with its own example. Keep this paragraph fully positive.`,
+    bp2: `Focus entirely on DISADVANTAGES: [disadvantage 1] with a concrete example — [a specific scenario] — then [disadvantage 2] with its own example. Keep this paragraph about drawbacks.`,
+    concl: `Summarise both sides in a balanced way. If the question asked for an opinion, state whether the advantages outweigh the disadvantages (or vice versa) and why. [Final balanced sentence.]`
+  },
+
+  positive_negative_impact: {
+    bp1Role: "the positive impacts / the case it is a blessing",
+    bp2Role: "the negative impacts / the case it is a curse",
+    intro: `Introduce [paraphrase the development/trend] and why its impact is debated. State that this essay will examine its POSITIVE and NEGATIVE impacts on [the affected group]. If it is framed as "blessing or curse" / "good or bad", signal which way you lean.`,
+    bp1: `Discuss POSITIVE impacts: [positive impact 1] with a concrete example — [a specific scenario] — then [positive impact 2] with its own example.`,
+    bp2: `Discuss NEGATIVE impacts: [negative impact 1] with a concrete example — [a specific scenario] — then [negative impact 2] with its own example.`,
+    concl: `Weigh positives against negatives and give a clear verdict — overall beneficial, harmful, or beneficial only if [the key condition] is met. [Final verdict.]`
+  },
+
+  single_best_option: {
+    bp1Role: "why the chosen option is the most important",
+    bp2Role: "practical solutions / how to act on it",
+    intro: `Introduce [paraphrase the broad area]. Name the ONE you have chosen — [the selected problem/area] — and state that this essay explains why it is most pressing and what should be done. Commit to a single choice.`,
+    bp1: `Justify the choice: [reason 1 it is most serious] with a concrete consequence/example — [a specific scenario] — then [reason 2] with its own example. Show why it outranks the alternatives.`,
+    bp2: `Set out practical SOLUTIONS for [the selected problem/area]: [solution 1] explaining how it helps, then [solution 2] with a short example. Keep them realistic and actionable.`,
+    concl: `Restate why [the selected problem/area] is most pressing, recap the solutions, and end with a forward-looking call to act. [Final sentence.]`
+  },
+
+  discuss_both_views: {
+    bp1Role: "the first view, presented fairly",
+    bp2Role: "the second view, then your own opinion",
+    intro: `Introduce [paraphrase the issue]. Note that opinion is divided: some hold [view A] while others hold [view B]. State that this essay discusses BOTH views before giving your own opinion.`,
+    bp1: `Present the FIRST view fairly: [reason 1 people hold view A] with an example — [a specific scenario] — then [reason 2] with its own example.`,
+    bp2: `Present the SECOND view: [reason 1 people hold view B] with an example, then [reason 2]. Then state YOUR opinion in the last sentence — which view is more convincing and briefly why. [Your opinion.]`,
+    concl: `State which view you favour overall, summarise the strongest reason, and close. Do not add new arguments. [Final judgement.]`
+  },
+
+  responsibility: {
+    bp1Role: "why the primary party bears the main responsibility",
+    bp2Role: "the supporting role of other parties / shared responsibility",
+    intro: `Introduce [paraphrase the issue and the candidate parties]. State who should bear the MAIN responsibility — [the primary party] — while acknowledging others have a role. [Your position.]`,
+    bp1: `Argue why [the primary party] is mainly responsible: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example.`,
+    bp2: `Acknowledge the SUPPORTING role of [other party/parties] with an example, explaining why their role is secondary to [the primary party]. Keep the answer balanced without abandoning your position.`,
+    concl: `Restate who carries the main responsibility and why, note the shared contribution, and finish on how acting together works best. [Final sentence.]`
+  },
+
+  two_option_preference: {
+    bp1Role: "two reasons for preferring the chosen option",
+    bp2Role: "a further benefit of the chosen option and a brief contrast",
+    intro: `Introduce the choice between [option A] and [option B]. Acknowledge both have merits, then state which you prefer — [the chosen option] — and that this essay explains why. [Your preference.]`,
+    bp1: `Give the first reasons you prefer [the chosen option]: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example. Focus on the strengths of your choice.`,
+    bp2: `Add a FURTHER benefit of [the chosen option] — [reason 3] with an example — and briefly contrast [the other option], conceding one point but showing it does not change your preference.`,
+    concl: `Restate your preference, summarise the main reasons, and close with a personal, forward-looking sentence. [Final sentence.]`
+  },
+
+  cause_effect: {
+    bp1Role: "the main causes",
+    bp2Role: "the resulting effects / consequences",
+    intro: `Introduce [paraphrase the situation]. State that this essay examines the main CAUSES of [the situation] and the EFFECTS they produce on [the affected group]. If it also asks "how important", state that here.`,
+    bp1: `Set out the main CAUSES: [cause 1] with a concrete example — [a specific scenario] — then [cause 2] with its own example. This paragraph is about WHY it happens.`,
+    bp2: `Set out the EFFECTS that follow: [effect 1] with a concrete example — [a specific scenario] — then [effect 2] with its own example. Link each effect back to the causes in BP1.`,
+    concl: `Summarise how the causes lead to these effects, restate why it matters, and close with a measured forward-looking remark. [Final sentence.]`
+  },
+
+  problem_solution: {
+    bp1Role: "the key problems or causes",
+    bp2Role: "matching, practical solutions",
+    intro: `Introduce [paraphrase the problem area]. State that this essay identifies the key problems/causes of [the issue] and proposes practical solutions for each.`,
+    bp1: `Set out the key PROBLEMS/causes: [problem 1] with a concrete example — [a specific scenario] — then [problem 2] with its own example.`,
+    bp2: `Propose a SOLUTION for each: [solution to problem 1] explaining how it works, then [solution to problem 2] with a short example. Pair each solution to its problem and keep them realistic.`,
+    concl: `Summarise the problems and the solutions that address them, and end with a forward-looking call to act. [Final sentence.]`
+  },
+
+  importance_reasons: {
+    bp1Role: "how important it is / why it matters",
+    bp2Role: "the reasons it is hard to achieve",
+    intro: `Introduce [paraphrase the situation]. State clearly HOW IMPORTANT [the thing] is, and that this essay will explain why it matters and the main reasons it is hard to achieve.`,
+    bp1: `Explain WHY IT MATTERS / how important it is: [reason 1 it matters] with a concrete example — [a specific scenario] — then [reason 2] with its own example.`,
+    bp2: `Explain the REASONS IT IS HARD TO ACHIEVE: [obstacle 1] with a concrete example — [a specific scenario] — then [obstacle 2] with its own example. Do NOT turn these into solutions; focus on the obstacles that make it difficult.`,
+    concl: `Restate how important [the thing] is, sum up the main obstacle, and close with a measured forward-looking remark. [Final sentence.]`
+  },
+  example_specific: {
+    bp1Role: "the chosen example and its main justification",
+    bp2Role: "impact, limitation, or recommendation",
+    intro: `Introduce [paraphrase the question]. Name the SPECIFIC example/choice you will discuss — [the chosen example] — and state what you will argue about it. Commit to one clear choice.`,
+    bp1: `Present [the chosen example] and the MAIN justification: [reason 1] with support from study, observation, or experience — [a specific scenario] — then [reason 2] with its own example.`,
+    bp2: `Discuss the wider IMPACT, a LIMITATION, or a RECOMMENDATION: [point 1] with an example, then [point 2], showing balanced judgement rather than only praise.`,
+    concl: `Restate your specific choice and the core reason, add your recommendation, and close. [Final sentence.]`
+  }
+};
+
+/* Resolve simple aliases (e.g. opinion -> agree_disagree). */
+Object.keys(QUESTION_TYPE_TEMPLATES).forEach(k => {
+  const v = QUESTION_TYPE_TEMPLATES[k];
+  if (v && v.__aliasOf && QUESTION_TYPE_TEMPLATES[v.__aliasOf]) {
+    QUESTION_TYPE_TEMPLATES[k] = QUESTION_TYPE_TEMPLATES[v.__aliasOf];
+  }
+});
+
+/* Relation/other variants that share a skeleton. */
+const TYPE_TEMPLATE_ALIASES = {
+  causes_solutions: "problem_solution",
+  cause_solution: "problem_solution",
+  problem_effect: "cause_effect",
+  causes_effects: "cause_effect",
+  problems_effects: "cause_effect",
+  compare_two_sides: "advantages_disadvantages",
+  blessing_curse: "positive_negative_impact"
+};
+
+/* Return a concrete {intro,bp1,bp2,concl} for the question type, falling back to
+   the band skeleton the client sent. Non-paragraph fields (e.g. notes) carry over. */
+function getTypeTemplateStructure(questionType, fallbackTemplate) {
+  const key = TYPE_TEMPLATE_ALIASES[questionType] || questionType;
+  const t = QUESTION_TYPE_TEMPLATES[key];
+  if (!t) return fallbackTemplate;
+  return {
+    ...(fallbackTemplate || {}),
+    bp1Role: t.bp1Role,
+    bp2Role: t.bp2Role,
+    intro: t.intro,
+    bp1: t.bp1,
+    bp2: t.bp2,
+    concl: t.concl
+  };
+}
+
 function generateEssayPrompt(plan, template) {
   const isBand6 = (plan.target_band_level === 'band6');
+  // Adjust the exam-template STRUCTURE to match the question type (falls back to the
+  // band skeleton the client sent for any uncovered type).
+  template = getTypeTemplateStructure(plan.question_type, template);
   const isNatural = (plan.generation_mode === 'natural');
 
   const vocabSpec = VOCAB_LEVELS[(plan.vocabulary_level || 3) - 1] || VOCAB_LEVELS[2];
