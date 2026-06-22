@@ -1402,12 +1402,12 @@ function getPairedTextForIdea(e, leftIdea, leftIdx) {
   if (leftIdea.pairedSolutionOrEffect) return leftIdea.pairedSolutionOrEffect;
   
   if (leftIdea.pairedId && e.suggestedIdeas) {
-    const found = e.suggestedIdeas.find(i => i.id === leftIdea.pairedId);
+    const found = (e.suggestedIdeas || []).find(i => i.id === leftIdea.pairedId);
     if (found && found.text) return found.text;
   }
   
   if (e.suggestedIdeas && typeof leftIdx === 'number') {
-    const rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+    const rightIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
     if (rightIdeas[leftIdx] && rightIdeas[leftIdx].text) {
       return rightIdeas[leftIdx].text;
     }
@@ -1438,6 +1438,11 @@ function ensureSuggestedIdeas(e) {
     if (list.length > 0) {
       e.suggestedIdeas = list;
     }
+  }
+
+  // Guarantee an array so downstream .filter/.map calls never crash before ideas are generated.
+  if (!Array.isArray(e.suggestedIdeas)) {
+    e.suggestedIdeas = [];
   }
 
   // Normalize existing or newly constructed list elements
@@ -1697,7 +1702,7 @@ function revalidateSelectedIdeas(e) {
 
     if (isRel) {
       if (e.selectedReasonIds.length === 0) {
-        const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+        const leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
         e.selectedReasonIds = leftIdeas.slice(0, 2).map(i => i.text);
         didAutopopulate = true;
       }
@@ -1741,8 +1746,8 @@ function revalidateSelectedIdeas(e) {
         }
       }
     } else {
-      const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
-      const rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+      const leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
+      const rightIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
       
       if (e.selectedReasonIds.length === 0) {
         e.selectedReasonIds = leftIdeas.slice(0, 2).map(i => i.text);
@@ -1770,6 +1775,14 @@ function revalidateSelectedIdeas(e) {
   
   let warnings = [];
   let errors = [];
+  
+  // Non-mandatory stance types: silently apply the balanced default so the writer never has to
+  // pick (the stance picker is hidden for these). The "select a stance first" error below then
+  // only fires for genuinely mandatory types (two_option_preference, single_best_option).
+  if (typeCfg.stanceRequired && !e.chosenStance) {
+    const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
+    if (balancedDefault) e.chosenStance = balancedDefault;
+  }
   
   if (typeCfg.stanceRequired) {
     if (!e.chosenStance) {
@@ -2205,7 +2218,12 @@ function validateEssayStateBeforeGeneration(e) {
   const errors = [];
   const warnings = [];
 
-  // Stance check
+  // Stance check — apply the balanced default for non-mandatory types so generation is never
+  // blocked for a type whose stance picker is hidden; only genuinely mandatory types require a pick.
+  if (typeCfg.stanceRequired && !e.chosenStance) {
+    const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
+    if (balancedDefault) e.chosenStance = balancedDefault;
+  }
   if (typeCfg.stanceRequired && !e.chosenStance) {
     errors.push("A stance/opinion selection is required for this question type.");
   }
@@ -2241,6 +2259,10 @@ function validateEssayStateBeforeGeneration(e) {
     } else if (activeType === 'opinion_alternatives') {
       if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
         errors.push("Please select exactly 2 supporting reasons and 2 alternative actions.");
+      }
+    } else if (activeType === 'agree_disagree') {
+      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+        errors.push("Please select exactly 2 reasons and 2 alternative actions.");
       }
     } else if (isStanceAgreement) {
       if (pickedReasonsCount !== 2) {
@@ -2694,7 +2716,7 @@ function updatePairedText(idx, newValue) {
     const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
     leftIdeas = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge');
   } else {
-    leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+    leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
   }
   
   const leftIdea = leftIdeas[idx];
@@ -2762,8 +2784,8 @@ function toggleIdeaText(category, text) {
         leftIdeas = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge');
         rightIdeas = alignedIdeas.filter(i => i.category === 'example' || i.category === 'solution' || i.category === 'effect');
       } else {
-        leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
-        rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+        leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+        rightIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
       }
       
       const leftIdx = leftIdeas.findIndex(i => i.text === text);
@@ -6863,7 +6885,7 @@ function renderIdeasPicker() {
     const leftLabel = ['problem_solution', 'causes_solutions', 'cause_solution'].includes(activeType) ? 'Problems / Causes' : 'Causes / Problems';
     const rightLabel = ['problem_solution', 'causes_solutions', 'cause_solution'].includes(activeType) ? 'Solutions (Auto-paired)' : 'Effects (Auto-paired)';
     
-    const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+    const leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
     const pickedReasons = e.selectedReasonIds || [];
     
     listsHtml = `
@@ -6931,8 +6953,8 @@ function renderIdeasPicker() {
     const leftLabel = typeCfg.leftLabel || 'Advantages / Benefits';
     const rightLabel = typeCfg.rightLabel || 'Disadvantages / Drawbacks';
     
-    const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
-    const rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+    const leftIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
+    const rightIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
     
     const pickedReasons = e.selectedReasonIds || [];
     const pickedRight = (activeType === 'problem_solution' || activeType === 'causes_solutions' || activeType === 'cause_solution') ? (e.selectedSolutionIds || []) : (e.selectedExampleIds || []);
