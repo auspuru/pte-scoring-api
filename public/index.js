@@ -6461,6 +6461,22 @@ function renderStanceController(e) {
     options = typeCfg.stanceOptions || [];
   }
   
+  // Auto-select the stance when there is only ONE possible option (e.g. example_specific's
+  // single "custom selected example", or a single detected option). There is no real choice to
+  // make, so leaving it blank only stalls generation: the stanceRequired check in
+  // validateEssayStateBeforeGeneration fails and the silent preview regeneration keeps retrying
+  // until it gives up. Set it synchronously so the pill renders selected immediately, then defer
+  // the save + revalidate + preview refresh (mirrors the Band 6 agree/disagree auto-select above).
+  if (options.length === 1 && !e.chosenStance) {
+    e.chosenStance = options[0];
+    setTimeout(() => {
+      saveAll();
+      revalidateSelectedIdeas(e);
+      renderIdeasPicker();
+      renderPreview();
+    }, 0);
+  }
+  
   if (options.length === 0) return '';
   
   const pillsHtml = options.map(opt => {
