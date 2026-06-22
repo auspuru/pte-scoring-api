@@ -6414,6 +6414,34 @@ Format:
   }
 }
 
+function getBalancedDefaultStance(activeType, typeCfg) {
+  // Question types where the writer must consciously commit to ONE specific side — there is no
+  // meaningful "balanced" middle, so we do NOT auto-pick a stance (the user must choose).
+  const MANDATORY_STANCE_TYPES = ['two_option_preference', 'single_best_option'];
+  if (MANDATORY_STANCE_TYPES.includes(activeType)) return '';
+
+  const opts = (typeCfg && typeCfg.stanceOptions) || [];
+  if (opts.length === 0) return '';
+  if (opts.length === 1) return opts[0]; // single option (e.g. example_specific) — nothing to choose
+
+  // Agree/disagree opinion scale: the balanced position is a mild lean. Use "partially disagree"
+  // to stay consistent with the existing Band 6 default.
+  const partialDisagree = opts.find(o => /^partially disagree$/i.test(o));
+  if (partialDisagree) return partialDisagree;
+  const partial = opts.find(o => /^partially\b/i.test(o));
+  if (partial) return partial;
+
+  // Otherwise prefer an explicitly balanced / shared / conditional option.
+  const balanced = opts.find(o =>
+    /\b(balanced|neutral|shared|compromise)\b/i.test(o) ||
+    /(with conditions|if managed|with risks|under specific conditions|with major changes|major changes)/i.test(o)
+  );
+  if (balanced) return balanced;
+
+  // No balanced option exists -> treat as a manual pick.
+  return '';
+}
+
 function renderStanceController(e) {
   const activeType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
@@ -6461,20 +6489,22 @@ function renderStanceController(e) {
     options = typeCfg.stanceOptions || [];
   }
   
-  // Auto-select the stance when there is only ONE possible option (e.g. example_specific's
-  // single "custom selected example", or a single detected option). There is no real choice to
-  // make, so leaving it blank only stalls generation: the stanceRequired check in
-  // validateEssayStateBeforeGeneration fails and the silent preview regeneration keeps retrying
-  // until it gives up. Set it synchronously so the pill renders selected immediately, then defer
-  // the save + revalidate + preview refresh (mirrors the Band 6 agree/disagree auto-select above).
-  if (options.length === 1 && !e.chosenStance) {
-    e.chosenStance = options[0];
-    setTimeout(() => {
-      saveAll();
-      revalidateSelectedIdeas(e);
-      renderIdeasPicker();
-      renderPreview();
-    }, 0);
+  // Default the stance to a BALANCED option so generated essays are measured by default, EXCEPT
+  // for question types where the writer must consciously commit to a specific side (e.g. "which is
+  // better, A or B?" or "which single problem?"). For those, leave it blank so the user picks.
+  // Set synchronously so the pill renders selected immediately, then defer the save + revalidate +
+  // preview refresh (mirrors the Band 6 auto-select above).
+  if (!e.chosenStance) {
+    const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
+    if (balancedDefault && options.includes(balancedDefault)) {
+      e.chosenStance = balancedDefault;
+      setTimeout(() => {
+        saveAll();
+        revalidateSelectedIdeas(e);
+        renderIdeasPicker();
+        renderPreview();
+      }, 0);
+    }
   }
   
   if (options.length === 0) return '';
@@ -7069,8 +7099,13 @@ async function aiWriteFullEssay(opts = {}) {
 
     if (isBand6 && isAgreementType) {
       e.chosenStance = 'partially disagree';
-    } else if (options.length > 0) {
-      e.chosenStance = options[0];
+    } else {
+      // Default to a BALANCED stance; mandatory-pick types (two_option_preference,
+      // single_best_option) return '' and are left for the user to choose.
+      const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
+      if (balancedDefault) {
+        e.chosenStance = balancedDefault;
+      }
     }
     if (e.chosenStance) {
       saveAll();
