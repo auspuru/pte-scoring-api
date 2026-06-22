@@ -6489,25 +6489,28 @@ function renderStanceController(e) {
     options = typeCfg.stanceOptions || [];
   }
   
-  // Default the stance to a BALANCED option so generated essays are measured by default, EXCEPT
-  // for question types where the writer must consciously commit to a specific side (e.g. "which is
-  // better, A or B?" or "which single problem?"). For those, leave it blank so the user picks.
-  // Set synchronously so the pill renders selected immediately, then defer the save + revalidate +
-  // preview refresh (mirrors the Band 6 auto-select above).
-  if (!e.chosenStance) {
-    const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
-    if (balancedDefault && options.includes(balancedDefault)) {
-      e.chosenStance = balancedDefault;
-      setTimeout(() => {
-        saveAll();
-        revalidateSelectedIdeas(e);
-        renderIdeasPicker();
-        renderPreview();
-      }, 0);
-    }
+  // Default the stance to a BALANCED option so generated essays are measured by default. For the
+  // question types where the writer must consciously commit to a specific side
+  // (two_option_preference, single_best_option) there is no balanced default — getBalancedDefaultStance
+  // returns '' — so the stance is left blank for the user to pick. Set synchronously so the pill
+  // renders selected immediately, then defer the save + revalidate + preview refresh.
+  const balancedDefault = getBalancedDefaultStance(activeType, typeCfg);
+  if (!e.chosenStance && balancedDefault && options.includes(balancedDefault)) {
+    e.chosenStance = balancedDefault;
+    setTimeout(() => {
+      saveAll();
+      revalidateSelectedIdeas(e);
+      renderIdeasPicker();
+      renderPreview();
+    }, 0);
   }
   
   if (options.length === 0) return '';
+  
+  // Only SHOW the stance picker when the writer MUST consciously choose — i.e. when there is no
+  // balanced default to apply silently (two_option_preference, single_best_option). For every other
+  // type the balanced stance is applied above and the picker stays hidden to keep the UI clean.
+  if (balancedDefault !== '') return '';
   
   const pillsHtml = options.map(opt => {
     const isSelected = e.chosenStance === opt;
@@ -6545,14 +6548,17 @@ function renderIdeasPicker() {
   
   const helpEl = document.getElementById('ideasPickerHelp');
   if (helpEl) {
+    // Only prompt to "choose a stance" when the stance picker is actually shown (mandatory types).
+    const mustPickStance = typeCfg.stanceRequired && getBalancedDefaultStance(activeType, typeCfg) === '';
+    const sp = mustPickStance ? 'Choose a stance, then pick' : 'Pick';
     if (activeType === 'single_best_option') {
-      helpEl.innerHTML = `Choose a stance, pick exactly 2 causes/challenges`;
+      helpEl.innerHTML = `${sp} exactly 2 causes/challenges`;
     } else if (activeType === 'opinion_alternatives') {
-      helpEl.innerHTML = `Choose a stance, pick exactly 2 supporting reasons and 2 alternative actions`;
+      helpEl.innerHTML = `${sp} exactly 2 supporting reasons and 2 alternative actions`;
     } else if (isStanceAgreement) {
-      helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons`;
+      helpEl.innerHTML = `${sp} exactly 2 reasons`;
     } else if (typeCfg.stanceRequired) {
-      helpEl.innerHTML = `Choose a stance, pick exactly 2 left-side + 2 right-side ideas`;
+      helpEl.innerHTML = `${sp} exactly 2 left-side + 2 right-side ideas`;
     } else if (['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType)) {
       helpEl.innerHTML = `Choose exactly 2 problems/causes (solutions are auto-paired)`;
     } else if (['cause_effect', 'problem_effect', 'causes_effects'].includes(activeType)) {
@@ -6565,16 +6571,9 @@ function renderIdeasPicker() {
   const body = document.getElementById('ideasPickerBody');
   if (!body) return;
 
-  // 1. Question Type status with manual override Change button
-  let typeHeaderHtml = `
-    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:11.5px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:14px;">🤖</span>
-        <span><strong>Question type:</strong> ${escapeHtml(typeCfg.displayName)}</span>
-      </div>
-      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:11px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
-    </div>
-  `;
+  // 1. Question type is auto-detected (with detectStrongType locking the known patterns); the
+  //    manual question-type picker has been removed, so this header is intentionally empty.
+  let typeHeaderHtml = '';
 
   // 2. Stance Selector if stance is required
   let stanceSelectorHtml = '';
