@@ -2242,10 +2242,6 @@ function validateEssayStateBeforeGeneration(e) {
       if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
         errors.push("Please select exactly 2 supporting reasons and 2 alternative actions.");
       }
-    } else if (activeType === 'agree_disagree') {
-      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
-        errors.push("Please select exactly 2 reasons and 2 alternative actions.");
-      }
     } else if (isStanceAgreement) {
       if (pickedReasonsCount !== 2) {
         errors.push("Please select exactly 2 supporting reasons.");
