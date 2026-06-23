@@ -1817,9 +1817,15 @@ function revalidateSelectedIdeas(e) {
     } else if (hasAltActions && pickedSolutionsCount !== 2) {
       warnings.push("Now select 2 alternative actions (right-hand column).");
     }
-  } else if (['opinion', 'agree_disagree', 'two_option_preference'].includes(activeType)) {
+  } else if (activeType === 'two_option_preference') {
     if (pickedReasonsCount !== 2) {
       warnings.push("Please select exactly 2 supporting reasons.");
+    }
+  } else if (['opinion', 'agree_disagree'].includes(activeType)) {
+    // Agree reasons -> BP1 (selectedReasonIds), disagree reasons -> BP2 (optionalContrastIds).
+    const totalReasons = pickedReasonsCount + (e.optionalContrastIds || []).length;
+    if (totalReasons < 2) {
+      warnings.push("Pick at least 2 reasons — you can mix Reasons to Agree and Reasons to Disagree.");
     }
   } else if (activeType === 'problem_solution') {
     if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
@@ -2260,9 +2266,11 @@ function validateEssayStateBeforeGeneration(e) {
       if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
         errors.push("Please select exactly 2 supporting reasons and 2 alternative actions.");
       }
-    } else if (activeType === 'agree_disagree') {
-      if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
-        errors.push("Please select exactly 2 reasons and 2 alternative actions.");
+    } else if (['opinion', 'agree_disagree'].includes(activeType)) {
+      // Agree reasons -> BP1 (selectedReasonIds), disagree reasons -> BP2 (optionalContrastIds).
+      const totalReasons = pickedReasonsCount + (e.optionalContrastIds || []).length;
+      if (totalReasons < 2) {
+        errors.push("Please pick at least 2 reasons — you can mix Reasons to Agree and Reasons to Disagree.");
       }
     } else if (isStanceAgreement) {
       if (pickedReasonsCount !== 2) {
@@ -2746,11 +2754,18 @@ function deriveStanceFromPicks(e, activeType) {
   const catByText = {};
   (e.suggestedIdeas || []).forEach(i => { catByText[i.text] = i.category; });
   let agree = 0, disagree = 0;
-  (e.selectedReasonIds || []).forEach(t => {
-    const cat = catByText[t];
-    if (cat === 'advantage' || cat === 'main_support') agree++;
-    else if (cat === 'disadvantage' || cat === 'counter_point') disagree++;
-  });
+  if (activeType === 'opinion_alternatives') {
+    // For opinion+alternatives, agree and disagree reasons both live in selectedReasonIds.
+    (e.selectedReasonIds || []).forEach(t => {
+      const cat = catByText[t];
+      if (cat === 'advantage' || cat === 'main_support') agree++;
+      else if (cat === 'disadvantage' || cat === 'counter_point') disagree++;
+    });
+  } else {
+    // opinion / agree_disagree: agree -> selectedReasonIds (BP1), disagree -> optionalContrastIds (BP2).
+    agree = (e.selectedReasonIds || []).length;
+    disagree = (e.optionalContrastIds || []).length;
+  }
   if (agree > 0 && disagree === 0) {
     e.chosenStance = agree >= 2 ? 'largely agree' : 'partially agree';
   } else if (disagree > 0 && agree === 0) {
@@ -2823,9 +2838,12 @@ function toggleIdeaText(category, text) {
   }
   
   let targetList;
-  if (['opinion', 'agree_disagree'].includes(activeType) && ['advantage', 'disadvantage', 'main_support', 'counter_point'].includes(category)) {
-    // Opinion-scale: any reason (agree or disagree) is one of the 2 picked reasons.
+  if (['opinion', 'agree_disagree'].includes(activeType) && ['advantage', 'main_support'].includes(category)) {
+    // Opinion-scale: agree reasons fill Body Paragraph 1 (their own budget of 2).
     targetList = e.selectedReasonIds;
+  } else if (['opinion', 'agree_disagree'].includes(activeType) && ['disadvantage', 'counter_point'].includes(category)) {
+    // Opinion-scale: disagree reasons fill Body Paragraph 2 (their own separate budget of 2).
+    targetList = e.optionalContrastIds;
   } else if (activeType === 'opinion_alternatives') {
     if (category === 'solution') {
       targetList = e.selectedSolutionIds;
@@ -6847,8 +6865,9 @@ function renderIdeasPicker() {
       const agreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'advantage' || i.category === 'main_support') : [];
       const disagreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'disadvantage' || i.category === 'counter_point') : [];
       const pickedReasons = e.selectedReasonIds || [];
+      const pickedContrast = e.optionalContrastIds || [];
       const renderReasonItem = (idea) => {
-        const isSelected = pickedReasons.includes(idea.text);
+        const isSelected = pickedReasons.includes(idea.text) || pickedContrast.includes(idea.text);
         return `
           <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
             <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">

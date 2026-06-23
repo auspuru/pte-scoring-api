@@ -5124,9 +5124,13 @@ function getTypeTemplateStructure(questionType, fallbackTemplate) {
 
 function generateEssayPrompt(plan, template) {
   const isBand6 = (plan.target_band_level === 'band6');
-  // Adjust the exam-template STRUCTURE to match the question type (falls back to the
-  // band skeleton the client sent for any uncovered type).
-  template = getTypeTemplateStructure(plan.question_type, template);
+  // Band 6 adapts the exam-template STRUCTURE to the question type (falling back to the band
+  // skeleton the client sent for any uncovered type). Band 9 must follow the sophisticated Band 9
+  // template directly — it already adapts to the question type via its slashed alternatives — so its
+  // intro/body/conclusion phrasing is NOT replaced by the generic per-type skeletons.
+  if (isBand6) {
+    template = getTypeTemplateStructure(plan.question_type, template);
+  }
   const isNatural = (plan.generation_mode === 'natural');
 
   const vocabSpec = VOCAB_LEVELS[(plan.vocabulary_level || 3) - 1] || VOCAB_LEVELS[2];
@@ -5170,7 +5174,9 @@ For all opinion-based essays, keep it very simple and present both the positives
   * Supporting Reason 2: "${reasons[1] || ''}" (You MUST autogenerate a short, concrete, everyday, and relatable example for this reason, e.g. "students submitting homework online")
 
 - Body Paragraph 2 (Negatives / Drawbacks / Limitations): Focus on the negative aspects, drawbacks, or limitations of the topic to present a balanced view.
-  * Develop the Contrast point: "${contrast[0] || 'a relevant drawback or limitation of the topic'}" (provide a supporting explanation and a short relatable example for it, e.g. "some people feeling isolated"). If no contrast point is selected, you MUST automatically generate a simple, common negative aspect or drawback of the topic yourself.
+  * Drawback / Limitation 1: "${contrast[0] || ''}"
+  * Drawback / Limitation 2: "${contrast[1] || ''}"
+  * Develop EACH drawback listed above that is non-empty, giving each its own short explanation and a relatable example (e.g. "some people feeling isolated"). If BOTH are empty, automatically generate ONE simple, common negative aspect or drawback of the topic yourself and develop it.
   * Keep the discussion very simple, presenting the positives in Body Paragraph 1 and the negatives/limitations in Body Paragraph 2, regardless of how strong the chosen stance is.
 `;
     } else if (isOpinionOrPreference) {
