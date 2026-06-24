@@ -17,7 +17,7 @@
    structure works for both — only the wording level changes.
 
    ---------------------------------------------------------------------
-   COVERAGE — current seed list (35 essays -> 10 types)
+   COVERAGE — current seed list (36 essays -> 10 types)
      opinion_alternatives (1)      Late Submission and Mark Deduction
      agree_disagree (15)           Television…, Combining Study…, Experiential…,
                                    Public Transport…, Formal Exams…, Compulsory
@@ -37,7 +37,7 @@
                                    Climate Change
      discuss_both_views (2)        Laws and Human Behaviour, The Value of Humanities
      responsibility (1)            Responsibility for Tackling Climate Change
-     two_option_preference (1)     City vs Countryside Living
+     two_option_preference (2)     City vs Countryside Living, Brand Reputation vs Short-Term Marketing
      cause_effect (1)              Work-Life Balance
      example_specific (1)          Age Restrictions
 
