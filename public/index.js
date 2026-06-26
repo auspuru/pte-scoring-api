@@ -1416,6 +1416,7 @@ function normalizeSingleIdea(item, fallbackId, side, e) {
       category: item.category || (side === 'left' ? 'main_support' : (isSolution ? 'solution' : 'example')),
       supports: item.supports || (side === 'left' ? ['left'] : ['right']),
       opposes: item.opposes || (side === 'left' ? ['right'] : ['left']),
+      area: item.area || '',
       pairedText: item.pairedText || item.pairedSolutionOrEffect || '',
       pairedType: item.pairedType || '',
       pairedId: item.pairedId || '',
@@ -1446,6 +1447,7 @@ function normalizeIdeasArray(arr, e) {
         category: 'main_support',
         supports: [],
         opposes: [],
+        area: '',
         pairedText: '',
         pairedType: '',
         pairedId: '',
@@ -1461,6 +1463,7 @@ function normalizeIdeasArray(arr, e) {
         category: ideaCategoryNormalize(item.category),
         supports: item.supports || [],
         opposes: item.opposes || [],
+        area: item.area || '',
         pairedText: item.pairedText || item.pairedSolutionOrEffect || '',
         pairedType: item.pairedType || '',
         pairedId: item.pairedId || '',
@@ -1658,10 +1661,15 @@ function revalidateSelectedIdeas(e) {
       // selections that no longer belong to the newly chosen area.
       const areaText = (e.chosenStance || '').replace(/^focus:\s*/i, '').toLowerCase();
       if (areaText) {
+        const matchArea = (val) => {
+          const v = (val || '').toLowerCase();
+          return v && (v.includes(areaText) || areaText.includes(v));
+        };
         const inArea = (idea) => {
           if (!idea) return false;
+          if (idea.area) return matchArea(idea.area);
           if (idea.supports && idea.supports.length) {
-            return idea.supports.some(s => (s || '').toLowerCase().includes(areaText) || areaText.includes((s || '').toLowerCase()));
+            return idea.supports.some(matchArea);
           }
           return true;
         };
@@ -6412,6 +6420,25 @@ Format:
     e.detectedOptions = result.detectedOptions || [];
     e.suggestedIdeas = result.ideas;
     e.secondaryFeatures = result.secondaryFeatures || [];
+
+    // For focus-area questions, stamp each idea with a durable `area` field
+    // derived from its `supports` tag (matched against the candidate areas).
+    // Filtering reads this field instead of `supports`, which the idea
+    // normalizer can overwrite with stance sides for main_support ideas.
+    if (isFocusArea && Array.isArray(e.suggestedIdeas)) {
+      const areaOpts = (e.detectedOptions || []).map(a => (a || '').toLowerCase());
+      e.suggestedIdeas.forEach(idea => {
+        if (idea.area) return;
+        const sup = idea.supports || [];
+        let matched = '';
+        for (const s of sup) {
+          const sl = (s || '').toLowerCase();
+          const hit = (e.detectedOptions || []).find((opt, i) => areaOpts[i].includes(sl) || sl.includes(areaOpts[i]));
+          if (hit) { matched = hit; break; }
+        }
+        idea.area = matched || (sup.length ? sup[0] : '');
+      });
+    }
     
     e.chosenStance = '';
     e.selectedReasonIds = [];
@@ -6613,10 +6640,16 @@ function renderIdeasPicker() {
 
       // Restrict to the chosen area when one is selected.
       const areaText = (e.chosenStance || '').replace(/^focus:\s*/i, '').toLowerCase();
+      const matchArea = (val) => {
+        const v = (val || '').toLowerCase();
+        return v && (v.includes(areaText) || areaText.includes(v));
+      };
       const belongsToArea = (idea) => {
         if (!areaText) return true;
+        // Prefer the durable `area` field (immune to supports clobbering).
+        if (idea.area) return matchArea(idea.area);
         if (idea.supports && idea.supports.length) {
-          return idea.supports.some(s => (s || '').toLowerCase().includes(areaText) || areaText.includes((s || '').toLowerCase()));
+          return idea.supports.some(matchArea);
         }
         return true; // untagged ideas stay visible so the column is never empty
       };
