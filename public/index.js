@@ -1427,6 +1427,13 @@ function normalizeSingleIdea(item, fallbackId, side, e) {
 
 function normalizeIdeasArray(arr, e) {
   if (!arr || !Array.isArray(arr)) return [];
+
+  // Focus-area single_best_option ideas carry their sub-area name in `supports`
+  // (e.g. ["agriculture and food security"]), NOT stance sides. The agree/left
+  // healing below must NOT touch them, or the area tags get wiped and per-area
+  // filtering breaks.
+  const isFocusAreaEssay = !!(e && getActiveQuestionType(e) === 'single_best_option'
+    && e.secondaryFeatures && e.secondaryFeatures.includes('focus_area'));
   
   // Step 1: convert all string/object items to basic object structures
   const objArr = arr.map((item, idx) => {
@@ -1468,6 +1475,15 @@ function normalizeIdeasArray(arr, e) {
     const origCategory = item.category || '';
     let supports = [...(item.supports || [])];
     let opposes = [...(item.opposes || [])];
+
+    // For focus-area essays, `supports` holds the sub-area name. Never overwrite
+    // it with agree/left stance sides — just leave it as-is (and leave opposes
+    // empty; focus-area filtering only reads `supports`).
+    if (isFocusAreaEssay) {
+      item.supports = supports;
+      item.opposes = opposes;
+      return item;
+    }
 
     if (supports.length === 0 || opposes.length === 0) {
       const catLower = origCategory.toLowerCase();
@@ -1642,18 +1658,31 @@ function revalidateSelectedIdeas(e) {
       // selections that no longer belong to the newly chosen area.
       const areaText = (e.chosenStance || '').replace(/^focus:\s*/i, '').toLowerCase();
       if (areaText) {
-        const inArea = (txt) => {
-          const idea = e.suggestedIdeas.find(i => i.text === txt);
+        const inArea = (idea) => {
           if (!idea) return false;
           if (idea.supports && idea.supports.length) {
             return idea.supports.some(s => (s || '').toLowerCase().includes(areaText) || areaText.includes((s || '').toLowerCase()));
           }
           return true;
         };
-        const prunedReasons = e.selectedReasonIds.filter(inArea);
-        const prunedSolutions = e.selectedSolutionIds.filter(inArea);
-        if (prunedReasons.length !== e.selectedReasonIds.length) { e.selectedReasonIds = prunedReasons; didAutopopulate = true; }
-        if (prunedSolutions.length !== e.selectedSolutionIds.length) { e.selectedSolutionIds = prunedSolutions; didAutopopulate = true; }
+        // Mirror the picker's graceful fallback: if fewer than 2 ideas of a
+        // category are tagged to this area, the picker shows ALL of them, so we
+        // must NOT prune that category (otherwise valid picks would vanish).
+        const reasonIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge' || i.category === 'advantage');
+        const solutionIdeas = e.suggestedIdeas.filter(i => i.category === 'solution' || i.category === 'example');
+        const reasonsInArea = reasonIdeas.filter(inArea);
+        const solutionsInArea = solutionIdeas.filter(inArea);
+        const reasonsFellBack = reasonsInArea.length < 2 && reasonIdeas.length > reasonsInArea.length;
+        const solutionsFellBack = solutionsInArea.length < 2 && solutionIdeas.length > solutionsInArea.length;
+
+        if (!reasonsFellBack) {
+          const prunedReasons = e.selectedReasonIds.filter(txt => inArea(e.suggestedIdeas.find(i => i.text === txt)));
+          if (prunedReasons.length !== e.selectedReasonIds.length) { e.selectedReasonIds = prunedReasons; didAutopopulate = true; }
+        }
+        if (!solutionsFellBack) {
+          const prunedSolutions = e.selectedSolutionIds.filter(txt => inArea(e.suggestedIdeas.find(i => i.text === txt)));
+          if (prunedSolutions.length !== e.selectedSolutionIds.length) { e.selectedSolutionIds = prunedSolutions; didAutopopulate = true; }
+        }
       }
       if (e.selectedExampleIds && e.selectedExampleIds.length > 0) {
         e.selectedExampleIds = [];
@@ -1753,9 +1782,16 @@ function revalidateSelectedIdeas(e) {
   const pickedExamplesCount = e.selectedExampleIds.length;
   const pickedSolutionsCount = e.selectedSolutionIds.length;
   
-  const isRel = ['problem_solution', 'cause_solution', 'cause_effect', 'problem_effect', 'causes_solutions', 'causes_effects'].includes(activeType) || (activeType === 'single_best_option' && e.secondaryFeatures && e.secondaryFeatures.includes('solution_required'));
+  const isFocusAreaWarn = (activeType === 'single_best_option') && e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+  const isRel = ['problem_solution', 'cause_solution', 'cause_effect', 'problem_effect', 'causes_solutions', 'causes_effects'].includes(activeType) || (activeType === 'single_best_option' && e.secondaryFeatures && e.secondaryFeatures.includes('solution_required') && !isFocusAreaWarn);
   
-  if (isRel) {
+  if (isFocusAreaWarn) {
+    if (!e.chosenStance) {
+      warnings.push("Please choose a focus area first.");
+    } else if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
+      warnings.push("Please select exactly 2 reasons and 2 examples/solutions.");
+    }
+  } else if (isRel) {
     if (pickedReasonsCount !== 2) {
       warnings.push(`Please select exactly 2 causes/problems/challenges.`);
     }
@@ -6255,11 +6291,13 @@ If the question is relation-based (problem_solution, cause_solution, cause_effec
 - If the question is about a "most pressing problem" (single_best_option + solution_required), select exactly ONE main problem as the choice, and generate 5-6 cause/challenge ideas under that problem, where each has a "pairedText" solution. Do NOT suggest multiple unrelated problems.
 
 If the question is a "choose one area/aspect to focus on" question (single_best_option + focus_area):
-- Put the 4 candidate sub-areas in detectedOptions (these are the choice pills), e.g. ["agriculture and food security", "human health", "sea-level rise", "extreme weather events"].
-- Generate ideas in TWO categories tagged to whichever sub-area they belong to via the "supports" array (set supports to the exact detectedOptions text the idea belongs to):
-  - At least 5-6 "main_support" ideas = REASONS this area matters / how the topic harms this area (Body Paragraph 1 material). Noun phrases. Example for agriculture: "droughts reduce wheat yields", "irregular rainfall ruins harvests".
-  - At least 5-6 "solution" ideas = EXAMPLES and practical SOLUTIONS for that area (Body Paragraph 2 material). Actionable where natural. Example for agriculture: "use drought-resistant crops", "install drip irrigation".
-- Spread the ideas across the candidate sub-areas so that whichever area the student picks, there are at least 2 reasons and 2 solutions tagged to it. Tie every idea to a real sub-area via "supports". Do NOT generate a generic two-column impacts list and do NOT repeat the same phrase in both categories.
+- Put EXACTLY 3 candidate sub-areas in detectedOptions (these are the choice pills), e.g. ["agriculture and food security", "human health", "sea-level rise and coastal flooding"]. Each must be a real sub-area of the topic.
+- For EVERY ONE of the 3 sub-areas you listed, you MUST generate BOTH of the following (do this per area — do not concentrate ideas on one area and starve the others):
+  - At least 3 "main_support" ideas = REASONS this area matters / how the broad topic harms this area (Body Paragraph 1 material). Noun phrases. Example for "agriculture and food security": "droughts reduce wheat yields", "irregular rainfall ruins harvests", "rising heat lowers crop quality".
+  - At least 3 "solution" ideas = EXAMPLES and practical SOLUTIONS for that area (Body Paragraph 2 material). Actionable where natural. Example for "agriculture and food security": "use drought-resistant crops", "install drip irrigation", "build local food storage".
+- TAGGING IS CRITICAL: every "main_support" and "solution" idea MUST have a "supports" array containing the EXACT sub-area string from detectedOptions it belongs to (copy it verbatim, e.g. supports: ["agriculture and food security"]). Do NOT use stance words like "agree"/"left"/"right" here. Do NOT leave the supports array empty.
+- This means you will produce at least 9 reasons (3 areas × 3) and at least 9 solutions (3 areas × 3), each tagged to its area. Whichever area the student picks, there MUST be at least 3 reasons and 3 solutions tagged to it.
+- Do NOT generate a generic two-column impacts list and do NOT repeat the same phrase in both categories.
 
 ESSAY DETAILS:
 TITLE: ${e.title}
@@ -6582,16 +6620,24 @@ function renderIdeasPicker() {
         }
         return true; // untagged ideas stay visible so the column is never empty
       };
-      const leftFiltered = reasonIdeas.filter(belongsToArea);
-      const rightFiltered = solutionIdeas.filter(belongsToArea);
+      // Filter to the chosen area, but never leave a column unusable: if the AI
+      // tagged fewer than 2 ideas to this area, fall back to showing all ideas of
+      // that category so the student can always pick 2.
+      let leftFiltered = reasonIdeas.filter(belongsToArea);
+      let rightFiltered = solutionIdeas.filter(belongsToArea);
+      const leftFellBack = areaText && leftFiltered.length < 2 && reasonIdeas.length > leftFiltered.length;
+      const rightFellBack = areaText && rightFiltered.length < 2 && solutionIdeas.length > rightFiltered.length;
+      if (leftFellBack) leftFiltered = reasonIdeas;
+      if (rightFellBack) rightFiltered = solutionIdeas;
 
       const pickedReasons = e.selectedReasonIds || [];
       const pickedSolutions = e.selectedSolutionIds || [];
       const needStance = !e.chosenStance;
+      const fallbackHint = `<div style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
 
       const colA = leftFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available for this area.'}</div>`
-        : leftFiltered.map((idea) => {
+        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
+        : (leftFellBack ? fallbackHint : '') + leftFiltered.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
@@ -6604,8 +6650,8 @@ function renderIdeasPicker() {
           }).join('');
 
       const colB = rightFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available for this area.'}</div>`
-        : rightFiltered.map((idea) => {
+        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
+        : (rightFellBack ? fallbackHint : '') + rightFiltered.map((idea) => {
             const isSelected = pickedSolutions.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('solution', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
