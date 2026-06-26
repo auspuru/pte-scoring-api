@@ -5023,6 +5023,19 @@ const QUESTION_TYPE_TEMPLATES = {
     concl: `Restate why [the selected problem/area] is most pressing, recap the solutions, and end with a forward-looking call to act. [Final sentence.]`
   },
 
+  // Focus-area variant of single_best_option: the writer picks ONE sub-area of a
+  // broad topic and justifies it (e.g. "which area of climate change will you
+  // focus on?"). This is NOT a "most pressing" debate — BP1 explains why the area
+  // matters, BP2 gives examples and solutions for it.
+  single_best_option_focus: {
+    bp1Role: "why the chosen area matters",
+    bp2Role: "examples and practical solutions for that area",
+    intro: `Introduce [paraphrase the broad topic] in one sentence. State the ONE area you will focus on — [the selected area] — and why it matters. Commit to this single area.`,
+    bp1: `Explain why [the selected area] is important and how the broad topic affects it: [reason 1] with a concrete everyday example — [a specific scenario] — then [reason 2] with its own example.`,
+    bp2: `Give examples and practical solutions for [the selected area]: [example/solution 1] explaining how it helps, then [example/solution 2] with a short example. Keep them realistic and everyday.`,
+    concl: `Restate that [the selected area] is an important area to focus on, recap the reasons and solutions, and end with a forward-looking sentence. [Final sentence.]`
+  },
+
   discuss_both_views: {
     bp1Role: "the first view, presented fairly",
     bp2Role: "the second view, then your own opinion",
@@ -5129,7 +5142,11 @@ function generateEssayPrompt(plan, template) {
   // template directly — it already adapts to the question type via its slashed alternatives — so its
   // intro/body/conclusion phrasing is NOT replaced by the generic per-type skeletons.
   if (isBand6) {
-    template = getTypeTemplateStructure(plan.question_type, template);
+    // Focus-area single_best_option needs its own structure, not the "most
+    // pressing problem" skeleton. Select the focus variant when flagged.
+    const isFocusAreaPlan = (plan.question_type === 'single_best_option') && Array.isArray(plan.secondary_features) && plan.secondary_features.includes('focus_area');
+    const structureKey = isFocusAreaPlan ? 'single_best_option_focus' : plan.question_type;
+    template = getTypeTemplateStructure(structureKey, template);
   }
   const isNatural = (plan.generation_mode === 'natural');
 
@@ -5149,10 +5166,27 @@ You MUST write the essay using these manual ideas. Address them clearly.
     const contrast = plan.selected_ideas.contrast || [];
     
     const isOpinionAlts = (plan.question_type === 'opinion_alternatives');
+    const isFocusArea = (plan.question_type === 'single_best_option') && Array.isArray(plan.secondary_features) && plan.secondary_features.includes('focus_area');
     const isOpinionOrAgreeDisagree = ['opinion', 'agree_disagree'].includes(plan.question_type);
     const isOpinionOrPreference = ['opinion', 'agree_disagree', 'two_option_preference'].includes(plan.question_type);
     
-    if (isOpinionAlts) {
+    if (isFocusArea) {
+      const focusArea = (plan.stance || '').replace(/^focus:\s*/i, '').trim() || 'the chosen area';
+      ideasBlock = `
+=== KEY IDEAS TO USE (MANDATORY) ===
+This question asks the writer to choose ONE specific area of the broader topic and justify that choice with examples. The writer has chosen to focus on: "${focusArea}". The essay MUST commit to this ONE area only. Do NOT give a general overview of the whole topic, and do NOT discuss other areas except for a one-line mention in the introduction. This is NOT a "most pressing problem" debate and there is no need to argue that this area "outranks" the others.
+
+- Body Paragraph 1 (Why this area matters): Explain WHY "${focusArea}" is important and how the broader topic affects it. Build the paragraph around these two chosen reasons:
+  * Reason 1: "${reasons[0] || ''}" (develop it with a short, concrete, everyday explanation and example)
+  * Reason 2: "${reasons[1] || ''}" (develop it with a short, concrete, everyday explanation and example)
+
+- Body Paragraph 2 (Examples and solutions): Give concrete examples for "${focusArea}" and practical ways the issue can be approached or managed. Build the paragraph around these two chosen items:
+  * Example/Solution 1: "${solutions[0] || examples[0] || 'a relevant example or solution'}" (explain how it helps, with a short relatable example)
+  * Example/Solution 2: "${solutions[1] || examples[1] || 'another relevant example or solution'}" (explain how it helps, with a short relatable example)
+
+Keep the essay simple and focused: reasons this area matters in Body Paragraph 1, examples and solutions in Body Paragraph 2.
+`;
+    } else if (isOpinionAlts) {
       ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using exactly these chosen supporting reasons and alternative actions:
