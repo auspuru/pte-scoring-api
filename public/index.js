@@ -544,7 +544,8 @@ async function loadUserData(uid) {
           intro: '', bp1: '', bp2: '', concl: '',
           vocab: 3,
           seedIdeas: '',
-          questionType: t.type || ''
+          questionType: t.type || '',
+          secondaryFeatures: t.secondaryFeatures || []
         }));
         essays = seeded;
         currentId = seeded[0].id;
@@ -880,17 +881,17 @@ async function adminDeleteUser(uid, email) {
 const SEED_TOPICS = [
   { title: "Late Submission and Mark Deduction", question: "Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.", explanation: "Examine deducting marks for late submissions and propose your opinion with alternative recommendations.", type: "opinion_alternatives" },
   { title: "Television as a Relaxation Tool and Companion", question: "Television serves many useful functions. It helps people to relax. Besides, it can also be seen as a companion for the lonely. To what extent do you agree with this? Explain why with your own experience.", explanation: "Evaluate whether television effectively helps people relax and acts as a companion for lonely individuals.", type: "agree_disagree" },
-  { title: "Studying Old Plays and Theatre Works", question: "What are the problems and the benefits for high school students of studying plays and other works for theatre that were written centuries ago? Do you agree with it? Use your own experience to discuss it.", explanation: "Examine the benefits and problems of studying historical theatre in high schools using personal experience.", type: "advantages_disadvantages" },
+  { title: "Studying Old Plays and Theatre Works", question: "What are the problems and the benefits for high school students of studying plays and other works for theatre that were written centuries ago? Do you agree with it? Use your own experience to discuss it.", explanation: "Examine the benefits and problems of studying historical theatre in high schools using personal experience.", type: "advantages_disadvantages_opinion" },
   { title: "Combining Study and Employment", question: "Effective study requires time, comfort and peace. It is impossible to study with employment because one may distract the other. To what extent do you think the statements are realistic? Give your opinion with examples.", explanation: "Explore whether students can effectively combine work and study.", type: "agree_disagree" },
-  { title: "Experiential Learning in Education", question: "Some people point that experiential learning (i.e. learning by doing it) can work well in formal education. However, others think a traditional form of teaching is the best. Do you think experiential learning can work well in high schools or colleges?", explanation: "Explore whether experiential learning is effective in high schools and colleges.", type: "agree_disagree" },
-  { title: "Digital Materials and Libraries", question: "With the increase of new digital media available online, the role of the library has become obsolete. Therefore universities should only procure digital materials rather than constantly update textbooks. Discuss both the advantages and disadvantages of this position and give your own point of view.", explanation: "Examine whether universities should replace physical libraries with digital-only resources.", type: "advantages_disadvantages" },
+  { title: "Experiential Learning in Education", question: "Some people point that experiential learning (i.e. learning by doing it) can work well in formal education. However, others think a traditional form of teaching is the best. Do you think experiential learning can work well in high schools or colleges?", explanation: "Explore whether experiential learning is effective in high schools and colleges.", type: "education_effectiveness" },
+  { title: "Digital Materials and Libraries", question: "With the increase of new digital media available online, the role of the library has become obsolete. Therefore universities should only procure digital materials rather than constantly update textbooks. Discuss both the advantages and disadvantages of this position and give your own point of view.", explanation: "Examine whether universities should replace physical libraries with digital-only resources.", type: "advantages_disadvantages_opinion" },
   { title: "Public Transport and Road Building", question: "As cities expand, governments should look forward to creating better networks of public transport available for everyone rather than building more roads for vehicle owning population. To what extent do you agree or disagree?", explanation: "Evaluate whether governments should prioritise public transport networks over new road construction.", type: "agree_disagree" },
-  { title: "Tourism in Less Developed Countries", question: "For a less developed country, the disadvantages of tourism are as great as the advantages. Please discuss this statement, and give and explain your opinion.", explanation: "Evaluate whether tourism brings equal benefits and drawbacks to less developed nations.", type: "advantages_disadvantages" },
+  { title: "Tourism in Less Developed Countries", question: "For a less developed country, the disadvantages of tourism are as great as the advantages. Please discuss this statement, and give and explain your opinion.", explanation: "Evaluate whether tourism brings equal benefits and drawbacks to less developed nations.", type: "advantages_disadvantages_opinion" },
   { title: "Formal Written Examinations", question: "Many education systems assess students' learning using formal written examinations. Those kinds of exams are a valid method. To what extent do you agree or disagree? Give examples with your own experience.", explanation: "Evaluate formal written examinations as an assessment method using personal experience.", type: "agree_disagree" },
   { title: "Compulsory Foreign Language Learning", question: "Some people think learning a foreign language at school should be compulsory. To what extent do you agree with it? Use your experience or examples to support your viewpoint.", explanation: "Evaluate whether foreign language learning should be compulsory in schools.", type: "agree_disagree" },
   { title: "The Most Pressing Global Problem", question: "In today's world, different government and international organisations are confronting many global problems. What is the most pressing problem among them and give solutions?", explanation: "Select one global problem as most pressing and justify your choice with practical solutions.", type: "single_best_option" },
-  { title: "Medical Technology and Life Expectancy", question: "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?", explanation: "Determine whether increasing life expectancy through medical technology is beneficial or harmful.", type: "positive_negative_impact" },
-  { title: "Parental Legal Responsibility", question: "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.", explanation: "Evaluate whether parents should bear legal responsibility for their children's behaviour.", type: "agree_disagree" },
+  { title: "Medical Technology and Life Expectancy", question: "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?", explanation: "Determine whether increasing life expectancy through medical technology is beneficial or harmful.", type: "blessing_curse" },
+  { title: "Parental Legal Responsibility", question: "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.", explanation: "Evaluate whether parents should bear legal responsibility for their children's behaviour.", type: "policy_recommendation" },
   { title: "Building Design and Daily Life", question: "Do you think the design of buildings affects, positively or negatively, where people live and work?", explanation: "Evaluate how building design influences living and working environments.", type: "positive_negative_impact" },
   { title: "Mass Media Influence on Young People", question: "The mass media, such as TV, radio and newspapers, have an influence on people, particularly on younger generations. It plays a pivotal role in shaping the opinions of people, especially teenagers and young people. To what extent do you agree with this? Please give examples.", explanation: "Evaluate the extent to which mass media shapes the opinions of teenagers and young people.", type: "agree_disagree" },
   { title: "Modern Inventions and Their Impact", question: "In our technological world, the number of new inventions has been evolving on a daily basis. Please describe a new invention and determine whether it brings beneficial or detrimental impact to society.", explanation: "Describe a modern invention and evaluate whether its societal impact is positive or negative.", type: "positive_negative_impact" },
@@ -901,16 +902,16 @@ const SEED_TOPICS = [
   { title: "Shopping Malls Replacing Small Shops", question: "Large shopping malls are replacing small shops. What is your opinion on this? Do you think this is a good or bad change?", explanation: "Evaluate whether the replacement of small shops by large shopping malls is positive or negative.", type: "positive_negative_impact" },
   { title: "Youth Unemployment and Shorter Working Week", question: "Unemployment among young people is a serious problem. One solution has been suggested is to shorten the working week. What do you think are the advantages and disadvantages? Do you think this policy should apply to just young workers or the whole workforce?", explanation: "Evaluate shortening the working week to address youth unemployment.", type: "advantages_disadvantages" },
   { title: "Fewer Working Hours in the Future", question: "\"In the future, people will work fewer hours at their jobs than they do now.\" Do you agree with the statement? Please support your opinion with your own experience.", explanation: "Evaluate whether future working hours will decrease compared to present levels.", type: "agree_disagree" },
-  { title: "Maximum Wage for High-Paying Jobs", question: "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?", explanation: "Evaluate whether maximum wage caps should be applied to high-paying jobs.", type: "agree_disagree" },
+  { title: "Maximum Wage for High-Paying Jobs", question: "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?", explanation: "Evaluate whether maximum wage caps should be applied to high-paying jobs.", type: "policy_recommendation" },
   { title: "Famous People and the Right to Privacy", question: "People who are famous entertainers or sportspeople should give up the right to privacy, because this is the price of fame. To what extent do you agree/disagree with this point of view? Give your opinion with your experiences.", explanation: "Evaluate whether celebrities should sacrifice privacy as the price of fame.", type: "agree_disagree" },
-  { title: "Studying Climate Change", question: "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.", explanation: "Choose a specific area of climate change to study and justify your choice with examples.", type: "single_best_option" },
-  { title: "Work-Life Balance", question: "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?", explanation: "Explore the importance of work-life balance and reasons why it is difficult to maintain.", type: "cause_effect" },
+  { title: "Studying Climate Change", question: "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.", explanation: "Choose a specific area of climate change to study and justify your choice with examples.", type: "single_best_option", secondaryFeatures: ["focus_area"] },
+  { title: "Work-Life Balance", question: "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?", explanation: "Explore the importance of work-life balance and reasons why it is difficult to maintain.", type: "importance_reasons" },
   { title: "Experience is the Best Teacher", question: "Some people argue that experience is the best teacher. Life experiences can teach more effectively than books or formal school education. How far do you agree with this idea? Support your opinion with reasons and/or your personal experience.", explanation: "Evaluate whether life experience teaches more effectively than formal education.", type: "agree_disagree" },
   { title: "AI and Foreign Language Learning", question: "While artificial intelligence becomes so advanced, people can use computers to translate foreign languages that makes learning a foreign language unnecessary. To what extent do you agree with it?", explanation: "Examine whether AI translation makes foreign language learning unnecessary.", type: "agree_disagree" },
   { title: "Travel and Quality of Education", question: "Some believe the value of travel is overrated. 'One brilliant scholar never leaves the home bases.' People argue whether travel is a necessary component of quality education or not. To what extent do you agree with it?", explanation: "Ask whether travel is essential for quality education.", type: "agree_disagree" },
   { title: "City vs Countryside Living", question: "Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.", explanation: "Compare city and countryside living and justify personal preference.", type: "two_option_preference" },
   { title: "Growing Up in the 21st Century", question: "It is harder for children to grow up in the 21st century than it was in the past. How far do you agree with this statement? Give your opinions.", explanation: "Evaluate whether growing up today is more difficult than in previous generations.", type: "agree_disagree" },
-  { title: "Historic Buildings vs Modern Housing", question: "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.", explanation: "Evaluate whether governments should prioritise historic building restoration over modern housing.", type: "advantages_disadvantages" },
+  { title: "Historic Buildings vs Modern Housing", question: "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.", explanation: "Evaluate whether governments should prioritise historic building restoration over modern housing.", type: "advantages_disadvantages_opinion" },
   { title: "Communication Methods in Modern Society", question: "The means of communicating in society today has changed markedly over the last ten years. In your opinion, what are the positive and negative impacts of this change?", explanation: "Evaluate the positive and negative impacts of modern communication technology changes over the last decade.", type: "positive_negative_impact" },
   { title: "The Value of Humanities", question: "Some say that in today's world the value of humanities has been eclipsed by the necessity of preparing for specific wealth-producing careers, such as medicine. Discuss whether you think there is a role in today's changing world for study of the humanities.", explanation: "Evaluate whether study of the humanities still has a role in today's wealth-focused world.", type: "discuss_both_views", badge: "Pearson Mock Test v2" }
 ];
@@ -1270,6 +1271,20 @@ const QUESTION_TYPES = {
       "BP1 must support the chosen stance",
       "BP2 must suggest practical alternative actions",
       "Conclusion must reiterate the opinion and summarize alternatives"
+    ]
+  },
+  importance_reasons: {
+    id: "importance_reasons",
+    displayName: "Importance + reasons",
+    stanceRequired: false,
+    bp1Role: "how important it is / why it matters",
+    bp2Role: "the reasons it is hard to achieve",
+    conclusionRole: "restate importance and the main obstacle",
+    detect: "How important is something, and why is it hard to achieve?",
+    validationRules: [
+      "BP1 must explain why it matters / how important it is",
+      "BP2 must give the reasons it is hard to achieve (obstacles, not solutions)",
+      "Conclusion must restate the importance and the main obstacle"
     ]
   }
 };
@@ -10441,7 +10456,8 @@ function syncSeedTopics() {
         intro: '', bp1: '', bp2: '', concl: '',
         vocab: 3,
         seedIdeas: '',
-        questionType: t.type || ''
+        questionType: t.type || '',
+        secondaryFeatures: t.secondaryFeatures || []
       });
       changed = true;
     } else {
@@ -10450,6 +10466,7 @@ function syncSeedTopics() {
       if (item.explanation !== t.explanation) { item.explanation = t.explanation; changed = true; }
       if ((item.badge || '') !== (t.badge || '')) { item.badge = t.badge || ''; changed = true; }
       if (item.questionType !== t.type && t.type) { item.questionType = t.type; changed = true; }
+      if (t.secondaryFeatures && JSON.stringify(item.secondaryFeatures || []) !== JSON.stringify(t.secondaryFeatures)) { item.secondaryFeatures = t.secondaryFeatures.slice(); changed = true; }
     }
   });
   return changed;
@@ -10478,7 +10495,8 @@ function initOfflineMode() {
       intro: '', bp1: '', bp2: '', concl: '',
       vocab: 3,
       seedIdeas: '',
-      questionType: t.type || ''
+      questionType: t.type || '',
+      secondaryFeatures: t.secondaryFeatures || []
     }));
     currentId = essays[0].id;
     safeLSSet('ipt_essays_v2', JSON.stringify(essays));

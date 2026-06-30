@@ -5096,6 +5096,24 @@ const QUESTION_TYPE_TEMPLATES = {
     bp1: `Present [the chosen example] and the MAIN justification: [reason 1] with support from study, observation, or experience — [a specific scenario] — then [reason 2] with its own example.`,
     bp2: `Discuss the wider IMPACT, a LIMITATION, or a RECOMMENDATION: [point 1] with an example, then [point 2], showing balanced judgement rather than only praise.`,
     concl: `Restate your specific choice and the core reason, add your recommendation, and close. [Final sentence.]`
+  },
+
+  education_effectiveness: {
+    bp1Role: "the educational benefits / why the method is effective",
+    bp2Role: "the drawbacks, limits, or a better alternative method",
+    intro: `Introduce [paraphrase the teaching method/approach] and why its effectiveness is debated. State clearly whether you find it HIGHLY EFFECTIVE, INEFFECTIVE, or effective only under certain conditions, and that this essay weighs it against [the alternative method if the question names one]. [State your verdict.]`,
+    bp1: `Present the BENEFITS / why it works: [benefit 1] with a concrete example — [a specific scenario] — then [benefit 2] with its own example. Keep this paragraph focused on why the method is educationally effective.`,
+    bp2: `Present the LIMITS, or where a different method works better: [limitation 1] with an example, then [limitation 2 / the alternative approach], showing the method is not enough on its own. (BP2 = drawbacks / limits / alternative method.)`,
+    concl: `Restate your effectiveness verdict in fresh words, weigh the benefits against the limits, and finish on a forward-looking note — e.g. it works best combined with [the alternative]. [Final verdict.]`
+  },
+
+  policy_recommendation: {
+    bp1Role: "the reasons to support the policy",
+    bp2Role: "the limitations, risks, or how to implement it",
+    intro: `Introduce [paraphrase the proposed policy/rule] and why it is debated. State your recommendation clearly — SUPPORT it, OPPOSE it, or support it WITH CONDITIONS — and that this essay explains why. [State your recommendation.]`,
+    bp1: `Give the REASONS FOR the policy: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example. Keep this paragraph about why the policy is justified.`,
+    bp2: `Set out the LIMITATIONS or IMPLEMENTATION challenges: [limitation/risk 1] with an example — e.g. how hard it is to enforce or who it harms — then [limitation 2], showing where the policy needs conditions. (BP2 = limits / how to implement it.)`,
+    concl: `Restate your recommendation in fresh words, weigh the benefits against the limits, and end with a PRACTICAL recommendation — e.g. adopt it with [the condition], or use [the better alternative] instead. [Final recommendation.]`
   }
 };
 
@@ -5109,6 +5127,7 @@ Object.keys(QUESTION_TYPE_TEMPLATES).forEach(k => {
 
 /* Relation/other variants that share a skeleton. */
 const TYPE_TEMPLATE_ALIASES = {
+  advantages_disadvantages_opinion: "advantages_disadvantages",
   causes_solutions: "problem_solution",
   cause_solution: "problem_solution",
   problem_effect: "cause_effect",
