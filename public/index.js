@@ -1297,6 +1297,391 @@ QUESTION_TYPES.causes_effects = QUESTION_TYPES.cause_effect;
 QUESTION_TYPES.problems_benefits = QUESTION_TYPES.advantages_disadvantages;
 QUESTION_TYPES.positive_negative_impacts = QUESTION_TYPES.positive_negative_impact;
 
+// ============================================================
+//  v20.2.0 — DETERMINISTIC CLASSIFICATION + STATIC EXPLANATIONS
+//  Classification is no longer trusted to the AI when a curated
+//  library type or a confident local pattern match exists. The
+//  AI only classifies unseen custom questions, and even then it
+//  is constrained by explicit disambiguation rules.
+// ============================================================
+
+function normalizeQuestionType(t) {
+  const key = String(t || '').trim();
+  if (!key) return '';
+  if (QUESTION_TYPES[key] && QUESTION_TYPES[key].id === key) return key;
+  const map = {
+    single_focus: 'two_option_preference',
+    problems_solutions: 'problem_solution',
+    causes_solutions: 'problem_solution',
+    causes_effects: 'cause_effect',
+    problems_effects: 'problem_effect',
+    problems_benefits: 'advantages_disadvantages',
+    positive_negative_impacts: 'positive_negative_impact',
+    advantage_disadvantage: 'advantages_disadvantages',
+    agree_or_disagree: 'agree_disagree',
+    discuss_both: 'discuss_both_views',
+    best_option: 'single_best_option'
+  };
+  if (map[key]) return map[key];
+  if (QUESTION_TYPES[key]) return QUESTION_TYPES[key].id || key;
+  return key;
+}
+
+// Ordered, deterministic pattern classifier. First hit wins.
+// Returns { type, secondaryFeatures, confident, rule }.
+// confident=false means only the last-resort fallback fired and the
+// AI is allowed to classify instead.
+function classifyQuestionLocally(q) {
+  const out = { type: 'opinion', secondaryFeatures: [], confident: false, rule: 'fallback' };
+  if (!q) return out;
+  const s = String(q).toLowerCase();
+  const hit = (type, rule, feats) => {
+    out.type = type; out.rule = rule; out.confident = true;
+    out.secondaryFeatures = feats || [];
+    return out;
+  };
+
+  // 0. Legacy curated exception kept from the old staticClassifyQuestion.
+  if (/(age restrictions?|minimum age)/.test(s)) return hit('example_specific', 'age_restriction');
+
+  // 1. "…what alternatives / what should be done instead" + agreement context.
+  if ((/alternativ/.test(s) || /what (could|should|can)[\s\S]{0,40}\binstead\b/.test(s)) &&
+      /(agree|opinion|do you think|do you believe|support)/.test(s)) {
+    return hit('opinion_alternatives', 'alternatives');
+  }
+
+  // Shared signals for the two-sided rules below.
+  const advWords = /(advantages? and disadvantages?|disadvantages? and advantages?|benefits? and drawbacks?|drawbacks? and benefits?|problems? and (the )?benefits?|benefits? and (the )?problems?|pros and cons|merits and demerits)/.test(s);
+  const opinionDemand = /(your opinion|your (own )?(view|point of view)|do you believe|do you agree|outweigh)/.test(s) ||
+    (/do you think/.test(s) && !/what do you think (are|is)/.test(s));
+
+  // 2a. Explicit two-views discussion.
+  if (/discuss both (these |the )?(views|sides|opinions|perspectives)/.test(s) ||
+      /discuss these (two )?(views|sides|opinions)/.test(s)) {
+    return hit('discuss_both_views', 'discuss_both');
+  }
+
+  // 6/7 hoisted: blessing/curse and positive/negative development are more
+  // specific than the generic "some…others" two-views pattern below.
+  if (/blessing/.test(s) && /curse/.test(s)) return hit('blessing_curse', 'blessing_curse');
+  if (/positive (or|and) negative/.test(s) || /negative or positive/.test(s)) {
+    return hit('positive_negative_impact', 'pos_neg');
+  }
+
+  // 2b. Two views presented ("some think X … others think Y") + a view ask.
+  if (/some (people )?(think|believe|say|argue|feel|claim)[\s\S]{0,140}\bothers (think|believe|say|argue|feel|claim|prefer)/.test(s) &&
+      /(what is your (view|opinion)|give your (own )?opinion|\bdiscuss\b)/.test(s)) {
+    return hit('discuss_both_views', 'some_others_views');
+  }
+
+  // 2c. "Discuss both the advantages and disadvantages" is an adv/disadv ask,
+  //     not a two-views essay — only bare "discuss both" without adv-words
+  //     falls to discuss_both_views.
+  if (/discuss both/.test(s) && !advWords) {
+    return hit('discuss_both_views', 'discuss_both');
+  }
+
+  // 2d. An interrogative ask for BOTH sides ("What are the problems and the
+  //     benefits…?") outranks a trailing "do you agree" — the task is to list
+  //     both sides first.
+  if (advWords && /what (are|do you think are) (the )?(advantages?|benefits?|problems?|drawbacks?|pros)/.test(s)) {
+    return hit(opinionDemand ? 'advantages_disadvantages_opinion' : 'advantages_disadvantages',
+      opinionDemand ? 'adv_disadv_opinion' : 'adv_disadv');
+  }
+
+  // 3. Agree / disagree — NEVER problem_solution, even if the statement
+  //    inside the prompt mentions problems, causes or solutions.
+  if (/to what extent do you agree/.test(s) || /agree or disagree/.test(s) || /\bdo you agree\b/.test(s)) {
+    return hit('agree_disagree', 'agree_disagree');
+  }
+
+  // 4/5. Advantages & disadvantages (with or without an opinion demand).
+  if (/outweigh/.test(s)) return hit('advantages_disadvantages_opinion', 'outweigh');
+  if (advWords && opinionDemand) {
+    return hit('advantages_disadvantages_opinion', 'adv_disadv_opinion');
+  }
+  if (advWords) return hit('advantages_disadvantages', 'adv_disadv');
+
+  // 8. "Most pressing problem" family → single_best_option + solution_required.
+  if (/(most (pressing|serious|important|significant|urgent)|biggest|greatest) (global |single )?(problem|issue|challenge)/.test(s) ||
+      /(which|what) (one |single )?(problem|issue|challenge)[\s\S]{0,50}most (pressing|serious|important|significant|urgent)/.test(s)) {
+    return hit('single_best_option', 'most_pressing', ['solution_required']);
+  }
+
+  // 9. "Choose one area / aspect to focus on" → single_best_option + focus_area.
+  if (/(which|what) (one )?(area|aspect|field|sector|part)[\s\S]{0,60}(focus|choose|select|research|address)/.test(s) ||
+      /choose one (area|aspect|field)/.test(s)) {
+    return hit('single_best_option', 'focus_area', ['focus_area']);
+  }
+
+  // 10. Responsibility questions.
+  if (/who(se)?[\s\S]{0,60}responsib/.test(s) ||
+      (/responsib/.test(s) && /(governments?|individuals?|companies|parents?|schools?)[\s\S]{0,50}\bor\b/.test(s))) {
+    return hit('responsibility', 'responsibility');
+  }
+
+  // 11. Relation matrix — only when the question ITSELF asks for
+  //     solutions/effects, not when the topic merely mentions a problem.
+  const wantsSolution = /(solutions?|measures?|remed(y|ies)|what can be done|what should be done|steps[\s\S]{0,30}taken|suggest (some )?ways|ways to (solve|tackle|address|reduce|combat|prevent|overcome)|what (can|could|should)[\s\S]{0,30}\bdo\b|to (address|tackle|solve|combat|overcome) (the |this |these )?(problem|issue|situation)|how (can|could|should)[\s\S]{0,60}(solve|solved|tackle|tackled|address|addressed|reduce|reduced|prevent|prevented|overcome|deal))/.test(s);
+  const wantsEffect = /(effects?|impacts?|consequences?)\b/.test(s) || /how (do|does)[\s\S]{0,60}affect/.test(s);
+  const asksCause = /(what|main|major|possible|the) causes?\b/.test(s) || /\bcauses? of\b/.test(s) || /reasons? (for|behind|why)/.test(s) || /why (do|does|is|are|has|have)/.test(s);
+  const asksProblem = /\bproblems?\b/.test(s) || /\bissues?\b/.test(s) || /\bchallenges?\b/.test(s) || /difficult(y|ies)/.test(s);
+  if (wantsSolution) {
+    // An explicit "what are the causes…" ask outranks a scene-setting "problem" mention.
+    return hit(asksCause ? 'cause_solution' : 'problem_solution', 'relation_solution');
+  }
+  if (wantsEffect && (asksCause || asksProblem)) {
+    return hit(asksCause ? 'cause_effect' : 'problem_effect', 'relation_effect');
+  }
+
+  // 12. Two-option personal preference.
+  if (/which (of these |one |option )?(do|would) you (prefer|choose)/.test(s) ||
+      /would you (rather|prefer)/.test(s) || /is it better to/.test(s) ||
+      /which is better/.test(s) || /\bdo you prefer\b/.test(s)) {
+    return hit('two_option_preference', 'preference');
+  }
+
+  // 13. Plain opinion (confident forms only).
+  if (/what is your (own )?(view|opinion)/.test(s) || /give your (own )?opinion/.test(s) ||
+      /in your opinion/.test(s) || /do you (think|believe|support)/.test(s) ||
+      (/\bshould\b/.test(s) && /\?/.test(s))) {
+    return hit('opinion', 'opinion');
+  }
+
+  return out; // fallback: opinion, confident:false → AI may classify.
+}
+
+// ------------------------------------------------------------
+// Static, deterministic per-type explanations shown to students
+// BEFORE they pick a stance or any ideas. No AI involved.
+// ------------------------------------------------------------
+const TYPE_EXPLANATIONS = {
+  opinion: {
+    ask: 'This question wants YOUR view. You must decide what you think about the statement and defend that one view for the whole essay.',
+    bp1: 'Your two strongest reasons for your view, each with a simple everyday example.',
+    bp2: 'More support for the SAME view (a further reason, or a limited concession that you immediately answer).',
+    concl: 'Restate your view clearly — no new ideas.',
+    trap: 'Do NOT list problems and solutions, and do NOT give both sides equal weight. One clear side, start to finish.'
+  },
+  agree_disagree: {
+    ask: 'You must say HOW FAR you agree or disagree with the statement — from strongly agree to strongly disagree — and defend that exact level for the whole essay.',
+    bp1: 'Two strong reasons for the side you chose, each with an everyday example.',
+    bp2: 'Further support for your side. A short contrast is allowed only for “partially” stances.',
+    concl: 'Repeat your exact level of agreement.',
+    trap: 'This is NOT a problem/solution essay and NOT a balanced discussion. Pick a side and stay on it.'
+  },
+  advantages_disadvantages: {
+    ask: 'This question asks you to explain BOTH the good points and the bad points of the topic. Your personal opinion is not the focus.',
+    bp1: 'Two clear advantages, each with an everyday example.',
+    bp2: 'Two clear disadvantages, each with an everyday example.',
+    concl: 'A balanced judgement or a short recommendation.',
+    trap: 'Do NOT argue for one side only, and do NOT turn it into problems + solutions. Both sides must appear.'
+  },
+  advantages_disadvantages_opinion: {
+    ask: 'This question asks whether the good points OUTWEIGH the bad points — so you must cover both sides AND finish with a clear verdict.',
+    bp1: 'Two advantages, each with an everyday example.',
+    bp2: 'Two disadvantages, each with an everyday example.',
+    concl: 'Your clear verdict: which side wins, and why.',
+    trap: 'Covering both sides is required, but sitting on the fence at the end is not allowed — the conclusion must pick a winner.'
+  },
+  problem_solution: {
+    ask: 'This question asks you to identify the PROBLEMS around the topic and then suggest practical SOLUTIONS that fix those exact problems.',
+    bp1: 'Two specific problems, each with an everyday example.',
+    bp2: 'Two solutions — one matched to each problem from Body 1.',
+    concl: 'Name the strongest solution.',
+    trap: 'Every solution must answer a problem you actually raised. Do NOT drift into agreeing/disagreeing with anything.'
+  },
+  cause_solution: {
+    ask: 'This question asks WHY the situation happens (causes) and WHAT can be done about it (solutions).',
+    bp1: 'Two clear causes, each with an everyday example.',
+    bp2: 'Two solutions — one matched to each cause from Body 1.',
+    concl: 'Name the strongest solution.',
+    trap: 'Causes explain WHY it happens — they are not the same as the problem itself. Pair each solution with its cause.'
+  },
+  cause_effect: {
+    ask: 'This question asks WHY the situation happens (causes) and WHAT HAPPENS as a result (effects). No solutions are needed.',
+    bp1: 'Two main causes, each with an everyday example.',
+    bp2: 'Two effects that directly follow from those causes.',
+    concl: 'Summarise the main cause-and-effect chain.',
+    trap: 'Do NOT offer solutions — the question never asked for them.'
+  },
+  problem_effect: {
+    ask: 'This question asks you to identify the PROBLEMS and explain their EFFECTS or consequences. No solutions are needed.',
+    bp1: 'Two main problems, each with an everyday example.',
+    bp2: 'Two effects that directly follow from those problems.',
+    concl: 'Summarise the main problem-and-effect chain.',
+    trap: 'Do NOT offer solutions — the question never asked for them.'
+  },
+  discuss_both_views: {
+    ask: 'Two opposing views are given. You must explain BOTH views fairly, and (if asked) give your own opinion at the end.',
+    bp1: 'Why supporters of the FIRST view think the way they do, with an example.',
+    bp2: 'Why supporters of the SECOND view think the way they do, with an example.',
+    concl: 'Your own position, stated clearly.',
+    trap: 'Explaining only one view fails the question. Give both views real space before you take a side.'
+  },
+  two_option_preference: {
+    ask: 'Two options are given and you must CHOOSE ONE and justify your choice. The whole essay backs the option you pick.',
+    bp1: 'Two strong reasons your chosen option is better, each with an everyday example.',
+    bp2: 'More support for your option; the other option may appear only as a brief contrast.',
+    concl: 'Repeat your chosen option clearly.',
+    trap: 'A fully balanced essay is wrong here. Your chosen option must control every paragraph.'
+  },
+  responsibility: {
+    ask: 'This question asks WHO should take responsibility — governments, companies, or individuals. You must decide and defend your judgement.',
+    bp1: 'Why your chosen group carries the main responsibility, with an example.',
+    bp2: 'The supporting role of the other groups, or the limits of relying on them.',
+    concl: 'Your responsibility judgement, restated.',
+    trap: 'Saying “everyone is responsible” without ranking who matters MOST is a weak answer. Commit to a judgement.'
+  },
+  positive_negative_impact: {
+    ask: 'This question asks whether the trend is a POSITIVE or NEGATIVE development. You weigh both sides and deliver a verdict.',
+    bp1: 'Two positive effects, each with an everyday example.',
+    bp2: 'Two negative effects, each with an everyday example.',
+    concl: 'Your verdict: mainly positive or mainly negative.',
+    trap: 'This is not a problem/solution question. Do NOT suggest fixes — evaluate the development.'
+  },
+  blessing_curse: {
+    ask: 'This question asks whether the topic is a blessing (mostly good) or a curse (mostly harmful). You weigh both sides and give a verdict.',
+    bp1: 'Two ways it acts as a blessing, each with an everyday example.',
+    bp2: 'Two ways it acts as a curse, each with an everyday example.',
+    concl: 'Your verdict: blessing, curse, or blessing-with-conditions.',
+    trap: 'Do NOT drift into solutions. The task is to judge, not to fix.'
+  },
+  compare_two_sides: {
+    ask: 'This question asks you to COMPARE two things or approaches — how they differ and which matters more.',
+    bp1: 'The first side: its key features, with an example.',
+    bp2: 'The second side: its key features, with an example.',
+    concl: 'The most important difference, or which side matters more.',
+    trap: 'Describing each side in isolation is not comparing. Keep linking them to each other.'
+  },
+  single_best_option: {
+    ask: 'This question asks you to pick ONE option as the most important and justify that single choice.',
+    bp1: 'Why your chosen option is the most important, with an example.',
+    bp2: 'What can be done about it, or further support for your choice.',
+    concl: 'Repeat your chosen option as the clear answer.',
+    trap: 'Do NOT discuss several options equally. Choose ONE early and build everything around it.'
+  },
+  example_specific: {
+    ask: 'This question asks for your position on a specific practical measure, supported by concrete examples.',
+    bp1: 'Your first main point, grounded in a concrete everyday example.',
+    bp2: 'Your second main point, again grounded in a concrete example.',
+    concl: 'Restate your position on the measure.',
+    trap: 'Vague generalisations fail here — the examples ARE the essay. Keep them simple and real.'
+  },
+  policy_recommendation: {
+    ask: 'This question asks what POLICIES or actions should be taken. You recommend measures and justify them.',
+    bp1: 'Your first recommended measure and why it works, with an example.',
+    bp2: 'Your second recommended measure and why it works, with an example.',
+    concl: 'The recommendation you consider most urgent.',
+    trap: 'Recommendations must be actionable — “people should care more” is not a policy.'
+  },
+  rights_ethics: {
+    ask: 'This question asks whether something is RIGHT or ETHICAL. You must take a moral position and defend it.',
+    bp1: 'Your strongest ethical reasons, with an everyday example.',
+    bp2: 'Further support, or the limits of the opposing moral view.',
+    concl: 'Your moral position, restated.',
+    trap: 'Do NOT reduce it to advantages vs disadvantages — the question is about right and wrong.'
+  },
+  future_prediction: {
+    ask: 'This question asks what WILL HAPPEN in the future. You make a clear prediction and support it.',
+    bp1: 'Your first predicted change and the reasoning behind it.',
+    bp2: 'Your second predicted change, or the main factor that could alter the outcome.',
+    concl: 'Your overall prediction, restated.',
+    trap: 'Hedging everything (“maybe, perhaps, it depends”) reads as no answer. Commit to a prediction.'
+  },
+  social_impact: {
+    ask: 'This question asks how the trend affects SOCIETY — communities, families, relationships.',
+    bp1: 'The first major social effect, with an everyday example.',
+    bp2: 'The second major social effect, with an everyday example.',
+    concl: 'The overall social impact, summarised.',
+    trap: 'Keep the lens on society, not on individuals’ private gains or on technical details.'
+  },
+  education_effectiveness: {
+    ask: 'This question asks whether an educational approach actually WORKS. You evaluate its effectiveness.',
+    bp1: 'Where and why the approach works, with a classroom-level example.',
+    bp2: 'Where it falls short, or what it depends on.',
+    concl: 'Your verdict on its effectiveness.',
+    trap: 'Do NOT just describe the approach — the question asks you to judge it.'
+  },
+  opinion_alternatives: {
+    ask: 'This question asks whether you agree with a practice AND what could be done INSTEAD. Two jobs: your stance, plus alternatives.',
+    bp1: 'Two reasons supporting your stance on the practice, with examples.',
+    bp2: 'Two alternative actions that could be taken instead.',
+    concl: 'Your stance plus the alternative you rate highest.',
+    trap: 'Forgetting the alternatives loses half the marks. Body 2 must offer real “instead” actions.'
+  },
+  importance_reasons: {
+    ask: 'This question asks HOW IMPORTANT something is and WHY it is hard to achieve.',
+    bp1: 'Why it matters — its importance, with an everyday example.',
+    bp2: 'The main obstacles that make it hard to achieve (not solutions).',
+    concl: 'Restate the importance and the biggest obstacle.',
+    trap: 'Body 2 is about obstacles, NOT solutions — do not start fixing things.'
+  }
+};
+
+function buildQuestionExplanationHtml(e, activeType, typeCfg) {
+  const cfg = typeCfg || QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  const feats = (e && e.secondaryFeatures) || [];
+  let ex = TYPE_EXPLANATIONS[activeType];
+
+  // Sub-variant overrides for single_best_option.
+  if (activeType === 'single_best_option' && feats.includes('focus_area')) {
+    ex = {
+      ask: 'This question asks you to choose ONE focus area of the broad topic and justify that single choice.',
+      bp1: 'Why your chosen area matters most — two reasons, with everyday examples.',
+      bp2: 'Concrete examples and practical solutions for YOUR area.',
+      concl: 'Repeat your chosen focus area as the clear answer.',
+      trap: 'This is NOT a two-sided debate and NOT problem/solution for the whole topic. One area, fully developed.'
+    };
+  } else if (activeType === 'single_best_option' && feats.includes('solution_required')) {
+    ex = {
+      ask: 'This question asks you to name the MOST PRESSING problem and show what can be done about it.',
+      bp1: 'Why your chosen problem is the most serious — two causes or challenges behind it.',
+      bp2: 'Practical solutions matched to those causes.',
+      concl: 'Repeat your chosen problem and the strongest solution.',
+      trap: 'Do NOT list several unrelated problems. ONE problem, argued deeply, then solved.'
+    };
+  }
+
+  if (!ex) {
+    ex = {
+      ask: `This question asks you to write a "${cfg.displayName}" essay: ${cfg.detect}.`,
+      bp1: cfg.bp1Role || 'develop your first main point with an example',
+      bp2: cfg.bp2Role || 'develop your second main point with an example',
+      concl: cfg.conclusionRole || 'summarise your answer clearly',
+      trap: ''
+    };
+  }
+
+  // Slot in detected options where the type is built around named options.
+  let optionsLine = '';
+  const opts = (e && e.detectedOptions) || [];
+  if (opts.length >= 2 && ['two_option_preference', 'discuss_both_views'].includes(activeType)) {
+    optionsLine = `<div style="margin-top:6px;">The two options here are <strong>${escapeHtml(opts[0])}</strong> and <strong>${escapeHtml(opts[1])}</strong>.</div>`;
+  } else if (opts.length >= 2 && activeType === 'single_best_option') {
+    optionsLine = `<div style="margin-top:6px;">Your choices: ${opts.map(o => `<strong>${escapeHtml(o)}</strong>`).join(' · ')}.</div>`;
+  }
+
+  const row = (label, text) => `
+      <div style="display:flex; gap:8px; align-items:baseline;">
+        <span style="flex:0 0 92px; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; color:#6b5d3f;">${label}</span>
+        <span>${escapeHtml(text)}</span>
+      </div>`;
+
+  return `
+    <div class="question-explainer" style="background:#fdf9ef; border:1px solid #e8dcc0; border-radius:8px; padding:12px 14px; margin-bottom:12px; font-size:12px; color:#4a4030; line-height:1.55;">
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; font-weight:800; color:#8a713d; margin-bottom:6px;">📖 What this question is asking</div>
+      <div>${escapeHtml(ex.ask)}</div>
+      ${optionsLine}
+      <div style="display:flex; flex-direction:column; gap:4px; margin-top:9px; padding-top:9px; border-top:1px dashed #e8dcc0;">
+        ${row('Body 1', ex.bp1)}
+        ${row('Body 2', ex.bp2)}
+        ${row('Conclusion', ex.concl)}
+      </div>
+      ${ex.trap ? `<div style="margin-top:9px; padding:7px 10px; background:#fbeee2; border-left:3px solid #d98f4e; border-radius:4px; color:#7a4a1e;"><strong>⚠ Watch out:</strong> ${escapeHtml(ex.trap)}</div>` : ''}
+    </div>`;
+}
+
 
 // ============================================================
 //  UNIVERSAL ESSAY STATE HELPERS & MODULES
@@ -1306,14 +1691,11 @@ function getActiveQuestionType(e) {
   if (!e) return 'advantages_disadvantages';
   let t = e.manualQuestionTypeOverride || e.questionType || e.detectedQuestionType || 'advantages_disadvantages';
   const qLower = (e.question || '').toLowerCase();
-  if (qLower.includes('opinion') && qLower.includes('alternative')) {
+  // The student's manual override is a deliberate choice — never hijack it.
+  if (!e.manualQuestionTypeOverride && qLower.includes('opinion') && qLower.includes('alternative')) {
     t = 'opinion_alternatives';
   }
-  if (t === 'single_focus') t = 'two_option_preference';
-  if (t === 'problems_solutions' || t === 'causes_solutions') t = 'problem_solution';
-  if (t === 'causes_effects') t = 'cause_effect';
-  if (t === 'problems_benefits') t = 'advantages_disadvantages';
-  if (t === 'positive_negative_impacts') t = 'positive_negative_impact';
+  t = normalizeQuestionType(t) || 'advantages_disadvantages';
   return t;
 }
 
@@ -1335,26 +1717,9 @@ function isStrongStance(activeType, stance) {
 }
 
 function staticClassifyQuestion(q) {
-  if (!q) return 'advantages_disadvantages';
-  const lower = q.toLowerCase();
-  if (lower.includes('age restriction') || lower.includes('minimum age') || lower.includes('age restrictions')) return 'example_specific';
-  if (lower.includes('most pressing problem') || lower.includes('most important issue') || lower.includes('biggest problem') || lower.includes('most serious global issue') || lower.includes('most serious problem')) {
-    return 'single_best_option';
-  }
-  if (lower.includes('agree') && lower.includes('disagree')) return 'agree_disagree';
-  if (lower.includes('advantages') && lower.includes('disadvantages') && (lower.includes('opinion') || lower.includes('outweigh'))) return 'advantages_disadvantages_opinion';
-  if (lower.includes('advantages') && lower.includes('disadvantages')) return 'advantages_disadvantages';
-  if (lower.includes('discuss') && lower.includes('views')) return 'discuss_both_views';
-  if (lower.includes('problems') && lower.includes('solutions')) return 'problem_solution';
-  if (lower.includes('causes') && lower.includes('solutions')) return 'problem_solution';
-  if (lower.includes('causes') && lower.includes('effects')) return 'cause_effect';
-  if (lower.includes('curse') || lower.includes('blessing')) return 'blessing_curse';
-  if (lower.includes('positive') && lower.includes('negative')) return 'positive_negative_impact';
-  if (lower.includes('responsibility') || lower.includes('responsible')) return 'responsibility';
-  if (lower.includes('which') && (lower.includes('better') || lower.includes('prefer'))) return 'two_option_preference';
-  if (lower.includes('opinion') && lower.includes('alternative')) return 'opinion_alternatives';
-  if (lower.includes('opinion')) return 'opinion';
-  return 'opinion';
+  // Kept for backward compatibility (old essays loaded without a type).
+  // Now backed by the deterministic rule classifier above.
+  return classifyQuestionLocally(q).type;
 }
 
 function getPairedTextForIdea(e, leftIdea, leftIdx) {
@@ -6232,6 +6597,23 @@ async function aiSuggestIdeas() {
   const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
   const isBand6 = (effectiveTplKey === 'band6');
 
+  // ---- v20.2.0 classification lock -------------------------------------
+  // Priority: (1) the student's manual override, (2) the curated library
+  // type stamped on seed topics, (3) a confident local pattern match.
+  // Only when none of these exist is the AI allowed to classify.
+  const isSeedEssay = typeof e.id === 'string' && e.id.indexOf('seed_') === 0;
+  const curatedTypeRaw = e.manualQuestionTypeOverride || (isSeedEssay ? (e.questionType || '') : '');
+  const curatedType = normalizeQuestionType(curatedTypeRaw);
+  const localCls = classifyQuestionLocally(e.question || '');
+  const lockedType = (curatedType && QUESTION_TYPES[curatedType])
+    ? curatedType
+    : (localCls.confident ? localCls.type : '');
+  const lockedFeatures = curatedType
+    ? ((e.secondaryFeatures || []).slice())
+    : (localCls.confident ? (localCls.secondaryFeatures || []).slice() : []);
+  const lockedCfg = lockedType ? QUESTION_TYPES[lockedType] : null;
+  // -----------------------------------------------------------------------
+
   const picker = document.getElementById('ideasPicker');
   const body = document.getElementById('ideasPickerBody');
   picker.classList.add('show');
@@ -6258,12 +6640,29 @@ async function aiSuggestIdeas() {
 
   const bandHeadline = isBand6 ? 'a Band 6 IELTS/PTE essay (simple, plain English)' : 'a Band 9 IELTS/PTE essay';
 
+  const task1Block = lockedType ? `TASK 1 — THE QUESTION TYPE IS ALREADY DETERMINED. DO NOT RE-CLASSIFY.
+The verified question type for this prompt is:
+  "${lockedType}" — ${lockedCfg.displayName}: ${lockedCfg.detect}
+${lockedFeatures.length ? `Secondary features (verified): ${lockedFeatures.join(', ')}
+` : ''}You MUST set "primaryQuestionType" to exactly "${lockedType}"${lockedFeatures.length ? ` and "secondaryFeatures" to ${JSON.stringify(lockedFeatures)}` : ''} in your JSON output. Choosing any other type is an error.
+Generate ideas that fit THIS type's paragraph roles:
+- Body Paragraph 1: ${lockedCfg.bp1Role}
+- Body Paragraph 2: ${lockedCfg.bp2Role}` : `TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
+
+${typeOptions}
+
+*DISAMBIGUATION RULES — APPLY IN THIS ORDER*:
+1. "discuss both views/sides" → discuss_both_views (even if it also says "give your own opinion").
+2. "agree or disagree" / "to what extent do you agree" → agree_disagree — NEVER problem_solution, even when the statement inside the prompt mentions problems, causes or solutions.
+3. advantages + disadvantages + ("outweigh" or "your opinion") → advantages_disadvantages_opinion; without an opinion demand → advantages_disadvantages.
+4. Only classify as problem_solution / cause_solution when the question ITSELF asks for problems/causes AND solutions/measures. A topic that merely mentions a problem is NOT a problem_solution question.
+5. "which do you prefer" / "is it better to" with two options → two_option_preference.
+6. If the question only asks for your view ("do you think…?", "should…?", "what is your opinion?") → opinion.`;
+
   const prompt = `You are helping a tutor at IPT Brisbane prepare ${bandHeadline}. There are TWO tasks:
 
 ═══════════════════════════════════════════════════
-TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
-
-${typeOptions}
+${task1Block}
 
 *SPECIAL RULE FOR "MOST PRESSING PROBLEM" QUESTIONS*:
 If the question prompt asks about the "most pressing problem", "most important issue", "biggest problem", "most serious global issue", or similar:
@@ -6278,11 +6677,12 @@ If the question asks the writer to choose ONE area, aspect, or field of a broad 
 - Do NOT generate two opposing columns of generic impacts. Do NOT duplicate the same idea across categories.
 
 ═══════════════════════════════════════════════════
-TASK 2 — Generate 10-15 high-quality, topic-specific ideas.
+TASK 2 — Generate high-quality, topic-specific ideas so the student can CHOOSE (they will pick only 2 per body paragraph, so give them a real menu).
 You MUST generate:
-- At least 5 supporting reasons (category "main_support" or "advantage").
-- At least 5 supporting examples (category "example"). These examples must be extremely simple, concrete, everyday, and relatable scenarios that students can easily relate to (e.g. "employees using translation apps", "students submitting homework online", "travelers taking buses in cities", "people buying groceries online"). Avoid academic, formal, or abstract examples.
-- At least 2 optional contrast points (category "optional_contrast").
+- 5-6 supporting reasons (category "main_support" or "advantage") for EACH body paragraph role. For stance-based or option-based types this means 5-6 reasons FOR EACH stance side or option (tagged via "supports"/"opposes"), so whichever side the student picks they still see 5-6 reasons to choose from.
+- 5-6 supporting examples (category "example"). These examples must be extremely simple, concrete, everyday, and relatable scenarios that students can easily relate to (e.g. "employees using translation apps", "students submitting homework online", "travelers taking buses in cities", "people buying groceries online"). Avoid academic, formal, or abstract examples.
+- 2-3 optional contrast points (category "optional_contrast").
+- HALLUCINATION BAN: every idea must be a plain, real-world point about the topic. Do NOT put statistics, studies, named organizations, named people, brands, or invented facts inside any idea.
 
 Each idea must be represented as a JSON object with:
 - id: short unique string (e.g. "city_hospitals")
@@ -6316,10 +6716,10 @@ If the question is relation-based (problem_solution, cause_solution, cause_effec
 If the question is a "choose one area/aspect to focus on" question (single_best_option + focus_area):
 - Put EXACTLY 3 candidate sub-areas in detectedOptions (these are the choice pills), e.g. ["agriculture and food security", "human health", "sea-level rise and coastal flooding"]. Each must be a real sub-area of the topic.
 - For EVERY ONE of the 3 sub-areas you listed, you MUST generate BOTH of the following (do this per area — do not concentrate ideas on one area and starve the others):
-  - At least 3 "main_support" ideas = REASONS this area matters / how the broad topic harms this area (Body Paragraph 1 material). Noun phrases. Example for "agriculture and food security": "droughts reduce wheat yields", "irregular rainfall ruins harvests", "rising heat lowers crop quality".
-  - At least 3 "solution" ideas = EXAMPLES and practical SOLUTIONS for that area (Body Paragraph 2 material). Actionable where natural. Example for "agriculture and food security": "use drought-resistant crops", "install drip irrigation", "build local food storage".
+  - At least 5 "main_support" ideas = REASONS this area matters / how the broad topic harms this area (Body Paragraph 1 material). Noun phrases. Example for "agriculture and food security": "droughts reduce wheat yields", "irregular rainfall ruins harvests", "rising heat lowers crop quality".
+  - At least 5 "solution" ideas = EXAMPLES and practical SOLUTIONS for that area (Body Paragraph 2 material). Actionable where natural. Example for "agriculture and food security": "use drought-resistant crops", "install drip irrigation", "build local food storage".
 - TAGGING IS CRITICAL: every "main_support" and "solution" idea MUST have a "supports" array containing the EXACT sub-area string from detectedOptions it belongs to (copy it verbatim, e.g. supports: ["agriculture and food security"]). Do NOT use stance words like "agree"/"left"/"right" here. Do NOT leave the supports array empty.
-- This means you will produce at least 9 reasons (3 areas × 3) and at least 9 solutions (3 areas × 3), each tagged to its area. Whichever area the student picks, there MUST be at least 3 reasons and 3 solutions tagged to it.
+- This means you will produce at least 15 reasons (3 areas × 5) and at least 15 solutions (3 areas × 5), each tagged to its area. Whichever area the student picks, there MUST be at least 5 reasons and 5 solutions tagged to it.
 - Do NOT generate a generic two-column impacts list and do NOT repeat the same phrase in both categories.
 
 ESSAY DETAILS:
@@ -6394,7 +6794,8 @@ Format:
       throw new Error('AI did not return the expected ideas format');
     }
     
-    let activeType = result.primaryQuestionType || 'advantages_disadvantages';
+    let activeType = lockedType || normalizeQuestionType(result.primaryQuestionType) || 'advantages_disadvantages';
+    if (!QUESTION_TYPES[activeType]) activeType = 'advantages_disadvantages';
     const lowerQ = (e.question || '').toLowerCase();
     const isMostPressing = (lowerQ.includes('most pressing problem') || lowerQ.includes('most important issue') || lowerQ.includes('biggest problem') || lowerQ.includes('most serious global issue') || lowerQ.includes('most serious problem'));
 
@@ -6435,6 +6836,9 @@ Format:
     e.detectedOptions = result.detectedOptions || [];
     e.suggestedIdeas = result.ideas;
     e.secondaryFeatures = result.secondaryFeatures || [];
+    lockedFeatures.forEach(f => {
+      if (!e.secondaryFeatures.includes(f)) e.secondaryFeatures.push(f);
+    });
 
     // For focus-area questions, stamp each idea with a durable `area` field
     // derived from its `supports` tag (matched against the candidate areas).
@@ -6631,11 +7035,21 @@ function renderIdeasPicker() {
     </div>
   `;
 
+  // 1b. Static, deterministic explanation of what the question is asking.
+  const questionExplanationHtml = buildQuestionExplanationHtml(e, activeType, typeCfg);
+
   // 2. Stance Selector if stance is required
   let stanceSelectorHtml = '';
   if (typeCfg.stanceRequired) {
     stanceSelectorHtml = renderStanceController(e);
   }
+
+  // 2b. Stance gate: for stance-based types the idea lists stay hidden
+  // until the student makes a deliberate choice.
+  const stanceGateActive = !!typeCfg.stanceRequired && !e.chosenStance && stanceSelectorHtml !== '';
+  const gateNoun = (activeType === 'single_best_option' && (e.secondaryFeatures || []).includes('focus_area'))
+    ? 'focus area'
+    : (activeType === 'single_best_option' ? 'option' : 'stance');
 
   // 3. Main columns / lists
   let listsHtml = '';
@@ -7071,6 +7485,15 @@ function renderIdeasPicker() {
     `).join('');
   }
   
+  if (stanceGateActive) {
+    listsHtml = `
+      <div style="border:1.5px dashed var(--line); border-radius:8px; padding:24px 16px; text-align:center; background:var(--bg); color:var(--ink-soft); font-size:12.5px; line-height:1.6;">
+        <div style="font-size:22px; margin-bottom:6px;">🧭</div>
+        <strong>Step 2 — choose your ${escapeHtml(gateNoun)} above.</strong><br>
+        The idea lists stay hidden until you pick, so the decision is yours — not the AI's.
+      </div>`;
+  }
+
   let errorsHtml = '';
   if (e.ideaValidationErrors && e.ideaValidationErrors.length > 0) {
     errorsHtml = e.ideaValidationErrors.map(err => `
@@ -7106,7 +7529,7 @@ function renderIdeasPicker() {
   }
 
   const isFocusAreaStatus = (activeType === 'single_best_option') && e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
-  const statusText = isReady 
+  let statusText = isReady 
     ? `<strong>Ready! All required ideas selected.</strong>` 
     : isFocusAreaStatus
       ? `Choose a focus area, then select exactly 2 reasons and 2 examples/solutions.`
@@ -7122,8 +7545,15 @@ function renderIdeasPicker() {
                 ? `Select exactly 2 causes/problems/challenges.` 
                 : `Select 2 left-side and 2 right-side ideas.`;
 
+  if (stanceGateActive) {
+    errorsHtml = '';
+    warningsHtml = '';
+    statusText = `Pick your ${escapeHtml(gateNoun)} to reveal the ideas.`;
+  }
+
   body.innerHTML = `
     ${typeHeaderHtml}
+    ${questionExplanationHtml}
     ${stanceSelectorHtml}
     <div style="margin-top:14px; margin-bottom:14px;">
       ${listsHtml}
@@ -7516,6 +7946,31 @@ async function freestyleSuggestIdeas() {
 
   const band = document.getElementById('fsBand').value === 'band6' ? 'band6' : 'band9';
   const isBand6 = band === 'band6';
+
+  // v20.2.0 — deterministic classification lock for Freestyle.
+  // Canonical local types are mapped onto Freestyle's column recipes.
+  const FS_CANON_TO_FSID = {
+    problem_solution: 'problems_solutions',
+    cause_solution: 'causes_solutions',
+    cause_effect: 'causes_effects',
+    problem_effect: 'causes_effects',
+    advantages_disadvantages: 'advantages_disadvantages',
+    advantages_disadvantages_opinion: 'advantages_disadvantages',
+    agree_disagree: 'agree_disagree',
+    opinion: 'agree_disagree',
+    discuss_both_views: 'discuss_both_views',
+    positive_negative_impact: 'positive_negative_impacts',
+    blessing_curse: 'positive_negative_impacts',
+    two_option_preference: 'single_focus',
+    opinion_alternatives: 'opinion_alternatives'
+  };
+  const fsLocal = classifyQuestionLocally(question);
+  const fsLockedId = (fsLocal.confident && FS_CANON_TO_FSID[fsLocal.type]) ? FS_CANON_TO_FSID[fsLocal.type] : '';
+  const fsLockHint = fsLockedId ? `
+LOCKED TYPE — the question type has been verified as "${fsLockedId}". You MUST return exactly this questionType and generate ideas for its columns as described below. Choosing any other type is an error.
+` : `
+DISAMBIGUATION: "agree or disagree" → agree_disagree (NEVER a problems/solutions type, even if the statement mentions problems). Only pick a problems/causes + solutions type when the question ITSELF asks for solutions or measures.
+`;
   const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
   const vocabSpec = VOCAB_LEVELS[vocabIdx];
 
@@ -7547,7 +8002,7 @@ async function freestyleSuggestIdeas() {
 
 TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
 ${typeOptions}
-
+${fsLockHint}
 TASK 2 — Generate ideas for the columns that match the chosen type.
 
 For MOST types, generate 5 ideas for EACH of TWO columns (leftIdeas + rightIdeas):
@@ -7631,7 +8086,7 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
       throw new Error('Could not parse the suggested ideas. Please try again.');
     }
 
-    fsDetectedQuestionType = parsed.questionType || 'advantages_disadvantages';
+    fsDetectedQuestionType = fsLockedId || parsed.questionType || 'advantages_disadvantages';
     fsSuggestedLeftIdeas = parsed.leftIdeas || [];
     fsSuggestedRightIdeas = parsed.rightIdeas || [];
     fsSuggestedThirdIdeas = parsed.thirdIdeas || [];
@@ -7679,6 +8134,7 @@ function renderFreestyleIdeasPicker() {
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
+    ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
       <div>
         <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
@@ -7883,6 +8339,7 @@ function renderFreestyleSidedPicker(type) {
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
+    ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
     <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
       <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(getFsColLabel(sideCols[0]))}</strong> or <strong>${escapeHtml(getFsColLabel(sideCols[1]))}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(getFsColLabel(fixedCol))}</strong>.
     </div>

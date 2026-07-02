@@ -4867,9 +4867,11 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
   const sLower = (sourceText || '').toLowerCase();
   
   const allowedTokens = new Set();
+  const allowedTexts = [];
   
   const addAllowedText = (txt) => {
     if (!txt) return;
+    allowedTexts.push(String(txt).toLowerCase());
     const words = txt.toLowerCase().split(/[\s,.:;?!"'()]+/);
     words.forEach(w => {
       if (w.length > 2) allowedTokens.add(w);
@@ -4902,13 +4904,35 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
     }
   }
 
+  const yearRegex = /\b(19|20)\d{2}\b/g;
+  while ((match = yearRegex.exec(essayLower)) !== null) {
+    const yr = match[0];
+    if (!allowedTokens.has(yr) && !qLower.includes(yr) && !sLower.includes(yr) && !allowedTexts.some(t => t.includes(yr))) {
+      detected.push(`Invented year: "${yr}"`);
+    }
+  }
+
+  const bigNumRegex = /\b(\d[\d,]*)\s*(million|billion|thousand|times more|times higher|times as many|out of \d+)\b/gi;
+  while ((match = bigNumRegex.exec(essayLower)) !== null) {
+    const numTok = match[1].replace(/,/g, '');
+    const phrase = match[0].toLowerCase();
+    if (!allowedTokens.has(numTok) && !qLower.includes(phrase) && !sLower.includes(phrase) && !allowedTexts.some(t => t.includes(phrase))) {
+      detected.push(`Invented quantity: "${match[0]}"`);
+    }
+  }
+
   const fakePhrases = [
     "studies show", "research shows", "research proves", "experts say", "survey found",
     "according to researchers", "a recent study", "harvard study", "university of",
     "university researchers", "experts suggest", "scientists prove", "scientists say",
     "researchers say", "according to a survey", "according to a study", "according to research",
     "according to experts", "according to scientists", "according to statistics", "statistical analysis",
-    "survey of", "researchers at", "study by"
+    "survey of", "researchers at", "study by",
+    "data show", "figures show", "statistics show", "statistics indicate",
+    "it is estimated", "estimates suggest", "reports indicate", "a report by",
+    "according to data", "according to reports", "polls show", "surveys show",
+    "surveys indicate", "a recent survey", "a recent report", "recent data",
+    "evidence shows that"
   ];
   for (const phrase of fakePhrases) {
     if (essayLower.includes(phrase) && !qLower.includes(phrase) && !sLower.includes(phrase)) {
@@ -5319,6 +5343,12 @@ ${isNatural ? naturalStyleInstruction : templateStyleInstruction}
 
 ${isBand6 ? band6VocabRule : band9VocabRule}
 
+=== GROUNDING — NO INVENTED CONTENT (CRITICAL) ===
+- Build EVERY argument ONLY from the selected ideas in the plan above. Do NOT introduce new reasons, new advantages, or new problems that are not in the selected ideas.
+- Do NOT use ANY numbers, years, or quantities (no "in 2019", "3 million", "twice as many") unless that exact number appears in the QUESTION or in a selected idea.
+- Do NOT name real people, companies, brands, apps, universities, organizations, cities or countries unless they appear in the QUESTION or in a selected idea. Examples must be generic everyday scenarios about unnamed people ("a student", "an office worker", "a small business owner").
+- If you are unsure whether a detail is real, leave it out. Plain and true beats impressive and invented.
+
 === LENGTH GUIDANCE ===
 Aim for a well-developed essay of roughly 250-330 words in total (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion). As a rough guide: introduction ~45-55 words, each body paragraph ~90-110 words, conclusion ~45-55 words.
 There is NO hard upper limit and the essay will not be rejected for length, so prioritise complete, well-supported paragraphs over hitting an exact count. Do not pad with filler or repetitive transitions, and do not compress the content: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
@@ -5583,6 +5613,10 @@ ${plan.explanation ? `TOPIC EXPLANATION: ${plan.explanation}` : ''}
 - Keep sentences short, direct, and easy to understand.
 - AVOID all academic, sophisticated, or formal words (e.g. avoid foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted).
 - Use everyday words like "helps", "makes", "gives", "saves", "easy", "good", "important".
+
+=== GROUNDING — NO INVENTED CONTENT ===
+- Use ONLY the selected ideas above. Do NOT add new ideas or new arguments.
+- No numbers, years, statistics, studies, or named organizations/brands/people. Every example phrase must be a generic everyday situation.
 
 === OUTPUT FORMAT ===
 Respond with EXACTLY four sections, nothing else, no preamble:
