@@ -4874,7 +4874,7 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
     allowedTexts.push(String(txt).toLowerCase());
     const words = txt.toLowerCase().split(/[\s,.:;?!"'()]+/);
     words.forEach(w => {
-      if (w.length > 2) allowedTokens.add(w);
+      if (w.length > 2 || /^\d+$/.test(w)) allowedTokens.add(w);
     });
   };
 
@@ -4899,7 +4899,7 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
   let match;
   while ((match = pctRegex.exec(essayLower)) !== null) {
     const num = match[1];
-    if (!allowedTokens.has(num)) {
+    if (!allowedTokens.has(num) && !allowedTexts.some(t => t.includes(match[0]))) {
       detected.push(`Invented percentage: "${match[0]}"`);
     }
   }
@@ -4932,7 +4932,7 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
     "it is estimated", "estimates suggest", "reports indicate", "a report by",
     "according to data", "according to reports", "polls show", "surveys show",
     "surveys indicate", "a recent survey", "a recent report", "recent data",
-    "evidence shows that"
+    "evidence shows", "results show", "findings show"
   ];
   for (const phrase of fakePhrases) {
     if (essayLower.includes(phrase) && !qLower.includes(phrase) && !sLower.includes(phrase)) {
@@ -5002,163 +5002,190 @@ function splitSentences(text) {
    --------------------------------------------------------------------- */
 const QUESTION_TYPE_TEMPLATES = {
   agree_disagree: {
-    bp1Role: "supporting reasons for the chosen stance (the positive / supporting side)",
-    bp2Role: "drawbacks, limitations, or the opposing side, for a balanced view",
-    intro: `Introduce [paraphrase the topic] and note briefly why it matters. State your position clearly in one sentence — whether you AGREE or DISAGREE (and how strongly) with [the statement]. [State your stance here.]`,
-    bp1: `Present the SUPPORTING side of your stance. Give [supporting reason 1] with a concrete everyday example — [a specific scenario] — then [supporting reason 2] with its own short example. Keep this paragraph positive and aligned with your stance.`,
-    bp2: `Present the other side for BALANCE: a drawback, limitation, or the main opposing point — [the contrast point] — explained with a short example. Acknowledge it fairly, but make clear your overall stance still stands. (BP1 = supporting side, BP2 = drawbacks / balance.)`,
-    concl: `Restate your position in fresh words, briefly weigh the supporting reasons against the drawback, and finish with a forward-looking sentence that reaffirms your stance. [End on your stance.]`
+    bp1Role: "your supporting reasons with examples",
+    bp2Role: "limitations or drawbacks (balanced view)",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some people believe that [restate the statement in simple words]. I [completely agree / mostly agree / mostly disagree / completely disagree] with this idea. This essay will explain my opinion with clear reasons and examples.`,
+    bp1: `To begin with, one important reason for my opinion is that [supporting reason 1]. For example, [insert a simple everyday example related to reason 1]. Additionally, another key reason is that [supporting reason 2]. For example, [insert a simple everyday example related to reason 2].`,
+    bp2: `On the other hand, there are some limitations of [topic]. One concern is that [drawback or limitation 1]. For example, [insert a simple everyday example related to this concern]. Furthermore, [drawback or limitation 2] can also create problems for some people. However, these points do not change my overall opinion.`,
+    concl: `In conclusion, [topic rephrased] has strong reasons on my side, even though it also has some limitations. Therefore, I [restate your exact stance in fresh simple words] because [your strongest reason in a few words].`
   },
-  opinion: { __aliasOf: "agree_disagree" },
+
+  opinion: {
+    bp1Role: "your supporting reasons with examples",
+    bp2Role: "limitations or drawbacks (balanced view)",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some people think that [restate the idea in simple words]. In my opinion, [state your view clearly in simple words]. This essay will explain my opinion with clear reasons and examples.`,
+    bp1: `To begin with, one important reason for my opinion is that [supporting reason 1]. For example, [insert a simple everyday example related to reason 1]. Additionally, another key reason is that [supporting reason 2]. For example, [insert a simple everyday example related to reason 2].`,
+    bp2: `On the other hand, there are some limitations of [topic]. One concern is that [drawback or limitation 1]. For example, [insert a simple everyday example related to this concern]. Furthermore, [drawback or limitation 2] can also create problems for some people. However, these points do not change my overall opinion.`,
+    concl: `In conclusion, [topic rephrased] has strong reasons on my side, even though it also has some limitations. Therefore, I believe that [restate your view in fresh simple words] because [your strongest reason in a few words].`
+  },
 
   opinion_alternatives: {
     bp1Role: "support the chosen stance with two reasons",
     bp2Role: "propose alternative actions to take instead",
-    intro: `Introduce [paraphrase the practice/policy] and why it matters. State your opinion clearly — whether you AGREE or DISAGREE with [the practice] — and signal that you will suggest better alternatives. [State your stance.]`,
-    bp1: `Justify your stance with [reason 1] (short everyday example) and [reason 2] (its own example). This paragraph is only about WHY you hold your opinion, not the alternatives.`,
-    bp2: `Propose ALTERNATIVE ACTIONS instead of [the practice]: [alternative action 1] with a brief example of how it helps, then [alternative action 2] with its own example. Keep them practical and specific.`,
-    concl: `Restate your opinion in new wording, recap your main reason, and summarise the alternative actions you recommend. [Close on stance + alternatives.]`
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some institutions believe that [the practice in simple words] is useful, but I [agree / partially disagree / completely disagree] with this practice. This essay will explain my opinion and suggest some better alternative actions.`,
+    bp1: `To begin with, one important reason for my view is that [reason 1]. For example, [insert a simple everyday example related to reason 1]. Additionally, another key reason is that [reason 2]. For example, [insert a simple everyday example related to reason 2].`,
+    bp2: `On the other hand, there are better alternative actions instead of [the practice]. One helpful option is to [alternative action 1]. For example, [insert a short everyday example of how it helps]. Furthermore, another practical step is to [alternative action 2]. For example, [insert a short everyday example of how it helps].`,
+    concl: `In conclusion, although [the practice rephrased] has a purpose, it can be unfair in some cases. Therefore, it is better to [restate the strongest alternative action] so that [the positive outcome in simple words].`
   },
 
   advantages_disadvantages: {
     bp1Role: "the main advantages",
     bp2Role: "the main disadvantages",
-    intro: `Introduce [paraphrase the topic] and why it is discussed. State that this essay will weigh the main ADVANTAGES against the main DISADVANTAGES of [the topic]. Add an opinion sentence only if the question asks for your view.`,
-    bp1: `Focus entirely on ADVANTAGES: [advantage 1] with a concrete example — [a specific scenario] — then [advantage 2] with its own example. Keep this paragraph fully positive.`,
-    bp2: `Focus entirely on DISADVANTAGES: [disadvantage 1] with a concrete example — [a specific scenario] — then [disadvantage 2] with its own example. Keep this paragraph about drawbacks.`,
-    concl: `Summarise both sides in a balanced way. If the question asked for an opinion, state whether the advantages outweigh the disadvantages (or vice versa) and why. [Final balanced sentence.]`
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. [If the question asks for your opinion, add one sentence: In my opinion, the advantages outweigh the disadvantages / the disadvantages outweigh the advantages.] This essay will discuss the main advantages and disadvantages of [topic], supported by relevant examples.`,
+    bp1: `To begin with, one important benefit of [topic] is that [advantage 1]. For example, [insert a simple everyday example related to advantage 1]. Additionally, another key advantage is that [advantage 2]. For example, [insert a simple everyday example related to advantage 2].`,
+    bp2: `On the other hand, one major concern regarding [topic] is that [disadvantage 1]. For example, [insert a simple everyday example related to disadvantage 1]. Furthermore, [disadvantage 2] is another drawback that affects some people. For example, [insert a simple everyday example related to disadvantage 2].`,
+    concl: `In conclusion, [topic rephrased] brings both clear benefits and real drawbacks. Therefore, [state which side is stronger, or give a short balanced recommendation, in simple words] because [short reason].`
   },
 
   positive_negative_impact: {
-    bp1Role: "the positive impacts / the case it is a blessing",
-    bp2Role: "the negative impacts / the case it is a curse",
-    intro: `Introduce [paraphrase the development/trend] and why its impact is debated. State that this essay will examine its POSITIVE and NEGATIVE impacts on [the affected group]. If it is framed as "blessing or curse" / "good or bad", signal which way you lean.`,
-    bp1: `Discuss POSITIVE impacts: [positive impact 1] with a concrete example — [a specific scenario] — then [positive impact 2] with its own example.`,
-    bp2: `Discuss NEGATIVE impacts: [negative impact 1] with a concrete example — [a specific scenario] — then [negative impact 2] with its own example.`,
-    concl: `Weigh positives against negatives and give a clear verdict — overall beneficial, harmful, or beneficial only if [the key condition] is met. [Final verdict.]`
+    bp1Role: "the positive effects",
+    bp2Role: "the negative effects",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some people see this change as positive, while others see it as negative. In my opinion, it is a [mainly positive / mainly negative] development. This essay will look at both sides with examples.`,
+    bp1: `To begin with, one important positive effect of [topic] is that [positive effect 1]. For example, [insert a simple everyday example related to this effect]. Additionally, another benefit is that [positive effect 2]. For example, [insert a simple everyday example related to this effect].`,
+    bp2: `On the other hand, one major negative effect is that [negative effect 1]. For example, [insert a simple everyday example related to this effect]. Furthermore, [negative effect 2] can also cause problems for some people. For example, [insert a simple everyday example related to this effect].`,
+    concl: `In conclusion, [topic rephrased] brings both positive and negative effects. Therefore, I believe it is a [mainly positive / mainly negative] development because [your strongest reason in a few words].`
   },
 
-  single_best_option: {
-    bp1Role: "why the chosen option is the most important",
-    bp2Role: "practical solutions / how to act on it",
-    intro: `Introduce [paraphrase the broad area]. Name the ONE you have chosen — [the selected problem/area] — and state that this essay explains why it is most pressing and what should be done. Commit to a single choice.`,
-    bp1: `Justify the choice: [reason 1 it is most serious] with a concrete consequence/example — [a specific scenario] — then [reason 2] with its own example. Show why it outranks the alternatives.`,
-    bp2: `Set out practical SOLUTIONS for [the selected problem/area]: [solution 1] explaining how it helps, then [solution 2] with a short example. Keep them realistic and actionable.`,
-    concl: `Restate why [the selected problem/area] is most pressing, recap the solutions, and end with a forward-looking call to act. [Final sentence.]`
-  },
-
-  // Focus-area variant of single_best_option: the writer picks ONE sub-area of a
-  // broad topic and justifies it (e.g. "which area of climate change will you
-  // focus on?"). This is NOT a "most pressing" debate — BP1 explains why the area
-  // matters, BP2 gives examples and solutions for it.
-  single_best_option_focus: {
-    bp1Role: "why the chosen area matters",
-    bp2Role: "examples and practical solutions for that area",
-    intro: `Introduce [paraphrase the broad topic] in one sentence. State the ONE area you will focus on — [the selected area] — and why it matters. Commit to this single area.`,
-    bp1: `Explain why [the selected area] is important and how the broad topic affects it: [reason 1] with a concrete everyday example — [a specific scenario] — then [reason 2] with its own example.`,
-    bp2: `Give examples and practical solutions for [the selected area]: [example/solution 1] explaining how it helps, then [example/solution 2] with a short example. Keep them realistic and everyday.`,
-    concl: `Restate that [the selected area] is an important area to focus on, recap the reasons and solutions, and end with a forward-looking sentence. [Final sentence.]`
-  },
-
-  discuss_both_views: {
-    bp1Role: "the first view, presented fairly",
-    bp2Role: "the second view, then your own opinion",
-    intro: `Introduce [paraphrase the issue]. Note that opinion is divided: some hold [view A] while others hold [view B]. State that this essay discusses BOTH views before giving your own opinion.`,
-    bp1: `Present the FIRST view fairly: [reason 1 people hold view A] with an example — [a specific scenario] — then [reason 2] with its own example.`,
-    bp2: `Present the SECOND view: [reason 1 people hold view B] with an example, then [reason 2]. Then state YOUR opinion in the last sentence — which view is more convincing and briefly why. [Your opinion.]`,
-    concl: `State which view you favour overall, summarise the strongest reason, and close. Do not add new arguments. [Final judgement.]`
-  },
-
-  responsibility: {
-    bp1Role: "why the primary party bears the main responsibility",
-    bp2Role: "the supporting role of other parties / shared responsibility",
-    intro: `Introduce [paraphrase the issue and the candidate parties]. State who should bear the MAIN responsibility — [the primary party] — while acknowledging others have a role. [Your position.]`,
-    bp1: `Argue why [the primary party] is mainly responsible: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example.`,
-    bp2: `Acknowledge the SUPPORTING role of [other party/parties] with an example, explaining why their role is secondary to [the primary party]. Keep the answer balanced without abandoning your position.`,
-    concl: `Restate who carries the main responsibility and why, note the shared contribution, and finish on how acting together works best. [Final sentence.]`
-  },
-
-  two_option_preference: {
-    bp1Role: "two reasons for preferring the chosen option",
-    bp2Role: "a further benefit of the chosen option and a brief contrast",
-    intro: `Introduce the choice between [option A] and [option B]. Acknowledge both have merits, then state which you prefer — [the chosen option] — and that this essay explains why. [Your preference.]`,
-    bp1: `Give the first reasons you prefer [the chosen option]: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example. Focus on the strengths of your choice.`,
-    bp2: `Add a FURTHER benefit of [the chosen option] — [reason 3] with an example — and briefly contrast [the other option], conceding one point but showing it does not change your preference.`,
-    concl: `Restate your preference, summarise the main reasons, and close with a personal, forward-looking sentence. [Final sentence.]`
+  problem_solution: {
+    bp1Role: "the main problems or causes",
+    bp2Role: "practical solutions matched to them",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This situation creates several [problems / difficulties] for [affected group in simple words]. This essay will discuss the main [problems / causes] and suggest some practical solutions.`,
+    bp1: `To begin with, one major [problem / cause] is that [problem or cause 1]. For example, [insert a simple everyday example related to it]. Additionally, another serious [problem / cause] is that [problem or cause 2]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, there are practical solutions to these [problems / causes]. One useful step is to [solution 1], which helps to deal with the first [problem / cause]. For example, [insert a short everyday example of how it helps]. Furthermore, another helpful measure is to [solution 2], which answers the second [problem / cause]. For example, [insert a short everyday example of how it helps].`,
+    concl: `In conclusion, [topic rephrased] causes real [problems / difficulties], but they can be reduced with the right actions. Therefore, [restate the strongest solution] should be the first step because [short reason].`
   },
 
   cause_effect: {
     bp1Role: "the main causes",
-    bp2Role: "the resulting effects / consequences",
-    intro: `Introduce [paraphrase the situation]. State that this essay examines the main CAUSES of [the situation] and the EFFECTS they produce on [the affected group]. If it also asks "how important", state that here.`,
-    bp1: `Set out the main CAUSES: [cause 1] with a concrete example — [a specific scenario] — then [cause 2] with its own example. This paragraph is about WHY it happens.`,
-    bp2: `Set out the EFFECTS that follow: [effect 1] with a concrete example — [a specific scenario] — then [effect 2] with its own example. Link each effect back to the causes in BP1.`,
-    concl: `Summarise how the causes lead to these effects, restate why it matters, and close with a measured forward-looking remark. [Final sentence.]`
+    bp2Role: "the effects that follow",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This essay will explain the main [causes / problems] of this situation and the effects it has on [affected group in simple words].`,
+    bp1: `To begin with, one major [cause / problem] is that [cause 1]. For example, [insert a simple everyday example related to it]. Additionally, another important [cause / problem] is that [cause 2]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, these [causes / problems] lead to serious effects. One clear effect is that [effect 1]. For example, [insert a simple everyday example related to it]. Furthermore, [effect 2] is another result that affects many people. For example, [insert a simple everyday example related to it].`,
+    concl: `In conclusion, [topic rephrased] happens for clear reasons and has real effects on daily life. Therefore, understanding [restate the main cause in a few words] is the first step to dealing with [the main effect in a few words].`
   },
 
-  problem_solution: {
-    bp1Role: "the key problems or causes",
-    bp2Role: "matching, practical solutions",
-    intro: `Introduce [paraphrase the problem area]. State that this essay identifies the key problems/causes of [the issue] and proposes practical solutions for each.`,
-    bp1: `Set out the key PROBLEMS/causes: [problem 1] with a concrete example — [a specific scenario] — then [problem 2] with its own example.`,
-    bp2: `Propose a SOLUTION for each: [solution to problem 1] explaining how it works, then [solution to problem 2] with a short example. Pair each solution to its problem and keep them realistic.`,
-    concl: `Summarise the problems and the solutions that address them, and end with a forward-looking call to act. [Final sentence.]`
+  single_best_option: {
+    bp1Role: "why the chosen problem is the most serious",
+    bp2Role: "practical solutions for it",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. There are many serious problems in this area, but I believe the most pressing one is [chosen problem]. This essay will explain why this problem is so serious and what can be done about it.`,
+    bp1: `To begin with, [chosen problem] is the most serious issue because [cause or challenge 1]. For example, [insert a simple everyday example related to it]. Additionally, [cause or challenge 2] makes the situation worse. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, there are practical solutions to this problem. One useful step is to [solution 1]. For example, [insert a short everyday example of how it helps]. Furthermore, another helpful measure is to [solution 2]. For example, [insert a short everyday example of how it helps].`,
+    concl: `In conclusion, [chosen problem rephrased] is the most pressing problem and needs quick action. Therefore, [restate the strongest solution] should be the first step because [short reason].`
   },
 
-  importance_reasons: {
-    bp1Role: "how important it is / why it matters",
-    bp2Role: "the reasons it is hard to achieve",
-    intro: `Introduce [paraphrase the situation]. State clearly HOW IMPORTANT [the thing] is, and that this essay will explain why it matters and the main reasons it is hard to achieve.`,
-    bp1: `Explain WHY IT MATTERS / how important it is: [reason 1 it matters] with a concrete example — [a specific scenario] — then [reason 2] with its own example.`,
-    bp2: `Explain the REASONS IT IS HARD TO ACHIEVE: [obstacle 1] with a concrete example — [a specific scenario] — then [obstacle 2] with its own example. Do NOT turn these into solutions; focus on the obstacles that make it difficult.`,
-    concl: `Restate how important [the thing] is, sum up the main obstacle, and close with a measured forward-looking remark. [Final sentence.]`
+  single_best_option_focus: {
+    bp1Role: "why the chosen area matters most",
+    bp2Role: "examples and practical solutions for that area",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This is a very broad topic, so this essay will focus on one area: [chosen focus area]. This essay will explain why this area matters and give examples and practical solutions for it.`,
+    bp1: `To begin with, [chosen focus area] is an important area because [reason 1]. For example, [insert a simple everyday example related to it]. Additionally, [reason 2] also shows why this area needs attention. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, there are practical ways to deal with [chosen focus area]. One useful step is to [example or solution 1]. For example, [insert a short everyday example of how it helps]. Furthermore, another helpful step is to [example or solution 2]. For example, [insert a short everyday example of how it helps].`,
+    concl: `In conclusion, [chosen focus area rephrased] is the area that deserves the most attention. Therefore, [restate the strongest example or solution] is the best way forward because [short reason].`
   },
+
+  discuss_both_views: {
+    bp1Role: "reasons behind the first view",
+    bp2Role: "reasons behind the second view",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some people believe that [view A in simple words], while others think that [view B in simple words]. This essay will discuss both views and then give my own opinion.`,
+    bp1: `To begin with, people who support the first view say that [reason for view A]. For example, [insert a simple everyday example related to it]. Additionally, they also believe that [second reason for view A]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, people who support the second view argue that [reason for view B]. For example, [insert a simple everyday example related to it]. Furthermore, they point out that [second reason for view B]. For example, [insert a simple everyday example related to it].`,
+    concl: `In conclusion, both views have their own reasons. Therefore, in my opinion, [state which view you support in simple words] because [your strongest reason in a few words].`
+  },
+
+  responsibility: {
+    bp1Role: "why the chosen group holds the main responsibility",
+    bp2Role: "the supporting role and limits of the other groups",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. People disagree about who should take the main responsibility for this issue. In my opinion, [chosen group: the government / companies / individuals] should carry the main responsibility. This essay will explain my reasons with examples.`,
+    bp1: `To begin with, [chosen group] should take the main responsibility because [reason 1]. For example, [insert a simple everyday example related to it]. Additionally, [reason 2] also shows why [chosen group] is in the best position to act. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, the other groups also have a supporting role. [Other group] can help by [supporting action]. For example, [insert a simple everyday example related to it]. However, they cannot solve the problem alone because [limitation in simple words].`,
+    concl: `In conclusion, while everyone has a part to play, [chosen group rephrased] should lead the effort. Therefore, [restate who is mainly responsible] because [your strongest reason in a few words].`
+  },
+
+  two_option_preference: {
+    bp1Role: "reasons for your chosen option",
+    bp2Role: "brief contrast or further support, ending on your choice",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Some people prefer [option A in simple words], while others prefer [option B in simple words]. In my opinion, [chosen option] is the better choice. This essay will explain my preference with clear reasons and examples.`,
+    bp1: `To begin with, one important reason I prefer [chosen option] is that [reason 1]. For example, [insert a simple everyday example related to it]. Additionally, another key reason is that [reason 2]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, [the other option] also has some good points, such as [brief contrast point OR a third supporting reason]. For example, [insert a simple everyday example related to it]. However, I still believe [chosen option] is better because [short explanation].`,
+    concl: `In conclusion, both options have their own value, but [chosen option rephrased] works better for most people. Therefore, I would choose [chosen option] because [your strongest reason in a few words].`
+  },
+
   example_specific: {
-    bp1Role: "the chosen example and its main justification",
-    bp2Role: "impact, limitation, or recommendation",
-    intro: `Introduce [paraphrase the question]. Name the SPECIFIC example/choice you will discuss — [the chosen example] — and state what you will argue about it. Commit to one clear choice.`,
-    bp1: `Present [the chosen example] and the MAIN justification: [reason 1] with support from study, observation, or experience — [a specific scenario] — then [reason 2] with its own example.`,
-    bp2: `Discuss the wider IMPACT, a LIMITATION, or a RECOMMENDATION: [point 1] with an example, then [point 2], showing balanced judgement rather than only praise.`,
-    concl: `Restate your specific choice and the core reason, add your recommendation, and close. [Final sentence.]`
-  },
-
-  education_effectiveness: {
-    bp1Role: "the educational benefits / why the method is effective",
-    bp2Role: "the drawbacks, limits, or a better alternative method",
-    intro: `Introduce [paraphrase the teaching method/approach] and why its effectiveness is debated. State clearly whether you find it HIGHLY EFFECTIVE, INEFFECTIVE, or effective only under certain conditions, and that this essay weighs it against [the alternative method if the question names one]. [State your verdict.]`,
-    bp1: `Present the BENEFITS / why it works: [benefit 1] with a concrete example — [a specific scenario] — then [benefit 2] with its own example. Keep this paragraph focused on why the method is educationally effective.`,
-    bp2: `Present the LIMITS, or where a different method works better: [limitation 1] with an example, then [limitation 2 / the alternative approach], showing the method is not enough on its own. (BP2 = drawbacks / limits / alternative method.)`,
-    concl: `Restate your effectiveness verdict in fresh words, weigh the benefits against the limits, and finish on a forward-looking note — e.g. it works best combined with [the alternative]. [Final verdict.]`
+    bp1Role: "your main reasons with concrete everyday examples",
+    bp2Role: "how the measure looks in real daily life",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This question is about one specific measure: [restate the rule or measure in simple words]. In my opinion, [state your position on this measure clearly]. This essay will explain my position with real, everyday examples.`,
+    bp1: `To begin with, one important reason for my position is that [main point 1]. For example, [insert a very concrete everyday example related to it]. Additionally, another key reason is that [main point 2]. For example, [insert a very concrete everyday example related to it].`,
+    bp2: `On the other hand, this measure can also be judged by daily life. One clear point is that [supporting point or example 1]. For example, [insert a very concrete everyday situation related to it]. Furthermore, [supporting point or example 2] shows the same idea in practice. For example, [insert a very concrete everyday situation related to it].`,
+    concl: `In conclusion, [restate the measure in fresh words] should be judged by how it works in real life. Therefore, I [restate your position in fresh simple words] because [your strongest reason in a few words].`
   },
 
   policy_recommendation: {
-    bp1Role: "the reasons to support the policy",
-    bp2Role: "the limitations, risks, or how to implement it",
-    intro: `Introduce [paraphrase the proposed policy/rule] and why it is debated. State your recommendation clearly — SUPPORT it, OPPOSE it, or support it WITH CONDITIONS — and that this essay explains why. [State your recommendation.]`,
-    bp1: `Give the REASONS FOR the policy: [reason 1] with a concrete example — [a specific scenario] — then [reason 2] with its own example. Keep this paragraph about why the policy is justified.`,
-    bp2: `Set out the LIMITATIONS or IMPLEMENTATION challenges: [limitation/risk 1] with an example — e.g. how hard it is to enforce or who it harms — then [limitation 2], showing where the policy needs conditions. (BP2 = limits / how to implement it.)`,
-    concl: `Restate your recommendation in fresh words, weigh the benefits against the limits, and end with a PRACTICAL recommendation — e.g. adopt it with [the condition], or use [the better alternative] instead. [Final recommendation.]`
+    bp1Role: "your first recommended actions and why they work",
+    bp2Role: "further measures and the support they need",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This situation calls for clear and practical action. This essay will recommend some useful steps and explain why they can work.`,
+    bp1: `To begin with, one useful step is to [recommended action 1]. This works because [short reason in simple words]. For example, [insert a simple everyday example of how it helps]. Additionally, another helpful step is to [recommended action 2]. For example, [insert a simple everyday example of how it helps].`,
+    bp2: `On the other hand, good plans also need support to work in real life. One more practical measure is to [recommended action or support 1]. For example, [insert a simple everyday example of how it helps]. Furthermore, [recommended action or support 2] will make the results stronger. For example, [insert a simple everyday example of how it helps].`,
+    concl: `In conclusion, [topic rephrased] can be improved with practical steps. Therefore, [restate the action that should come first] should be the starting point because [short reason].`
+  },
+
+  rights_ethics: {
+    bp1Role: "your moral reasons (fairness, harm, freedom, honesty)",
+    bp2Role: "the opposing moral view and why it is weaker",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This question asks whether [restate the issue in simple words] is right or fair. In my opinion, [state your moral position clearly in simple words]. This essay will explain my position with clear reasons and examples.`,
+    bp1: `To begin with, one important reason for my position is that [moral reason 1, such as fairness, harm, freedom, or honesty]. For example, [insert a simple everyday example related to it]. Additionally, another key reason is that [moral reason 2]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, some people see this issue differently. They may argue that [opposing point or further reason 1]. For example, [insert a simple everyday example related to it]. However, [answer that point in simple words], and [opposing point or further reason 2] does not change the main question of right and wrong.`,
+    concl: `In conclusion, [restate the issue in fresh words] is a question of what is right, not only what is useful. Therefore, I believe [restate your moral position in fresh simple words] because [your strongest reason in a few words].`
+  },
+
+  future_prediction: {
+    bp1Role: "the changes you predict, with early signs today",
+    bp2Role: "the conditions and factors that shape the outcome",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This question asks what will happen in the future. In my opinion, [state your clear prediction in simple words]. This essay will explain the reasons behind my prediction with examples.`,
+    bp1: `To begin with, one important change I expect is that [predicted change 1]. For example, [insert a simple everyday example of early signs we can already see today]. Additionally, another likely change is that [predicted change 2]. For example, [insert a simple everyday example of early signs related to it].`,
+    bp2: `On the other hand, the future also depends on some conditions. One key factor is that [factor or further change 1]. For example, [insert a simple everyday example related to it]. Furthermore, [factor or further change 2] could also shape the outcome. For example, [insert a simple everyday example related to it].`,
+    concl: `In conclusion, [topic rephrased] is likely to change in clear ways. Therefore, I predict that [restate your prediction in fresh simple words] because [your strongest reason in a few words].`
+  },
+
+  social_impact: {
+    bp1Role: "the first big effects on society",
+    bp2Role: "further effects on how people live together",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This trend affects not only individuals but society as a whole. This essay will discuss its main effects on society, such as families, communities, and workplaces.`,
+    bp1: `To begin with, one important social effect is that [social effect 1]. For example, [insert a simple everyday example about families, neighbours, or workplaces]. Additionally, another key effect is that [social effect 2]. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, society also feels this trend in other ways. One further effect is that [social effect 3]. For example, [insert a simple everyday example related to it]. Furthermore, [social effect 4] changes how people live together. For example, [insert a simple everyday example related to it].`,
+    concl: `In conclusion, [topic rephrased] has real effects on how people live together. Therefore, [sum up the overall effect on society in simple words] because [your strongest reason in a few words].`
+  },
+
+  education_effectiveness: {
+    bp1Role: "where and why the approach works",
+    bp2Role: "its limits and what it depends on",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This question asks whether [restate the teaching or learning approach in simple words] really works. In my opinion, [state your verdict in simple words]. This essay will judge this approach with clear examples.`,
+    bp1: `To begin with, this approach works well in some ways. One important strength is that [strength 1]. For example, [insert a simple classroom or study example related to it]. Additionally, [strength 2] also helps students. For example, [insert a simple classroom or study example related to it].`,
+    bp2: `On the other hand, this approach also has limits. One clear weakness is that [weakness or condition 1]. For example, [insert a simple classroom or study example related to it]. Furthermore, [weakness or condition 2] can reduce its results. For example, [insert a simple classroom or study example related to it].`,
+    concl: `In conclusion, [restate the approach in fresh words] has both strengths and limits. Therefore, my verdict is that [state your final judgement in simple words] because [your strongest reason in a few words].`
+  },
+
+  importance_reasons: {
+    bp1Role: "why the goal is important",
+    bp2Role: "the obstacles that make it hard to achieve",
+    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. Most people agree that [restate the goal in simple words] matters, but it is not easy to achieve. This essay will explain why it is important and why it is difficult to reach.`,
+    bp1: `To begin with, [the goal] is important for clear reasons. One key reason is that [reason for importance 1]. For example, [insert a simple everyday example related to it]. Additionally, [reason for importance 2] also shows its value. For example, [insert a simple everyday example related to it].`,
+    bp2: `On the other hand, reaching [the goal] is difficult in real life. One major obstacle is that [obstacle 1]. For example, [insert a simple everyday example related to it]. Furthermore, [obstacle 2] makes it even harder. For example, [insert a simple everyday example related to it].`,
+    concl: `In conclusion, [the goal rephrased] is important, yet hard to achieve. Therefore, [name the biggest obstacle in a few words] is the main challenge that people must understand first.`
   }
 };
 
-/* Resolve simple aliases (e.g. opinion -> agree_disagree). */
-Object.keys(QUESTION_TYPE_TEMPLATES).forEach(k => {
-  const v = QUESTION_TYPE_TEMPLATES[k];
-  if (v && v.__aliasOf && QUESTION_TYPE_TEMPLATES[v.__aliasOf]) {
-    QUESTION_TYPE_TEMPLATES[k] = QUESTION_TYPE_TEMPLATES[v.__aliasOf];
-  }
-});
-
-/* Relation/other variants that share a skeleton. */
+/* Relation/legacy variants that share a skeleton. */
 const TYPE_TEMPLATE_ALIASES = {
   advantages_disadvantages_opinion: "advantages_disadvantages",
   causes_solutions: "problem_solution",
+  problems_solutions: "problem_solution",
   cause_solution: "problem_solution",
   problem_effect: "cause_effect",
   causes_effects: "cause_effect",
   problems_effects: "cause_effect",
   compare_two_sides: "advantages_disadvantages",
-  blessing_curse: "positive_negative_impact"
+  blessing_curse: "positive_negative_impact",
+  positive_negative_impacts: "positive_negative_impact",
+  single_focus: "two_option_preference"
 };
 
 /* Return a concrete {intro,bp1,bp2,concl} for the question type, falling back to
@@ -5178,19 +5205,24 @@ function getTypeTemplateStructure(questionType, fallbackTemplate) {
   };
 }
 
+/* Band 6 adapts the exam-template STRUCTURE to the question type (falling back to the band
+   skeleton the client sent for any uncovered type). Band 9 must follow the sophisticated Band 9
+   template directly — it already adapts to the question type via its slashed alternatives — so its
+   intro/body/conclusion phrasing is NOT replaced by the per-type frames.
+   This helper is the single source of truth for that swap: the prompt builder AND the
+   validator must both use it, otherwise validation would check the wrong template. */
+function getEffectiveTemplate(plan, template) {
+  if (!plan || plan.target_band_level !== 'band6') return template;
+  // Focus-area single_best_option needs its own structure, not the "most
+  // pressing problem" skeleton. Select the focus variant when flagged.
+  const isFocusAreaPlan = (plan.question_type === 'single_best_option') && Array.isArray(plan.secondary_features) && plan.secondary_features.includes('focus_area');
+  const structureKey = isFocusAreaPlan ? 'single_best_option_focus' : plan.question_type;
+  return getTypeTemplateStructure(structureKey, template);
+}
+
 function generateEssayPrompt(plan, template) {
   const isBand6 = (plan.target_band_level === 'band6');
-  // Band 6 adapts the exam-template STRUCTURE to the question type (falling back to the band
-  // skeleton the client sent for any uncovered type). Band 9 must follow the sophisticated Band 9
-  // template directly — it already adapts to the question type via its slashed alternatives — so its
-  // intro/body/conclusion phrasing is NOT replaced by the generic per-type skeletons.
-  if (isBand6) {
-    // Focus-area single_best_option needs its own structure, not the "most
-    // pressing problem" skeleton. Select the focus variant when flagged.
-    const isFocusAreaPlan = (plan.question_type === 'single_best_option') && Array.isArray(plan.secondary_features) && plan.secondary_features.includes('focus_area');
-    const structureKey = isFocusAreaPlan ? 'single_best_option_focus' : plan.question_type;
-    template = getTypeTemplateStructure(structureKey, template);
-  }
+  template = getEffectiveTemplate(plan, template);
   const isNatural = (plan.generation_mode === 'natural');
 
   const vocabSpec = VOCAB_LEVELS[(plan.vocabulary_level || 3) - 1] || VOCAB_LEVELS[2];
@@ -5298,8 +5330,13 @@ These formulaic templates make the essay look robotic and rehearsed. Write a com
 `;
 
   const templateStyleInstruction = `
-=== WRITING STYLE: EXAM TEMPLATE MODE (FOLLOW TEMPLATE CLOSELY) ===
-Fill in the [square bracket] placeholders with content specific to the essay topic. Keep the template's structure and transitions. You may tighten wordy or boilerplate phrasing where it improves clarity, but do not cut content to hit a specific word count.
+=== WRITING STYLE: EXAM TEMPLATE MODE (STRICT — FOLLOW THE TEMPLATE EXACTLY) ===
+This is a memorised exam template. Copy the template sentences and replace ONLY the [square bracket] slots with topic-specific content.
+- Every fixed word OUTSIDE the brackets must appear exactly as written (only tiny grammar fixes are allowed: a/an, singular/plural, verb tense).
+- Where brackets show slashed alternatives [A / B / C], choose exactly ONE option.
+- Bracketed sentences that say "If the question asks..." are optional — include or drop the whole sentence as instructed.
+- Do NOT reorder, merge, drop, or add sentences. Do NOT paraphrase the fixed wording.
+- The sentence starters ("The topic of", "To begin with,", "On the other hand,", "In conclusion,") are the whole point of this mode — students memorise them. Keep them exactly.
   
 INTRODUCTION TEMPLATE:
 ${template.intro}
@@ -5396,7 +5433,7 @@ Respond with EXACTLY these sections, nothing else, no preamble:
 [filled conclusion paragraph — topic-specific nouns; add the Therefore line on a new line if the intro had an opinion sentence]`;
 }
 
-function validateGeneratedEssayText(plan, text) {
+function validateGeneratedEssayText(plan, text, template) {
   const errors = [];
   const warnings = [];
 
@@ -5440,6 +5477,29 @@ function validateGeneratedEssayText(plan, text) {
       errors,
       warnings
     };
+  }
+
+  // === EXAM TEMPLATE ADHERENCE ===
+  // In template mode every section must begin with the template's fixed lead
+  // wording (the text before the first [slot]). This is what makes the band
+  // structure actually stick: drift becomes a validation error, which feeds
+  // the retry-correction loop instead of being silently returned.
+  if (template && plan && plan.generation_mode !== 'natural') {
+    const leadLiteral = (frame) => {
+      if (!frame) return '';
+      let lead = String(frame).split('[')[0].replace(/\s+/g, ' ').trim();
+      lead = lead.split(' ').slice(0, 6).join(' ');
+      return lead.length >= 8 ? lead : '';
+    };
+    const normalizeLead = (s) => String(s || '').replace(/^[=\s"'\u201C\u2018]+/, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    const sectionNames = { intro: 'Introduction', bp1: 'Body Paragraph 1', bp2: 'Body Paragraph 2', concl: 'Conclusion' };
+    [['intro', intro], ['bp1', bp1], ['bp2', bp2], ['concl', concl]].forEach(([key, sec]) => {
+      const lead = leadLiteral(template[key]);
+      if (!lead) return;
+      if (!normalizeLead(sec).startsWith(normalizeLead(lead))) {
+        errors.push(`${sectionNames[key]} does not follow the exam template. It must START with the template's fixed wording: "${lead}..." — rewrite this section by copying the template sentences and filling only the [slots].`);
+      }
+    });
   }
 
   const fullEssayClean = `${intro} ${bp1} ${bp2} ${concl}`.replace(/==/g, '').trim();
@@ -5593,6 +5653,7 @@ app.post('/api/generate-essay', async (req, res) => {
 
   const isBand6 = (plan.target_band_level === 'band6');
   const mode = plan.band6Mode;
+  const effectiveTemplate = getEffectiveTemplate(plan, template);
 
   let prompt = '';
   if (isBand6 && mode === 'just_phrases') {
@@ -5622,7 +5683,7 @@ ${plan.explanation ? `TOPIC EXPLANATION: ${plan.explanation}` : ''}
 Respond with EXACTLY four sections, nothing else, no preamble:
 
 ===INTRO===
-[A very simple, clear Band 6 introduction paragraph following this template: "${template.intro}"]
+[A very simple, clear Band 6 introduction paragraph following this template: "${effectiveTemplate.intro}"]
 
 ===BP1===
 Idea 1: [The exact text of the first selected idea for BP1]
@@ -5651,7 +5712,7 @@ Example Phrases:
 - [Another simple everyday phrase/sentence starter related to Idea 2]
 
 ===CONCL===
-[A very simple, clear Band 6 conclusion paragraph following this template: "${template.concl}"]`;
+[A very simple, clear Band 6 conclusion paragraph following this template: "${effectiveTemplate.concl}"]`;
   } else {
     prompt = generateEssayPrompt(plan, template);
   }
@@ -5691,7 +5752,7 @@ Please rewrite the essay to completely fix these issues. Ensure all instructions
         if (isBand6 && mode === 'just_phrases') {
           finalValidation = { ok: true, errors: [], warnings: [] };
         } else {
-          finalValidation = validateGeneratedEssayText(plan, text);
+          finalValidation = validateGeneratedEssayText(plan, text, effectiveTemplate);
         }
 
         if (finalValidation.ok) {
