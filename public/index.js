@@ -31,6 +31,39 @@
 })();
 
 // ============================================================
+//  STUDENT PORTAL — ADMIN ENTRY REMOVED
+//  The student-facing application must never expose an admin navigation link,
+//  admin launch button, or embedded admin modal. Protected backend maintenance
+//  endpoints remain server-side and are not part of the student interface.
+// ============================================================
+function removeAdminPortalEntry() {
+  const selectors = [
+    '#nav-admin',
+    '#adminModal',
+    '[data-section="admin"]',
+    '[data-target="admin"]',
+    'a[href="/admin"]',
+    'a[href="/admin.html"]',
+    'a[href$="/admin"]',
+    'a[href$="/admin.html"]',
+    '[onclick*="openAdmin"]'
+  ];
+  for (const selector of selectors) {
+    document.querySelectorAll(selector).forEach(el => el.remove());
+  }
+}
+
+(function installAdminEntryRemoval() {
+  sessionStorage.removeItem('pte_admin_key');
+  const run = () => removeAdminPortalEntry();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  // Some layouts are injected after authentication; remove any late-added entry.
+  const observer = new MutationObserver(run);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+
+// ============================================================
 //  STATE — Unified Client State
 // ============================================================
 let essays = [];
@@ -46,7 +79,7 @@ let sessionToken = '';        // Custom sync authentication token
 
 // SWT progress elements
 let passages = [];
-let adminKey = sessionStorage.getItem('pte_admin_key') || '';
+let adminKey = ''; // Student portal has no admin entry
 let attempted = new Set();
 let timerOn = false;
 let timerSeconds = 0;
@@ -646,8 +679,7 @@ function signOut() {
   document.getElementById('loginPassword').value = '';
   document.getElementById('loginSubmitBtn').disabled = false;
   document.getElementById('loginSubmitBtn').textContent = 'Sign in';
-  const adminBtn = document.getElementById('nav-admin');
-  if (adminBtn) adminBtn.style.display = 'none';
+  removeAdminPortalEntry();
 }
 
 async function changePassword() {
@@ -704,8 +736,7 @@ async function enterApp(uid) {
   setZoom(0.7);
   updateDashboard();
   checkAIStatus();
-  const adminBtn = document.getElementById('nav-admin');
-  if (adminBtn) adminBtn.style.display = isAdmin() ? '' : 'none';
+  removeAdminPortalEntry();
 
   // Prompt existing users if they don't have a real email address configured
   checkUserEmailRequirement();
@@ -967,30 +998,15 @@ function importLocalEssays() {
 let adminUsersCache = [];
 
 async function openAdmin() {
-  if (!isAdmin()) { toast('Not an admin', true); return; }
-  if (!adminKey) {
-    const k = prompt('Enter Admin Secret Key to authorize operations:');
-    if (!k) return;
-    adminKey = k;
-    sessionStorage.setItem('pte_admin_key', k);
-  }
-  document.getElementById('adminModal').classList.add('show');
-  await loadAdminUsers();
+  removeAdminPortalEntry();
+  return false;
 }
-function closeAdmin() { document.getElementById('adminModal').classList.remove('show'); }
+function closeAdmin() {
+  const modal = document.getElementById('adminModal');
+  if (modal) modal.remove();
+}
 
 function isAdmin() {
-  if (offlineMode || !currentUser) return false;
-  const username = (currentUser.uid || '').trim().toLowerCase();
-  if (username === 'admin') return true;
-
-  const userEmailLc = (currentUser.email || '').trim().toLowerCase();
-  const adminEmailLc = (window.FB?.adminEmail || 'admin@ptewriting.com').trim().toLowerCase();
-  if (userEmailLc === adminEmailLc) return true;
-
-  const adminPrefix = adminEmailLc.split('@')[0];
-  if (username === adminPrefix) return true;
-
   return false;
 }
 
@@ -11234,8 +11250,7 @@ function initOfflineMode() {
   document.getElementById('userBadge').style.display = 'none';
   document.getElementById('syncIndicator').style.display = 'none';
   document.getElementById('quotaChip').style.display = 'none';
-  const adminBtn = document.getElementById('nav-admin');
-  if (adminBtn) adminBtn.style.display = 'none';
+  removeAdminPortalEntry();
   // Boot the app
   renderList();
   loadCurrent();
@@ -11250,18 +11265,7 @@ async function bootForUser(user) {
   document.getElementById('userBadge').style.display = '';
   document.getElementById('userName').textContent = user.email.split('@')[0];
   document.getElementById('userAvatar').textContent = (user.email[0] || '?').toUpperCase();
-  const userEmailLc = (user.email || '').trim().toLowerCase();
-  const adminEmailLc = (window.FB.adminEmail || '').trim().toLowerCase();
-  const username = (user.uid || '').trim().toLowerCase();
-  const adminPrefix = adminEmailLc.split('@')[0];
-  const adminBtn = document.getElementById('nav-admin');
-  if (userEmailLc === adminEmailLc || username === 'admin' || username === adminPrefix) {
-    if (adminBtn) adminBtn.style.display = '';
-    console.log('Admin mode: enabled for', user.email);
-  } else {
-    if (adminBtn) adminBtn.style.display = 'none';
-    console.log('Not admin. Signed in as:', user.email, '| Admin set to:', window.FB.adminEmail);
-  }
+  removeAdminPortalEntry();
   // Load their data
   const ok = await loadUserData(user.uid);
   if (!ok) return;
@@ -13864,19 +13868,21 @@ function verdictLine(pte, band){
 function buildResultSummary(data, traits){
   const cd = data.content_details || {};
   const captured = (cd.key_ideas_present || []).length;
+  const diagnosticTotal = captured + (cd.key_ideas_missing || []).length;
   const cMax = traits.content_max || 4;
   const parts = [];
-  if(captured === cMax){
-    parts.push('You captured all ' + cMax + ' key ideas in one well-formed sentence.');
+  if((traits.content || 0) >= cMax){
+    parts.push('You captured the central message and enough essential supporting information for full Content.');
+    if(diagnosticTotal && captured < diagnosticTotal){
+      parts.push('One diagnostic headline was omitted, but it was not required for the holistic full score.');
+    }
   } else {
-    parts.push('You captured ' + captured + ' of ' + cMax + ' key ideas in one sentence with appropriate connectors.');
+    parts.push('The summary includes ' + captured + ' diagnostic headline' + (captured === 1 ? '' : 's') + ', but the central message or essential support needs strengthening.');
   }
   if((traits.vocabulary || 0) < 2){
-    parts.push('Vocabulary range is the lever that will push you higher — try swapping high-frequency words for academic alternatives.');
+    parts.push('Review any imprecise or unnatural word choices; copying accurate source vocabulary is acceptable.');
   } else if((traits.grammar || 0) < 2){
-    parts.push('Tightening grammar will lift the score — check connector punctuation and article use.');
-  } else if(captured < cMax){
-    parts.push('Add the missing key element to move up a band.');
+    parts.push('Meaning is clear, but correcting the highlighted language errors would make the sentence more polished.');
   }
   return parts.join(' ');
 }
@@ -14317,13 +14323,13 @@ function renderTraitBreakdown(data, traits){
 
   const rows = [
     { name:'Content', score:traits.content||0, max:cMax,
-      note: captured >= cMax ? 'All key elements present.' : captured + ' of ' + cMax + ' key elements present — add the missing one(s).' },
+      note: (traits.content >= cMax) ? 'Central message and essential supporting points are sufficiently covered.' : 'Strengthen the central message or add another essential supporting point.' },
     { name:'Form', score:traits.form||0, max:1,
       note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
     { name:'Grammar', score:traits.grammar||0, max:2,
-      note: (traits.grammar >= 2) ? 'Clean grammar and connector punctuation.' : 'Check connector punctuation (semicolons) and article use.' },
+      note: (traits.grammar >= 2) ? 'Clear, controlled sentence structure.' : 'Correct the highlighted grammar or usage errors; a semicolon is not compulsory.' },
     { name:'Vocabulary', score:traits.vocabulary||0, max:2,
-      note: (traits.vocabulary >= 2) ? 'Good academic range.' : 'Range could be wider — swap high-frequency words for academic alternatives.' }
+      note: (traits.vocabulary >= 2) ? 'Words are accurate and appropriate.' : 'Review the highlighted word choices; a fixed number of synonym swaps is not required.' }
   ];
 
   el.innerHTML = rows.map(r => {
@@ -14355,6 +14361,7 @@ function renderCoverage(data, passage){
   el.innerHTML = labels.filter(([k]) => keyEls[k]).map(([k, label]) => {
     let status, statusCls;
     if(captured.has(k)){ status = 'Covered'; statusCls = 'covered'; }
+    else if(missing.has(k) && ((data.trait_scores || {}).content >= ((data.trait_scores || {}).content_max || 4))){ status = 'Not selected'; statusCls = 'partial'; }
     else if(missing.has(k)){ status = 'Missing'; statusCls = 'missing'; }
     else { status = 'Partial'; statusCls = 'partial'; }
     const txt = String(keyEls[k] || '').replace(/<[^>]+>/g,'');
@@ -14385,14 +14392,14 @@ function renderAboutPassage(passage){
     </div>`);
   sections.push(`
     <div class="about-section">
-      <div class="about-eyebrow">🎯 Why these are the critical ideas</div>
+      <div class="about-eyebrow">🎯 How the diagnostic ideas support the passage</div>
       <p>${escapeHtml(importance)}</p>
     </div>`);
   if(elementsExplained && Object.keys(elementsExplained).length){
     const order = [['what','What','what'],['why','Why','why'],['how','How','how'],['result','Result','result']];
     sections.push(`
       <div class="about-section">
-        <div class="about-eyebrow">🧩 Why each element matters</div>
+        <div class="about-eyebrow">🧩 What each diagnostic element represents</div>
         ${order.filter(([k]) => elementsExplained[k]).map(([k,label,cls]) => `
           <p><strong style="display:inline-flex;align-items:center;gap:6px;">
             <span class="e-dot" style="background:var(--${cls});display:inline-block;width:9px;height:9px;border-radius:2px;"></span>${label}:
@@ -14412,7 +14419,7 @@ function generateTopicFallback(passage){
 function generateImportanceFallback(passage){
   const keys = passage.keyElements || {};
   const count = ['what','why','how','result'].filter(k => keys[k]).length;
-  return `Of all the sentences in the passage, ${count} carry the load: the topic claim, the reasons supporting it, the mechanism or evidence, and the consequence.`;
+  return `These ${count} diagnostic headlines help identify the passage structure, but a strong summary does not always need to state every one of them.`;
 }
 function generateElementsFallback(passage){
   const keys = passage.keyElements || {};

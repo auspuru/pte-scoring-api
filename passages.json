@@ -3,7 +3,7 @@
     "id": 1,
     "title": "Climate Change Economics",
     "category": "Environment/Economics",
-    "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5\u00b0C, we lose 70% of coral reefs. At 2\u00b0C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+    "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
     "keyElements": {
       "what": "Climate change could cause a 10% loss of global GDP by 2050",
       "why": "Coastal cities face $1 trillion in annual damages and developing nations bear 75% of costs despite contributing less than 10% of emissions",
@@ -13,13 +13,13 @@
     "sampleResponse": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
     "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words.",
     "keyElementsRationale": {
-      "topic": "This passage is about the economic stakes of climate change \u2014 using GDP impact, regional inequity, and the cost of the renewable energy transition as the core argument. It is structured around a central claim (the economic damage), evidence (specific damage figures and emissions inequity), a proposed mechanism (renewables and their falling costs), and the implied call to action (the scale of investment needed).",
-      "importance": "Many sentences in this passage are colour \u2014 direct quotes from named experts, rhetorical questions, dramatic phrasing. A summariser must filter past those to the structural backbone. The four key ideas below are the load-bearing claims; everything else (Chen's exact wording, the insurance industry's 340% surge, the Okafor quote about 'justice') is illustration, not argument. Capturing the elaborations instead of the structure produces a long, vivid, but low-scoring summary.",
+      "topic": "This passage is about the economic stakes of climate change — using GDP impact, regional inequity, and the cost of the renewable energy transition as the core argument. It is structured around a central claim (the economic damage), evidence (specific damage figures and emissions inequity), a proposed mechanism (renewables and their falling costs), and the implied call to action (the scale of investment needed).",
+      "importance": "Many sentences in this passage are colour — direct quotes from named experts, rhetorical questions, dramatic phrasing. A summariser must filter past those to the structural backbone. The four key ideas below are the load-bearing claims; everything else (Chen's exact wording, the insurance industry's 340% surge, the Okafor quote about 'justice') is illustration, not argument. Capturing the elaborations instead of the structure produces a long, vivid, but low-scoring summary.",
       "elements": {
-        "what": "The headline economic claim (10% of global GDP by 2050) \u2014 without this, the summary has no thesis. Other large figures in the passage (the 25% agricultural drop, the 46% increase in weather events) are downstream consequences, not the central economic claim.",
-        "why": "The inequity figure (developing nations bearing 75% of the cost despite contributing under 10% of emissions) \u2014 this is the moral and political weight of the topic. The $1 trillion coastal-damage figure is part of this same 'why' because it grounds the cost claim in concrete impact.",
-        "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) \u2014 this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
-        "result": "The $4 trillion annual investment requirement, framed against military spending \u2014 this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
+        "what": "The headline economic claim (10% of global GDP by 2050) — without this, the summary has no thesis. Other large figures in the passage (the 25% agricultural drop, the 46% increase in weather events) are downstream consequences, not the central economic claim.",
+        "why": "The inequity figure (developing nations bearing 75% of the cost despite contributing under 10% of emissions) — this is the moral and political weight of the topic. The $1 trillion coastal-damage figure is part of this same 'why' because it grounds the cost claim in concrete impact.",
+        "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) — this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
+        "result": "The $4 trillion annual investment requirement, framed against military spending — this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
       }
     }
   },
@@ -40,10 +40,10 @@
       "topic": "This passage describes AI's role in medical diagnostics, weighing its accuracy advantage against ethical and adoption concerns. The argument moves from a performance claim (AI vs human accuracy), to scale of adoption, to ethical caveats, to economic implication.",
       "importance": "The passage mixes hard numbers (94.7%, 86.3%, 67%, 23, $150 billion) with cautionary framing. The trap is treating every statistic as equally important. Only four numbers carry the argument: the accuracy comparison (the claim), the adoption rate (the scale), the diagnostic errors (the caveat), and the cost savings (the stake). The rest are texture.",
       "elements": {
-        "what": "The accuracy comparison (94.7% vs 86.3%) \u2014 this is the central claim and the reason the topic matters at all.",
-        "why": "Hospital adoption at 67% \u2014 this establishes that the technology is no longer hypothetical, which is what makes the rest worth caring about.",
-        "how": "The 23 diagnostic errors \u2014 this is the necessary counterweight; without it the summary reads as cheerleading rather than analysis.",
-        "result": "The $150 billion annual saving \u2014 this quantifies why the question is worth resolving. Without it, the conclusion is moralistic rather than economic."
+        "what": "The accuracy comparison (94.7% vs 86.3%) — this is the central claim and the reason the topic matters at all.",
+        "why": "Hospital adoption at 67% — this establishes that the technology is no longer hypothetical, which is what makes the rest worth caring about.",
+        "how": "The 23 diagnostic errors — this is the necessary counterweight; without it the summary reads as cheerleading rather than analysis.",
+        "result": "The $150 billion annual saving — this quantifies why the question is worth resolving. Without it, the conclusion is moralistic rather than economic."
       }
     }
   },
@@ -51,7 +51,7 @@
     "id": 3,
     "title": "Sustainable Urban Development Strategies",
     "category": "Urban Planning/Sustainability",
-    "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms\u2014incorporating community consultations, citizen science initiatives, and collaborative budgeting processes\u2014foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
+    "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
     "keyElements": {
       "what": "Sustainable urban development requires an integrated planning approach reconciling economic growth with environmental stewardship and social equity",
       "why": "Compact city models with mixed-use zoning and high-density configurations reduce carbon emissions from commuter traffic and urban sprawl",
@@ -59,15 +59,15 @@
       "result": "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems adapting to climate variability"
     },
     "sampleResponse": "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
-    "sampleNotes": "Verbatim Method \u2014 passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words.",
+    "sampleNotes": "Verbatim Method — passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words.",
     "keyElementsRationale": {
       "topic": "This passage outlines how cities can grow without exhausting their environment or fracturing their communities. It moves from the central tension (economic growth vs ecological and social cost), through a design response (compact-city models, green buildings), into a process response (participatory governance), and lands on the systems-level outcome (resilient urban ecosystems).",
-      "importance": "Urban planning passages are dense with overlapping concepts \u2014 sustainability, equity, density, governance, infrastructure. A summariser who tries to list them all ends over the 75-word cap or under-specified on each. The four key ideas reduce the passage to its argumentative spine: the problem, the design fix, the governance fix, and the systemic payoff. Other phrases (specific technologies, regional examples if any) are evidence, not load-bearing.",
+      "importance": "Urban planning passages are dense with overlapping concepts — sustainability, equity, density, governance, infrastructure. A summariser who tries to list them all ends over the 75-word cap or under-specified on each. The four key ideas reduce the passage to its argumentative spine: the problem, the design fix, the governance fix, and the systemic payoff. Other phrases (specific technologies, regional examples if any) are evidence, not load-bearing.",
       "elements": {
-        "what": "The triple constraint \u2014 balancing economic growth, environmental stewardship, and social equity \u2014 names the actual problem the passage is solving.",
-        "why": "Compact city models and green building standards \u2014 the design-level response. This is the 'what we change' beat.",
-        "how": "Participatory governance \u2014 the process-level response. Without it the summary describes physical changes but not how they happen.",
-        "result": "Resilient urban ecosystems at the metropolitan scale \u2014 the outcome that justifies the effort. Skipping it leaves the summary mid-argument."
+        "what": "The triple constraint — balancing economic growth, environmental stewardship, and social equity — names the actual problem the passage is solving.",
+        "why": "Compact city models and green building standards — the design-level response. This is the 'what we change' beat.",
+        "how": "Participatory governance — the process-level response. Without it the summary describes physical changes but not how they happen.",
+        "result": "Resilient urban ecosystems at the metropolitan scale — the outcome that justifies the effort. Skipping it leaves the summary mid-argument."
       }
     }
   },
@@ -75,7 +75,7 @@
     "id": 4,
     "title": "Scientific Research Protocol",
     "category": "Research Methods",
-    "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions grounded in comprehensive literature reviews, identifying gaps in existing knowledge frameworks and articulating testable hypotheses with operationalizable variables. Secondly, study designs must incorporate appropriate control groups, randomization techniques, and statistical power calculations to minimize confounding variables and selection biases that could compromise internal validity. Furthermore, data collection procedures should employ standardized instruments with established psychometric properties, ensuring inter-rater reliability and construct validity across diverse populations and contexts (Cronbach, 1951). Consequently, peer review processes\u2014whether double-blind or open\u2014serve as critical mechanisms for methodological transparency, enabling the identification of analytical errors, replication of findings, and progressive refinement of theoretical frameworks. Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice in applied domains.",
+    "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions grounded in comprehensive literature reviews, identifying gaps in existing knowledge frameworks and articulating testable hypotheses with operationalizable variables. Secondly, study designs must incorporate appropriate control groups, randomization techniques, and statistical power calculations to minimize confounding variables and selection biases that could compromise internal validity. Furthermore, data collection procedures should employ standardized instruments with established psychometric properties, ensuring inter-rater reliability and construct validity across diverse populations and contexts (Cronbach, 1951). Consequently, peer review processes—whether double-blind or open—serve as critical mechanisms for methodological transparency, enabling the identification of analytical errors, replication of findings, and progressive refinement of theoretical frameworks. Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice in applied domains.",
     "keyElements": {
       "what": "Rigorous scientific inquiry demands systematic empirical protocols ensuring validity, reliability and reproducibility",
       "why": "Researchers must formulate precise questions through literature reviews and articulate testable hypotheses with operationalizable variables",
@@ -83,7 +83,7 @@
       "result": "Peer review enables methodological transparency and replication so investigations yield credible evidence advancing knowledge"
     },
     "sampleResponse": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
-    "sampleNotes": "Verbatim Method \u2014 academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
+    "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
   },
   {
     "id": 5,
@@ -97,7 +97,13 @@
       "result": "He tried to convince his wife that exchanging the town house for a farm cottage on a lower income was a good idea"
     },
     "sampleResponse": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
-    "sampleNotes": "Real Pearson-scored Band 90 sample. Paraphrased Method \u2014 5+ swaps (choice\u2192decision, familiar\u2192aware, disadvantages\u2192downsides, advantages\u2192benefits, persuade\u2192convince) + 3 connectors. 74 words."
+    "sampleNotes": "Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "officialCalibration": {
+      "source": "Pearson official mock test supplied by the user",
+      "expectedBand": "Band 9",
+      "response": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, as he knew that it was a good idea because he had been there before; moreover, there were many benefits, but few disadvantages; thus, he was trying to persuade his wife that exchanging a warm town house for a windswept farm cottage on a much lower income was a beneficial idea.",
+      "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    }
   },
   {
     "id": 6,
@@ -107,11 +113,17 @@
     "keyElements": {
       "what": "The little band of stockbrokers from Jonathan's Coffee House in 1698 became the founder-members of the world's mighty money capital",
       "why": "Progress was not entirely smooth, with setbacks like the South Sea Bubble of 1720",
-      "how": "The UK's financial hub has now overtaken its New York rivals in funds managed and holds 70% of the global secondary bond market",
+      "how": "London became a dominant global financial centre by overtaking rivals, holding 70% of the global secondary bond market or dominating foreign exchange trading",
       "result": "London remains the place to be for foreigners in finance despite being one of the most expensive cities with transport systems groaning under pressure"
     },
     "sampleResponse": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
-    "sampleNotes": "Real Pearson-scored Band 90 sample. Verbatim Method \u2014 mostly lifted lines (entirely\u2192completely, UK\u2192United Kingdom only) but glued by 3 connectors. 70 words."
+    "sampleNotes": "Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "officialCalibration": {
+      "source": "Pearson official mock test supplied by the user",
+      "expectedBand": "Band 9",
+      "response": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of world's mighty money capital; however, the progress was not completely smooth; moreover, the city dominates foreign exchange trading by holding 70% of the global secondary bond market; furthermore, London is one of the most expensive cities, and its transport systems groan; despite these obstacles, foreigners in finance wants to live here.",
+      "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    }
   },
   {
     "id": 7,
@@ -122,10 +134,16 @@
       "what": "The Nobel peace prize rewards IPCC scientists for painstaking climate study while Al Gore focuses on telling people what to fear",
       "why": "Gore predicts five-metre sea-level rises but the IPCC concludes sea levels will rise only twelve to fifty centimetres this century",
       "how": "The IPCC also concludes Greenland's current rate of melting would add just eight centimetres to sea level rise by century's end",
-      "result": "By 2050 heat will claim 400,000 more lives but 1.8 million fewer will die from cold, so global warming actually saves lives"
+      "result": "Global warming may actually save lives because rising temperatures reduce deadly cold spells, with fewer people dying from cold than the additional deaths caused by heat"
     },
     "sampleResponse": "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
-    "sampleNotes": "Hybrid \u2014 captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words."
+    "sampleNotes": "Hybrid — captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words. Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "officialCalibration": {
+      "source": "Pearson official mock test supplied by the user",
+      "expectedBand": "Band 9",
+      "response": "The scientists that were engaged in establishing what the world should expect from climate change have recieved the Nobel peace prize, and Al Gore told the world that it will expect five-metre sea-level rises over this century; moreover, rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat; therefore, global warming will actually save lives.",
+      "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    }
   },
   {
     "id": 8,
@@ -136,10 +154,16 @@
       "what": "Travel and tourism generates a large percentage of GDP and a huge number of jobs in the world-wide economy",
       "why": "Jobs are spread across the economy and employ a large proportion of women, minority groups and young people while offering good training and transferability",
       "how": "Tourism acts as a catalyst for conservation, environmental improvement and the maintenance of local diversity and culture",
-      "result": "Tourism has a comparative advantage with low start-up and running costs compared to other forms of industry development"
+      "result": "A further comparative advantage is that tourism can have low start-up and running costs compared with other industries"
     },
     "sampleResponse": "Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.",
-    "sampleNotes": "Paraphrased Method \u2014 large\u2192significant, huge\u2192substantial. 3 connectors. ~64 words."
+    "sampleNotes": "Paraphrased Method — large→significant, huge→substantial. 3 connectors. ~64 words. Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "officialCalibration": {
+      "source": "Pearson official mock test supplied by the user",
+      "expectedBand": "Band 9",
+      "response": "Travel and tourism generates a significant percentage of GDP, which can be expected to continue to grow; moreover, jobs created by them employ a huge number of females, minority groups and young individuals, and offer good training and transferability to them; furthermore, tourism acts as a catalyst for conservation and development of the environment and maintenance of local diversity and culture.",
+      "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    }
   },
   {
     "id": 9,
@@ -153,13 +177,13 @@
       "result": "The Oxford computer scientist invented the Web because he was frustrated that he could not find all the information he wanted in one place"
     },
     "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
-    "sampleNotes": "Hybrid \u2014 captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
+    "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
   },
   {
     "id": 10,
     "title": "Economic Forecasting Limitations",
     "category": "Economics/Business",
-    "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates\u2014although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
+    "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
     "keyElements": {
       "what": "For economists in the corporate sector, forecasting is a key function drawing on a wide range of statistical data",
       "why": "Economic forecasting is a long way from a precise science because forecasters' assumptions about how an economy works can vary widely",
@@ -167,11 +191,11 @@
       "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
     },
     "sampleResponse": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
-    "sampleNotes": "Verbatim Method \u2014 passage lines lifted with minor swaps (win\u2192earn) and 3 connectors creating logical flow. ~73 words."
+    "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words."
   },
   {
     "id": 11,
-    "title": "Wright Brothers \u2014 From Bicycles to Flight",
+    "title": "Wright Brothers — From Bicycles to Flight",
     "category": "Technology/History",
     "text": "In 1892 the brothers opened a bicycle sales and repair shop, and they began to build bicycles on a small scale in 1896. They developed their own self-oiling bicycle wheel hub and installed a number of light machine tools in the shop. Profits from the print shop and the bicycle operation eventually were to fund the Wright brothers' aeronautical experiments from 1899 to 1905. In addition, the experience of designing and building lightweight, precision machines of wood, wire, and metal tubing was an ideal preparation for the construction of flying machines.\n\nIn later years the brothers dated their fascination with flight to a small helicopter toy that their father had brought home from his travels when the family was living in Iowa. A decade later, they had read accounts of the work of the German glider pioneer Otto Lilienthal. But it was news reports of Lilienthal's death in a glider crash in August 1896 that marked the beginning of their serious interest in flight. By 1899 the brothers had exhausted the resources of the local library and had written to the Smithsonian Institution for suggestions as to further reading in aeronautics. The following year they wrote to introduce themselves to Octave Chanute, civil engineer and an authority on aviation who was confident of the brothers during the critical years from 1900 to 1905.",
     "keyElements": {
@@ -181,7 +205,7 @@
       "result": "They corresponded with Octave Chanute, a civil engineer and aviation authority who supported them through the critical years 1900 to 1905"
     },
     "sampleResponse": "The Wright brothers opened a bicycle shop in 1892 and began building bicycles in 1896; however, profits from this business funded their aeronautical experiments from 1899 to 1905; moreover, news of Lilienthal's death in 1896 sparked their serious interest in flight; therefore, they corresponded with Octave Chanute, an aviation authority who supported them through the critical years from 1900 to 1905.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 61 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 61 words."
   },
   {
     "id": 12,
@@ -195,7 +219,7 @@
       "result": "The notion left a lasting impression and has been commemorated as an important milestone that laid the groundwork for future reforms and feminist thought"
     },
     "sampleResponse": "The concept of the New Woman emerged in Britain and North America, advanced by a writer named Sarah; however, her book emphasized the need to uplift women's status in a male-dominated society; moreover, although her ideas received mixed responses, her advocacy contributed to broader discussions about women's rights; therefore, the notion has been commemorated as a milestone that laid the groundwork for future feminist thought.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 65 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 65 words."
   },
   {
     "id": 13,
@@ -209,13 +233,13 @@
       "result": "Monitoring is expensive and not all volcanoes are covered, so residents who recognise precursor phenomena can alert scientists and help prevent disasters"
     },
     "sampleResponse": "No single event can predict a volcanic eruption, so many events must be monitored together to forecast one; however, each volcano behaves differently and some eruptions occur with no precursors at all; moreover, after the 1980 Mount St. Helens eruption, dedicated monitoring of seismic energy, dome expansion, tilt, and SO2 emissions allowed scientists to predict eruptions with increasing accuracy; therefore, residents who recognise precursor phenomena can alert scientists and help prevent disasters.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 72 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words."
   },
   {
     "id": 14,
     "title": "Product Life Cycle",
     "category": "Business/Marketing",
-    "text": "His product life cycle has 4 very clearly defined stages, each with its characteristics that mean different things for businesses that are trying to manage the life cycle of their particular products.\n\nIntroduction Stage \u2013 This stage of the cycle could be the most expensive for a company launching a new product. The size of the market for the product is small, which means sales are low, although they will be increasing. On the other hand, the cost of things like research and development, consumer testing, and the marketing needed to launch the product can be very high.\n\nGrowth Stage \u2013 The growth stage is typically characterized by strong growth in sales and profits, and because the company can start to benefit from economies of scale in production, the profit margins, as well as the overall amount of profit, will increase. This makes it possible for businesses to invest more money in promotional activity to maximize the potential of this growth stage.\n\nMaturity Stage \u2013 During the maturity stage, the product is established and the aim for the manufacturer is now to maintain the market share they have built up. This is probably the most competitive time for most products and businesses need to invest wisely in any marketing they undertake. They also need to consider any product modifications or improvements to the production process which might give them a competitive advantage.\n\nDecline Stage \u2013 Eventually, the market for a product will start to shrink, and this is what's known as the decline stage. This shrinkage could be due to the market becoming saturated, or because the consumers are switching to a different type of product. While this decline may be inevitable, it may still be possible for companies to make some profit by switching to less expensive production methods and cheaper markets.",
+    "text": "His product life cycle has 4 very clearly defined stages, each with its characteristics that mean different things for businesses that are trying to manage the life cycle of their particular products.\n\nIntroduction Stage – This stage of the cycle could be the most expensive for a company launching a new product. The size of the market for the product is small, which means sales are low, although they will be increasing. On the other hand, the cost of things like research and development, consumer testing, and the marketing needed to launch the product can be very high.\n\nGrowth Stage – The growth stage is typically characterized by strong growth in sales and profits, and because the company can start to benefit from economies of scale in production, the profit margins, as well as the overall amount of profit, will increase. This makes it possible for businesses to invest more money in promotional activity to maximize the potential of this growth stage.\n\nMaturity Stage – During the maturity stage, the product is established and the aim for the manufacturer is now to maintain the market share they have built up. This is probably the most competitive time for most products and businesses need to invest wisely in any marketing they undertake. They also need to consider any product modifications or improvements to the production process which might give them a competitive advantage.\n\nDecline Stage – Eventually, the market for a product will start to shrink, and this is what's known as the decline stage. This shrinkage could be due to the market becoming saturated, or because the consumers are switching to a different type of product. While this decline may be inevitable, it may still be possible for companies to make some profit by switching to less expensive production methods and cheaper markets.",
     "keyElements": {
       "what": "The Introduction Stage is the most expensive for a company launching a new product, with small market size and low sales but high R&D and marketing costs",
       "why": "The Growth Stage is characterised by strong growth in sales and profits, with economies of scale enabling more investment in promotional activity",
@@ -223,7 +247,7 @@
       "result": "Eventually the market shrinks in the Decline Stage due to saturation or consumers switching, though companies may still profit by adopting cheaper production methods"
     },
     "sampleResponse": "The product life cycle has four stages; the Introduction Stage is expensive with low sales but high R&D and marketing costs; however, the Growth Stage delivers strong sales and profit growth through economies of scale; moreover, the Maturity Stage requires manufacturers to maintain market share through wise marketing and product improvements; therefore, the Decline Stage eventually shrinks the market, though companies may still profit by adopting cheaper production methods.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 69 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 69 words."
   },
   {
     "id": 15,
@@ -237,7 +261,7 @@
       "result": "Many schools have reduced or eliminated handwriting instruction in favour of computers, which is a mistake because handwriting is essential for academic and professional success"
     },
     "sampleResponse": "Handwriting skills have been declining in recent years due to the rising use of technology; however, handwriting is a complex motor and cognitive skill that develops coordination, dexterity, and memory; moreover, good handwriting helps students learn more effectively by enabling them to take notes and express ideas clearly; therefore, schools that have eliminated handwriting instruction in favour of computers are making a mistake because the skill is essential for academic and professional success.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 73 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 73 words."
   },
   {
     "id": 16,
@@ -251,7 +275,7 @@
       "result": "Affordability can be improved by increasing the availability of used and rental textbooks and by using open educational resources that are freely available online"
     },
     "sampleResponse": "Expensive textbooks are a major burden for students, with the average cost rising over 1,000% since the 1970s; however, the high cost is driven by industry consolidation and the frequent release of minor new editions; moreover, these costs force students to choose between textbooks and necessities like food and housing; therefore, affordability can be improved by increasing used and rental textbook availability and by using freely available open educational resources.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 70 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 70 words."
   },
   {
     "id": 17,
@@ -265,7 +289,7 @@
       "result": "Classes can benefit students of all ages and backgrounds, from those being bullied to those feeling stressed or being abused at home"
     },
     "sampleResponse": "Self-defense classes offer many benefits for students, including increased safety, confidence, fitness, and self-discipline; however, they teach students how to protect themselves from attacks, which can reduce bullying in schools; moreover, classes involve physical activity that improves health and teach life skills like respect and conflict resolution; therefore, they can benefit students of all ages, from those being bullied to those feeling stressed or abused at home.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 67 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 67 words."
   },
   {
     "id": 18,
@@ -279,7 +303,7 @@
       "result": "Although off-grid living requires careful planning and preparation, the benefits in health, cost savings, and freedom to live and work as one chooses can be significant"
     },
     "sampleResponse": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, and greater freedom; however, off-grid homes produce their own energy and water, reducing reliance on fossil fuels and lowering carbon footprint; moreover, residents meet their own basic needs such as generating electricity, growing food, and maintaining the home, which builds valuable self-sufficiency skills; therefore, although off-grid living requires careful planning, the benefits can be significant.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 68 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 68 words."
   },
   {
     "id": 19,
@@ -293,7 +317,7 @@
       "result": "Fake news can also harm individuals and businesses by defaming people, damaging reputations, and promoting scams or fraudulent products"
     },
     "sampleResponse": "Fake news is false or misleading information presented as news, which can be spread intentionally or unintentionally; however, social media platforms are particularly vulnerable because they allow users to share information without verification; moreover, fake news can mislead people into bad decisions such as refusing COVID-19 vaccinations and can be used by foreign governments to spread propaganda; therefore, it also harms individuals and businesses by defaming people, damaging reputations, and promoting scams.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 72 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words."
   },
   {
     "id": 20,
@@ -307,6 +331,6 @@
       "result": "The book remains one of the most important works in human history, still scientifically valuable more than 150 years after publication"
     },
     "sampleResponse": "In 1837, at age 28, Darwin wrote Species Change in a notebook, the earliest record of his evolutionary ideas after sailing on HMS Beagle; however, he recognised the theory was a radical view with insufficient evidence to publish; moreover, over 20 years he accumulated data and presented his views to a small circle before publishing On the Origin of Species in 1859; therefore, the book remains one of the most important works in human history.",
-    "sampleNotes": "Captures all four key ideas (W\u00b7W\u00b7H\u00b7R) with 3 formal connectors. 75 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 75 words."
   }
 ]
