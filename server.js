@@ -1562,12 +1562,12 @@ function roundToTenth(value) {
 }
 
 // Convert diagnostic checklist coverage into the holistic 0–4 Content trait.
-// A central message plus three of four headline ideas is full content: one
-// secondary point may be omitted, matching the Pearson calibration responses.
+// Full content means the central message plus at least two important supporting
+// ideas; diagnostic key elements are guidance, not compulsory boxes.
 function coverageToContentScore(capturedCount, totalIdeas, centralCaptured) {
   if (!totalIdeas || capturedCount <= 0) return 0;
   const ratio = capturedCount / totalIdeas;
-  if (centralCaptured && ratio >= 0.75) return 4;
+  if (centralCaptured && capturedCount >= 3) return 4;
   if (ratio >= 0.75) return 3;
   if (centralCaptured && ratio >= 0.50) return 3;
   if (ratio >= 0.50) return 2;
@@ -3658,14 +3658,16 @@ ${studentText}
 ${kpHint ? 'DIAGNOSTIC HEADLINE IDEAS (use as a flexible checklist, not mandatory boxes):\n' + kpHint + '\n' : ''}
 AUTHORITATIVE SCORING CRITERIA:
 - These criteria determine the score; the diagnostic checklist is coaching only.
-- A summary may earn full Content even when it omits one secondary point.
-- Award Content 4/4 when it conveys the central message accurately and combines at least two important supporting ideas, with no major contradiction or fabrication.
+- GOOD SUMMARY RULE: treat the response as good/high-scoring when it accurately identifies the main topic or central message and includes at least two important supporting ideas (normally 2–3).
+- The ideas must be logically connected. Strong or adequate cohesion is acceptable; weak/disconnected writing is not a good summary.
+- Minor grammar or spelling errors are acceptable when they do not hinder comprehension.
+- The summary should be selective: omit examples, minor facts, repetitions and other extraneous details. A small incidental nonessential detail does not by itself disqualify an otherwise concise and clear summary.
+- Do NOT require every diagnostic headline idea. A summary may earn full Content when the central message plus at least two important supporting ideas are present, even if another secondary diagnostic point is omitted.
 - Source wording and phrase-lifting are acceptable. Do not require a fixed number of synonyms.
 - A semicolon plus “moreover/however/therefore” is only one valid structure. Do not penalise a clear sentence merely because it uses and, but, because, while, which, or another grammatical structure.
-- Minor local grammar errors or a spelling mistake may remain in an otherwise clear high-scoring summary. Judge whether communication remains controlled and understandable.
 
 CONTENT SCORE (integer 0–4):
-4 = central message + at least two important supporting ideas; concise, accurate and faithful; one secondary omission is acceptable.
+4 = central message + at least two important supporting ideas; concise, accurate, faithful and selective; one secondary omission is acceptable.
 3 = central message is present but support is thin, or the summary is mostly accurate with an important gap.
 2 = some relevant ideas are present but the overall message is incomplete or unclear.
 1 = very limited relevant information.
@@ -4214,8 +4216,8 @@ app.post('/api/grade', async (req, res) => {
       let holistic = Number(llmJudgment.content_score);
       if (!Number.isFinite(holistic)) holistic = coverageScore;
       holistic = Math.round(clampNumber(holistic, 0, maxContent));
-      // Calibration safeguard: 3/4 headline ideas including the central message
-      // is full content, even when one secondary point is omitted.
+      // Calibration safeguard: the central message plus at least two supporting
+      // ideas is full content, even when another diagnostic point is omitted.
       if (coverageScore === 4) holistic = 4;
       if (coverageScore <= 2) holistic = Math.min(holistic, 3);
       llmJudgment.content_score = holistic;
