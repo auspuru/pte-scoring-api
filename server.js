@@ -8,6 +8,7 @@ const path = require('path');
 const compression = require('compression');
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
+const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
 
 // Email and Puppeteer settings from Essay Builder
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -1505,42 +1506,7 @@ function checkSpelling(studentText, passageText) {
 const BAND_MAP = { 0:'Band 5',1:'Band 5',2:'Band 6',3:'Band 6.5',4:'Band 7',5:'Band 7.5',6:'Band 8',7:'Band 9' };
 const RAW_TO_PTE = { 0:10,1:15,2:28,3:38,4:50,5:62,6:76,7:90 };
 
-// Single source of truth for SWT scoring. These criteria—not admin settings,
-// connector templates, or compulsory checklist boxes—determine the score.
-const SWT_SCORING_CRITERIA = Object.freeze({
-  profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
-  content: Object.freeze({
-    max: 4,
-    full: 'Accurate central message plus at least two important supporting ideas; one secondary omission is acceptable.',
-    three: 'Central message is present but support is thin, or one important gap weakens the summary.',
-    two: 'Some relevant ideas are present, but the overall message is incomplete or unclear.',
-    one: 'Very limited relevant information.',
-    zero: 'Off-topic, contradictory, fabricated or unintelligible.'
-  }),
-  form: Object.freeze({
-    max: 1,
-    rule: 'Exactly one sentence containing 5–75 words and ending with sentence punctuation.'
-  }),
-  grammar: Object.freeze({
-    max: 2,
-    full: 'Complete and clear sentence with good control; minor local slips may remain when meaning is unaffected.',
-    connectorRule: 'No fixed connector or semicolon template is required.'
-  }),
-  vocabulary: Object.freeze({
-    max: 2,
-    full: 'Accurate and appropriate wording; faithful source wording and accurate paraphrasing are both acceptable.',
-    synonymRule: 'No fixed number of synonym swaps is required.'
-  }),
-  band9: Object.freeze({
-    minimumRaw: 8,
-    minimumGrammar: 1.4,
-    minimumVocabulary: 1.5,
-    requiresFullContent: true,
-    requiresValidForm: true,
-    disallowWeakCohesion: true,
-    disallowMeaningChange: true
-  })
-});
+// Practice-scoring policy and semantic judgment safeguards live in swt-scoring-policy.js.
 const SWT_CONTENT_MAX = SWT_SCORING_CRITERIA.content.max;
 const SWT_MAX_RAW = SWT_SCORING_CRITERIA.content.max + SWT_SCORING_CRITERIA.form.max + SWT_SCORING_CRITERIA.grammar.max + SWT_SCORING_CRITERIA.vocabulary.max;
 
@@ -1562,8 +1528,8 @@ function roundToTenth(value) {
 }
 
 // Convert diagnostic checklist coverage into the holistic 0–4 Content trait.
-// Full content means the central message plus at least two important supporting
-// ideas; diagnostic key elements are guidance, not compulsory boxes.
+// This compatibility estimate is diagnostic only; the local fallback caps it
+// below full Content because word overlap cannot establish meaning or links.
 function coverageToContentScore(capturedCount, totalIdeas, centralCaptured) {
   if (!totalIdeas || capturedCount <= 0) return 0;
   const ratio = capturedCount / totalIdeas;
@@ -1612,16 +1578,12 @@ function pteToRaw(pte, maxRaw) {
 }
 
 function grammarScoreFromJudgment(localGrammar, llmJudgment) {
-  if (llmJudgment && Number.isFinite(Number(llmJudgment.grammar_score))) {
-    return roundToTenth(clampNumber(llmJudgment.grammar_score, 0, 2));
-  }
-  const annotations = Array.isArray(llmJudgment?.grammar_annotations) ? llmJudgment.grammar_annotations : [];
-  if (annotations.length) {
-    const major = annotations.filter(a => a?.severity === 'major').length;
-    const minor = annotations.filter(a => a?.severity !== 'major').length;
-    return roundToTenth(Math.max(0, 2 - (major * 0.35) - (minor * 0.12)));
-  }
-  return roundToTenth(clampNumber(localGrammar?.score ?? 2, 0, 2));
+  // Only a verified annotation about meaning can reduce grammar. Surface
+  // patterns, spelling counts and content omissions are feedback only.
+  const errors = llmJudgment?.grammar_annotations || [];
+  if (!errors.some(a => a.affects_score === true)) return 2;
+  return typeof llmJudgment.grammar_score === 'number'
+    ? roundToTenth(clampNumber(llmJudgment.grammar_score, 0, 1.5)) : 1;
 }
 
 const STOP_WORDS = new Set([
@@ -2196,10 +2158,9 @@ function checkGrammar(text, passageText) {
   const hasSemicolon = /;\s*(however|therefore|moreover|furthermore|consequently|thus|nevertheless|additionally|hence)/i.test(text);
 
   // A semicolon-plus-adverb chain is one valid structure, not a compulsory rule.
-  // Grammar is reduced only for an observed language problem.
+  // Local patterns suggest optional refinements; they cannot establish a change in meaning.
   if (!/^[A-Z0-9$"']/.test(text.trim())) {
     issues.push('Start with a capital letter');
-    score -= 0.4;
   }
 
   const grammarPatterns = [
@@ -2210,14 +2171,13 @@ function checkGrammar(text, passageText) {
     { pattern: /\bjobs created by (them|it|the sector) employ\b/i, msg: 'Awkward logic: the sector employs people, not the jobs', penalty: 0.25 }
   ];
   for (const { pattern, msg, penalty } of grammarPatterns) {
-    if (pattern.test(text)) { issues.push(msg); score -= penalty; }
+    if (pattern.test(text)) issues.push(msg);
   }
 
   if (/\b(\w+)\s+\1\b/i.test(text)) {
     const m = text.match(/\b(\w+)\s+\1\b/i);
     if (m && !['that','had','was'].includes(m[1].toLowerCase())) {
       issues.push(`Repeated word: "${m[1]}"`);
-      score -= 0.2;
     }
   }
 
@@ -2228,7 +2188,7 @@ function checkGrammar(text, passageText) {
     score, has_connector: hasConnector, connector_used: connectorUsed,
     connector_type: foundType || 'none',
     connector_quality: hasConnector ? 'perfect' : 'neutral',
-    has_semicolon_before_connector: hasSemicolon, grammar_issues: issues, first_person: firstPerson
+    has_semicolon_before_connector: hasSemicolon, grammar_issues: issues.map(issue => `Optional language refinement (no score deduction): ${issue}`), first_person: firstPerson
   };
 }
 
@@ -2262,11 +2222,11 @@ function scoreVocabulary(verbatimData, swapData, firstPersonData, grammarData, l
   // Meaning reversal is semantic and context-dependent. The old global antonym
   // lookup produced false positives (for example, a passage containing "low costs"
   // and a student using "significant GDP"). Only the semantic judge may apply
-  // the hard vocabulary-zero penalty; local antonym hits are coaching flags only.
+  // a vocabulary deduction; local antonym hits are coaching flags only.
   if (llmJudgment?.synonym_appropriateness === 'meaning_changed') {
     meaningChanged = true;
-    score = 0;
-    notes.push('⚠ A word substitution changed the passage meaning');
+    // The verified semantic judgment determines the size of this deduction.
+    notes.push('⚠ A word choice changes or obscures the passage meaning');
     suggestion = 'Use wording that preserves the original claim exactly.';
   } else if (!llmJudgment && dangerousSwapCount > 0) {
     notes.push('Possible contrast word detected; no automatic penalty was applied without semantic confirmation');
@@ -2379,13 +2339,12 @@ function generateFeedback(coverage, grammar, vocab, firstPerson) {
   else if (presentCount === 1) parts.push(`Only 1/3 key ideas found. Missing: ${missing.join(' and ')}.`);
   else parts.push('No key ideas detected. Use TOPIC → PIVOT → CONCLUSION structure.');
 
-  if (grammar.score === 2) parts.push('Grammar excellent with proper connector.');
-  else if (!grammar.has_connector) parts.push('Add a connector with semicolon for full grammar marks.');
-  else parts.push(grammar.grammar_issues[0] || 'Minor grammar issue.');
+  if (grammar.score === 2) parts.push('Meaning remains clear; optional grammar refinements do not reduce scores.');
+  else parts.push(grammar.grammar_issues[0] || 'Correct the grammatical error that changes or obscures meaning.');
 
   if (vocab.meaning_changed) parts.push('⚠️ CRITICAL: Your synonyms changed the meaning of the passage!');
   else if (vocab.score === 2) parts.push(`Vocabulary excellent (${vocab.total_paraphrase_credit} safe synonym swaps).`);
-  else if (vocab.total_paraphrase_credit < 4) parts.push(`Need ${4 - vocab.total_paraphrase_credit} more synonym swaps for full vocab marks.`);
+  else parts.push('Use context-appropriate wording that preserves the original message.');
 
   if (firstPerson.isProblematic) parts.push('⚠️ First-person language — shift to "The author/narrator".');
 
@@ -2396,13 +2355,12 @@ function generateImprovementTips(rawScore, contentScore, grammarScore, vocabScor
   const tips = [];
   if (contentScore < 2) tips.push('CONTENT: Identify Topic (what is it about?), Pivot (but/however), Conclusion (so what?)');
   if (grammarScore < 2) {
-    if (!grammar.has_connector) tips.push('GRAMMAR: Add "; however," or "; therefore," with semicolon');
-    else if (!grammar.has_semicolon_before_connector) tips.push(`GRAMMAR: Write "; ${grammar.connector_used}," not just "${grammar.connector_used}"`);
+    tips.push('GRAMMAR: Correct the error that changes or obscures the intended meaning.');
   }
   if (vocab.meaning_changed) {
     tips.push('VOCABULARY: Your synonym CHANGED the meaning! "minor"→"small" is OK, "minor"→"major" is WRONG. Always check the synonym preserves the original idea.');
-  } else if (vocabScore < 2 && vocab.total_paraphrase_credit < 4) {
-    tips.push(`VOCABULARY: Need ${4 - vocab.total_paraphrase_credit} more synonym swaps. Replace verbs (made→opted, knew→acknowledged) and adjectives (good→beneficial, many→numerous) but keep nouns.`);
+  } else if (vocabScore < 2) {
+    tips.push('VOCABULARY: Choose wording that preserves the intended meaning.');
   }
   if (rawScore >= 6 && rawScore < 7) tips.push('ALMOST BAND 9: One small fix could push you to 90.');
   return tips.join(' | ');
@@ -3647,79 +3605,7 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
   const kpHint = formatKeyElementsHint(keyElements);
   const totalIdeas = countKeyElements(keyElements);
 
-  const prompt = `You are a calibrated PTE Academic Summarize Written Text scorer. Evaluate the student's ONE-SENTENCE summary as a whole. Do not treat the checklist below as four compulsory boxes.
-
-PASSAGE:
-${passageText}
-
-STUDENT SUMMARY:
-${studentText}
-
-${kpHint ? 'DIAGNOSTIC HEADLINE IDEAS (use as a flexible checklist, not mandatory boxes):\n' + kpHint + '\n' : ''}
-AUTHORITATIVE SCORING CRITERIA:
-- These criteria determine the score; the diagnostic checklist is coaching only.
-- GOOD SUMMARY RULE: treat the response as good/high-scoring when it accurately identifies the main topic or central message and includes at least two important supporting ideas (normally 2–3).
-- The ideas must be logically connected. Strong or adequate cohesion is acceptable; weak/disconnected writing is not a good summary.
-- Minor grammar or spelling errors are acceptable when they do not hinder comprehension.
-- The summary should be selective: omit examples, minor facts, repetitions and other extraneous details. A small incidental nonessential detail does not by itself disqualify an otherwise concise and clear summary.
-- Do NOT require every diagnostic headline idea. A summary may earn full Content when the central message plus at least two important supporting ideas are present, even if another secondary diagnostic point is omitted.
-- Source wording and phrase-lifting are acceptable. Do not require a fixed number of synonyms.
-- A semicolon plus “moreover/however/therefore” is only one valid structure. Do not penalise a clear sentence merely because it uses and, but, because, while, which, or another grammatical structure.
-
-CONTENT SCORE (integer 0–4):
-4 = central message + at least two important supporting ideas; concise, accurate, faithful and selective; one secondary omission is acceptable.
-3 = central message is present but support is thin, or the summary is mostly accurate with an important gap.
-2 = some relevant ideas are present but the overall message is incomplete or unclear.
-1 = very limited relevant information.
-0 = off-topic, contradictory, fabricated or unintelligible.
-
-GRAMMAR SCORE (0, 0.5, 1, 1.5 or 2):
-2 = a complete, clear sentence with good control; minor local slips may occur without harming meaning.
-1.5 = one or two noticeable errors, but meaning remains fully clear.
-1 = repeated errors or awkward construction sometimes reduces clarity.
-0.5 = serious errors make much of the sentence difficult.
-0 = not a usable sentence.
-Do not lower grammar merely for not using a semicolon or a preferred connector.
-
-VOCABULARY SCORE (0, 0.5, 1, 1.5 or 2):
-2 = words are accurate and appropriate, whether copied or paraphrased.
-1.5 = one awkward or imprecise choice, without changing the message.
-1 = several weak or inaccurate choices.
-0.5 = vocabulary frequently obscures meaning.
-0 = wording materially reverses or destroys the passage meaning.
-
-COHESION: return strong, adequate, or weak. Strong can be achieved through any clear grammatical linking, not only conjunctive adverbs.
-
-For diagnostics, mark each listed headline idea as 1 if its core proposition is present and 0 if absent. These diagnostic values do NOT have to sum to content_score.
-
-Return ONLY valid JSON with this structure:
-{
-  "per_idea_scores": { "what": 1, "why": 1, "how": 0, "result": 1 },
-  "content_score": 4,
-  "content_reason": "brief reason",
-  "ideas_captured": ["what", "why", "result"],
-  "ideas_missing": ["how"],
-  "grammar_score": 1.5,
-  "vocabulary_score": 2,
-  "synonym_appropriateness": "appropriate",
-  "synonym_issues": [],
-  "cohesion": "strong",
-  "academic_register": true,
-  "feedback_note": "one actionable sentence",
-  "recommended_swaps": [
-    { "word": "made", "context": "made a choice", "synonyms": ["chose", "opted for"], "rationale": "Optional style alternatives" }
-  ],
-  "grammar_annotations": [
-    { "phrase": "exact words from summary", "fix": "corrected words", "severity": "major", "type": "subject-verb", "rationale": "plain-English explanation" }
-  ]
-}
-
-Rules:
-- Use only the actual key labels supplied above; if there are none, return an empty per_idea_scores object.
-- grammar_annotations should include genuine grammar or usage errors, not every possible stylistic rewrite. A strong answer can legitimately have 0–2 annotations.
-- Each annotation phrase must be an exact substring of the student's summary.
-- recommended_swaps are optional coaching and do not affect the score; return 4–6 useful items when possible.
-- synonym_appropriateness must be one of: appropriate, some_inappropriate, meaning_changed, no_swaps.`;
+  const prompt = buildJudgingPrompt(studentText, passageText, kpHint);
 
   try {
     const callPromise = anthropic.messages.create({
@@ -3786,16 +3672,18 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
   const missing = checks.filter(c => !c.present).map(c => c.name);
   const centralCaptured = present.includes('what') || present.includes('topic');
   const contradiction = detectStrongLocalContradiction(studentText, passageText);
-  let score = coverageToContentScore(present.length, fields.length, centralCaptured);
+  // Word overlap cannot establish whether the selected ideas depend on missing
+  // context. Offline scores remain provisional and cannot certify full Content.
+  let score = Math.min(3, coverageToContentScore(present.length, fields.length, centralCaptured));
   if (contradiction) score = Math.min(score, 1);
   const perIdea = Object.fromEntries(fields.map(f => [f.name, present.includes(f.name) ? 1 : 0]));
 
   return {
     content_score: score,
     content_max: SWT_CONTENT_MAX,
-    content_reason: score === 4
-      ? `Central message and essential supporting points captured (${present.length}/${fields.length} diagnostic headlines)`
-      : `${present.length}/${fields.length} diagnostic headlines captured; holistic Content ${score}/${SWT_CONTENT_MAX}`,
+    content_reason: 'Provisional content estimate: AI assessment of meaning and relationships was unavailable. Retry for a complete score.',
+    full_content_eligible: false,
+    needs_semantic_review: true,
     ideas_captured: present,
     ideas_missing: missing,
     per_idea_scores: perIdea,
@@ -3856,7 +3744,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
   } else if (rawRatio >= 0.79) {
     tier = 'good';
-    headline = `Solid attempt — ${band} (PTE ${pte}). One or two changes will push this to Band 9.`;
+    headline = `Solid attempt — ${band} (PTE ${pte}). Review the priorities below to strengthen this response.`;
   } else if (rawRatio >= 0.50) {
     tier = 'partial';
     headline = `${band} (PTE ${pte}). Significant gaps to close.`;
@@ -3883,7 +3771,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     });
   }
 
-  if (grammar.has_connector && grammar.connector_quality === 'perfect') {
+  if (grammar.has_connector && grammar.connector_quality === 'perfect' && llmJudgment?.cohesion === 'strong') {
     strengths.push({ icon: '🔗', label: `Clear linking device: "${grammar.connector_used}"`, detail: 'The sentence connects its ideas clearly.' });
   } else if (grammar.has_connector) {
     strengths.push({ icon: '🔗', label: `Connector used: "${grammar.connector_used}"`, detail: '' });
@@ -3929,33 +3817,30 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     };
   }
 
-  // Priority 1 — content (v19.8: binary — only missing ideas surface here)
-  const missingArr = contentVerdict.ideas_missing || [];
-  if (contentNone) {
+  // Explain the missing proposition or dependency, not a compulsory checklist.
+  if (contentScore < cMax) {
     improvements.push({
-      priority: 1,
-      icon: '🚨',
-      action: 'Re-read the passage and capture the main ideas',
-      detail: `Identify each of the ${cMax} key ideas (What/Why/How/Result). Missing all ideas heavily caps the score (PTE 15 max).`
+      priority: 1, icon: '🧩',
+      action: contentVerdict.needs_semantic_review || contentVerdict.source === 'local_fallback'
+        ? 'Retry for a complete assessment'
+        : 'Clarify the main idea and its supporting relationships',
+      detail: contentVerdict.content_reason || 'Include the main message, relevant support and the context needed to connect them.'
     });
-  } else if (contentScore < cMax && missingArr.length > 0) {
-    const capPte = contentRatio <= 0.5 ? 50 : contentRatio <= 0.75 ? 65 : 79;
-    improvements.push({
-      priority: 1,
-      icon: '⚠️',
-      action: `Add the missing idea${missingArr.length > 1 ? 's' : ''}: ${missingArr.join(', ')}`,
-      detail: `You captured ${contentScore}/${cMax}. Score is currently capped at PTE ${capPte} until all main ideas are included.`
-    });
+  }
+
+  if (grammarScore < 2 && llmJudgment) {
+    const errors = (llmJudgment.grammar_annotations || []).filter(a => a.affects_score);
+    improvements.push({ priority: 2, icon: '✍️', action: 'Correct the grammar that affects meaning',
+      detail: errors.map(a => `“${a.phrase}” → “${a.fix}”. ${a.meaning_effect || a.rationale || ''}`).join(' ') });
   }
 
   // Priority 1 — meaning changed
   if (vocab.meaning_changed) {
-    const danger = (vocab.dangerous_swaps || [])[0];
     improvements.push({
       priority: 1,
       icon: '⚠️',
-      action: danger ? `"${danger.original}" → "${danger.replacement}" reverses the meaning` : 'A synonym you used reverses the meaning',
-      detail: 'Pick substitutes that preserve the original sense. "minor → small" is OK; "minor → major" is wrong.'
+      action: 'Correct the wording that changes the meaning',
+      detail: (llmJudgment?.synonym_issues || []).join('; ') || 'Use wording that preserves the original message.'
     });
   }
 
@@ -3965,7 +3850,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
       priority: 2,
       icon: '🧩',
       action: 'Clauses do not connect logically',
-      detail: 'Each connector should signal a real relationship: "however" for contrast, "moreover" for addition, "therefore" for consequence.'
+      detail: contentVerdict.content_reason || 'Include the necessary cause or background so the selected ideas connect clearly.'
     });
   }
 
@@ -4021,7 +3906,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
       methodCoaching = {
         current: 'Phrase-Picking Method',
         next: vocab.effective_credit < 2
-          ? 'Solid phrase selection with proper connectors. Add 2–3 academic synonym swaps to lock in Reading 90.'
+          ? 'Keep the selected ideas accurate and connected. Optional paraphrasing should preserve the same meaning.'
           : 'Excellent phrase selection + academic upgrades — top of both ladders.'
       };
     }
@@ -4078,7 +3963,7 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   else if (contentScore === 2) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_65', detail: 'Partial central message/support' });
   else if (contentScore === 3) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_79', detail: 'Strong but incomplete content' });
   if (spelling.count > 0) arr.push({ type: 'spelling_feedback', impact: 'reported_separately', detail: `${spelling.count} spelling error(s)` });
-  if (vocab.meaning_changed) arr.push({ type: 'meaning_reversed', impact: 'vocab_to_0', detail: 'Word choice altered passage meaning' });
+  if (vocab.meaning_changed) arr.push({ type: 'meaning_reversed', impact: 'reflected_in_vocabulary_trait', detail: 'Word choice changes or obscures passage meaning' });
   if (vocab.inappropriate_count > 0) arr.push({ type: 'inappropriate_word_choice', impact: 'reflected_in_vocabulary_trait', detail: `${vocab.inappropriate_count} occurrence(s)` });
   return arr;
 }
@@ -4148,7 +4033,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: '20.2.0', mode: 'local'
+        scoring_version: POLICY_VERSION, mode: 'local'
       });
     }
 
@@ -4211,21 +4096,7 @@ app.post('/api/grade', async (req, res) => {
       llmJudgment.ideas_partial = [];
       llmJudgment.ideas_missing = missing;
 
-      const centralCaptured = captured.includes('what') || captured.includes('topic');
-      const coverageScore = coverageToContentScore(captured.length, labels.length || totalIdeas, centralCaptured);
-      let holistic = Number(llmJudgment.content_score);
-      if (!Number.isFinite(holistic)) holistic = coverageScore;
-      holistic = Math.round(clampNumber(holistic, 0, maxContent));
-      // Calibration safeguard: the central message plus at least two supporting
-      // ideas is full content, even when another diagnostic point is omitted.
-      if (coverageScore === 4) holistic = 4;
-      if (coverageScore <= 2) holistic = Math.min(holistic, 3);
-      llmJudgment.content_score = holistic;
-      llmJudgment.content_max = maxContent;
-      llmJudgment.content_reason = llmJudgment.content_reason ||
-        (holistic === 4
-          ? `Central message and essential support captured (${captured.length}/${labels.length} diagnostic headlines)`
-          : `Holistic Content ${holistic}/${maxContent}; ${captured.length}/${labels.length} diagnostic headlines captured`);
+      llmJudgment = applyScoringPolicy(llmJudgment, text);
     }
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
@@ -4234,7 +4105,7 @@ app.post('/api/grade', async (req, res) => {
     // response can't include grammar annotations or vocabulary swaps. Flag this
     // so the frontend can show an honest "detailed feedback unavailable for this
     // attempt — try again" notice instead of silently dropping those sections.
-    const aiFeedbackDegraded = !llmJudgment;
+    const aiFeedbackDegraded = !llmJudgment || llmJudgment.needs_semantic_review === true;
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
@@ -4253,8 +4124,8 @@ app.post('/api/grade', async (req, res) => {
 
     let cohesionPenaltyApplied = false;
     if (contentVerdict?.cohesion === 'weak') {
-      grammarScore = Math.max(0, roundToTenth(grammarScore - 0.35));
-      grammar.grammar_issues.push('Ideas are not linked clearly enough');
+      // Missing causes/context lower content. Grammar is independent unless a
+      // grammatical error itself changes or obscures meaning.
       cohesionPenaltyApplied = true;
     }
 
@@ -4280,7 +4151,8 @@ app.post('/api/grade', async (req, res) => {
 
     // Pearson-calibrated tolerance: with full content and valid form, one or two
     // local language slips may coexist with Band 9 when meaning stays clear.
-    const band9Eligible = (!SWT_SCORING_CRITERIA.band9.requiresFullContent || contentScore === SWT_CONTENT_MAX)
+    const band9Eligible = contentVerdict.full_content_eligible === true
+      && (!SWT_SCORING_CRITERIA.band9.requiresFullContent || contentScore === SWT_CONTENT_MAX)
       && (!SWT_SCORING_CRITERIA.band9.requiresValidForm || form.valid)
       && rawScore >= SWT_SCORING_CRITERIA.band9.minimumRaw
       && grammarScore >= SWT_SCORING_CRITERIA.band9.minimumGrammar
@@ -4290,6 +4162,8 @@ app.post('/api/grade', async (req, res) => {
     if (band9Eligible) {
       band = 'Band 9';
       overallScore = Math.max(overallScore, 84);
+    } else if (band === 'Band 9') {
+      band = 'Band 8';
     }
 
     const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment, maxContent, maxRaw);
@@ -4301,6 +4175,7 @@ app.post('/api/grade', async (req, res) => {
       // F1 (v19.17): true when Claude was unavailable and the local fallback
       // produced the scores (no grammar annotations / vocab swaps available).
       ai_feedback_degraded: aiFeedbackDegraded,
+      score_provisional: aiFeedbackDegraded,
       trait_scores: {
         form: 1,
         form_max: 1,
@@ -4322,6 +4197,8 @@ app.post('/api/grade', async (req, res) => {
         key_ideas_missing: contentVerdict.ideas_missing  || [],
         per_idea_scores: contentVerdict.per_idea_scores  || null,
         notes: contentVerdict.content_reason,
+        full_content_eligible: contentVerdict.full_content_eligible === true,
+        summary_assessment: contentVerdict.summary_assessment || null,
         feels_connected: contentVerdict.cohesion ? contentVerdict.cohesion !== 'weak' : true,
         cohesion: contentVerdict.cohesion || 'unknown',
         feedback_note: contentVerdict.feedback_note || '',
@@ -4363,7 +4240,10 @@ app.post('/api/grade', async (req, res) => {
               fix: String(a.fix).slice(0, 200),
               severity: (a.severity === 'major' || a.severity === 'minor') ? a.severity : 'minor',
               type: typeof a.type === 'string' ? a.type.slice(0, 30) : 'style',
-              rationale: typeof a.rationale === 'string' ? a.rationale.slice(0, 500) : ''
+              rationale: (a.affects_score ? '' : 'Optional refinement — no score deduction. ') + (typeof a.rationale === 'string' ? a.rationale.slice(0, 500) : ''),
+              affects_score: a.affects_score === true,
+              meaning_impact: a.meaning_impact || 'none',
+              meaning_effect: typeof a.meaning_effect === 'string' ? a.meaning_effect.slice(0, 500) : ''
             }))
             .slice(0, 20);
         })(),
@@ -4384,6 +4264,7 @@ app.post('/api/grade', async (req, res) => {
         dangerous_swap_count: vocab.dangerous_swap_count,
         inappropriate_count: vocab.inappropriate_count || 0,
         meaning_changed: vocab.meaning_changed,
+        vocabulary_annotations: contentVerdict.vocabulary_annotations || [],
         academic_words: vocab.academic_words,
         perspective_shifted: vocab.perspective_shifted,
         method: vocab.method,
@@ -4422,7 +4303,7 @@ app.post('/api/grade', async (req, res) => {
       method_detected: vocab.method,
       penalties_applied: buildPenaltiesList(form, contentScore, vocab, spelling, maxContent),
       llm_used: !!llmJudgment,
-      scoring_version: '20.2.0',
+      scoring_version: POLICY_VERSION,
       scoring_criteria: SWT_SCORING_CRITERIA,
       mode: llmJudgment ? 'claude' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),

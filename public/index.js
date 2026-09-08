@@ -13373,8 +13373,13 @@ async function loadPassages(){
 function showSwtScreen(id) {
   document.querySelectorAll('.swt-sub-screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
-  if (target) target.classList.add('active');
-  window.scrollTo(0, 0);
+  if (target) {
+    target.classList.add('active');
+    const heading = target.querySelector('h1');
+    if (heading) heading.focus({ preventScroll: true });
+  }
+  const pane = document.getElementById('swtPane');
+  if (pane) pane.scrollTop = 0;
 }
 
 let activeFilter = 'all';
@@ -13540,6 +13545,9 @@ function switchWriteTab(tab){
   if (tabPlanEl) tabPlanEl.classList.toggle('active', tab === 'plan');
   if (writeTabPaneEl) writeTabPaneEl.classList.toggle('hidden', tab !== 'write');
   if (planTabPaneEl) planTabPaneEl.classList.toggle('hidden', tab !== 'plan');
+  for (const [button, selected] of [[tabWriteEl, tab === 'write'], [tabPlanEl, tab === 'plan']]) {
+    if (button) { button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1; }
+  }
 }
 
 
@@ -13574,6 +13582,17 @@ function onSummaryInput(){
   }
 
   setHealthRow('hrWordBand', words >= 5 && words <= 75, words, (words >= 5 && words <= 75) ? 'ok' : 'warn');
+  const status = document.getElementById('swtWordStatus');
+  if (status) {
+    const message = words > 75 ? 'Remove ' + (words - 75) + ' words to meet the limit.'
+      : words >= 5 ? 'Within the word limit. Check that this is one complete sentence.'
+      : words ? 'Add at least ' + (5 - words) + ' more words.' : 'Write 5–75 words.';
+    if (status.textContent !== message) status.textContent = message;
+    status.className = words >= 5 && words <= 75 ? 'is-ready' : words ? 'is-warning' : '';
+  }
+  summaryInputEl.setAttribute('aria-invalid', String(words > 75));
+  const undo = document.getElementById('swtUndoClear');
+  if (undo) undo.hidden = true;
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
   if(text.trim()){
@@ -13595,10 +13614,26 @@ function setHealthRow(rowId, ok, value, cls){
   if (valSpan) valSpan.textContent = value;
 }
 
+let swtClearedDraft = null;
 function resetSummary(){
-  const summaryInputEl = document.getElementById('summaryInput');
-  if (summaryInputEl) summaryInputEl.value = '';
+  const input = document.getElementById('summaryInput');
+  if (!input || !input.value) return;
+  swtClearedDraft = { text: input.value, passageId: currentPassageId, storageKey: getPteStorageKey('summaries') };
+  input.value = '';
   onSummaryInput();
+  const undo = document.getElementById('swtUndoClear');
+  if (undo) undo.hidden = false;
+  input.focus();
+}
+function undoSwtClear(){
+  const draft = swtClearedDraft;
+  if (!draft || draft.passageId !== currentPassageId || draft.storageKey !== getPteStorageKey('summaries')) return;
+  const input = document.getElementById('summaryInput');
+  if (!input || input.value) return;
+  input.value = draft.text;
+  swtClearedDraft = null;
+  onSummaryInput();
+  input.focus();
 }
 
 // Scratch Pad events
@@ -13614,7 +13649,12 @@ const TIMER_START_SECONDS = 10 * 60;
 function toggleTimer(){
   timerOn = !timerOn;
   const timerStateEl = document.getElementById('timerState');
-  if (timerStateEl) timerStateEl.textContent = timerOn ? 'Timed' : 'Off';
+  if (timerStateEl) timerStateEl.textContent = timerOn ? 'Timer on' : 'Timer off';
+  const toggle = document.getElementById('timerToggle');
+  if (toggle) {
+    toggle.setAttribute('aria-pressed', String(timerOn));
+    toggle.setAttribute('aria-label', timerOn ? 'Turn off the timer' : 'Turn on the 10-minute timer');
+  }
   if(timerOn){
     timerSeconds = TIMER_START_SECONDS;
     startTimer();
@@ -13677,7 +13717,9 @@ async function scoreSummary(){
 
   showLoading(true);
   const scoreBtn = document.getElementById('scoreBtn');
-  if (scoreBtn) scoreBtn.setAttribute('disabled','');
+  if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'Reviewing your summary…'; }
+  const workspace = document.getElementById('writeTabPane');
+  if (workspace) workspace.setAttribute('aria-busy', 'true');
 
   try {
     const payload = { type: 'swt', prompt: p.text, keyPoints: p.keyElements, text: text };
@@ -13714,7 +13756,8 @@ async function scoreSummary(){
     toast('Scoring failed — check your connection and try again.');
   } finally {
     showLoading(false);
-    if (scoreBtn) scoreBtn.removeAttribute('disabled');
+    if (scoreBtn) { scoreBtn.disabled = false; scoreBtn.textContent = 'Get feedback →'; }
+    if (workspace) workspace.removeAttribute('aria-busy');
   }
 }
 
@@ -13781,6 +13824,9 @@ function showResults(data, passage, spellData, submittedText){
   const pte = data.overall_score || 0;
   const band = data.band || 'Band 5';
   const traits = data.trait_scores || {};
+  const rawMax = (traits.content_max || 4) + 5;
+  const rawScore = typeof data.raw_score === 'number' ? data.raw_score
+    : ['content', 'form', 'grammar', 'vocabulary'].reduce((total, key) => total + (Number(traits[key]) || 0), 0);
 
   let crumb = 'Results · ' + (passage.title || 'Passage ' + currentPassageId);
   if(data.__timestamp){
@@ -13794,21 +13840,29 @@ function showResults(data, passage, spellData, submittedText){
   const heroRing = document.getElementById('heroRing');
   if (heroRing) {
     heroRing.style.strokeDasharray = ringCirc;
-    heroRing.style.strokeDashoffset = ringCirc * (1 - Math.min(1, pte/90));
+    heroRing.style.strokeDashoffset = ringCirc * (1 - Math.max(0, Math.min(1, rawScore/rawMax)));
   }
   const heroScoreEl = document.getElementById('heroScore');
-  if (heroScoreEl) heroScoreEl.textContent = pte;
+  if (heroScoreEl) heroScoreEl.textContent = fmtNum(rawScore);
+  const maxEl = document.getElementById('swtRawMax');
+  if (maxEl) maxEl.textContent = '/ ' + rawMax;
+  const estimateEl = document.getElementById('swtEstimate');
+  if (estimateEl) estimateEl.textContent = (data.score_provisional || data.ai_feedback_degraded ? 'Provisional estimate: ' : 'PTE estimate: ') + pte + ' / 90';
 
   const heroVerdictEl = document.getElementById('heroVerdict');
-  if (heroVerdictEl) heroVerdictEl.innerHTML = verdictLine(pte, band);
+  if (heroVerdictEl) {
+    heroVerdictEl.innerHTML = data.score_provisional || data.ai_feedback_degraded ? 'Provisional result' : verdictLine(pte, band);
+  }
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
+  renderSwtGuidance(data);
+  document.querySelectorAll('#swtResultsScreen details').forEach(detail => { detail.open = false; });
 
   const degradedEl = document.getElementById('aiDegradedNotice');
   if(degradedEl){
-    if(data.ai_feedback_degraded){
+    if(data.ai_feedback_degraded || data.score_provisional){
       degradedEl.style.display = '';
-      degradedEl.textContent = 'Detailed grammar and vocabulary feedback was unavailable for this attempt (the AI grader was busy). Your score is accurate — try again in a moment for full coaching.';
+      degradedEl.textContent = 'AI assessment of meaning and connections was unavailable. These scores are provisional — try again for a complete assessment.';
     } else {
       degradedEl.style.display = 'none';
     }
@@ -13821,8 +13875,8 @@ function showResults(data, passage, spellData, submittedText){
       `Content ${fmtNum(traits.content)}/${cMax}`,
       `Form ${fmtNum(traits.form)}/1`,
       `Grammar ${fmtNum(traits.grammar)}/2`,
-      `Vocab ${fmtNum(traits.vocabulary)}/2`,
-      `${data.word_count || countWords(submittedText)} / 5–75 words`
+      `Vocabulary ${fmtNum(traits.vocabulary)}/2`,
+      `${data.word_count || countWords(submittedText)} words`
     ].map(t => `<span class="trait-chip">${t}</span>`).join('');
   }
 
@@ -13866,67 +13920,44 @@ function verdictLine(pte, band){
 }
 
 function buildResultSummary(data, traits){
-  const cd = data.content_details || {};
-  const captured = (cd.key_ideas_present || []).length;
-  const diagnosticTotal = captured + (cd.key_ideas_missing || []).length;
-  const cMax = traits.content_max || 4;
-  const parts = [];
-  if((traits.content || 0) >= cMax){
-    parts.push('You captured the central message and enough essential supporting information for full Content.');
-    if(diagnosticTotal && captured < diagnosticTotal){
-      parts.push('One diagnostic headline was omitted, but it was not required for the holistic full score.');
-    }
-  } else {
-    parts.push('The summary includes ' + captured + ' diagnostic headline' + (captured === 1 ? '' : 's') + ', but the central message or essential support needs strengthening.');
-  }
-  if((traits.vocabulary || 0) < 2){
-    parts.push('Review any imprecise or unnatural word choices; copying accurate source vocabulary is acceptable.');
-  } else if((traits.grammar || 0) < 2){
-    parts.push('Meaning is clear, but correcting the highlighted language errors would make the sentence more polished.');
-  }
-  return parts.join(' ');
+  return SwtStudentFeedback.build(data).summary;
 }
+function renderSwtGuidance(data){
+  const target = document.getElementById('swtGuidanceBody');
+  if (!target) return;
+  const feedback = SwtStudentFeedback.build(data);
+  target.innerHTML = '<ul class="swt-guidance-list">' + feedback.priorities.map(item =>
+    '<li><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.detail) + '</p></li>'
+  ).join('') + '</ul>' + (feedback.optional.length
+    ? '<details class="swt-refinements"><summary>Optional refinements · no marks deducted (' + feedback.optional.length + ')</summary><ul>' +
+      feedback.optional.map(item => '<li><span>“' + escapeHtml(item.phrase) + '” → “' + escapeHtml(item.fix) + '”</span>' +
+      (item.reason ? '<p>' + escapeHtml(item.reason) + '</p>' : '') + '</li>').join('') + '</ul></details>' : '');
+}
+function compareSwtSample(){
+  switchSbsView('sample');
+  const tab = document.getElementById('sbsTabSample');
+  if (tab) { tab.scrollIntoView({ block: 'center' }); tab.focus({ preventScroll: true }); }
+}
+document.addEventListener('keydown', function(event){
+  if (!event.target || !event.target.closest || !event.target.closest('#swtPane [role="tablist"]')) return;
+  const list = event.target.closest('[role="tablist"]');
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  const index = tabs.indexOf(event.target);
+  if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1
+    : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+  tabs[next].click();
+  tabs[next].focus();
+});
 
 function renderOriginality(data, passage, submittedText){
   const el = document.getElementById('originalityChecks');
   if (!el) return;
   const overlap = computeCopyMetrics(submittedText, passage.text || '');
-
-  let copyVerdict, copyClass, copyDetail;
-  if(overlap.pct <= 15 && overlap.longestRun < 6){
-    copyVerdict = 'Original'; copyClass = 'good';
-  } else if(overlap.pct <= 40 && overlap.longestRun <= 10){
-    copyVerdict = 'Some lifting'; copyClass = 'warn';
-  } else {
-    copyVerdict = 'Heavy lifting'; copyClass = 'warn';
-  }
-  copyDetail = 'Longest run: ' + overlap.longestRun + ' words · ' + overlap.pct + '% verbatim';
-
-  const aiVerdict = 'Likely Human';
-  const aiDetail = 'Burstiness signal · written in-session';
-
-  el.innerHTML = `
-    <div class="orig-cell">
-      <div class="orig-head">
-        <span class="orig-name">AI Detector</span>
-        <span class="orig-verdict">${aiVerdict}</span>
-      </div>
-      <div class="orig-detail">${aiDetail}</div>
-    </div>
-    <div class="orig-cell ${copyClass}">
-      <div class="orig-head">
-        <span class="orig-name">Copy Detector</span>
-        <span class="orig-verdict">${escapeHtml(copyVerdict)}</span>
-      </div>
-      <div class="orig-detail">${escapeHtml(copyDetail)}</div>
-    </div>
-    <div class="orig-cell">
-      <div class="orig-head">
-        <span class="orig-name">Plagiarism Web</span>
-        <span class="orig-verdict">Not Checked</span>
-      </div>
-      <div class="orig-detail">Web plagiarism check not enabled</div>
-    </div>`;
+  el.innerHTML = '<div class="orig-cell"><p>Accurate source wording is acceptable when your summary is concise and connected.</p>' +
+    '<p class="orig-detail">Longest matching phrase: ' + overlap.longestRun + ' words. ' + overlap.pct +
+    '% of your four-word sequences also appear in the passage. This is a wording comparison, not an authorship or plagiarism assessment.</p></div>';
 }
 
 function computeCopyMetrics(student, passage){
@@ -14029,27 +14060,20 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
 
   const fb = document.getElementById('annotatedFeedback');
   if (fb) {
-    const items = [];
-    const connectors = detectConnectors(text);
-    const sentences = countSentences(text);
-    if(sentences === 1 && connectors.length >= 2){
-      items.push({ cls:'good', icon:'✓', text:'One sentence, ' + connectors.length + ' connectors (' + connectors.join(' / ') + '), inside the 5–75 word band.' });
-    } else if(sentences === 1){
-      items.push({ cls:'good', icon:'✓', text:'Single well-formed sentence within the word band.' });
-    } else {
-      items.push({ cls:'warn', icon:'!', text:'Summary should be a <em>single sentence</em> — found ' + sentences + '.' });
+    const traits = data.trait_scores || {};
+    const assessment = cd.summary_assessment || {};
+    const validForm = Number(traits.form) >= 1;
+    const items = [{ cls: validForm ? 'good' : 'warn', icon: validForm ? '✓' : '!',
+      text: validForm ? 'One sentence within 5–75 words.' : 'Check the form: one complete sentence within 5–75 words.' }];
+    if (!data.score_provisional && !data.ai_feedback_degraded && validForm) {
+      if (assessment.relationships_clear === true && !(assessment.missing_dependencies || []).length) {
+        items.push({ cls: 'good', icon: '✓', text: 'The selected ideas connect clearly.' });
+      } else if (assessment.relationships_clear === false || (assessment.missing_dependencies || []).length) {
+        items.push({ cls: 'warn', icon: '!', text: 'A connection needs attention. See your next step above.' });
+      }
     }
-    const cMax = (data.trait_scores||{}).content_max || 4;
-    const missing = labels.filter(l => keyEls[l] && !captured.has(l) && !usedLabels.has(l));
-    if(missing.length){
-      const missLabel = missing[0].charAt(0).toUpperCase() + missing[0].slice(1);
-      items.push({ cls:'warn', icon:'!', text:'Missing the <em>' + missLabel + '</em> element — work it into your summary.' });
-    } else if((captured.size || usedLabels.size) >= cMax){
-      items.push({ cls:'good', icon:'✓', text:'All key elements present and accounted for.' });
-    }
-    fb.innerHTML = items.map(it =>
-      `<div class="ann-fb-item ${it.cls}"><span class="fb-icon">${it.icon}</span><span class="fb-text">${it.text}</span></div>`
-    ).join('');
+    fb.innerHTML = items.map(it => '<div class="ann-fb-item ' + it.cls + '"><span class="fb-icon">' +
+      it.icon + '</span><span class="fb-text">' + escapeHtml(it.text) + '</span></div>').join('');
   }
 }
 
@@ -14132,9 +14156,10 @@ function annotateGrammar(clause, issues){
       for(let i = idx; i < idx + needle.length; i++){ if(claimed[i]){ conflict = true; break; } }
       if(!conflict){
         for(let i = idx; i < idx + needle.length; i++) claimed[i] = true;
-        const sev = (issue.severity === 'major') ? 'grammar-major' : 'grammar-minor';
+        const sev = issue.affects_score === false ? 'grammar-minor swt-optional' : (issue.severity === 'major' ? 'grammar-major' : 'grammar-minor');
         const tipParts = [];
         if(issue.fix) tipParts.push('→ ' + issue.fix);
+        if(issue.meaning_effect) tipParts.push(issue.meaning_effect);
         if(issue.rationale) tipParts.push(issue.rationale);
         insertions.push({
           start: idx, end: idx + needle.length, sev,
@@ -14312,6 +14337,10 @@ function switchSbsView(view){
   vSam.style.display = isSample ? '' : 'none';
   tSum.classList.toggle('active', !isSample);
   tSam.classList.toggle('active', isSample);
+  tSum.setAttribute('aria-selected', String(!isSample));
+  tSam.setAttribute('aria-selected', String(isSample));
+  tSum.tabIndex = isSample ? -1 : 0;
+  tSam.tabIndex = isSample ? 0 : -1;
 }
 
 function renderTraitBreakdown(data, traits){
@@ -14323,20 +14352,22 @@ function renderTraitBreakdown(data, traits){
 
   const rows = [
     { name:'Content', score:traits.content||0, max:cMax,
-      note: (traits.content >= cMax) ? 'Central message and essential supporting points are sufficiently covered.' : 'Strengthen the central message or add another essential supporting point.' },
+      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: meaning and connections need a complete assessment.'
+        : (traits.content >= cMax) ? 'Main message, relevant support and conclusion connect clearly.' : (cd.notes || 'Strengthen the main idea and its supporting connections.') },
     { name:'Form', score:traits.form||0, max:1,
       note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
     { name:'Grammar', score:traits.grammar||0, max:2,
-      note: (traits.grammar >= 2) ? 'Clear, controlled sentence structure.' : 'Correct the highlighted grammar or usage errors; a semicolon is not compulsory.' },
+      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed grammar assessment unavailable.'
+        : (traits.grammar >= 2) ? 'Meaning remains clear. Minor slips are optional refinements.' : 'Review the grammar affecting meaning in your next steps above.' },
     { name:'Vocabulary', score:traits.vocabulary||0, max:2,
-      note: (traits.vocabulary >= 2) ? 'Words are accurate and appropriate.' : 'Review the highlighted word choices; a fixed number of synonym swaps is not required.' }
+      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed vocabulary assessment unavailable.'
+        : (traits.vocabulary >= 2) ? 'Wording preserves the message. Accurate source words are welcome.' : 'Review the wording affecting meaning in your next steps above.' }
   ];
 
   el.innerHTML = rows.map(r => {
     const pct = r.max > 0 ? Math.min(100, (r.score / r.max) * 100) : 0;
-    let barColor = 'var(--good)';
-    if(pct < 50) barColor = 'var(--bad)';
-    else if(pct < 100) barColor = 'var(--warn)';
+    let barColor = 'var(--swt-good)';
+    if(pct < 100) barColor = 'var(--swt-warn)';
     return `
       <div class="trait-row">
         <div class="trait-head">
@@ -14357,13 +14388,14 @@ function renderCoverage(data, passage){
   const captured = new Set(cd.key_ideas_present || []);
   const missing = new Set(cd.key_ideas_missing || []);
 
-  const labels = [['what','What'],['why','Why'],['how','How'],['result','Result']];
+  const labels = keyEls.topic || keyEls.pivot || keyEls.conclusion
+    ? [['topic','Main idea'],['pivot','Support'],['conclusion','Conclusion']]
+    : [['what','Main idea'],['why','Reason'],['how','Support'],['result','Result']];
   el.innerHTML = labels.filter(([k]) => keyEls[k]).map(([k, label]) => {
     let status, statusCls;
-    if(captured.has(k)){ status = 'Covered'; statusCls = 'covered'; }
-    else if(missing.has(k) && ((data.trait_scores || {}).content >= ((data.trait_scores || {}).content_max || 4))){ status = 'Not selected'; statusCls = 'partial'; }
-    else if(missing.has(k)){ status = 'Missing'; statusCls = 'missing'; }
-    else { status = 'Partial'; statusCls = 'partial'; }
+    if(captured.has(k)){ status = 'Included'; statusCls = 'covered'; }
+    else if(missing.has(k)){ status = 'Not selected'; statusCls = 'partial'; }
+    else { status = 'Review'; statusCls = 'partial'; }
     const txt = String(keyEls[k] || '').replace(/<[^>]+>/g,'');
     return `
       <div class="coverage-row">
@@ -14483,7 +14515,7 @@ function renderVocabCoach(data){
         </div>
         <div class="vocab-arrow">→</div>
         <div class="vocab-syns">
-          ${syns.map(syn => `<span class="vocab-chip" onclick="applyVocabSwap('${escapeHtml(word).replace(/'/g, "\\'")}','${escapeHtml(syn).replace(/'/g, "\\'")}')">${escapeHtml(syn)}</span>`).join('')}
+          ${syns.map(syn => '<button type="button" class="vocab-chip" data-swt-word="' + escapeHtml(word) + '" data-swt-replacement="' + escapeHtml(syn) + '">' + escapeHtml(syn) + '</button>').join('')}
         </div>
         ${rationale ? '<div class="vocab-rationale"><b>Why:</b> ' + escapeHtml(rationale) + '</div>' : ''}
       </div>`;
@@ -14501,7 +14533,8 @@ function applyVocabSwap(original, replacement){
   if(match[0][0] === match[0][0].toUpperCase()){
     repl = replacement.charAt(0).toUpperCase() + replacement.slice(1);
   }
-  ta.value = ta.value.replace(re, repl);
+  ta.value = ta.value.replace(re, () => repl);
+  onSummaryInput();
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
   summaries[currentPassageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentPassageId]||{}).score || 0 };
   LocalStore.set(getPteStorageKey('summaries'), summaries);
@@ -14520,6 +14553,7 @@ function showSample(){
 }
 
 function backToPractice(){
+  loadPassage(currentPassageId);
   showSwtScreen('swtPracticeScreen');
   switchWriteTab('write');
   const summaryInputEl = document.getElementById('summaryInput');
@@ -16180,3 +16214,11 @@ function updateEmailLabels() {
 window.updateUserEmail = updateUserEmail;
 
 
+
+document.addEventListener('click', function(event){
+  const button = event.target && event.target.closest ? event.target.closest('#swtPane button[data-swt-word]') : null;
+  if (!button) return;
+  loadPassage(currentPassageId);
+  applyVocabSwap(button.dataset.swtWord, button.dataset.swtReplacement);
+  backToPractice();
+});

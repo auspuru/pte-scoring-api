@@ -1,12 +1,13 @@
 {
   "name": "ptewriting",
-  "version": "20.2.0",
-  "description": "PTE Writing Practice Portal — Pearson-calibrated SWT scoring with no student-facing admin entry",
+  "version": "20.3.0",
+  "description": "PTE Writing Practice Portal \u2014 connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test:calibration": "node tests/calibration.js"
+    "test:calibration": "node tests/calibration.js",
+    "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
