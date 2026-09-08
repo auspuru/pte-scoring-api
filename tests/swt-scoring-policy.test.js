@@ -129,6 +129,9 @@ test('Missing cause lowers content even when every diagnostic idea is marked pre
   const result = await grade(fixture, j);
   assert(result.trait_scores.content < 4);
   assert.equal(result.trait_scores.grammar, 2);
+  assert.equal(result.raw_score, Object.values({ content: result.trait_scores.content,
+    form: result.trait_scores.form, grammar: result.trait_scores.grammar,
+    vocabulary: result.trait_scores.vocabulary }).reduce((a, b) => a + b, 0));
   assert.notEqual(result.band, 'Band 9');
 });
 

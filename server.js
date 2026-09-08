@@ -4139,14 +4139,15 @@ app.post('/api/grade', async (req, res) => {
     else if (contentScore === 1) contentCapPTE = 38;
     else if (contentScore === 2) contentCapPTE = 65;
     else if (contentScore === 3) contentCapPTE = 79;
-    if (contentCapPTE !== null) rawScore = Math.min(rawScore, pteToRaw(contentCapPTE, maxRaw));
 
     // Truly weak cohesion prevents a top score, but it no longer triggers an
     // excessive PTE-62 cap for an otherwise understandable sentence.
-    if (cohesionPenaltyApplied) rawScore = Math.min(rawScore, pteToRaw(79, maxRaw));
 
     rawScore = Math.max(0, Math.min(maxRaw, rawScore));
     let overallScore = rawToPTEDynamic(rawScore, maxRaw);
+    // PTE estimates may be capped; the raw score must remain the trait sum.
+    if (contentCapPTE !== null) overallScore = Math.min(overallScore, contentCapPTE);
+    if (cohesionPenaltyApplied) overallScore = Math.min(overallScore, 79);
     let band = rawToBandDynamic(rawScore, maxRaw);
 
     // Pearson-calibrated tolerance: with full content and valid form, one or two
