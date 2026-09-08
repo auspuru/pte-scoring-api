@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="index.css?v=20.1.5">
+<link rel="stylesheet" href="swt-ui.css?v=20.3.0">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
         tailwind.config = {
@@ -129,7 +130,8 @@
         }
 </style>
 <script src="vocab_1000.js"></script>
-<script src="index.js?v=20.2.2" defer></script>
+<script src="swt-feedback.js?v=20.3.0" defer></script>
+<script src="index.js?v=20.3.0" defer></script>
 </head>
 <body>
 
@@ -525,190 +527,95 @@
 
       <!-- SWT Practice Pane -->
       <div id="swtPane" class="pane">
-        <!-- SWT Core practice interface -->
         <div id="swtPracticeScreen" class="swt-sub-screen active">
-          <div class="passage-nav">
-            <div class="nav-arrow" id="navPrev" onclick="prevPassage()">←</div>
-            <span>Passage <span class="nav-label" id="navCurrent">01</span> / <span id="navTotal">10</span></span>
-            <div class="nav-arrow" id="navNext" onclick="nextPassage()">→</div>
-            <select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
-              <option value="all">All</option>
-              <option value="attempted">Attempted</option>
-              <option value="unattempted">Unattempted</option>
-            </select>
-            <select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select>
-            <div class="passage-nav-spacer"></div>
-            <div class="timer-toggle" id="timerToggle" onclick="toggleTimer()">
-              <span id="timerState">Timed</span>
-              <span class="timer-pill" id="timerDisplay">—</span>
+          <header class="swt-heading">
+            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p>Read the passage and bring its main message together in one sentence.</p></div>
+            <ul class="swt-requirements" aria-label="Task requirements"><li>1 sentence</li><li>5–75 words</li><li>10-minute timer available</li></ul>
+          </header>
+          <div class="passage-nav" aria-label="Choose a passage">
+            <div class="swt-pager">
+              <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">←</button>
+              <span>Passage <strong class="nav-label" id="navCurrent">01</strong> <span class="swt-muted">of <span id="navTotal">10</span></span></span>
+              <button type="button" class="nav-arrow" id="navNext" onclick="nextPassage()" aria-label="Next passage">→</button>
             </div>
+            <label class="swt-select-label">Show<select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
+              <option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option>
+            </select></label>
+            <label class="swt-select-label swt-passage-picker">Choose passage<select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select></label>
+            <button type="button" class="timer-toggle" id="timerToggle" onclick="toggleTimer()" aria-pressed="false" aria-label="Turn on the 10-minute timer">
+              <span class="material-symbols-outlined" aria-hidden="true">timer</span><span id="timerState">Timer off</span><span class="timer-pill" id="timerDisplay">—</span>
+            </button>
           </div>
-
           <div class="practice-grid">
-            <!-- Left: Original Passage -->
-            <div class="card passage-pane">
-              <div class="passage-meta">
-                <span class="eyebrow">Passage <span id="pasNum">01</span></span>
-                <span class="meta-tag" id="pasWordCount">0 words</span>
-                <span class="meta-tag" id="pasCategory">~10 min</span>
+            <section class="card passage-pane" aria-labelledby="swtReadHeading">
+              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">1</span><div><h2 id="swtReadHeading">Read the passage</h2><p>Find the main idea and how the supporting ideas connect.</p></div></div>
+              <div class="passage-meta"><span class="eyebrow">Passage <span id="pasNum">01</span></span><span class="meta-tag" id="pasWordCount">0 words</span><span class="meta-tag" id="pasCategory">~10 min</span></div>
+              <div class="passage-body" id="passageBody">Loading passage…</div>
+              <p class="passage-fresh-note">You can explore the key ideas and a sample answer after submitting.</p>
+            </section>
+            <section class="card write-pane" aria-labelledby="swtWriteHeading">
+              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">2</span><div><h2 id="swtWriteHeading">Write your summary</h2><p>Connect the main idea, relevant support and the final message.</p></div></div>
+              <div class="write-tabs" role="tablist" aria-label="Writing workspace">
+                <button type="button" class="write-tab active" id="tabWrite" role="tab" aria-selected="true" aria-controls="writeTabPane" onclick="switchWriteTab('write')">Your summary</button>
+                <button type="button" class="write-tab" id="tabPlan" role="tab" aria-selected="false" aria-controls="planTabPane" tabindex="-1" onclick="switchWriteTab('plan')">Planning notes <span class="tab-sub">Not scored</span></button>
               </div>
-              <div class="passage-body" id="passageBody">Loading passage...</div>
-              <div class="passage-fresh-note">Title & key ideas appear after you submit — so you read fresh.</div>
-            </div>
-
-            <!-- Right: Write Answer -->
-            <div class="card write-pane">
-              <div class="write-tabs">
-                <div class="write-tab active" id="tabWrite" onclick="switchWriteTab('write')">
-                  Write<span class="tab-sub">Your summary</span>
-                </div>
-                <div class="write-tab" id="tabPlan" onclick="switchWriteTab('plan')">
-                  Plan<span class="tab-sub">Scratch notes</span>
-                </div>
-              </div>
-
-              <!-- Write Editor -->
-              <div id="writeTabPane">
+              <div id="writeTabPane" role="tabpanel" aria-labelledby="tabWrite">
+                <label class="swt-editor-label" for="summaryInput">Your one-sentence summary</label>
+                <textarea class="summary-input" id="summaryInput" placeholder="Start with the main idea, then connect the details that explain it…" oninput="onSummaryInput()" aria-describedby="swtEditorHint swtWordStatus" spellcheck="true"></textarea>
                 <div class="word-meter">
-                  <span>Words</span>
-                  <div class="meter-track"><div class="meter-fill" id="wordMeterFill"></div></div>
-                  <span class="meter-count"><span id="wordCount">0</span> / 5–75</span>
+                  <span>Word count</span><div class="meter-track" aria-hidden="true"><div class="meter-fill" id="wordMeterFill"></div></div><span class="meter-count"><span id="wordCount">0</span> / 75</span>
                 </div>
-                <textarea class="summary-input" id="summaryInput" placeholder="Write your one-sentence summary here…" oninput="onSummaryInput()" spellcheck="true"></textarea>
-
-                <div class="health-grid">
-                  <div class="health-panel">
-                    <div class="panel-title">Writing Health</div>
-                    <div class="health-row" id="hrWordBand">
-                      <span class="h-icon">○</span>
-                      <span class="h-label">Inside word band <span class="h-sub">target: 5–75 words</span></span>
-                      <span class="h-value" id="hrWordBandVal">0</span>
-                    </div>
-                  </div>
-                </div>
-
+                <div class="swt-editor-status"><span id="swtWordStatus" role="status">Write 5–75 words.</span></div>
+                <p class="swt-help" id="swtEditorHint">Keep one complete sentence. Include the cause or context needed to make each selected idea clear.</p>
+                <div class="health-grid" hidden aria-hidden="true"><div class="health-panel"><div class="health-row" id="hrWordBand"><span class="h-icon">○</span><span class="h-label">Word limit</span><span class="h-value" id="hrWordBandVal">0</span></div></div></div>
                 <div class="write-actions">
-                  <button class="btn btn-ghost" onclick="resetSummary()">Reset</button>
-                  <button class="btn" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Show my answer</button>
-                  <div class="write-actions-spacer"></div>
-                  <button class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">
-                    Score my summary
-                  </button>
+                  <button type="button" class="btn btn-ghost" onclick="resetSummary()">Clear</button>
+                  <button type="button" class="btn btn-ghost" id="swtUndoClear" onclick="undoSwtClear()" hidden>Undo clear</button>
+                  <button type="button" class="btn btn-ghost" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Previous result</button>
+                  <button type="button" class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">Get feedback <span aria-hidden="true">→</span></button>
                 </div>
               </div>
-
-              <!-- Scratch Pad -->
-              <div id="planTabPane" class="hidden">
-                <textarea class="scratch-input" id="scratchInput" placeholder="Jot down What / Why / How / Result before you write. These notes are never scored."></textarea>
-                <div class="scratch-note">Scratch notes are saved locally and never sent for scoring.</div>
+              <div id="planTabPane" class="hidden" role="tabpanel" aria-labelledby="tabPlan">
+                <label class="swt-editor-label" for="scratchInput">Plan the connections</label>
+                <textarea class="scratch-input" id="scratchInput" placeholder="Main idea:&#10;&#10;Relevant support and its cause or context:&#10;&#10;Conclusion or result:" aria-describedby="swtScratchHint"></textarea>
+                <p class="scratch-note" id="swtScratchHint">Notes stay on this device and are never sent for scoring.</p>
+                <button type="button" class="btn" onclick="switchWriteTab('write'); document.getElementById('summaryInput').focus()">Return to your summary →</button>
               </div>
-            </div>
+            </section>
           </div>
         </div>
-
-        <!-- SWT Results Detail view -->
         <div id="swtResultsScreen" class="swt-sub-screen">
-          <div class="passage-nav">
-            <div class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)">←</div>
-            <span>Passage <span class="nav-label" id="resNavCurrent">01</span> / <span id="resNavTotal">10</span></span>
-            <div class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)">→</div>
-            <select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)">
-              <option value="all">All</option>
-              <option value="attempted">Attempted</option>
-              <option value="unattempted">Unattempted</option>
-            </select>
-            <select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select>
-            <div class="passage-nav-spacer"></div>
-            <button class="btn btn-ghost" style="padding: 4px 12px; font-size:12px;" onclick="backToPractice()">← Back to practice</button>
+          <header class="swt-heading"><div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Your summary, reviewed</h1><p id="resultsBreadcrumb">Review your result, then make one useful improvement.</p></div><button type="button" class="btn" onclick="backToPractice()">← Back to writing</button></header>
+          <div class="passage-nav" aria-label="Browse your results">
+            <div class="swt-pager"><button type="button" class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)" aria-label="Previous passage result">←</button><span>Passage <strong class="nav-label" id="resNavCurrent">01</strong> of <span id="resNavTotal">10</span></span><button type="button" class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)" aria-label="Next passage result">→</button></div>
+            <label class="swt-select-label">Show<select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)"><option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option></select></label>
+            <label class="swt-select-label swt-passage-picker">Choose passage<select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select></label>
           </div>
-
-          <!-- Summary Hero Section -->
-          <div class="card results-hero">
+          <section class="card results-hero" aria-label="Score overview">
             <div class="score-ring-wrap">
-              <div class="score-ring">
-                <svg viewBox="0 0 120 120">
-                  <circle class="ring-track" cx="60" cy="60" r="54"></circle>
-                  <circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle>
-                </svg>
-                <div class="ring-value" id="heroScore">0</div>
-              </div>
-              <div class="score-ring-label">PTE Estimate</div>
+              <div class="score-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="54"></circle><circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle></svg><div class="ring-value"><strong id="heroScore">0</strong><span id="swtRawMax">/ 9</span></div></div>
+              <div class="score-ring-label">Practice score</div><div id="swtEstimate" class="swt-help"></div>
             </div>
-            <div class="results-hero-body">
-              <div class="eyebrow">Result Summary</div>
-              <div class="display" id="heroVerdict">—</div>
-              <div class="result-summary" id="heroSummary"></div>
-              <div class="trait-chips" id="heroTraitChips"></div>
-              <div class="ai-degraded-notice" id="aiDegradedNotice" style="display:none;"></div>
-            </div>
-            <div class="results-hero-actions">
-              <button class="btn btn-primary" onclick="backToPractice()">Try again</button>
-              <button class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button>
-              <button class="btn" onclick="switchSbsView('sample')">Compare sample</button>
-            </div>
-          </div>
-
-          <!-- Originality checks -->
-          <div class="originality" id="originalityChecks"></div>
-
-          <!-- Side-by-side view -->
-          <div class="card">
-            <div class="section-num">
-              03 · Passage &amp; Submission — Side by Side
-              <span class="legend">
-                <span><i style="background:var(--what)"></i>What</span>
-                <span><i style="background:var(--why)"></i>Why</span>
-                <span><i style="background:var(--how)"></i>How</span>
-                <span><i style="background:var(--result)"></i>Result</span>
-              </span>
-            </div>
+            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice" id="aiDegradedNotice" role="status" style="display:none;"></div></div>
+            <div class="results-hero-actions"><button type="button" class="btn btn-primary" onclick="backToPractice()">Improve this summary</button><button type="button" class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button><button type="button" class="btn btn-ghost" onclick="compareSwtSample()">Compare with sample</button></div>
+          </section>
+          <section class="card swt-guidance" aria-labelledby="swtGuidanceHeading"><div class="swt-card-heading"><span class="swt-step" aria-hidden="true">3</span><div><h2 id="swtGuidanceHeading">Your next step</h2><p>Focus on what will help this response most.</p></div></div><div id="swtGuidanceBody"></div></section>
+          <section class="card" id="swtComparison" aria-labelledby="swtComparisonHeading">
+            <div class="swt-section-heading"><h2 id="swtComparisonHeading">Review your response</h2><span class="legend" aria-label="Highlight key"><span><i style="background:var(--what)"></i>Main idea</span><span><i style="background:var(--why)"></i>Reason</span><span><i style="background:var(--how)"></i>Support</span><span><i style="background:var(--result)"></i>Result</span></span></div>
+            <p class="swt-help">Highlights are a reading aid. You do not need to include every highlighted detail.</p>
             <div class="side-by-side">
-              <div class="sbs-col">
-                <div class="sbs-head">Original Passage</div>
-                <div class="annotated-text" id="annotatedPassage"></div>
-              </div>
-              <div class="sbs-col">
-                <div class="sbs-toggle" role="tablist" aria-label="Right column view">
-                  <button type="button" class="sbs-tab active" id="sbsTabSummary" onclick="switchSbsView('summary')">Student Summary</button>
-                  <button type="button" class="sbs-tab" id="sbsTabSample" onclick="switchSbsView('sample')">Sample Answer</button>
-                </div>
-                <div id="sbsViewSummary">
-                  <div class="annotated-text" id="annotatedSubmission"></div>
-                  <div class="annotated-feedback" id="annotatedFeedback"></div>
-                </div>
-                <div id="sbsViewSample" style="display:none;">
-                  <div class="annotated-text" id="sampleAnswerText"></div>
-                  <div class="sample-note" id="sampleAnswerNotes"></div>
-                </div>
-              </div>
+              <div class="sbs-col"><h3 class="sbs-head">Original passage</h3><div class="annotated-text" id="annotatedPassage"></div></div>
+              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" style="display:none;"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes"></div></div></div>
             </div>
-          </div>
-
-          <!-- Trait breakdown -->
-          <div class="card">
-            <div class="section-num">04 · Trait Breakdown</div>
-            <div class="trait-breakdown" id="traitBreakdown"></div>
-          </div>
-
-          <!-- Key element coverage -->
-          <div class="card">
-            <div class="section-num">05 · Key Element Coverage</div>
-            <div class="coverage-table" id="coverageTable"></div>
-          </div>
-
-          <!-- About passage -->
-          <div class="card" id="aboutPassageCard" style="display:none;">
-            <div class="section-num">06 · About this passage</div>
-            <div class="about-passage" id="aboutPassageBody"></div>
-          </div>
-
-          <!-- Vocab coach -->
-          <div class="card" id="vocabCoachCard" style="display:none;">
-            <div class="section-num">07 · Vocabulary Coach</div>
-            <div class="vocab-coach" id="vocabCoachBody"></div>
-          </div>
+          </section>
+          <section class="card" aria-labelledby="swtTraitsHeading"><h2 id="swtTraitsHeading">Where your marks came from</h2><div class="trait-breakdown" id="traitBreakdown"></div></section>
+          <details class="card swt-details"><summary>Explore the passage’s key ideas</summary><p class="swt-help">These ideas help you understand the passage. Full Content depends on an accurate, connected summary with enough relevant support.</p><div class="coverage-table" id="coverageTable"></div></details>
+          <details class="card swt-details" id="aboutPassageCard" style="display:none;"><summary>Understand this passage</summary><div class="about-passage" id="aboutPassageBody"></div></details>
+          <details class="card swt-details" id="vocabCoachCard" style="display:none;"><summary>Explore vocabulary alternatives</summary><p class="swt-help">Optional practice: choose a word only if it keeps the same meaning. Replacing accurate source words is not required.</p><div class="vocab-coach" id="vocabCoachBody"></div></details>
+          <details class="card swt-details"><summary>Source wording</summary><div class="originality" id="originalityChecks"></div></details>
         </div>
       </div>
+
 
       <!-- Library Pane -->
       <div id="libraryPane" class="pane">
@@ -1633,3 +1540,4 @@
 
 </body>
 </html>
+

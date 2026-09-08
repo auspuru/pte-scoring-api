@@ -3744,7 +3744,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     headline = `Excellent — ${band} (PTE ${pte}) achieved via the ${methodLabel}.`;
   } else if (rawRatio >= 0.79) {
     tier = 'good';
-    headline = `Solid attempt — ${band} (PTE ${pte}). One or two changes will push this to Band 9.`;
+    headline = `Solid attempt — ${band} (PTE ${pte}). Review the priorities below to strengthen this response.`;
   } else if (rawRatio >= 0.50) {
     tier = 'partial';
     headline = `${band} (PTE ${pte}). Significant gaps to close.`;
@@ -3771,7 +3771,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
     });
   }
 
-  if (grammar.has_connector && grammar.connector_quality === 'perfect') {
+  if (grammar.has_connector && grammar.connector_quality === 'perfect' && llmJudgment?.cohesion === 'strong') {
     strengths.push({ icon: '🔗', label: `Clear linking device: "${grammar.connector_used}"`, detail: 'The sentence connects its ideas clearly.' });
   } else if (grammar.has_connector) {
     strengths.push({ icon: '🔗', label: `Connector used: "${grammar.connector_used}"`, detail: '' });
@@ -3826,6 +3826,12 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
         : 'Clarify the main idea and its supporting relationships',
       detail: contentVerdict.content_reason || 'Include the main message, relevant support and the context needed to connect them.'
     });
+  }
+
+  if (grammarScore < 2 && llmJudgment) {
+    const errors = (llmJudgment.grammar_annotations || []).filter(a => a.affects_score);
+    improvements.push({ priority: 2, icon: '✍️', action: 'Correct the grammar that affects meaning',
+      detail: errors.map(a => `“${a.phrase}” → “${a.fix}”. ${a.meaning_effect || a.rationale || ''}`).join(' ') });
   }
 
   // Priority 1 — meaning changed
@@ -3900,7 +3906,7 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
       methodCoaching = {
         current: 'Phrase-Picking Method',
         next: vocab.effective_credit < 2
-          ? 'Solid phrase selection with proper connectors. Add 2–3 academic synonym swaps to lock in Reading 90.'
+          ? 'Keep the selected ideas accurate and connected. Optional paraphrasing should preserve the same meaning.'
           : 'Excellent phrase selection + academic upgrades — top of both ladders.'
       };
     }
