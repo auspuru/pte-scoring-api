@@ -56,3 +56,13 @@ The user authorised pushing all updates on 8 September 2026. This release combin
 ## Build follow-up
 
 The first Railway build failed during npm installation. The inherited lockfile resolved all 230 public packages through an internal mirror. Their download URLs now use registry.npmjs.org; versions, dependency metadata and integrity hashes are unchanged. The existing Reading Mock Test navigation is preserved in HTML, so it no longer depends on a custom Railway startup injection.
+
+## 20.3.1 — report and historical-response calibration
+
+Reviewed all SWT passages/responses in Writing Report Versions 1–3, the supplied screenshots, and four historical `officialCalibration` responses in passages.json. The reports' embedded Writing totals (88; 70 then 88) are combined skill results, not SWT item-level trait labels. Teaching targets and synonym advice therefore do not establish automatic full-score fixtures. Essay and spoken-summary examples do not alter SWT rules.
+
+Added contextual calibration for Farm Cottage, Tourism, Web invention, Forecasting, Nobel/IPCC and London, plus the later tea/music screenshots. Preserve short complete summaries, additive/contrastive structures, valid compression and source wording. Require only context essential to the selected claims. The Nobel report variant omits the reason behind its final claim; the earlier saved answer supplies the cold-versus-heat comparison. Historical labels do not override material relationship errors. Harmless agreement or article slips remain optional feedback.
+
+Feedback now explicitly prioritises a captured relationship and one passage-grounded repair, with optional refinements separated from deductions. No mandatory synonym count, connector template or preferred length within 5–75 words.
+
+Validation: deterministic report-policy regressions, existing route and feedback tests. These use labelled semantic assessments; they do not certify live AI agreement or reproduce Pearson's scoring engine.

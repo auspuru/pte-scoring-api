@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.0';
+const POLICY_VERSION = '20.3.1';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -143,6 +143,20 @@ CALIBRATION FROM USER-SUPPLIED 9/9 EXAMPLES:
 - Caffeine: caffeine in nectar improves bees' memory of flower scents, supporting pollination and plant survival. The supplied answer also says 'the smell of caffeine', but its surrounding clauses identify caffeine improving memory and bees remembering FLOWER scents. Treat that local imprecision as optional feedback, preserving 9/9. Do not generalise this tolerance to a response whose central mechanism is wrong or missing.
 - Number processing: neurons process quantities from early life, the brain recognises smaller quantities more readily, and larger ones are harder to process. Evolutionary examples can be omitted.
 - Forgetting: discarding old information supports efficient storage/function, forgetfulness can be useful, and lifestyle influences what is discarded. 'Brain clears' and 'an significant aspect' are optional article corrections, not deductions.
+
+ADDITIONAL CALIBRATION FROM EARLIER RESPONSES AND WRITING REPORTS:
+- Farm cottage: the author's move, awareness of disadvantages and belief in benefits can form a complete contrastive summary. Specific heating, water, road and family details are optional. Preserve whose decision it was; do not turn the narrator's experience into an unattributed claim about the student.
+- Tourism: economic contribution, environmental benefits and low costs explaining comparative advantage form a valid additive summary. Alternatively, economic contribution, inclusive employment and conservation can sufficiently convey its broad benefits without listing every advantage. 'Travel and tourism generates' is a harmless agreement slip. Source wording and accurate paraphrases earn equal credit.
+- Web invention: Berners-Lee's impact, the Web changing communication and his frustration with scattered information supply identity, impact and motivation. Do not demand the historical comparisons or every activity changed by the Web.
+- Forecasting: its importance, imprecision, varying assumptions and poor performance for volatile statistics form a connected summary even in roughly 30–40 words. No preferred length within the valid 5–75-word range earns extra marks. Omitting examples or a secondary concession is acceptable if the retained claim stays properly scoped.
+- Nobel/IPCC: distinguish the earlier response that connects reduced cold spells (a greater killer than heat) to the passage's lives-saved conclusion from report variants that simply append 'global warming will actually save lives'. The latter lack the necessary reason and cannot earn full Content. Assess fidelity to this passage, not outside opinions; synonym changes cannot repair the missing cause.
+- London: missing articles and 'foreigners ... wants' do not reduce Grammar. Its historical growth, financial importance and attraction despite high costs/transport problems can preserve the central contrast. Independently check any 'by/because' relationship: wording that turns two separate market facts into a material causal claim needs correction, regardless of a historical benchmark label.
+- Tea and music screenshots: missing 'is/are' or agreement alone need not reduce Grammar when the intended proposition remains clear. Do not require every growing condition in tea. A claim of universal appeal must be checked for material overstatement. In music, parental approval alone does not replace the passage's final benefit of enjoyable, effective learning; identify that missing benefit as Content feedback, not a grammar deduction.
+- Preserve meaningful qualifiers, scope and attribution. Do not automatically replace 'can' with 'does', or 'generally' with 'everyone' to sound stronger. Only material changes warrant deductions; local awkwardness does not.
+The writing reports contain teaching targets and combined Writing results, not verified individual SWT trait scores. Never infer an item's score from those totals or memorise a benchmark as an automatic full-score override.
+
+STUDENT FEEDBACK:
+Explain the strongest captured relationship first, then the single most useful repair if marks were lost. Quote the affected phrase and identify the missing cause, background, qualification or final benefit. Offer a short passage-grounded way to connect it without inventing facts. Separate optional language refinements from score deductions. Do not prescribe four headlines, a fixed connector template, synonym counts or every example; do not tell a full-score student that optional details were required for full marks.
 
 Return ONLY JSON:
 {
