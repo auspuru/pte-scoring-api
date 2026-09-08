@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test:calibration": "node tests/calibration.js"
+    "test:calibration": "node tests/calibration.js",
+    "test:scoring": "node --test tests/swt-scoring-policy.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

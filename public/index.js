@@ -13808,7 +13808,7 @@ function showResults(data, passage, spellData, submittedText){
   if(degradedEl){
     if(data.ai_feedback_degraded){
       degradedEl.style.display = '';
-      degradedEl.textContent = 'Detailed grammar and vocabulary feedback was unavailable for this attempt (the AI grader was busy). Your score is accurate — try again in a moment for full coaching.';
+      degradedEl.textContent = 'AI assessment of meaning and connections was unavailable. These scores are provisional — try again for a complete assessment.';
     } else {
       degradedEl.style.display = 'none';
     }

@@ -1,0 +1,106 @@
+[
+  {
+    "summary": "The film editor plays a crucial role in making a film, and a great editor has the flexibility to adapt and refine a video; moreover, they work closely with directors to determine the overall feel of the film, and their choices affect how the audience experiences time, suspense and emotion; furthermore, they integrate sound effects, music and dialogue to improve the story; additionally, they influence how the story unfolds in front of the audience.",
+    "topic": "Film editing",
+    "passage": "While directors and actors are often in the spotlight, the film editor plays a crucial but often overlooked role in making a film. Editing is not just about cutting scenes; it's about creating a narrative, ensuring smooth continuity between scenes. A great editor has the flexibility to adapt and refine video to create the best version of a film.\n\nThe editing process takes place in post-production, where raw film is transformed into a polished final product. Editors work closely with directors to determine the overall feel of the film. Their choices affect how the audience experiences time, suspense and emotion. A well-edited film can make scenes more engaging, while poor editing can disrupt the flow and weaken the story.\n\nEditors integrate sound effects, music and dialogue to improve the story. The right sound choices can create atmosphere or generate strong emotions. Whether it's the quiet movement of leaves or a dramatic explosion, sound is of paramount importance in engaging the audience. At the same time, the right piece of music can create a particular atmosphere in a scene. It can also create an emotional connection with viewers and build intensity.\n\nFar from simply adding the final touches to a film, editors greatly influence how the story unfolds on screen in front of the audience. This is why they are sometimes called the unsung heroes of storytelling.",
+    "expected": {
+      "content": 4,
+      "grammar": 2,
+      "vocabulary": 2,
+      "form": 1,
+      "raw": 9
+    },
+    "source": "User-supplied screenshot showing 9/9; transcription for calibration",
+    "assessment": {
+      "main_idea_accurate": true,
+      "main_idea_evidence": "The film editor plays a crucial role in making a film",
+      "supporting_evidence": [
+        "they work closely with directors to determine the overall feel of the film",
+        "they integrate sound effects, music and dialogue to improve the story"
+      ],
+      "conclusion_status": "captured",
+      "relationships_clear": true,
+      "material_meaning_change": false,
+      "missing_dependencies": [],
+      "relationship_explanation": "Editors' work on the film and sound affects the audience's experience and how the story unfolds."
+    }
+  },
+  {
+    "summary": "Caffeine is useful for bees and certain plant species, as the caffeine found in flower nectar can potentially improve the memory of the honeybee, and the smell of caffeine aids the memory of the bees and helps them to remember the smell of different flowers; therefore, it is beneficial for the plant as this improves pollination and, thus, the survival of the plant species.",
+    "topic": "Caffeine and bees",
+    "passage": "Research indicates that caffeine, the substance found in tea and coffee that helps wake you up in the morning, could also be useful for bees and certain plants.\n\nIn tests, low amounts of caffeine were found in 'arabica' coffee used to make espressos and filter coffees, and the flowers of grapefruit, lemons and oranges. It is thought that the caffeine found in flower nectar can potentially improve the memory of the honeybee. Research shows that honeybees that feed on a sugar solution with caffeine that is found naturally in nectar from coffee and citrus flowers were significantly more likely to remember the scent of a flower compared with those that fed on just sugar solutions.\n\nResearchers are excited by the findings as this has a positive impact on both the plant and the honeybee. In the case of honeybees, it is usually difficult for them to remember different flower scents as they fly quickly from one flower to another. So, the caffeine aids the memory of the bees, which makes them more likely to search for other coffee and citrus flowers. This, in turn, is beneficial for the plant as this improves pollination and, therefore, the survival of the plant species.",
+    "expected": {
+      "content": 4,
+      "grammar": 2,
+      "vocabulary": 2,
+      "form": 1,
+      "raw": 9
+    },
+    "source": "User-supplied screenshot showing 9/9; transcription for calibration",
+    "assessment": {
+      "main_idea_accurate": true,
+      "main_idea_evidence": "Caffeine is useful for bees and certain plant species",
+      "supporting_evidence": [
+        "the caffeine found in flower nectar can potentially improve the memory of the honeybee",
+        "helps them to remember the smell of different flowers"
+      ],
+      "conclusion_status": "captured",
+      "relationships_clear": true,
+      "material_meaning_change": false,
+      "missing_dependencies": [],
+      "relationship_explanation": "Caffeine improves bees' memory of flower scents, supporting pollination and plant survival; the local reference to the smell of caffeine is recoverable from the surrounding claims."
+    }
+  },
+  {
+    "summary": "When human beings encounter a number, they use neurons in the brain to process it, and this ability emerges when a human being is born; moreover, humans are better able to recognize and differentiate between two smaller numbers rather than between two larger numbers, because the brain is better able to recognize and generate images of smaller quantities; therefore, the larger the quantities are, the more difficult it is for the brain to process them.",
+    "topic": "Number processing",
+    "passage": "When human beings encounter a number, they use a network of connected cells called neurons in the brain to process it. This processing largely happens in a part of the brain located just above the ears, which is responsible for processing quantities of all kinds. The ability to do this usually emerges almost as soon as a human being is born.\n\nAlthough much of the activity that goes on in our brains remains a mystery to scientists, we know that humans of all ages are better able to recognize and differentiate between two smaller numbers than between two larger numbers, even if the difference between the numbers is exactly the same. The reason for this is the fact that the brain is better able to recognize and generate images of smaller quantities than of larger quantities. This represents an evolutionary adaptation to the reality of daily life where we are more likely to come into contact with smaller quantities than larger ones. Today that means doing things like choosing fruit and vegetables to buy at the supermarket.\n\nResearch studies have demonstrated that even young children can recognize quantities between one and four. The larger the quantities are, the more difficult it is for the brain to perceive and process them.",
+    "expected": {
+      "content": 4,
+      "grammar": 2,
+      "vocabulary": 2,
+      "form": 1,
+      "raw": 9
+    },
+    "source": "User-supplied screenshot showing 9/9; transcription for calibration",
+    "assessment": {
+      "main_idea_accurate": true,
+      "main_idea_evidence": "When human beings encounter a number, they use neurons in the brain to process it",
+      "supporting_evidence": [
+        "humans are better able to recognize and differentiate between two smaller numbers rather than between two larger numbers",
+        "the brain is better able to recognize and generate images of smaller quantities"
+      ],
+      "conclusion_status": "captured",
+      "relationships_clear": true,
+      "material_meaning_change": false,
+      "missing_dependencies": [],
+      "relationship_explanation": "The brain represents smaller quantities more readily, so processing larger quantities is harder."
+    }
+  },
+  {
+    "summary": "Brain clears up space to order and store new information efficiently, and it also optimizes the ability to make better decisions; moreover, new research suggests that forgetfulness, or a failure of brain functionality, could actually be an significant aspect of neurological function; furthermore, the information that human brains choose to discard is to some degree governed by the lives they live.",
+    "topic": "Forgetting",
+    "passage": "While there have been numerous studies conducted into how our brains store information, the idea that there might be a very good neurological reason for doing the opposite has not been explored to the same extent. Thanks to new research, we now know that what has traditionally been seen as forgetfulness, or a failure of brain functionality, could actually be an important part of neurological function. Memories are stored within neurons in our brains, and it has been discovered that the brain in effect uses these neurons to overwrite historic memories and replace them with more recent ones. It is thought that in so doing, the brain can function more effectively. Less time is spent sorting through older memories, for example.\n\nA further interesting point is that research indicates that the sort of information that our brains choose to discard is to some degree governed by the lives we lead. As there is really no need for us to store phone numbers in our heads anymore, for example, some scientists suggest that our brains are now less likely to store them in our long-term memory.",
+    "expected": {
+      "content": 4,
+      "grammar": 2,
+      "vocabulary": 2,
+      "form": 1,
+      "raw": 9
+    },
+    "source": "User-supplied screenshot showing 9/9; transcription for calibration",
+    "assessment": {
+      "main_idea_accurate": true,
+      "main_idea_evidence": "forgetfulness, or a failure of brain functionality, could actually be an significant aspect of neurological function",
+      "supporting_evidence": [
+        "Brain clears up space to order and store new information efficiently",
+        "the information that human brains choose to discard is to some degree governed by the lives they live"
+      ],
+      "conclusion_status": "clearly_implied",
+      "relationships_clear": true,
+      "material_meaning_change": false,
+      "missing_dependencies": [],
+      "relationship_explanation": "Discarding information helps the brain work efficiently, and lifestyle influences what is discarded."
+    }
+  }
+]

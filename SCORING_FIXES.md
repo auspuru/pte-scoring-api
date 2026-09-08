@@ -1,40 +1,45 @@
-# Pearson-calibrated SWT scoring fix — v20.2.0
+# SWT scoring policy — draft 20.3.0
 
-## Authoritative scoring criteria
+This is the institute's practice-scoring policy, calibrated against user-supplied examples. It does not claim to reproduce Pearson's proprietary scoring engine.
 
-The score is calculated from this fixed **9-point SWT profile**:
+## Rules
 
-- **Content — 4 points:** accurately communicate the central message and at least two important supporting ideas. One secondary omission is acceptable. The stored What/Why/How/Result headlines are diagnostic coaching prompts, not four compulsory boxes.
-- **Form — 1 point:** write exactly one sentence containing 5–75 words and end it with sentence punctuation.
-- **Grammar — 2 points:** use a complete, clear and controlled sentence. Minor local errors may remain when meaning is unaffected. No fixed connector or semicolon pattern is required.
-- **Vocabulary — 2 points:** use accurate, context-appropriate wording. Faithful source wording and accurate paraphrasing are both valid. No fixed number of synonym swaps is required.
+- **Content — 4:** capture the central message, one or two relevant supporting ideas, and the passage conclusion where present. Preserve the necessary cause, background, references and relationships. A conclusion can be combined with another idea or clearly implied.
+- **Grammar — 2:** minor article, agreement, spelling, repetition or punctuation slips do not reduce scores when meaning remains clear. Every deduction requires a quoted grammatical error and an explanation of how it changes or obscures meaning.
+- **Vocabulary — 2:** source wording and accurate paraphrases are acceptable. Minor recoverable imprecision is optional feedback, including the supplied caffeine example. Wording that changes or obscures meaning loses marks.
+- **Form — 1:** the existing one-sentence, 5–75-word checks remain.
+- **Full result:** all these conditions produce 9/9. The top band label requires this complete assessment.
 
-A Band 9 result requires full Content, valid Form, clear cohesion, no material meaning change, at least 8/9 raw points, Grammar of at least 1.4/2 and Vocabulary of at least 1.5/2.
+Missing necessary causes or context lower Content, without an automatic Grammar deduction. Compression of a causal chain is valid when its connection remains understandable. Descriptive and contrastive passages do not require invented cause-and-effect relationships.
 
-## Changes in this package
+## Implementation
 
-- The scoring criteria above are defined once in `server.js` and returned with each score result for transparent auditing.
-- The four Pearson official mock-test responses supplied by the user remain regression-calibration cases.
-- Incomplete, contradictory, fabricated and off-topic responses remain blocked from Band 9.
-- The **student-facing admin panel link, launch control and embedded modal are removed entirely** from `public/index.js`, including entries inserted after login.
-- Existing protected server maintenance APIs are not used to calculate student scores.
+The scoring policy module defines the rubric and validates the semantic assessment. The grader identifies the main idea, relevant support, conclusion status and missing dependencies. Counting matching headline ideas can no longer override missing relationships.
 
-## Files
+Harmless language corrections retain an explicit no-deduction label. Errors that affect scores retain a quotation and an explanation of their effect on meaning.
 
-- `server.js` — authoritative scoring engine
-- `passages.json` — diagnostic passage headlines and Pearson calibration cases
-- `public/index.js` — student portal with the admin entry removed
-- `tests/calibration.js` — scoring and admin-entry regression tests
+When the AI assessment is unavailable or incomplete, the result is marked provisional and cannot receive full Content from keyword overlap alone. The student notice explains this limitation.
 
-## Run the tests
+The draft does not modify production passages, accounts, progress records or deployment settings.
+
+## Calibration and verification
+
+The fixtures in `tests/swt-meaning-fixtures.json` preserve the four new user-supplied examples: film editors (74 words), caffeine and bees (64), number processing (75), and forgetting (61). Their expected scores are 4 + 1 + 2 + 2 = 9. Earlier user benchmarks remain in `passages.json`.
+
+Run the dependency-free checks:
 
 ```bash
-npm install
-npm run test:calibration
+node --test tests/swt-scoring-policy.test.js
 ```
 
-The test starts a temporary local server, checks all four Pearson calibration responses, checks negative controls and verifies that the student client cannot expose an admin navigation entry. No Anthropic key is required.
+The 17 checks exercise the grading route with fixed, human-labelled semantic assessments. They cover expected full scores, missing causes despite complete checklist coverage, missing conclusions, errors that change meaning, invalid form, and provisional fallback.
 
-## Production passage data
+These checks verify deterministic scoring behavior, not a live AI model's understanding. Live semantic calibration remains necessary before release. Syntax checks for the server and client also pass.
 
-Where production passage records are stored in PostgreSQL or a persistent JSON volume, update those stored records directly from `passages.json` during deployment. The scoring engine itself does not depend on an admin panel.
+The existing server smoke test (`node tests/calibration.js`) requires the app dependencies. With no AI key, it checks provisional scoring and the existing student-admin-entry gate. That smoke test was not run in this workspace, where the app dependencies were unavailable.
+
+## Release state
+
+This is a draft for the user's sample review; it has not been deployed.
+
+At inspection, production ran commit `b11c6631fb5fe43af22b2879b6c514253ab7f726`, while `main` was two commits ahead at `d705781022dbefaced43ba34d9c252f444f61689`. This draft is based on `main`. Account for its earlier pending changes before any release.
