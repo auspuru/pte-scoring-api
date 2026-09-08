@@ -52,3 +52,7 @@ The six additional feedback checks cover optional refinements, missing causes, m
 ## Release
 
 The user authorised pushing all updates on 8 September 2026. This release combines the saved scoring draft and the SWT interface/feedback changes, based on main at d705781022dbefaced43ba34d9c252f444f61689.
+
+## Build follow-up
+
+The first Railway build failed during npm installation. The inherited lockfile resolved all 230 public packages through an internal mirror. Their download URLs now use registry.npmjs.org; versions, dependency metadata and integrity hashes are unchanged. The existing Reading Mock Test navigation is preserved in HTML, so it no longer depends on a custom Railway startup injection.
