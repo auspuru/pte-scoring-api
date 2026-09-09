@@ -13821,12 +13821,10 @@ function formatAttemptTime(iso){
 }
 
 function showResults(data, passage, spellData, submittedText){
-  const pte = data.overall_score || 0;
-  const band = data.band || 'Band 5';
+  const display = SwtStudentFeedback.presentation(data);
   const traits = data.trait_scores || {};
-  const rawMax = (traits.content_max || 4) + 5;
-  const rawScore = typeof data.raw_score === 'number' ? data.raw_score
-    : ['content', 'form', 'grammar', 'vocabulary'].reduce((total, key) => total + (Number(traits[key]) || 0), 0);
+  const rawMax = display.max;
+  const rawScore = display.score;
 
   let crumb = 'Results · ' + (passage.title || 'Passage ' + currentPassageId);
   if(data.__timestamp){
@@ -13847,11 +13845,13 @@ function showResults(data, passage, spellData, submittedText){
   const maxEl = document.getElementById('swtRawMax');
   if (maxEl) maxEl.textContent = '/ ' + rawMax;
   const estimateEl = document.getElementById('swtEstimate');
-  if (estimateEl) estimateEl.textContent = (data.score_provisional || data.ai_feedback_degraded ? 'Provisional estimate: ' : 'PTE estimate: ') + pte + ' / 90';
+  if (estimateEl) estimateEl.textContent = display.secondary;
+  const scoreLabel = document.getElementById('swtScoreLabel');
+  if (scoreLabel) scoreLabel.textContent = display.label;
 
   const heroVerdictEl = document.getElementById('heroVerdict');
   if (heroVerdictEl) {
-    heroVerdictEl.innerHTML = data.score_provisional || data.ai_feedback_degraded ? 'Provisional result' : verdictLine(pte, band);
+    heroVerdictEl.textContent = display.headline;
   }
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);

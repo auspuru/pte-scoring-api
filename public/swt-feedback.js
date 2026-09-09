@@ -54,6 +54,27 @@
       : clean(content.notes) || clean(content.feedback_note) || 'Review the priorities below to see what held this response back and what to change next.';
     return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, formValid };
   }
-  return { build };
+  // Recompute presentation from traits, including previously saved attempts.
+  // Never trust a historical band label or a raw total as proof of completeness.
+  function presentation(data) {
+    const feedback = build(data);
+    const t = data.trait_scores || {};
+    const content = Math.max(0, Math.min(4, Number(t.content) || 0));
+    const raw = ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
+    const caps = [15, 38, 65, 79, 90];
+    const estimate = Math.min(Number(data.overall_score) || 0, caps[Math.floor(content)]);
+    let headline = feedback.full ? 'Complete, well-connected summary' : 'Review the language affecting meaning';
+    if (!feedback.formValid) headline = 'Form requirements not met';
+    else if (feedback.provisional) headline = 'Provisional result';
+    else if (content <= 1) headline = 'Incomplete summary — limited content';
+    else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
+    else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
+    const focusContent = feedback.formValid && content < 4;
+    return { headline, score: focusContent ? content : raw, max: focusContent ? 4 : 9,
+      label: focusContent ? 'Content score' : 'Trait total', raw, estimate,
+      secondary: feedback.provisional ? 'Assessment incomplete — submit again for a confirmed result.'
+        : (focusContent ? 'Trait total: ' + raw + ' / 9 · ' : '') + 'PTE estimate: ' + estimate + ' / 90' };
+  }
+  return { build, presentation };
 });
 

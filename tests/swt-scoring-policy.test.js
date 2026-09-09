@@ -219,3 +219,16 @@ test('Existing user benchmarks receive full local grammar for meaning-preserving
     assert.equal(context.checkGrammar(passage.officialCalibration.response, passage.text).score, 2, passage.title);
   }
 });
+
+test('Content caps apply equally to PTE estimates and bands while raw totals stay honest', async () => {
+  for (let content = 0; content <= 3; content++) {
+    const j = judgment();
+    j.content_score = content;
+    j.summary_assessment.conclusion_status = 'missing';
+    const result = await grade(fixtures[1], j);
+    assert.equal(result.trait_scores.content, content);
+    assert.equal(result.raw_score, content + 5);
+    assert.equal(result.overall_score, [15, 38, 65, 79][content]);
+    assert.equal(result.band, ['Band 5', 'Band 6', 'Band 7.5', 'Band 8'][content]);
+  }
+});

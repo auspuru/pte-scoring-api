@@ -83,3 +83,35 @@ test('User/model text is escaped at the guidance rendering boundary', () => {
   assert(target.innerHTML.includes('&lt;script&gt;'));
 });
 
+
+test('Saved one-line answer cannot display its stale high band or inflated total as the headline', () => {
+  const data = full();
+  data.trait_scores.content = 1;
+  Object.assign(data, { raw_score: 6, overall_score: 90, band: 'Band 9' });
+  const result = require('../public/swt-feedback').presentation(data);
+  assert.equal(result.headline, 'Incomplete summary — limited content');
+  assert.equal(result.score, 1);
+  assert.equal(result.max, 4);
+  assert.equal(result.label, 'Content score');
+  assert.equal(result.estimate, 38);
+  assert.match(result.secondary, /Trait total: 6 \/ 9/);
+  assert(!result.headline.includes('Band'));
+});
+test('All incomplete content levels remain distinct from complete summaries despite perfect language', () => {
+  for (let content = 0; content <= 4; content++) {
+    const data = full(); data.trait_scores.content = content;
+    Object.assign(data, { raw_score: 9, overall_score: 90, band: 'Band 9' });
+    const result = require('../public/swt-feedback').presentation(data);
+    assert.equal(result.raw, content + 5);
+    assert.equal(result.max, content < 4 ? 4 : 9);
+    assert.equal(result.estimate, [15, 38, 65, 79, 90][content]);
+    assert.equal(result.headline === 'Complete, well-connected summary', content === 4);
+  }
+});
+test('Provisional and invalid results never promise a complete summary', () => {
+  for (const extra of [{ score_provisional: true }, { ai_feedback_degraded: true }, { trait_scores: { content: 4, form: 0, grammar: 2, vocabulary: 2 } }]) {
+    const result = require('../public/swt-feedback').presentation({ ...full(), ...extra });
+    assert(!result.headline.includes('Complete, well-connected'));
+    assert(!result.headline.includes('Band'));
+  }
+});

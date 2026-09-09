@@ -3735,6 +3735,12 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   } else if (contentNone) {
     tier = 'fail';
     headline = 'The central message was not captured. Re-read the passage and identify its main claim and strongest supporting points.';
+  } else if (contentScore <= 1) {
+    tier = 'fail';
+    headline = 'Incomplete summary — limited content. Capture the central message, relevant support and conclusion.';
+  } else if (!contentFull) {
+    tier = 'partial';
+    headline = contentScore <= 2 ? 'Incomplete summary — key ideas or connections are missing.' : 'Mostly complete — strengthen the missing idea or connection.';
   } else if (band === 'Band 9') {
     tier = 'excellent';
     const methodLabel = vocab.method === 'paraphrased' ? 'Paraphrased Method'
@@ -4148,7 +4154,8 @@ app.post('/api/grade', async (req, res) => {
     // PTE estimates may be capped; the raw score must remain the trait sum.
     if (contentCapPTE !== null) overallScore = Math.min(overallScore, contentCapPTE);
     if (cohesionPenaltyApplied) overallScore = Math.min(overallScore, 79);
-    let band = rawToBandDynamic(rawScore, maxRaw);
+    // Derive every proficiency label from the same capped estimate.
+    let band = rawToBandDynamic(pteToRaw(overallScore, maxRaw), maxRaw);
 
     // Pearson-calibrated tolerance: with full content and valid form, one or two
     // local language slips may coexist with Band 9 when meaning stays clear.
