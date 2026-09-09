@@ -30,7 +30,7 @@
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
     const priorities = [];
     const optional = [];
-    const add = (title, detail) => priorities.push({ title, detail: compact(detail) });
+    const add = (title, detail, repair) => priorities.push({ title, detail: compact(detail, 280), repair: compact(repair, 220) });
     const languageDetail = (annotations, fallback) => {
       const issues = annotations.filter(a => a && a.affects_score === true && clean(a.meaning_effect));
       return compact(issues.slice(0, 2).map(a => '“' + clean(a.phrase) + '” → “' + clean(a.fix) + '”. ' + clean(a.meaning_effect)).join(' ') || fallback);
@@ -44,14 +44,15 @@
         const dependencies = list(assessment.missing_dependencies).filter(d => d && clean(d.missing_context));
         if (dependencies.length) {
           const first = dependencies[0];
-          add('Connect the idea to its missing context', (clean(first.effect) ? 'Your phrase “' + clean(first.effect) + '” needs this context: ' : '') + clean(first.missing_context) + (clean(first.explanation) ? ' ' + clean(first.explanation) : ''));
+          add('Connect the idea to its missing context', clean(assessment.next_step) ||
+            (clean(first.effect) ? '“' + compact(first.effect, 100) + '” needs this context: ' : '') + clean(first.missing_context), assessment.repair);
         } else {
           add(['missing', 'incorrect'].includes(assessment.conclusion_status) ? 'Include the passage’s final message' : 'Strengthen the main idea and its connections',
-            clean(content.notes) || clean(content.feedback_note) || 'Check that the main idea, relevant support and conclusion connect clearly. Include any cause or background your selected ideas depend on.');
+            clean(assessment.next_step) || clean(content.feedback_note) || clean(content.notes) || 'Check that the main idea, relevant support and conclusion connect clearly. Include any cause or background your selected ideas depend on.', assessment.repair);
         }
       }
-      if (Number(traits.grammar) < 2) add('Correct the grammar affecting meaning', languageDetail(grammar, 'Review the grammar explanation and the highlighted wording. A deduction should identify how the sentence changes or obscures the intended meaning.'));
-      if (Number(traits.vocabulary) < 2) add('Use wording that preserves the meaning', languageDetail(vocabulary, 'Review the highlighted word choices against the passage. Replace any wording that changes the original message.'));
+      if (Number(traits.grammar) < 2) add('Correct the grammar affecting meaning', languageDetail(grammar, 'Review the quoted wording in your feedback. A deduction should identify how the sentence changes or obscures the intended meaning.'));
+      if (Number(traits.vocabulary) < 2) add('Use wording that preserves the meaning', languageDetail(vocabulary, 'Review the quoted word choices against the passage. Replace any wording that changes the original message.'));
       if (full) add('Keep this approach', 'You have enough relevant content, clear connections and valid form for full marks. Try another passage, or review the optional refinements below if any are shown.');
       for (const a of [...grammar, ...vocabulary]) {
         if (!a || a.affects_score !== false || !clean(a.phrase) || !clean(a.fix)) continue;
@@ -62,7 +63,7 @@
     const summary = !formValid ? 'The form requirements need attention before this response can receive a complete score.'
       : provisional ? 'This result is provisional. A complete assessment of meaning and connections is still needed.'
       : full ? 'Your summary captures the main message, relevant support and conclusion with clear connections. Minor slips that preserve meaning do not reduce your marks.'
-      : compact(clean(content.notes) || clean(content.feedback_note) || 'Review the priorities below to see what held this response back and what to change next.');
+      : compact(clean(content.feedback_note) || clean(content.notes) || 'Review the priorities below to see what held this response back and what to change next.', 300);
     return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, formValid };
   }
   // Recompute presentation from traits, including previously saved attempts.
@@ -76,7 +77,7 @@
     const raw = ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
     const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
-    const estimate = Math.min(rawEstimate, caps[Math.floor(content)]);
+    const estimate = feedback.formValid ? Math.min(rawEstimate, caps[Math.floor(content)]) : 10;
     const fullEligible = !feedback.provisional && (contentDetails.full_content_eligible === true
       || (contentDetails.full_content_eligible == null && feedback.full
         && assessment.relationships_clear === true
@@ -87,11 +88,10 @@
     else if (content <= 1) headline = 'Incomplete summary — limited content';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
     else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
-    const focusContent = feedback.formValid && (feedback.provisional || !fullEligible || content < 4);
-    return { headline, score: focusContent ? content : raw, max: focusContent ? 4 : 9,
-      label: focusContent ? 'Content score' : 'Trait total', raw, estimate,
+    return { headline, score: feedback.provisional ? null : estimate, max: 90,
+      label: 'PTE estimate', raw, estimate,
       secondary: feedback.provisional ? 'Assessment incomplete — submit again for a confirmed result.'
-        : (focusContent ? 'Trait total: ' + raw + ' / 9 · ' : '') + 'PTE estimate: ' + estimate + ' / 90' };
+        : 'Practice estimate, not an official PTE score.' };
   }
   return { build, presentation };
 });

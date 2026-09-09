@@ -144,6 +144,27 @@ test('Contradiction and missing conclusion cannot be rescued by idea counts', ()
   }
 });
 
+test('An opening-only response stays at most Content 1 even with an optimistic proposed score', () => {
+  for (const mainAccurate of [true, false]) {
+    const j = judgment();
+    j.summary_assessment.main_idea_accurate = mainAccurate;
+    j.summary_assessment.supporting_evidence = [];
+    const result = policy.applyScoringPolicy(j, fixtures[1].summary);
+    assert(result.content_score <= 1);
+    assert.equal(result.grammar_score, 2);
+    assert.equal(result.full_content_eligible, false);
+  }
+});
+
+test('A connector-only edit cannot become a duplicate Grammar deduction', () => {
+  const j = judgment(fixtures[1], { grammar_score: 1,
+    grammar_annotations: [annotation('therefore, it is beneficial', 'additionally, it is beneficial', 'changed',
+      'The preliminary judge alleged a causal meaning issue.')] });
+  const result = policy.applyScoringPolicy(j, fixtures[1].summary);
+  assert.equal(result.grammar_score, 2);
+  assert.equal(result.grammar_annotations[0].affects_score, false);
+});
+
 test('Grammar meaning changes deduct independently of content omissions', async () => {
   const fixture = { ...fixtures[1], summary: 'Caffeine helps plants remember the bees, which improves pollination and survival.' };
   const j = judgment(fixture, { grammar_score: 1,

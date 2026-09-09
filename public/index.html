@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="index.css?v=20.3.4">
-<link rel="stylesheet" href="swt-ui.css?v=20.3.3">
+<link rel="stylesheet" href="swt-ui.css?v=20.3.5">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
         tailwind.config = {
@@ -130,9 +130,9 @@
         }
 </style>
 <script src="vocab_1000.js"></script>
-<script src="swt-feedback.js?v=20.3.3" defer></script>
+<script src="swt-feedback.js?v=20.3.5" defer></script>
 <script src="essay-attempt-sync.js?v=20.3.4" defer></script>
-<script src="index.js?v=20.3.4" defer></script>
+<script src="index.js?v=20.3.5" defer></script>
 </head>
 <body>
 
@@ -599,24 +599,23 @@
           </div>
           <section class="card results-hero" aria-label="Score overview">
             <div class="score-ring-wrap">
-              <div class="score-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="54"></circle><circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle></svg><div class="ring-value"><strong id="heroScore">0</strong><span id="swtRawMax">/ 9</span></div></div>
-              <div id="swtScoreLabel" class="score-ring-label">Content score</div><div id="swtEstimate" class="swt-help"></div>
+              <div class="score-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="54"></circle><circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle></svg><div class="ring-value"><strong id="heroScore">—</strong><span id="swtRawMax">/ 90</span></div></div>
+              <div id="swtScoreLabel" class="score-ring-label">PTE estimate</div><div id="swtEstimate" class="swt-help"></div>
             </div>
-            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice" id="aiDegradedNotice" role="status" style="display:none;"></div></div>
+            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><p class="swt-help" id="swtRubricNotice" role="status" hidden></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice" id="aiDegradedNotice" role="status" style="display:none;"></div></div>
             <div class="results-hero-actions"><button type="button" class="btn btn-primary" onclick="backToPractice()">Improve this summary</button><button type="button" class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button><button type="button" class="btn btn-ghost" onclick="compareSwtSample()">Compare with sample</button></div>
           </section>
-          <section class="card swt-guidance" aria-labelledby="swtGuidanceHeading"><div class="swt-card-heading"><span class="swt-step" aria-hidden="true">3</span><div><h2 id="swtGuidanceHeading">Your next step</h2><p>Focus on what will help this response most.</p></div></div><div id="swtGuidanceBody"></div></section>
+          <section class="card swt-guidance" aria-labelledby="swtGuidanceHeading"><div class="swt-card-heading"><div><h2 id="swtGuidanceHeading">Your next step</h2><p>Focus on what will help this response most.</p></div></div><div id="swtGuidanceBody"></div></section>
+          <section class="card" aria-labelledby="swtKeyPhrasesHeading"><h2 id="swtKeyPhrasesHeading">Key phrases and ideas</h2><p class="swt-help">These phrases point to the main message and useful support. You can paraphrase them; you do not need to include them all.</p><div id="swtKeyPhrases"></div></section>
           <section class="card" id="swtComparison" aria-labelledby="swtComparisonHeading">
-            <div class="swt-section-heading"><h2 id="swtComparisonHeading">Review your response</h2><span class="legend" aria-label="Highlight key"><span><i style="background:var(--what)"></i>Main idea</span><span><i style="background:var(--why)"></i>Reason</span><span><i style="background:var(--how)"></i>Support</span><span><i style="background:var(--result)"></i>Result</span></span></div>
-            <p class="swt-help">Highlights are a reading aid. You do not need to include every highlighted detail.</p>
+            <div class="swt-section-heading"><h2 id="swtComparisonHeading">Review your response</h2></div>
+            <p class="swt-help">Read your summary against the original, or compare it with a checked sample.</p>
             <div class="side-by-side">
               <div class="sbs-col"><h3 class="sbs-head">Original passage</h3><div class="annotated-text" id="annotatedPassage"></div></div>
-              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" style="display:none;"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes"></div></div></div>
+              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" style="display:none;"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
             </div>
           </section>
-          <section class="card" aria-labelledby="swtTraitsHeading"><h2 id="swtTraitsHeading">Where your marks came from</h2><div class="trait-breakdown" id="traitBreakdown"></div></section>
-          <details class="card swt-details"><summary>Explore the passage’s key ideas</summary><p class="swt-help">These ideas help you understand the passage. Full Content depends on an accurate, connected summary with enough relevant support.</p><div class="coverage-table" id="coverageTable"></div></details>
-          <details class="card swt-details" id="aboutPassageCard" style="display:none;"><summary>Understand this passage</summary><div class="about-passage" id="aboutPassageBody"></div></details>
+          <details class="card swt-details" aria-labelledby="swtTraitsHeading"><summary id="swtTraitsHeading">Score breakdown</summary><div class="trait-breakdown" id="traitBreakdown"></div></details>
           <details class="card swt-details" id="vocabCoachCard" style="display:none;"><summary>Explore vocabulary alternatives</summary><p class="swt-help">Optional practice: choose a word only if it keeps the same meaning. Replacing accurate source words is not required.</p><div class="vocab-coach" id="vocabCoachBody"></div></details>
           <details class="card swt-details"><summary>Source wording</summary><div class="originality" id="originalityChecks"></div></details>
         </div>

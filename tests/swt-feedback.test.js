@@ -56,8 +56,9 @@ test('Provisional assessments do not present full marks or language corrections 
   assert.equal(result.priorities[0].title, 'Request a complete assessment');
   assert.equal(result.optional.length, 0);
   const display = require('../public/swt-feedback').presentation(data);
-  assert.equal(display.label, 'Content score');
-  assert.equal(display.max, 4);
+  assert.equal(display.label, 'PTE estimate');
+  assert.equal(display.max, 90);
+  assert.equal(display.score, null);
 });
 test('Invalid form does not produce spurious grammar and vocabulary revision priorities', () => {
   const data = full();
@@ -93,11 +94,12 @@ test('Saved one-line answer cannot display its stale high band or inflated total
   Object.assign(data, { raw_score: 6, overall_score: 90, band: 'Band 9' });
   const result = require('../public/swt-feedback').presentation(data);
   assert.equal(result.headline, 'Incomplete summary — limited content');
-  assert.equal(result.score, 1);
-  assert.equal(result.max, 4);
-  assert.equal(result.label, 'Content score');
+  assert.equal(result.score, 38);
+  assert.equal(result.max, 90);
+  assert.equal(result.label, 'PTE estimate');
   assert.equal(result.estimate, 38);
-  assert.match(result.secondary, /Trait total: 6 \/ 9/);
+  assert(!result.secondary.includes('Trait total'));
+  assert.match(result.secondary, /not an official PTE score/);
   assert(!result.headline.includes('Band'));
 });
 test('All incomplete content levels remain distinct from complete summaries despite perfect language', () => {
@@ -106,7 +108,7 @@ test('All incomplete content levels remain distinct from complete summaries desp
     Object.assign(data, { raw_score: 9, overall_score: 90, band: 'Band 9' });
     const result = require('../public/swt-feedback').presentation(data);
     assert.equal(result.raw, content + 5);
-    assert.equal(result.max, content < 4 ? 4 : 9);
+    assert.equal(result.max, 90);
     assert.equal(result.estimate, [15, 38, 65, 79, 90][content]);
     assert.equal(result.headline === 'Complete, well-connected summary', content === 4);
   }
@@ -125,8 +127,8 @@ test('A saved Content 4 without semantic eligibility is reviewed instead of labe
   delete data.content_details.summary_assessment.conclusion_status;
   const result = require('../public/swt-feedback').presentation(data);
   assert.equal(result.headline, 'Review the missing content or connection');
-  assert.equal(result.label, 'Content score');
-  assert.equal(result.max, 4);
+  assert.equal(result.label, 'PTE estimate');
+  assert.equal(result.max, 90);
 });
 
 test('Semantic evidence keeps coverage rows consistent with the written explanation', () => {

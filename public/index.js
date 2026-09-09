@@ -79,6 +79,8 @@ let sessionToken = '';        // Custom sync authentication token
 
 // SWT progress elements
 let passages = [];
+let swtResultPassage = null;
+const swtSampleChecks = new Map();
 let adminKey = ''; // Student portal has no admin entry
 let attempted = new Set();
 let timerOn = false;
@@ -13904,7 +13906,7 @@ async function scoreSummary(){
   if (workspace) workspace.setAttribute('aria-busy', 'true');
 
   try {
-    const payload = { type: 'swt', prompt: p.text, keyPoints: p.keyElements, text: text };
+    const payload = { type: 'swt', passageId: currentPassageId, prompt: p.text, keyPoints: p.keyElements, text: text };
     if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentPassageId; }
 
     const [gradeRes, spellRes] = await Promise.allSettled([
@@ -14003,6 +14005,7 @@ function formatAttemptTime(iso){
 }
 
 function showResults(data, passage, spellData, submittedText){
+  swtResultPassage = passage;
   const display = SwtStudentFeedback.presentation(data);
   const traits = data.trait_scores || {};
   const rawMax = display.max;
@@ -14023,7 +14026,7 @@ function showResults(data, passage, spellData, submittedText){
     heroRing.style.strokeDashoffset = ringCirc * (1 - Math.max(0, Math.min(1, rawScore/rawMax)));
   }
   const heroScoreEl = document.getElementById('heroScore');
-  if (heroScoreEl) heroScoreEl.textContent = fmtNum(rawScore);
+  if (heroScoreEl) heroScoreEl.textContent = rawScore == null ? '—' : fmtNum(rawScore);
   const maxEl = document.getElementById('swtRawMax');
   if (maxEl) maxEl.textContent = '/ ' + rawMax;
   const estimateEl = document.getElementById('swtEstimate');
@@ -14038,6 +14041,12 @@ function showResults(data, passage, spellData, submittedText){
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
   renderSwtGuidance(data);
+  const previousRubric = data.scoring_version && data.scoring_version !== '20.3.5';
+  const rubricNotice = document.getElementById('swtRubricNotice');
+  if (rubricNotice) {
+    rubricNotice.hidden = !previousRubric;
+    rubricNotice.textContent = previousRubric ? 'Saved result from an earlier scoring version. Submit this summary again to use the updated rules.' : '';
+  }
   document.querySelectorAll('#swtResultsScreen details').forEach(detail => { detail.open = false; });
 
   const degradedEl = document.getElementById('aiDegradedNotice');
@@ -14050,23 +14059,19 @@ function showResults(data, passage, spellData, submittedText){
     }
   }
 
-  const cMax = traits.content_max || 4;
   const heroTraitChipsEl = document.getElementById('heroTraitChips');
   if (heroTraitChipsEl) {
     heroTraitChipsEl.innerHTML = [
-      `Content ${fmtNum(traits.content)}/${cMax}`,
-      `Form ${fmtNum(traits.form)}/1`,
-      `Grammar ${fmtNum(traits.grammar)}/2`,
-      `Vocabulary ${fmtNum(traits.vocabulary)}/2`,
-      `${data.word_count || countWords(submittedText)} words`
+      `${data.word_count || countWords(submittedText)} words`,
+      Number(traits.form) >= 1 ? 'One sentence · within word limit' : 'Check sentence and word limits'
     ].map(t => `<span class="trait-chip">${t}</span>`).join('');
   }
 
   renderOriginality(data, passage, submittedText);
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
   renderAnnotatedPassage(passage);
+  renderSwtKeyPhrases(passage);
   renderTraitBreakdown(data, traits);
-  renderCoverage(data, passage);
 
   const sampleEl = document.getElementById('sampleAnswerText');
   const sampleNotes = document.getElementById('sampleAnswerNotes');
@@ -14075,9 +14080,9 @@ function showResults(data, passage, spellData, submittedText){
     sampleEl.textContent = sample || '(No sample answer authored for this passage yet.)';
   }
   if(sampleNotes){
-    const notes = (passage && passage.sampleNotes) || '';
-    sampleNotes.textContent = notes;
-    sampleNotes.style.display = notes ? '' : 'none';
+    sampleNotes.textContent = 'Open this tab to check the sample with the same rubric used for your summary.';
+    sampleNotes.dataset.status = 'unchecked';
+    sampleNotes.style.display = '';
   }
   switchSbsView('summary');
 
@@ -14109,7 +14114,8 @@ function renderSwtGuidance(data){
   if (!target) return;
   const feedback = SwtStudentFeedback.build(data);
   target.innerHTML = '<ul class="swt-guidance-list">' + feedback.priorities.map(item =>
-    '<li><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.detail) + '</p></li>'
+    '<li><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.detail) + '</p>' +
+    (item.repair ? '<p class="swt-repair"><strong>Try:</strong> ' + escapeHtml(item.repair) + '</p>' : '') + '</li>'
   ).join('') + '</ul>' + (feedback.optional.length
     ? '<details class="swt-refinements"><summary>Optional refinements · no marks deducted (' + feedback.optional.length + ')</summary><ul>' +
       feedback.optional.map(item => '<li><span>“' + escapeHtml(item.phrase) + '” → “' + escapeHtml(item.fix) + '”</span>' +
@@ -14172,74 +14178,8 @@ function computeCopyMetrics(student, passage){
 function renderAnnotatedSubmission(data, passage, spellData, submittedText){
   const el = document.getElementById('annotatedSubmission');
   if (!el) return;
-  const text = submittedText || '';
-  if(!text.trim()){ el.textContent = '—'; return; }
-
+  el.textContent = submittedText || '—';
   const cd = data.content_details || {};
-  const captured = new Set(cd.key_ideas_present || []);
-  const keyEls = passage.keyElements || {};
-
-  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
-  function toks(s){ return (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w)); }
-  function headline(t){
-    if(!t) return '';
-    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
-    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
-  }
-
-  const segments = text.split(/(;|\.|!|\?)/).filter(s => s !== '');
-  const clauses = [];
-  for(let i = 0; i < segments.length; i++){
-    if(/^[;.!?]$/.test(segments[i])){
-      if(clauses.length) clauses[clauses.length-1] += segments[i];
-    } else {
-      clauses.push(segments[i]);
-    }
-  }
-
-  const labels = ['what','why','how','result'];
-  const clauseLabel = {};
-  const usedLabels = new Set();
-  for(const lbl of labels){
-    if(!keyEls[lbl]) continue;
-    const hTok = toks(headline(keyEls[lbl]));
-    if(hTok.length < 2) continue;
-    let bestIdx = -1, bestHits = 0;
-    for(let i = 0; i < clauses.length; i++){
-      if(clauseLabel[i]) continue;
-      const cTok = new Set(toks(clauses[i]));
-      let hits = 0;
-      for(const t of hTok){
-        if(cTok.has(t)){ hits++; continue; }
-        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
-        if(stem.length >= 4){ for(const ct of cTok){ if(ct.startsWith(stem)){ hits++; break; } } }
-      }
-      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
-    }
-    if(bestIdx >= 0 && bestHits >= 2){ clauseLabel[bestIdx] = lbl; usedLabels.add(lbl); }
-  }
-
-  let spellWords = {};
-  const errs = (spellData && Array.isArray(spellData.errors)) ? spellData.errors
-             : (data.spelling_details && data.spelling_details.errors) || [];
-  for(const e of errs){
-    const w = (e.misspelled || '').toLowerCase().trim();
-    if(w) spellWords[w] = e.suggestion || (e.suggestions && e.suggestions[0]) || '';
-  }
-
-  const grammarIssues = (data.grammar_details && Array.isArray(data.grammar_details.grammar_annotations))
-    ? data.grammar_details.grammar_annotations : [];
-
-  let html = '';
-  for(let i = 0; i < clauses.length; i++){
-    const lbl = clauseLabel[i];
-    let inner = annotateGrammar(clauses[i], grammarIssues);
-    inner = annotateSpelling(inner, spellWords, true);
-    if(lbl){ html += `<span class="ann-seg ${lbl}">${inner}</span>`; }
-    else { html += inner; }
-  }
-  el.innerHTML = html;
-
   const fb = document.getElementById('annotatedFeedback');
   if (fb) {
     const traits = data.trait_scores || {};
@@ -14261,63 +14201,67 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
 
 function renderAnnotatedPassage(passage){
   const el = document.getElementById('annotatedPassage');
-  if(!el) return;
-  const text = (passage && passage.text) || '';
-  if(!text.trim()){ el.textContent = '—'; return; }
-  const keyEls = (passage && passage.keyElements) || {};
+  if (el) el.textContent = (passage && passage.text) || '—';
+}
 
-  const STOP = new Set(['the','a','an','and','or','but','of','to','for','from','with','by','in','on','at','as','is','are','was','were','be','been','have','has','had','will','would','could','should','this','that','these','those','it','its','their','they','them','there','then','than','so','also','about','i','you','he','she','we','his','her','our','your','my']);
-  const toks = s => (s||'').toLowerCase().replace(/[^\w\s$%]/g,' ').split(/\s+/).filter(w => w.length>=3 && !STOP.has(w));
-  const headline = t => {
-    if(!t) return '';
-    const m = String(t).match(/,\s+such\s+as\s+|\s+such\s+as\s+|,\s+including\s+|;\s*moreover\b|,\s+and\s+/i);
-    return m && m.index > 20 ? String(t).slice(0, m.index) : String(t);
-  };
+function renderSwtKeyPhrases(passage){
+  const el = document.getElementById('swtKeyPhrases');
+  if (!el) return;
+  const guide = passage.studyGuide || {};
+  const items = Array.isArray(guide.items) ? guide.items : Object.entries(passage.keyElements || {})
+    .filter(([, idea]) => typeof idea === 'string' && idea.trim())
+    .map(([, idea]) => ({ label: 'Key idea', phrases: [], idea }));
+  el.innerHTML = (guide.overview ? '<p class="swt-help">' + escapeHtml(guide.overview) + '</p>' : '') +
+    (items.length ? '<ul class="swt-key-grid">' + items.map(item =>
+      '<li><h3>' + escapeHtml(item.label || 'Key idea') + '</h3>' +
+      '<div class="swt-key-phrases">' + (Array.isArray(item.phrases) ? item.phrases : [])
+        .map(phrase => '<q>' + escapeHtml(phrase) + '</q>').join('') + '</div>' +
+      '<p>' + escapeHtml(item.idea || '') + '</p></li>').join('') + '</ul>'
+      : '<p>Identify what the passage mainly says, then choose one or two supporting ideas that explain it.</p>') +
+    (guide.connection ? '<p class="swt-connections"><strong>How the ideas connect:</strong> ' +
+      escapeHtml(guide.connection) + '</p>' : '');
+}
 
-  const parts = text.split(/([.!?])\s+/);
-  const sentences = [];
-  for(let i = 0; i < parts.length; i += 2){
-    const body = parts[i];
-    const delim = parts[i+1] || '';
-    if(body && body.trim()) sentences.push(body + delim);
-  }
-  if(!sentences.length) sentences.push(text);
-
-  const labels = keyEls.topic || keyEls.pivot || keyEls.conclusion
-    ? ['topic','pivot','conclusion']
-    : ['what','why','how','result'];
-  const colorOf = (lbl) => ({topic:'what', pivot:'why', conclusion:'result'}[lbl] || lbl);
-
-  const sentLabel = {};
-  for(const lbl of labels){
-    if(!keyEls[lbl]) continue;
-    const hTok = toks(headline(keyEls[lbl]));
-    if(hTok.length < 2) continue;
-    let bestIdx = -1, bestHits = 0;
-    for(let i = 0; i < sentences.length; i++){
-      if(sentLabel[i]) continue;
-      const sTok = new Set(toks(sentences[i]));
-      let hits = 0;
-      for(const t of hTok){
-        if(sTok.has(t)){ hits++; continue; }
-        const stem = t.length > 5 ? t.slice(0, t.length-2) : t;
-        if(stem.length >= 4){
-          for(const st of sTok){ if(st.startsWith(stem)){ hits++; break; } }
-        }
+async function checkSwtSample(passage){
+  const key = JSON.stringify([passage.id, passage.text, passage.sampleResponse]);
+  const cached = swtSampleChecks.get(key);
+  if (cached && cached.expires > Date.now()) return cached.promise;
+  const promise = (async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 70000);
+    try {
+      const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id),
+        { method: 'POST', signal: controller.signal });
+      const result = await response.json();
+      if (!response.ok || !['verified', 'needs_revision'].includes(result.status)) {
+        swtSampleChecks.delete(key);
+        return { status: 'unavailable', note: result.note || 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
       }
-      if(hits > bestHits){ bestHits = hits; bestIdx = i; }
+      return result;
+    } catch (error) {
+      swtSampleChecks.delete(key);
+      return { status: 'unavailable', note: 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+    } finally {
+      clearTimeout(timer);
     }
-    if(bestIdx >= 0 && bestHits >= 2){ sentLabel[bestIdx] = colorOf(lbl); }
-  }
+  })();
+  swtSampleChecks.set(key, { promise, expires: Date.now() + 10 * 60 * 1000 });
+  return promise;
+}
 
-  let html = '';
-  for(let i = 0; i < sentences.length; i++){
-    const lbl = sentLabel[i];
-    const safe = escapeHtml(sentences[i]);
-    if(lbl){ html += `<span class="ann-seg ${lbl}">${safe}</span> `; }
-    else { html += safe + ' '; }
-  }
-  el.innerHTML = html;
+async function refreshSwtSample(passage){
+  const note = document.getElementById('sampleAnswerNotes');
+  if (!note) return;
+  note.textContent = 'Checking this sample against the current scoring rubric…';
+  note.dataset.status = 'checking';
+  note.setAttribute('aria-busy', 'true');
+  const result = await checkSwtSample(passage);
+  if (swtResultPassage !== passage) return;
+  const sample = document.getElementById('sampleAnswerText');
+  if (sample && result.sample) sample.textContent = result.sample;
+  note.textContent = result.note;
+  note.dataset.status = result.status;
+  note.setAttribute('aria-busy', 'false');
 }
 
 function annotateGrammar(clause, issues){
@@ -14523,6 +14467,7 @@ function switchSbsView(view){
   tSam.setAttribute('aria-selected', String(isSample));
   tSum.tabIndex = isSample ? -1 : 0;
   tSam.tabIndex = isSample ? 0 : -1;
+  if (isSample && swtResultPassage) refreshSwtSample(swtResultPassage);
 }
 
 function renderTraitBreakdown(data, traits){
@@ -14536,7 +14481,7 @@ function renderTraitBreakdown(data, traits){
     const cut = text.slice(0, 245).replace(/\s+\S*$/, '').trim();
     return (cut || text.slice(0, 245).trim()) + '… Read the next step for details.';
   };
-  const contentNote = concise(cd.notes || cd.feedback_note || 'Strengthen the main idea and its supporting connections.');
+  const contentNote = concise(cd.feedback_note || cd.notes || 'Strengthen the main idea and its supporting connections.');
 
   const rows = [
     { name:'Content', score:traits.content||0, max:cMax,
@@ -14765,15 +14710,19 @@ function applyVocabSwap(original, replacement){
   toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
 }
 
-function showSample(){
+async function showSample(){
   const p = passages.find(x => x.id === currentPassageId);
   if(!p || !p.sampleResponse){ toast('No sample available for this passage.'); return; }
+  const passageId = currentPassageId;
+  toast('Checking the sample…');
+  const result = await checkSwtSample(p);
+  if (currentPassageId !== passageId) return;
   const summaryInputEl = document.getElementById('summaryInput');
-  if (summaryInputEl) summaryInputEl.value = p.sampleResponse;
+  if (summaryInputEl) summaryInputEl.value = result.sample || p.sampleResponse;
   showSwtScreen('swtPracticeScreen');
   switchWriteTab('write');
   onSummaryInput();
-  toast('Band-9 sample loaded ✓');
+  toast(result.status === 'verified' ? 'Checked sample loaded — assessed with the same rubric.' : 'Example loaded — it is not verified as full-mark.');
 }
 
 function backToPractice(){

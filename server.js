@@ -10,6 +10,8 @@ const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
+const { createJudgmentService } = require('./swt-judgment-service');
+const { studentPassage } = require('./swt-reference');
 
 // Email and Puppeteer settings from Essay Builder
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -193,6 +195,7 @@ if (rateLimit) {
     message: { error: 'Too many attempts — please wait a few minutes.' }
   });
   app.use('/api/grade', gradeLimiter);
+  app.use('/api/swt/sample', gradeLimiter);
   app.use('/api/spellcheck', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
@@ -2820,7 +2823,7 @@ app.get('/api/health', async (req, res) => {
 
   res.json({
     status: 'ok',
-    version: '20.1.0',
+    version: require('./package.json').version,
     anthropicConfigured: !!anthropic,
     verdict,
     runtime: {
@@ -3105,7 +3108,7 @@ app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
 app.get('/api/passages', async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
-    res.json({ passages: all, count: all.length });
+    res.json({ passages: all.map(studentPassage), count: all.length });
   } catch (e) {
     console.error('Read passages failed:', e.message);
     res.status(500).json({ error: 'Failed to load passages', details: e.message });
@@ -3116,7 +3119,7 @@ app.get('/api/passages/:id', async (req, res) => {
   try {
     const p = await PassageAPI.getById(req.params.id);
     if (!p) return res.status(404).json({ error: 'Passage not found' });
-    res.json(p);
+    res.json(studentPassage(p));
   } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
 });
 
@@ -3655,18 +3658,18 @@ function formatKeyElementsHint(keyElements) {
 async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
-  const totalIdeas = countKeyElements(keyElements);
+  return swtJudgmentService.judge(studentText, passageText, kpHint, timeoutMs);
+}
 
-  const prompt = buildJudgingPrompt(studentText, passageText, kpHint);
-
+async function callSwtJudge(prompt, timeoutMs) {
+  if (!anthropic) return null;
   try {
-    const callPromise = anthropic.messages.create({
+    const response = await anthropic.messages.create({
       model: CLAUDE_MODEL,
-      max_tokens: 2400,
+      max_tokens: 2800,
+      temperature: 0,
       messages: [{ role: 'user', content: prompt }]
-    });
-    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error('Claude judge timeout')), timeoutMs));
-    const response = await Promise.race([callPromise, timeoutPromise]);
+    }, { timeout: timeoutMs, maxRetries: 0 });
     const text = response.content?.[0]?.text || '';
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return null;
@@ -3679,6 +3682,40 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
     return null;
   }
 }
+
+const swtJudgmentService = createJudgmentService({
+  call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
+  isComplete: (result, summary) => !applyScoringPolicy(result, summary).needs_semantic_review
+});
+
+// Reference answers use exactly the same form gate, semantic judge and scoring
+// policy as student submissions. A label is earned, never inferred from origin.
+app.post('/api/swt/sample/:id', async (req, res) => {
+  try {
+    const stored = await PassageAPI.getById(req.params.id);
+    if (!stored) return res.status(404).json({ error: 'Passage not found' });
+    const p = studentPassage(stored);
+    const sample = p.sampleResponse || '';
+    const form = validateForm(sample);
+    if (!sample || !form.valid) return res.json({ status: 'needs_revision', sample,
+      note: 'This reference needs a form correction before it can be a full-score example.', scoring_version: POLICY_VERSION });
+    const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
+    if (!raw) return res.json({ status: 'unavailable', sample,
+      note: 'The reference could not be checked right now. It is not a verified full-score example.', scoring_version: POLICY_VERSION });
+    const judged = applyScoringPolicy(raw, sample);
+    const verified = judged.full_content_eligible && judged.grammar_score === 2 && judged.vocabulary_score === 2;
+    const repair = judged.summary_assessment?.next_step
+      || [...judged.grammar_annotations, ...judged.vocabulary_annotations].find(a => a.affects_score)?.meaning_effect
+      || judged.content_reason;
+    res.json({ status: judged.needs_semantic_review ? 'unavailable' : verified ? 'verified' : 'needs_revision',
+      sample, scoring_version: POLICY_VERSION,
+      note: judged.needs_semantic_review ? 'The reference could not be fully checked. It is not a verified full-score example.'
+        : verified ? 'Checked against the same rubric used for your summary. Full-score practice example.'
+        : 'This reference still needs revision: ' + String(repair || 'Check the content and language.').slice(0, 240) });
+  } catch (e) {
+    res.status(503).json({ status: 'unavailable', error: 'Reference check unavailable. Please try again.' });
+  }
+});
 
 function detectStrongLocalContradiction(studentText, passageText) {
   const student = String(studentText || '').toLowerCase();
@@ -4051,7 +4088,8 @@ app.post('/api/grade', async (req, res) => {
     // the student never refreshed.
     if (passageId != null) {
       try {
-        const live = await PassageAPI.getById(passageId);
+        const stored = await PassageAPI.getById(passageId);
+        const live = stored && studentPassage(stored);
         if (live) {
           if (live.text) prompt = live.text;
           if (live.keyElements && Object.keys(live.keyElements).length) {
@@ -4405,7 +4443,8 @@ app.post('/api/grade', async (req, res) => {
     // admin edit would see the old feedback on a brand-new attempt.
     if (passageId != null) {
       try {
-        const live = await PassageAPI.getById(passageId);
+        const stored = await PassageAPI.getById(passageId);
+        const live = stored && studentPassage(stored);
         if (live) {
           result.passage_current = {
             id: live.id,
@@ -4413,7 +4452,10 @@ app.post('/api/grade', async (req, res) => {
             category: live.category,
             keyElements: live.keyElements || {},
             keyElementsRationale: live.keyElementsRationale || null,
-            extractionMeta: live.extractionMeta || null
+            extractionMeta: live.extractionMeta || null,
+            sampleResponse: live.sampleResponse || '',
+            sampleNotes: live.sampleNotes || '',
+            studyGuide: live.studyGuide
           };
         }
       } catch (e) { /* non-fatal — frontend falls back to its own copy */ }
