@@ -55,6 +55,9 @@ test('Provisional assessments do not present full marks or language corrections 
   assert.match(result.summary, /provisional/);
   assert.equal(result.priorities[0].title, 'Request a complete assessment');
   assert.equal(result.optional.length, 0);
+  const display = require('../public/swt-feedback').presentation(data);
+  assert.equal(display.label, 'Content score');
+  assert.equal(display.max, 4);
 });
 test('Invalid form does not produce spurious grammar and vocabulary revision priorities', () => {
   const data = full();

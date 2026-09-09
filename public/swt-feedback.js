@@ -77,17 +77,17 @@
     const caps = [15, 38, 65, 79, 90];
     const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
     const estimate = Math.min(rawEstimate, caps[Math.floor(content)]);
-    const fullEligible = contentDetails.full_content_eligible === true
+    const fullEligible = !feedback.provisional && (contentDetails.full_content_eligible === true
       || (contentDetails.full_content_eligible == null && feedback.full
         && assessment.relationships_clear === true
-        && !list(assessment.missing_dependencies).length);
+        && !list(assessment.missing_dependencies).length));
     let headline = fullEligible ? 'Complete, well-connected summary' : 'Review the missing content or connection';
     if (!feedback.formValid) headline = 'Form requirements not met';
     else if (feedback.provisional) headline = 'Provisional result';
     else if (content <= 1) headline = 'Incomplete summary — limited content';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
     else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
-    const focusContent = feedback.formValid && (!fullEligible || content < 4);
+    const focusContent = feedback.formValid && (feedback.provisional || !fullEligible || content < 4);
     return { headline, score: focusContent ? content : raw, max: focusContent ? 4 : 9,
       label: focusContent ? 'Content score' : 'Trait total', raw, estimate,
       secondary: feedback.provisional ? 'Assessment incomplete — submit again for a confirmed result.'
