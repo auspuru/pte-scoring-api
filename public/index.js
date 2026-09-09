@@ -92,6 +92,8 @@ let syncQueued = false;
 let syncTimer = null;
 let lastSyncOk = true;
 let syncRetryCount = 0;
+let syncInFlight = null;
+let practiceHistoryDeleted = [];
 const SYNC_MAX_RETRIES = 5;
 
 // API configuration
@@ -413,6 +415,61 @@ const LocalStore = {
   setUserId(id){ try{ localStorage.setItem('pte_user_id', id); }catch(e){} }
 };
 
+// Account names are stored lowercase by the API.  Always use that canonical
+// identity for local keys and sync URLs so logging in as "Student" on one
+// device and "student" on another reaches the same cloud record.
+function canonicalClientUserId(value) {
+  if (window.EssayAttemptSync?.canonicalUserId) return window.EssayAttemptSync.canonicalUserId(value);
+  return String(value || '').trim().toLowerCase();
+}
+
+function practiceHistoryCacheKey(uid = currentUserId) {
+  const id = canonicalClientUserId(uid);
+  return id ? `pte_${id}_practiceHistory` : 'ipt_practice';
+}
+
+function practiceHistoryDeletedCacheKey(uid = currentUserId) {
+  const id = canonicalClientUserId(uid);
+  return id ? `pte_${id}_practiceHistoryDeleted` : 'ipt_practice_deleted';
+}
+
+function getCachedPracticeHistory(uid = currentUserId) {
+  const value = LocalStore.get(practiceHistoryCacheKey(uid));
+  return Array.isArray(value) ? value : [];
+}
+
+function getCachedPracticeHistoryDeleted(uid = currentUserId) {
+  const value = LocalStore.get(practiceHistoryDeletedCacheKey(uid));
+  return Array.isArray(value) ? value : [];
+}
+
+function cachePracticeHistory(history, deleted = practiceHistoryDeleted, uid = currentUserId) {
+  LocalStore.set(practiceHistoryCacheKey(uid), Array.isArray(history) ? history : []);
+  LocalStore.set(practiceHistoryDeletedCacheKey(uid), Array.isArray(deleted) ? deleted : []);
+}
+
+function mergePracticeHistoryClient(serverHistory, localHistory, deleted = []) {
+  if (window.EssayAttemptSync?.mergeHistory) {
+    return window.EssayAttemptSync.mergeHistory(serverHistory, localHistory, deleted);
+  }
+  const removed = new Set((deleted || []).map(id => String(id)));
+  const byId = new Map();
+  [...(serverHistory || []), ...(localHistory || [])].forEach(item => {
+    if (!item || typeof item !== 'object' || (item.id && removed.has(String(item.id)))) return;
+    const key = item.id ? String(item.id) : `${item.date || item.timestamp || ''}|${item.essayText || ''}`;
+    const previous = byId.get(key);
+    const time = Number(item.updatedAt || item.date || Date.parse(item.timestamp || '') || 0);
+    const previousTime = Number(previous?.updatedAt || previous?.date || Date.parse(previous?.timestamp || '') || 0);
+    if (!previous || time >= previousTime) byId.set(key, { ...item });
+  });
+  return [...byId.values()].sort((a, b) => (Number(b.updatedAt || b.date || 0) - Number(a.updatedAt || a.date || 0))).slice(0, 50);
+}
+
+function mergePracticeDeletedClient(serverDeleted, localDeleted) {
+  if (window.EssayAttemptSync?.mergeDeleted) return window.EssayAttemptSync.mergeDeleted(serverDeleted, localDeleted);
+  return [...new Set([...(serverDeleted || []), ...(localDeleted || [])].map(id => String(id).trim()).filter(Boolean))].slice(-200);
+}
+
 // ============================================================
 //  AUTH FLOW
 // ============================================================
@@ -583,7 +640,7 @@ async function handleLoginSubmit(ev) {
         sessionToken = d.token;
         localStorage.setItem('pte_session_token', d.token);
       }
-      await enterApp(u);
+      await enterApp(d.user?.username || canonicalClientUserId(u));
     } else {
       showLoginError(d.error || 'Login failed.');
       btn.disabled = false;
@@ -633,7 +690,7 @@ async function handleRegisterSubmit(ev) {
         sessionToken = d.token;
         localStorage.setItem('pte_session_token', d.token);
       }
-      await enterApp(u);
+      await enterApp(d.user?.username || canonicalClientUserId(u));
     } else {
       showRegisterError(d.error || 'Registration failed.');
       btn.disabled = false;
@@ -669,6 +726,9 @@ function signOut() {
   userProfile = null;
   essays = [];
   currentId = null;
+  practiceHistoryDeleted = [];
+  syncQueued = false;
+  clearTimeout(syncTimer);
 
   const banner = document.getElementById('impersonateBanner');
   if (banner) banner.style.display = 'none';
@@ -711,7 +771,9 @@ async function changePassword() {
 // ============================================================
 
 async function enterApp(uid) {
+  uid = canonicalClientUserId(uid);
   currentUserId = uid;
+  offlineMode = false;
   currentUser = { uid: uid, email: uid.includes('@') ? uid : (uid + '@ptewriting.com') };
   LocalStore.setUserId(uid);
   document.getElementById('userAvatar').textContent = uid.slice(0, 2).toUpperCase();
@@ -743,6 +805,7 @@ async function enterApp(uid) {
 }
 
 async function loadUserData(uid) {
+  uid = canonicalClientUserId(uid);
   setSync('syncing', 'Loading...');
   try {
     const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
@@ -766,12 +829,29 @@ async function loadUserData(uid) {
       // Load Essay state components
       essays = data.essays || [];
       currentId = data.currentId || (essays[0]?.id || null);
+
+      // Reconcile attempts from the cloud with this device's scoped cache.
+      // The cache covers the short window before a debounced sync completes;
+      // the server merge below then makes attempts from multiple devices
+      // additive instead of last-write-wins.
+      const serverDeleted = Array.isArray(data.practiceHistoryDeleted) ? data.practiceHistoryDeleted : [];
+      const localDeleted = getCachedPracticeHistoryDeleted(uid);
+      practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, localDeleted);
+      const serverPracticeHistory = Array.isArray(data.practiceHistory) ? data.practiceHistory : [];
+      const localPracticeHistory = getCachedPracticeHistory(uid);
+      const mergedPracticeHistory = mergePracticeHistoryClient(serverPracticeHistory, localPracticeHistory, practiceHistoryDeleted);
+      const practiceNeedsPush = !window.EssayAttemptSync?.sameHistory
+        ? JSON.stringify(mergedPracticeHistory) !== JSON.stringify(serverPracticeHistory)
+        : !window.EssayAttemptSync.sameHistory(mergedPracticeHistory, serverPracticeHistory)
+          || practiceHistoryDeleted.some(id => !serverDeleted.includes(id));
+      cachePracticeHistory(mergedPracticeHistory, practiceHistoryDeleted, uid);
       
       userProfile = {
         email: data.email || '',
         quotaUsed: data.quotaUsed || { essay: 0, idea: 0 },
         quotaDate: data.quotaDate || todayStamp(),
-        practiceHistory: data.practiceHistory || [],
+        practiceHistory: mergedPracticeHistory,
+        practiceHistoryDeleted,
         vocabProgress: data.vocabProgress || {},
         templates: data.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
       };
@@ -781,6 +861,12 @@ async function loadUserData(uid) {
       if (userProfile.templates && userProfile.templates.band9TemplateVersion) {
         userProfile.band9TemplateVersion = userProfile.templates.band9TemplateVersion;
       }
+
+      // Keep a recovery copy for this account, without mixing users on a
+      // shared browser.  It is only used when a later pull cannot reach the
+      // server.
+      LocalStore.set(`pte_${uid}_essays`, essays);
+      LocalStore.set(`pte_${uid}_currentId`, currentId);
       
       // Seed first time if essays are empty
       if (essays.length === 0) {
@@ -817,6 +903,11 @@ async function loadUserData(uid) {
         await flushSyncDirect();
       }
 
+      if (practiceNeedsPush) {
+        syncQueued = true;
+        await flushSyncDirect();
+      }
+
       setSync('synced', 'Synced');
       maybeOfferDraftRecovery();
       return true;
@@ -827,6 +918,20 @@ async function loadUserData(uid) {
     setSync('error', 'Sync failed');
     toast('Failed to load your data from cloud. Working offline.', true);
     offlineMode = true;
+    // Preserve any scored attempts made on this device and make them
+    // available immediately; the queue will retry when connectivity returns.
+    practiceHistoryDeleted = getCachedPracticeHistoryDeleted(uid);
+    const cachedPracticeHistory = getCachedPracticeHistory(uid);
+    const cachedEssays = LocalStore.get(`pte_${uid}_essays`);
+    if (Array.isArray(cachedEssays)) {
+      essays = cachedEssays;
+      currentId = LocalStore.get(`pte_${uid}_currentId`) || essays[0]?.id || null;
+    }
+    userProfile = {
+      email: '', quotaUsed: {}, quotaDate: todayStamp(),
+      practiceHistory: cachedPracticeHistory, practiceHistoryDeleted,
+      vocabProgress: {}, templates: getDefaultTemplates()
+    };
     return true; // continue in offline mode
   }
 }
@@ -842,7 +947,10 @@ function todayStamp() {
 }
 
 function queueSync() {
-  if (offlineMode || !currentUserId) return;
+  // Keep the queue alive during a temporary network outage.  An authenticated
+  // account can still retry later; only a signed-out/local-only session is
+  // excluded.
+  if (!currentUserId || !sessionToken) return;
   syncQueued = true;
   setSync('syncing', 'Syncing...');
   clearTimeout(syncTimer);
@@ -850,13 +958,15 @@ function queueSync() {
 }
 
 async function flushSync() {
-  if (!syncQueued || !currentUserId) return;
+  if (!syncQueued || !currentUserId || !sessionToken) return false;
   syncQueued = false;
-  await flushSyncDirect();
+  return flushSyncDirect();
 }
 
-async function flushSyncDirect() {
-  try {
+async function flushSyncDirect(options = {}) {
+  if (syncInFlight) return syncInFlight;
+  syncInFlight = (async () => {
+   try {
     if (userProfile && userProfile.templates) {
       userProfile.templates.band9TemplateVersion = userProfile.band9TemplateVersion || 0;
     }
@@ -876,6 +986,7 @@ async function flushSyncDirect() {
       quotaUsed: userProfile?.quotaUsed || { essay: 0, idea: 0 },
       quotaDate: userProfile?.quotaDate || todayStamp(),
       practiceHistory: userProfile?.practiceHistory || [],
+      practiceHistoryDeleted: practiceHistoryDeleted || userProfile?.practiceHistoryDeleted || [],
       vocabProgress: userProfile?.vocabProgress || {},
       templates: userProfile?.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
     };
@@ -886,18 +997,34 @@ async function flushSyncDirect() {
         'Content-Type': 'application/json',
         'x-session-token': sessionToken
       },
+      keepalive: !!options.keepalive,
       body: JSON.stringify(payload)
     });
     
     if (r.status === 401 || r.status === 403) {
       handleAuthExpired();
-      return;
+      return false;
     }
-    
+    if (!r.ok) throw new Error(`Sync push failed (${r.status})`);
+    const response = await r.json().catch(() => ({}));
+    if (Array.isArray(response.practiceHistory)) {
+      const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
+      practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, practiceHistoryDeleted);
+      const merged = mergePracticeHistoryClient(response.practiceHistory, userProfile?.practiceHistory || [], practiceHistoryDeleted);
+      if (userProfile) {
+        userProfile.practiceHistory = merged;
+        userProfile.practiceHistoryDeleted = practiceHistoryDeleted;
+      }
+    }
+    offlineMode = false;
+    cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
+    LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
+    LocalStore.set(`pte_${currentUserId}_currentId`, currentId);
     setSync('synced', 'Synced');
     lastSyncOk = true;
     syncRetryCount = 0;
     safeLSRemove('ipt_unsaved_backup');
+    return true;
   } catch (err) {
     console.error(err);
     setSync('error', 'Sync failed — retrying');
@@ -908,13 +1035,20 @@ async function flushSyncDirect() {
     } else {
       setSync('error', 'Sync failed — check connection');
     }
+    return false;
+  }
+  })();
+  try {
+    return await syncInFlight;
+  } finally {
+    syncInFlight = null;
   }
 }
 
 async function manualSync() {
   syncQueued = true;
-  await flushSync();
-  toast('Synced ✓');
+  const ok = await flushSync();
+  toast(ok ? 'Synced ✓' : 'Sync is pending — we will retry when connected.', !ok);
 }
 
 function setSync(state, text) {
@@ -923,7 +1057,32 @@ function setSync(state, text) {
   if (!dot || !txt) return;
   dot.className = 'sync-dot ' + state;
   txt.textContent = text;
+  const practice = document.getElementById('practiceSyncStatus');
+  if (practice) {
+    practice.dataset.state = state;
+    practice.textContent = state === 'synced' ? 'Cloud history synced' : text;
+  }
 }
+
+// A tab may be closed before a debounced request fires.  keepalive gives the
+// browser a chance to finish the final profile write while pagehide/visibility
+// transitions are still in progress.
+function flushPendingSyncOnExit() {
+  if (syncQueued && currentUserId && sessionToken) {
+    syncQueued = false;
+    flushSyncDirect({ keepalive: true }).catch(() => {});
+  }
+}
+window.addEventListener('pagehide', flushPendingSyncOnExit);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushPendingSyncOnExit();
+});
+window.addEventListener('online', () => {
+  if (!currentUserId || !sessionToken) return;
+  offlineMode = false;
+  syncQueued = true;
+  flushSync();
+});
 
 // ============================================================
 //  QUOTA
@@ -11907,6 +12066,8 @@ function copyPracticeText(type) {
 
 function getPracticeHistory() {
   if (offlineMode) {
+    const accountHistory = currentUserId ? getCachedPracticeHistory(currentUserId) : [];
+    if (accountHistory.length > 0 || currentUserId) return accountHistory;
     try { return JSON.parse(safeLSGet('ipt_practice') || '[]'); }
     catch (e) { return []; }
   }
@@ -11915,14 +12076,27 @@ function getPracticeHistory() {
   return userProfile.practiceHistory;
 }
 
-async function savePracticeHistory(history) {
+async function savePracticeHistory(history, options = {}) {
+  const nextHistory = Array.isArray(history) ? history : [];
+  if (currentUserId) cachePracticeHistory(nextHistory, practiceHistoryDeleted, currentUserId);
   if (offlineMode) {
-    safeLSSet('ipt_practice', JSON.stringify(history));
+    if (currentUserId) {
+      // Keep the account-scoped copy and attempt a cloud retry when a token is
+      // still available; offline mode is a network state, not a data state.
+      if (userProfile) userProfile.practiceHistory = nextHistory;
+      queueSync();
+      if (options.immediate) await flushSync();
+    } else {
+      safeLSSet('ipt_practice', JSON.stringify(nextHistory));
+    }
     return;
   }
   if (!currentUser) return;
-  userProfile.practiceHistory = history;
+  userProfile.practiceHistory = nextHistory;
+  userProfile.practiceHistoryDeleted = practiceHistoryDeleted;
+  cachePracticeHistory(nextHistory, practiceHistoryDeleted, currentUserId);
   queueSync();
+  if (options.immediate) await flushSync();
 }
 
 function updatePracticeStats() {
@@ -12043,7 +12217,8 @@ async function deletePracticeAttempt(id) {
   if (!confirm('Delete this practice attempt? Cannot be undone.')) return;
   let h = getPracticeHistory();
   h = h.filter(a => a.id !== id);
-  await savePracticeHistory(h);
+  if (id && !practiceHistoryDeleted.includes(id)) practiceHistoryDeleted.push(id);
+  await savePracticeHistory(h, { immediate: true });
   if (practiceState.viewingAttemptId === id) {
     practiceState.viewingAttemptId = null;
     practiceState.view = 'welcome';
@@ -12852,7 +13027,10 @@ CRITICAL for the "errors" array:
     history.unshift(attempt);
     // history = prunePracticeAttempts(history, attempt);
     if (history.length > 50) history.length = 50;
-    await savePracticeHistory(history);
+    // Score results are durable records, so push this attempt immediately
+    // instead of waiting for the normal 1.2s debounce (which a closed tab can
+    // interrupt).
+    await savePracticeHistory(history, { immediate: true });
 
     practiceState.currentAttempt = attempt;
     practiceState.viewingAttemptId = attempt.id;

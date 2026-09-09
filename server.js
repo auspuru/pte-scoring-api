@@ -9,6 +9,7 @@ const compression = require('compression');
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
+const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 
 // Email and Puppeteer settings from Essay Builder
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -596,6 +597,7 @@ const PgStorage = {
   },
 
   async saveProgress(userId, passageId, summary, scoreData) {
+    userId = canonicalUserId(userId);
     const data = await this.readData();
     if (!data.users[userId]) data.users[userId] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
     const u = data.users[userId];
@@ -629,56 +631,81 @@ const PgStorage = {
     return { success: true, userStats: u.stats };
   },
   async getUserData(userId) {
+    userId = canonicalUserId(userId);
     const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
     if (!rows.length) {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
-        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [], vocabProgress: {}
+        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
+        practiceHistoryDeleted: [], vocabProgress: {}
       };
     }
     const u = rows[0].data || {};
     return {
       attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
-      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [], vocabProgress: u.vocabProgress || {}
+      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
+      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || ''
     };
   },
   async setUserData(userId, userData) {
-    const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
-    const existing = rows[0]?.data || {};
-    const clientHistory = userData.history || {};
-    const serverHistory = existing.history || {};
-    const mergedHistory = {};
-    const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
-    for (const pid of allPassageIds) {
-      const all = [...(clientHistory[pid] || []), ...(serverHistory[pid] || [])];
-      const seen = new Set();
-      const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
-      merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      mergedHistory[pid] = merged.slice(0, 10);
+    userId = canonicalUserId(userId);
+    const incoming = (userData && typeof userData === 'object') ? userData : {};
+    const client = await pgPool.connect();
+    try {
+      // Serialise full-profile writes so two devices cannot read the same old
+      // snapshot and then overwrite each other's essay attempts.
+      await client.query('BEGIN');
+      await client.query(
+        `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
+         ON CONFLICT (username) DO NOTHING`, [userId]
+      );
+      const { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      const existing = rows[0]?.data || {};
+      const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
+      const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
+      const clientHistory = incoming.history || {};
+      const serverHistory = existing.history || {};
+      const mergedHistory = {};
+      const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
+      for (const pid of allPassageIds) {
+        const all = [...(clientHistory[pid] || []), ...(serverHistory[pid] || [])];
+        const seen = new Set();
+        const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
+        merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        mergedHistory[pid] = merged.slice(0, 10);
+      }
+      const u = {
+        attempted: [...new Set([...(existing.attempted || []), ...(incoming.attempted || [])])],
+        summaries: { ...(existing.summaries || {}), ...(incoming.summaries || {}) },
+        scores: { ...(existing.scores || {}), ...(incoming.scores || {}) },
+        history: mergedHistory,
+        email: incoming.email !== undefined ? incoming.email : (existing.email || ''),
+        essays: incoming.essays !== undefined ? incoming.essays : (existing.essays || []),
+        templates: incoming.templates !== undefined ? incoming.templates : (existing.templates || {}),
+        currentId: incoming.currentId !== undefined ? incoming.currentId : (existing.currentId || null),
+        quotaUsed: incoming.quotaUsed !== undefined ? incoming.quotaUsed : (existing.quotaUsed || {}),
+        quotaDate: incoming.quotaDate !== undefined ? incoming.quotaDate : (existing.quotaDate || ""),
+        practiceHistory: mergedPracticeHistory,
+        practiceHistoryDeleted: deleted,
+        vocabProgress: incoming.vocabProgress !== undefined ? incoming.vocabProgress : (existing.vocabProgress || {})
+      };
+      let total = 0, count = 0;
+      Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+      u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+      await client.query(
+        `UPDATE user_data SET data = $2::jsonb, updated_at = NOW() WHERE username = $1`,
+        [userId, JSON.stringify(u)]
+      );
+      await client.query('COMMIT');
+      return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
+        practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted };
+    } catch (e) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw e;
+    } finally {
+      client.release();
     }
-    const u = {
-      attempted: [...new Set([...(existing.attempted || []), ...(userData.attempted || [])])],
-      summaries: { ...(existing.summaries || {}), ...(userData.summaries || {}) },
-      scores: { ...(existing.scores || {}), ...(userData.scores || {}) },
-      history: mergedHistory,
-      essays: userData.essays !== undefined ? userData.essays : (existing.essays || []),
-      templates: userData.templates !== undefined ? userData.templates : (existing.templates || {}),
-      currentId: userData.currentId !== undefined ? userData.currentId : (existing.currentId || null),
-      quotaUsed: userData.quotaUsed !== undefined ? userData.quotaUsed : (existing.quotaUsed || {}),
-      quotaDate: userData.quotaDate !== undefined ? userData.quotaDate : (existing.quotaDate || ""),
-      practiceHistory: userData.practiceHistory !== undefined ? userData.practiceHistory : (existing.practiceHistory || []),
-      vocabProgress: userData.vocabProgress !== undefined ? userData.vocabProgress : (existing.vocabProgress || {})
-    };
-    let total = 0, count = 0;
-    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
-    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
-    await pgPool.query(
-      `INSERT INTO user_data (username, data, updated_at) VALUES ($1, $2::jsonb, NOW())
-       ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
-      [userId, JSON.stringify(u)]
-    );
-    return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count };
   },
   async getProgress(userId) { return this.getUserData(userId); },
   async getLeaderboard(limit = 10) {
@@ -702,6 +729,7 @@ const JsonStorage = {
   
   // Save individual attempt (called after each verify)
   async saveProgress(userId, passageId, summary, scoreData) {
+    userId = canonicalUserId(userId);
     const data = await this.readData();
     if (!data.users[userId]) data.users[userId] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
     const u = data.users[userId];
@@ -742,23 +770,28 @@ const JsonStorage = {
   },
   
   async getUserData(userId) {
+    userId = canonicalUserId(userId);
     const data = await this.readData();
     const u = data.users[userId];
     if (!u) {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
-        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [], vocabProgress: {}
+        essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
+        practiceHistoryDeleted: [], vocabProgress: {}
       };
     }
     return {
       attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
-      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [], vocabProgress: u.vocabProgress || {}
+      quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
+      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || ''
     };
   },
   
   // Push full user data from client (for bulk sync)
   async setUserData(userId, userData) {
+    userId = canonicalUserId(userId);
+    userData = (userData && typeof userData === 'object') ? userData : {};
     const data = await this.readData();
     if (!data.users[userId]) data.users[userId] = {};
     const u = data.users[userId];
@@ -794,7 +827,10 @@ const JsonStorage = {
     u.currentId = userData.currentId !== undefined ? userData.currentId : (u.currentId || null);
     u.quotaUsed = userData.quotaUsed !== undefined ? userData.quotaUsed : (u.quotaUsed || {});
     u.quotaDate = userData.quotaDate !== undefined ? userData.quotaDate : (u.quotaDate || "");
-    u.practiceHistory = userData.practiceHistory !== undefined ? userData.practiceHistory : (u.practiceHistory || []);
+    const deleted = mergeDeleted(u.practiceHistoryDeleted, userData.practiceHistoryDeleted);
+    u.practiceHistory = mergeHistory(u.practiceHistory, userData.practiceHistory, deleted);
+    u.practiceHistoryDeleted = deleted;
+    u.email = userData.email !== undefined ? userData.email : (u.email || '');
     u.vocabProgress = userData.vocabProgress !== undefined ? userData.vocabProgress : (u.vocabProgress || {});
     
     // Recalculate stats
@@ -803,7 +839,8 @@ const JsonStorage = {
     u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
     
     await this.writeData(data);
-    return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count };
+    return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
+      practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted };
   },
   
   async getProgress(userId) { return this.getUserData(userId); },
@@ -2818,12 +2855,12 @@ app.get('/api/health', async (req, res) => {
 app.post('/api/progress/:userId', async (req, res) => {
   try {
     const { passageId, summary, scoreData } = req.body;
-    res.json(await StorageAPI.saveProgress(req.params.userId, passageId, summary, scoreData));
+    res.json(await StorageAPI.saveProgress(canonicalUserId(req.params.userId), passageId, summary, scoreData));
   } catch (e) { res.status(500).json({ error: 'Failed to save progress' }); }
 });
 
 app.get('/api/progress/:userId', async (req, res) => {
-  try { res.json(await StorageAPI.getProgress(req.params.userId)); }
+  try { res.json(await StorageAPI.getProgress(canonicalUserId(req.params.userId))); }
   catch (e) { res.status(500).json({ error: 'Failed to get progress' }); }
 });
 
@@ -2836,14 +2873,14 @@ app.get('/api/leaderboard', async (req, res) => {
 // Pull: get full user data from server (called on login)
 // C3: now requires a valid session token matching :userId.
 app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
-  try { res.json({ success: true, data: await StorageAPI.getUserData(req.params.userId) }); }
+  try { res.json({ success: true, data: await StorageAPI.getUserData(canonicalUserId(req.params.userId)) }); }
   catch (e) { res.status(500).json({ error: 'Sync pull failed' }); }
 });
 
 // Push: send full user data to server (called on login + after verify)
 // C3: now requires a valid session token matching :userId.
 app.post('/api/sync/:userId', requireSyncAuth, async (req, res) => {
-  try { res.json(await StorageAPI.setUserData(req.params.userId, req.body)); }
+  try { res.json(await StorageAPI.setUserData(canonicalUserId(req.params.userId), req.body)); }
   catch (e) { res.status(500).json({ error: 'Sync push failed' }); }
 });
 

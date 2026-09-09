@@ -1,11 +1,12 @@
 {
   "name": "ptewriting",
-  "version": "20.3.0",
+  "version": "20.3.4",
   "description": "PTE Writing Practice Portal \u2014 connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js"
   },
