@@ -598,37 +598,52 @@ const PgStorage = {
 
   async saveProgress(userId, passageId, summary, scoreData) {
     userId = canonicalUserId(userId);
-    const data = await this.readData();
-    if (!data.users[userId]) data.users[userId] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
-    const u = data.users[userId];
-    if (!u.attempted) u.attempted = [];
-    if (!u.attempted.includes(passageId)) u.attempted.push(passageId);
-    if (!u.summaries) u.summaries = {};
-    u.summaries[passageId] = { text: summary, timestamp: new Date().toISOString(), score: scoreData?.overall_score || 0 };
-    if (!u.scores) u.scores = {};
-    u.scores[passageId] = scoreData;
-    if (!u.history) u.history = {};
-    if (!u.history[passageId]) u.history[passageId] = [];
-    u.history[passageId].unshift({
-      text: summary, timestamp: new Date().toISOString(),
-      overall_score: scoreData?.overall_score || 0, band: scoreData?.band || 'Band 5',
-      trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
-      feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
-      skill_contributions: scoreData?.skill_contributions || null,
-      scoring_version: scoreData?.scoring_version || 'unknown'
-    });
-    if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
-    let total = 0, count = 0;
-    Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
-    u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
-    // Persist this single user's data + bump global stats — focused write, not whole-blob.
-    await pgPool.query(
-      `INSERT INTO user_data (username, data, updated_at) VALUES ($1, $2::jsonb, NOW())
-       ON CONFLICT (username) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
-      [userId, JSON.stringify(u)]
-    );
-    await pgPool.query(`UPDATE global_stats SET total_attempts = total_attempts + 1 WHERE id = 1`);
-    return { success: true, userStats: u.stats };
+    const client = await pgPool.connect();
+    try {
+      // Grade saves and full-profile syncs share this row.  Lock the current
+      // snapshot so a score submitted on one device cannot race a sync from
+      // another device and overwrite its newly-added attempt history.
+      await client.query('BEGIN');
+      await client.query(
+        `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
+         ON CONFLICT (username) DO NOTHING`, [userId]
+      );
+      const { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      const u = rows[0]?.data || { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 } };
+      if (!u.attempted) u.attempted = [];
+      if (!u.attempted.includes(passageId)) u.attempted.push(passageId);
+      if (!u.summaries) u.summaries = {};
+      const timestamp = new Date().toISOString();
+      u.summaries[passageId] = { text: summary, timestamp, score: scoreData?.overall_score || 0 };
+      if (!u.scores) u.scores = {};
+      u.scores[passageId] = scoreData;
+      if (!u.history) u.history = {};
+      if (!u.history[passageId]) u.history[passageId] = [];
+      u.history[passageId].unshift({
+        text: summary, timestamp,
+        overall_score: scoreData?.overall_score || 0, band: scoreData?.band || 'Band 5',
+        trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
+        feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
+        skill_contributions: scoreData?.skill_contributions || null,
+        scoring_version: scoreData?.scoring_version || 'unknown'
+      });
+      if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
+      let total = 0, count = 0;
+      Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+      u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+      await client.query(
+        `UPDATE user_data SET data = $2::jsonb, updated_at = NOW() WHERE username = $1`,
+        [userId, JSON.stringify(u)]
+      );
+      await client.query(`UPDATE global_stats SET total_attempts = total_attempts + 1 WHERE id = 1`);
+      await client.query('COMMIT');
+      return { success: true, userStats: u.stats };
+    } catch (e) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw e;
+    } finally {
+      client.release();
+    }
   },
   async getUserData(userId) {
     userId = canonicalUserId(userId);
