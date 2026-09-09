@@ -48,7 +48,8 @@ async function main() {
     try {
       let result;
       if (args.mode === 'grade') {
-        const data = await request('/api/grade', { type: 'swt', passageId: c.p.id, text: c.text });
+        const data = await request('/api/grade', { type: 'swt', passageId: c.p.id, text: c.text,
+          prompt: c.p.text, keyPoints: c.p.keyElements });
         assert.equal(data.score_provisional, false, 'Model assessment must be complete');
         result = { content: data.trait_scores.content, grammar: data.trait_scores.grammar,
           vocabulary: data.trait_scores.vocabulary, estimate: data.overall_score,
