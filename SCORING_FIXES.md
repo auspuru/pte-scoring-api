@@ -73,4 +73,6 @@ An incomplete response can retain full Grammar and Vocabulary without being pres
 
 The result hero leads with Content for incomplete or uncertain responses, including reopened saved attempts. The coverage table combines checklist data with the semantic assessment, so captured main ideas, supporting evidence and conclusions are shown as Included even when the model uses different labels. Long explanations are shortened in the visible cards, and coverage labels have enough width to avoid overlap on desktop and mobile.
 
+Saved results without a complete semantic assessment are now shown as needing review, even if an old record contains Content 4 or a high band label. The practice estimate is recomputed from the trait total and then limited by the Content ceiling, so stale stored estimates cannot inflate the headline.
+
 Regression coverage now includes stale high-band data, all incomplete Content levels, semantic coverage mapping, long feedback text and category-level London compression. All 37 deterministic checks pass.

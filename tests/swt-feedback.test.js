@@ -7,7 +7,7 @@ const { build } = require('../public/swt-feedback');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../public/index.js'), 'utf8');
 const full = () => ({
   trait_scores: { content: 4, content_max: 4, form: 1, grammar: 2, vocabulary: 2 },
-  content_details: { key_ideas_missing: ['why'], summary_assessment: { relationships_clear: true, missing_dependencies: [] } },
+  content_details: { full_content_eligible: true, key_ideas_missing: ['why'], summary_assessment: { relationships_clear: true, missing_dependencies: [], conclusion_status: 'captured' } },
   grammar_details: { grammar_annotations: [] }, vocabulary_details: { vocabulary_annotations: [] }
 });
 test('Full scores keep harmless corrections optional despite omitted diagnostic ideas', () => {
@@ -114,6 +114,16 @@ test('Provisional and invalid results never promise a complete summary', () => {
     assert(!result.headline.includes('Complete, well-connected'));
     assert(!result.headline.includes('Band'));
   }
+});
+
+test('A saved Content 4 without semantic eligibility is reviewed instead of labelled complete', () => {
+  const data = full();
+  delete data.content_details.full_content_eligible;
+  delete data.content_details.summary_assessment.conclusion_status;
+  const result = require('../public/swt-feedback').presentation(data);
+  assert.equal(result.headline, 'Review the missing content or connection');
+  assert.equal(result.label, 'Content score');
+  assert.equal(result.max, 4);
 });
 
 test('Semantic evidence keeps coverage rows consistent with the written explanation', () => {

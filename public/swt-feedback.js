@@ -21,7 +21,12 @@
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
     const provisional = data.score_provisional === true || data.ai_feedback_degraded === true;
     const formValid = Number(traits.form) >= 1;
-    const full = formValid && !provisional && Number(traits.content) >= (traits.content_max || 4)
+    const semanticFull = content.full_content_eligible === true
+      || (content.full_content_eligible == null
+        && assessment.relationships_clear === true
+        && !list(assessment.missing_dependencies).length
+        && ['captured', 'clearly_implied', 'not_applicable'].includes(assessment.conclusion_status));
+    const full = formValid && !provisional && semanticFull && Number(traits.content) >= (traits.content_max || 4)
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
     const priorities = [];
     const optional = [];
@@ -70,7 +75,8 @@
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
     const raw = ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
-    const estimate = Math.min(Number(data.overall_score) || 0, caps[Math.floor(content)]);
+    const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
+    const estimate = Math.min(rawEstimate, caps[Math.floor(content)]);
     const fullEligible = contentDetails.full_content_eligible === true
       || (contentDetails.full_content_eligible == null && feedback.full
         && assessment.relationships_clear === true
