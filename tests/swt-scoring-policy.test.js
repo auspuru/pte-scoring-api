@@ -165,6 +165,23 @@ test('A connector-only edit cannot become a duplicate Grammar deduction', () => 
   assert.equal(result.grammar_annotations[0].affects_score, false);
 });
 
+test('A miscopied pronoun in a long evidence citation cannot lower an otherwise accurate London summary', () => {
+  const summary = 'Although London faced historical setbacks and continues to struggle with high living costs and overloaded infrastructure, deregulation and regulatory advantages have allowed its financial center to surpass global rivals in fund management, foreign exchange trading, and secondary bonds.';
+  const j = judgment();
+  Object.assign(j.summary_assessment, {
+    main_idea_evidence: "London's financial center to surpass global rivals in fund management, foreign exchange trading, and secondary bonds",
+    supporting_evidence: ['deregulation and regulatory advantages have allowed its financial center to surpass global rivals']
+  });
+  const result = policy.applyScoringPolicy(j, summary);
+  assert.equal(result.content_score, 4);
+  assert.equal(result.needs_semantic_review, false);
+  assert(summary.includes(result.summary_assessment.main_idea_evidence));
+  j.summary_assessment.main_idea_evidence = 'Invented evidence that has no faithful equivalent anywhere in this student summary';
+  const invented = policy.applyScoringPolicy(j, summary);
+  assert.equal(invented.needs_semantic_review, true);
+  assert.equal(invented.full_content_eligible, false);
+});
+
 test('Grammar meaning changes deduct independently of content omissions', async () => {
   const fixture = { ...fixtures[1], summary: 'Caffeine helps plants remember the bees, which improves pollination and survival.' };
   const j = judgment(fixture, { grammar_score: 1,

@@ -37,6 +37,24 @@ const score = (value, maximum) => typeof value === 'number' && Number.isFinite(v
 const textPresent = (summary, phrase) => typeof phrase === 'string'
   && phrase.trim().length > 0 && summary.toLowerCase().includes(phrase.toLowerCase());
 
+// A model sometimes resolves "its" to "London's" in an evidence quote. Keep
+// the long, verbatim portion as the citation instead of penalising the student
+// for the judge's transcription. Never invent evidence or accept a paraphrase:
+// the retained span must be present, at least 8 words and 80% of the quote.
+function exactEvidenceQuote(summary, phrase) {
+  if (textPresent(summary, phrase) || typeof phrase !== 'string') return phrase;
+  const words = [...phrase.matchAll(/\S+/g)];
+  const minimum = Math.max(8, Math.ceil(words.length * 0.8));
+  for (let n = words.length; n >= minimum; n--) {
+    for (let i = 0; i <= words.length - n; i++) {
+      const span = phrase.slice(words[i].index, words[i + n - 1].index + words[i + n - 1][0].length);
+      const index = summary.toLowerCase().indexOf(span.toLowerCase());
+      if (index >= 0) return summary.slice(index, index + span.length);
+    }
+  }
+  return phrase;
+}
+
 // Discourse-marker choice is Content/coherence coaching, not a second Grammar
 // penalty. A genuinely false proposition still lowers Content independently.
 function connectorOnlyEdit(annotation) {
@@ -70,7 +88,12 @@ function languageScore(proposed, annotations) {
 
 function applyScoringPolicy(judgment, summary) {
   const result = { ...judgment };
-  const assessment = result.summary_assessment || {};
+  const assessment = { ...(result.summary_assessment || {}) };
+  assessment.main_idea_evidence = exactEvidenceQuote(summary, assessment.main_idea_evidence);
+  if (Array.isArray(assessment.supporting_evidence)) {
+    assessment.supporting_evidence = assessment.supporting_evidence.map(phrase => exactEvidenceQuote(summary, phrase));
+  }
+  result.summary_assessment = assessment;
   const validAnnotations = items => Array.isArray(items) && items.every(a => a
     && textPresent(summary, a.phrase) && typeof a.fix === 'string'
     && ['none', 'changed', 'obscured'].includes(a.meaning_impact)
