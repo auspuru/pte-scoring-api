@@ -115,3 +115,41 @@ test('Provisional and invalid results never promise a complete summary', () => {
     assert(!result.headline.includes('Band'));
   }
 });
+
+test('Semantic evidence keeps coverage rows consistent with the written explanation', () => {
+  const start = source.indexOf('function renderCoverage(');
+  const end = source.indexOf('\n}\n\nfunction renderAboutPassage', start) + 2;
+  assert(start >= 0 && end > start);
+  const target = { innerHTML: '' };
+  const context = {
+    document: { getElementById: () => target },
+    escapeHtml: value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+  };
+  vm.createContext(context);
+  vm.runInContext(source.slice(start, end) + `\nrenderCoverage({
+    content_details: {
+      key_ideas_present: [], key_ideas_missing: ['what', 'why', 'how', 'result'],
+      summary_assessment: {
+        main_idea_accurate: true,
+        supporting_evidence: ['the city dominates foreign exchange trading'],
+        conclusion_status: 'clearly_implied'
+      }
+    }
+  }, { keyElements: {
+    what: 'London became the world money capital',
+    why: 'Progress faced historical setbacks',
+    how: 'London dominates foreign exchange trading',
+    result: 'London remains the place to be for finance'
+  }});`, context);
+  assert.match(target.innerHTML, /Included/g);
+  assert(!/^.*Not selected.*Not selected.*Not selected.*Not selected/s.test(target.innerHTML));
+});
+
+test('Long model explanations are compacted in the student priority card', () => {
+  const data = full();
+  data.trait_scores.content = 2;
+  data.content_details.notes = Array(80).fill('The summary omits an optional named example.').join(' ');
+  const result = build(data);
+  assert(result.priorities[0].detail.length <= 421);
+  assert(result.priorities[0].detail.endsWith('…'));
+});

@@ -53,3 +53,14 @@ test('Fluent or familiar wording cannot override a material false causal relatio
   assert(applyScoringPolicy(j, summary).content_score < 4);
   assert.equal(applyScoringPolicy(j, summary).grammar_score, 2);
 });
+
+test('London category-level compression is strong partial content, not a severe two-point penalty', () => {
+  const summary = 'Although London faced historical setbacks and continues to struggle with high living costs and overloaded infrastructure, deregulation and regulatory advantages have allowed its financial center to surpass global rivals in fund management, foreign exchange trading, and secondary bonds.';
+  const j = assessment(summary, 'London faced historical setbacks', 'deregulation and regulatory advantages have allowed its financial center to surpass global rivals', 'The summary states the regulatory cause and financial effect clearly; it omits the passage’s final attraction to foreign investors.');
+  j.content_score = 2;
+  j.summary_assessment.conclusion_status = 'missing';
+  const result = applyScoringPolicy(j, summary);
+  assert.equal(result.content_score, 3);
+  assert.equal(result.grammar_score, 2);
+  assert.equal(result.vocabulary_score, 2);
+});

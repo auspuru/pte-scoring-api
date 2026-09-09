@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.2';
+const POLICY_VERSION = '20.3.3';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -97,6 +97,13 @@ function applyScoringPolicy(judgment, summary) {
   let content = Math.round(score(result.content_score, 4));
   if (fullContent) content = 4;
   else content = Math.min(content, 3);
+  // A complete semantic assessment with an accurate main idea, useful support
+  // and clear relationships is at least strong partial content even when the
+  // conclusion is missing or the model's proposed number is overly severe.
+  // The full-content gate above still requires an acceptable conclusion.
+  const strongPartial = complete && mainCaptured && supports.length >= 1
+    && connected && assessment.material_meaning_change === false;
+  if (!fullContent && strongPartial && content >= 2) content = Math.max(content, 3);
   if (complete && (!mainCaptured || assessment.material_meaning_change)) content = Math.min(content, 2);
 
   result.content_score = content;
@@ -121,13 +128,13 @@ FULL MARKS:
 - An effect with a missing necessary cause, an unexplained 'this/they', reversed causality, or misleadingly joined claims prevents full Content even when many keywords or headline ideas are present.
 - Compression is valid: do not require every intermediate step when the stated cause and outcome have a clear, faithful connection. Do not invent a causal chain in a descriptive, additive or contrastive passage.
 - Before listing a missing dependency, reread the exact summary and check whether its scope or reason is already supplied. Never claim an answer treats all cases equally when it explicitly limits its claim (for example, to 'volatile statistics'). A secondary contrast is not a missing dependency merely because the passage contains it. Distinguish an essential unstated cause from an optional elaboration of an already understandable connection.
+- Category-level paraphrase is enough when it preserves the passage's proposition and relationship. For example, "regulatory advantages allowed London to surpass rivals" can accurately compress the passage's named examples (no Sarbanes-Oxley and no euro); do not require those examples or call the relationship disconnected merely because they are omitted. Do not demand a named example when the summary's scope, cause and effect are already clear.
 - Judge what the connections mean. 'And', relative clauses and semicolons can work; 'therefore' or 'moreover' cannot repair missing information by themselves.
 
 CONTENT (integer 0–4):
 4: all the full-mark conditions above are satisfied.
 3: main idea and useful support, but an important gap or missing relationship remains.
 2: relevant information with an incomplete, distorted or unclear central message.
-1: very limited relevant information. 0: off-topic, fabricated or unintelligible.
 Diagnostic idea coverage is coaching only and must not determine the holistic score.
 
 GRAMMAR (0, 0.5, 1, 1.5, 2):

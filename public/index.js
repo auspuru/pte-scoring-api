@@ -14348,12 +14348,18 @@ function renderTraitBreakdown(data, traits){
   if (!el) return;
   const cMax = traits.content_max || 4;
   const cd = data.content_details || {};
-  const captured = (cd.key_ideas_present || []).length;
+  const concise = value => {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (text.length <= 260) return text;
+    const cut = text.slice(0, 245).replace(/\s+\S*$/, '').trim();
+    return (cut || text.slice(0, 245).trim()) + '… Read the next step for details.';
+  };
+  const contentNote = concise(cd.notes || cd.feedback_note || 'Strengthen the main idea and its supporting connections.');
 
   const rows = [
     { name:'Content', score:traits.content||0, max:cMax,
       note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: meaning and connections need a complete assessment.'
-        : (traits.content >= cMax) ? 'Main message, relevant support and conclusion connect clearly.' : (cd.notes || 'Strengthen the main idea and its supporting connections.') },
+        : (traits.content >= cMax) ? 'Main message, relevant support and conclusion connect clearly.' : contentNote },
     { name:'Form', score:traits.form||0, max:1,
       note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
     { name:'Grammar', score:traits.grammar||0, max:2,
@@ -14385,23 +14391,59 @@ function renderCoverage(data, passage){
   if (!el) return;
   const keyEls = passage.keyElements || {};
   const cd = data.content_details || {};
+  const assessment = cd.summary_assessment || {};
   const captured = new Set(cd.key_ideas_present || []);
   const missing = new Set(cd.key_ideas_missing || []);
 
   const labels = keyEls.topic || keyEls.pivot || keyEls.conclusion
     ? [['topic','Main idea'],['pivot','Support'],['conclusion','Conclusion']]
     : [['what','Main idea'],['why','Reason'],['how','Support'],['result','Result']];
+  const semantic = new Set();
+  const mainKey = labels.some(([k]) => k === 'what') ? 'what' : 'topic';
+  const conclusionKey = labels.some(([k]) => k === 'result') ? 'result' : 'conclusion';
+  if (assessment.main_idea_accurate === true && keyEls[mainKey]) semantic.add(mainKey);
+  if (['captured', 'clearly_implied', 'not_applicable'].includes(assessment.conclusion_status)
+      && keyEls[conclusionKey]) semantic.add(conclusionKey);
+
+  // The semantic judge may describe a support proposition without using the
+  // passage's checklist label. Map it to the closest support row for display;
+  // this keeps the table consistent with the explanation and avoids showing
+  // every row as “Not selected” when the summary clearly contains support.
+  const evidence = Array.isArray(assessment.supporting_evidence)
+    ? assessment.supporting_evidence.filter(v => typeof v === 'string' && v.trim()) : [];
+  const supportKeys = labels.map(([k]) => k)
+    .filter(k => ![mainKey, conclusionKey].includes(k) && keyEls[k]);
+  const tokens = value => String(value || '').toLowerCase().match(/[a-z0-9]{4,}/g) || [];
+  const stop = new Set(['that','this','with','from','into','than','their','they','have','been','will','which','also','more','such','what','where','when']);
+  const overlap = (a, b) => {
+    const left = new Set(tokens(a).filter(t => !stop.has(t)));
+    const right = new Set(tokens(b).filter(t => !stop.has(t)));
+    let hits = 0;
+    left.forEach(t => { if (right.has(t)) hits += 1; });
+    return hits;
+  };
+  evidence.forEach((item, index) => {
+    let best = '', bestHits = 0;
+    supportKeys.forEach(k => {
+      if (semantic.has(k)) return;
+      const hits = overlap(item, keyEls[k]);
+      if (hits > bestHits) { best = k; bestHits = hits; }
+    });
+    if (best && bestHits >= 1) semantic.add(best);
+    else if (supportKeys[index] && !semantic.has(supportKeys[index])) semantic.add(supportKeys[index]);
+  });
+
   el.innerHTML = labels.filter(([k]) => keyEls[k]).map(([k, label]) => {
     let status, statusCls;
-    if(captured.has(k)){ status = 'Included'; statusCls = 'covered'; }
+    if(captured.has(k) || semantic.has(k)){ status = 'Included'; statusCls = 'covered'; }
     else if(missing.has(k)){ status = 'Not selected'; statusCls = 'partial'; }
     else { status = 'Review'; statusCls = 'partial'; }
     const txt = String(keyEls[k] || '').replace(/<[^>]+>/g,'');
     return `
       <div class="coverage-row">
         <div class="cov-key"><span class="cov-dot ${k}"></span>${label.toUpperCase()}</div>
-        <div class="cov-text ${statusCls === 'missing' ? 'missing' : ''}">${escapeHtml(txt)}</div>
-        <div class="cov-status ${statusCls}">${status}</div>
+        <div class="cov-text">${escapeHtml(txt)}</div>
+        <div class="cov-status ${statusCls}" title="${status === 'Included' ? 'This proposition is represented in the summary.' : status === 'Not selected' ? 'This idea was not identified in the summary.' : 'The assessment did not map this checklist row with certainty.'}">${status}</div>
       </div>`;
   }).join('');
 }

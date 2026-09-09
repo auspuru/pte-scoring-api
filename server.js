@@ -4156,6 +4156,12 @@ app.post('/api/grade', async (req, res) => {
     if (cohesionPenaltyApplied) overallScore = Math.min(overallScore, 79);
     // Derive every proficiency label from the same capped estimate.
     let band = rawToBandDynamic(pteToRaw(overallScore, maxRaw), maxRaw);
+    // A high language subtotal must not make an incomplete Content response
+    // look like a high-band answer. Keep the public band label within the
+    // ceiling implied by the holistic Content result.
+    if (contentScore < maxContent) {
+      band = ({ 0: 'Band 5', 1: 'Band 6', 2: 'Band 7', 3: 'Band 8' })[contentScore] || band;
+    }
 
     // Pearson-calibrated tolerance: with full content and valid form, one or two
     // local language slips may coexist with Band 9 when meaning stays clear.

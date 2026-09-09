@@ -7,6 +7,12 @@
   'use strict';
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const list = value => Array.isArray(value) ? value : [];
+  const compact = (value, limit = 420) => {
+    const text = clean(value).replace(/\s+/g, ' ');
+    if (text.length <= limit) return text;
+    const sentence = text.slice(0, limit).replace(/\s+\S*$/, '').trim();
+    return (sentence || text.slice(0, limit).trim()) + '…';
+  };
   function build(data) {
     const traits = data.trait_scores || {};
     const content = data.content_details || {};
@@ -19,10 +25,10 @@
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
     const priorities = [];
     const optional = [];
-    const add = (title, detail) => priorities.push({ title, detail });
+    const add = (title, detail) => priorities.push({ title, detail: compact(detail) });
     const languageDetail = (annotations, fallback) => {
       const issues = annotations.filter(a => a && a.affects_score === true && clean(a.meaning_effect));
-      return issues.slice(0, 2).map(a => '“' + clean(a.phrase) + '” → “' + clean(a.fix) + '”. ' + clean(a.meaning_effect)).join(' ') || fallback;
+      return compact(issues.slice(0, 2).map(a => '“' + clean(a.phrase) + '” → “' + clean(a.fix) + '”. ' + clean(a.meaning_effect)).join(' ') || fallback);
     };
     if (!formValid) {
       add('Make it one sentence within 5–75 words', clean((data.form_details || {}).reason) || 'Join your ideas into one complete sentence, check the word count, and end with sentence punctuation.');
@@ -51,7 +57,7 @@
     const summary = !formValid ? 'The form requirements need attention before this response can receive a complete score.'
       : provisional ? 'This result is provisional. A complete assessment of meaning and connections is still needed.'
       : full ? 'Your summary captures the main message, relevant support and conclusion with clear connections. Minor slips that preserve meaning do not reduce your marks.'
-      : clean(content.notes) || clean(content.feedback_note) || 'Review the priorities below to see what held this response back and what to change next.';
+      : compact(clean(content.notes) || clean(content.feedback_note) || 'Review the priorities below to see what held this response back and what to change next.');
     return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, formValid };
   }
   // Recompute presentation from traits, including previously saved attempts.
@@ -59,17 +65,23 @@
   function presentation(data) {
     const feedback = build(data);
     const t = data.trait_scores || {};
+    const contentDetails = data.content_details || {};
+    const assessment = contentDetails.summary_assessment || {};
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
     const raw = ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
     const estimate = Math.min(Number(data.overall_score) || 0, caps[Math.floor(content)]);
-    let headline = feedback.full ? 'Complete, well-connected summary' : 'Review the language affecting meaning';
+    const fullEligible = contentDetails.full_content_eligible === true
+      || (contentDetails.full_content_eligible == null && feedback.full
+        && assessment.relationships_clear === true
+        && !list(assessment.missing_dependencies).length);
+    let headline = fullEligible ? 'Complete, well-connected summary' : 'Review the missing content or connection';
     if (!feedback.formValid) headline = 'Form requirements not met';
     else if (feedback.provisional) headline = 'Provisional result';
     else if (content <= 1) headline = 'Incomplete summary — limited content';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
     else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
-    const focusContent = feedback.formValid && content < 4;
+    const focusContent = feedback.formValid && (!fullEligible || content < 4);
     return { headline, score: focusContent ? content : raw, max: focusContent ? 4 : 9,
       label: focusContent ? 'Content score' : 'Trait total', raw, estimate,
       secondary: feedback.provisional ? 'Assessment incomplete — submit again for a confirmed result.'
@@ -77,4 +89,3 @@
   }
   return { build, presentation };
 });
-

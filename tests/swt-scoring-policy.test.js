@@ -225,10 +225,12 @@ test('Content caps apply equally to PTE estimates and bands while raw totals sta
     const j = judgment();
     j.content_score = content;
     j.summary_assessment.conclusion_status = 'missing';
+    j.summary_assessment.relationships_clear = false;
+    j.summary_assessment.missing_dependencies = [{ effect: 'the effect', missing_context: 'the necessary cause', explanation: 'The selected effect is disconnected.' }];
     const result = await grade(fixtures[1], j);
     assert.equal(result.trait_scores.content, content);
     assert.equal(result.raw_score, content + 5);
     assert.equal(result.overall_score, [15, 38, 65, 79][content]);
-    assert.equal(result.band, ['Band 5', 'Band 6', 'Band 7.5', 'Band 8'][content]);
+    assert.equal(result.band, ['Band 5', 'Band 6', 'Band 7', 'Band 8'][content]);
   }
 });

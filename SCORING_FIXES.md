@@ -66,3 +66,11 @@ Added contextual calibration for Farm Cottage, Tourism, Web invention, Forecasti
 Feedback now explicitly prioritises a captured relationship and one passage-grounded repair, with optional refinements separated from deductions. No mandatory synonym count, connector template or preferred length within 5–75 words.
 
 Validation: deterministic report-policy regressions, existing route and feedback tests. These use labelled semantic assessments; they do not certify live AI agreement or reproduce Pearson's scoring engine.
+
+## 20.3.3 — content-first result display and coverage consistency
+
+An incomplete response can retain full Grammar and Vocabulary without being presented as a high-band result. Incomplete Content now sets the public band ceiling (Content 1 → Band 6, Content 2 → Band 7, Content 3 → Band 8), while the PTE estimate remains a secondary practice estimate. The raw total remains the sum of the four traits.
+
+The result hero leads with Content for incomplete or uncertain responses, including reopened saved attempts. The coverage table combines checklist data with the semantic assessment, so captured main ideas, supporting evidence and conclusions are shown as Included even when the model uses different labels. Long explanations are shortened in the visible cards, and coverage labels have enough width to avoid overlap on desktop and mobile.
+
+Regression coverage now includes stale high-band data, all incomplete Content levels, semantic coverage mapping, long feedback text and category-level London compression. All 37 deterministic checks pass.
