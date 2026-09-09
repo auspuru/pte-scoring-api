@@ -1007,6 +1007,7 @@ async function flushSyncDirect(options = {}) {
     }
     if (!r.ok) throw new Error(`Sync push failed (${r.status})`);
     const response = await r.json().catch(() => ({}));
+    if (response && response.success === false) throw new Error(response.error || 'Sync push rejected');
     if (Array.isArray(response.practiceHistory)) {
       const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
       practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, practiceHistoryDeleted);
@@ -1015,6 +1016,9 @@ async function flushSyncDirect(options = {}) {
         userProfile.practiceHistory = merged;
         userProfile.practiceHistoryDeleted = practiceHistoryDeleted;
       }
+      if (document.getElementById('practiceHistoryList')) renderPracticeHistory();
+      updatePracticeStats();
+      updateDashboard();
     }
     offlineMode = false;
     cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
