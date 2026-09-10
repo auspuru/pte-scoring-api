@@ -258,7 +258,7 @@
 
 <!-- ============ APP CORE CONTAINER ============ -->
 <div class="app-shell" style="display:none;" id="appShell">
-  <a class="portal-skip-link" href="#portalContent">Skip to practice content</a>
+  <a class="portal-skip-link" href="#portalContent" onclick="event.preventDefault(); document.getElementById('portalContent').focus()">Skip to practice content</a>
   <button type="button" class="portal-menu-backdrop" id="portalMenuBackdrop" aria-label="Close navigation" tabindex="-1"></button>
   <!-- Collapsible Left Sidebar -->
   <aside class="sidebar-nav" id="portalSidebar" aria-label="Workspace navigation">
