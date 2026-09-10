@@ -158,3 +158,8 @@ body.reading-exam-open .portal-skip-link { display: none !important; }
   .reading-exam-footer-row { gap: 12px; }
   .reading-exam-footer-row p { max-width: 36ch; font-size: 11px; }
 }
+
+.reading-format-guide { margin: 16px 0; }
+.reading-format-guide summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+.reading-format-guide table { width: 100%; border-collapse: collapse; text-align: left; }
+.reading-format-guide th, .reading-format-guide td { padding: 10px; border-bottom: 1px solid var(--line); }

@@ -1,6 +1,6 @@
 {
   "source": "auspuru/ptemocktestreading",
-  "version": 2,
+  "version": 3,
   "sets": [
     {
       "id": "v1",
@@ -1635,7 +1635,7 @@
             "numerous",
             "isolated"
           ],
-          "passage": "Species counts alone provide an incomplete picture of biodiversity. Two sites may contain the same number of species yet differ greatly in how [[1]] those species are, how evenly individuals are distributed, and which ecological roles are represented. Conservation assessments therefore combine richness with measures of abundance and [[2]]. This broader approach can reveal that a community is becoming more [[3]] even before total species numbers decline. Such early warning is valuable because ecological recovery is often more difficult once functional diversity has been [[4]].",
+          "passage": "Species counts provide an incomplete picture of biodiversity. Two sites may contain the same number of species yet differ in how [[1]] those species are, how evenly individuals are distributed, and which ecological roles are represented. Conservation assessments therefore combine richness with measures of abundance and [[2]]. This broader approach can reveal that a community is becoming more [[3]] even before species numbers decline. Such warning is valuable because ecological recovery is more difficult once functional diversity has been [[4]].",
           "answers": [
             "distinct",
             "composition",
@@ -2022,7 +2022,7 @@
   ],
   "mixedMock": {
     "id": "full-mixed",
-    "name": "Full mixed reading mock",
+    "name": "Custom mixed-skills practice",
     "minutes": 45,
     "swtCount": 1,
     "audioQuestions": [
@@ -2193,7 +2193,89 @@
       "id": "sectional-2",
       "name": "Sectional Reading Mock 2",
       "setId": "v2",
-      "minutes": 25
+      "minutes": 30,
+      "questionRefs": [
+        {
+          "setId": "v2",
+          "questionId": 2
+        },
+        {
+          "setId": "v2",
+          "questionId": 3
+        },
+        {
+          "setId": "v2",
+          "questionId": 4
+        },
+        {
+          "setId": "v2",
+          "questionId": 5
+        },
+        {
+          "setId": "v2",
+          "questionId": 6
+        },
+        {
+          "setId": "v3",
+          "questionId": 1
+        },
+        {
+          "setId": "v2",
+          "questionId": 7
+        },
+        {
+          "setId": "v2",
+          "questionId": 8
+        },
+        {
+          "setId": "v3",
+          "questionId": 7
+        },
+        {
+          "setId": "v2",
+          "questionId": 9
+        },
+        {
+          "setId": "v2",
+          "questionId": 10
+        },
+        {
+          "setId": "v3",
+          "questionId": 9
+        },
+        {
+          "setId": "v2",
+          "questionId": 11
+        },
+        {
+          "setId": "v2",
+          "questionId": 12
+        },
+        {
+          "setId": "v2",
+          "questionId": 13
+        },
+        {
+          "setId": "v2",
+          "questionId": 14
+        },
+        {
+          "setId": "v3",
+          "questionId": 11
+        },
+        {
+          "setId": "v2",
+          "questionId": 15
+        },
+        {
+          "setId": "v2",
+          "questionId": 16
+        },
+        {
+          "setId": "v3",
+          "questionId": 15
+        }
+      ]
     }
   ]
 }

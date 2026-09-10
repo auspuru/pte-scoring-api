@@ -18,12 +18,52 @@
     return valid ? { earned: data.raw_score, possible: 9 } : { earned: 0, possible: 9, pending: true };
   }
   function isAudio(q) { return q.type === 'hcs' || q.type === 'hiw'; }
+  // Pearson PTE Academic Test Taker Score Guide, p. 40; checked 10 September 2026.
+  // These are format constraints only; scoring is intentionally independent.
+  const readingFormat = {
+    minutes: [23, 30],
+    source: 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf',
+    tasks: [
+      { type: 'dropdown', label: 'Dropdown blanks', min: 5, max: 6, words: 300 },
+      { type: 'mcma', label: 'Multiple answers', min: 2, max: 3, words: 350 },
+      { type: 'reorder', label: 'Reorder paragraphs', min: 2, max: 3, words: 150 },
+      { type: 'wordbank', label: 'Drag-and-drop blanks', min: 4, max: 5, words: 80 },
+      { type: 'mcsa', label: 'Single answer', min: 2, max: 3, words: 300 }
+    ]
+  };
+  function validateReading(questions, minutes) {
+    if (!Number.isFinite(minutes) || minutes < readingFormat.minutes[0] || minutes > readingFormat.minutes[1]) throw Error('This reading mock has an invalid section time.');
+    if (new Set(questions.map(q => q.uid)).size !== questions.length) throw Error('This reading mock contains repeated questions.');
+    const order = readingFormat.tasks.map(t => t.type);
+    let last = -1;
+    for (const q of questions) {
+      const position = order.indexOf(q.type), task = readingFormat.tasks[position];
+      if (position < 0 || position < last) throw Error('This reading mock has an invalid task order.');
+      last = position;
+      const text = q.type === 'reorder' ? q.items.map(item => item.text).join(' ') : q.passage;
+      if (String(text || '').trim().split(/\s+/).filter(Boolean).length > task.words) throw Error('A reading passage exceeds the exam format’s word limit.');
+    }
+    for (const task of readingFormat.tasks) {
+      const count = questions.filter(q => q.type === task.type).length;
+      if (count < task.min || count > task.max) throw Error('This reading mock has an invalid number of ' + task.label.toLowerCase() + ' questions.');
+    }
+  }
   function compose(bank, mode, setId, swtPassage) {
     const sectional = bank.sectionalMocks.find(item => item.id === mode);
     const set = bank.sets.find(item => item.id === (sectional?.setId || setId));
     if (!set) throw Error('This question set is unavailable.');
     const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
-    if (sectional) return { name: sectional.name, minutes: sectional.minutes, questions: reading };
+    if (sectional) {
+      const questions = sectional.questionRefs ? sectional.questionRefs.map(ref => {
+        const source = bank.sets.find(item => item.id === ref.setId);
+        const q = source?.questions.find(item => item.id === ref.questionId);
+        if (!q) throw Error('A sectional reading question is unavailable.');
+        return { ...q, uid: source.id + ':' + q.id, reasoning: source.reasoning[q.id] || {} };
+      }) : reading;
+      validateReading(questions, sectional.minutes);
+      return { name: sectional.name, minutes: sectional.minutes, questions };
+    }
+    if (mode === 'mock') validateReading(reading, set.minutes);
     if (mode !== 'full') return { name: set.name, minutes: set.minutes, questions: reading };
     if (!swtPassage?.text || !swtPassage.keyElements) throw Error('The SWT passage could not load. Please try again.');
     const swt = { id: swtPassage.id, uid: 'mixed:swt:' + swtPassage.id, type: 'swt', title: swtPassage.title || 'Summarise written text', passageId: swtPassage.id, passage: swtPassage.text, keyPoints: swtPassage.keyElements, sampleResponse: swtPassage.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. Aim to spend 10 minutes on this question.' };
@@ -81,5 +121,5 @@
     }
     return { play, cancel };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading };
 });

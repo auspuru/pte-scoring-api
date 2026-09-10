@@ -76,8 +76,9 @@ test('Full mixed mock adds SWT and highlight tasks; two fixed sectionals contain
   assert.equal(new Set(full.questions.map(q=>q.uid)).size,full.questions.length);
  }
  const sections=bank.sectionalMocks.map(m=>compose(bank,m.id,'v3'));
- assert.deepEqual(sections.map(s=>s.questions.length),[16,15]);
- assert(sections.every(s=>s.minutes===25&&s.questions.every(q=>!['swt','hcs','hiw'].includes(q.type))));
+ assert.deepEqual(sections.map(s=>s.questions.length),[16,20]);
+ assert.deepEqual(sections.map(s=>s.minutes),[25,30]);
+ assert(sections.every(s=>s.questions.every(q=>!['swt','hcs','hiw'].includes(q.type))));
  assert(!sections[0].questions.some(q=>sections[1].questions.some(other=>other.uid===q.uid)));
  assert.throws(()=>compose(bank,'full','v1'),/SWT passage/);
 });
@@ -183,10 +184,10 @@ test('Exam Next confirms unanswered parts, blocks backward movement, and restore
 test('The last Next submits once, then unlocks review of earlier questions',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
  const saved=()=>JSON.parse(h.values.get(storageKey('first')));
- for(let i=0;i<14;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
+ for(let i=0;i<saved().session.questions.length-1;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
  h.click({action:'exam-next'});assert.equal(saved().session.done,false);assert.match(h.host.innerHTML,/final question/);
  h.click({action:'exam-confirm'});assert.equal(saved().session.done,true);assert.equal(saved().history.length,1);assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);
- h.click({question:'0'});assert.match(h.host.innerHTML,/Question 1 of 15/);assert.equal(saved().session.index,0);
+ h.click({question:'0'});assert.match(h.host.innerHTML,/Question 1 of 20/);assert.equal(saved().session.index,0);
  h.timers.at(-1)();assert.equal(saved().history.length,1);
 });
 test('The two reorder panels transfer, return and reorder selected paragraphs without duplicate answers',async()=>{
@@ -209,4 +210,79 @@ test('Mock mode closes on exit, completion and sign-out without changing the sto
  h.click({action:'resume'});assert(classes.has('reading-exam-open'));
  h.click({action:'submit'});assert(!classes.has('reading-exam-open'));
  await h.click({start:'sectional-1'});h.ctx.currentUserId='';h.ctx.ReadingPractice.reset();assert(!classes.has('reading-exam-open'));assert(classes.has('dark'));
+});
+
+test('Reading mock composition enforces Pearson timing, task counts, order, unique items and prompt limits',()=>{
+ const {validateReading}=require('../public/reading-mock-tools');
+ for(const set of bank.sets)assert.doesNotThrow(()=>validateReading(compose(bank,'mock',set.id).questions,set.minutes));
+ const first=compose(bank,'sectional-1','v1'),second=compose(bank,'sectional-2','v1');
+ assert.deepEqual(['dropdown','mcma','reorder','wordbank','mcsa'].map(type=>second.questions.filter(q=>q.type===type).length),[6,3,3,5,3]);
+ assert.throws(()=>validateReading(first.questions,22),/section time/);
+ assert.throws(()=>validateReading(first.questions,31),/section time/);
+ assert.throws(()=>validateReading(first.questions.filter(q=>q.type!=='mcma'),25),/number/);
+ assert.throws(()=>validateReading([...first.questions,first.questions[0]],25),/repeated/);
+ assert.throws(()=>validateReading([...first.questions].reverse(),25),/task order/);
+ const overlong=structuredClone(first.questions);overlong.find(q=>q.type==='wordbank').passage='word '.repeat(81);
+ assert.throws(()=>validateReading(overlong,25),/word limit/);
+ const broken=structuredClone(bank);broken.sectionalMocks[1].questionRefs[0].questionId=-1;
+ assert.throws(()=>compose(broken,'sectional-2','v1'),/unavailable/);
+});
+
+test('An answer event after the deadline cannot change the response before the next timer tick',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+ const key=storageKey('first'),initial=JSON.parse(h.values.get(key)).session;
+ h.ctx.Date=class extends Date { static now(){return initial.deadline+600000;} };
+ h.host.onchange({target:{dataset:{answer:'0'},value:'late answer'}});
+ const saved=JSON.parse(h.values.get(key));
+ assert.equal(saved.session.done,true);assert.equal(saved.session.finishedAt,initial.deadline);
+ assert.equal(saved.session.completionReason,'timeout');assert.deepEqual(saved.session.answers,{});
+ assert(saved.session.times[initial.questions[0].uid]<=25*60000);
+ assert.match(h.host.innerHTML,/Time is up/);
+ h.timers.at(-1)();assert.equal(JSON.parse(h.values.get(key)).history.length,1);
+});
+
+test('Next and resume enforce expiry even when browser background timers have not run',async()=>{
+ for(const action of ['exam-next','resume']){
+  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
+  const key=storageKey('first'),initial=JSON.parse(h.values.get(key)).session;
+  h.ctx.Date=class extends Date { static now(){return initial.deadline+3600000;} };
+  h.click({action});const saved=JSON.parse(h.values.get(key));
+  assert.equal(saved.session.done,true);assert.equal(saved.session.index,0);
+  assert.equal(saved.session.finishedAt-initial.startedAt,30*60000);
+  assert.equal(saved.history.length,1);
+ }
+ assert.equal(remaining({deadline:0},1),0);
+});
+
+test('Existing saved sectionals retain their original questions and deadline after a preset update',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
+ const key=storageKey('first'),old=JSON.parse(h.values.get(key));
+ old.session.questions=bank.sets[1].questions.map(q=>({...q,uid:'v2:'+q.id}));
+ old.session.formatVersion=2;old.session.deadline=old.session.startedAt+25*60000;
+ h.values.set(key,JSON.stringify(old));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ const saved=JSON.parse(h.values.get(key));assert.equal(saved.session.questions.length,15);assert.equal(saved.session.deadline,old.session.deadline);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.match(h.host.innerHTML,/keeps its original questions and timer/);
+});
+
+test('Clicking a selected single answer again clears it without changing any other answers',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+ const key=storageKey('first'),saved=()=>JSON.parse(h.values.get(key));
+ const index=saved().session.questions.findIndex(q=>q.type==='mcsa');
+ for(let i=0;i<index;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
+ const uid=saved().session.questions[index].uid;
+ h.host.querySelectorAll=()=>[{dataset:{choice:'0'}}];
+ h.host.onchange({target:{dataset:{choice:'0'}}});assert.deepEqual(saved().session.answers[uid],[0]);
+ let prevented=false;
+ h.host.onclick({target:{dataset:{choice:'0'},matches:()=>true},preventDefault(){prevented=true;}});
+ assert(prevented);assert.deepEqual(saved().session.answers[uid],[]);
+});
+
+test('Leaving during an asynchronous mixed-mock start prevents the late response replacing a new session',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();let resolve;
+ h.ctx.fetch=()=>new Promise(r=>resolve=r);
+ const pending=h.click({start:'full'});h.ctx.ReadingPractice.leave();
+ await h.click({start:'sectional-1'});
+ resolve({ok:true,json:async()=>[swtPassage]});await pending;
+ const saved=JSON.parse(h.values.get(storageKey('first')));
+ assert.equal(saved.session.mode,'sectional-1');assert.equal(saved.session.questions.length,16);
 });
