@@ -66,12 +66,23 @@ test('A content deduction always has a next step, even if the model omitted impr
 
 test('Quoted real misspellings support deductions without counting stylistic advice', () => {
   const text = essay.replace('information', 'infromation');
-  const raw = good(); raw.scores.spelling = 1;
+  const raw = good(); raw.scores.spelling = 2;
   raw.errors = [{ type: 'spelling', phrase: 'infromation', correction: 'information', impact: 'minor', explanation: 'Correct the letter order.' }];
   const result = policy.normalizeResult(raw, text);
-  assert.equal(result.scores.spelling, 1);
+  assert.equal(result.scores.spelling, 2);
   assert.equal(result.scores.grammar, 2);
-  assert.deepEqual(result.spellingErrors, ['infromation']);
+  assert.deepEqual(result.spellingErrors, []);
+  assert.equal(result.optionalRefinements[0].affects_score, false);
+});
+
+test('Meaning-changing language errors are the only grammar deductions', () => {
+  const text = essay.replace('can educate', 'cannot educate');
+  const raw = good(); raw.scores.grammar = 1;
+  raw.errors = [{ type: 'grammar', phrase: 'cannot educate', correction: 'can educate', impact: 'meaning',
+    explanation: 'The added negation reverses the claim about what media can do.' }];
+  const result = policy.normalizeResult(raw, text);
+  assert.equal(result.scores.grammar, 1);
+  assert.deepEqual(result.grammarIssues, ['cannot educate']);
 });
 
 test('Prompt requires an opinion only when the question asks and avoids template-count rules', () => {

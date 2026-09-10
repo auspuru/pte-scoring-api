@@ -27,8 +27,8 @@ Assess the question's actual requirements first. Require a personal opinion only
 Use INTEGER scores only:
 - content 0–6: 6 fully answers the prompt with relevant, developed ideas and supporting explanation/examples; 4–5 mostly answers it with some weak development; 2–3 partial or thin answer; 0–1 off-topic or very limited. Do not reward generic paragraphs merely because they contain topic words. Do not deduct solely for omitting your preferred example or taking a defensible different position.
 - form 0–2: supplied word count is ${form.count}, yielding exactly ${form.score}/2. Use this number; do not recount. 200–300 = 2, 120–199 or 301–380 = 1, outside 120–380 = 0. Form measures length only; do not zero other traits merely because Form is low.
-- spelling 0–2: 2 for no actual misspellings; 1 for 1–3 distinct misspellings; 0 for 4+. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors; repeated identical errors appear once.
-- grammar 0–2: 2 for zero to two minor errors that do not impede meaning; 1 for several actual errors while meaning remains mostly clear; 0 for frequent errors that block meaning. Count actual grammar, not stylistic preferences. A more elegant synonym, a shorter sentence, or another valid connector is optional advice.
+- spelling 0–2: 2 when spelling is accurate or minor slips leave the meaning unchanged; 1 for 1–3 distinct spelling errors that change or obscure meaning; 0 for 4+ meaning-changing spelling errors. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors; repeated identical errors appear once.
+- grammar 0–2: 2 when meaning is clear and unchanged, including a few minor grammar slips; 1 for one or two actual grammar errors that change or obscure meaning; 0 for frequent meaning-changing errors that block meaning. Count actual grammar, not stylistic preferences. A more elegant synonym, a shorter sentence, or another valid connector is optional advice.
 - vocabulary 0–2: 2 appropriate, precise, varied wording; 1 adequate with some repetition or imprecision; 0 very limited or frequently wrong. A simple correct word is not an error; do not invent a compulsory synonym quota.
 - linguistic 0–6: assess useful sentence variety and control (simple, compound and complex); 6 varied/confident, 4–5 some variety, 2–3 limited, 0–1 very repetitive or broken. Complex language is not required in every sentence.
 - coherence 0–6: assess clear paragraphs and understandable connections; 6 clear and smooth, 4–5 mostly organised, 2–3 weak connections, 0–1 confused. Penalise a genuinely missing connection, not failure to use a preferred connector template.
@@ -78,6 +78,10 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
         optional.push(item); continue;
       }
       if (!['grammar', 'spelling'].includes(item.type) || !['minor', 'meaning'].includes(item.impact)) fail();
+      // A minor, meaning-preserving slip is useful coaching but cannot lower a
+      // trait score; keep it out of the scored error list and show it under
+      // optional refinements instead.
+      if (item.impact === 'minor') { optional.push({ ...item, optional: true }); continue; }
       if (!errors.some(e => e.type === item.type && e.phrase.toLowerCase() === item.phrase.toLowerCase())) errors.push({ ...item });
     }
     const promptCoverage = raw.promptCoverage.map(item => {
@@ -93,8 +97,8 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
     const spellingErrors = errors.filter(e => e.type === 'spelling');
     const grammarErrors = errors.filter(e => e.type === 'grammar');
     const spelling = spellingErrors.length === 0 ? 2 : spellingErrors.length <= 3 ? 1 : 0;
-    if (scores.spelling !== spelling) fail();
-    if (scores.grammar < 2 && grammarErrors.length <= 2 && grammarErrors.every(e => e.impact === 'minor')) fail();
+    const grammar = grammarErrors.length === 0 ? 2 : grammarErrors.length <= 2 ? 1 : 0;
+    if (scores.spelling !== spelling || scores.grammar !== grammar) fail();
     const form = formFor(essay);
     scores.form = form.score;
     scores.total = Object.values(scores).reduce((sum, n) => sum + n, 0);

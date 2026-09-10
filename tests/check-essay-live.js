@@ -23,7 +23,7 @@ const grader = createEssayGrader(async prompt => {
 (async () => {
   const cases = [
     { name: 'Balanced media essay without an unrequested opinion', ...fixture, minContent: 4, spelling: 2 },
-    { name: 'Real misspelling', question: fixture.question, essay: fixture.essay.replace('information', 'infromation'), minContent: 4, spelling: 1 },
+    { name: 'Minor misspelling does not lower marks', question: fixture.question, essay: fixture.essay.replace('information', 'infromation'), minContent: 4, spelling: 2 },
     { name: 'Unrelated response', question: 'Should governments invest more in railway construction than in roads? Give your opinion and reasons.', essay: fixture.essay, maxContent: 1, spelling: 2 }
   ];
   let failed = 0;
