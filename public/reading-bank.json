@@ -1,6 +1,6 @@
 {
   "source": "auspuru/ptemocktestreading",
-  "version": 3,
+  "version": 4,
   "sets": [
     {
       "id": "v1",
@@ -2023,8 +2023,8 @@
   "mixedMock": {
     "id": "full-mixed",
     "name": "Custom mixed-skills practice",
-    "minutes": 45,
-    "swtCount": 1,
+    "minutes": 55,
+    "swtCount": 2,
     "audioQuestions": [
       {
         "id": "hcs-urban-cooling",
@@ -2180,7 +2180,9 @@
           "correct": "The recording separates precise measurement from the strength and transferability of an explanation. The substitutions alter the argument about uncertainty, incompatible explanations and evidence that challenges a preferred account."
         }
       }
-    ]
+    ],
+    "listeningMinutes": 10,
+    "audioPreparationSeconds": 10
   },
   "sectionalMocks": [
     {

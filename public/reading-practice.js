@@ -1,10 +1,11 @@
 /* Reading is a native portal pane; it does not contact the former mock service. */
 (function (root, factory) {
   const api = factory(typeof module === 'object' && module.exports ? require('./reading-mock-tools') : root.ReadingMockTools,
-    typeof module === 'object' && module.exports ? require('./reading-exam-player') : root.ReadingExamPlayer);
+    typeof module === 'object' && module.exports ? require('./reading-exam-player') : root.ReadingExamPlayer,
+    typeof module === 'object' && module.exports ? require('./reading-session-timing') : root.ReadingSessionTiming);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingPractice = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam, timing) {
   'use strict';
   const labels = { dropdown: 'Dropdown blanks', wordbank: 'Drag-and-drop blanks', reorder: 'Reorder paragraphs', mcsa: 'Single answer', mcma: 'Multiple answers' };
   const taskLabels = { ...labels, ...mock.extraLabels };
@@ -73,8 +74,9 @@
     activeSince = Date.now();
   }
   function reset() {
+    document.removeEventListener?.('visibilitychange', visibilityChanged);
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
-    starting = false; pendingGrades.clear(); speaker?.cancel(); setExamMode(false); selectedParagraph = {}; examNotice = null;
+    starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
     if (host) host.replaceChildren();
   }
   function setExamMode(enabled) {
@@ -82,7 +84,7 @@
     host?.classList?.toggle('reading-exam-active',active);
     document.body?.classList?.toggle('reading-exam-open',active);
   }
-  function leave() { startGeneration++; starting=false; recordTime(); speaker?.cancel(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
+  function leave() { startGeneration++; starting=false; recordTime(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function open() {
     const nextOwner = identity();
     if (!nextOwner) return;
@@ -92,7 +94,7 @@
     host.innerHTML = '<div class="reading-card" role="status">Preparing your reading practice…</div>';
     try {
       if (!bank) {
-        const response = await fetch('reading-bank.json?v=3', { signal: AbortSignal.timeout(15000) });
+        const response = await fetch('reading-bank.json?v=4', { signal: AbortSignal.timeout(15000) });
         if (!response.ok) throw Error('Unable to load question bank');
         bank = await response.json();
       }
@@ -109,6 +111,7 @@
       if (state.session) repairSession(state.session);
       host.onclick = click; host.onchange = change; host.oninput = input;
       speaker ||= mock.createSpeaker(globalThis, audioState);
+      document.addEventListener?.('visibilitychange', visibilityChanged);
       host.ondragstart = dragStart; host.ondragover = dragOver; host.ondrop = drop;
       render(); interval = setInterval(tick, 1000); activeSince = Date.now(); tick();
     } catch (_) {
@@ -122,7 +125,7 @@
     s.flags = Array.isArray(s.flags) ? s.flags : [];
     s.checked = Array.isArray(s.checked) ? s.checked : [];
     for (const [uid,item] of Object.entries(s.assessments)) if (item.status === 'working' && !pendingGrades.has(s.id+':'+uid)) { item.status = 'error'; item.message = 'The previous grading request was interrupted. Retry your saved response.'; }
-    for (const item of Object.values(s.audioStates)) if (['loading','playing'].includes(item.status)) { item.status = 'error'; item.message = 'Playback was interrupted. Replay this question before submitting.'; }
+    for (const item of Object.values(s.audioStates)) if (['countdown','loading','playing'].includes(item.status)) { item.status = 'error'; item.message = 'Audio was interrupted. Select Play audio when you are ready.'; }
   }
   function questionList(set) { return set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} })); }
   async function start(mode) {
@@ -134,31 +137,35 @@
     const startTicket = ++startGeneration;
     starting = true;
     const status = host.querySelector('[data-start-status]');
-    if (status) status.textContent = mode === 'full' ? 'Preparing your mixed mock and SWT passage…' : 'Preparing your questions…';
+    if (status) status.textContent = mode === 'full' ? 'Preparing your mixed practice and two SWT passages…' : 'Preparing your questions…';
     try {
-      let passage;
+      let swtPassages;
       if (mode === 'full') {
-        const valid = p => p.id != null && typeof p.text === 'string' && p.text.length > 100 && p.keyElements && Object.values(p.keyElements).some(value => typeof value === 'string' && value.trim());
-        let available = typeof passages !== 'undefined' && Array.isArray(passages) ? passages.filter(valid) : [];
-        if (!available.length) {
+        const valid = p => p && p.id != null && typeof p.text === 'string' && p.text.length > 100 && p.keyElements && Object.values(p.keyElements).some(value => typeof value === 'string' && value.trim());
+        const unique = items => { const ids = new Set(), texts = new Set(); return items.filter(valid).filter(p => { const id=String(p.id), text=p.text.trim().replace(/\s+/g,' ').toLowerCase(); if(ids.has(id)||texts.has(text))return false;ids.add(id);texts.add(text);return true; }); };
+        let available = unique(typeof passages !== 'undefined' && Array.isArray(passages) ? passages : []);
+        if (available.length < 2) {
           const response = await fetch((typeof API_URL !== 'undefined' ? API_URL : '') + '/api/passages', { signal: AbortSignal.timeout(15000) });
           if (!response.ok) throw Error('The SWT passage could not load. Please try again.');
           const data = await response.json();
-          available = (Array.isArray(data) ? data : data.passages || []).filter(valid);
+          available = unique([...available, ...(Array.isArray(data) ? data : data.passages || [])]);
         }
-        if (!available.length) throw Error('The SWT passage could not load. Please try again.');
-        passage = available[Date.now() % available.length];
+        if (available.length < 2) throw Error('Two different SWT passages are required. Please try again.');
+        const first = Date.now() % available.length;
+        swtPassages = [available[first], available[(first + 1) % available.length]];
       }
       if (ticket !== generation || startTicket !== startGeneration || startedOwner !== identity() || token !== authToken()) return;
-      let plan = mock.compose(bank, mode, set.id, passage);
+      let plan = mock.compose(bank, mode, set.id, swtPassages);
       if (mode === 'diagnostic') plan = { questions: diagnostic(bank.sets), minutes: 15, name: 'Reading diagnostic' };
       if (mode === 'practice') {
         const questions = questionList(set).filter(q => type === 'all' || q.type === type);
         plan = { questions, minutes: questions.length * 2, name: labels[type] || 'Mixed reading practice' };
       }
-      speaker?.cancel();
+      cancelAudio();
       const startedAt = Date.now();
-      state.session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, formatVersion: bank.version, questions: plan.questions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
+      const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, formatVersion: bank.version, questions: plan.questions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
+      timing.initialise(session, plan.stages, startedAt);
+      state.session = session;
       selectedWord = ''; selectedParagraph = {}; examNotice = null; activeSince = Date.now(); persist(); render();
     } catch (error) {
       if (ticket === generation && startTicket === startGeneration && startedOwner === identity() && status) status.textContent = error.message || 'This mock could not start. Please try again.';
@@ -168,18 +175,18 @@
     leave();
     const recent = state.history;
     host.innerHTML = `<div class="reading-intro"><p class="portal-eyebrow">IPT Brisbane · Reading</p><h2>Find your focus. Build your confidence.</h2><p>Practise a task, check your starting point, or rehearse with a timed mock.</p><p class="reading-note">Mocks and diagnostics use an exam screen: one question at a time, forward-only navigation, and explanations after submission. Your timer keeps running if you exit and return.</p></div>
-      ${state.session&&!state.session.done&&state.session.formatVersion!==bank.version?'<p class="reading-note">Your saved session keeps its original questions and timer. Start a new sectional to use the current presets.</p>':''}
+      ${state.session&&!state.session.done&&state.session.formatVersion!==bank.version?'<p class="reading-note">Your saved session keeps its original questions and timer. Start a new session to use the current presets and staged mixed-practice timers.</p>':''}
       ${state.session ? `<div class="portal-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done ? 'Your answers and explanations are ready to review.' : 'Continue your saved session. Timed sessions keep counting while you are away.'}</p></div><button class="portal-button primary" data-action="resume">${state.session.done ? 'Review result' : 'Continue session'}</button></div>` : ''}
       <div class="reading-setup reading-card"><label>Question set<select id="readingSet">${bank.sets.map(s=>`<option value="${s.id}">${escape(s.name)} · ${s.questions.length} questions</option>`).join('')}</select></label><label>Practice task<select id="readingType"><option value="all">All reading tasks</option>${Object.entries(labels).map(([type,label])=>`<option value="${type}">${label}</option>`).join('')}</select></label><label class="reading-check"><input type="checkbox" id="readingTimed"> Timer for practice (2 minutes per question)</label></div>
       <div class="reading-modes">
         <article class="reading-card"><span class="reading-number">01 / PRACTISE</span><h3>Reading practice</h3><p>Dropdown blanks, drag-and-drop blanks, paragraphs and multiple choice. Check explanations as you go.</p><button class="portal-button primary" data-start="practice">Start practice</button></article>
         <article class="reading-card"><span class="reading-number">02 / DISCOVER</span><h3>Diagnostic test</h3><p>10 questions across all five tasks · 15 minutes. A shorter IPT diagnostic, not a complete Reading section or a certified CEFR test.</p><button class="portal-button primary" data-start="diagnostic">Find my starting point</button></article>
-        <article class="reading-card reading-mixed-card"><span class="reading-number">03 / CONNECT</span><h3>Custom mixed-skills practice</h3><p>45 minutes · Your selected reading set + 1 SWT + 2 Highlight Correct Summary + 2 C2-targeted Highlight Incorrect Words questions.</p><p class="reading-note">A custom IPT session, not the real Reading section or a full PTE exam. SWT belongs to Speaking &amp; Writing; the highlight tasks belong to Listening. This session uses an IPT 45-minute shared timer.</p><button class="portal-button primary" data-start="full">Start mixed-skills practice</button></article>
+        <article class="reading-card reading-mixed-card"><span class="reading-number">03 / CONNECT</span><h3>Custom mixed-skills practice</h3><p>Four timed stages: SWT 1 (10 minutes), SWT 2 (10 minutes), your selected Reading set (25 minutes), then 2 HCS + 2 C2-targeted HIW questions sharing 10 minutes. Up to 55 minutes in total.</p><p class="reading-note">A custom IPT session, not the real Reading section or a full PTE exam. SWT belongs to Speaking &amp; Writing; the highlight tasks belong to Listening. Each stage has its own clock. Unused time does not carry over. Expired stages advance automatically, including while you are away. The 10-minute audio allowance is an IPT preset for these four questions, not the duration of the complete Listening section.</p><button class="portal-button primary" data-start="full">Start mixed-skills practice</button></article>
       </div>
       <div class="reading-section-heading"><h3>Sectional reading mocks</h3><p>Two Reading-section presets within Pearson’s published format. One shared section timer; no individual question timer. Work forward and review explanations after submission.</p></div>
       <details class="reading-card reading-format-guide"><summary>Real exam format and these mock presets</summary><p>Pearson publishes 23–30 minutes for Reading. Its task ranges total 15–20 questions; the exact combination varies. These are IPT presets within those ranges, not a promise of your exam’s exact count or time.</p><div class="reading-table-wrap"><table><thead><tr><th>Task, in exam order</th><th>Pearson range</th>${bank.sectionalMocks.map((m,i)=>`<th>Mock ${i+1}</th>`).join('')}</tr></thead><tbody>${mock.readingFormat.tasks.map(t=>`<tr><th>${escape(t.label)}</th><td>${t.min}–${t.max}</td>${bank.sectionalMocks.map(m=>`<td>${mock.compose(bank,m.id,m.setId).questions.filter(q=>q.type===t.type).length}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p>Use Next to save and move forward. You cannot return to earlier questions. Exiting or refreshing does not pause the clock; time expiry submits your saved answers.</p><p><a href="${mock.readingFormat.source}" target="_blank" rel="noopener noreferrer">Pearson’s current format guide, page 40</a> · Checked 10 September 2026</p></details>
       <div class="reading-sectionals">${bank.sectionalMocks.map((m,i)=>`<article class="reading-card"><span class="reading-number">MOCK 0${i+1}</span><h3>${escape(m.name)}</h3><p>${mock.compose(bank,m.id,m.setId).questions.length} questions · ${m.minutes} minutes · All five reading tasks</p><button class="portal-button" data-start="${m.id}">Start sectional ${i+1}</button></article>`).join('')}</div>
-      <div class="reading-card reading-sound-check"><div><h3>Check your sound before mixed-skills practice</h3><p>Custom practice audio uses your device’s English speech voice, not an exam recording. Each question plays once; interrupted playback can be retried. C2 is the intended difficulty of the HIW text, not a certified level.</p></div><button class="portal-button" data-action="soundcheck">Test audio</button><p data-sound-status role="status"></p></div>
+      <div class="reading-card reading-sound-check"><div><h3>Check your sound before mixed-skills practice</h3><p>Custom practice audio uses your device’s English speech voice, not an exam recording. Audio starts after a visible 10-second countdown and plays once. If your browser blocks it, select Play audio. Interrupted playback can be retried. C2 is the intended difficulty of the HIW text, not a certified level.</p></div><button class="portal-button" data-action="soundcheck">Test audio</button><p data-sound-status role="status"></p></div>
       <p data-start-status role="status"></p><p class="reading-note">Starting a new session replaces your current draft. Completed results stay in your history. Progress is saved for this account on this browser; it does not sync between devices.</p>
       <div class="reading-card"><h3>Recent reading progress</h3>${recent.length ? `<ul class="reading-history">${recent.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.percent==null?'':' · '+r.percent+'%'}${r.pending?' · SWT awaiting grade':''}${r.excluded?' · '+r.excluded+' audio items excluded':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>` : '<p>Your completed practice, diagnostics and mocks will appear here.</p>'}</div>`;
   }
@@ -191,7 +198,9 @@
     const testing=exam.isExam(s)&&!s.done;
     setExamMode(testing);
     if(testing) {
+      prepareAudio(q);
       host.innerHTML=exam.render({session:s,question:q,content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice});
+      updateAutoplay();
       return;
     }
     const review=s.done || s.checked.includes(q.uid);
@@ -205,8 +214,38 @@
       <div class="reading-actions"><button class="portal-button" data-move="-1" ${s.index===0?'disabled':''}>Previous</button><button class="portal-button" data-move="1" ${s.index===s.questions.length-1?'disabled':''}>Next question</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}</div></article></div>`;
   }
   function audioHTML(q) {
-    const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['loading','playing','complete'].includes(item?.status);
-    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='error'?'Retry audio':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || 'Listen once, then answer. Check that your sound is on.')}</span></div>`;
+    const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
+    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || 'Listen once, then answer. Check that your sound is on.')}</span></div>`;
+  }
+  function prepareAudio(q) {
+    const s=state?.session;
+    if (!s || s.done || !mock.isAudio(q) || !viewingQuestion || host.hidden || document.hidden || s.audioStates[q.uid]) return;
+    const seconds=bank.mixedMock.audioPreparationSeconds;
+    s.audioStates[q.uid]={status:'countdown',readyAt:Date.now()+seconds*1000,message:'Audio starts automatically in '+seconds+' seconds. Get ready to listen.'};
+    persist();
+  }
+  function updateAutoplay() {
+    const s=state?.session;
+    if(!owner||identity()!==owner||!s||s.done||!viewingQuestion||host.hidden||document.hidden)return;
+    const q=s.questions[s.index]; if(!mock.isAudio(q))return;
+    prepareAudio(q);
+    const item=s.audioStates[q.uid]; if(item?.status!=='countdown')return;
+    const seconds=Math.max(0,Math.ceil((item.readyAt-Date.now())/1000));
+    if(seconds===0){if(!expireSession())speaker.play(q.uid,q.audioText);return;}
+    item.message='Audio starts automatically in '+seconds+' second'+(seconds===1?'':'s')+'. Get ready to listen.';
+    const label=host.querySelector('[data-audio-status]');if(label)label.textContent=item.message;
+  }
+  function cancelAudio() {
+    const s=state?.session, q=s?.questions[s.index];
+    if(s&&!s.done&&q&&s.audioStates?.[q.uid]?.status==='countdown'){
+      s.audioStates[q.uid]={status:'error',message:'The audio countdown was interrupted. Select Play audio when you are ready.'};
+      persist();
+    }
+    speaker?.cancel();
+  }
+  function visibilityChanged() {
+    if(document.hidden){recordTime();cancelAudio();}
+    else if(owner&&identity()===owner&&state?.session&&viewingQuestion&&!host.hidden){if(!expireSession())renderSession();}
   }
   function audioState(key, status, message) {
     if (!owner || identity() !== owner) return;
@@ -217,11 +256,12 @@
     }
     const s = state?.session;
     if (!s || !s.questions.some(q=>q.uid===key)) return;
+    if(!s.done&&['playing','complete'].includes(status)&&remaining(s)===0){expireSession();return;}
     if (!s.done) { s.audioStates[key] = { status, message }; persist(); }
     if (viewingQuestion && s.questions[s.index].uid === key) {
       const el = host.querySelector('[data-audio-status]'); if (el) el.textContent = message;
       const button = host.querySelector('[data-action="play"]');
-      if (button) { button.disabled = ['loading','playing'].includes(status) || (!s.done && status==='complete'); button.textContent = s.done ? 'Replay for review' : status==='complete' ? 'Audio played' : status==='error' ? 'Retry audio' : 'Playing…'; }
+      if (button) { button.disabled = ['loading','playing'].includes(status) || (!s.done && status==='complete'); button.textContent = s.done ? 'Replay for review' : status==='complete' ? 'Audio played' : status==='error' ? 'Play audio' : status==='loading' ? 'Starting audio…' : 'Playing…'; }
     }
   }
   function questionHTML(q,a) {
@@ -259,23 +299,25 @@
     const weakest=rows.filter(r=>r.gradedPossible).sort((a,b)=>a.earned/a.gradedPossible-b.earned/b.gradedPossible)[0];
     const unanswered=s.questions.filter(q=>!s.answers[q.uid]?.some(x=>x!==''&&x!=null)).length;
     const grading=s.questions.some(q=>q.type==='swt'&&s.assessments?.[q.uid]?.status==='working');
-    return `<section class="reading-card reading-report"><p class="portal-eyebrow">IPT Brisbane · ${s.mode==='diagnostic'?'Your diagnostic snapshot':'Session complete'}</p><h2>${percent==null?'Awaiting results':percent+'% accuracy · '+earned+'/'+possible+' graded points'}</h2>${grading?`<div class="ipt-assessment-status" role="status" aria-live="polite"><img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="112" height="68"><p>IPT Brisbane’s AI scoring engine is analysing your response…</p></div>`:''}${s.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':''}<p>${unanswered} unanswered questions · ${Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))} minutes elapsed</p>${pending||excluded?`<p role="status">${pending?pending+' SWT response awaiting grade. ':''}${excluded?excluded+' audio items excluded because playback did not complete. ':''}These items are outside the graded total.</p>`:''}<p class="reading-note">IPT Brisbane practice points, not an official PTE score or a full language-level assessment. Previously practised questions can make this result less representative.${s.mode==='full'?' This custom mixed mock includes SWT and listening tasks that also exercise reading.':''}</p><div class="reading-table-wrap"><table><thead><tr><th>Task</th><th>Graded points</th><th>Accuracy</th><th>Active time</th></tr></thead><tbody>${rows.map(r=>`<tr><th>${r.label}</th><td>${r.gradedPossible?r.earned+'/'+r.gradedPossible:'—'}${r.pending?' · Pending':''}${r.excluded?' · '+r.excluded+' excluded':''}</td><td>${r.gradedPossible?Math.round(r.earned/r.gradedPossible*100)+'%':'—'}</td><td>${Math.round(s.questions.filter(q=>q.type===r.type).reduce((n,q)=>n+(s.times[q.uid]||0),0)/1000)}s</td></tr>`).join('')}</tbody></table></div><div class="reading-next"><strong>${!weakest?'Review the available feedback':earned===possible?'Keep building consistency':'Your next practice focus: '+weakest.label}</strong><p>${weakest&&earned===possible?'Try another question set and keep checking the evidence for every choice.':'Review the missed answers below, then practise without a timer before trying another timed session.'}</p></div></section>`;
+    return `<section class="reading-card reading-report"><p class="portal-eyebrow">IPT Brisbane · ${s.mode==='diagnostic'?'Your diagnostic snapshot':'Session complete'}</p><h2>${percent==null?'Awaiting results':percent+'% accuracy · '+earned+'/'+possible+' graded points'}</h2>${grading?`<div class="ipt-assessment-status" role="status" aria-live="polite"><img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="112" height="68"><p>IPT Brisbane’s AI scoring engine is analysing your response…</p></div>`:''}${s.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':''}<p>${unanswered} unanswered questions · ${Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))} minutes elapsed</p>${pending||excluded?`<p role="status">${pending?pending+' SWT response'+(pending===1?'':'s')+' awaiting grade. ':''}${excluded?excluded+' audio items excluded because playback did not complete. ':''}These items are outside the graded total.</p>`:''}<p class="reading-note">IPT Brisbane practice points, not an official PTE score or a full language-level assessment. Previously practised questions can make this result less representative.${s.mode==='full'?' This custom mixed mock includes SWT and listening tasks that also exercise reading.':''}</p><div class="reading-table-wrap"><table><thead><tr><th>Task</th><th>Graded points</th><th>Accuracy</th><th>Active time</th></tr></thead><tbody>${rows.map(r=>`<tr><th>${r.label}</th><td>${r.gradedPossible?r.earned+'/'+r.gradedPossible:'—'}${r.pending?' · Pending':''}${r.excluded?' · '+r.excluded+' excluded':''}</td><td>${r.gradedPossible?Math.round(r.earned/r.gradedPossible*100)+'%':'—'}</td><td>${Math.round(s.questions.filter(q=>q.type===r.type).reduce((n,q)=>n+(s.times[q.uid]||0),0)/1000)}s</td></tr>`).join('')}</tbody></table></div><div class="reading-next"><strong>${!weakest?'Review the available feedback':earned===possible?'Keep building consistency':'Your next practice focus: '+weakest.label}</strong><p>${weakest&&earned===possible?'Try another question set and keep checking the evidence for every choice.':'Review the missed answers below, then practise without a timer before trying another timed session.'}</p></div></section>`;
   }
   function timerText() { const left=remaining(state.session, state.session.done ? state.session.finishedAt : Date.now()); return left===null?'Untimed practice':`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}${state.session.done?' · Finished':''}`; }
   function tick() {
     if (!owner || identity()!==owner) return reset();
     if (!state?.session || state.session.done) return;
     recordTime();
-    if(remaining(state.session)===0) return finish();
+    if(expireSession()) return;
     const timer=host.querySelector('[data-timer]'); if(timer)timer.textContent=timerText();
     if(timer)timer.dataset.urgent=String(remaining(state.session)<=300);
     if (Date.now() - lastPersisted >= 10000) persist();
+    updateAutoplay();
   }
   function finish() {
     const s=state.session; if(!s||s.done)return;
-    recordTime(); speaker?.cancel(); s.done=true;
+    recordTime(); cancelAudio(); s.done=true;
     s.finishedAt=s.deadline==null?Date.now():Math.min(Date.now(),s.deadline);
     s.completionReason=s.deadline!=null&&Date.now()>=s.deadline?'timeout':'submitted';
+    timing.complete(s,s.finishedAt,s.completionReason);
     selectedWord=''; examNotice=null; selectedParagraph={};
     syncHistory(s); persist(); render();
     s.questions.filter(q=>q.type==='swt'&&String(s.answers[q.uid]?.[0]||'').trim()).forEach(q=>gradeSwt(q));
@@ -313,8 +355,17 @@
   }
   function expireSession() {
     const s=state?.session;
-    if (s&&!s.done&&remaining(s)===0) { finish(); return true; }
-    return false;
+    let changed=false;
+    while(s&&!s.done&&remaining(s)===0){
+      const stage=timing.current(s);
+      if(!stage){finish();return true;}
+      recordTime();cancelAudio();
+      if(!timing.advance(s,Date.now(),'timeout')){finish();return true;}
+      changed=true;selectedWord='';selectedParagraph={};examNotice=null;
+      s.stageNotice=stage.name+' time is up. Your saved answers are locked. '+timing.current(s).name+' has started.';
+    }
+    if(changed){persist();renderSession();}
+    return changed;
   }
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
   function change(e) {
@@ -376,8 +427,12 @@
     const s=state.session;
     if(!s||s.done||!exam.isExam(s))return;
     examNotice=null;
-    if(remaining(s)===0||s.index===s.questions.length-1)return finish();
-    recordTime();speaker?.cancel();s.index++;selectedWord='';selectedParagraph={};persist();renderSession();
+    if(expireSession())return;
+    if(s.index===s.questions.length-1)return finish();
+    recordTime();cancelAudio();
+    const stage=timing.current(s);
+    if(stage&&s.index===stage.last)timing.advance(s,Date.now());else s.index++;
+    s.stageNotice='';selectedWord='';selectedParagraph={};persist();renderSession();
     host.querySelector('[data-exam-title]')?.focus();
   }
   function examAction(action) {
@@ -392,7 +447,9 @@
     if(action==='exam-exit'){
       persist();examNotice={action:'exit',message:'Leave the test screen? The timer will keep running. Resume this question from Reading home. '+saveNotice+'.'};
     }else if(action==='exam-next'){
-      const message=exam.needsAttention(q,s.answers[q.uid]||[],s.audioStates[q.uid]);
+      let message=exam.needsAttention(q,s.answers[q.uid]||[],s.audioStates[q.uid]);
+      const stage=timing.current(s),next=s.stages?.[s.stageIndex+1];
+      if(stage&&s.index===stage.last&&next)message=(message?message+' ':'')+'Finish '+stage.name+' and start '+next.name+'? Its '+next.minutes+'-minute timer starts immediately. Unused time does not carry over.';
       if(s.index===s.questions.length-1)examNotice={action:'submit',message:(message?message+' ':'')+'This is the final question. Submit your test to view the results?'};
       else if(message)examNotice={action:'next',message};
       else return advanceExam();
@@ -413,7 +470,7 @@
     const d=b.dataset,s=state.session;
     if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? This replaces your current reading draft.'))return;return start(d.start);}
     if(d.action==='soundcheck')return speaker.play('soundcheck','Welcome to IPT Brisbane. If you can hear this sentence, your audio is ready for the mixed reading mock.');
-    if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current reading draft will be replaced.'))return;speaker?.cancel();state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();return render();}
+    if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current reading draft will be replaced.'))return;cancelAudio();state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();return render();}
     if(d.action==='home')return home();
     if(d.action==='resume')return render();
     if(!s)return;
@@ -422,9 +479,9 @@
     if(testing&&d.action?.startsWith('exam-'))return examAction(d.action);
     // Exam questions can only advance through Next; review unlocks after submission.
     if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
-    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText);}
+    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText);}
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
-    if(d.question!==undefined||d.move!==undefined){speaker?.cancel();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
+    if(d.question!==undefined||d.move!==undefined){cancelAudio();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
     if(d.action==='submit'){if(confirm('Finish this reading session and show the answers?'))finish();return;}
     if(!editable())return;

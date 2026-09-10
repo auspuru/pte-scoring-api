@@ -48,7 +48,7 @@
       if (count < task.min || count > task.max) throw Error('This reading mock has an invalid number of ' + task.label.toLowerCase() + ' questions.');
     }
   }
-  function compose(bank, mode, setId, swtPassage) {
+  function compose(bank, mode, setId, swtPassages) {
     const sectional = bank.sectionalMocks.find(item => item.id === mode);
     const set = bank.sets.find(item => item.id === (sectional?.setId || setId));
     if (!set) throw Error('This question set is unavailable.');
@@ -65,18 +65,26 @@
     }
     if (mode === 'mock') validateReading(reading, set.minutes);
     if (mode !== 'full') return { name: set.name, minutes: set.minutes, questions: reading };
-    if (!swtPassage?.text || !swtPassage.keyElements) throw Error('The SWT passage could not load. Please try again.');
-    const swt = { id: swtPassage.id, uid: 'mixed:swt:' + swtPassage.id, type: 'swt', title: swtPassage.title || 'Summarise written text', passageId: swtPassage.id, passage: swtPassage.text, keyPoints: swtPassage.keyElements, sampleResponse: swtPassage.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. Aim to spend 10 minutes on this question.' };
-    return { name: bank.mixedMock.name, minutes: bank.mixedMock.minutes, questions: [swt, ...reading, ...bank.mixedMock.audioQuestions] };
+    if (!Array.isArray(swtPassages) || swtPassages.length !== 2 || swtPassages.some(p => p?.id == null || !p.text || !p.keyElements) || new Set(swtPassages.map(p => String(p.id))).size !== 2 || new Set(swtPassages.map(p => p.text.trim().replace(/\s+/g, ' ').toLowerCase())).size !== 2) throw Error('Two different SWT passages are required. Please try again.');
+    const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2, with its own 10-minute timer.' }));
+    const questions = [...swt, ...reading, ...bank.mixedMock.audioQuestions];
+    const stages = [
+      { id: 'swt-1', name: 'SWT 1 of 2', first: 0, last: 0, minutes: 10 },
+      { id: 'swt-2', name: 'SWT 2 of 2', first: 1, last: 1, minutes: 10 },
+      { id: 'reading', name: 'Reading', first: 2, last: reading.length + 1, minutes: set.minutes },
+      { id: 'listening', name: 'HCS & HIW', first: reading.length + 2, last: questions.length - 1, minutes: bank.mixedMock.listeningMinutes }
+    ];
+    return { name: bank.mixedMock.name, minutes: stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages };
   }
-  // Audio is deliberately initiated by a click, as browser autoplay policies vary.
-  // A completed utterance consumes one play; failed/interrupted audio can be retried.
+  // Autoplay and manual recovery share the same playback lifecycle.
   function createSpeaker(env, onState) {
-    let active = null, timeout = null, serial = 0;
+    let active = null, timeout = null, startTimeout = null, serial = 0;
     function cancel() {
       serial++;
       if (timeout) env.clearTimeout(timeout);
+      if (startTimeout) env.clearTimeout(startTimeout);
       timeout = null;
+      startTimeout = null;
       if (active) {
         const previous = active; active = null;
         env.speechSynthesis?.cancel();
@@ -107,15 +115,18 @@
         if (ticket !== serial || active !== key) return;
         active = null;
         if (timeout) env.clearTimeout(timeout);
+        if (startTimeout) env.clearTimeout(startTimeout);
         timeout = null;
+        startTimeout = null;
         serial++;
         if (status === 'error') env.speechSynthesis.cancel();
         onState(key, status, message);
       };
-      utterance.onstart = () => { if (ticket === serial) { started = true; onState(key, 'playing', 'Playing. Follow the question on screen.'); } };
+      utterance.onstart = () => { if (ticket === serial) { started = true; if (startTimeout) env.clearTimeout(startTimeout); startTimeout = null; onState(key, 'playing', 'Playing. Follow the question on screen.'); } };
       utterance.onend = () => finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
-      utterance.onerror = () => finish('error', 'Audio could not finish. Check your sound and replay the question.');
+      utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
       onState(key, 'loading', 'Starting audio…');
+      startTimeout = env.setTimeout(() => { if (!started) finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'); }, 8000);
       timeout = env.setTimeout(() => finish('error', 'Audio timed out. Replay the question before submitting.'), 150000);
       try { env.speechSynthesis.speak(utterance); } catch (_) { finish('error', 'Audio could not start. Try another browser with an English voice.'); }
     }
