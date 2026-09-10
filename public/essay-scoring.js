@@ -15,13 +15,16 @@
     const originalWords = new Set((essay.match(/\b[A-Za-z]+\b/g) || []).map(word => word.toLowerCase()));
     const originalNumbers = new Set(essay.match(/\b\d+(?:[.,]\d+)*%?/g) || []);
     if ((sample.match(/\b\d+(?:[.,]\d+)*%?/g) || []).some(number => !originalNumbers.has(number))) return true;
-    // Catch introduced named examples/acronyms inside sentences. Ordinary
-    // sentence-opening capitals are allowed; the prompt governs semantic
-    // grounding, which cannot be fully established by a capitalisation check.
-    for (const match of sample.matchAll(/\b(?:[A-Z][a-z]+|[A-Z]{2,})\b/g)) {
-      if (originalWords.has(match[0].toLowerCase())) continue;
-      const before = sample.slice(0, match.index).trimEnd();
-      if (/^[A-Z]{2,}$/.test(match[0]) || (before && !/[.!?]["'”’)]?$/.test(before))) return true;
+    // Reject obvious introduced facts such as unsupported acronyms or named
+    // examples after factual prepositions. Do not reject ordinary capitalised
+    // words, because that made valid Band 9 samples fail and blocked results.
+    for (const match of sample.matchAll(/\b[A-Z]{2,}\b/g)) {
+      if (!originalWords.has(match[0].toLowerCase())) return true;
+    }
+    const namedExample = /\b(?:in|from|at|by|across|within|near|outside|inside)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})\b/g;
+    for (const match of sample.matchAll(namedExample)) {
+      const words = match[1].split(/\s+/).map(word => word.toLowerCase());
+      if (words.some(word => !originalWords.has(word))) return true;
     }
     return false;
   }

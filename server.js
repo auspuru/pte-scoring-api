@@ -212,7 +212,7 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
 const essayGrader = createEssayGrader(async prompt => {
   if (!anthropic) throw new Error('Essay grader unavailable');
   const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-    max_tokens: 6000, messages: [{ role: 'user', content: prompt }] }, { timeout: 35000, maxRetries: 0 });
+    max_tokens: 6000, messages: [{ role: 'user', content: prompt }] }, { timeout: 85000, maxRetries: 0 });
   if (response.stop_reason === 'max_tokens') throw new Error('Incomplete assessment');
   const text = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
   return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || 'null');
@@ -224,7 +224,10 @@ app.post('/api/essay/grade', async (req, res) => {
     return res.status(400).json({ error: 'Provide an essay question and response within the size limits.' });
   }
   try { res.json(await essayGrader.grade(question, essay)); }
-  catch (error) { res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' }); }
+  catch (error) {
+    console.error('[essay-grade] assessment failed:', error && error.message ? error.message : error);
+    res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' });
+  }
 });
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
