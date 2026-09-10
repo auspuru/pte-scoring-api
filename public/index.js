@@ -5608,9 +5608,34 @@ function safeLSRemove(key) {
   } catch (e) { /* ignore */ }
 }
 
+const workspaceLoadingMessages = [
+  'Setting up your practice space...',
+  'Bringing your latest progress into view...',
+  "Preparing today's writing practice...",
+  'Loading your tools and saved work...'
+];
+let workspaceLoadingTimer = null;
+let workspaceLoadingIndex = 0;
+
 function showLoading(on){
   const el = document.getElementById('loadingVeil');
-  if(el) el.classList.toggle('hidden', !on);
+  if (!el) return;
+  el.classList.toggle('hidden', !on);
+  if (on) {
+    const label = el.querySelector('span');
+    if (label) label.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
+    if (workspaceLoadingTimer) clearInterval(workspaceLoadingTimer);
+    workspaceLoadingTimer = setInterval(() => {
+      workspaceLoadingIndex = (workspaceLoadingIndex + 1) % workspaceLoadingMessages.length;
+      const currentLabel = el.querySelector('span');
+      if (currentLabel && !el.classList.contains('hidden')) {
+        currentLabel.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
+      }
+    }, 1800);
+  } else if (workspaceLoadingTimer) {
+    clearInterval(workspaceLoadingTimer);
+    workspaceLoadingTimer = null;
+  }
 }
 
 // If beforeunload stashed a backup that's newer than what we loaded, offer to restore it.
@@ -16320,26 +16345,8 @@ window.queryExternalWord = queryExternalWord;
 window.applyExternalSuggestion = applyExternalSuggestion;
 
 async function checkUserEmailRequirement() {
-  if (offlineMode || !currentUser) return;
-  const userHasRealEmail = userProfile && userProfile.email && userProfile.email.includes('@') && !userProfile.email.toLowerCase().endsWith('@ptewriting.com');
-  if (!userHasRealEmail) {
-    setTimeout(async () => {
-      let emailInput = prompt("To avoid delivery issues, please enter a valid email address for your account. This is where your essay PDFs will be sent:");
-      if (emailInput !== null) {
-        emailInput = emailInput.trim();
-        if (emailInput && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput) && !emailInput.toLowerCase().endsWith('@ptewriting.com')) {
-          userProfile.email = emailInput;
-          currentUser.email = emailInput;
-          localStorage.setItem('pte_preferred_email', emailInput);
-          toast("Email address saved successfully!");
-          await flushSyncDirect();
-          updateEmailLabels();
-        } else {
-          toast("Invalid email address. Please update it via your Account menu to receive PDFs.", true);
-        }
-      }
-    }, 1200);
-  }
+  // Email collection is intentionally opt-in from the Account menu so startup
+  // never interrupts practice with a browser prompt.
 }
 
 async function updateUserEmail() {
