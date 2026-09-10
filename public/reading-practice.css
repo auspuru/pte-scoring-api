@@ -103,7 +103,7 @@ body.reading-exam-open .portal-skip-link { display: none !important; }
 .reading-exam-instructions { margin: 0 0 24px; font-weight: 600; font-style: italic; color: #222; }
 .reading-exam-question fieldset { min-width: 0; padding: 0; margin: 0; border: 0; }
 .reading-exam-question .reading-passage { margin: 0 0 24px; font-size: 16px; line-height: 1.8; color: #171717; }
-#readingPane .reading-exam-question select { min-height: 30px; padding: 2px 26px 2px 6px; border: 1px solid #818181; border-radius: 0; background: #fff; color: #171717; font-size: 16px; }
+#readingPane .reading-exam-question select { appearance: auto; min-height: 30px; padding: 2px 26px 2px 6px; border: 1px solid #818181; border-radius: 0; background: #fff; color: #171717; font-size: 16px; }
 .reading-exam-question .reading-blank { min-width: 112px; min-height: 30px; padding: 2px 8px; border: 1px solid #858585; border-radius: 0; background: #f2f2f2; color: #171717; }
 .reading-exam-question .reading-clear { min-height: 30px; min-width: 25px; }
 .reading-exam-question .reading-wordbank { padding: 18px; margin: 12px 0; border: 1px solid #97aebc; border-radius: 0; background: #e1edf5; min-height: 76px; gap: 12px; }
