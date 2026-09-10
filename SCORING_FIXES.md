@@ -76,3 +76,11 @@ The result hero leads with Content for incomplete or uncertain responses, includ
 Saved results without a complete semantic assessment are now shown as needing review, even if an old record contains Content 4 or a high band label. The practice estimate is recomputed from the trait total and then limited by the Content ceiling, so stale stored estimates cannot inflate the headline.
 
 Regression coverage now includes stale high-band data, all incomplete Content levels, semantic coverage mapping, long feedback text and category-level London compression. All 37 deterministic checks pass.
+
+## 20.4.1 — full essay samples using the student's ideas
+
+Essay Practice now requests a complete 200–300-word, four-paragraph Band 9-style sample using the student's own arguments, examples and viewpoint, including for a 26/26 original. The original essay remains the sole basis for scoring. Samples use plain text, preserve paragraph breaks when copied and remain attached to saved attempts. Earlier saved excerpts keep their original label.
+
+The shared server/browser validator checks sample length, paragraph count and exact original-essay quotations identifying the retained ideas. Missing or malformed samples receive the existing assessment retry rather than silently disappearing. An off-topic response or a missing required idea/position receives a specific next step instead of invented arguments. The practice rubric remains unchanged.
+
+Validation: 94 deterministic checks pass, covering full-score samples, unchanged original scores, malformed samples, grounded quotations, retries, safe rendering/copying, saved metadata, existing essay sync/draft behavior and SWT scoring. The opt-in live essay checker also verifies complete samples and the off-topic next-step response without saving student progress.

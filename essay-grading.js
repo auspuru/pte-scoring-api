@@ -14,7 +14,7 @@ function createEssayGrader(call) {
         const prompt = policy.buildPrompt(question, essay);
         for (let attempt = 0; attempt < 2; attempt++) {
           try {
-            const raw = await call(prompt + (attempt ? '\nVALIDATION RETRY: Return all required fields, exact short essay quotations and mutually consistent scores, error evidence and feedback. Do not recount words.' : ''));
+            const raw = await call(prompt + (attempt ? '\nVALIDATION RETRY: Return all required fields, exact short essay quotations and mutually consistent scores, error evidence and feedback. Use the supplied ORIGINAL essay word count. A ready sample must be 200–300 words in exactly four plain-text paragraphs, including at 26/26, with sampleSourceIdeas quoted from the original. Use needs-ideas only for a specific missing idea or required position; never silently omit or shorten the sample.' : ''));
             const result = policy.normalizeResult(raw, essay);
             cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
             while (cache.size > 100) cache.delete(cache.keys().next().value);

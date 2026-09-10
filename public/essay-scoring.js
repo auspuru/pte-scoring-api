@@ -4,7 +4,7 @@
   else root.EssayScoring = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
-  const VERSION = 'essay-1.0';
+  const VERSION = 'essay-1.1';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const words = text => clean(text).split(/\s+/).filter(Boolean).length;
@@ -41,7 +41,13 @@ FEEDBACK:
 Use plain English, addressed to the student. Give each trait one or two short sentences (maximum 40 words) that match its score. Every reduced trait must explain why and offer a practical action. Provide up to three priorities in improvements, ordered by impact; do not leave this empty when marks are lost. Quote short exact phrases from the essay; never invent errors.
 List actual spelling and grammar mistakes comprehensively in errors. Separate optional style, vocabulary and phrasing suggestions into optionalRefinements; they are not grammar errors and do not themselves lower any score. A small grammar correction can be shown even with full Grammar marks under this rubric.
 For promptCoverage, identify the actual requested parts and mark addressed, partial or missing. For addressed/partial items, evidence must be a SHORT contiguous exact excerpt from the essay (ideally 3–10 words), not a paraphrase. For partial/missing items, nextStep must say exactly what needs adding or developing.
-sampleResponse is a revised EXCERPT of at most 150 words, not a whole model essay. Preserve the student's ideas and stance. It may contain only <span class='diff-ins'>added wording</span> and <span class='diff-del'>replaced wording</span> for changes. For a full-score response, return an empty sampleResponse instead of declaring the essay perfect.
+
+BAND 9 SAMPLE USING THE STUDENT'S OWN IDEAS:
+After assessing the ORIGINAL essay, write a complete Band 9-style sampleResponse of 200–300 words in exactly four paragraphs: introduction, two developed body paragraphs and conclusion. Aim for 230–270 words. Separate paragraphs with a blank line. Use plain text only: no title, headings, bullet points, HTML or change markers.
+Keep the student's main ideas, examples and position, including a balanced position. Improve grammar, vocabulary, cohesion and organisation, and develop the reasoning already present. Do not replace their arguments with generic model arguments, introduce a new main argument, reverse their stance or invent statistics, studies or named authorities. Only include a personal opinion if the question requests one AND the student has supplied a position. Do not invent that position for them.
+Return this full sample even when the original earns 26/26; lightly polish an already strong essay. The sample is a learning reference, not an official band prediction, and must never influence the original essay's scores, errors or feedback.
+Set sampleStatus to ready and supply sampleSourceIdeas as 1–6 short, contiguous exact quotations from the ORIGINAL essay identifying the ideas retained in the sample. Check the sample's length and four-paragraph structure before returning it.
+If the response is wholly off-topic or lacks ideas/a required position needed to answer the question faithfully, do not invent them just to produce a sample. Set sampleStatus to needs-ideas, sampleResponse to an empty string, sampleSourceIdeas to an empty array, and sampleNote to a short, specific request for the missing ideas. Mark the corresponding promptCoverage requirement partial or missing. Do not use this exception merely because language is weak, the essay is short, or the score is below full marks; expand existing relevant reasoning wherever possible.
 
 Return only complete JSON with ALL of these fields:
 {
@@ -52,7 +58,9 @@ Return only complete JSON with ALL of these fields:
  "optionalRefinements":[{"phrase":"exact essay phrase","correction":"alternative phrasing","explanation":"optional improvement"}],
  "templateDetector":"ok","templateNote":"brief note about relevance and structure","templateEvidence":[],
  "strengths":["specific strength"],"improvements":["specific action when marks are lost"],
- "overallVerdict":"brief assessment consistent with the scores","sampleResponse":"a revised excerpt if useful"
+ "overallVerdict":"brief assessment consistent with the scores",
+ "sampleStatus":"ready","sampleResponse":"complete 200–300-word essay in four paragraphs separated by blank lines",
+ "sampleSourceIdeas":["short exact quotation of an idea from the original essay"],"sampleNote":""
 }
 errors.type is spelling or grammar; errors.impact is minor or meaning (meaning = impedes meaning). Empty arrays are appropriate when there are no issues. templateDetector is good, ok or flag; flag requires templateEvidence containing exact essay quotes and a specific content explanation in templateNote. Your scores, coverage and feedback must agree.
 
@@ -131,6 +139,18 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
     const templateEvidence = (Array.isArray(raw.templateEvidence) ? raw.templateEvidence : []).filter(phrase => quoteExists(essay, phrase));
     const templateDetector = raw.templateDetector === 'flag' && !templateEvidence.length ? 'ok'
       : ['good', 'ok', 'flag'].includes(raw.templateDetector) ? raw.templateDetector : 'ok';
+    const sampleResponse = clean(raw.sampleResponse).replace(/\r\n?/g, '\n');
+    const sampleSourceIdeas = Array.isArray(raw.sampleSourceIdeas) ? raw.sampleSourceIdeas.map(clean) : [];
+    const sampleWordCount = words(sampleResponse);
+    if (raw.sampleStatus === 'ready') {
+      if (sampleWordCount < 200 || sampleWordCount > 300 || sampleResponse.split(/\n\s*\n/).length !== 4
+        || /<\/?[a-z][^>]*>/i.test(sampleResponse) || /^\s*(?:#{1,6}\s|[-*]\s|\d+\.\s)/m.test(sampleResponse)
+        || sampleSourceIdeas.length < 1 || sampleSourceIdeas.length > 6
+        || sampleSourceIdeas.some(idea => !quoteExists(essay, idea))) fail();
+    } else if (raw.sampleStatus === 'needs-ideas') {
+      if (sampleResponse || !clean(raw.sampleNote) || scores.content === 6
+        || !promptCoverage.some(item => item.status !== 'addressed')) fail();
+    } else fail();
     return { ...raw, scores, feedback, errors, promptCoverage, optionalRefinements,
       improvements: scores.total === 26 ? [] : [...new Set(priorities)].slice(0, 3),
       strengths: (Array.isArray(raw.strengths) ? raw.strengths : []).map(clean).filter(Boolean).slice(0, 3),
@@ -138,8 +158,11 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
       templateDetector, templateEvidence,
       templateNote: templateDetector === 'ok' && raw.templateDetector === 'flag'
         ? 'Focus on how clearly your ideas answer the question; familiar structure phrases are acceptable.' : clean(raw.templateNote),
-      sampleResponse: scores.total === 26 ? '' : clean(raw.sampleResponse),
-      sampleKind: 'excerpt', wordCount: form.count, scoring_version: VERSION };
+      sampleResponse, sampleStatus: raw.sampleStatus, sampleWordCount,
+      sampleSourceIdeas: raw.sampleStatus === 'ready' ? sampleSourceIdeas : [],
+      sampleNote: raw.sampleStatus === 'needs-ideas' ? clean(raw.sampleNote) : '',
+      sampleKind: raw.sampleStatus === 'ready' ? 'full-essay' : 'needs-ideas',
+      wordCount: form.count, scoring_version: VERSION };
   }
   function renderExcerpt(text) {
     let result = '', last = 0, open = false;

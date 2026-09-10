@@ -12127,8 +12127,9 @@ function closePractice() {
   switchSection('dashboard');
 }
 
-function getCleanSampleResponse(html) {
+function getCleanSampleResponse(html, kind) {
   if (!html) return '';
+  if (kind === 'full-essay') return html.trim();
   // Replace deletions with empty string
   let clean = html.replace(/<span class=["']diff-del["']>[\s\S]*?<\/span>/g, '');
   // Strip the insertion tags but keep the content inside them
@@ -12194,7 +12195,7 @@ function copyPracticeText(type) {
   if (type === 'attempted') {
     text = a.essayText;
   } else if (type === 'rewritten') {
-    text = getCleanSampleResponse(a.sampleResponse);
+    text = getCleanSampleResponse(a.sampleResponse, a.sampleKind);
   }
   if (!text) {
     toast('No essay text to copy', true);
@@ -12900,7 +12901,7 @@ function loadingView() {
     <div class="practice-loading">
       <div class="practice-loading-icon"></div>
       <div class="practice-loading-text" id="practiceLoadingText">Reading your essay…</div>
-      <div class="practice-loading-sub">This usually takes 8–15 seconds.</div>
+      <div class="practice-loading-sub">Scoring your original essay and preparing your sample.</div>
     </div>
   `;
 }
@@ -12915,7 +12916,8 @@ function startLoadingMessages() {
     'Assessing vocabulary and range…',
     'Evaluating coherence and structure…',
     'Scoring against the 26-point rubric…',
-    'Writing your feedback…'
+    'Writing your feedback…',
+    'Developing your ideas into a Band 9 sample…'
   ];
   let i = 0;
   if (practiceLoadingTimer) clearInterval(practiceLoadingTimer);
@@ -13010,6 +13012,39 @@ async function submitPracticeEssay() {
 }
 
 // ---------- Results view ----------
+
+function renderPracticeSample(a) {
+  if (a.sampleKind === 'needs-ideas') {
+    return `<div class="practice-grammar-section" style="margin-top:20px;">
+      <div class="practice-grammar-title">Add ideas for your Band 9 sample</div>
+      <p style="font-size:13px; line-height:1.6; color:var(--ink-soft);">${escapeHtml(a.sampleNote || '')}</p>
+    </div>`;
+  }
+  if (!a.sampleResponse) return '';
+  const fullEssay = a.sampleKind === 'full-essay';
+  return `
+    <div class="practice-grammar-section" style="margin-top:20px;">
+      <div class="practice-grammar-header" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center;">
+        <div style="flex:1; min-width:200px;">
+          <div class="practice-grammar-title">${fullEssay ? 'Band 9 sample · Your ideas' : 'Example revision'}</div>
+          <div style="font-size:12px; color:var(--ink-soft); line-height:1.5; font-weight:normal;">
+            ${fullEssay
+              ? 'A complete essay using your ideas and viewpoint, with stronger language and structure. ' + EssayScoring.words(a.sampleResponse) + ' words. Your practice score is based on your original essay.'
+              : 'A saved excerpt showing suggested changes. Keep the rest of your essay and your own viewpoint.'}
+          </div>
+        </div>
+        <button class="admin-btn" style="padding:6px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">${fullEssay ? 'Copy sample essay' : 'Copy revised excerpt'}</button>
+      </div>
+      <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
+        ${fullEssay ? '' : `<div style="display:flex; flex-wrap:wrap; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
+          <div><span class="diff-ins">ins</span> Added / Improved</div>
+          <div><span class="diff-del">del</span> Replaced / Removed</div>
+        </div>`}
+        <div style="white-space:pre-wrap; font-family:var(--serif); font-size:14px; line-height:1.8; color:var(--ink);">${fullEssay ? escapeHtml(a.sampleResponse) : EssayScoring.renderExcerpt(a.sampleResponse)}</div>
+      </div>
+    </div>
+  `;
+}
 
 function resultsView() {
   const a = practiceState.currentAttempt;
@@ -13155,32 +13190,7 @@ function resultsView() {
   // Grammar & Spelling inline-error section
   const grammarSection = renderGrammarSpellingSection(a);
 
-  // AI Sample Response (if available)
-  let sampleResponseSection = '';
-  if (a.sampleResponse) {
-    sampleResponseSection = `
-      <div class="practice-grammar-section" style="margin-top:20px;">
-        <div class="practice-grammar-header" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div class="practice-grammar-title">Example revision</div>
-            <div style="font-size:11px; color:var(--ink-soft); font-weight:normal; font-style:italic;">
-              A revised excerpt showing the suggested changes. Keep the rest of your essay and your own viewpoint.
-            </div>
-          </div>
-          <button class="admin-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">Copy revised excerpt</button>
-        </div>
-        <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
-          <div style="display:flex; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
-            <div style="display:flex; align-items:center; gap:6px;"><span class="diff-ins" style="font-size:10px; padding:2px 6px; font-weight:700;">ins</span> <span>Added / Improved</span></div>
-            <div style="display:flex; align-items:center; gap:6px;"><span class="diff-del" style="font-size:10px; padding:2px 6px; font-weight:700;">del</span> <span>Replaced / Removed</span></div>
-          </div>
-          <div style="white-space:pre-wrap; font-family:var(--serif); font-size:13.5px; line-height:1.75; color:var(--ink);">
-            ${EssayScoring.renderExcerpt(a.sampleResponse)}
-          </div>
-        </div>
-      </div>
-    `;
-  }
+  const sampleResponseSection = renderPracticeSample(a);
 
   // Show the original question + essay for context
   const questionPanel = `

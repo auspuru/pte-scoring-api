@@ -3,7 +3,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 const policy = require('../public/essay-scoring');
+const sync = require('../essay-attempt-sync');
 const { createEssayGrader } = require('../essay-grading');
 const { question, essay } = require('./essay-fixtures');
 const uiSource = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
@@ -14,7 +16,9 @@ function good() {
     errors: [], optionalRefinements: [],
     promptCoverage: [{ requirement: 'Positive and negative effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }],
     templateDetector: 'good', templateNote: 'The structure is filled with relevant ideas.',
-    strengths: ['Clear relevant examples.'], improvements: [], sampleResponse: '' };
+    strengths: ['Clear relevant examples.'], improvements: [],
+    sampleStatus: 'ready', sampleResponse: essay,
+    sampleSourceIdeas: ['mass media supports learning', 'unrealistic expectations'], sampleNote: '' };
 }
 
 test('Essay word-count boundaries are deterministic and independent of model counting', () => {
@@ -105,7 +109,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20\.3\.6/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.1/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
@@ -121,4 +125,103 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   await assert.rejects(broken.grade(question, essay), /could not be completed/);
   await assert.rejects(broken.grade(question, essay), /could not be completed/);
   assert.equal(failures, 4);
+});
+
+test('Full-score essays retain a complete sample and sample changes never alter original scores', () => {
+  const raw = good();
+  const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.scores.total, 26);
+  assert.equal(result.sampleResponse, essay);
+  assert.equal(result.sampleKind, 'full-essay');
+  assert.equal(result.sampleWordCount, policy.words(essay));
+  assert.deepEqual(policy.normalizeResult(result, essay), result, 'Server results remain valid in the browser');
+  const lower = good(); lower.scores.vocabulary = 1;
+  const a = policy.normalizeResult(lower, essay);
+  lower.sampleResponse = essay.replace('in recent years', 'in modern society');
+  const b = policy.normalizeResult(lower, essay);
+  assert.deepEqual(a.scores, b.scores);
+  assert.deepEqual(a.feedback, b.feedback);
+  assert.equal(b.scores.total, 25);
+});
+
+test('Incomplete, excerpt-only, ungrounded or marked-up samples are retried instead of shown', async () => {
+  for (const change of [
+    raw => { raw.sampleResponse = ''; },
+    raw => { raw.sampleResponse = 'Only a short excerpt.'; },
+    raw => { raw.sampleResponse = essay.replace(/\n\n/g, ' '); },
+    raw => { raw.sampleResponse = essay + ' additional'.repeat(301); },
+    raw => { raw.sampleResponse = essay.replace('mass media', '<b>mass media</b>'); },
+    raw => { raw.sampleSourceIdeas = ['A fabricated idea absent from the original']; },
+    raw => { raw.sampleSourceIdeas = []; },
+    raw => { delete raw.sampleStatus; }
+  ]) {
+    const raw = good(); change(raw);
+    assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
+  }
+  let calls = 0;
+  const grader = createEssayGrader(async prompt => {
+    const raw = good();
+    if (++calls === 1) raw.sampleResponse = 'Too short.';
+    else assert.match(prompt, /VALIDATION RETRY:[\s\S]*200–300 words/);
+    return raw;
+  });
+  const result = await grader.grade(question, essay);
+  assert.equal(calls, 2);
+  assert.equal(result.sampleResponse, essay);
+});
+
+test('Missing ideas produce an honest next step and cannot suppress a full-score sample', () => {
+  const raw = good(); raw.scores.content = 1;
+  raw.promptCoverage = [{ requirement: 'A position about railways versus roads', status: 'missing', evidence: '',
+    nextStep: 'State which transport investment you support and give a reason.' }];
+  raw.sampleStatus = 'needs-ideas'; raw.sampleResponse = ''; raw.sampleSourceIdeas = [];
+  raw.sampleNote = 'Your essay discusses media. Add your position about railways versus roads and a supporting reason.';
+  const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.sampleKind, 'needs-ideas');
+  assert.equal(result.sampleResponse, '');
+  assert.match(result.sampleNote, /railways versus roads/);
+  assert.deepEqual(policy.normalizeResult(result, essay), result);
+  delete raw.sampleNote;
+  assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
+  const perfect = good(); perfect.sampleStatus = 'needs-ideas'; perfect.sampleResponse = ''; perfect.sampleNote = 'Already perfect.';
+  assert.throws(() => policy.normalizeResult(perfect, essay), /incomplete/);
+});
+
+test('Sample instructions preserve student ideas and position independently of assessment', () => {
+  const prompt = policy.buildPrompt(question, essay);
+  for (const instruction of [/200–300 words in exactly four paragraphs/, /even when the original earns 26\/26/,
+    /Do not replace their arguments/, /invent statistics/, /must never influence the original essay/,
+    /Do not invent that position/, /sampleSourceIdeas/]) assert.match(prompt, instruction);
+});
+
+function browserFunction(name) {
+  const start = uiSource.indexOf('function ' + name + '(');
+  assert(start >= 0, name);
+  return uiSource.slice(start, uiSource.indexOf('\n}', start) + 2);
+}
+
+test('Saved samples keep their paragraphs and copy as plain text; legacy excerpts retain their label', () => {
+  const result = policy.normalizeResult(good(), essay);
+  const stored = JSON.parse(JSON.stringify({ ...result, id: 'sample-attempt', date: 1, essayText: essay }));
+  const restored = sync.mergeHistory([], [stored], [])[0];
+  const browser = { EssayScoring: policy };
+  vm.createContext(browser);
+  vm.runInContext(['escapeHtml', 'renderPracticeSample', 'getCleanSampleResponse'].map(browserFunction).join('\n'), browser);
+  const html = browser.renderPracticeSample(restored);
+  assert.match(html, /Band 9 sample · Your ideas/);
+  assert.match(html, /Copy sample essay/);
+  assert(!html.includes('Copy revised excerpt'));
+  assert(html.includes(browser.escapeHtml(essay)));
+  assert.equal(browser.getCleanSampleResponse(restored.sampleResponse, restored.sampleKind), essay);
+  const legacy = browser.renderPracticeSample({ sampleResponse: 'A <span class="diff-ins">clearer</span> idea.' });
+  assert.match(legacy, /Example revision/);
+  assert.match(legacy, /Copy revised excerpt/);
+  assert(!legacy.includes('Band 9 sample'));
+  assert(legacy.includes('<span class="diff-ins">clearer</span>'));
+  const hostile = browser.renderPracticeSample({ sampleKind: 'full-essay', sampleResponse: '<img src=x onerror="bad()">' });
+  assert(!hostile.includes('<img'));
+  const missing = browser.renderPracticeSample({ sampleKind: 'needs-ideas', sampleNote: '<script>bad()</script> Add a position.' });
+  assert(!missing.includes('<script>'));
+  assert.match(missing, /Add a position/);
+  assert(!missing.includes('Copy sample essay'));
 });
