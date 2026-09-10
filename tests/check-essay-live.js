@@ -32,11 +32,12 @@ const grader = createEssayGrader(async prompt => {
   ];
   let failed = 0;
   const results = [];
-  for (const c of cases) {
+  for (const c of cases.filter(c => !args.case || c.name.toLowerCase().includes(args.case.toLowerCase()))) {
     try {
       const result = args.mode === 'proxy' ? await grader.grade(c.question, c.essay)
         : await post('/api/essay/grade', { question: c.question, essay: c.essay });
       policy.normalizeResult(result, c.essay);
+      assert.equal(result.scoring_version, policy.VERSION);
       results.push({ case: c.name, question: c.question, essay: c.essay, result });
       console.log(JSON.stringify({ case: c.name, words: result.wordCount, scores: result.scores, improvements: result.improvements,
         optional: result.optionalRefinements.length, version: result.scoring_version,

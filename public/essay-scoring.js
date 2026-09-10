@@ -4,13 +4,27 @@
   else root.EssayScoring = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
-  const VERSION = 'essay-1.1';
+  const VERSION = 'essay-1.2';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const words = text => clean(text).split(/\s+/).filter(Boolean).length;
   const quoteExists = (essay, quote) => !!clean(quote) && essay.toLowerCase().includes(quote.trim().toLowerCase());
   const spellingMeaningEvidence = value => /\b(meaning|ambiguous|ambiguity|unclear|confus|revers|opposite|mislead|misinterpret|changes? (?:the )?(?:claim|message|meaning))\b/i.test(String(value || ''));
   const escape = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  function hasUnsupportedSampleFacts(sample, essay) {
+    const originalWords = new Set((essay.match(/\b[A-Za-z]+\b/g) || []).map(word => word.toLowerCase()));
+    const originalNumbers = new Set(essay.match(/\b\d+(?:[.,]\d+)*%?/g) || []);
+    if ((sample.match(/\b\d+(?:[.,]\d+)*%?/g) || []).some(number => !originalNumbers.has(number))) return true;
+    // Catch introduced named examples/acronyms inside sentences. Ordinary
+    // sentence-opening capitals are allowed; the prompt governs semantic
+    // grounding, which cannot be fully established by a capitalisation check.
+    for (const match of sample.matchAll(/\b(?:[A-Z][a-z]+|[A-Z]{2,})\b/g)) {
+      if (originalWords.has(match[0].toLowerCase())) continue;
+      const before = sample.slice(0, match.index).trimEnd();
+      if (/^[A-Z]{2,}$/.test(match[0]) || (before && !/[.!?]["'”’)]?$/.test(before))) return true;
+    }
+    return false;
+  }
   function formFor(essay) {
     const count = words(essay);
     const score = count >= 200 && count <= 300 ? 2 : count >= 120 && count <= 380 ? 1 : 0;
@@ -45,6 +59,7 @@ For promptCoverage, identify the actual requested parts and mark addressed, part
 BAND 9 SAMPLE USING THE STUDENT'S OWN IDEAS:
 After assessing the ORIGINAL essay, write a complete Band 9-style sampleResponse of 200–300 words in exactly four paragraphs: introduction, two developed body paragraphs and conclusion. Aim for 230–270 words. Separate paragraphs with a blank line. Use plain text only: no title, headings, bullet points, HTML or change markers.
 Keep the student's main ideas, examples and position, including a balanced position. Improve grammar, vocabulary, cohesion and organisation, and develop the reasoning already present. Do not replace their arguments with generic model arguments, introduce a new main argument, reverse their stance or invent statistics, studies or named authorities. Only include a personal opinion if the question requests one AND the student has supplied a position. Do not invent that position for them.
+Do not introduce named cities, countries, people, organisations, real-world case studies or numerical claims that the student did not supply. In particular, a suggestion in your feedback to add evidence does NOT authorise you to invent that evidence in the sample. Expand the student's existing reasoning by explaining how or why it works, using general logical or explicitly hypothetical illustrations. Do not present new factual examples as established evidence. Before returning the sample, remove every unsupported name, statistic or real-world factual example.
 Return this full sample even when the original earns 26/26; lightly polish an already strong essay. The sample is a learning reference, not an official band prediction, and must never influence the original essay's scores, errors or feedback.
 Set sampleStatus to ready and supply sampleSourceIdeas as 1–6 short, contiguous exact quotations from the ORIGINAL essay identifying the ideas retained in the sample. Check the sample's length and four-paragraph structure before returning it.
 If the response is wholly off-topic or lacks ideas/a required position needed to answer the question faithfully, do not invent them just to produce a sample. Set sampleStatus to needs-ideas, sampleResponse to an empty string, sampleSourceIdeas to an empty array, and sampleNote to a short, specific request for the missing ideas. Mark the corresponding promptCoverage requirement partial or missing. Do not use this exception merely because language is weak, the essay is short, or the score is below full marks; expand existing relevant reasoning wherever possible.
@@ -146,7 +161,8 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
       if (sampleWordCount < 200 || sampleWordCount > 300 || sampleResponse.split(/\n\s*\n/).length !== 4
         || /<\/?[a-z][^>]*>/i.test(sampleResponse) || /^\s*(?:#{1,6}\s|[-*]\s|\d+\.\s)/m.test(sampleResponse)
         || sampleSourceIdeas.length < 1 || sampleSourceIdeas.length > 6
-        || sampleSourceIdeas.some(idea => !quoteExists(essay, idea))) fail();
+        || sampleSourceIdeas.some(idea => !quoteExists(essay, idea))
+        || hasUnsupportedSampleFacts(sampleResponse, essay)) fail();
     } else if (raw.sampleStatus === 'needs-ideas') {
       if (sampleResponse || !clean(raw.sampleNote) || scores.content === 6
         || !promptCoverage.some(item => item.status !== 'addressed')) fail();

@@ -109,7 +109,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.1/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.2/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
@@ -192,6 +192,16 @@ test('Sample instructions preserve student ideas and position independently of a
   for (const instruction of [/200–300 words in exactly four paragraphs/, /even when the original earns 26\/26/,
     /Do not replace their arguments/, /invent statistics/, /must never influence the original essay/,
     /Do not invent that position/, /sampleSourceIdeas/]) assert.match(prompt, instruction);
+});
+
+test('Samples reject introduced named examples and figures while retaining the student’s own evidence', () => {
+  for (const phrase of ['News reports from Copenhagen', 'News reports from UNESCO', 'News reports about 85% of students']) {
+    const raw = good(); raw.sampleResponse = essay.replace('News reports', phrase);
+    assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
+  }
+  const original = essay.replace('a local flood', 'a local flood in Sydney');
+  const raw = good(); raw.sampleResponse = original;
+  assert.equal(policy.normalizeResult(raw, original).sampleResponse, original);
 });
 
 function browserFunction(name) {

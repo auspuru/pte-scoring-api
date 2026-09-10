@@ -84,3 +84,7 @@ Essay Practice now requests a complete 200–300-word, four-paragraph Band 9-sty
 The shared server/browser validator checks sample length, paragraph count and exact original-essay quotations identifying the retained ideas. Missing or malformed samples receive the existing assessment retry rather than silently disappearing. An off-topic response or a missing required idea/position receives a specific next step instead of invented arguments. The practice rubric remains unchanged.
 
 Validation: 94 deterministic checks pass, covering full-score samples, unchanged original scores, malformed samples, grounded quotations, retries, safe rendering/copying, saved metadata, existing essay sync/draft behavior and SWT scoring. The opt-in live essay checker also verifies complete samples and the off-topic next-step response without saving student progress.
+
+## 20.4.2 — prevent invented examples in short-answer samples
+
+Manual review of the live short-answer test found city examples that were absent from the student's essay. The prompt now explicitly prohibits adding named places, factual case studies or numerical claims, including when the original feedback recommends further evidence. It develops existing reasoning through logical explanation instead. Validation also rejects newly introduced figures and names/acronyms inside sentences, causing a retry. These checks complement the prompt; capitalisation alone cannot establish semantic grounding.
