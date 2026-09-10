@@ -1,9 +1,10 @@
 /* Reading is a native portal pane; it does not contact the former mock service. */
 (function (root, factory) {
-  const api = factory(typeof module === 'object' && module.exports ? require('./reading-mock-tools') : root.ReadingMockTools);
+  const api = factory(typeof module === 'object' && module.exports ? require('./reading-mock-tools') : root.ReadingMockTools,
+    typeof module === 'object' && module.exports ? require('./reading-exam-player') : root.ReadingExamPlayer);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingPractice = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam) {
   'use strict';
   const labels = { dropdown: 'Dropdown blanks', wordbank: 'Drag-and-drop blanks', reorder: 'Reorder paragraphs', mcsa: 'Single answer', mcma: 'Multiple answers' };
   const taskLabels = { ...labels, ...mock.extraLabels };
@@ -50,6 +51,7 @@
   function remaining(session, now = Date.now()) { return session.deadline ? Math.max(0, Math.ceil((session.deadline - now) / 1000)) : null; }
   let host, bank, owner = '', state, generation = 0, interval, selectedWord = '', saveNotice = '';
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
+  let selectedParagraph = {}, examNotice = null;
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [] });
   function identity() { return typeof currentUserId !== 'undefined' ? String(currentUserId).trim().toLowerCase() : ''; }
@@ -70,10 +72,15 @@
   }
   function reset() {
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
-    starting = false; pendingGrades.clear(); speaker?.cancel();
+    starting = false; pendingGrades.clear(); speaker?.cancel(); setExamMode(false); selectedParagraph = {}; examNotice = null;
     if (host) host.replaceChildren();
   }
-  function leave() { recordTime(); speaker?.cancel(); viewingQuestion = false; persist(); }
+  function setExamMode(enabled) {
+    const active = enabled && !host?.hidden;
+    host?.classList?.toggle('reading-exam-active',active);
+    document.body?.classList?.toggle('reading-exam-open',active);
+  }
+  function leave() { recordTime(); speaker?.cancel(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function open() {
     const nextOwner = identity();
     if (!nextOwner) return;
@@ -100,9 +107,7 @@
       if (state.session) repairSession(state.session);
       host.onclick = click; host.onchange = change; host.oninput = input;
       speaker ||= mock.createSpeaker(globalThis, audioState);
-      host.ondragstart = e => { const word=e.target.closest('[data-word]'); if(word) { selectedWord=word.dataset.word; e.dataTransfer.setData('text/plain', selectedWord); } };
-      host.ondragover = e => { if(e.target.closest('[data-blank]'))e.preventDefault(); };
-      host.ondrop = e => { const blank=e.target.closest('[data-blank]'); if(blank){e.preventDefault(); place(Number(blank.dataset.blank),e.dataTransfer.getData('text/plain'));} };
+      host.ondragstart = dragStart; host.ondragover = dragOver; host.ondrop = drop;
       render(); interval = setInterval(tick, 1000); activeSince = Date.now(); tick();
     } catch (_) {
       if (requestGeneration !== generation) return;
@@ -148,7 +153,7 @@
       }
       speaker?.cancel();
       state.session = { id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, questions: plan.questions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt: Date.now(), deadline: timed ? Date.now() + plan.minutes * 60000 : null, done: false, checked: [] };
-      selectedWord = ''; activeSince = Date.now(); persist(); render();
+      selectedWord = ''; selectedParagraph = {}; examNotice = null; activeSince = Date.now(); persist(); render();
     } catch (error) {
       if (ticket === generation && startedOwner === identity() && status) status.textContent = error.message || 'This mock could not start. Please try again.';
     } finally { if (ticket === generation) starting = false; }
@@ -156,7 +161,7 @@
   function home() {
     leave();
     const recent = state.history;
-    host.innerHTML = `<div class="reading-intro"><p class="portal-eyebrow">IPT Brisbane · Reading</p><h2>Find your focus. Build your confidence.</h2><p>Practise a task, check your starting point, or rehearse with a timed mock.</p></div>
+    host.innerHTML = `<div class="reading-intro"><p class="portal-eyebrow">IPT Brisbane · Reading</p><h2>Find your focus. Build your confidence.</h2><p>Practise a task, check your starting point, or rehearse with a timed mock.</p><p class="reading-note">Mocks and diagnostics use an exam screen: one question at a time, forward-only navigation, and explanations after submission. Your timer keeps running if you exit and return.</p></div>
       ${state.session ? `<div class="portal-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done ? 'Your answers and explanations are ready to review.' : 'Continue your saved session. Timed sessions keep counting while you are away.'}</p></div><button class="portal-button primary" data-action="resume">${state.session.done ? 'Review result' : 'Continue session'}</button></div>` : ''}
       <div class="reading-setup reading-card"><label>Question set<select id="readingSet">${bank.sets.map(s=>`<option value="${s.id}">${escape(s.name)} · ${s.questions.length} questions</option>`).join('')}</select></label><label>Practice task<select id="readingType"><option value="all">All reading tasks</option>${Object.entries(labels).map(([type,label])=>`<option value="${type}">${label}</option>`).join('')}</select></label><label class="reading-check"><input type="checkbox" id="readingTimed"> Timer for practice (2 minutes per question)</label></div>
       <div class="reading-modes">
@@ -174,6 +179,12 @@
   function renderSession() {
     viewingQuestion = true; activeSince = Date.now();
     const s=state.session, q=s.questions[s.index], a=s.answers[q.uid]||[];
+    const testing=exam.isExam(s)&&!s.done;
+    setExamMode(testing);
+    if(testing) {
+      host.innerHTML=exam.render({session:s,question:q,content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice});
+      return;
+    }
     const review=s.done || s.checked.includes(q.uid);
     host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading home</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
@@ -206,20 +217,21 @@
   }
   function questionHTML(q,a) {
     if (q.type === 'swt') return `<p class="reading-passage">${escape(q.passage)}</p><label class="reading-response-label" for="readingSwtResponse">Your one-sentence summary</label><textarea id="readingSwtResponse" data-swt-response rows="5" maxlength="4000" spellcheck="false">${escape(a[0]||'')}</textarea><p class="reading-note" data-word-count>${wordCount(a[0])} words · 5–75 words</p>`;
-    if (q.type === 'hiw') return `<p class="reading-note">Select the words that differ from the audio. Select a word again to undo. +1 per correct word, −1 per incorrect selection, minimum 0.</p><div class="reading-hiw" aria-label="Transcript: select incorrect words">${q.passage.split(/\s+/).map((word,i)=>`<button type="button" data-hiw-word="${i}" aria-label="Word ${i+1}: ${escape(word)}" aria-pressed="${a.includes(i)}">${escape(word)}</button>`).join(' ')}</div>`;
+    if (q.type === 'hiw') return `<div class="reading-hiw" aria-label="Transcript: select incorrect words">${q.passage.split(/\s+/).map((word,i)=>`<button type="button" data-hiw-word="${i}" aria-label="Word ${i+1}: ${escape(word)}" aria-pressed="${a.includes(i)}">${escape(word)}</button>`).join(' ')}</div>`;
     if(q.type==='dropdown'||q.type==='wordbank') {
       const passage=escape(q.passage).replace(/\[\[(\d+)\]\]/g, (_,n)=>{
         const i=Number(n)-1;
         if(q.type==='dropdown') return `<select data-answer="${i}" aria-label="Blank ${n}"><option value="">Choose…</option>${q.options[i].map(x=>`<option ${a[i]===x?'selected':''} value="${escape(x)}">${escape(x)}</option>`).join('')}</select>`;
-        return `<button type="button" class="reading-blank" data-blank="${i}" aria-label="Blank ${n}: ${escape(a[i]||'empty')}">${escape(a[i]||'Blank '+n)}</button>${a[i]?`<button type="button" class="reading-clear" data-clear="${i}" aria-label="Clear blank ${n}">×</button>`:''}`;
+        return `<button type="button" class="reading-blank" data-blank="${i}" ${a[i]?`draggable="true" data-filled-word="${escape(a[i])}"`:''} aria-label="Blank ${n}: ${escape(a[i]||'empty')}">${escape(a[i]||'Blank '+n)}</button>${a[i]?`<button type="button" class="reading-clear" data-clear="${i}" aria-label="Clear blank ${n}">×</button>`:''}`;
       });
-      return `<p class="reading-passage">${passage}</p>${q.type==='wordbank'?`<p class="reading-note">Drag a word into a blank, or select a word and then select a blank. Select × to return a word.</p><div class="reading-wordbank">${q.bank.map(w=>`<button type="button" draggable="true" data-word="${escape(w)}" class="portal-button" aria-pressed="${selectedWord===w}" ${a.includes(w)?'disabled':''}>${escape(w)}</button>`).join('')}</div>`:''}`;
+      return `<p class="reading-passage">${passage}</p>${q.type==='wordbank'?`<div class="reading-wordbank" data-word-return>${q.bank.map(w=>`<button type="button" draggable="true" data-word="${escape(w)}" class="portal-button" aria-pressed="${selectedWord===w}" ${a.includes(w)?'disabled':''}>${escape(w)}</button>`).join('')}</div><p class="reading-note">Drag words into or between blanks, or select a word and then a blank. Drag a filled word back here or select × to return it.</p>`:''}`;
     }
     if(q.type==='reorder') {
+      if(exam.isExam(state.session)&&!state.session.done)return exam.reorderHTML(q,a,selectedParagraph);
       const order=a.length?a:q.items.map(x=>x.key);
       return `<ol class="reading-reorder">${order.map((key,i)=>`<li><p>${escape(q.items.find(x=>x.key===key).text)}</p><div><button class="portal-button" data-reorder="${i}" data-direction="-1" ${i===0?'disabled':''} aria-label="Move paragraph ${i+1} up">↑</button><button class="portal-button" data-reorder="${i}" data-direction="1" ${i===order.length-1?'disabled':''} aria-label="Move paragraph ${i+1} down">↓</button></div></li>`).join('')}</ol><p class="reading-note">Use the arrows to order the paragraphs. ${!a.length?'Move a paragraph to record your answer.':''}</p>`;
     }
-    return `${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${i}" ${a.includes(i)?'checked':''}>${escape(choice)}</label>`).join('')}`;
+    return `<div class="reading-multiple-choice ${q.passage?'reading-has-passage':''}">${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}<div class="reading-choice-options">${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${i}" ${a.includes(i)?'checked':''}>${escape(choice)}</label>`).join('')}</div></div>`;
   }
   function wordCount(text) { return String(text||'').trim().split(/\s+/).filter(Boolean).length; }
   function explanation(q,a) {
@@ -246,11 +258,12 @@
     recordTime();
     if(remaining(state.session)===0) return finish();
     const timer=host.querySelector('[data-timer]'); if(timer)timer.textContent=timerText();
+    if(timer)timer.dataset.urgent=String(remaining(state.session)<=300);
     if (Date.now() - lastPersisted >= 10000) persist();
   }
   function finish() {
     const s=state.session; if(!s||s.done)return;
-    recordTime(); speaker?.cancel(); s.done=true; s.finishedAt=Date.now(); selectedWord='';
+    recordTime(); speaker?.cancel(); s.done=true; s.finishedAt=Date.now(); selectedWord=''; examNotice=null; selectedParagraph={};
     syncHistory(s); persist(); render();
     s.questions.filter(q=>q.type==='swt'&&String(s.answers[q.uid]?.[0]||'').trim()).forEach(q=>gradeSwt(q));
   }
@@ -308,6 +321,66 @@
     const previous=a.indexOf(word); if(previous>=0)a[previous]=''; a[index]=word;
     state.session.answers[q.uid]=a;selectedWord='';persist();renderSession();
   }
+  function dragStart(e) {
+    if(!owner||identity()!==owner||!editable())return;
+    const paragraph=e.target.closest('[data-paragraph]');
+    if(paragraph){selectedParagraph={key:paragraph.dataset.paragraph,panel:paragraph.dataset.panel};e.dataTransfer.setData('application/x-ipt-paragraph',selectedParagraph.key);return;}
+    const word=e.target.closest('[data-word], [data-filled-word]');
+    if(word){selectedWord=word.dataset.word||word.dataset.filledWord;e.dataTransfer.setData('text/plain',selectedWord);}
+  }
+  function dragOver(e) { if(editable()&&e.target.closest('[data-blank], [data-word-return], [data-reorder-zone]'))e.preventDefault(); }
+  function drop(e) {
+    if(!owner||identity()!==owner||!editable())return;
+    const zone=e.target.closest('[data-reorder-zone]');
+    if(zone){
+      e.preventDefault();const item=e.target.closest('[data-paragraph]'),s=state.session,q=s.questions[s.index];
+      const position=item&&item.dataset.panel==='target'?(s.answers[q.uid]||[]).indexOf(item.dataset.paragraph):undefined;
+      return transferParagraph(zone.dataset.reorderZone,position,e.dataTransfer.getData('application/x-ipt-paragraph'));
+    }
+    const blank=e.target.closest('[data-blank]'),word=e.dataTransfer.getData('text/plain');
+    if(blank){e.preventDefault();return place(Number(blank.dataset.blank),word);}
+    if(e.target.closest('[data-word-return]')){
+      e.preventDefault();const s=state.session,q=s.questions[s.index];
+      if(q.type==='wordbank'&&q.bank.includes(word)){s.answers[q.uid]=(s.answers[q.uid]||[]).map(value=>value===word?'':value);selectedWord='';persist();renderSession();}
+    }
+  }
+  function focusParagraph() {
+    const target=[...host.querySelectorAll('[data-paragraph]')].find(el=>el.dataset.paragraph===selectedParagraph.key&&el.dataset.panel===selectedParagraph.panel);
+    target?.focus();
+  }
+  function transferParagraph(destination,position,key=selectedParagraph.key) {
+    if(!editable()||!exam.isExam(state.session))return;
+    const s=state.session,q=s.questions[s.index];if(q.type!=='reorder'||!q.items.some(item=>item.key===key))return;
+    s.answers[q.uid]=exam.moveParagraph(q,s.answers[q.uid]||[],key,destination,position);
+    selectedParagraph={key,panel:destination};persist();renderSession();focusParagraph();
+  }
+  function advanceExam() {
+    const s=state.session;
+    if(!s||s.done||!exam.isExam(s))return;
+    examNotice=null;
+    if(remaining(s)===0||s.index===s.questions.length-1)return finish();
+    recordTime();speaker?.cancel();s.index++;selectedWord='';selectedParagraph={};persist();renderSession();
+    host.querySelector('[data-exam-title]')?.focus();
+  }
+  function examAction(action) {
+    const s=state.session,q=s.questions[s.index];
+    if(action==='exam-stay'){examNotice=null;renderSession();host.querySelector('[data-action="exam-next"]')?.focus();return;}
+    if(action==='exam-confirm'){
+      const pending=examNotice?.action;if(!pending)return;examNotice=null;
+      if(pending==='exit')return home();
+      if(pending==='submit')return finish();
+      return advanceExam();
+    }
+    if(action==='exam-exit'){
+      persist();examNotice={action:'exit',message:'Leave the test screen? The timer will keep running. Resume this question from Reading home. '+saveNotice+'.'};
+    }else if(action==='exam-next'){
+      const message=exam.needsAttention(q,s.answers[q.uid]||[],s.audioStates[q.uid]);
+      if(s.index===s.questions.length-1)examNotice={action:'submit',message:(message?message+' ':'')+'This is the final question. Submit your test to view the results?'};
+      else if(message)examNotice={action:'next',message};
+      else return advanceExam();
+    }
+    renderSession();host.querySelector('[data-action="exam-stay"]')?.focus();
+  }
   function click(e) {
     if(!owner||identity()!==owner||!state)return;
     const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -319,12 +392,24 @@
     if(d.action==='resume')return render();
     if(!s)return;
     recordTime();const q=s.questions[s.index];
+    const testing=exam.isExam(s)&&!s.done;
+    if(testing&&d.action?.startsWith('exam-'))return examAction(d.action);
+    // Exam questions can only advance through Next; review unlocks after submission.
+    if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
     if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText);}
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
     if(d.question!==undefined||d.move!==undefined){speaker?.cancel();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
     if(d.action==='submit'){if(confirm('Finish this reading session and show the answers?'))finish();return;}
     if(!editable())return;
+    if(testing&&q.type==='reorder'){
+      if(d.paragraph!==undefined){selectedParagraph={key:d.paragraph,panel:d.panel};renderSession();focusParagraph();return;}
+      if(d.transfer!==undefined)return transferParagraph(d.transfer);
+      if(d.orderStep!==undefined&&selectedParagraph.panel==='target'){
+        const a=s.answers[q.uid]||[],i=a.indexOf(selectedParagraph.key),j=i+Number(d.orderStep);
+        if(i<0||j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];s.answers[q.uid]=a;persist();renderSession();focusParagraph();return;
+      }
+    }
     if(d.hiwWord!==undefined&&q.type==='hiw'){const index=Number(d.hiwWord),a=s.answers[q.uid]||[];s.answers[q.uid]=a.includes(index)?a.filter(x=>x!==index):[...a,index];b.setAttribute('aria-pressed',String(s.answers[q.uid].includes(index)));persist();return;}
     if(d.action==='check'){s.checked.push(q.uid);persist();return renderSession();}
     if(d.word!==undefined){selectedWord=d.word;host.querySelectorAll('[data-word]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.word===selectedWord)));return;}

@@ -40,7 +40,7 @@ function client(){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
  const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,confirm:()=>true};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
+ vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
 }
@@ -151,11 +151,62 @@ test('HIW selection stays interactive during audio; leaving interrupts playback 
  const h=client(),audio=speechHarness();Object.assign(h.ctx,audio.env);h.ctx.passages=[swtPassage];
  await h.ctx.ReadingPractice.open();await h.click({start:'full'});
  const saved=()=>JSON.parse(h.values.get(storageKey('first'))),index=saved().session.questions.findIndex(q=>q.type==='hiw');
- h.click({question:String(index)});h.click({action:'play'});const utterance=audio.utterances[0];utterance.onstart();
+ for(let i=0;i<index;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}h.click({action:'play'});const utterance=audio.utterances[0];utterance.onstart();
  const html=h.host.innerHTML;h.click({hiwWord:'4'});assert.equal(h.host.innerHTML,html);
  const q=saved().session.questions[index];assert.deepEqual(saved().session.answers[q.uid],[4]);
  h.ctx.ReadingPractice.leave();assert.equal(saved().session.audioStates[q.uid].status,'error');utterance.onend();assert.equal(saved().session.audioStates[q.uid].status,'error');
  await h.ctx.ReadingPractice.open();assert.match(h.host.innerHTML,/data-hiw-word="4"[^>]*aria-pressed="true"/);
  h.click({action:'play'});audio.utterances[1].onstart();audio.utterances[1].onend();h.click({action:'play'});assert.equal(audio.utterances.length,2);
  h.click({action:'submit'});assert.equal(saved().session.audioStates[q.uid].status,'complete');
+});
+const examPlayer=require('../public/reading-exam-player');
+test('Every mock and diagnostic uses the same exam shell while practice keeps its review tools',async()=>{
+ for(const mode of ['full','mock','sectional-1','sectional-2','diagnostic','practice']){
+  const h=client();h.ctx.passages=[swtPassage];await h.ctx.ReadingPractice.open();await h.click({start:mode});
+  const isMock=mode!=='practice';assert.equal(h.host.innerHTML.includes('data-exam-player'),isMock);
+  if(isMock){
+   assert.match(h.host.innerHTML,/Time remaining/);assert.match(h.host.innerHTML,/data-action="exam-next"/);
+   assert.doesNotMatch(h.host.innerHTML,/data-question=|data-action="flag"|data-move="-1"|data-action="check"/);
+  }else assert.match(h.host.innerHTML,/data-action="check"/);
+ }
+});
+test('Exam Next confirms unanswered parts, blocks backward movement, and restores the same question and deadline',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+ const saved=()=>JSON.parse(h.values.get(storageKey('first'))),deadline=saved().session.deadline;
+ h.click({action:'exam-next'});assert.equal(saved().session.index,0);assert.match(h.host.innerHTML,/unanswered parts/);
+ h.click({action:'exam-stay'});assert.equal(saved().session.index,0);
+ h.click({action:'exam-next'});h.click({action:'exam-confirm'});assert.equal(saved().session.index,1);
+ h.click({question:'0'});h.click({move:'-1'});h.click({action:'check'});assert.equal(saved().session.index,1);assert.equal(saved().session.checked.length,0);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);assert.match(h.host.innerHTML,/Continue session/);
+ h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.equal(saved().session.index,1);assert.equal(saved().session.deadline,deadline);assert.match(h.host.innerHTML,/Question 2 of 16/);
+});
+test('The last Next submits once, then unlocks review of earlier questions',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
+ const saved=()=>JSON.parse(h.values.get(storageKey('first')));
+ for(let i=0;i<14;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
+ h.click({action:'exam-next'});assert.equal(saved().session.done,false);assert.match(h.host.innerHTML,/final question/);
+ h.click({action:'exam-confirm'});assert.equal(saved().session.done,true);assert.equal(saved().history.length,1);assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);
+ h.click({question:'0'});assert.match(h.host.innerHTML,/Question 1 of 15/);assert.equal(saved().session.index,0);
+ h.timers.at(-1)();assert.equal(saved().history.length,1);
+});
+test('The two reorder panels transfer, return and reorder selected paragraphs without duplicate answers',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+ const saved=()=>JSON.parse(h.values.get(storageKey('first'))),index=saved().session.questions.findIndex(q=>q.type==='reorder');
+ for(let i=0;i<index;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
+ const q=saved().session.questions[index],first=q.items[0].key,second=q.items[1].key;
+ assert.match(h.host.innerHTML,/Source paragraphs/);assert.match(h.host.innerHTML,/Paragraphs in your chosen order/);
+ h.click({paragraph:first,panel:'source'});h.click({transfer:'target'});
+ h.click({paragraph:second,panel:'source'});h.click({transfer:'target'});h.click({orderStep:'-1'});
+ assert.deepEqual(saved().session.answers[q.uid],[second,first]);
+ h.click({transfer:'source'});assert.deepEqual(saved().session.answers[q.uid],[first]);
+ assert.deepEqual(examPlayer.moveParagraph(q,[first,second],first,'target'),[second,first]);
+ assert.deepEqual(examPlayer.moveParagraph(q,[first],first,'target'),[first]);
+});
+test('Mock mode closes on exit, completion and sign-out without changing the stored theme',async()=>{
+ const h=client(),classes=new Set(['dark']);h.ctx.document.body={classList:{toggle(name,on){on?classes.add(name):classes.delete(name);}}};
+ await h.ctx.ReadingPractice.open();await h.click({start:'mock'});assert(classes.has('reading-exam-open'));
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert(!classes.has('reading-exam-open'));assert(classes.has('dark'));
+ h.click({action:'resume'});assert(classes.has('reading-exam-open'));
+ h.click({action:'submit'});assert(!classes.has('reading-exam-open'));
+ await h.click({start:'sectional-1'});h.ctx.currentUserId='';h.ctx.ReadingPractice.reset();assert(!classes.has('reading-exam-open'));assert(classes.has('dark'));
 });
