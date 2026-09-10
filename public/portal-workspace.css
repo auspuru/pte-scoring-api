@@ -223,6 +223,18 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
 #libraryPane .lib, #libraryPane .editor, #libraryPane .preview { background: var(--bg-card); box-shadow: none; backdrop-filter: none; }
 .tb-text-btn, .field-input, .field-textarea { font-family: var(--sans); }
 .loading-veil { flex-direction: column; gap: 16px; color: var(--ink); font-size: 15px; }
+.ipt-assessment-logo { display: block; width: 180px; max-width: 100%; height: auto; padding: 10px; border-radius: 10px; background: #fff; object-fit: contain; }
+.practice-loading.ipt-assessment .ipt-assessment-logo { margin: 0 auto 24px; }
+.ipt-assessment .practice-loading-text, .loading-veil.ipt-assessment > span {
+  width: 520px; max-width: 100%; margin: 0 auto; color: var(--ink);
+  font: 650 18px/1.6 var(--sans); text-align: center;
+}
+.loading-veil.ipt-assessment { padding: 24px; }
+.ipt-assessment .practice-loading-sub { max-width: 520px; margin: 12px auto 0; font-size: 14px; line-height: 1.6; }
+.loading-veil.ipt-assessment .spinner, .ipt-assessment .practice-loading-icon { border-top-color: var(--accent); }
+.ipt-assessment-status { display: flex; align-items: center; gap: 16px; margin: 20px 0; padding: 16px; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 12px; background: var(--accent-soft); }
+.ipt-assessment-status .ipt-assessment-logo { width: 112px; max-width: 30%; flex-shrink: 0; }
+.ipt-assessment-status p { margin: 0; color: var(--ink); font-weight: 600; line-height: 1.6; }
 .toast { font-size: 14px; line-height: 1.6; max-width: min(480px, calc(100vw - 32px)); }
 .login-screen { background: var(--bg) !important; }
 .login-card { background: var(--bg-card) !important; border: 1px solid var(--line-soft); box-shadow: var(--shadow-lg) !important; }

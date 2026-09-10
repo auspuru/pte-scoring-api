@@ -5619,14 +5619,25 @@ const workspaceLoadingMessages = [
 let workspaceLoadingTimer = null;
 let workspaceLoadingIndex = 0;
 
-function showLoading(on){
+function showLoading(on, context = 'workspace'){
   const el = document.getElementById('loadingVeil');
   if (!el) return;
+  const scoring = on && context === 'scoring';
   el.classList.toggle('hidden', !on);
+  el.classList.toggle('ipt-assessment', scoring);
+  const logo = document.getElementById('loadingBrandLogo');
+  if (logo) logo.classList.toggle('hidden', !scoring);
+  if (workspaceLoadingTimer) {
+    clearInterval(workspaceLoadingTimer);
+    workspaceLoadingTimer = null;
+  }
   if (on) {
     const label = el.querySelector('span');
+    if (scoring) {
+      if (label) label.textContent = 'IPT Brisbane’s AI scoring engine is analysing your response…';
+      return;
+    }
     if (label) label.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
-    if (workspaceLoadingTimer) clearInterval(workspaceLoadingTimer);
     workspaceLoadingTimer = setInterval(() => {
       workspaceLoadingIndex = (workspaceLoadingIndex + 1) % workspaceLoadingMessages.length;
       const currentLabel = el.querySelector('span');
@@ -5634,9 +5645,6 @@ function showLoading(on){
         currentLabel.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
       }
     }, 1800);
-  } else if (workspaceLoadingTimer) {
-    clearInterval(workspaceLoadingTimer);
-    workspaceLoadingTimer = null;
   }
 }
 
@@ -12925,26 +12933,23 @@ function updateSubmitBtnState() {
 
 function loadingView() {
   return `
-    <div class="practice-loading">
-      <div class="practice-loading-icon"></div>
-      <div class="practice-loading-text" id="practiceLoadingText">Reading your essay…</div>
-      <div class="practice-loading-sub">Scoring your original essay and preparing your sample.</div>
+    <div class="practice-loading ipt-assessment">
+      <img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109">
+      <div class="practice-loading-icon" aria-hidden="true"></div>
+      <div class="practice-loading-text" role="status" aria-live="polite">IPT Brisbane’s AI scoring engine is analysing your response…</div>
+      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback and a Band 9 sample using your own ideas will appear here.</div>
     </div>
   `;
 }
 
-// Cycle through friendly progress messages while the AI scores (purely cosmetic —
-// makes the wait feel responsive instead of frozen).
+// Keep the branded assessment status visible while cycling supporting copy.
 let practiceLoadingTimer = null;
 function startLoadingMessages() {
   const messages = [
-    'Reading your essay…',
-    'Checking grammar and spelling…',
-    'Assessing vocabulary and range…',
-    'Evaluating coherence and structure…',
-    'Scoring against the 26-point rubric…',
-    'Writing your feedback…',
-    'Developing your ideas into a Band 9 sample…'
+    'Your original essay is being assessed.',
+    'Your feedback will cover content, structure and language.',
+    'Your Band 9 sample will build on your own ideas.',
+    'Your results will appear as soon as they are ready.'
   ];
   let i = 0;
   if (practiceLoadingTimer) clearInterval(practiceLoadingTimer);
@@ -12952,7 +12957,7 @@ function startLoadingMessages() {
     i = (i + 1) % messages.length;
     const el = document.getElementById('practiceLoadingText');
     if (el) el.textContent = messages[i];
-  }, 2500);
+  }, 4000);
 }
 function stopLoadingMessages() {
   if (practiceLoadingTimer) { clearInterval(practiceLoadingTimer); practiceLoadingTimer = null; }
@@ -13999,9 +14004,9 @@ async function scoreSummary(submission = null){
   const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
   const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
   swtGradingPending = true;
-  showLoading(true);
+  showLoading(true, 'scoring');
   const scoreBtn = document.getElementById('scoreBtn');
-  if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'Reviewing your summary…'; }
+  if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'IPT Brisbane AI is analysing…'; }
   const workspace = document.getElementById('writeTabPane');
   if (workspace) workspace.setAttribute('aria-busy', 'true');
 
