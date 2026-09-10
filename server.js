@@ -3685,31 +3685,28 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
   return swtJudgmentService.judge(studentText, passageText, kpHint, timeoutMs);
 }
 
-async function callSwtJudge(prompt, timeoutMs) {
+async function callSwtJudge(prompt, timeoutMs, { signal } = {}) {
   if (!anthropic) return null;
-  try {
-    const response = await anthropic.messages.create({
-      model: CLAUDE_MODEL,
-      max_tokens: 2800,
-      temperature: 0,
-      messages: [{ role: 'user', content: prompt }]
-    }, { timeout: timeoutMs, maxRetries: 0 });
-    const text = response.content?.[0]?.text || '';
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) return null;
-    const parsed = JSON.parse(m[0]);
-    parsed.source = 'claude';
-    if (DEBUG) console.log(`[grade] Claude returned ${Array.isArray(parsed.grammar_annotations) ? parsed.grammar_annotations.length : 0} grammar_annotations`);
-    return parsed;
-  } catch (e) {
-    console.error('Claude content judge failed:', e.message);
-    return null;
+  const response = await anthropic.messages.create({
+    model: CLAUDE_MODEL, max_tokens: 4000, temperature: 0,
+    messages: [{ role: 'user', content: prompt }]
+  }, { timeout: timeoutMs, maxRetries: 0, signal });
+  if (response.stop_reason === 'max_tokens') {
+    const error = new Error('Incomplete SWT assessment'); error.code = 'SWT_TRUNCATED'; throw error;
   }
+  const text = (response.content || []).filter(part => part.type === 'text').map(part => part.text).join('\n');
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) return null;
+  const parsed = JSON.parse(m[0]);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+  return { ...parsed, source: 'claude' };
 }
 
 const swtJudgmentService = createJudgmentService({
   call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
-  isComplete: (result, summary) => !applyScoringPolicy(result, summary).needs_semantic_review
+  isComplete: (result, summary) => !applyScoringPolicy(result, summary).needs_semantic_review,
+  validationIssues: (result, summary) => applyScoringPolicy(result, summary).assessment_issues,
+  onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
 });
 
 // Reference answers use exactly the same form gate, semantic judge and scoring
@@ -4164,35 +4161,12 @@ app.post('/api/grade', async (req, res) => {
     const grammar = checkGrammar(text, prompt);
     let spelling = checkSpelling(text, prompt);
 
-    // ── CONTENT JUDGE: Claude first (with a bounded retry), local fallback ──
-    // v19.6: also fire the Datamuse spelling enrichment in parallel — both are
-    // network-bound, so doing them concurrently saves ~2-4s on slow paths.
-    // C1/F3 (v19.17): retry once on failure.
-    // v19.17.1: but be smart about WHICH failures to retry. A timeout means the
-    // model was slow — retrying with the full 30s budget could mean a 60s wait,
-    // which is unacceptable. So: on a timeout, retry only ONCE with a SHORTER
-    // budget (15s) so worst-case total stays ~45s; on a fast error (bad JSON,
-    // momentary network blip), retry with the full budget since it'll likely
-    // return quickly.
-    let llmJudgment = null;
-    const [_judgeResult, enrichedSpelling] = await Promise.all([
-      (async () => {
-        const t0 = Date.now();
-        let firstErr = null;
-        try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints); }
-        catch (e) { firstErr = e; }
-        if (!llmJudgment) {
-          const elapsed = Date.now() - t0;
-          const wasTimeout = firstErr && /timeout/i.test(firstErr.message || '');
-          // If the first attempt already ate most of our time budget on a
-          // timeout, retry with a shorter ceiling; otherwise retry normally.
-          const retryTimeout = wasTimeout ? 15000 : 30000;
-          await new Promise(r => setTimeout(r, 300));
-          try { llmJudgment = await judgeContentWithClaude(text, prompt, keyPoints, retryTimeout); }
-          catch (e) { /* swallow → fallback */ }
-          if (DEBUG) console.log(`[grade] Claude judge ${llmJudgment ? 'succeeded on retry' : 'failed twice — using local fallback'} (first attempt ${elapsed}ms, timeout=${wasTimeout})`);
-        }
-      })(),
+    // The judgment service owns both retries and consistency reviews within
+    // one 55-second budget. Do not start another retry loop at the route level.
+    let [llmJudgment, enrichedSpelling] = await Promise.all([
+      judgeContentWithClaude(text, prompt, keyPoints).catch(error => {
+        console.warn('[swt-grade] assessment unavailable:', error.code || error.name); return null;
+      }),
       (EXTERNAL_SPELLCHECK_ENABLED ? enrichSpellingWithDatamuse(spelling, text) : Promise.resolve(spelling)).catch(() => spelling)
     ]);
     spelling = enrichedSpelling;

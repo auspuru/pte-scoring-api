@@ -1,5 +1,6 @@
 'use strict';
 const seeds = require('./passages.json');
+const { POLICY_VERSION } = require('./swt-scoring-policy');
 const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
 const references = {
   8: {
@@ -82,7 +83,7 @@ function studentPassage(passage) {
   return { ...passage,
     ...(useRevision ? { sampleResponse: reference.sample,
       sampleNotes: 'The sample keeps the main message and important relationships without requiring every detail.',
-      sampleRevision: '20.3.5' } : {}),
+      sampleRevision: POLICY_VERSION } : {}),
     studyGuide: buildStudyGuide(passage)
   };
 }

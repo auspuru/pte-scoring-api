@@ -80,6 +80,8 @@ let sessionToken = '';        // Custom sync authentication token
 // SWT progress elements
 let passages = [];
 let swtResultPassage = null;
+let swtResultSubmission = null;
+let swtGradingPending = false;
 const swtSampleChecks = new Map();
 let adminKey = ''; // Student portal has no admin entry
 let attempted = new Set();
@@ -13955,18 +13957,48 @@ function resetTimer(){
   }
 }
 
-async function scoreSummary(){
+async function requestSwtGrade(payload, timeoutMs = 75000) {
+  const controller = new AbortController();
+  let timer;
+  try {
+    return await Promise.race([
+      (async () => {
+        const res = await fetch(API_URL + '/api/grade', { method: 'POST',
+          headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal });
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error('The assessment response was incomplete. Your summary is safe; please try again.'); }
+        if (!res.ok) throw new Error(typeof data?.error === 'string' ? data.error : 'The assessment is unavailable. Your summary is safe; please try again.');
+        if (!data?.trait_scores || !['content', 'form', 'grammar', 'vocabulary'].every(key => Number.isFinite(data.trait_scores[key]))) {
+          throw new Error('The assessment response was incomplete. Your summary is safe; please try again.');
+        }
+        return data;
+      })(),
+      new Promise((_, reject) => { timer = setTimeout(() => {
+        reject(new Error('The assessment took too long. Your summary is safe; please try again.'));
+        controller.abort();
+      }, timeoutMs); })
+    ]);
+  } finally { clearTimeout(timer); }
+}
+
+async function scoreSummary(submission = null){
+  if (swtGradingPending) return;
   const summaryInputEl = document.getElementById('summaryInput');
-  if (!summaryInputEl) return;
-  const text = summaryInputEl.value.trim();
+  if (!summaryInputEl && !submission) return;
+  const text = (submission ? submission.text : summaryInputEl.value).trim();
+  const passageId = submission ? submission.passageId : currentPassageId;
   if(!text){ toast('Write a summary first.'); return; }
   const words = countWords(text);
   if(words < 5){ toast('Too short — minimum 5 words.'); return; }
   if(words > 75){ toast('Too long — maximum 75 words.'); return; }
 
-  const p = passages.find(x => x.id === currentPassageId);
+  const p = passages.find(x => x.id === passageId);
   if(!p){ toast('Passage not loaded.'); return; }
 
+  const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
+  const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
+  swtGradingPending = true;
   showLoading(true);
   const scoreBtn = document.getElementById('scoreBtn');
   if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'Reviewing your summary…'; }
@@ -13974,43 +14006,48 @@ async function scoreSummary(){
   if (workspace) workspace.setAttribute('aria-busy', 'true');
 
   try {
-    const payload = { type: 'swt', passageId: currentPassageId, prompt: p.text, keyPoints: p.keyElements, text: text };
-    if(currentUserId){ payload.userId = currentUserId; payload.passageId = currentPassageId; }
-
-    const [gradeRes, spellRes] = await Promise.allSettled([
-      fetch(API_URL+'/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),
-      fetch(API_URL+'/api/spellcheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})})
-    ]);
-
-    if(gradeRes.status !== 'fulfilled' || !gradeRes.value.ok){ throw new Error('Grading failed'); }
-    const data = await gradeRes.value.json();
-
-    let spellData = null;
-    if(spellRes.status === 'fulfilled' && spellRes.value.ok){
-      try { spellData = await spellRes.value.json(); } catch(e){ spellData = null; }
+    const payload = { type: 'swt', passageId, prompt: p.text, keyPoints: p.keyElements, text };
+    if (owner.uid) payload.userId = owner.uid;
+    const data = await requestSwtGrade(payload);
+    if (!sameOwner()) return;
+    // The grade already includes spelling feedback. A separate dictionary
+    // request must not delay the student's completed assessment.
+    const spellData = data.spelling_details || null;
+    let saved = true;
+    try { await saveAttempt(passageId, text, data, spellData); }
+    catch { saved = false; }
+    if (!sameOwner()) return;
+    attempted.add(passageId);
+    populatePassageDropdowns();
+    if (currentPassageId !== passageId) {
+      toast(saved ? 'Feedback saved for ' + (p.title || 'your summary') + '.' : 'Feedback could not be saved. Please retry this summary.');
+      return;
     }
     lastSpellData = spellData;
-
-    await saveAttempt(currentPassageId, text, data, spellData);
-    attempted.add(currentPassageId);
-    populatePassageDropdowns();
     stopTimer();
     
     let resultPassage = p;
     if(data.passage_current){
       resultPassage = Object.assign({}, p, data.passage_current);
-      const idx = passages.findIndex(x => x.id === currentPassageId);
+      const idx = passages.findIndex(x => x.id === passageId);
       if(idx >= 0) passages[idx] = Object.assign({}, passages[idx], data.passage_current);
     }
     showResults(data, resultPassage, spellData, text);
     showSwtScreen('swtResultsScreen');
+    if (!saved) toast('Your score is ready, but this device could not save it. Keep this result open.', true);
   } catch(e){
-    toast('Scoring failed — check your connection and try again.');
+    if (sameOwner()) toast(e.message || 'Scoring could not be completed. Your summary is still here.', true);
   } finally {
+    swtGradingPending = false;
     showLoading(false);
     if (scoreBtn) { scoreBtn.disabled = false; scoreBtn.textContent = 'Get feedback →'; }
     if (workspace) workspace.removeAttribute('aria-busy');
   }
+}
+
+function retrySwtAssessment(){
+  if (swtResultSubmission && swtResultSubmission.ownerId === canonicalClientUserId(currentUserId)
+    && swtResultSubmission.token === sessionToken) return scoreSummary(swtResultSubmission);
 }
 
 async function saveAttempt(pid, text, data, spellData){
@@ -14020,7 +14057,9 @@ async function saveAttempt(pid, text, data, spellData){
   LocalStore.set(getPteStorageKey('attempted'), Array.from(attempted));
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
+  if (!summaries[pid] || String(summaries[pid].text || '').trim() === text.trim()) {
+    summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
+  }
   LocalStore.set(getPteStorageKey('summaries'), summaries);
 
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
@@ -14074,6 +14113,8 @@ function formatAttemptTime(iso){
 
 function showResults(data, passage, spellData, submittedText){
   swtResultPassage = passage;
+  swtResultSubmission = { passageId: passage.id, text: submittedText || '',
+    ownerId: canonicalClientUserId(currentUserId), token: sessionToken };
   const display = SwtStudentFeedback.presentation(data);
   const traits = data.trait_scores || {};
   const rawMax = display.max;
@@ -14109,7 +14150,7 @@ function showResults(data, passage, spellData, submittedText){
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
   renderSwtGuidance(data);
-  const previousRubric = data.scoring_version && data.scoring_version !== '20.3.5';
+  const previousRubric = data.scoring_version && data.scoring_version !== '20.3.6';
   const rubricNotice = document.getElementById('swtRubricNotice');
   if (rubricNotice) {
     rubricNotice.hidden = !previousRubric;
@@ -14121,10 +14162,15 @@ function showResults(data, passage, spellData, submittedText){
   if(degradedEl){
     if(data.ai_feedback_degraded || data.score_provisional){
       degradedEl.style.display = '';
-      degradedEl.textContent = 'AI assessment of meaning and connections was unavailable. These scores are provisional — try again for a complete assessment.';
+      degradedEl.textContent = 'The full assessment could not be completed. Your summary is still available. Retry the assessment to receive a confirmed score.';
     } else {
       degradedEl.style.display = 'none';
     }
+  }
+  const retryBtn = document.getElementById('swtRetryAssessmentBtn');
+  if (retryBtn) {
+    retryBtn.hidden = !(data.ai_feedback_degraded || data.score_provisional);
+    retryBtn.style.display = retryBtn.hidden ? 'none' : '';
   }
 
   const heroTraitChipsEl = document.getElementById('heroTraitChips');

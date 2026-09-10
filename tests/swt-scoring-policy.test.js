@@ -25,6 +25,25 @@ function annotation(phrase, fix, impact = 'none', effect = '') {
     severity: 'major', type: 'grammar', rationale: 'Suggested light correction.' };
 }
 
+test('Smart quotes and pasted whitespace preserve the score and retain exact original citations', () => {
+  const normal = "Caffeine improves bees' memory of flower scents, supporting pollination and plant survival.";
+  const original = normal.replace(/ /g, '\u00a0 ').replace("bees'", 'bees’');
+  const raw = judgment();
+  Object.assign(raw.summary_assessment, { main_idea_evidence: "Caffeine improves bees' memory of flower scents",
+    supporting_evidence: ['supporting pollination and plant survival'] });
+  raw.grammar_annotations = [annotation("bees' memory", 'the memory of bees')];
+  const result = policy.applyScoringPolicy(raw, original);
+  assert.equal(result.needs_semantic_review, false);
+  assert.equal(result.content_score, 4);
+  assert.equal(result.grammar_score, 2);
+  assert(original.includes(result.grammar_annotations[0].phrase));
+  assert(original.includes(result.summary_assessment.main_idea_evidence));
+  raw.summary_assessment.main_idea_evidence = 'Caffeine damages memory and prevents pollination';
+  const fabricated = policy.applyScoringPolicy(raw, original);
+  assert.equal(fabricated.needs_semantic_review, true);
+  assert(fabricated.assessment_issues.includes('main_idea_evidence'));
+});
+
 function functionSource(name) {
   const start = source.indexOf(`function ${name}(`);
   const end = source.indexOf('\n}', start) + 2;

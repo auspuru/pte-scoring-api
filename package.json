@@ -1,6 +1,6 @@
 {
   "name": "ptewriting",
-  "version": "20.4.6",
+  "version": "20.4.7",
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {

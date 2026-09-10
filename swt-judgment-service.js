@@ -3,7 +3,8 @@ const { createHash } = require('node:crypto');
 
 // Identical source + response + rubric use one assessment, whether submitted
 // by a learner or checked as a reference. No sample-answer score overrides.
-function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, maxEntries = 200, ttlMs = 20 * 60 * 1000 }) {
+function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, validationIssues = () => [],
+  onAttemptError = () => {}, totalTimeoutMs = 55000, maxEntries = 200, ttlMs = 20 * 60 * 1000 }) {
   const cache = new Map();
   const pending = new Map();
   const keyFor = (summary, passage, ideas) => createHash('sha256')
@@ -15,8 +16,33 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, m
     cache.delete(key);
     if (!pending.has(key)) {
       const task = (async () => {
+        const deadline = Date.now() + totalTimeoutMs;
+        let attempts = 0;
+        async function read(prompt, stage) {
+          const remaining = Math.min(timeoutMs, deadline - Date.now());
+          if (attempts >= 2 || remaining <= 0) return null;
+          attempts++;
+          const controller = new AbortController();
+          let timer;
+          try {
+            const response = await Promise.race([
+              Promise.resolve().then(() => call(prompt, remaining, { signal: controller.signal })),
+              new Promise((_, reject) => { timer = setTimeout(() => {
+                const error = new Error('SWT assessment timed out'); error.code = 'SWT_TIMEOUT';
+                reject(error); controller.abort();
+              }, remaining); })
+            ]);
+            if (!response || !isComplete(response, summary)) onAttemptError({ stage, attempt: attempts,
+              code: response ? 'incomplete_assessment' : 'empty_response', issues: response ? validationIssues(response, summary) : [] });
+            return response;
+          } catch (error) {
+            onAttemptError({ stage, attempt: attempts, code: error.code || error.name || 'unknown', status: error.status });
+            return null;
+          } finally { clearTimeout(timer); }
+        }
         const prompt = buildPrompt(summary, passage, ideas);
-        let result = await call(prompt, timeoutMs);
+        let result = await read(prompt, 'assessment');
+        if (!result) result = await read(prompt + '\n\nThe previous request did not return a complete response. Return complete JSON with all required assessment and annotation fields.', 'retry');
         if (!result) return null;
         const a = result.summary_assessment || {};
         // Review relationship deductions where the judge already acknowledges
@@ -33,7 +59,8 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, m
           // reviewer even when its new explanation explicitly rejects them.
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
             + 'Independently reassess this response from the passage. Pay particular attention to category-level paraphrases, pronoun referents, locally stated reasons, and additive versus causal links. Confirm a deduction only for a genuinely missing necessary proposition or explicit material falsehood. A regulatory advantage can explain competitive dominance without naming individual laws; a named invention can be the referent of it despite an intervening clause about motivation. Keep stylistic refinements optional. Do not assume any benchmark guarantees a score. Return a fresh complete JSON assessment with mutually consistent numerical scores, semantic flags and short actionable feedback. If the relationships are faithful, set relationships_clear true and material_meaning_change false; do not retain a deduction whose explanation you reject. Copy main_idea_evidence and each supporting_evidence as a CONTIGUOUS EXACT substring of the student summary: no inserted brackets, ellipses, paraphrases or altered verb forms.';
-          const reviewed = await call(reviewPrompt, timeoutMs).catch(() => null);
+          const issues = validationIssues(result, summary);
+          const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : ''), 'review');
           if (reviewed && isComplete(reviewed, summary)) result = { ...reviewed, consistency_reviewed: true };
           else result = { ...result, review_unavailable: true };
         }

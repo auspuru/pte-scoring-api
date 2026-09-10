@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.5';
+const POLICY_VERSION = '20.3.6';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -34,22 +34,30 @@ const SCORING_CRITERIA = Object.freeze({
 
 const score = (value, maximum) => typeof value === 'number' && Number.isFinite(value)
   ? Math.max(0, Math.min(maximum, value)) : 0;
-const textPresent = (summary, phrase) => typeof phrase === 'string'
-  && phrase.trim().length > 0 && summary.toLowerCase().includes(phrase.toLowerCase());
+function findExactQuote(summary, phrase) {
+  if (typeof phrase !== 'string' || !phrase.trim()) return '';
+  // Pasted whitespace and smart quotes must not invalidate the model's
+  // citation. Return the original span so the UI still quotes the student's text.
+  const pattern = phrase.trim().split(/\s+/).map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/['‘’]/g, "['‘’]").replace(/["“”]/g, '["“”]')).join('\\s+');
+  return summary.match(new RegExp(pattern, 'i'))?.[0] || '';
+}
+const textPresent = (summary, phrase) => !!findExactQuote(summary, phrase);
 
 // A model sometimes resolves "its" to "London's" in an evidence quote. Keep
 // the long, verbatim portion as the citation instead of penalising the student
 // for the judge's transcription. Never invent evidence or accept a paraphrase:
 // the retained span must be present, at least 8 words and 80% of the quote.
 function exactEvidenceQuote(summary, phrase) {
-  if (textPresent(summary, phrase) || typeof phrase !== 'string') return phrase;
+  const exact = findExactQuote(summary, phrase);
+  if (exact || typeof phrase !== 'string') return exact || phrase;
   const words = [...phrase.matchAll(/\S+/g)];
   const minimum = Math.max(8, Math.ceil(words.length * 0.8));
   for (let n = words.length; n >= minimum; n--) {
     for (let i = 0; i <= words.length - n; i++) {
       const span = phrase.slice(words[i].index, words[i + n - 1].index + words[i + n - 1][0].length);
-      const index = summary.toLowerCase().indexOf(span.toLowerCase());
-      if (index >= 0) return summary.slice(index, index + span.length);
+      const original = findExactQuote(summary, span);
+      if (original) return original;
     }
   }
   return phrase;
@@ -88,6 +96,10 @@ function languageScore(proposed, annotations) {
 
 function applyScoringPolicy(judgment, summary) {
   const result = { ...judgment };
+  for (const field of ['grammar_annotations', 'vocabulary_annotations']) {
+    if (Array.isArray(result[field])) result[field] = result[field].map(a => a
+      && { ...a, phrase: findExactQuote(summary, a.phrase) || a.phrase });
+  }
   const assessment = { ...(result.summary_assessment || {}) };
   assessment.main_idea_evidence = exactEvidenceQuote(summary, assessment.main_idea_evidence);
   if (Array.isArray(assessment.supporting_evidence)) {
@@ -101,18 +113,20 @@ function applyScoringPolicy(judgment, summary) {
   const supports = Array.isArray(assessment.supporting_evidence)
     ? assessment.supporting_evidence.filter(p => textPresent(summary, p)) : [];
   const conclusionStatuses = ['captured', 'clearly_implied', 'not_applicable', 'missing', 'incorrect'];
-  const complete = result.review_unavailable !== true && ['main_idea_accurate', 'relationships_clear', 'material_meaning_change']
-    .every(k => typeof assessment[k] === 'boolean')
-    && Array.isArray(assessment.supporting_evidence)
-    && assessment.supporting_evidence.every(phrase => textPresent(summary, phrase))
-    && (assessment.main_idea_accurate !== true || textPresent(summary, assessment.main_idea_evidence))
-    && Array.isArray(assessment.missing_dependencies)
-    && conclusionStatuses.includes(assessment.conclusion_status)
-    && ['strong', 'adequate', 'weak'].includes(result.cohesion)
-    && validAnnotations(result.grammar_annotations)
-    && validAnnotations(result.vocabulary_annotations)
-    && typeof assessment.relationship_explanation === 'string'
-    && assessment.relationship_explanation.trim().length > 0;
+  const checks = {
+    review_unavailable: result.review_unavailable !== true,
+    semantic_flags: ['main_idea_accurate', 'relationships_clear', 'material_meaning_change'].every(k => typeof assessment[k] === 'boolean'),
+    supporting_evidence: Array.isArray(assessment.supporting_evidence) && assessment.supporting_evidence.every(phrase => textPresent(summary, phrase)),
+    main_idea_evidence: assessment.main_idea_accurate !== true || textPresent(summary, assessment.main_idea_evidence),
+    missing_dependencies: Array.isArray(assessment.missing_dependencies),
+    conclusion_status: conclusionStatuses.includes(assessment.conclusion_status),
+    cohesion: ['strong', 'adequate', 'weak'].includes(result.cohesion),
+    grammar_annotations: validAnnotations(result.grammar_annotations),
+    vocabulary_annotations: validAnnotations(result.vocabulary_annotations),
+    relationship_explanation: typeof assessment.relationship_explanation === 'string' && assessment.relationship_explanation.trim().length > 0
+  };
+  result.assessment_issues = Object.keys(checks).filter(key => !checks[key]);
+  const complete = result.assessment_issues.length === 0;
   const mainCaptured = assessment.main_idea_accurate === true
     && textPresent(summary, assessment.main_idea_evidence);
   const missingDependencies = Array.isArray(assessment.missing_dependencies)

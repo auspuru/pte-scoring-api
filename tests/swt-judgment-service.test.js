@@ -8,7 +8,8 @@ const good = () => ({ content_score: 4, summary_assessment: structuredClone(fixt
   grammar_score: 2, vocabulary_score: 2, grammar_annotations: [], vocabulary_annotations: [], cohesion: 'strong' });
 const service = (call, extra = {}) => createJudgmentService({ call,
   buildPrompt: (text, source, ideas) => JSON.stringify({ text, source, ideas }), policyVersion: 'test',
-  isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review, ...extra });
+  isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review,
+  validationIssues: (j, text) => applyScoringPolicy(j, text).assessment_issues, ...extra });
 const invoke = svc => svc.judge(fixture.summary, fixture.passage, 'diagnostic ideas');
 
 test('Student and sample requests for the same response share one complete assessment', async () => {
@@ -79,11 +80,50 @@ test('Unavailable second review is provisional and is not cached as a confirmed 
 test('Failed or malformed assessments are retried rather than cached', async () => {
   let calls = 0;
   const svc = service(async () => { calls++; return calls === 1 ? null : calls === 2 ? {} : good(); });
-  assert.equal(await invoke(svc), null);
+  assert.equal(applyScoringPolicy(await invoke(svc), fixture.summary).needs_semantic_review, true);
   await invoke(svc);
   await invoke(svc);
   await invoke(svc);
   assert.equal(calls, 3);
+});
+
+test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async () => {
+  let calls = 0, blocked = true, signal;
+  const svc = service(async (prompt, timeout, options) => {
+    calls++; signal = options.signal;
+    return blocked ? new Promise(() => {}) : good();
+  }, { totalTimeoutMs: 25 });
+  const started = Date.now();
+  const [a, b] = await Promise.all([invoke(svc), invoke(svc)]);
+  assert.equal(a, null); assert.equal(b, null);
+  assert.equal(signal.aborted, true);
+  assert.equal(calls, 1);
+  assert(Date.now() - started < 1000);
+  blocked = false;
+  assert.equal((await invoke(svc)).content_score, 4);
+  assert.equal(calls, 2);
+});
+
+test('A failed request followed by a disputed assessment cannot create an unbounded retry chain', async () => {
+  let calls = 0;
+  const disputed = good(); disputed.summary_assessment.relationships_clear = false;
+  const svc = service(async () => ++calls === 1 ? null : disputed);
+  const result = await invoke(svc);
+  assert.equal(calls, 2);
+  assert.equal(result.review_unavailable, true);
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, true);
+});
+
+test('Formatting differences preserve verified meaning without requesting another model assessment', async () => {
+  let calls = 0;
+  const svc = service(async () => { calls++; return good(); });
+  const spaced = fixture.summary.replace(/ /g, '  ');
+  const result = applyScoringPolicy(await svc.judge(spaced, fixture.passage, 'diagnostic ideas'), spaced);
+  assert.equal(calls, 1);
+  assert.equal(result.needs_semantic_review, false);
+  assert.equal(result.content_score, 4);
+  assert(spaced.includes(result.summary_assessment.main_idea_evidence));
+  assert(result.summary_assessment.supporting_evidence.every(quote => spaced.includes(quote)));
 });
 
 test('Expired and evicted entries cause a fresh assessment', async () => {
@@ -114,7 +154,11 @@ test('Paraphrased evidence triggers a fresh exact-quote check instead of a false
   malformed.summary_assessment.main_idea_evidence = 'The main idea [has been] paraphrased by the judge';
   assert.equal(applyScoringPolicy(malformed, fixture.summary).needs_semantic_review, true);
   let calls = 0;
-  const svc = service(async () => ++calls === 1 ? malformed : good());
+  const svc = service(async prompt => {
+    if (++calls === 1) return malformed;
+    assert.match(prompt, /Correct these invalid fields: main_idea_evidence/);
+    return good();
+  });
   const corrected = applyScoringPolicy(await invoke(svc), fixture.summary);
   assert.equal(calls, 2);
   assert.equal(corrected.needs_semantic_review, false);
