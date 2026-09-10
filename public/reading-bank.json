@@ -1,6 +1,6 @@
 {
   "source": "auspuru/ptemocktestreading",
-  "version": 1,
+  "version": 2,
   "sets": [
     {
       "id": "v1",
@@ -2018,6 +2018,182 @@
           }
         }
       }
+    }
+  ],
+  "mixedMock": {
+    "id": "full-mixed",
+    "name": "Full mixed reading mock",
+    "minutes": 45,
+    "swtCount": 1,
+    "audioQuestions": [
+      {
+        "id": "hcs-urban-cooling",
+        "uid": "mixed:hcs-urban-cooling",
+        "type": "hcs",
+        "title": "Urban cooling",
+        "instructions": "Listen to the recording, then select the one paragraph that best summarises its main argument.",
+        "audioText": "Planting trees is frequently presented as a straightforward way to cool a city. Shade certainly reduces the heat people experience, and evaporation from leaves can cool the surrounding air. But counting newly planted trees tells us little about whether those benefits will endure. Species must suit the local climate, roots need adequate space, and young trees require water and maintenance. Equally important is where planting occurs. A programme can increase a city's overall tree cover while leaving its hottest, least sheltered neighbourhoods almost untouched. Effective planning therefore combines long term care with a deliberate focus on places where residents have the fewest alternatives to outdoor exposure. The aim is not merely a greener map, but a reliable and fairly distributed reduction in heat.",
+        "choices": [
+          "Planting any tree species will reliably cool all neighbourhoods, so increasing the total number of trees should take priority over maintenance.",
+          "Trees can reduce urban heat, but lasting and equitable benefits depend on suitable species, continued care and planting in the areas that need protection most.",
+          "Tree planting has little influence on urban heat because evaporation offsets the advantages of shade.",
+          "Tree planting should be limited to neighbourhoods that already have abundant shade and reliable maintenance."
+        ],
+        "answer": 1,
+        "reasoning": {
+          "correct": "The speaker supports tree planting while making its success conditional on suitability, maintenance and equitable location.",
+          "options": {
+            "More trees alone": "The recording explicitly says that a count does not establish lasting benefits.",
+            "No cooling effect": "Both shade and evaporation are described as cooling mechanisms.",
+            "Already sheltered areas": "The proposed priority is residents with the fewest alternatives to outdoor exposure."
+          }
+        }
+      },
+      {
+        "id": "hcs-replication",
+        "uid": "mixed:hcs-replication",
+        "type": "hcs",
+        "title": "Replication and context",
+        "instructions": "Listen to the recording, then select the one paragraph that best summarises its main argument.",
+        "audioText": "When a study cannot be replicated, the immediate temptation is to conclude that the original finding was worthless. Sometimes that conclusion is warranted, particularly when the initial methods were weak. Yet a different result can also reveal that an effect depends on circumstances that the original explanation overlooked. A learning technique, for instance, might help experienced students while confusing beginners. The important question is therefore not simply whether a later study produces the same number, but whether it tests the same claim under conditions in which that claim was meant to hold. Replication remains essential because it exposes both unreliable findings and overly broad explanations. Its value lies in refining what we can responsibly conclude, rather than automatically confirming or dismissing an earlier result.",
+        "choices": [
+          "An unsuccessful replication always proves that the first study was worthless and that further investigation is unnecessary.",
+          "Replication is only useful when later researchers reproduce exactly the same numerical result.",
+          "Differences between studies should be ignored whenever the first result offers a convenient explanation.",
+          "Replication tests the dependability and limits of findings; different outcomes may expose weak methods or overlooked conditions and help refine an explanation."
+        ],
+        "answer": 3,
+        "reasoning": {
+          "correct": "The conclusion combines reliability with scope: a different outcome can reveal either an unreliable finding or a condition omitted from the original explanation.",
+          "options": {
+            "Automatic rejection": "The speaker explicitly qualifies this conclusion.",
+            "Identical numbers": "The recording distinguishes testing a claim from reproducing a number.",
+            "Ignore differences": "Differences are presented as useful evidence for refining explanations."
+          }
+        }
+      },
+      {
+        "id": "hiw-institutions-c2",
+        "uid": "mixed:hiw-institutions-c2",
+        "type": "hiw",
+        "title": "Institutional resilience",
+        "cefrTarget": "C2",
+        "difficultyNote": "C2-targeted practice: abstract argument, nuanced qualification and dense academic vocabulary. Not a certified CEFR assessment.",
+        "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it. Correct selections earn 1 practice point; incorrect selections lose 1, with a minimum of 0 for the question.",
+        "audioText": "Institutional resilience is often conflated with an organisation's capacity to preserve existing arrangements. Yet an institution that remains impervious to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing indispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can entrench the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision constrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the reciprocal obligations that make collective action possible. Such responsiveness requires judgement, rather than the mechanical application of a universal blueprint.",
+        "passage": "Institutional resilience is often contrasted with an organisation's capacity to preserve existing arrangements. Yet an institution that remains receptive to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing dispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can eradicate the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision unconstrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the unilateral obligations that make collective action possible. Such responsiveness requires judgement, rather than the mechanical application of a universal blueprint.",
+        "answers": [
+          4,
+          18,
+          39,
+          57,
+          84,
+          100
+        ],
+        "corrections": [
+          {
+            "index": 4,
+            "written": "contrasted",
+            "spoken": "conflated"
+          },
+          {
+            "index": 18,
+            "written": "receptive",
+            "spoken": "impervious"
+          },
+          {
+            "index": 39,
+            "written": "dispensable",
+            "spoken": "indispensable"
+          },
+          {
+            "index": 57,
+            "written": "eradicate",
+            "spoken": "entrench"
+          },
+          {
+            "index": 84,
+            "written": "unconstrained",
+            "spoken": "constrained"
+          },
+          {
+            "index": 100,
+            "written": "unilateral",
+            "spoken": "reciprocal"
+          }
+        ],
+        "reasoning": {
+          "correct": "The speaker distinguishes preserving arrangements from principled revision. Each highlighted substitution changes a qualification or relationship in the original argument; select the written word only when it differs from the audio."
+        }
+      },
+      {
+        "id": "hiw-evidence-c2",
+        "uid": "mixed:hiw-evidence-c2",
+        "type": "hiw",
+        "title": "Evidence and explanation",
+        "cefrTarget": "C2",
+        "difficultyNote": "C2-targeted practice: abstract argument, nuanced qualification and dense academic vocabulary. Not a certified CEFR assessment.",
+        "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it. Correct selections earn 1 practice point; incorrect selections lose 1, with a minimum of 0 for the question.",
+        "audioText": "The proliferation of finely resolved measurements does not, by itself, resolve the indeterminacy of an explanation. Several incompatible accounts may accommodate the same observations, especially when the mechanisms under investigation operate beyond the conditions in which the measurements were obtained. An apparently decisive correlation can therefore be evidentially weak without being spurious. The appropriate response is not to abandon quantification, but to articulate the assumptions that permit an inference to travel from one setting to another. This demands a distinction between uncertainty that further observations might reduce and uncertainty arising from the conceptual categories through which those observations become intelligible. A credible account makes these limitations explicit while remaining answerable to evidence capable of unsettling its preferred interpretation.",
+        "passage": "The proliferation of finely resolved measurements does not, by itself, resolve the certainty of an explanation. Several identical accounts may accommodate the same observations, especially when the mechanisms under investigation operate within the conditions in which the measurements were obtained. An apparently decisive correlation can therefore be evidentially strong without being spurious. The appropriate response is not to abandon quantification, but to articulate the assumptions that permit an inference to travel from one setting to another. This demands a distinction between uncertainty that further observations might increase and uncertainty arising from the conceptual categories through which those observations become intelligible. A credible account makes these limitations explicit while remaining answerable to evidence capable of confirming its preferred interpretation.",
+        "answers": [
+          12,
+          17,
+          31,
+          48,
+          86,
+          114
+        ],
+        "corrections": [
+          {
+            "index": 12,
+            "written": "certainty",
+            "spoken": "indeterminacy"
+          },
+          {
+            "index": 17,
+            "written": "identical",
+            "spoken": "incompatible"
+          },
+          {
+            "index": 31,
+            "written": "within",
+            "spoken": "beyond"
+          },
+          {
+            "index": 48,
+            "written": "strong",
+            "spoken": "weak"
+          },
+          {
+            "index": 86,
+            "written": "increase",
+            "spoken": "reduce"
+          },
+          {
+            "index": 114,
+            "written": "confirming",
+            "spoken": "unsettling"
+          }
+        ],
+        "reasoning": {
+          "correct": "The recording separates precise measurement from the strength and transferability of an explanation. The substitutions alter the argument about uncertainty, incompatible explanations and evidence that challenges a preferred account."
+        }
+      }
+    ]
+  },
+  "sectionalMocks": [
+    {
+      "id": "sectional-1",
+      "name": "Sectional Reading Mock 1",
+      "setId": "v1",
+      "minutes": 25
+    },
+    {
+      "id": "sectional-2",
+      "name": "Sectional Reading Mock 2",
+      "setId": "v2",
+      "minutes": 25
     }
   ]
 }

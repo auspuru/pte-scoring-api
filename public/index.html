@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="index.css?v=20.4.7">
 <link rel="stylesheet" href="swt-ui.css?v=20.3.5">
 <link rel="stylesheet" href="portal-workspace.css?v=20.4.9">
-<link rel="stylesheet" href="reading-practice.css?v=1">
+<link rel="stylesheet" href="reading-practice.css?v=2">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
         tailwind.config = {
@@ -135,8 +135,9 @@
 <script src="swt-feedback.js?v=20.3.5" defer></script>
 <script src="essay-attempt-sync.js?v=20.3.6" defer></script>
 <script src="essay-scoring.js?v=20.4.7" defer></script>
-<script src="reading-practice.js?v=1" defer></script>
-<script src="portal-workspace.js?v=20.4.9" defer></script>
+<script src="reading-mock-tools.js?v=2" defer></script>
+<script src="reading-practice.js?v=2" defer></script>
+<script src="portal-workspace.js?v=20.4.10" defer></script>
 <script src="index.js?v=20.4.7" defer></script>
 </head>
 <body>
@@ -363,7 +364,7 @@
           <div class="welcome-text">
             <p class="portal-eyebrow">A clear next step</p>
             <h2>Choose a task and get started.</h2>
-            <p>Build one useful habit with a summary, an essay, or a few new words.</p>
+            <p>Build one useful habit with writing, reading, or a few new words.</p>
           </div>
         </div>
 
@@ -382,12 +383,16 @@
           </button>
           <button type="button" class="portal-task" onclick="switchSection('reading')">
             <span class="portal-task-top"><span class="material-symbols-outlined" aria-hidden="true">quiz</span><span>Practice · Diagnostic · Mock</span></span>
-            <strong>Reading practice</strong><p>Fill in blanks, discover your strengths, and prepare with a full reading mock.</p><span class="portal-task-link">Practise reading <span aria-hidden="true">→</span></span>
+            <strong>Reading practice</strong><p>Fill in blanks, discover your strengths, and choose a sectional or mixed mock.</p><span class="portal-task-link">Practise reading <span aria-hidden="true">→</span></span>
           </button>
           <button type="button" class="portal-task" onclick="openVocab()">
             <span class="portal-task-top"><span class="material-symbols-outlined" aria-hidden="true">auto_stories</span><span>At your own pace</span></span>
             <strong>Build your vocabulary</strong><p>Learn useful words and check what you remember.</p><span class="portal-task-link">Explore vocabulary <span aria-hidden="true">→</span></span>
           </button>
+        </div>
+        <div class="portal-resume" aria-label="Essay Library shortcut">
+          <div><span class="portal-eyebrow">Your writing collection</span><strong>Essay Library</strong><p>Browse essay topics, develop your drafts, and export your writing.</p></div>
+          <button type="button" class="portal-button" onclick="switchSection('library')">Open Essay Library <span aria-hidden="true">→</span></button>
         </div>
         <div class="portal-section-heading"><h2>Your progress</h2><p>Recent practice and ideas for what to work on next.</p></div>
 

@@ -7,8 +7,8 @@
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
     swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
-    library: { pane: 'libraryPane', title: 'Essay library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
-    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practise a task, discover your starting point, or take a full reading mock.' },
+    library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
+    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practise a task, find your starting point, or choose a sectional or mixed mock.' },
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 
@@ -40,6 +40,7 @@
     function activate(section, options = {}) {
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
+      if (changed && current === 'reading') win.ReadingPractice?.leave();
       current = section;
       Object.entries(routes).forEach(([key, route]) => {
         const pane = doc.getElementById(route.pane);
