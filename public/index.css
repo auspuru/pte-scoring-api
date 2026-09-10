@@ -3246,6 +3246,31 @@ body.dark .login-config-warning { color: #fcd34d; }
   border-bottom: 1px solid var(--line-soft);
   color: var(--ink);
 }
+
+.practice-results .essay-feedback-details {
+  margin: 20px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+.practice-results .essay-feedback-details > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.practice-results .essay-feedback-details > summary::before { content: '▸'; margin-right: 10px; }
+.practice-results .essay-feedback-details[open] > summary::before { content: '▾'; }
+.practice-results .essay-feedback-details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.practice-results .essay-optional ul { padding-left: 20px; }
+.practice-results .essay-optional li { margin: 14px 0; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
+.practice-results .essay-optional p { margin: 4px 0; }
+.practice-results .essay-saved-note { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin: 12px 0 20px; }
+.practice-results .practice-fb-card-body { font-size: 15px; line-height: 1.7; }
 .practice-fb-card {
   background: var(--bg);
   border: 1px solid var(--line-soft);
@@ -6154,5 +6179,4 @@ body.dark .vocab-action-btn.coach {
   color: var(--accent-deep);
   opacity: 0.85;
 }
-
 

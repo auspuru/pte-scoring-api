@@ -95,7 +95,12 @@ let syncTimer = null;
 let lastSyncOk = true;
 let syncRetryCount = 0;
 let syncInFlight = null;
+let syncInFlightSession = null;
 let practiceHistoryDeleted = [];
+let practiceSubmissionPending = false;
+let practiceRevision = null;
+let practiceRefreshInFlight = null;
+let lastPracticeRefreshAt = 0;
 const SYNC_MAX_RETRIES = 5;
 
 // API configuration
@@ -961,12 +966,27 @@ function queueSync() {
 
 async function flushSync() {
   if (!syncQueued || !currentUserId || !sessionToken) return false;
-  syncQueued = false;
   return flushSyncDirect();
 }
 
 async function flushSyncDirect(options = {}) {
-  if (syncInFlight) return syncInFlight;
+  const syncUserId = canonicalClientUserId(currentUserId);
+  const syncToken = sessionToken;
+  if (!syncUserId || !syncToken) return false;
+  const sameSession = () => canonicalClientUserId(currentUserId) === syncUserId && sessionToken === syncToken;
+  if (syncInFlight) {
+    // An immediate save must wait for its own data to be included, not merely
+    // for an older request that captured the profile before this attempt.
+    syncQueued = true;
+    const sameFlight = syncInFlightSession?.uid === syncUserId && syncInFlightSession?.token === syncToken;
+    const ok = await syncInFlight;
+    if (!sameSession()) return false;
+    if (!ok && sameFlight) return false;
+    return syncQueued ? flushSyncDirect(options) : true;
+  }
+  syncQueued = false;
+  let completed = false;
+  syncInFlightSession = { uid: syncUserId, token: syncToken };
   syncInFlight = (async () => {
    try {
     if (userProfile && userProfile.templates) {
@@ -993,22 +1013,24 @@ async function flushSyncDirect(options = {}) {
       templates: userProfile?.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
     };
 
-    const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(currentUserId), {
+    const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(syncUserId), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-session-token': sessionToken
+        'x-session-token': syncToken
       },
       keepalive: !!options.keepalive,
       body: JSON.stringify(payload)
     });
     
+    if (!sameSession()) return false;
     if (r.status === 401 || r.status === 403) {
       handleAuthExpired();
       return false;
     }
     if (!r.ok) throw new Error(`Sync push failed (${r.status})`);
     const response = await r.json().catch(() => ({}));
+    if (!sameSession()) return false;
     if (response && response.success === false) throw new Error(response.error || 'Sync push rejected');
     if (Array.isArray(response.practiceHistory)) {
       const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
@@ -1026,18 +1048,21 @@ async function flushSyncDirect(options = {}) {
     cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
     LocalStore.set(`pte_${currentUserId}_currentId`, currentId);
-    setSync('synced', 'Synced');
+    setSync(syncQueued ? 'syncing' : 'synced', syncQueued ? 'Saving latest changes…' : 'Synced');
     lastSyncOk = true;
     syncRetryCount = 0;
     safeLSRemove('ipt_unsaved_backup');
+    completed = true;
     return true;
   } catch (err) {
+    if (!sameSession()) return false;
     console.error(err);
+    syncQueued = true;
     setSync('error', 'Sync failed — retrying');
     lastSyncOk = false;
     if (syncRetryCount < SYNC_MAX_RETRIES) {
       syncRetryCount++;
-      setTimeout(() => { syncQueued = true; flushSync(); }, 5000);
+      setTimeout(() => { if (sameSession()) { syncQueued = true; flushSync(); } }, 5000);
     } else {
       setSync('error', 'Sync failed — check connection');
     }
@@ -1048,7 +1073,49 @@ async function flushSyncDirect(options = {}) {
     return await syncInFlight;
   } finally {
     syncInFlight = null;
+    syncInFlightSession = null;
+    if (completed && sameSession() && syncQueued) {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(flushSync, 0);
+    }
   }
+}
+
+async function refreshPracticeHistory(options = {}) {
+  const uid = canonicalClientUserId(currentUserId), token = sessionToken;
+  if (!uid || !token || !userProfile || document.visibilityState === 'hidden') return false;
+  if (practiceRefreshInFlight) return practiceRefreshInFlight;
+  if (!options.force && Date.now() - lastPracticeRefreshAt < 15000) return false;
+  const sameSession = () => uid === canonicalClientUserId(currentUserId) && token === sessionToken;
+  practiceRefreshInFlight = (async () => {
+    try {
+      // Refresh only scored attempts. An open essay draft must not be replaced
+      // by a full-profile pull when another device finishes an attempt.
+      const response = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
+        headers: { 'x-session-token': token }
+      });
+      if (!sameSession()) return false;
+      if (response.status === 401 || response.status === 403) { handleAuthExpired(); return false; }
+      if (!response.ok) throw new Error('Could not refresh cloud history');
+      const body = await response.json();
+      if (!sameSession() || !userProfile || !body.success || !body.data) return false;
+      const deleted = mergePracticeDeletedClient(body.data.practiceHistoryDeleted || [], practiceHistoryDeleted);
+      const merged = mergePracticeHistoryClient(body.data.practiceHistory || [], getPracticeHistory(), deleted);
+      practiceHistoryDeleted = deleted;
+      userProfile.practiceHistoryDeleted = deleted;
+      userProfile.practiceHistory = merged;
+      cachePracticeHistory(merged, deleted, uid);
+      lastPracticeRefreshAt = Date.now();
+      renderPracticeHistory(); updatePracticeStats(); updateDashboard();
+      if (!syncQueued && !syncInFlight) setSync('synced', 'Synced');
+      return true;
+    } catch (error) {
+      if (sameSession() && !syncQueued && !syncInFlight) setSync('error', 'Cloud history unavailable — saved attempts remain on this device');
+      return false;
+    }
+  })();
+  try { return await practiceRefreshInFlight; }
+  finally { practiceRefreshInFlight = null; }
 }
 
 async function manualSync() {
@@ -1075,19 +1142,23 @@ function setSync(state, text) {
 // transitions are still in progress.
 function flushPendingSyncOnExit() {
   if (syncQueued && currentUserId && sessionToken) {
-    syncQueued = false;
     flushSyncDirect({ keepalive: true }).catch(() => {});
   }
 }
 window.addEventListener('pagehide', flushPendingSyncOnExit);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') flushPendingSyncOnExit();
+  else refreshPracticeHistory();
 });
+window.addEventListener('focus', () => refreshPracticeHistory());
+setInterval(() => {
+  if (document.getElementById('practiceScreen')?.classList.contains('show')) refreshPracticeHistory();
+}, 30000);
 window.addEventListener('online', () => {
   if (!currentUserId || !sessionToken) return;
   offlineMode = false;
   syncQueued = true;
-  flushSync();
+  flushSync().then(() => refreshPracticeHistory({ force: true }));
 });
 
 // ============================================================
@@ -11927,13 +11998,14 @@ const PRACTICE_RUBRIC = [
   { key: 'spelling',        label: 'Spelling',   max: 2 },
   { key: 'grammar',         label: 'Grammar',    max: 2 },
   { key: 'vocabulary',      label: 'Vocabulary', max: 2 },
-  { key: 'linguistic',      label: 'Linguistic', max: 6 },
-  { key: 'coherence',       label: 'Coherence',  max: 6 }
+  { key: 'linguistic',      label: 'Sentence variety', max: 6 },
+  { key: 'coherence',       label: 'Organisation', max: 6 }
   // Total = 26
 ];
 const PRACTICE_MAX_TOTAL = 26;
 
 function openPractice(defaultToWelcome = true) {
+  refreshPracticeHistory();
   document.getElementById('practiceScreen').classList.add('show');
   document.body.classList.add('has-active-practice');
   renderPracticeHistory();
@@ -12280,7 +12352,7 @@ function welcomeView() {
     <div class="practice-welcome">
       <div class="practice-welcome-icon">✏️</div>
       <h2>Practice Essay</h2>
-      <p>Write a full essay, then get a detailed AI score out of <strong>26 points</strong>, just like real PTE/IELTS. You'll see plain-English feedback for every category — no jargon.</p>
+      <p>Write a full essay, then get feedback using our <strong>26-point practice rubric</strong>. See what you did well and the most useful changes to make next.</p>
       <p style="font-size:12.5px; color:var(--ink-mute);">Each attempt uses <strong>1 essay quota credit</strong>.</p>
       <button class="practice-welcome-cta" onclick="startNewPractice()">
         Start a new attempt →
@@ -12768,302 +12840,77 @@ function stopLoadingMessages() {
 // ---------- Submit & score with Claude ----------
 
 async function submitPracticeEssay() {
-  // Capture latest values from inputs (in case oninput didn't fire)
+  if (practiceSubmissionPending) return;
   const ta = document.getElementById('practiceEssayInput');
   if (ta) practiceState.essayText = ta.value;
   const customInput = document.getElementById('practiceCustomPrompt');
-  if (customInput && practiceState.questionSource === 'custom') {
-    practiceState.questionText = customInput.value.trim();
-  }
+  if (customInput && practiceState.questionSource === 'custom') practiceState.questionText = customInput.value.trim();
+  const question = practiceState.questionText.trim();
+  const essay = practiceState.essayText.trim();
+  if (!question) { toast('Please pick or write a question first', true); return; }
+  if (countWords(essay) < 50) { toast('Please write at least 50 words before scoring', true); return; }
 
-  if (!practiceState.questionText.trim()) {
-    toast('Please pick or write a question first', true);
-    return;
-  }
-  if (countWords(practiceState.essayText) < 50) {
-    toast('Please write at least 50 words before scoring', true);
-    return;
-  }
-
-  // Capture elapsed timer (if enabled) — stop the live counter now
+  const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
+  const questionId = practiceState.selectedQuestionId || '';
+  const questionTitle = practiceState.questionTitle || '';
   const elapsedMsAtSubmit = getPracticeElapsedMs();
+  const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
   stopPracticeTimer();
-
-  // Consume quota (1 essay credit)
-  if (!await consumeQuota('essay')) return;
-
+  practiceSubmissionPending = true;
   practiceState.view = 'loading';
   renderPracticeMain();
   startLoadingMessages();
-
-  const essay = practiceState.essayText.trim();
-  const question = practiceState.questionText.trim();
-  const wordCount = countWords(essay);
-
-  const prompt = `You are an experienced PTE/IELTS examiner at IPT Brisbane. Score this student essay and give friendly, plain-English feedback. The student is NOT a linguistics expert — explain things in simple language they can act on.
-
-═══════════════════════════════════════════════════════════════
-ESSAY QUESTION:
-${question}
-═══════════════════════════════════════════════════════════════
-STUDENT'S ESSAY (${wordCount} words):
-${essay}
-═══════════════════════════════════════════════════════════════
-
-SCORING RUBRIC (total = 26 points):
-
-• content (0-6): Does the essay actually answer the question? Are all parts of the prompt addressed? Are ideas relevant and developed with examples?
-   - 6: Fully addresses every part, well-developed examples
-   - 4-5: Addresses most parts, mostly relevant
-   - 2-3: Partial answer, weak development
-   - 0-1: Off-topic or very thin
-
-• form (0-2): Word count check ONLY. The exact word count is exactly ${wordCount} words. You MUST use this exact number and do NOT count the words yourself.
-   - 2: Word count is 200-300
-   - 1: Word count is 120-199 OR 301-380
-   - 0: Word count outside 120-380
-
-• spelling (0-2): Count actual spelling errors.
-   - 2: 0 errors
-   - 1: 1-3 errors
-   - 0: 4+ errors
-
-• grammar (0-2): Grammar accuracy.
-   - 2: 0-2 minor errors, never blocks meaning
-   - 1: Several errors but mostly clear
-   - 0: Frequent errors that block meaning
-
-• vocabulary (0-2): Word choice and range.
-   - 2: Wide range, appropriate, precise
-   - 1: Adequate, mostly correct, some repetition
-   - 0: Very limited, repetitive, or many wrong word choices
-
-• linguistic (0-6): Sentence variety and structures.
-   - 6: Varied (simple, compound, complex), confident
-   - 4-5: Some variety, mostly correct
-   - 2-3: Mostly simple sentences, limited range
-   - 0-1: Very repetitive or broken
-
-• coherence (0-6): Flow, organisation, paragraphing, linking words.
-   - 6: Clear paragraphs, smooth transitions, ideas connect
-   - 4-5: Mostly organised, occasional jump
-   - 2-3: Some structure but weak connections
-   - 0-1: Confused or no clear order
-
-═══════════════════════════════════════════════════════════════
-TEMPLATE DETECTOR (IPT BRISBANE-aware):
-
-IMPORTANT CONTEXT: Students at IPT Brisbane are TAUGHT a specific Band 9 essay structure. These phrases below are PART OF THAT TAUGHT STRUCTURE — they are not "memorised templates", they are the correct application of what the student was taught. DO NOT flag them as template-y:
-
- ✓ "The topic of [X] has become increasingly important in recent years"
- ✓ "Its significance lies in its influence on..."
- ✓ "This essay will examine the [X] of [Y] incorporating different perspectives"
- ✓ "To begin with, one major merit / advantage / benefit is..."
- ✓ "Additionally, another significant point in favour / reason is..."
- ✓ "On the other hand, one notable demerit / limitation is..."
- ✓ "Furthermore, another limitation / concern is..."
- ✓ "To conclude, [topic] presents compelling advantages and disadvantages..."
- ✓ "Hence, prioritising the maximisation of..."
- ✓ "Therefore, [solution-oriented closing]..."
- ✓ "For example, ... shows its benefits in practice"
- ✓ "This can be illustrated by..."
- ✓ "[EXTRA IDEA] Moreover, ..."
-
-When you see these IPT phrases, the student is FOLLOWING THE TAUGHT STRUCTURE CORRECTLY — that is a strength, not a weakness.
-
-Choose ONE of three values:
-- "good" = student used the IPT taught structure phrases correctly AND personalised them with topic-specific content (this is what you want to see)
-- "ok" = essay reads naturally; doesn't lean heavily on IPT structure but also no over-rehearsal from elsewhere
-- "flag" = essay is over-rehearsed with phrases from OTHER common templates (e.g. "in today's day and age", "since the dawn of time", "from time immemorial", "it is a multifaceted issue", repetitive transitions, or generic content unrelated to the actual question)
-
-For "templateNote", write a SHORT ENCOURAGING note:
-- If "good": praise it — e.g. "Nice — you applied the IPT Band 9 structure correctly. Keep using these transitions."
-- If "ok": neutral — e.g. "Your writing flows naturally."
-- If "flag": gentle warning about the specific rehearsed phrases you noticed (NOT IPT's taught phrases).
-═══════════════════════════════════════════════════════════════
-
-FEEDBACK STYLE — read this twice before writing feedback:
-1. Use PLAIN ENGLISH. Imagine the student speaks English as a second language and has never studied linguistics.
-2. NO jargon. Don't say "cohesion", "lexical resource", "syntactic variety", "discourse markers". Instead say "how your ideas link together", "the words you chose", "different sentence shapes", "joining words like however".
-3. Be SPECIFIC. Quote 2-3 short phrases from THEIR essay to show what you mean.
-4. Be ACTIONABLE. Tell them what to DO next time, not just what was wrong.
-5. Be ENCOURAGING. Lead with what they did well, then what to fix.
-6. Keep each category's feedback to 2-3 short sentences (max ~50 words).
-
-For "strengths" and "improvements": give 2-3 short bullet-style items each (one sentence each), the most important things only.
-
-═══════════════════════════════════════════════════════════════
-RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format:
-
-{
-  "scores": {
-    "content": 6,
-    "form": 2,
-    "spelling": 2,
-    "grammar": 2,
-    "vocabulary": 2,
-    "linguistic": 6,
-    "coherence": 6
-  },
-  "templateDetector": "good",
-  "templateNote": "Nice — you applied the IPT Band 9 structure correctly. Keep using these transitions.",
-  "overallVerdict": "Excellent work! This is close to a top-band essay.",
-  "feedback": {
-    "content": "What you did well: ...  What to improve: ...  Tip: ...",
-    "form": "Word count was X — that's within / outside the 200-300 target...",
-    "spelling": "...",
-    "grammar": "...",
-    "vocabulary": "...",
-    "linguistic": "...",
-    "coherence": "..."
-  },
-  "errors": [
-    {
-      "type": "spelling",
-      "phrase": "the EXACT word or short phrase as it appears in the essay (verbatim, case-sensitive)",
-      "correction": "the corrected version",
-      "explanation": "one short, plain-English sentence explaining the issue"
-    },
-    {
-      "type": "grammar",
-      "phrase": "...",
-      "correction": "...",
-      "explanation": "..."
-    }
-  ],
-  "spellingErrors": ["wrod1", "wrod2"],
-  "grammarIssues": ["short phrase showing the issue", "another"],
-  "strengths": ["You clearly answered both parts of the question.", "Good use of specific examples like X."],
-  "sampleResponse": "A revised version of the essay focusing on the key paragraphs that need improvement (keep it concise, max 150 words total, rather than rewriting the entire essay). If the essay scores a perfect overall score (26/26, equivalent to PTE 90), you do NOT need to rewrite the essay — simply set 'sampleResponse' to 'Congratulations! Your essay is already perfect, so no rewrite is needed.' Highlight the changes: wrap any added or improved words/phrases in <span class='diff-ins'>...</span> and any deleted or replaced words/phrases in <span class='diff-del'>...</span> (you MUST use single quotes for HTML classes to ensure valid JSON). Example: 'This is <span class='diff-del'>bad</span><span class='diff-ins'>suboptimal</span>.'"
-}
-
-CRITICAL for the "errors" array:
-- Include EVERY single spelling issue, grammatical mistake, and style/vocabulary improvement you find in the entire essay. Do not cap it or limit it to 10; list all of them in a single pass.
-- Do NOT hold back style suggestions or wait for the student to fix basic errors first; list ALL errors and potential refinements/upgrades immediately in the first pass so the user can see and fix everything in one go.
-- "phrase" MUST be the exact text from the essay (verbatim — same spelling, same capitalisation). I will search-and-replace it to highlight it. If the same misspelling appears twice, list it once.
-- "type" is "spelling" OR "grammar" — nothing else (categorize style/phrasing refinements under "grammar").
-- If the essay has zero errors, return "errors": [].`;
-
   try {
-    const res = await fetch(API_URL + '/api/claude', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2500,
-        messages: [{ role: 'user', content: prompt }]
-      })
+    const res = await fetch(API_URL + '/api/essay/grade', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, essay })
     });
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(`Server returned ${res.status}: ${t.slice(0, 200)}`);
-    }
     const data = await res.json();
-    let text = (data.content || []).map(c => c.text || '').join('').trim();
-    // Strip markdown fences if AI added them
-    text = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-    let result = cleanAndParseJSON(text);
-
-    // Programmatic override for Form score and feedback to prevent LLM word counting errors
-    let calculatedFormScore = 0;
-    let formFeedbackText = '';
-    if (wordCount >= 200 && wordCount <= 300) {
-      calculatedFormScore = 2;
-      formFeedbackText = `Your essay is ${wordCount} words, which is within the required 200–300 word limit. Well done on meeting the length requirement!`;
-    } else if ((wordCount >= 120 && wordCount < 200) || (wordCount > 300 && wordCount <= 380)) {
-      calculatedFormScore = 1;
-      if (wordCount < 200) {
-        formFeedbackText = `Your essay is ${wordCount} words, which is slightly below the 200-word minimum limit. Try to write a bit more to land between 200 and 300 words next time.`;
-      } else {
-        formFeedbackText = `Your essay is ${wordCount} words, which is slightly above the 300-word limit. Try to trim about ${wordCount - 300} words to land between 200 and 300 words next time.`;
-      }
-    } else {
-      calculatedFormScore = 0;
-      if (wordCount < 120) {
-        formFeedbackText = `Your essay is only ${wordCount} words, which is far below the 200-word limit. You must write at least 200 words to avoid heavy form penalties.`;
-      } else {
-        formFeedbackText = `Your essay is ${wordCount} words, which is far above the 300-word limit. You must trim it to land between 200 and 300 words next time.`;
-      }
-    }
-    
-    if (!result.scores) result.scores = {};
-    if (!result.feedback) result.feedback = {};
-    
-    result.scores.form = calculatedFormScore;
-    result.feedback.form = formFeedbackText;
-
-    // Calculate total
-    let total = 0;
-    for (const r of PRACTICE_RUBRIC) {
-      const v = Math.max(0, Math.min(r.max, parseInt(result.scores?.[r.key] || 0)));
-      total += v;
-      result.scores[r.key] = v;
-    }
-    result.scores.total = total;
-
-    // Build the attempt object
+    if (!res.ok) throw new Error(data.error || 'The assessment could not be completed. Please try again.');
+    const result = EssayScoring.normalizeResult(data, essay);
     const attempt = {
-      id: 'pr_' + Date.now() + Math.random().toString(36).slice(2, 6),
-      date: Date.now(),
-      questionId: practiceState.selectedQuestionId || '',
-      questionTitle: practiceState.questionTitle,
-      questionText: practiceState.questionText,
-      essayText: practiceState.essayText,
-      wordCount: wordCount,
-      scores: result.scores,
-      templateDetector: ['good','ok','flag'].includes(result.templateDetector) ? result.templateDetector : 'ok',
-      templateNote: result.templateNote || '',
-      overallVerdict: result.overallVerdict || '',
-      feedback: result.feedback || {},
-      errors: Array.isArray(result.errors) ? result.errors : [],
-      spellingErrors: Array.isArray(result.spellingErrors) ? result.spellingErrors : [],
-      grammarIssues: Array.isArray(result.grammarIssues) ? result.grammarIssues : [],
-      strengths: Array.isArray(result.strengths) ? result.strengths : [],
-      improvements: Array.isArray(result.improvements) ? result.improvements : [],
-      sampleResponse: result.sampleResponse || ''
+      ...result,
+      id: 'pr_' + Date.now() + Math.random().toString(36).slice(2, 8),
+      date: Date.now(), questionId, questionTitle, questionText: question, essayText: essay,
+      ...(elapsedMsAtSubmit !== null ? { elapsedMs: elapsedMsAtSubmit } : {})
     };
 
-    // Save elapsed (if timer was running) onto the attempt
-    if (elapsedMsAtSubmit !== null) {
-      attempt.elapsedMs = elapsedMsAtSubmit;
+    // A response may finish after sign-out or an account switch. Keep it only
+    // in the originating account's recovery cache; never upload as another user.
+    if (!sameOwner()) {
+      if (owner.uid) {
+        const deleted = getCachedPracticeHistoryDeleted(owner.uid);
+        cachePracticeHistory(mergePracticeHistoryClient(getCachedPracticeHistory(owner.uid), [attempt], deleted), deleted, owner.uid);
+      }
+      return;
     }
-
-    // Save to history (cap at 50 total, but no per-question limit)
-    let history = getPracticeHistory();
-    history.unshift(attempt);
-    // history = prunePracticeAttempts(history, attempt);
-    if (history.length > 50) history.length = 50;
-    // Score results are durable records, so push this attempt immediately
-    // instead of waiting for the normal 1.2s debounce (which a closed tab can
-    // interrupt).
+    await consumeQuota('essay');
+    const history = mergePracticeHistoryClient(getPracticeHistory(), [attempt], practiceHistoryDeleted);
     await savePracticeHistory(history, { immediate: true });
-
-    practiceState.currentAttempt = attempt;
-    practiceState.viewingAttemptId = attempt.id;
+    if (!sameOwner()) return;
     stopLoadingMessages();
-    practiceState.view = 'results';
-    renderPracticeMain();
+    if (practiceState.view === 'loading' && practiceState.questionText.trim() === question) {
+      practiceState.currentAttempt = attempt;
+      practiceState.viewingAttemptId = attempt.id;
+      practiceRevision = null;
+      practiceState.view = 'results';
+      renderPracticeMain();
+    }
     renderPracticeHistory();
     updatePracticeStats();
-    toast(`Scored: ${attempt.scores.total}/${PRACTICE_MAX_TOTAL} ✓`);
-
-    // On-submit time-exceeded notification
-    if (elapsedMsAtSubmit !== null) {
-      const limitMs = PRACTICE_TIMER_LIMIT_MIN * 60 * 1000;
-      if (elapsedMsAtSubmit > limitMs) {
-        const minTook = Math.round(elapsedMsAtSubmit / 60000);
-        // Schedule slightly after the score toast so they don't overlap
-        setTimeout(() => {
-          toast(`⏱ You took ${minTook} min — exam limit is ${PRACTICE_TIMER_LIMIT_MIN}. Aim faster next time.`, true);
-        }, 2200);
-      }
+    toast('Essay review saved to your history.');
+    if (elapsedMsAtSubmit !== null && elapsedMsAtSubmit > PRACTICE_TIMER_LIMIT_MIN * 60000) {
+      setTimeout(() => { if (sameOwner()) toast('You took ' + Math.round(elapsedMsAtSubmit / 60000) +
+        ' min. Aim for ' + PRACTICE_TIMER_LIMIT_MIN + ' minutes next time.', true); }, 2200);
     }
   } catch (err) {
-    console.error(err);
-    stopLoadingMessages();
-    practiceState.view = 'write';
-    renderPracticeMain();
-    toast('Scoring failed: ' + err.message, true);
+    if (sameOwner()) {
+      stopLoadingMessages();
+      if (practiceState.view === 'loading') { practiceState.view = 'write'; renderPracticeMain(); }
+      toast(err.message || 'Scoring could not be completed. Your essay is still here.', true);
+    }
+  } finally {
+    practiceSubmissionPending = false;
   }
 }
 
@@ -13114,7 +12961,7 @@ function resultsView() {
     tplDefaultNote = 'Some phrases sound over-rehearsed — try writing more naturally about THIS topic.';
   }
   const templateBanner = `<div class="practice-template-banner ${tplClass}">
-    <span style="font-weight:700;">${tplIcon} Essay Template Detector:</span>
+    <span style="font-weight:700;">${tplIcon} Structure and relevance:</span>
     <span class="practice-template-status">${tplStatus}</span>
     <span style="flex:1;">${escapeHtml(a.templateNote || tplDefaultNote)}</span>
   </div>`;
@@ -13136,7 +12983,7 @@ function resultsView() {
         <div class="practice-score-circle total">
           <span class="practice-score-num">${total}<sub>/26</sub></span>
         </div>
-        <span class="pte-metric-label">PTE OVERALL</span>
+        <span class="pte-metric-label">Practice score</span>
       </div>
       <div class="pte-grid">
         ${cells}
@@ -13198,7 +13045,17 @@ function resultsView() {
     : total >= 17 ? 'Good effort. With a few tweaks you can push higher.'
     : total >= 10 ? 'Decent start. Focus on the "What to work on next" tips.'
     : 'Plenty of room to grow. Read through the per-category notes below.';
-  const verdict = a.overallVerdict || verdictDefault;
+  const contentScore = Number(a.scores?.content) || 0;
+  const verdict = contentScore <= 1 ? 'Focus on answering the question with relevant ideas.'
+    : contentScore <= 3 ? 'Develop your answer to the question more fully.'
+    : contentScore < 6 ? 'A useful answer — strengthen the points below.'
+    : total === 26 ? 'A clear, developed essay that meets this practice rubric.'
+    : 'Your answer covers the question. Review the language and structure below.';
+  const optionalItems = (a.optionalRefinements || []).map(item => '<li><p>“' + escapeHtml(item.phrase) +
+    '” → “' + escapeHtml(item.correction) + '”</p><p>' + escapeHtml(item.explanation || '') + '</p></li>').join('');
+  const optionalSection = optionalItems ? '<details class="essay-feedback-details essay-optional"><summary>Optional wording refinements · no marks deducted</summary><ul>' + optionalItems + '</ul></details>' : '';
+  const previousVersion = a.scoring_version !== EssayScoring.VERSION
+    ? '<p class="essay-saved-note">This is saved feedback from an earlier scoring version. Use “Revise this essay” to submit it under the updated rules.</p>' : '';
 
   // Grammar & Spelling inline-error section
   const grammarSection = renderGrammarSpellingSection(a);
@@ -13210,12 +13067,12 @@ function resultsView() {
       <div class="practice-grammar-section" style="margin-top:20px;">
         <div class="practice-grammar-header" style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <div class="practice-grammar-title">🤖 AI Rewrite &amp; Sample Response</div>
+            <div class="practice-grammar-title">Example revision</div>
             <div style="font-size:11px; color:var(--ink-soft); font-weight:normal; font-style:italic;">
-              Showing your essay rewritten to incorporate all recommendations.
+              A revised excerpt showing the suggested changes. Keep the rest of your essay and your own viewpoint.
             </div>
           </div>
-          <button class="admin-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">📋 Copy Polished Essay</button>
+          <button class="admin-btn" style="padding:4px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">Copy revised excerpt</button>
         </div>
         <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
           <div style="display:flex; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
@@ -13223,7 +13080,7 @@ function resultsView() {
             <div style="display:flex; align-items:center; gap:6px;"><span class="diff-del" style="font-size:10px; padding:2px 6px; font-weight:700;">del</span> <span>Replaced / Removed</span></div>
           </div>
           <div style="white-space:pre-wrap; font-family:var(--serif); font-size:13.5px; line-height:1.75; color:var(--ink);">
-            ${a.sampleResponse}
+            ${EssayScoring.renderExcerpt(a.sampleResponse)}
           </div>
         </div>
       </div>
@@ -13254,21 +13111,25 @@ function resultsView() {
       </div>
 
       ${pteDashboardHtml}
+      ${previousVersion}
       ${formBanner}
       ${templateBanner}
 
       ${summaryRow}
 
       ${grammarSection}
+      ${optionalSection}
 
       ${sampleResponseSection}
 
-      <div class="practice-feedback-title">Detailed feedback</div>
+      <details class="essay-feedback-details"><summary>Score breakdown and feedback</summary>
       ${feedbackCards}
+      </details>
 
       ${questionPanel}
 
       <div class="practice-actions">
+        <button class="practice-action-btn primary" onclick="revisePracticeEssay()">Revise this essay</button>
         <button class="practice-action-btn primary" onclick="reattemptPractice()">↻ Re-attempt this question</button>
         <button class="practice-action-btn" onclick="startNewPractice()">+ Try a different question</button>
         <button class="practice-action-btn" onclick="window.print()"><span style="margin-right: 4px;">🖨</span> Print / Save PDF</button>
@@ -13295,11 +13156,30 @@ function reattemptPractice() {
     if (match) practiceState.selectedQuestionId = match.id;
   }
   practiceState.essayText = '';
+  practiceRevision = null;
   practiceState.viewingAttemptId = null;
   practiceState.currentAttempt = null;
   resetPracticeTimer();
   renderPracticeMain();
   renderPracticeHistory();
+}
+
+function revisePracticeEssay() {
+  const a = practiceState.currentAttempt;
+  if (!a) return;
+  const text = practiceRevision?.attemptId === a.id ? practiceRevision.text : a.essayText;
+  practiceState.questionTitle = a.questionTitle || '';
+  practiceState.questionText = a.questionText || '';
+  practiceState.questionSource = a.questionId ? 'library' : 'custom';
+  practiceState.selectedQuestionId = a.questionId || null;
+  practiceState.essayText = text;
+  practiceState.view = 'write';
+  practiceState.writeStep = 2;
+  practiceState.promptExpanded = true;
+  practiceState.viewingAttemptId = null;
+  resetPracticeTimer();
+  renderPracticeMain();
+  document.getElementById('practiceEssayInput')?.focus();
 }
 
 // ---------- Grammar & Spelling section (Grammarly-style hybrid) ----------
@@ -13447,6 +13327,12 @@ function applyErrorFix(ev, idx) {
   // Get the correction text from the card's data
   const newText = card.querySelector('.gh-card-new')?.textContent || '';
   if (!newText || newText === '—') return;
+  const attempt = practiceState.currentAttempt;
+  const error = attempt?.errors?.[idx];
+  if (!error) return;
+  if (practiceRevision?.attemptId !== attempt.id) practiceRevision = { attemptId: attempt.id, text: attempt.essayText };
+  if (!practiceRevision.text.includes(error.phrase)) { toast('That wording has already changed in your draft.'); return; }
+  practiceRevision.text = practiceRevision.text.replace(error.phrase, () => newText);
 
   // Replace the underlined span with plain text (correction), inline
   const correctionNode = document.createElement('span');
@@ -13458,9 +13344,10 @@ function applyErrorFix(ev, idx) {
   card.classList.add('applied');
   const btn = card.querySelector('.gh-card-apply');
   if (btn) {
-    btn.textContent = '✓ Applied';
+    btn.textContent = '✓ In draft';
     btn.disabled = true;
   }
+  toast('Correction added to your draft. Choose “Revise this essay” to review and rescore it.');
 }
 
 // Apply ALL remaining fixes at once (helper for the "Apply all" button if we add it later)

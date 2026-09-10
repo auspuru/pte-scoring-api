@@ -12,6 +12,7 @@ const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPoli
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { studentPassage } = require('./swt-reference');
+const { createEssayGrader } = require('./essay-grading');
 
 // Email and Puppeteer settings from Essay Builder
 const GMAIL_USER = process.env.GMAIL_USER;
@@ -166,6 +167,7 @@ app.set('trust proxy', 1);
 
 // ─── SERVE STATIC FILES (Railway deployment) ─────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
+app.get('/essay-attempt-sync.js', (req, res) => res.sendFile(path.join(__dirname, 'essay-attempt-sync.js')));
 
 app.use(cors({
   origin: '*',
@@ -196,6 +198,7 @@ if (rateLimit) {
   });
   app.use('/api/grade', gradeLimiter);
   app.use('/api/swt/sample', gradeLimiter);
+  app.use('/api/essay/grade', gradeLimiter);
   app.use('/api/spellcheck', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
@@ -205,6 +208,24 @@ let anthropic = null;
 if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 }
+
+const essayGrader = createEssayGrader(async prompt => {
+  if (!anthropic) throw new Error('Essay grader unavailable');
+  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
+    max_tokens: 6000, messages: [{ role: 'user', content: prompt }] }, { timeout: 35000, maxRetries: 0 });
+  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete assessment');
+  const text = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
+  return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || 'null');
+});
+app.post('/api/essay/grade', async (req, res) => {
+  const { question, essay } = req.body || {};
+  if (typeof question !== 'string' || !question.trim() || question.length > 5000
+    || typeof essay !== 'string' || !essay.trim() || essay.length > 20000) {
+    return res.status(400).json({ error: 'Provide an essay question and response within the size limits.' });
+  }
+  try { res.json(await essayGrader.grade(question, essay)); }
+  catch (error) { res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' }); }
+});
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
 // Data storage: Railway volume > local ./data > /tmp fallback

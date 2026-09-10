@@ -1,0 +1,10 @@
+'use strict';
+const question = 'The mass media, such as TV, radio and newspapers, influence people, particularly younger generations. Discuss the positive and negative effects of this influence.';
+const essay = `The topic of mass media has become increasingly important in recent years because young people encounter news and entertainment throughout their daily lives. Television, radio and newspapers can educate their audiences, but they can also spread misleading messages. This essay will examine both effects on younger generations.
+
+To begin with, one major benefit is access to information. News reports help students understand events beyond their own neighbourhoods and connect classroom topics with real situations. For example, a television report about a local flood can explain why emergency warnings matter and encourage families to prepare. Educational programmes also introduce unfamiliar careers and scientific ideas, giving children opportunities to explore interests that their schools may not cover. These benefits are strongest when adults help children discuss what they have learned.
+
+On the other hand, mass media can create unrealistic expectations. Advertisements often connect expensive products with happiness or popularity, which may lead teenagers to compare themselves with carefully selected images. Repeated exposure can increase pressure to spend money and weaken confidence. Another concern is inaccurate reporting: a dramatic headline may attract attention while leaving out important facts. Young audiences who accept it without checking other sources can develop mistaken beliefs. Schools can respond by teaching students to distinguish evidence from opinion and recognise commercial messages.
+
+To conclude, mass media supports learning and public awareness, yet it can also encourage unhealthy comparisons and spread misinformation. Guided discussion and critical reading can help younger audiences benefit from media while reducing these risks.`;
+module.exports = { question, essay };

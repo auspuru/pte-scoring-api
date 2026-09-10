@@ -21,9 +21,10 @@
 
   function attemptTime(attempt) {
     if (!attempt || typeof attempt !== 'object') return 0;
-    const numeric = Number(attempt.updatedAt ?? attempt.date);
+    const stamp = attempt.updatedAt ?? attempt.date ?? attempt.timestamp;
+    const numeric = Number(stamp);
     if (Number.isFinite(numeric) && numeric > 0) return numeric;
-    const parsed = Date.parse(attempt.updatedAt || attempt.timestamp || '');
+    const parsed = Date.parse(String(stamp || ''));
     return Number.isFinite(parsed) ? parsed : 0;
   }
 

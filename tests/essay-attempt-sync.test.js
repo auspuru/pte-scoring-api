@@ -37,3 +37,10 @@ test('legacy attempts without ids still deduplicate across a cloud pull', () => 
 test('user identity is case-insensitive for all sync devices', () => {
   assert.equal(sync.canonicalUserId('  Student42 '), 'student42');
 });
+
+test('ISO dates in legacy essay attempts sort correctly alongside numeric dates', () => {
+  const older = { ...attempt('older', 1), date: '2026-08-01T10:00:00Z' };
+  const newer = attempt('newer', Date.parse('2026-09-01T10:00:00Z'));
+  assert.deepEqual(sync.mergeHistory([older], [newer], []).map(item => item.id), ['newer', 'older']);
+  assert.equal(sync.attemptTime(older), Date.parse(older.date));
+});
