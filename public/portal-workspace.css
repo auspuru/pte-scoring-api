@@ -370,3 +370,7 @@ body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary {
 #portalSidebar .brand-sub { color: #7a1f24; }
 body.dark #portalSidebar .brand-name { color: #e7f6ff; }
 body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
+
+/* Four task launchers fit without narrowing the writing tools. */
+@media (min-width: 761px) { .portal-task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+#portalSidebar .nav-group-secondary:has(#nav-admin[style*="display:none"]) { display: none; }

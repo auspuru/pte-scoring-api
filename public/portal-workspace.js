@@ -8,6 +8,7 @@
     swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
     library: { pane: 'libraryPane', title: 'Essay library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
+    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practise a task, discover your starting point, or take a full reading mock.' },
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 
@@ -68,6 +69,7 @@
         const button = doc.getElementById(id);
         if (button) button.style.display = section === 'library' ? '' : 'none';
       });
+      if (section === 'reading') win.ReadingPractice?.open();
       closeMenu();
       if (ready && options.history !== 'none') {
         const hash = '#/' + routes[section].path;
@@ -113,7 +115,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { history: 'replace', focus: false });
       },
-      reset() { ready = false; current = null; closeMenu(); },
+      reset() { win.ReadingPractice?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }

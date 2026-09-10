@@ -1,0 +1,2023 @@
+{
+  "source": "auspuru/ptemocktestreading",
+  "version": 1,
+  "sets": [
+    {
+      "id": "v1",
+      "name": "Mock test 1",
+      "minutes": 25,
+      "questions": [
+        {
+          "id": 1,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "The world's oceans are never still. Water moves in vast currents that circle the globe. Some currents flow slowly, creating calm surface conditions. At other times they move swiftly, generating powerful rip tides. [[1]] or turbulent, a current always begins in the same way. As the sun heats the ocean surface unevenly, some regions become warmer than others. The water above these [[2]] zones expands, becomes less dense than the surrounding water and begins to rise. Elsewhere denser water sinks, because it is [[3]]. Currents flow because water displaced by sinking pulls in water from rising zones. Currents will flow whenever there is a [[4]] in temperature and density, always moving from dense to less dense regions.",
+          "options": [
+            [
+              "Calm",
+              "Rapid",
+              "Warm",
+              "Salty"
+            ],
+            [
+              "warm",
+              "cold",
+              "deep",
+              "shallow"
+            ],
+            [
+              "lighter",
+              "saltier",
+              "denser",
+              "warmer"
+            ],
+            [
+              "similarity",
+              "difference",
+              "balance",
+              "pattern"
+            ]
+          ],
+          "answers": [
+            "Calm",
+            "warm",
+            "denser",
+            "difference"
+          ]
+        },
+        {
+          "id": 2,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "The world's atmosphere is forever on the move. Wind is air in motion. Sometimes air moves slowly, giving a gentle breeze. At other times it moves rapidly, creating gales and hurricanes. [[1]] or fierce, wind always starts in the same way. As the sun moves through the sky, it heats up some parts of the sea and land more than others. The air above these [[2]] spots is warmed, becomes lighter than the surrounding air and begins to rise. Elsewhere cool air sinks, because it is [[3]]. Winds blow because air squeezed out by sinking, colder air is sucked in under rising, warm air. Winds will blow whenever there is a [[4]] in air temperature and pressure, always blowing from high to low pressure.",
+          "options": [
+            [
+              "Strong",
+              "Nice",
+              "Windy",
+              "Gentle"
+            ],
+            [
+              "hot",
+              "cold",
+              "land",
+              "sea"
+            ],
+            [
+              "lighter",
+              "warmer",
+              "heavier",
+              "cooler"
+            ],
+            [
+              "conflict",
+              "difficulty",
+              "difference",
+              "struggle"
+            ]
+          ],
+          "answers": [
+            "Gentle",
+            "hot",
+            "heavier",
+            "difference"
+          ]
+        },
+        {
+          "id": 3,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "In England it is well known that access to university, on average, varies substantially by the level of parental income and that students from poorer families access different types of universities than those from wealthier backgrounds. However, the question of whether graduates' earnings vary [[1]] their socioeconomic background amongst graduates attending similar universities and taking the same subject has remained poorly understood, [[2]] limited by data availability. Our unique administrative database offers substantial advantages in [[3]] this crucial question. The findings are also relevant for myriad other issues that benefit from better information on [[4]] in graduates' earnings, including: student choice of subject and institution; better information for schools [[5]] advise and guide students whilst at school; and the operation and cost of the higher education finance system.",
+          "options": [
+            [
+              "according to",
+              "with reference",
+              "depending",
+              "corresponding"
+            ],
+            [
+              "like that",
+              "hence",
+              "thus far",
+              "so much"
+            ],
+            [
+              "dealing",
+              "addressing",
+              "focussing",
+              "speaking"
+            ],
+            [
+              "variation",
+              "corporation",
+              "federation",
+              "association"
+            ],
+            [
+              "for help",
+              "to help",
+              "helped",
+              "help in"
+            ]
+          ],
+          "answers": [
+            "according to",
+            "thus far",
+            "addressing",
+            "variation",
+            "to help"
+          ]
+        },
+        {
+          "id": 4,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "Our sense of cinema as a site of commercial entertainment can be traced back to the Lumière brothers. In December 1895 they [[1]] a fee-paying public in Paris to sit and watch flickering images on an illuminated screen. The commercial Pandora's Box they opened was to blossom in a few years into a world cinema [[2]] and, at its peak, the fantastical Hollywood. Yet in the 30 years in which this miraculous construction was accomplished, audiences rarely [[3]] to films, only watch them. Hence, the early decades of cinema were characterised by the title 'silent'. [[4]], there was a lot of noise: machinery, audiences, musicians and commentators. Even so, the absence of the human voice and [[5]] make the films seem strange when viewed by a modern audience.",
+          "options": [
+            [
+              "connected",
+              "discovered",
+              "committed",
+              "attracted"
+            ],
+            [
+              "club",
+              "industry",
+              "activity",
+              "pastime"
+            ],
+            [
+              "had listened",
+              "had a listen",
+              "listened",
+              "had to listen"
+            ],
+            [
+              "In fact",
+              "On the contrary",
+              "Furthermore",
+              "Besides"
+            ],
+            [
+              "conversation",
+              "interaction",
+              "dialogue",
+              "speaking"
+            ]
+          ],
+          "answers": [
+            "attracted",
+            "industry",
+            "had to listen",
+            "In fact",
+            "dialogue"
+          ]
+        },
+        {
+          "id": 5,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "The prospect of learning something from history is what makes sociologists tick. It is through [[1]] a systematic understanding of the forces which shape our lives that we [[2]] exercise control over them. The founding thinkers of sociology, who [[3]] to prominence during the development of what we are pleased to call modernity, thought so. It is the intimate relationship between the development of sociology and the development of modernity that the course begins with. This relationship is an intimate one, because it is [[4]] with the social change instituted in the development of the modern world that a discipline such as sociology — and social science in general — could either exist or have anything to study.",
+          "options": [
+            [
+              "developing",
+              "develop",
+              "developed",
+              "development"
+            ],
+            [
+              "should",
+              "will",
+              "can",
+              "would"
+            ],
+            [
+              "went",
+              "were",
+              "reached",
+              "came"
+            ],
+            [
+              "also",
+              "just",
+              "simply",
+              "only"
+            ]
+          ],
+          "answers": [
+            "developing",
+            "can",
+            "came",
+            "only"
+          ]
+        },
+        {
+          "id": 6,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "Most people assume, correctly, that flowers look the way they do to attract insects, which pollinate them. But that's not the whole story. Scientists have now discovered that plants have another 'trick up their leaves' to make themselves [[1]] to even the most choosy insect — solar power. Beverley Glover, a senior lecturer in the department of plant sciences at Cambridge University, and her [[2]], recently set up some fake flowers filled with a sugar solution, which they kept at different temperatures. Unleashing a team of bumblebees on their floral [[3]], they watched as the insects visited the flowers to drink the 'nectar' on offer. Very quickly it became obvious that the bees were concentrating on the flowers with the warmest nectar.",
+          "options": [
+            [
+              "irresistible",
+              "invisible",
+              "irregular",
+              "implausible"
+            ],
+            [
+              "cooperative",
+              "conspirators",
+              "contemporaneous",
+              "colleagues"
+            ],
+            [
+              "orations",
+              "offerings",
+              "origins",
+              "organisms"
+            ]
+          ],
+          "answers": [
+            "irresistible",
+            "colleagues",
+            "offerings"
+          ]
+        },
+        {
+          "id": 7,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all correct responses.",
+          "passage": "Denmark has a long history of active labour market policy. Employers can dismiss staff with relatively short notice. Around a fifth of the workforce experiences at least one spell of unemployment in any given year. But the jobless receive generous unemployment allowances while they search for work, worth around 80% of their previous earnings on average. To ensure this does not discourage people from returning to work, the Danes require the unemployed to take further training and to demonstrate that they are actively seeking another job.",
+          "prompt": "According to the text, which statements apply to people in Denmark who lose their job?",
+          "choices": [
+            "They must take further training.",
+            "They are assured of finding a new job.",
+            "They are required to seek another job.",
+            "They receive a small fraction of their salary from government.",
+            "They have an 80 percent chance of remaining unemployed."
+          ],
+          "answers": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": 8,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all correct responses.",
+          "passage": "'Researchers in Residence' is a scheme which places postdoctoral researchers in secondary schools across the UK. The programme aims to enable greater dialogue and interaction between third-level researchers and school students, and is about raising motivation among pupils by allowing them to connect with a cutting-edge researcher who is knowledgeable and passionate about their subject. Dr Barfoot, project manager, says, 'The pupils have direct access to positive role models. We want to challenge the stereotypical image, in particular, of scientists.' As an experiment, before introducing Melanie Thompson, a PhD student in microbiology, to a school in Yorkshire earlier this year, the science teacher asked pupils to draw a picture of what they thought a scientist looked like. Predictably, almost all drew an image of the stereotypical eccentric professor, and only one drew a woman scientist. When Melanie arrived, without a white coat or a pair of spectacles in sight, the children were immediately smitten. Armed with an assortment of bright and cuddly bacteria 'toys', Melanie set to work on two experiments she had designed to illustrate the concept of 'good' and 'bad' bacteria. While the benefits for schools are obvious, what do researchers gain? Participation is a good addition to a CV, but also gives researchers the opportunity to engage young people with their research, and in doing so develop important communication, teamwork and interpersonal skills. Some participants are also keen on broadening their horizons and gaining new perspectives on pedagogy.",
+          "prompt": "According to the passage, which statements are true?",
+          "choices": [
+            "School pupils learn about microbiology.",
+            "It overcomes pre-conceptions about scientists.",
+            "The resulting benefits are two-way.",
+            "Researchers widen their scope for research topics.",
+            "Programmes are devised to suit the needs of pupils."
+          ],
+          "answers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "id": 9,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the correct order.",
+          "items": [
+            {
+              "key": "D",
+              "text": "These early faiths expressed the wonder and mystery that seem always to have been an essential component of the human experience of this beautiful yet terrifying world."
+            },
+            {
+              "key": "A",
+              "text": "My study of the history of religion has revealed that human beings are spiritual animals. Indeed, there is a case for arguing that Homo sapiens is also Homo religiosus."
+            },
+            {
+              "key": "B",
+              "text": "Men and women started to worship gods as soon as they became recognizably human; they exhibited religious beliefs at the same time as they created works of art."
+            },
+            {
+              "key": "C",
+              "text": "This was not simply because they wanted to propitiate powerful forces they observed in their world."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 10,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the correct order.",
+          "items": [
+            {
+              "key": "B",
+              "text": "They might thus be used as treatments for diseases that require the replacement of a particular, lost cell type."
+            },
+            {
+              "key": "C",
+              "text": "Some examples cited for possible treatment using these cells are diabetes, motor-neuron disease and Parkinson's disease."
+            },
+            {
+              "key": "A",
+              "text": "Embryonic stem cells are valued by scientists because the cells' descendants can turn into any other sort of body cell."
+            },
+            {
+              "key": "D",
+              "text": "Because of these beneficial medical applications the lobby against stem cell research is particularly regrettable."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 11,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "edge",
+            "level",
+            "aspect",
+            "loss",
+            "disadvantage",
+            "marketing",
+            "wasted"
+          ],
+          "passage": "The promotion of good customer service must start at the top. If management doesn't realize how important this [[1]] of their business is, they will be at an instant [[2]] in their industry. Good customer response equates to loyal customers, which are the cornerstone of any successful business. No matter how much money you invest in [[3]], if you don't have this fundamental element of your business right, it's [[4]] money.",
+          "answers": [
+            "aspect",
+            "disadvantage",
+            "marketing",
+            "wasted"
+          ]
+        },
+        {
+          "id": 12,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "flagrant",
+            "arrangements",
+            "operating",
+            "flaws",
+            "documentary",
+            "fragmented"
+          ],
+          "passage": "Ministers' demands for help to cope with the pressures of an increasingly competitive political environment have been key drivers of the staffing system's development. But there has not been commensurate growth in [[1]] to support and control it. The [[2]] framework for ministerial staff is [[3]] and ad hoc.",
+          "answers": [
+            "arrangements",
+            "operating",
+            "fragmented"
+          ]
+        },
+        {
+          "id": 13,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "beside",
+            "treatise",
+            "within",
+            "interests",
+            "expose",
+            "journal",
+            "undertakings"
+          ],
+          "passage": "Michael T. Madigan has published over 110 research papers, has coedited a major [[1]] on phototrophic bacteria, and has served as chief editor of the [[2]] Archives of Microbiology. He currently serves on the editorial board of Environmental Microbiology. His nonscientific [[3]] include tree planting and caring for his dogs and horses. He lives [[4]] a quiet lake about five miles from the university campus with his wife, Nancy, four shelter dogs and three horses.",
+          "answers": [
+            "treatise",
+            "journal",
+            "interests",
+            "beside"
+          ]
+        },
+        {
+          "id": 14,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "meant",
+            "stand",
+            "interconnected",
+            "enabled",
+            "included",
+            "come"
+          ],
+          "passage": "Individual humans are relatively powerless creatures: it's what we can do as groups that has [[1]] us to take over the planet. These groupings — corporations, religions, states — are now part of a vast network of [[2]] information flows. Finding points of resistance, where smaller units can [[3]] up to the waves of information washing round the globe, is becoming harder all the time.",
+          "answers": [
+            "enabled",
+            "interconnected",
+            "stand"
+          ]
+        },
+        {
+          "id": 15,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one correct response.",
+          "passage": "One of the first things you'll discover as a college student is that writing in college is different from writing in high school. Certainly, a lot of what your high school writing teachers taught you will be useful to you as you approach writing in college: you will want to write clearly, to have an interesting and arguable thesis, to construct paragraphs that are coherent and focused, and so on. Still, many students enter college relying on writing strategies that served them well in high school but that won't serve them well here. Old formulas, such as the five-paragraph theme, aren't sophisticated or flexible enough to provide a sound structure for a college paper. And many of the old tricks — such as using elevated language, or repeating yourself so that you might meet a ten-page requirement — will fail you here.",
+          "prompt": "According to the text, a student might repeat himself to...",
+          "choices": [
+            "write a conclusion for the essay.",
+            "remind the teacher of what he has written.",
+            "increase the length of the essay.",
+            "emphasize the main argument of the essay."
+          ],
+          "answer": 2
+        },
+        {
+          "id": 16,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one correct response.",
+          "passage": "Britain also went to war on 4th August because of concerns over its longstanding interests in Belgium. France and Germany were Britain's imperial competitors. Britain was allied to France, and parts of its empire lay close to Russian and French territory, so it could not hope to remain neutral without France's acquiescence. Britain had previously remained aloof, but it was concerned that a victorious Germany would be unlikely to respect its established interests.",
+          "prompt": "Which concern most clearly contributed to Britain joining the war?",
+          "choices": [
+            "It wanted to protect its established imperial and strategic interests.",
+            "It saw an immediate opportunity to acquire new colonies.",
+            "It wanted to end its alliance with France.",
+            "It expected a victorious Germany to safeguard British interests."
+          ],
+          "answer": 0
+        }
+      ],
+      "reasoning": {
+        "1": {
+          "correct": "The passage contrasts calm currents with turbulent currents, warm zones with colder water, denser sinking water, and a difference in temperature and density.",
+          "options": {
+            "Rapid": "It does not contrast naturally with “turbulent”; a current can be both rapid and turbulent.",
+            "Warm": "“Warm or turbulent” compares temperature with movement, so the ideas do not match.",
+            "Salty": "Salinity is not the contrast being described in this sentence.",
+            "cold": "The sentence says these zones have been heated more strongly, so they are warm.",
+            "deep": "Depth is not the cause described; uneven heating is.",
+            "shallow": "The passage is discussing temperature zones, not water depth.",
+            "lighter": "The passage says the sinking water is denser, not lighter.",
+            "saltier": "Saltiness is not given as the reason in this passage.",
+            "warmer": "Warmer water becomes less dense and rises; it would not explain sinking here.",
+            "similarity": "Currents form because conditions are unequal, not similar.",
+            "balance": "A balance would reduce movement rather than create it.",
+            "pattern": "A pattern is too general; the passage specifically requires a difference."
+          }
+        },
+        "2": {
+          "correct": "The natural collocations are “gentle or fierce,” “hot spots,” heavier cool air sinks, and a difference in temperature and pressure.",
+          "options": {
+            "Strong": "“Strong or fierce” repeats nearly the same idea instead of creating a natural contrast.",
+            "Nice": "“Nice” does not describe wind strength in this scientific context.",
+            "Windy": "“Windy wind” is illogical and grammatically awkward.",
+            "cold": "The sun heats these locations more strongly, so the spots are hot.",
+            "land": "The blank describes temperature, not the type of surface.",
+            "sea": "The blank describes temperature, not whether the area is sea or land.",
+            "lighter": "Cool air sinks because it is heavier, not lighter.",
+            "warmer": "The sentence specifically refers to cool air.",
+            "cooler": "“Because it is cooler” repeats the idea but does not explain why it sinks; heavier gives the physical reason.",
+            "conflict": "The fixed expression is a difference in temperature and pressure.",
+            "difficulty": "A difficulty is a problem, not a measurable contrast between conditions.",
+            "struggle": "A struggle cannot occur in temperature and pressure."
+          }
+        },
+        "3": {
+          "correct": "The passage asks whether earnings vary according to background, says the issue has thus far remained unclear, discusses addressing the question, variation in graduates’ earnings, and information to help schools.",
+          "options": {
+            "with reference": "The phrase would require “with reference to,” so it is incomplete.",
+            "depending": "“Vary depending their background” is grammatically incorrect; it would need “depending on.”",
+            "corresponding": "“Corresponding their background” is not a valid structure.",
+            "like that": "This phrase does not express the time meaning required by “has remained.”",
+            "hence": "“Hence” means therefore, but the sentence needs a phrase meaning until now.",
+            "so much": "This expresses degree, not time.",
+            "dealing": "The correct pattern is “advantages in addressing a question,” not “dealing a question.”",
+            "focussing": "It would normally require “focusing on,” and the meaning is less precise.",
+            "speaking": "“Speaking this question” is grammatically incorrect.",
+            "corporation": "The passage is about universities, not businesses.",
+            "federation": "A federation is a union of groups, not the university attended.",
+            "association": "An association is an organisation, not the relevant educational institution.",
+            "for help": "The sentence needs an infinitive of purpose: “to help advise.”",
+            "helped": "The past tense does not fit after “for schools.”",
+            "help in": "This would require a different grammatical structure."
+          }
+        },
+        "4": {
+          "correct": "The Lumière brothers attracted an audience, cinema became an industry, silent audiences had to listen to accompanying sound, “In fact” introduces a surprising contrast, and dialogue means spoken interaction.",
+          "options": {
+            "connected": "They did not merely connect an audience; they drew or attracted paying viewers.",
+            "discovered": "The audience was not discovered.",
+            "committed": "“Committed a public” is not a valid collocation.",
+            "club": "Cinema developed into a commercial industry, not a club.",
+            "activity": "The passage stresses commercial growth, so “industry” is more precise.",
+            "pastime": "A pastime is a leisure activity, not the worldwide commercial system described.",
+            "had listened": "This tense suggests listening happened before another past event; that is not the intended meaning.",
+            "had a listen": "This informal phrase does not fit the formal historical style.",
+            "listened": "The structure and contrast indicate what audiences were required to do alongside watching.",
+            "On the contrary": "This is used to directly deny a previous statement, but the passage adds a surprising fact instead.",
+            "Furthermore": "This merely adds information and does not highlight the contrast with “silent.”",
+            "Besides": "This is too informal and does not express the intended factual contrast.",
+            "conversation": "Conversation is an exchange between people, not necessarily speech within a film.",
+            "interaction": "Interaction is too broad and can be non-verbal.",
+            "speaking": "“Absence of speaking” is less natural than the film term “dialogue.”"
+          }
+        },
+        "5": {
+          "correct": "The grammar requires “through developing,” the modal “can,” the collocation “came to prominence,” and the emphatic structure “it is only with.”",
+          "options": {
+            "develop": "After “through,” a gerund is needed.",
+            "developed": "The past participle does not fit after “through.”",
+            "development": "A noun would require a different structure, such as “through the development of.”",
+            "should": "The sentence describes ability, not advice or obligation.",
+            "will": "The meaning is present possibility, not future certainty.",
+            "would": "There is no hypothetical condition requiring “would.”",
+            "went": "The standard collocation is “came to prominence.”",
+            "were": "“Were to prominence” is grammatically impossible.",
+            "reached": "We say “reached prominence,” not “reached to prominence.”",
+            "also": "The structure is restrictive: only under this condition could sociology exist.",
+            "just": "“Just with” is less precise and does not create the formal emphatic structure.",
+            "simply": "It weakens the intended necessary-condition meaning."
+          }
+        },
+        "6": {
+          "correct": "Flowers must be irresistible to insects; Beverley Glover worked with her colleagues; and the fake flowers were offerings presented to the bees.",
+          "options": {
+            "invisible": "Invisible flowers would not attract insects.",
+            "irregular": "Irregular describes shape or pattern, not attractiveness.",
+            "implausible": "Implausible means difficult to believe and does not fit the insects’ response.",
+            "cooperative": "This adjective cannot naturally refer to “her” group of people as a noun.",
+            "conspirators": "This implies people secretly planning something harmful.",
+            "contemporaneous": "This is an adjective meaning existing at the same time, not a noun for co-workers.",
+            "orations": "Orations are formal speeches, not artificial flowers.",
+            "origins": "Origins means beginnings or sources.",
+            "organisms": "The passage refers to the prepared flowers as things offered to the bees, not organisms."
+          }
+        },
+        "7": {
+          "correct": "The passage explicitly states that unemployed people must take further training and actively seek another job.",
+          "options": {
+            "They are assured of finding a new job.": "The passage gives requirements and support, but no guarantee of employment.",
+            "They receive a small fraction of their salary from government.": "They receive around 80%, which is a large fraction, not a small one.",
+            "They have an 80 percent chance of remaining unemployed.": "The 80% figure refers to the allowance relative to previous earnings, not the chance of unemployment."
+          }
+        },
+        "8": {
+          "correct": "Pupils learn microbiology, the programme challenges stereotypes about scientists, and both pupils and researchers gain benefits.",
+          "options": {
+            "Researchers widen their scope for research topics.": "The passage says they broaden their horizons and communication skills, not their research topics.",
+            "Programmes are devised to suit the needs of pupils.": "The experiments are designed to illustrate concepts, but the passage does not say the whole programme is tailored to pupils’ needs."
+          }
+        },
+        "9": {
+          "correct": "The opening introduces the writer’s main idea; the next sentence gives historical evidence; “This” refers to worship; and the final sentence summarises what those early faiths expressed.",
+          "options": {
+            "pair_A_B": "A→B is correct because B develops the general claim introduced in A.",
+            "pair_B_C": "B→C is correct because “This” refers directly to the worship described in B.",
+            "pair_C_D": "C→D is correct because D concludes the explanation of those early religious beliefs."
+          }
+        },
+        "10": {
+          "correct": "The first sentence introduces the special property of embryonic stem cells; “They” refers to those cells; examples follow the general treatment claim; and the final sentence evaluates the applications.",
+          "options": {
+            "pair_A_B": "A→B is correct because “They” refers to embryonic stem cells.",
+            "pair_B_C": "B→C is correct because the examples support the treatment claim.",
+            "pair_C_D": "C→D is correct because the final sentence comments on the medical applications just listed."
+          }
+        },
+        "11": {
+          "correct": "“Aspect of their business,” “at a disadvantage,” “invest in marketing,” and “wasted money” are the natural meanings and collocations.",
+          "options": {
+            "edge": "An edge is an advantage, so it conflicts with the negative consequence described.",
+            "level": "A level is a degree or position, not a part of a business.",
+            "loss": "The phrase “this loss of their business” does not fit the meaning.",
+            "disadvantage@1": "The first blank needs a part or feature of the business, not a negative position.",
+            "marketing@1": "Marketing is an activity, but the sentence refers more generally to one aspect of the business.",
+            "wasted@1": "“This wasted of their business” is ungrammatical.",
+            "edge@2": "The sentence describes a negative position, not an advantage.",
+            "level@2": "“At an instant level” is not a natural expression.",
+            "aspect@2": "“At an instant aspect” is grammatically and logically incorrect.",
+            "loss@2": "The fixed expression is “at a disadvantage,” not “at a loss” in this context.",
+            "marketing@2": "“At an instant marketing” is ungrammatical.",
+            "wasted@2": "“At an instant wasted” is ungrammatical.",
+            "edge@3": "Businesses do not normally “invest in edge.”",
+            "level@3": "“Invest in level” has no clear meaning here.",
+            "aspect@3": "An aspect is too general; the sentence refers to promotional spending.",
+            "loss@3": "Businesses do not normally invest in loss.",
+            "disadvantage@3": "Businesses do not invest in a disadvantage.",
+            "wasted@3": "“Invest in wasted” is ungrammatical.",
+            "edge@4": "“It’s edge money” is not an English expression.",
+            "level@4": "“It’s level money” is not meaningful.",
+            "aspect@4": "“It’s aspect money” is ungrammatical.",
+            "loss@4": "The natural phrase is “wasted money,” not “loss money.”",
+            "disadvantage@4": "“Disadvantage money” is not a valid phrase.",
+            "marketing@4": "The sentence evaluates the money as wasted; it is not naming the money as marketing."
+          }
+        },
+        "12": {
+          "correct": "The natural sentence is “growth in arrangements,” followed by “the operating framework,” which is described as “fragmented and ad hoc.”",
+          "options": {
+            "flagrant": "Flagrant means obviously offensive or wrong; it cannot name systems that support staffing.",
+            "operating@1": "“Growth in operating” is incomplete because operating is an adjective here.",
+            "flaws@1": "The passage says support systems have not grown, not that flaws have grown.",
+            "documentary@1": "Documentary relates to documents or factual films; it does not mean support arrangements.",
+            "fragmented@1": "Fragmented is an adjective and cannot naturally follow “growth in” as a plural system.",
+            "flagrant@2": "A “flagrant framework” would mean an obviously bad framework, not a framework used for operations.",
+            "arrangements@2": "Arrangements is a plural noun, but the blank modifies the singular noun “framework.”",
+            "flaws@2": "“Flaws framework” is grammatically incorrect.",
+            "documentary@2": "A documentary framework concerns records or films, not staffing operations.",
+            "fragmented@2": "Although grammatical, this would duplicate the description needed in the final blank.",
+            "flagrant@3": "“Flagrant and ad hoc” is possible grammar but not the intended description of a disconnected system.",
+            "arrangements@3": "A plural noun cannot follow “is” as the adjective describing the framework.",
+            "operating@3": "The framework is operating in the previous blank; here it needs a condition or quality.",
+            "flaws@3": "“Is flaws” is ungrammatical.",
+            "documentary@3": "Documentary does not contrast naturally with “ad hoc.”"
+          }
+        },
+        "13": {
+          "correct": "A major scholarly work is a treatise; Archives of Microbiology is a journal; hobbies are interests; and “beside a quiet lake” gives location.",
+          "options": {
+            "beside@1": "Beside is a preposition and cannot name a scholarly publication.",
+            "within@1": "Within is a preposition, not a type of publication.",
+            "interests@1": "Interests are hobbies or concerns, not a major scientific work.",
+            "expose@1": "Expose means reveal or uncover; it is not the noun needed here.",
+            "journal@1": "A journal is a periodical, but the phrase says he coedited a major book-like work.",
+            "undertakings@1": "Undertakings are projects or tasks, not a scholarly publication type.",
+            "beside@2": "A journal title needs the noun “journal,” not a location word.",
+            "treatise@2": "Archives of Microbiology is a periodical, not a treatise.",
+            "within@2": "Within cannot name a publication.",
+            "interests@2": "Interests cannot serve as chief editor.",
+            "expose@2": "Expose is not the name of a publication type.",
+            "undertakings@2": "Undertakings are projects, not a periodical.",
+            "beside@3": "The blank needs a plural noun for hobbies.",
+            "treatise@3": "A treatise is a scholarly work, not a hobby.",
+            "within@3": "Within is a preposition.",
+            "expose@3": "Expose is a verb and does not name hobbies.",
+            "journal@3": "A journal is a publication, not a personal interest.",
+            "undertakings@3": "This can mean projects, but “interests include” is the natural phrase for hobbies.",
+            "treatise@4": "A location requires a preposition, not a scholarly noun.",
+            "within@4": "Within would mean inside the lake, which is illogical.",
+            "interests@4": "Interests cannot show location.",
+            "expose@4": "Expose is not a location preposition.",
+            "journal@4": "Journal does not show where he lives.",
+            "undertakings@4": "Undertakings does not show location."
+          }
+        },
+        "14": {
+          "correct": "Groups have enabled humans to dominate; the flows are interconnected; and smaller units can stand up to pressure.",
+          "options": {
+            "meant@1": "“Has meant us to” is grammatically incorrect.",
+            "stand@1": "“Has stand us” is grammatically incorrect.",
+            "interconnected@1": "This adjective cannot follow “has” to express what groups allowed humans to do.",
+            "included@1": "“Has included us to” is not a valid construction.",
+            "come@1": "“Has come us to” is grammatically incorrect.",
+            "meant@2": "“Meant information flows” does not describe how the flows relate to one another.",
+            "stand@2": "Stand is a verb, but the blank needs an adjective modifying “information flows.”",
+            "enabled@2": "Enabled does not describe the relationship among the flows.",
+            "included@2": "Included does not express that the flows connect with one another.",
+            "come@2": "Come is a verb and cannot modify “information flows.”",
+            "meant@3": "The fixed expression is “stand up to,” not “mean up to.”",
+            "interconnected@3": "An adjective cannot complete “can ___ up to.”",
+            "enabled@3": "“Can enabled” is grammatically incorrect.",
+            "included@3": "“Can included” is grammatically incorrect.",
+            "come@3": "“Come up to” means approach a level, not resist pressure."
+          }
+        },
+        "15": {
+          "correct": "The passage explicitly says students may repeat themselves to meet a ten-page requirement, so the purpose is to increase length.",
+          "options": {
+            "write a conclusion for the essay.": "A conclusion is a separate final section; repetition is not used to create one.",
+            "remind the teacher of what he has written.": "The passage does not mention reminding the teacher.",
+            "emphasize the main argument of the essay.": "Although repetition can sometimes emphasize an idea, the passage specifically links it to meeting a page requirement."
+          }
+        },
+        "16": {
+          "correct": "The passage connects Britain’s decision with protecting its established imperial and strategic interests from the consequences of a German victory.",
+          "options": {
+            "It saw an immediate opportunity to acquire new colonies.": "The passage focuses on protecting established interests, not acquiring new territory.",
+            "It wanted to end its alliance with France.": "The alliance with France is presented as a constraint on neutrality, not something Britain intended to end.",
+            "It expected a victorious Germany to safeguard British interests.": "The passage says Britain feared the opposite: a victorious Germany would be unlikely to respect those interests."
+          }
+        }
+      }
+    },
+    {
+      "id": "v2",
+      "name": "Mock test 2",
+      "minutes": 25,
+      "questions": [
+        {
+          "id": 2,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "A creature may have fine physical defences such as hard armour or sharp spines. It may have powerful chemical defences such as an [[1]] smell or foul-tasting flesh. But none of these defences is much use in the [[2]] for survival unless the animal also has the right behaviour to go with it. Evolution shapes a living creature's size, colour and other [[3]]. It also shapes an animal's actions and behaviour patterns. The most [[4]] behaviours are instinctive or in-built. In other words, the creature can perform the actions without having to learn what to do and how to do it by [[5]] and error.",
+          "options": [
+            [
+              "agreeable",
+              "enchanting",
+              "appalling",
+              "ordinary"
+            ],
+            [
+              "struggle",
+              "campaign",
+              "match",
+              "game"
+            ],
+            [
+              "shapes",
+              "pieces",
+              "features",
+              "aspects"
+            ],
+            [
+              "difficult",
+              "important",
+              "dangerous",
+              "automatic"
+            ],
+            [
+              "attempt",
+              "testing",
+              "doing",
+              "trial"
+            ]
+          ],
+          "answers": [
+            "appalling",
+            "struggle",
+            "features",
+            "important",
+            "trial"
+          ]
+        },
+        {
+          "id": 3,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "An analysis of more than 500 graduates found no significant difference between business schools that offered traditional courses and those that emphasise a 'learning by doing' approach to entrepreneurship education.\n\nThe research challenges the ongoing trend across higher education institutes (HEIs) of [[1]] on experiential learning, and suggests that universities need to reconsider their approach if they [[2]] increase entrepreneurship among their students.\n\nMs Inna Kozlinska, research associate at Aston Business School and author of the study, said: 'Entrepreneurship education [[3]] as a major force capable of generating long-term socio-economic changes through developing entrepreneurial, creative, flexible and wise individuals. There is an ongoing shift towards experiential learning in business school, [[4]] there is little empirical evidence to suggest this approach has better impact than traditional learning.'",
+          "options": [
+            [
+              "bashing",
+              "focussing",
+              "teaching",
+              "aiming"
+            ],
+            [
+              "are to",
+              "aim at",
+              "hope for",
+              "go to"
+            ],
+            [
+              "is seeing",
+              "sees",
+              "is seen",
+              "has seen"
+            ],
+            [
+              "since",
+              "yet",
+              "also",
+              "even"
+            ]
+          ],
+          "answers": [
+            "focussing",
+            "are to",
+            "is seen",
+            "yet"
+          ]
+        },
+        {
+          "id": 4,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "New technologies are helping cities replace failing water infrastructure. Piping systems allow polymer-based materials to be inserted into old pipes to repair faults and [[1]] leaks without having to dig up and lay new pipes. When it comes to managing waste water, new systems are [[2]], such as Advanced Immobilised Cell Reactor technology, which uses a system based on the immobilisation of bacteria, reducing the power and land area needed for conventional waste water treatment systems. And companies have realised that much can be achieved by re-examining their products at the [[3]] stage. By designing items that can be more easily picked apart and that use fewer different materials in their construction, companies can increase the [[4]] content of what they produce, cutting waste and generating cost-savings by being able to re-use parts and materials.",
+          "options": [
+            [
+              "reduce",
+              "extend",
+              "induce",
+              "protect"
+            ],
+            [
+              "discovering",
+              "introducing",
+              "existing",
+              "emerging"
+            ],
+            [
+              "original",
+              "development",
+              "integral",
+              "environment"
+            ],
+            [
+              "disposable",
+              "repeatable",
+              "returnable",
+              "recyclable"
+            ]
+          ],
+          "answers": [
+            "reduce",
+            "emerging",
+            "development",
+            "recyclable"
+          ]
+        },
+        {
+          "id": 5,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "At the local and state level, demanding funding for repairs and improvement to outdated transit infrastructure will greatly reduce the noise caused by trains, cars, and trucks.\n\nUrban-planning approaches to [[1]] noise on a city-by-city basis can be as simple as taking a single lane away from cars and giving it to bicycles, people, or green space. Improving, expanding, and properly funding public transit removes cars from the road, both reducing the sound they [[2]] and replacing it with quieter options like trams and high-speed light-rail.\n\nIn architecture, acoustics should play a greater [[3]] in all structures, from mundane apartment buildings to the grandest art museums. Noise control should be a consideration from the very first planning stage, [[4]] than tacked on as an afterthought.",
+          "options": [
+            [
+              "vanishing",
+              "disposing",
+              "eliminating",
+              "disappearing"
+            ],
+            [
+              "produce",
+              "produced",
+              "will produce",
+              "have produced"
+            ],
+            [
+              "act",
+              "role",
+              "function",
+              "position"
+            ],
+            [
+              "better",
+              "more",
+              "other",
+              "rather"
+            ]
+          ],
+          "answers": [
+            "eliminating",
+            "produce",
+            "role",
+            "rather"
+          ]
+        },
+        {
+          "id": 6,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank.",
+          "passage": "Used in a variety of courses in various disciplines, 'Asking the Right Questions' helps students bridge the gap between simply memorizing or blindly accepting information, and the greater challenge of critical analysis and synthesis. [[1]], this concise text teaches students to think critically [[2]] exploring the components of arguments - issues, conclusions, reasons, evidence, assumptions, language - and on how to spot fallacies and manipulations and obstacles [[3]] critical thinking in both written and visual communication. It teaches them [[4]] to alternative points of view and develop a solid foundation for making personal choices about what to accept and what to reject.",
+          "options": [
+            [
+              "For this reason",
+              "Instead",
+              "Specifically",
+              "In such cases"
+            ],
+            [
+              "by",
+              "over",
+              "into",
+              "with"
+            ],
+            [
+              "against",
+              "for",
+              "in",
+              "to"
+            ],
+            [
+              "how responding",
+              "their response",
+              "to respond",
+              "when responding"
+            ]
+          ],
+          "answers": [
+            "Specifically",
+            "by",
+            "to",
+            "to respond"
+          ]
+        },
+        {
+          "id": 7,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all correct responses.",
+          "passage": "There is a general consensus among mainstream anthropologists that humans first emerged in Africa about two million years ago. Since then we have spread throughout the world, successfully adapting to widely differing conditions and to periodic cataclysmic changes in local and global climate. The many separate societies that emerged around the globe differed markedly from each other, and many of these differences persist to this day. As well as the more obvious variations that exist between peoples, such as language, dress and traditions, there are also significant variations in the way societies organise themselves, in their shared conception of morality, and in the ways they interact with their environment. It is debatable whether these differences are merely incidental artifacts arising from patterns of human migration or whether they represent an evolutionary trait that is key to our success as a species. By analogy with biodiversity, which is thought to be essential to the long-term survival of life on earth, it can be argued that cultural diversity may be vital for the long-term survival of humanity, and that the conservation of indigenous cultures may be as important to humankind as the conservation of species and ecosystems is to life in general.",
+          "prompt": "According to the passage, which of the following statements are true?",
+          "choices": [
+            "Humans have been unable to successfully adapt to different climates.",
+            "The way societies organize themselves is an insubstantial cultural difference.",
+            "Language is generally considered to be a cultural difference.",
+            "Societies today still retain many cultural differences from the past.",
+            "Cultural diversity is unnecessary for continuing human survival on Earth."
+          ],
+          "answers": [
+            2,
+            3
+          ]
+        },
+        {
+          "id": 8,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all correct responses.",
+          "passage": "Some experts believe that there may have been many big bangs, perhaps trillions and trillions of them, spread through the mighty span of eternity, and that the reason we exist in this particular one is that this is one we could exist in. As Edward P. Tryon of Columbia University once put it: 'In answer to the question of why it happened, I offer the modest proposal that our universe is simply one of those things which happen from time to time.' To which adds Guth: 'Although the creation of a universe might be very unlikely, Tryon emphasized that no one had counted the failed attempts.'",
+          "prompt": "Which of the following views are expressed by big bang experts?",
+          "choices": [
+            "We have a good idea of how many big bangs there have been.",
+            "Other big bangs may have been unable to support life.",
+            "Big bangs are not necessarily a rare event.",
+            "Big bangs will occur less often in the future.",
+            "The creation of another universe is inevitable."
+          ],
+          "answers": [
+            1,
+            2
+          ]
+        },
+        {
+          "id": 9,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the correct order.",
+          "items": [
+            {
+              "key": "D",
+              "text": "That mayor's aggressive control over schools was criticized for reducing parents' influence."
+            },
+            {
+              "key": "A",
+              "text": "Education scholars generally agree that mayors can help failing school districts."
+            },
+            {
+              "key": "C",
+              "text": "One review pointed to a certain big city mayor's style as an example of what not to do."
+            },
+            {
+              "key": "B",
+              "text": "They are starting, however, to utter warnings."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 10,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the correct order.",
+          "items": [
+            {
+              "key": "D",
+              "text": "Once you have done this, you have set the stage for successful reviewing and revising."
+            },
+            {
+              "key": "C",
+              "text": "Get them down, and then later reorganize them in your own words."
+            },
+            {
+              "key": "B",
+              "text": "To be a good listener, you must learn to focus and concentrate on the main points of the lecture."
+            },
+            {
+              "key": "A",
+              "text": "Your main job in taking lecture notes is to be a good listener."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 11,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "settlements",
+            "emerged",
+            "unifies",
+            "examine",
+            "increasingly",
+            "became",
+            "waveringly",
+            "retains"
+          ],
+          "passage": "Australia is a dynamic multi-cultural society, viewed by many as the world's most desirable place to live. Here Frank Welsh traces Australia's intriguing and varied history, to [[1]] how this society [[2]] from its ancient Aborigine tribes and earliest British convict [[3]] to today's modern nation - one that [[4]] strong links with its colonial past but is [[5]] independent and diverse.",
+          "answers": [
+            "examine",
+            "emerged",
+            "settlements",
+            "retains",
+            "increasingly"
+          ]
+        },
+        {
+          "id": 12,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "determines",
+            "raised",
+            "puzzle",
+            "compensates",
+            "brought",
+            "suggest",
+            "interpret"
+          ],
+          "passage": "No two siblings are the same, not even identical twins. Parents often [[1]] about why their children are so different from one another. They'll say, 'I [[2]] them up all the same.' They forget that what [[3]] our behaviour isn't what happens to us but how we [[4]] what happens to us.",
+          "answers": [
+            "puzzle",
+            "brought",
+            "determines",
+            "interpret"
+          ]
+        },
+        {
+          "id": 13,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "aground",
+            "archipelago",
+            "scurried",
+            "succeeded",
+            "subsequent",
+            "vessel"
+          ],
+          "passage": "The people of Alaska's Aleutian Islands have long been accustomed to shipwrecks. They have been part of local consciousness since a Japanese whaling ship ran [[1]] near the western end of the 1,100-mile (1,800-km) volcanic [[2]] in 1780. This wreck inadvertently named one island Rat Island when the ship's rodents [[3]] ashore and made themselves at home.",
+          "answers": [
+            "aground",
+            "archipelago",
+            "scurried"
+          ]
+        },
+        {
+          "id": 14,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words from the word bank into the appropriate blanks. To remove an answer, drag it back to the word bank or use ×.",
+          "bank": [
+            "acceptance",
+            "proposals",
+            "portable",
+            "notoriety",
+            "regular",
+            "addendums"
+          ],
+          "passage": "Since the last papal reform, several [[1]] have been offered to make the Western calendar more useful or [[2]]. Very few reforms have gained official [[3]]. The rather different decimal French Republican calendar was one such official reform, but was repealed shortly after its introduction.",
+          "answers": [
+            "proposals",
+            "regular",
+            "acceptance"
+          ]
+        },
+        {
+          "id": 15,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one correct response.",
+          "passage": "Keep patient areas tidy and ensure they are cleaned regularly. Wash hands with soap and water or alcohol hand-rub, before and after contact with patients. Where it is likely that there will be exposure to body fluids, wounds or contaminated materials, disposable gloves and an apron should be worn. Machine wash uniforms in hot water. Handle linen carefully and do not shake it. Transport all linen in the appropriate colour-coded laundry bag. Curtains, pillows, cushions and other soft furnishings should be dry-cleaned regularly. Regular auditing, to ensure compliance with policies is also necessary.",
+          "prompt": "This information is mainly about ____",
+          "choices": [
+            "infection control procedures.",
+            "removing clutter in patient areas.",
+            "auditing infection control policies.",
+            "dealings between health staff and patients.",
+            "laundering linen and uniforms."
+          ],
+          "answer": 0
+        },
+        {
+          "id": 16,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one correct response.",
+          "passage": "Pure competition describes a market in which there are so many firms that each acts as though it can exert no control over price. In pure competition, each individual firm sells such a tiny part of the total market supply that it assumes its actions have no effect on the market price. Because a small wheat farm is just one of over a million farms in the same market, it is very unlikely to produce less wheat this year in an attempt to raise the price of wheat.",
+          "prompt": "According to the text, which of the following is true of 'pure competition'?",
+          "choices": [
+            "Market prices never change in pure competition.",
+            "A single small seller can raise the market price by reducing output.",
+            "Each seller sets a different market price for the same product.",
+            "Each individual firm behaves as though its own output cannot influence the market price."
+          ],
+          "answer": 3
+        }
+      ],
+      "reasoning": {
+        "2": {
+          "correct": "The passage uses the natural combinations “appalling smell,” “struggle for survival,” “size, colour and other features,” “important behaviours,” and “trial and error.”"
+        },
+        "3": {
+          "correct": "The grammar and meaning require “focussing on,” “are to increase,” the passive form “is seen,” and the contrast linker “yet.”"
+        },
+        "4": {
+          "correct": "The technologies reduce leaks, emerging systems are being introduced, products are reconsidered at the development stage, and recyclable content supports re-use."
+        },
+        "5": {
+          "correct": "The passage describes eliminating noise, the sound vehicles produce, the role of acoustics, and planning noise control early rather than adding it later."
+        },
+        "6": {
+          "correct": "“Specifically” introduces detail, “by exploring” explains method, “obstacles to” is the fixed phrase, and “teaches them to respond” is grammatically correct."
+        },
+        "7": {
+          "correct": "The text names language as a cultural variation and says many differences between societies persist to this day.",
+          "options": {
+            "Humans have been unable to successfully adapt to different climates.": "The passage says humans successfully adapted to widely differing conditions and climates.",
+            "The way societies organize themselves is an insubstantial cultural difference.": "The passage calls variations in social organisation significant.",
+            "Cultural diversity is unnecessary for continuing human survival on Earth.": "The author argues that cultural diversity may be vital for long-term human survival."
+          }
+        },
+        "8": {
+          "correct": "The passage suggests many big bangs may have occurred and explains that we exist in a universe capable of supporting us, implying other universes may not have supported life.",
+          "options": {
+            "We have a good idea of how many big bangs there have been.": "The text gives only a speculative possibility, not a known number.",
+            "Big bangs will occur less often in the future.": "The passage says nothing about a declining future frequency.",
+            "The creation of another universe is inevitable.": "The text says universe creation might be very unlikely, not inevitable."
+          }
+        },
+        "9": {
+          "correct": "The general agreement comes first; “They” refers to education scholars; the review then gives an example; “That mayor” refers to the mayor in the preceding sentence.",
+          "options": {
+            "pair_A_B": "“They” clearly refers to the education scholars introduced in A.",
+            "pair_B_C": "C provides the specific warning mentioned in B.",
+            "pair_C_D": "“That mayor” in D refers directly to the mayor introduced in C."
+          }
+        },
+        "10": {
+          "correct": "The topic sentence identifies listening as the main task; the next sentence explains good listening; “them” refers to the main points; “this” refers to recording and reorganising those points.",
+          "options": {
+            "pair_A_B": "B expands the meaning of being a good listener introduced in A.",
+            "pair_B_C": "“Them” in C refers to the main points mentioned in B.",
+            "pair_C_D": "“Once you have done this” refers to the actions described in C."
+          }
+        },
+        "11": {
+          "correct": "The writer examines history, society emerged, convict settlements were established, the nation retains links with its past, and it is increasingly independent."
+        },
+        "12": {
+          "correct": "Parents puzzle about differences, say they brought children up alike, behaviour is determined by interpretation, and people interpret events differently."
+        },
+        "13": {
+          "correct": "A ship runs aground, a group of islands is an archipelago, and rodents scurried ashore."
+        },
+        "14": {
+          "correct": "Reform ideas are proposals, a calendar can be made more regular, and reforms gain official acceptance."
+        },
+        "15": {
+          "correct": "The passage gives a broad set of hygiene, protective-equipment, cleaning, laundry and auditing measures, so its main topic is infection control procedures.",
+          "options": {
+            "removing clutter in patient areas.": "Tidiness is only one small part of the guidance.",
+            "auditing infection control policies.": "Auditing is mentioned only at the end as one supporting measure.",
+            "dealings between health staff and patients.": "The passage focuses on preventing contamination, not general staff–patient relations.",
+            "laundering linen and uniforms.": "Laundry is one part of the wider infection-control guidance."
+          }
+        },
+        "16": {
+          "correct": "The passage repeatedly says that each individual firm acts as though its own output decision cannot influence the market price.",
+          "options": {
+            "Market prices never change in pure competition.": "Market prices can change when total market supply or demand changes; the passage only says one tiny firm cannot control the price.",
+            "A single small seller can raise the market price by reducing output.": "The wheat-farm example says one small seller is very unlikely to influence the market price this way.",
+            "Each seller sets a different market price for the same product.": "Purely competitive firms are price takers rather than independent price setters."
+          }
+        }
+      }
+    },
+    {
+      "id": "v3",
+      "name": "Mock test 3",
+      "minutes": 25,
+      "questions": [
+        {
+          "id": 1,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Urban heat islands do not arise from temperature alone; they are produced by the interaction of buildings, surfaces and human activity. During the day, asphalt and concrete [[1]] solar energy; after sunset they [[2]] release it, keeping nearby streets warmer than surrounding rural areas. Vegetation can [[3]] this effect through shade and evaporation. Yet trees are not a universal remedy: if planted without regard to water availability, they may [[4]] local resources. Effective planning therefore depends on interventions being [[5]] to the local climate.",
+          "options": [
+            [
+              "absorb",
+              "dissolve",
+              "suspend",
+              "scatter"
+            ],
+            [
+              "gradually",
+              "abruptly",
+              "scarcely",
+              "previously"
+            ],
+            [
+              "mitigate",
+              "imitate",
+              "calculate",
+              "postpone"
+            ],
+            [
+              "strain",
+              "restore",
+              "predict",
+              "conceal"
+            ],
+            [
+              "tailored",
+              "postponed",
+              "identical",
+              "accidental"
+            ]
+          ],
+          "answers": [
+            "absorb",
+            "gradually",
+            "mitigate",
+            "strain",
+            "tailored"
+          ]
+        },
+        {
+          "id": 2,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Scientific uncertainty is often mistaken for ignorance. In research, however, uncertainty is measured rather than ignored. A confidence interval [[1]] a range of values compatible with the evidence; it does not imply that every value in the range is equally likely. As data accumulate, the interval may [[2]], but it rarely disappears entirely. Responsible communicators should therefore avoid [[3]] tentative findings as certainties. At the same time, they should not allow uncertainty to [[4]] action when the risks of delay are substantial. The challenge is to distinguish what remains unknown from what is known [[5]] confidence.",
+          "options": [
+            [
+              "indicates",
+              "invents",
+              "replaces",
+              "disguises"
+            ],
+            [
+              "narrow",
+              "dissolve",
+              "wander",
+              "multiply"
+            ],
+            [
+              "presenting",
+              "withdrawing",
+              "inheriting",
+              "interrupting"
+            ],
+            [
+              "paralyse",
+              "certify",
+              "simplify",
+              "reward"
+            ],
+            [
+              "with reasonable",
+              "by absolute",
+              "under accidental",
+              "for equal"
+            ]
+          ],
+          "answers": [
+            "indicates",
+            "narrow",
+            "presenting",
+            "paralyse",
+            "with reasonable"
+          ]
+        },
+        {
+          "id": 3,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Automated feedback can improve learning when it is timely and specific, but its value depends on how students use it. If comments merely identify an error, learners may correct the sentence without [[1]] the principle involved. Feedback is more useful when it prompts students to explain why an answer failed and to [[2]] the rule in a new context. Teachers also need to monitor whether the system's advice is [[3]] with course objectives. A fluent explanation can still be misleading, so apparent confidence should not be [[4]] for accuracy. Used carefully, automation can extend practice without [[5]] professional judgement.",
+          "options": [
+            [
+              "understanding",
+              "memorising",
+              "displaying",
+              "avoiding"
+            ],
+            [
+              "apply",
+              "announce",
+              "borrow",
+              "divide"
+            ],
+            [
+              "consistent",
+              "temporary",
+              "competitive",
+              "familiar"
+            ],
+            [
+              "mistaken",
+              "reserved",
+              "translated",
+              "submitted"
+            ],
+            [
+              "replacing",
+              "confirming",
+              "recording",
+              "describing"
+            ]
+          ],
+          "answers": [
+            "understanding",
+            "apply",
+            "consistent",
+            "mistaken",
+            "replacing"
+          ]
+        },
+        {
+          "id": 4,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Archaeological evidence is fragmentary because only a small proportion of past materials survive. The absence of an object is therefore not proof that it never existed. Researchers compare independent forms of evidence, and a pattern becomes persuasive when several sources [[1]] on the same interpretation. Even then, conclusions remain [[2]] to revision if new finds emerge. This does not make archaeology speculative; rather, it reflects a method in which claims are [[3]] according to the strength of the evidence. The most responsible account is not one that eliminates uncertainty, but one that [[4]] it explicitly and avoids [[5]] beyond the available data.",
+          "options": [
+            [
+              "converge",
+              "diverge",
+              "hesitate",
+              "compete"
+            ],
+            [
+              "open",
+              "immune",
+              "opposed",
+              "identical"
+            ],
+            [
+              "calibrated",
+              "celebrated",
+              "postponed",
+              "disguised"
+            ],
+            [
+              "acknowledges",
+              "abolishes",
+              "inherits",
+              "interrupts"
+            ],
+            [
+              "extrapolating",
+              "complying",
+              "settling",
+              "translating"
+            ]
+          ],
+          "answers": [
+            "converge",
+            "open",
+            "calibrated",
+            "acknowledges",
+            "extrapolating"
+          ]
+        },
+        {
+          "id": 5,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Measures of productivity are useful, but they can mislead when interpreted without context. An increase in output per worker may reflect better technology, longer hours or a shift towards high-value industries. It does not [[1]] show that every worker has become more efficient. Comparisons across countries are especially [[2]] because sectors and data practices differ. Analysts therefore adjust figures where possible and state the assumptions on which comparisons [[3]]. A good indicator simplifies reality, but it should not [[4]] the mechanisms producing the result. Its value lies in supporting judgement, not [[5]] it.",
+          "options": [
+            [
+              "necessarily",
+              "privately",
+              "formerly",
+              "equally"
+            ],
+            [
+              "difficult",
+              "permanent",
+              "automatic",
+              "identical"
+            ],
+            [
+              "depend",
+              "escape",
+              "occur",
+              "depart"
+            ],
+            [
+              "obscure",
+              "repeat",
+              "measure",
+              "reward"
+            ],
+            [
+              "replacing",
+              "observing",
+              "delaying",
+              "reporting"
+            ]
+          ],
+          "answers": [
+            "necessarily",
+            "difficult",
+            "depend",
+            "obscure",
+            "replacing"
+          ]
+        },
+        {
+          "id": 6,
+          "type": "dropdown",
+          "label": "Reading — Fill in the Blanks (Drop-down)",
+          "instructions": "Choose the option that best completes each blank. Use grammar, collocation and the wider argument.",
+          "passage": "Restoring wetlands is often described as returning land to its natural state, but ecosystems are not static. Historical conditions may no longer be achievable because climate, water flows and surrounding land use have changed. A restoration target should therefore be [[1]] by evidence from the past but not constrained by it. Managers may aim to recover key functions, such as flood storage and habitat, rather than reproduce an exact former landscape. This approach is more [[2]] to future change, yet it also requires explicit choices about which functions to prioritise. Those choices should be made [[3]] affected communities, because ecological benefits and costs are distributed unevenly. Monitoring is essential: without it, managers cannot tell whether interventions are [[4]] as intended or whether strategies need to be [[5]].",
+          "options": [
+            [
+              "informed",
+              "prevented",
+              "separated",
+              "replaced"
+            ],
+            [
+              "resilient",
+              "obedient",
+              "visible",
+              "similar"
+            ],
+            [
+              "with",
+              "against",
+              "beyond",
+              "despite"
+            ],
+            [
+              "functioning",
+              "imagining",
+              "competing",
+              "remaining"
+            ],
+            [
+              "revised",
+              "hidden",
+              "inherited",
+              "celebrated"
+            ]
+          ],
+          "answers": [
+            "informed",
+            "resilient",
+            "with",
+            "functioning",
+            "revised"
+          ]
+        },
+        {
+          "id": 7,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all conclusions supported by the passage. Avoid options that are stronger than the evidence.",
+          "passage": "In a controlled study, university students were randomly assigned the same total amount of study time. One group studied a vocabulary list in a single evening, while another divided the study into two sessions separated by a night's sleep. Both groups performed similarly on a test immediately after their final session. One week later, however, the divided-study group recalled more words. The researchers argued that spacing study across time can strengthen later retention, although they cautioned that sleep may be only one of several mechanisms involved.",
+          "prompt": "Which conclusions are supported by the passage?",
+          "choices": [
+            "Dividing study time may improve later recall even when total study time is unchanged.",
+            "Sleeping between study sessions guarantees long-term retention.",
+            "An immediate test may fail to reveal differences that appear later.",
+            "The divided-study group received more total study time.",
+            "The findings do not establish sleep as the only cause of the later advantage."
+          ],
+          "answers": [
+            0,
+            2,
+            4
+          ]
+        },
+        {
+          "id": 8,
+          "type": "mcma",
+          "label": "Reading — Multiple Choice, Multiple Answers",
+          "instructions": "Select all conclusions supported by the passage. Distinguish evidence from assumptions.",
+          "passage": "When a city redesigned several bus routes, planners first held evening public meetings. Most comments came from residents who already used the buses frequently and could attend at that time. Later, onboard surveys and anonymised mobile-location data revealed substantial demand from shift workers and residents of outer suburbs, groups that had been less visible at the meetings. The sources did not always point to the same priorities, so planners published the differences and explained how they balanced frequency, coverage and cost.",
+          "prompt": "According to the passage, which statements are true?",
+          "choices": [
+            "A single consultation method may underrepresent some affected groups.",
+            "Public-meeting participants were deliberately selected to exclude shift workers.",
+            "Different evidence sources can reveal competing priorities.",
+            "The meeting comments were not necessarily representative of all potential passengers.",
+            "The planners ignored evidence that conflicted with the meeting feedback."
+          ],
+          "answers": [
+            0,
+            2,
+            3
+          ]
+        },
+        {
+          "id": 9,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the most coherent order. Track reference words and the general-to-specific progression.",
+          "items": [
+            {
+              "key": "C",
+              "text": "They compared items across institutions, enlarged details and built personal collections."
+            },
+            {
+              "key": "A",
+              "text": "Many museums once treated digitisation mainly as a way of creating backup copies of fragile collections."
+            },
+            {
+              "key": "D",
+              "text": "Consequently, digitisation came to be understood not merely as preservation, but as a distinct form of access."
+            },
+            {
+              "key": "B",
+              "text": "That assumption changed as online visitors began using digital objects in ways that physical exhibitions could not support."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 10,
+          "type": "reorder",
+          "label": "Reading — Re-order Paragraphs",
+          "instructions": "Put the text boxes into the most coherent order. Use pronoun reference, example structure and contrast.",
+          "items": [
+            {
+              "key": "D",
+              "text": "It should, however, include the processes that materially affect the question being asked."
+            },
+            {
+              "key": "B",
+              "text": "Its omissions are therefore not automatically defects; they are choices made for a particular purpose."
+            },
+            {
+              "key": "A",
+              "text": "A scientific model is deliberately simpler than the system it represents."
+            },
+            {
+              "key": "C",
+              "text": "A climate model designed to estimate global temperature, for example, need not reproduce every local weather event."
+            }
+          ],
+          "answers": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        {
+          "id": 11,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words into the blanks. Use both grammatical form and the argument of the whole passage.",
+          "bank": [
+            "screening",
+            "biases",
+            "infallible",
+            "increasing",
+            "concealing",
+            "certainty",
+            "decorative"
+          ],
+          "passage": "Peer review is often described as a guarantee of quality, but it is better understood as a form of [[1]]. Reviewers assess whether methods support claims, identify possible [[2]], and suggest revisions. Because reviewers can disagree or overlook errors, publication does not make a finding [[3]]. Its value lies in exposing work to informed criticism before it enters wider debate, thereby [[4]] the chance that serious weaknesses are detected.",
+          "answers": [
+            "screening",
+            "biases",
+            "infallible",
+            "increasing"
+          ]
+        },
+        {
+          "id": 12,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words into the blanks. Use both grammatical form and the argument of the whole passage.",
+          "bank": [
+            "distinct",
+            "composition",
+            "homogeneous",
+            "eroded",
+            "expanded",
+            "temporary",
+            "numerous",
+            "isolated"
+          ],
+          "passage": "Species counts alone provide an incomplete picture of biodiversity. Two sites may contain the same number of species yet differ greatly in how [[1]] those species are, how evenly individuals are distributed, and which ecological roles are represented. Conservation assessments therefore combine richness with measures of abundance and [[2]]. This broader approach can reveal that a community is becoming more [[3]] even before total species numbers decline. Such early warning is valuable because ecological recovery is often more difficult once functional diversity has been [[4]].",
+          "answers": [
+            "distinct",
+            "composition",
+            "homogeneous",
+            "eroded"
+          ]
+        },
+        {
+          "id": 13,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words into the blanks. Use both grammatical form and the argument of the whole passage.",
+          "bank": [
+            "analogous",
+            "binding",
+            "preserving",
+            "adapt",
+            "identical",
+            "discarding",
+            "predict",
+            "temporary"
+          ],
+          "passage": "Legal precedent promotes consistency by requiring courts to consider earlier decisions. It does not, however, eliminate interpretation. Judges must decide whether a previous case is sufficiently [[1]] to the dispute before them and which parts of the earlier reasoning are [[2]]. A court may distinguish a precedent when material facts differ, while still [[3]] the general principle it established. The system therefore balances continuity with the capacity to [[4]] to new circumstances.",
+          "answers": [
+            "analogous",
+            "binding",
+            "preserving",
+            "adapt"
+          ]
+        },
+        {
+          "id": 14,
+          "type": "wordbank",
+          "label": "Reading — Fill in the Blanks (Drag and Drop)",
+          "instructions": "Drag words into the blanks. Use both grammatical form and the argument of the whole passage.",
+          "bank": [
+            "magnify",
+            "negligible",
+            "interpret",
+            "transparent",
+            "verify",
+            "random",
+            "conceal",
+            "decorative"
+          ],
+          "passage": "A graph can make a pattern visible, but design choices influence what viewers notice. Truncating an axis may [[1]] small differences, while an excessively broad scale can make meaningful variation appear [[2]]. Labels and units should be explicit so that readers can [[3]] the quantities correctly. The aim is not to remove interpretation from visualisation, which is impossible, but to make the basis of that interpretation [[4]].",
+          "answers": [
+            "magnify",
+            "negligible",
+            "interpret",
+            "transparent"
+          ]
+        },
+        {
+          "id": 15,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one answer that best reflects the author's reasoning.",
+          "passage": "Citizen-science projects can collect observations across regions and seasons that professional teams could never cover alone. Their scale is a major strength, but the records are not automatically comparable. Volunteers differ in experience, some locations are visited more often than others, and unusual species are more likely to be reported than familiar ones. Researchers therefore validate a sample of records, model differences in observation effort and publish uncertainty ranges before drawing conclusions about population change.",
+          "prompt": "Why does the passage say professional validation and adjustment are necessary?",
+          "choices": [
+            "Volunteer observations vary in accuracy and sampling effort, which can distort population estimates.",
+            "Citizen scientists are unable to identify any common species.",
+            "Professional researchers must replace all volunteer records with their own observations.",
+            "Large datasets cannot be used to study changes across regions."
+          ],
+          "answer": 0
+        },
+        {
+          "id": 16,
+          "type": "mcsa",
+          "label": "Reading — Multiple Choice, Single Answer",
+          "instructions": "Select the one answer that identifies the main methodological limitation.",
+          "passage": "A company reported that employees who worked remotely three days a week completed more projects than employees who remained in the office. The comparison was based on existing work arrangements rather than random assignment. Remote workers also had, on average, longer experience with the company and were concentrated in roles with clearer individual output measures. The report controlled statistically for experience and job type, but acknowledged that unmeasured differences might remain.",
+          "prompt": "What is the main limitation of the company's conclusion that remote work increased productivity?",
+          "choices": [
+            "Project completion cannot be measured in any type of job.",
+            "The groups may have differed before the work arrangement, so the association may not be entirely causal.",
+            "Statistical controls always make observational comparisons less accurate.",
+            "The report compared employees from different companies."
+          ],
+          "answer": 1
+        }
+      ],
+      "reasoning": {
+        "1": {
+          "correct": "Dark urban surfaces absorb solar energy and release it gradually. Vegetation can mitigate heat, but water-demanding planting can strain resources, so interventions must be tailored to local conditions.",
+          "clues": [
+            "Follow the causal chain: daytime energy storage explains continued warmth after sunset.",
+            "The contrast introduced by “Yet” shows that vegetation can also create a resource cost.",
+            "The fixed collocation is “tailored to” a particular context."
+          ],
+          "strategy": "Check each blank against both the immediate grammar and the paragraph's cause-and-effect logic.",
+          "options": {
+            "dissolve": "A surface may absorb or reflect radiation; it does not dissolve solar energy.",
+            "suspend": "Suspend means hold something in a medium or temporarily stop it, not take in heat.",
+            "scatter": "Scattering would redirect energy and does not explain heat being stored in the surface.",
+            "abruptly": "The passage explains why streets remain warm after sunset, which requires release over time rather than suddenly.",
+            "scarcely": "If surfaces scarcely released heat, the sentence would not explain the warmer nighttime streets.",
+            "previously": "This is a time-reference adverb, but the blank requires an adverb describing how the energy is released.",
+            "imitate": "Vegetation does not copy the heat-island effect; it reduces it.",
+            "calculate": "Plants do not calculate the effect.",
+            "postpone": "Shade and evaporation reduce heat rather than merely delay it.",
+            "restore": "High water demand can deplete resources, not restore them.",
+            "predict": "Trees can affect water demand; they do not predict resources.",
+            "conceal": "The concern is pressure on water resources, not hiding them.",
+            "postponed": "An intervention can be postponed, but “postponed to the local climate” is not grammatical.",
+            "identical": "Identical measures everywhere would contradict the need to respond to local conditions.",
+            "accidental": "Planning is deliberate, so “accidental to the local climate” is both illogical and ungrammatical."
+          }
+        },
+        "2": {
+          "correct": "A confidence interval indicates a compatible range, may narrow with more evidence, and should be communicated without presenting uncertainty as certainty or allowing it to paralyse proportionate action. The natural phrase is “with reasonable confidence.”",
+          "clues": [
+            "The paragraph distinguishes uncertainty from total ignorance.",
+            "“As data accumulate” signals increasing precision, so the range becomes narrower.",
+            "The final sentence contrasts what is unknown with what is known to a defensible degree."
+          ],
+          "strategy": "Do not choose an option merely because it sounds scientific; test whether it preserves the author's balanced position.",
+          "options": {
+            "invents": "A confidence interval is calculated from evidence; it does not invent a range.",
+            "replaces": "The interval summarises uncertainty rather than replacing the evidence.",
+            "disguises": "The purpose is to express uncertainty openly, not hide it.",
+            "dissolve": "Intervals may become smaller, but they do not literally dissolve.",
+            "wander": "A range does not wander in this context; the intended change is in its width.",
+            "multiply": "More data generally improve precision rather than multiply the interval.",
+            "withdrawing": "The warning concerns overstating results, not withdrawing findings.",
+            "inheriting": "Findings cannot be inherited as certainties.",
+            "interrupting": "This does not form a meaningful relationship with tentative findings.",
+            "certify": "Uncertainty cannot certify action; the sentence needs a verb meaning prevent or immobilise.",
+            "simplify": "Uncertainty may complicate decisions, but the paragraph warns against letting it stop action.",
+            "reward": "There is no idea of rewarding action.",
+            "by absolute": "The standard phrase is not “known by absolute confidence,” and absolute confidence contradicts the passage.",
+            "under accidental": "This is not a valid collocation and gives no coherent meaning.",
+            "for equal": "This is grammatically incomplete and does not describe a degree of confidence."
+          }
+        },
+        "3": {
+          "correct": "Students need to understand the principle and apply it elsewhere. Advice must be consistent with course goals, confidence must not be mistaken for accuracy, and automation should support rather than replace professional judgement.",
+          "clues": [
+            "“In a new context” points to transfer of learning, which requires applying a rule.",
+            "“Can still be misleading” creates a contrast between fluent presentation and factual accuracy.",
+            "The final sentence defines automation as an extension of practice, not a substitute for teachers."
+          ],
+          "strategy": "Look for conceptual relationships across sentences, especially contrast words such as “but” and “still.”",
+          "options": {
+            "memorising": "A learner could memorise wording without understanding; the sentence stresses the missing deeper process.",
+            "displaying": "Correcting a sentence does not require displaying the principle.",
+            "avoiding": "Avoiding the principle would not explain meaningful learning.",
+            "announce": "A rule is applied in a context, not announced to it.",
+            "borrow": "Borrowing a rule does not express using knowledge to solve a new problem.",
+            "divide": "A rule is not divided in a new context.",
+            "temporary": "Advice may be temporary, but the issue is whether it aligns with learning objectives.",
+            "competitive": "Course objectives are not opponents with which advice competes.",
+            "familiar": "Familiarity does not guarantee alignment with the course.",
+            "reserved": "“Reserved for accuracy” would require a different structure and meaning.",
+            "translated": "Fluency is not translated into accuracy; the warning is against confusing the two.",
+            "submitted": "Confidence cannot be submitted for accuracy.",
+            "confirming": "Automation may offer feedback, but the final contrast concerns whether it replaces human judgement.",
+            "recording": "Recording judgement is not the issue.",
+            "describing": "Automation can describe performance, but the sentence specifically rejects substitution for professionals."
+          }
+        },
+        "4": {
+          "correct": "Independent evidence becomes persuasive when sources converge. Conclusions remain open to revision, claims are calibrated to evidence, uncertainty is acknowledged, and responsible researchers avoid extrapolating beyond the data.",
+          "clues": [
+            "“Several sources” followed by “the same interpretation” requires a verb of agreement.",
+            "“If new finds emerge” means conclusions must remain revisable.",
+            "The paragraph defends archaeology by showing that uncertainty is managed explicitly."
+          ],
+          "strategy": "Use logical stance: the author supports cautious inference, not certainty or unrestricted speculation.",
+          "options": {
+            "diverge": "Sources that diverge point in different directions and would weaken a single interpretation.",
+            "hesitate": "Sources do not hesitate; researchers may hesitate.",
+            "compete": "Competing sources do not collectively support the same interpretation.",
+            "immune": "A conclusion immune to revision would contradict the effect of new evidence.",
+            "opposed": "“Opposed to revision” contradicts the method described.",
+            "identical": "Conclusions are not identical to revision; the adjective does not fit the structure.",
+            "celebrated": "Claims may be celebrated, but the sentence concerns matching confidence to evidential strength.",
+            "postponed": "Claims are not delayed according to evidence; they are assessed in proportion to it.",
+            "disguised": "Responsible research makes evidential limits visible rather than disguising them.",
+            "abolishes": "The account cannot eliminate uncertainty; the sentence explicitly says it should recognise it.",
+            "inherits": "An account does not inherit uncertainty in the intended sense.",
+            "interrupts": "Interrupting uncertainty is not meaningful here.",
+            "complying": "The fixed idea is going beyond the data, not complying beyond them.",
+            "settling": "“Settling beyond the data” is not a valid expression.",
+            "translating": "Translation does not describe unsupported inference beyond available evidence."
+          }
+        },
+        "5": {
+          "correct": "Higher output does not necessarily prove individual efficiency. Cross-country comparisons are difficult, depend on assumptions, and should not obscure underlying mechanisms. Indicators should support rather than replace judgement.",
+          "clues": [
+            "The first sentence warns against interpreting one measure too simply.",
+            "Different sectors and data practices create comparability problems.",
+            "The final contrast uses the pattern “supporting X, not replacing X.”"
+          ],
+          "strategy": "Identify the author's qualification: useful indicators simplify reality but must not be treated as complete explanations.",
+          "options": {
+            "privately": "Whether a fact is shown privately is irrelevant to the logical limitation.",
+            "formerly": "The sentence is not about a previous time.",
+            "equally": "The issue is not equal proof across workers, but whether the conclusion follows at all.",
+            "permanent": "Cross-country comparisons are challenging, not permanent.",
+            "automatic": "A comparison may be automatic, but this does not explain why differing sectors cause problems.",
+            "identical": "The passage says countries differ, so identical is the opposite of the intended meaning.",
+            "escape": "Comparisons do not escape on assumptions.",
+            "occur": "Although comparisons occur, the fixed relationship is that they depend on assumptions.",
+            "depart": "“Comparisons depart on assumptions” is not grammatical.",
+            "repeat": "An indicator may repeat information, but the warning is against hiding causal mechanisms.",
+            "measure": "Indicators do measure outcomes; the concern is that they can conceal how the outcomes arose.",
+            "reward": "Mechanisms are not rewarded by indicators.",
+            "observing": "The contrast is not between supporting and observing judgement.",
+            "delaying": "The paragraph does not discuss delaying judgement.",
+            "reporting": "Indicators can report information; the warning is against substituting them for human evaluation."
+          }
+        },
+        "6": {
+          "correct": "Past evidence should inform, not rigidly determine, restoration. Function-based targets are more resilient, choices should be made with communities, monitoring tests whether interventions are functioning, and strategies can then be revised.",
+          "clues": [
+            "“But not constrained by it” requires a positive but limited role for historical evidence.",
+            "The passage anticipates future change, pointing to resilience.",
+            "Monitoring creates feedback, so unsuccessful strategies must be revised."
+          ],
+          "strategy": "Track the paragraph's adaptive-management cycle: evidence → choice → implementation → monitoring → revision.",
+          "options": {
+            "prevented": "Past evidence should guide the target, not stop it from being formed.",
+            "separated": "The target is connected to historical evidence, though not controlled by it.",
+            "replaced": "Evidence from the past does not replace the target.",
+            "obedient": "An ecological approach is not obedient to change.",
+            "visible": "Visibility does not express capacity to cope with future conditions.",
+            "similar": "The approach is not merely similar to change; it must withstand or adapt to it.",
+            "against": "Choices made against communities would contradict participation.",
+            "beyond": "“Made beyond affected communities” does not express consultation.",
+            "despite": "This would treat communities as an obstacle rather than participants.",
+            "imagining": "Monitoring concerns actual performance, not what interventions imagine.",
+            "competing": "The question is whether interventions work as intended, not whether they compete.",
+            "remaining": "“Remaining as intended” does not express successful operation.",
+            "hidden": "Monitoring should reveal problems, not hide strategies.",
+            "inherited": "Strategies are revised in response to evidence, not inherited.",
+            "celebrated": "Celebration is not the corrective response to monitoring results."
+          }
+        },
+        "7": {
+          "correct": "The experiment kept total study time constant, found similar immediate performance but better delayed recall after spaced study, and explicitly warned that sleep was not necessarily the sole mechanism.",
+          "clues": [
+            "Separate what was controlled (total study time) from what differed (timing and sleep interval).",
+            "Compare the immediate and one-week tests.",
+            "Notice the hedge “may be only one of several mechanisms.”"
+          ],
+          "strategy": "Reject absolute words such as “guarantees” unless the passage gives absolute evidence.",
+          "options": {
+            "Sleeping between study sessions guarantees long-term retention.": "The study found an average advantage, not a guarantee, and the researchers did not isolate sleep as the only cause.",
+            "The divided-study group received more total study time.": "Both groups were assigned the same total study time."
+          }
+        },
+        "8": {
+          "correct": "Evening meetings captured a limited subset of residents. Additional sources revealed less visible groups and competing priorities, so the meeting feedback was not automatically representative.",
+          "clues": [
+            "Attendance depended on existing bus use and availability in the evening.",
+            "Later evidence revealed groups that were less visible in the first method.",
+            "The planners published rather than concealed disagreements among sources."
+          ],
+          "strategy": "Distinguish a sampling limitation from deliberate exclusion; the passage states the former, not the latter.",
+          "options": {
+            "Public-meeting participants were deliberately selected to exclude shift workers.": "The underrepresentation resulted from timing and attendance patterns; no deliberate exclusion is stated.",
+            "The planners ignored evidence that conflicted with the meeting feedback.": "They published the differences and explained how they balanced competing objectives."
+          }
+        },
+        "9": {
+          "correct": "The paragraph moves from the old preservation assumption to a changed understanding, gives examples of new online uses, and ends with the consequence for how digitisation was conceptualised.",
+          "clues": [
+            "“That assumption” in B refers to the view introduced in A.",
+            "“They” in C refers to the online visitors introduced in B.",
+            "“Consequently” in D signals the conclusion of the sequence."
+          ],
+          "strategy": "Build chains using reference words before relying on topic similarity.",
+          "options": {
+            "pair_A_B": "B cannot open because “That assumption” needs the preservation assumption stated in A.",
+            "pair_B_C": "C illustrates the online behaviours mentioned generally in B.",
+            "pair_C_D": "D draws the conceptual conclusion from the behaviours described in C."
+          }
+        },
+        "10": {
+          "correct": "The first sentence defines simplification. The second explains why omissions can be purposeful. The third supplies an example, and the final sentence limits that example by stating what a valid model must still include.",
+          "clues": [
+            "“Its omissions” in B requires the model introduced in A.",
+            "“For example” in C must follow a general claim.",
+            "“However” in D qualifies the permission to omit details."
+          ],
+          "strategy": "Identify definition → explanation → example → qualification.",
+          "options": {
+            "pair_A_B": "The possessive “Its” in B refers directly to the scientific model in A.",
+            "pair_B_C": "C exemplifies the purposeful omission described in B.",
+            "pair_C_D": "D contrasts with C by stating the processes that cannot be omitted."
+          }
+        },
+        "11": {
+          "correct": "Peer review is a screening process: it can identify biases, but it cannot make a finding infallible. Its practical value is increasing the probability that serious problems are found.",
+          "clues": [
+            "The opening contrast rejects “guarantee” and replaces it with a more limited checking function.",
+            "After “identify possible,” a plural noun naming sources of distortion is required.",
+            "“Thereby” is followed by an -ing form describing the result."
+          ],
+          "strategy": "Use word form first, then test whether the word fits the author's cautious evaluation.",
+          "options": {
+            "concealing": "Peer review is intended to expose weaknesses, not conceal them.",
+            "certainty": "The paragraph explicitly rejects the idea that review guarantees certainty.",
+            "decorative": "Decorative does not describe a substantive quality-control process."
+          }
+        },
+        "12": {
+          "correct": "The passage broadens biodiversity beyond species count: species can be distinct, composition matters, communities can become homogeneous, and functional diversity can be eroded.",
+          "clues": [
+            "“How ___ those species are” requires an adjective describing difference.",
+            "Richness, abundance and composition are parallel biodiversity measures.",
+            "Loss of difference makes a community more homogeneous."
+          ],
+          "strategy": "Track the semantic progression from difference to sameness to loss.",
+          "options": {
+            "expanded": "Expanded would imply growth, not degradation of functional diversity.",
+            "temporary": "Temporary describes duration, not biodiversity structure.",
+            "numerous": "The passage already holds species count constant, so number is not the missing dimension.",
+            "isolated": "Isolation may affect species, but it does not complete the broader measurement sequence as precisely as composition."
+          }
+        },
+        "13": {
+          "correct": "A precedent must be analogous enough to matter; parts of its reasoning may be binding. Courts can distinguish facts while preserving a principle, allowing the law to adapt.",
+          "clues": [
+            "The passage balances consistency with interpretation.",
+            "“Sufficiently ___ to” calls for a comparison word.",
+            "“While still” indicates that distinguishing facts need not destroy the general principle."
+          ],
+          "strategy": "Use the legal logic of similarity, authority, continuity and change.",
+          "options": {
+            "identical": "Precedents need not be identical; the passage says judges assess sufficient similarity.",
+            "discarding": "Distinguishing a case does not necessarily discard its general principle.",
+            "predict": "The final construction is “capacity to adapt to,” not “predict to.”",
+            "temporary": "Binding authority is a legal status, whereas temporary only describes duration."
+          }
+        },
+        "14": {
+          "correct": "A truncated axis can magnify small differences, a broad scale can make variation look negligible, clear units help readers interpret values, and transparent design exposes the basis of interpretation.",
+          "clues": [
+            "The first two blanks form an opposite visual effect: exaggeration versus minimisation.",
+            "Readers interpret quantities; they do not merely view labels.",
+            "The final contrast is between impossible neutrality and visible design choices."
+          ],
+          "strategy": "Read the two axis examples as a contrast pair, then follow the paragraph's argument for transparency.",
+          "options": {
+            "verify": "A graph alone cannot necessarily verify quantities; labels help readers understand them.",
+            "random": "Variation may appear small, not random.",
+            "conceal": "The stated aim is to reveal the basis of interpretation, not hide it.",
+            "decorative": "The passage concerns accurate communication rather than visual decoration."
+          }
+        },
+        "15": {
+          "correct": "Large volunteer datasets contain uneven observation effort and variable identification accuracy. Validation and modelling are therefore needed before those records can support reliable estimates of population change.",
+          "clues": [
+            "The passage values the scale of citizen science but immediately qualifies comparability.",
+            "Different experience and unequal site visits create systematic rather than merely random differences."
+          ],
+          "strategy": "Choose the option that explains all the corrective steps, not just one detail.",
+          "options": {
+            "Citizen scientists are unable to identify any common species.": "The passage says unusual species are more likely to be reported; it does not say common species cannot be identified.",
+            "Professional researchers must replace all volunteer records with their own observations.": "Researchers validate a sample and adjust the data rather than discard all volunteer records.",
+            "Large datasets cannot be used to study changes across regions.": "The passage presents wide coverage as a strength when appropriate corrections are applied."
+          }
+        },
+        "16": {
+          "correct": "Because employees were not randomly assigned, remote and office workers may have differed before the comparison. Statistical adjustment reduces but cannot eliminate the possibility that unmeasured pre-existing differences explain part of the association.",
+          "clues": [
+            "The passage explicitly contrasts existing arrangements with random assignment.",
+            "Experience and job type already differed across groups.",
+            "The final sentence acknowledges possible unmeasured differences."
+          ],
+          "strategy": "For causal claims, ask whether group membership was assigned or self-selected and whether confounding variables may remain.",
+          "options": {
+            "Project completion cannot be measured in any type of job.": "The report measured projects, although the measure was clearer in some roles than others.",
+            "Statistical controls always make observational comparisons less accurate.": "Controls usually aim to improve comparability; the limitation is that they cannot adjust for every unmeasured difference.",
+            "The report compared employees from different companies.": "All employees were from the same company."
+          }
+        }
+      }
+    }
+  ]
+}
