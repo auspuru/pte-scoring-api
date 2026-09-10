@@ -1,9 +1,13 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const policy = require('../public/essay-scoring');
 const { createEssayGrader } = require('../essay-grading');
 const { question, essay } = require('./essay-fixtures');
+const uiSource = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
+const htmlSource = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
 function good() {
   return { scores: { ...policy.MAXIMA },
     feedback: Object.fromEntries(Object.keys(policy.MAXIMA).map(key => [key, 'Your ideas are clear and relevant.'])),
@@ -83,6 +87,14 @@ test('The renderer allows change markers but escapes model-supplied HTML and scr
   assert(result.includes('<span class="diff-ins">clearer</span>'));
   assert(!result.includes('<img')); assert(!result.includes('<script>'));
   assert(result.includes('&lt;img'));
+});
+
+test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
+  assert.match(uiSource, /\/api\/essay\/grade/);
+  assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
+  assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
+  assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.3\.6/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
