@@ -481,6 +481,7 @@ function mergePracticeDeletedClient(serverDeleted, localDeleted) {
 //  AUTH FLOW
 // ============================================================
 function showLogin() {
+  if (portalWorkspace) portalWorkspace.reset();
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('appShell').style.display = 'none';
   document.body.style.overflow = 'hidden';
@@ -725,6 +726,10 @@ function exitImpersonation() {
 window.exitImpersonation = exitImpersonation;
 
 function signOut() {
+  savePortalEssayDraft();
+  stopPracticeTimer();
+  stopLoadingMessages();
+  practiceState = emptyPracticeState();
   currentUserId = '';
   sessionToken = '';
   localStorage.removeItem('pte_session_token');
@@ -778,6 +783,9 @@ async function changePassword() {
 // ============================================================
 
 async function enterApp(uid) {
+  clearTimeout(portalDraftTimer);
+  stopPracticeTimer();
+  practiceState = emptyPracticeState();
   uid = canonicalClientUserId(uid);
   currentUserId = uid;
   offlineMode = false;
@@ -786,7 +794,7 @@ async function enterApp(uid) {
   document.getElementById('userAvatar').textContent = uid.slice(0, 2).toUpperCase();
   document.getElementById('userName').textContent = uid;
   hideLogin();
-  switchSection('dashboard');
+  portalWorkspace.activate('dashboard', { history: 'none', focus: false });
   
   // Load local or pull from server
   const ok = await loadUserData(uid);
@@ -795,6 +803,7 @@ async function enterApp(uid) {
   await loadPassages();
   loadStoredData();
   if (typeof loadPassage === 'function') loadPassage(1);
+  showSwtScreen('swtPracticeScreen');
   
   if (!currentId || !getCurrent()) {
     currentId = essays[0]?.id || null;
@@ -804,6 +813,8 @@ async function enterApp(uid) {
   renderPreview();
   setZoom(0.7);
   updateDashboard();
+  restorePortalEssayDraft(true);
+  portalWorkspace.start();
   checkAIStatus();
   removeAdminPortalEntry();
 
@@ -5878,6 +5889,7 @@ function doBulkImport() {
 function selectEssay(id) {
   currentId = id;
   saveAll(); renderList(); loadCurrent(); renderPreview();
+  setPortalLibraryView('edit');
 }
 
 function deleteEssay(id) {
@@ -9790,21 +9802,17 @@ function toast(msg, isError) {
 // ============================================================
 let currentVocabCategory = null;
 
-function openVocab() {
-  document.getElementById('vocabScreen').classList.add('show');
-  renderVocabCategoryList();
+function openVocab(options = {}) {
+  savePortalEssayDraft();
+  portalWorkspace.activate('vocab', options);
+  if (!document.getElementById('vocabMainContent').children.length) {
+    renderVocabCategoryList();
+    renderVocabMain();
+  }
   updateVocabProgressSummary();
-  renderVocabMain(); // Populates initial view (Hub overview)
-  // Sidebar navigation active state updates
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === 'nav-vocab');
-  });
-  const titleEl = document.getElementById('pageTitle');
-  if (titleEl) titleEl.textContent = 'Vocabulary Hub';
 }
 function closeVocab() {
-  document.getElementById('vocabScreen').classList.remove('show');
-  switchSection('library');
+  switchSection('dashboard');
 }
 
 // Get user's vocab progress object: { read: {"cat:word": true}, attempts: {...} }
@@ -9955,6 +9963,7 @@ function selectVocabCategory(catId) {
   currentVocabCategory = catId;
   renderVocabCategoryList();
   renderVocabMain();
+  closePortalSecondary('vocab');
 }
 
 function jumpToVocabWord(catId, word) {
@@ -11533,6 +11542,7 @@ function bootForLoggedOut() {
 }
 
 async function initApp() {
+  initialisePortalWorkspace();
   console.log('[IPT] Integrated app initializing...');
   window.FB = window.FB || { adminEmail: 'admin@ptewriting.com' };
 
@@ -11629,45 +11639,114 @@ async function initApp() {
   }
 }
 
-// Switch between main panes (dashboard / swt / library)
-function switchSection(section) {
-  // Close any full-screen overlays (vocab / practice) so the pane is visible
-  ['vocabScreen', 'practiceScreen'].forEach(id => {
-    const ov = document.getElementById(id);
-    if (ov) ov.classList.remove('show');
+let portalWorkspace = null;
+let portalDraftStore = null;
+let portalDraftTimer = null;
+
+function initialisePortalWorkspace() {
+  if (portalWorkspace) return;
+  portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
+  // Access to storage can be denied by browser privacy settings.
+  try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
+  window.addEventListener('pagehide', savePortalEssayDraft);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') savePortalEssayDraft();
   });
+}
 
-  // Show the target pane, hide the rest
-  const paneMap = { dashboard: 'dashboardPane', swt: 'swtPane', library: 'libraryPane' };
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-  const pane = document.getElementById(paneMap[section]);
-  if (pane) pane.classList.add('active');
-
-  // If entering SWT section, show practice screen by default
-  if (section === 'swt' && typeof showSwtScreen === 'function') {
-    showSwtScreen('swtPracticeScreen');
+function switchSection(section, options = {}) {
+  savePortalEssayDraft();
+  if (section === 'practice') { openPractice(false, options); return; }
+  if (section === 'vocab') { openVocab(options); return; }
+  const active = portalWorkspace.activate(section, options);
+  if (active === 'dashboard') {
+    updateDashboard();
+    updatePortalResume();
   }
+  // SWT's current passage, results tab and editor node stay intact.
+}
 
-  // Sidebar active state
-  const navMap = { dashboard: 'nav-dashboard', swt: 'nav-swt', library: 'nav-library' };
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === navMap[section]);
+function togglePortalSecondary(section, button) {
+  const pane = document.getElementById(section === 'vocab' ? 'vocabScreen' : 'practiceScreen');
+  const open = pane.classList.toggle('portal-secondary-open');
+  button.setAttribute('aria-expanded', String(open));
+}
+
+function closePortalSecondary(section) {
+  const pane = document.getElementById(section === 'vocab' ? 'vocabScreen' : 'practiceScreen');
+  pane.classList.remove('portal-secondary-open');
+  pane.querySelector('.portal-secondary-toggle')?.setAttribute('aria-expanded', 'false');
+}
+
+function setPortalLibraryView(view) {
+  if (!['topics', 'edit', 'preview'].includes(view)) view = 'edit';
+  const pane = document.getElementById('libraryPane');
+  pane.dataset.libraryView = view;
+  pane.querySelectorAll('[data-library-view]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.libraryView === view));
   });
+}
 
-  // Page title
-  const titles = { dashboard: 'Dashboard', swt: 'Summarize Written Text (SWT)', library: 'Essay Library' };
-  const titleEl = document.getElementById('pageTitle');
-  if (titleEl) titleEl.textContent = titles[section] || 'Dashboard';
+function savePortalEssayDraft() {
+  clearTimeout(portalDraftTimer);
+  if (!currentUserId || practiceState.view !== 'write') return;
+  const saved = !!portalDraftStore?.write(currentUserId, practiceState);
+  const status = document.getElementById('practiceDraftStatus');
+  if (status) {
+    status.textContent = saved ? 'Draft saved on this device' : 'Draft is open here. Device saving is unavailable.';
+    status.dataset.state = saved ? 'saved' : 'error';
+  }
+}
 
-  // Essay-only topbar controls appear only on the library/essay section
-  const isLibrary = section === 'library';
-  const tplBtn = document.getElementById('essayTemplateBtn');
-  const expBtn = document.getElementById('exportBtn');
-  if (tplBtn) tplBtn.style.display = isLibrary ? '' : 'none';
-  if (expBtn) expBtn.style.display = isLibrary ? '' : 'none';
+function queuePortalEssayDraft() {
+  clearTimeout(portalDraftTimer);
+  const status = document.getElementById('practiceDraftStatus');
+  if (status) { status.textContent = 'Saving draft on this device…'; status.dataset.state = 'saving'; }
+  portalDraftTimer = setTimeout(savePortalEssayDraft, 350);
+}
 
-  // Refresh dashboard stats when landing on it
-  if (section === 'dashboard' && typeof updateDashboard === 'function') updateDashboard();
+function restorePortalEssayDraft(resetSession = false) {
+  stopPracticeTimer();
+  practiceState = emptyPracticeState();
+  const draft = portalDraftStore?.read(currentUserId);
+  if (draft && (draft.essayText.trim() || draft.questionText.trim())) {
+    // Copy only fields produced by our draft schema, never arbitrary storage keys.
+    for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt']) {
+      practiceState[key] = draft[key];
+    }
+    practiceState.view = 'write';
+  }
+  practiceRevision = null;
+  document.getElementById('practiceContent').replaceChildren();
+  if (resetSession) {
+    currentVocabCategory = null;
+    document.getElementById('vocabMainContent').replaceChildren();
+    document.getElementById('vocabSearch').value = '';
+  }
+  updatePortalResume();
+}
+
+function updatePortalResume() {
+  const banner = document.getElementById('portalResume');
+  if (!banner) return;
+  const draft = portalDraftStore?.read(currentUserId);
+  const writing = practiceState.view === 'write' && !!(practiceState.essayText.trim() || practiceState.questionText.trim());
+  const reviewing = practiceState.view === 'loading';
+  const resume = document.getElementById('portalPracticeResume');
+  if (resume) resume.hidden = writing || reviewing || !draft?.essayText.trim();
+  banner.hidden = !writing && !reviewing && !draft?.essayText.trim();
+  document.getElementById('portalResumeTitle').textContent = reviewing ? 'Your essay review is in progress' : 'Continue your essay';
+  document.getElementById('portalResumeDetail').textContent = reviewing ? 'You can move around while your feedback is prepared.' :
+    ((writing ? practiceState.questionTitle : draft?.questionTitle) || 'Your unfinished response') + ' · ' + countWords(writing ? practiceState.essayText : draft?.essayText || '') + ' words';
+  document.getElementById('portalEssayAction').textContent = writing ? 'Continue writing →' : reviewing ? 'View progress →' : 'Practise essays →';
+}
+
+function resumePortalEssay() {
+  if (practiceState.view !== 'write' && practiceState.view !== 'loading' && portalDraftStore?.read(currentUserId)) {
+    restorePortalEssayDraft();
+  }
+  openPractice();
+  document.getElementById('practiceEssayInput')?.focus();
 }
 
 // Dashboard statistics renderer
@@ -11806,7 +11885,7 @@ function renderDashboardRecentPractice() {
     const scoreColor = totalScore >= 22 ? 'var(--accent)' : totalScore >= 18 ? '#b45309' : 'var(--ink-soft)';
     
     return `
-      <div class="dash-list-item" onclick="openPractice(); viewPracticeAttempt('${h.id || ''}')">
+      <button type="button" class="dash-list-item" data-attempt-id="${escapeHtml(h.id || '')}" onclick="openPractice(); viewPracticeAttempt(this.dataset.attemptId)">
         <div class="item-main">
           <div class="item-title">${escapeHtml(h.questionTitle || 'Untitled Practice')}</div>
           <div class="item-date">Completed on ${date}</div>
@@ -11814,7 +11893,7 @@ function renderDashboardRecentPractice() {
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
           ${totalScore}/26
         </div>
-      </div>
+      </button>
     `;
   }).join('');
 }
@@ -11846,7 +11925,7 @@ function renderDashboardRecentEssays() {
     else if (estatus === 'draft') badgeClass = 'status-draft';
     
     return `
-      <div class="dash-list-item" onclick="switchSection('library'); selectEssay('${e.id}')">
+      <button type="button" class="dash-list-item" data-essay-id="${escapeHtml(e.id)}" onclick="switchSection('library'); selectEssay(this.dataset.essayId)">
         <div class="item-main">
           <div class="item-title">${escapeHtml(e.title || 'Untitled Essay')}</div>
           <div class="item-date">${escapeHtml(e.question || '').slice(0, 75)}${e.question && e.question.length > 75 ? '...' : ''}</div>
@@ -11854,7 +11933,7 @@ function renderDashboardRecentEssays() {
         <div class="item-status ${badgeClass}">
           ${estatus.toUpperCase()}
         </div>
-      </div>
+      </button>
     `;
   }).join('');
 }
@@ -11894,7 +11973,7 @@ function renderDashboardRecentSwt() {
     const scoreColor = h.overall_score >= 79 ? 'var(--accent)' : h.overall_score >= 58 ? '#b45309' : 'var(--ink-soft)';
     
     return `
-      <div class="dash-list-item" onclick="if (typeof jumpToResultsPassage === 'function') jumpToResultsPassage(${h.passageId});">
+      <button type="button" class="dash-list-item" data-passage-id="${escapeHtml(h.passageId)}" onclick="jumpToResultsPassage(Number(this.dataset.passageId))">
         <div class="item-main">
           <div class="item-title">${escapeHtml(title)}</div>
           <div class="item-date">Completed on ${date}</div>
@@ -11902,7 +11981,7 @@ function renderDashboardRecentSwt() {
         <div class="item-badge" style="background: ${scoreColor}20; color: ${scoreColor}">
           ${h.overall_score}/90
         </div>
-      </div>
+      </button>
     `;
   }).join('');
 }
@@ -11970,7 +12049,7 @@ if (!hasImpersonate && (!LocalStore.getUserId() || !localStorage.getItem('pte_se
 // ============================================================
 
 // State
-let practiceState = {
+function emptyPracticeState() { return {
   view: 'welcome',          // 'welcome' | 'write' | 'loading' | 'results'
   writeStep: 1,             // 1 = setup (select question), 2 = focus mode (writing simulator)
   promptExpanded: true,     // controls collapse/expand state of the prompt in simulator
@@ -11986,7 +12065,8 @@ let practiceState = {
   timerEnabled: false,       // user-toggled
   timerStartedAt: null,      // ms timestamp when writing started
   timerIntervalId: null      // setInterval handle for the live counter
-};
+}; }
+let practiceState = emptyPracticeState();
 
 // 20-minute IELTS Task 2 / PTE Write Essay target
 const PRACTICE_TIMER_LIMIT_MIN = 20;
@@ -12004,22 +12084,16 @@ const PRACTICE_RUBRIC = [
 ];
 const PRACTICE_MAX_TOTAL = 26;
 
-function openPractice(defaultToWelcome = true) {
+function openPractice(defaultToWelcome = false, options = {}) {
+  savePortalEssayDraft();
   refreshPracticeHistory();
-  document.getElementById('practiceScreen').classList.add('show');
-  document.body.classList.add('has-active-practice');
+  portalWorkspace.activate('practice', options);
   renderPracticeHistory();
-  if (defaultToWelcome) {
+  if (defaultToWelcome && !practiceState.essayText && !practiceSubmissionPending) {
     practiceState.view = 'welcome';
   }
-  renderPracticeMain();
+  if (defaultToWelcome || !document.getElementById('practiceContent').children.length) renderPracticeMain();
   updatePracticeStats();
-  // Sidebar navigation active state updates
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.toggle('active', item.id === 'nav-practice');
-  });
-  const titleEl = document.getElementById('pageTitle');
-  if (titleEl) titleEl.textContent = 'Practice Center';
 }
 
 function practiceCurrentEssay() {
@@ -12029,6 +12103,9 @@ function practiceCurrentEssay() {
     toast('Please enter a question prompt for this essay before practicing.', true);
     return;
   }
+  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
+  savePortalEssayDraft();
+  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Practise this question? This replaces your unsubmitted essay draft. Cancel to keep it.')) return;
   
   practiceState.view = 'write';
   practiceState.writeStep = 2;
@@ -12042,16 +12119,12 @@ function practiceCurrentEssay() {
   practiceState.currentAttempt = null;
   
   resetPracticeTimer();
-  
+  renderPracticeMain();
   openPractice(false);
 }
 
 function closePractice() {
-  document.getElementById('practiceScreen').classList.remove('show');
-  document.body.classList.remove('has-active-practice');
-  // Stop the live timer interval — don't keep it running in the background
-  stopPracticeTimer();
-  switchSection('library');
+  switchSection('dashboard');
 }
 
 function getCleanSampleResponse(html) {
@@ -12307,12 +12380,14 @@ async function deletePracticeAttempt(id) {
 }
 
 function viewPracticeAttempt(id) {
+  savePortalEssayDraft();
   const h = getPracticeHistory();
   const attempt = h.find(a => a.id === id);
   if (!attempt) return;
   practiceState.currentAttempt = attempt;
   practiceState.viewingAttemptId = id;
   practiceState.view = 'results';
+  closePortalSecondary('practice');
   renderPracticeMain();
   renderPracticeHistory();
 }
@@ -12325,6 +12400,8 @@ function renderPracticeMain() {
   else if (practiceState.view === 'write') c.innerHTML = writeView();
   else if (practiceState.view === 'loading') c.innerHTML = loadingView();
   else if (practiceState.view === 'results') c.innerHTML = resultsView();
+  c.dataset.view = practiceState.view;
+  c.setAttribute('aria-busy', String(practiceState.view === 'loading'));
 
   // Wire up live word counter
   const ta = document.getElementById('practiceEssayInput');
@@ -12345,23 +12422,35 @@ function renderPracticeMain() {
   } else if (practiceState.view !== 'write') {
     stopPracticeTimer();
   }
+  if (practiceState.view === 'write') savePortalEssayDraft();
+  updatePortalResume();
 }
 
 function welcomeView() {
   return `
     <div class="practice-welcome">
-      <div class="practice-welcome-icon">✏️</div>
-      <h2>Practice Essay</h2>
-      <p>Write a full essay, then get feedback using our <strong>26-point practice rubric</strong>. See what you did well and the most useful changes to make next.</p>
-      <p style="font-size:12.5px; color:var(--ink-mute);">Each attempt uses <strong>1 essay quota credit</strong>.</p>
+      <p class="portal-eyebrow">Essay practice · 200–300 words</p>
+      <h2>Turn your ideas into a clear essay.</h2>
+      <p>Choose a question, write at your own pace or use the 20-minute timer, then get feedback on what to improve.</p>
+      <ol class="portal-practice-steps">
+        <li><strong>Choose a topic</strong>Use your library or your own question.</li>
+        <li><strong>Write your response</strong>Your draft saves on this device.</li>
+        <li><strong>Review and revise</strong>Your assessed attempts sync to your account.</li>
+      </ol>
+      <p style="font-size:14px; color:var(--ink-soft);">Scoring uses 1 essay credit.</p>
       <button class="practice-welcome-cta" onclick="startNewPractice()">
-        Start a new attempt →
+        Choose an essay question →
       </button>
     </div>
   `;
 }
 
 function startNewPractice() {
+  if (practiceSubmissionPending) { toast('Your essay review is still running. You can keep using the other practice sections.'); return; }
+  const previous = portalDraftStore?.read(currentUserId);
+  if ((practiceState.view === 'write' && practiceState.essayText.trim()) || previous?.essayText.trim()) {
+    if (!confirm('Start a new essay? This replaces your unsubmitted draft. Cancel to keep it.')) return;
+  }
   practiceState.view = 'write';
   practiceState.writeStep = 1;
   practiceState.promptExpanded = true;
@@ -12460,7 +12549,7 @@ function writeView() {
             <span class="practice-timer-toggle-label">⏱ Time mode</span>
           </label>
           <button class="practice-action-btn primary" id="practiceStartBtn" onclick="startExamSimulator()" ${practiceState.questionText ? '' : 'disabled'} style="padding: 12px 28px; font-size: 14px; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px -3px var(--accent);">
-            Start Exam Simulator ⏱️
+            Start writing →
           </button>
         </div>
       </div>
@@ -12471,7 +12560,7 @@ function writeView() {
       <div class="practice-step simulator-mode" style="border: 1px solid var(--line-soft); border-radius: 14px; padding: 28px 32px; background: var(--bg-card); box-shadow: var(--shadow);">
         <div class="simulator-header" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 200px;">
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 800;">Exam Simulator Active</div>
+            <div style="font-size: 12px; color: var(--accent); font-weight: 700;">Your essay · 200–300 words</div>
             <div class="simulator-topic-title" style="font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--ink); margin-top: 2px;">
               ${escapeHtml(practiceState.questionTitle || 'Custom Writing Prompt')}
             </div>
@@ -12500,8 +12589,9 @@ function writeView() {
         </div>
 
         <div class="practice-textarea-container" style="position: relative; border-radius: 12px; border: 1px solid var(--line-soft); background: var(--bg); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; margin-bottom: 16px; transition: border-color 0.2s;">
-          <textarea class="practice-essay-area" id="practiceEssayInput" placeholder="Write your response here..." style="width: 100%; border: none; background: transparent; padding: 20px 24px; font-family: var(--sans); font-size: 15.5px; color: var(--ink); line-height: 1.8; min-height: 340px; outline: none; resize: vertical; box-sizing: border-box;">${escapeHtml(practiceState.essayText)}</textarea>
+          <textarea class="practice-essay-area" id="practiceEssayInput" aria-label="Your essay response" aria-describedby="practiceDraftStatus practiceWordCount" placeholder="Write your response here..." style="width: 100%; border: none; background: transparent; padding: 20px 24px; font-family: var(--sans); font-size: 16px; color: var(--ink); line-height: 1.8; min-height: 340px; resize: vertical; box-sizing: border-box;">${escapeHtml(practiceState.essayText)}</textarea>
         </div>
+        <span id="practiceDraftStatus" class="portal-draft-status" role="status" aria-live="polite">Saving draft on this device…</span>
 
         <!-- Dynamic Word Count Progress Visualizer -->
         <div class="practice-progress-container" style="margin-top: 20px; background: var(--bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--line-soft);">
@@ -12638,6 +12728,7 @@ function onCustomPromptInput(val) {
   practiceState.selectedQuestionId = null;
   practiceState.questionTitle = '';
   practiceState.questionText = val.trim();
+  queuePortalEssayDraft();
   // Update preview banner
   const sel = document.getElementById('practiceSelectedQuestion');
   if (sel) {
@@ -12657,6 +12748,7 @@ function updateLiveWordCount() {
   const ta = document.getElementById('practiceEssayInput');
   if (!ta) return;
   practiceState.essayText = ta.value;
+  queuePortalEssayDraft();
   const count = countWords(ta.value);
   
   // Update plain count display
@@ -12849,6 +12941,7 @@ async function submitPracticeEssay() {
   const essay = practiceState.essayText.trim();
   if (!question) { toast('Please pick or write a question first', true); return; }
   if (countWords(essay) < 50) { toast('Please write at least 50 words before scoring', true); return; }
+  savePortalEssayDraft();
 
   const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
   const questionId = practiceState.selectedQuestionId || '';
@@ -12894,6 +12987,8 @@ async function submitPracticeEssay() {
       practiceState.viewingAttemptId = attempt.id;
       practiceRevision = null;
       practiceState.view = 'results';
+      const savedDraft = portalDraftStore?.read(owner.uid);
+      if (savedDraft?.essayText.trim() === essay && savedDraft?.questionText.trim() === question) portalDraftStore.remove(owner.uid);
       renderPracticeMain();
     }
     renderPracticeHistory();
@@ -13140,6 +13235,8 @@ function resultsView() {
 }
 
 function reattemptPractice() {
+  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
+  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Start another attempt? This replaces your unsubmitted essay draft. Cancel to keep it.')) return;
   // Keep the same question, blank the essay, switch back to write view
   const a = practiceState.currentAttempt;
   if (!a) return startNewPractice();
@@ -13167,6 +13264,8 @@ function reattemptPractice() {
 function revisePracticeEssay() {
   const a = practiceState.currentAttempt;
   if (!a) return;
+  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
+  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Revise this essay? This replaces your unsubmitted draft. Cancel to keep it.')) return;
   const text = practiceRevision?.attemptId === a.id ? practiceRevision.text : a.essayText;
   practiceState.questionTitle = a.questionTitle || '';
   practiceState.questionText = a.questionText || '';
