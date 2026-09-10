@@ -105,7 +105,15 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
     const grammarErrors = errors.filter(e => e.type === 'grammar');
     const spelling = spellingErrors.length === 0 ? 2 : spellingErrors.length <= 3 ? 1 : 0;
     const grammar = grammarErrors.length === 0 ? 2 : grammarErrors.length <= 2 ? 1 : 0;
-    if (scores.spelling !== spelling || scores.grammar !== grammar) fail();
+    // If the model supplied quoted surface slips but proposed a lower score,
+    // correct that score deterministically; a lower score with no supporting
+    // evidence is still incomplete and must be retried.
+    const rawSpellingEvidence = raw.errors.some(item => item && item.type === 'spelling');
+    const rawGrammarEvidence = raw.errors.some(item => item && item.type === 'grammar');
+    if ((scores.spelling !== spelling && !(spelling === 2 && rawSpellingEvidence && spellingErrors.length === 0))
+      || (scores.grammar !== grammar && !(grammar === 2 && rawGrammarEvidence && grammarErrors.length === 0))) fail();
+    scores.spelling = spelling;
+    scores.grammar = grammar;
     const form = formFor(essay);
     scores.form = form.score;
     scores.total = Object.values(scores).reduce((sum, n) => sum + n, 0);
