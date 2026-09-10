@@ -9,6 +9,7 @@
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const words = text => clean(text).split(/\s+/).filter(Boolean).length;
   const quoteExists = (essay, quote) => !!clean(quote) && essay.toLowerCase().includes(quote.trim().toLowerCase());
+  const spellingMeaningEvidence = value => /\b(meaning|ambiguous|ambiguity|unclear|confus|revers|opposite|mislead|misinterpret|changes? (?:the )?(?:claim|message|meaning))\b/i.test(String(value || ''));
   const escape = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   function formFor(essay) {
     const count = words(essay);
@@ -78,11 +79,17 @@ ${JSON.stringify({ question, essay, wordCount: form.count })}`;
         optional.push(item); continue;
       }
       if (!['grammar', 'spelling'].includes(item.type) || !['minor', 'meaning'].includes(item.impact)) fail();
+      // A model occasionally labels an obvious typo as meaning-changing while
+      // giving no explanation of a semantic effect. Treat that as the harmless
+      // slip it describes; a real deduction must explain what the reader would
+      // misunderstand.
+      const impact = item.type === 'spelling' && item.impact === 'meaning' && !spellingMeaningEvidence(item.explanation)
+        ? 'minor' : item.impact;
       // A minor, meaning-preserving slip is useful coaching but cannot lower a
       // trait score; keep it out of the scored error list and show it under
       // optional refinements instead.
-      if (item.impact === 'minor') { optional.push({ ...item, optional: true }); continue; }
-      if (!errors.some(e => e.type === item.type && e.phrase.toLowerCase() === item.phrase.toLowerCase())) errors.push({ ...item });
+      if (impact === 'minor') { optional.push({ ...item, impact, optional: true }); continue; }
+      if (!errors.some(e => e.type === item.type && e.phrase.toLowerCase() === item.phrase.toLowerCase())) errors.push({ ...item, impact });
     }
     const promptCoverage = raw.promptCoverage.map(item => {
       if (!item || !clean(item.requirement) || !['addressed', 'partial', 'missing'].includes(item.status)) fail();
