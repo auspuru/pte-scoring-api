@@ -4,11 +4,11 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const routes = Object.freeze({
-    dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home' },
-    swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt' },
-    practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays' },
-    library: { pane: 'libraryPane', title: 'Essay library', path: 'library' },
-    vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary' }
+    dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
+    swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
+    practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
+    library: { pane: 'libraryPane', title: 'Essay library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
+    vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 
   function routeFromHash(hash) {
@@ -57,7 +57,12 @@
       doc.body.classList.toggle('has-active-practice', section === 'practice');
       doc.body.dataset.section = section;
       const heading = doc.getElementById('pageTitle');
-      if (heading) heading.textContent = routes[section].title;
+      const route = routes[section];
+      if (heading) heading.textContent = route.title;
+      const eyebrow = doc.getElementById('pageEyebrow');
+      if (eyebrow) eyebrow.textContent = route.eyebrow;
+      const context = doc.getElementById('pageContext');
+      if (context) context.textContent = route.context;
       doc.title = routes[section].title + ' · IPT Brisbane';
       ['essayTemplateBtn', 'exportBtn'].forEach(id => {
         const button = doc.getElementById(id);

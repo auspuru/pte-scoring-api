@@ -30,7 +30,7 @@ function harness(hash = '') {
     addEventListener: (key, fn) => { docEvents[key] = fn; } };
   doc.body = node('body'); node('container');
   Object.entries(routes).forEach(([key, route]) => { node(route.pane); node('nav-' + key); });
-  ['pageTitle', 'portalMenuToggle', 'portalMenuBackdrop', 'portalSidebar', 'essayTemplateBtn', 'exportBtn'].forEach(node);
+  ['pageTitle', 'pageEyebrow', 'pageContext', 'portalMenuToggle', 'portalMenuBackdrop', 'portalSidebar', 'essayTemplateBtn', 'exportBtn'].forEach(node);
   const win = { location: { hash }, addEventListener: (key, fn) => { events[key] = fn; }, setTimeout: fn => fn(),
     history: { pushState: (_, __, url) => { win.location.hash = url; visited.push(url); },
       replaceState: (_, __, url) => { win.location.hash = url; visited.splice(-1, 1, url); } } };
@@ -50,6 +50,18 @@ test('A section URL opens the requested task after authentication, including on 
   assert.equal(h.nodes.get('practiceScreen').parentElement, h.nodes.get('container'));
   assert.equal(h.nodes.get('nav-practice').attrs['aria-current'], 'page');
   assert.equal(h.nodes.get('pageTitle').textContent, 'Essay practice');
+  assert.equal(h.nodes.get('pageEyebrow').textContent, 'Practice · Essays');
+  assert.equal(h.nodes.get('pageContext').textContent, 'Choose a question, develop your ideas, and write with purpose.');
+});
+
+test('Each workspace route provides a clear section context for the current task', () => {
+  const h = harness(); h.controller.start();
+  h.controller.activate('swt');
+  assert.equal(h.nodes.get('pageEyebrow').textContent, 'Practice · SWT');
+  assert.equal(h.nodes.get('pageContext').textContent, 'Read, connect the ideas, and review one useful improvement.');
+  h.controller.activate('library');
+  assert.equal(h.nodes.get('pageEyebrow').textContent, 'Review · Saved writing');
+  assert.equal(h.nodes.get('pageContext').textContent, 'Return to a draft, refine a response, or prepare an export.');
 });
 
 test('Switching sections preserves draft nodes, cursor position and scroll, with only one active pane', () => {
