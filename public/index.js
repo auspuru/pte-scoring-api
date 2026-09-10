@@ -13006,7 +13006,7 @@ async function submitPracticeEssay() {
     }
     await consumeQuota('essay');
     const history = mergePracticeHistoryClient(getPracticeHistory(), [attempt], practiceHistoryDeleted);
-    await savePracticeHistory(history, { immediate: true });
+    const saving = savePracticeHistory(history, { immediate: true });
     if (!sameOwner()) return;
     stopLoadingMessages();
     if (practiceState.view === 'loading' && practiceState.questionText.trim() === question) {
@@ -13020,6 +13020,8 @@ async function submitPracticeEssay() {
     }
     renderPracticeHistory();
     updatePracticeStats();
+    await saving;
+    if (!sameOwner()) return;
     toast('Essay review saved to your history.');
     if (elapsedMsAtSubmit !== null && elapsedMsAtSubmit > PRACTICE_TIMER_LIMIT_MIN * 60000) {
       setTimeout(() => { if (sameOwner()) toast('You took ' + Math.round(elapsedMsAtSubmit / 60000) +
@@ -13038,7 +13040,52 @@ async function submitPracticeEssay() {
 
 // ---------- Results view ----------
 
+let practiceSamplePendingId = null;
+async function retryPracticeSample() {
+  const attempt = practiceState.currentAttempt;
+  if (!attempt || attempt.sampleKind !== 'unavailable' || practiceSamplePendingId) return;
+  const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
+  const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
+  practiceSamplePendingId = attempt.id;
+  renderPracticeMain();
+  try {
+    const res = await fetch(API_URL + '/api/essay/grade', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'The sample could not be prepared. Please try again.');
+    const sample = EssayScoring.normalizeSample(data, attempt.essayText, attempt);
+    if (!sameOwner()) return;
+    const current = getPracticeHistory().find(item => item.id === attempt.id);
+    if (!current) return;
+    const updated = { ...current, ...sample, updatedAt: Date.now() };
+    const save = savePracticeHistory(mergePracticeHistoryClient(getPracticeHistory(), [updated], practiceHistoryDeleted), { immediate: true });
+    if (practiceState.currentAttempt?.id === attempt.id) {
+      practiceState.currentAttempt = updated;
+      renderPracticeMain();
+    }
+    await save;
+    if (!sameOwner()) return;
+    renderPracticeHistory();
+    toast(sample.sampleStatus === 'ready' ? 'Your Band 9 sample is ready.' : sample.sampleNote, sample.sampleStatus === 'unavailable');
+  } catch (error) {
+    if (sameOwner()) toast(error.message || 'The sample could not be prepared. Your score is still saved.', true);
+  } finally {
+    practiceSamplePendingId = null;
+    if (sameOwner() && practiceState.currentAttempt?.id === attempt.id) renderPracticeMain();
+  }
+}
+
 function renderPracticeSample(a) {
+  if (a.sampleKind === 'unavailable') {
+    const pending = practiceSamplePendingId === a.id;
+    return `<div class="practice-grammar-section" style="margin-top:20px;">
+      <div class="practice-grammar-title">Band 9 sample · Your ideas</div>
+      <p style="font-size:13px; line-height:1.6; color:var(--ink-soft);">${escapeHtml(a.sampleNote || '')}</p>
+      <button class="admin-btn" onclick="retryPracticeSample()" ${pending ? 'disabled' : ''}>${pending ? 'Preparing your sample…' : 'Retry sample'}</button>
+    </div>`;
+  }
   if (a.sampleKind === 'needs-ideas') {
     return `<div class="practice-grammar-section" style="margin-top:20px;">
       <div class="practice-grammar-title">Add ideas for your Band 9 sample</div>

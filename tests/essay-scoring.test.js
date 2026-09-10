@@ -68,6 +68,19 @@ test('A content deduction always has a next step, even if the model omitted impr
   assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
 });
 
+test('Stitched coverage evidence is repaired to a real excerpt without admitting fabricated evidence', () => {
+  const raw = good();
+  raw.promptCoverage[0].evidence = 'Advertisements often connect expensive products with happiness or popularity, which may lead teenagers to compare themselves with carefully selected images. Schools can respond by teaching students to distinguish evidence from opinion and recognise commercial messages.';
+  const result = policy.normalizeResult(raw, essay);
+  assert(essay.includes(result.promptCoverage[0].evidence));
+  assert(!result.promptCoverage[0].evidence.includes('Schools can respond'));
+  assert.equal(result.scores.total, 26);
+  raw.promptCoverage[0].evidence = 'Completely invented claims about rockets and submarines';
+  assert.throws(() => policy.normalizeResult(raw, essay), { code: 'coverage_quote' });
+  const spaced = essay.replace('mass media supports learning', 'mass media  supports\nlearning');
+  assert.doesNotThrow(() => policy.normalizeResult(good(), spaced));
+});
+
 test('Quoted real misspellings support deductions without counting stylistic advice', () => {
   const text = essay.replace('information', 'infromation');
   const raw = good(); raw.scores.spelling = 1;
@@ -87,6 +100,21 @@ test('Meaning-changing language errors are the only grammar deductions', () => {
   const result = policy.normalizeResult(raw, text);
   assert.equal(result.scores.grammar, 1);
   assert.deepEqual(result.grammarIssues, ['cannot educate']);
+});
+
+test('Minor learner grammar gets coherent feedback and survives server and browser validation', () => {
+  const text = essay.replace('mass media supports learning', 'mass media support learning');
+  const raw = good(); raw.scores.grammar = 1;
+  raw.promptCoverage[0].evidence = 'mass media support learning';
+  raw.sampleSourceIdeas[0] = 'mass media support learning';
+  raw.errors = [{ type: 'grammar', phrase: 'mass media support learning', correction: 'mass media supports learning',
+    impact: 'meaning', explanation: 'The singular subject requires the verb supports.' }];
+  raw.feedback.grammar = 'One grammar error costs a mark.';
+  const result = policy.normalizeResult(raw, text);
+  assert.equal(result.scores.grammar, 2);
+  assert.match(result.feedback.grammar, /Full Grammar marks/);
+  assert.equal(result.optionalRefinements.length, 1);
+  assert.deepEqual(policy.normalizeResult(result, text), result);
 });
 
 test('Prompt requires an opinion only when the question asks and avoids template-count rules', () => {
@@ -109,7 +137,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.5/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.6/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
@@ -170,6 +198,42 @@ test('Incomplete, excerpt-only, ungrounded or marked-up samples are retried inst
   assert.equal(result.sampleResponse, essay);
 });
 
+test('A failed sample preserves the grade and a sample-only retry cannot rescore it', async () => {
+  let calls = 0;
+  const failures = [];
+  const grader = createEssayGrader(async prompt => {
+    calls++;
+    if (calls === 1) return { ...good(), sampleResponse: 'Too short.' };
+    assert.match(prompt, /do not rescore or change the assessment/);
+    if (calls === 2) {
+      assert.match(prompt, /VALIDATION RETRY: The sample must contain 200–300 words/);
+      throw new Error('Temporary provider failure');
+    }
+    return { ...good(), scores: { ...policy.MAXIMA, content: 0 } };
+  }, { onAttemptError: detail => failures.push(detail) });
+  const partial = await grader.grade(question, essay);
+  assert.equal(partial.scores.total, 26);
+  assert.equal(partial.sampleKind, 'unavailable');
+  assert.equal(partial.sampleResponse, '');
+  assert.equal(failures[0].code, 'sample_length');
+  assert.deepEqual(policy.normalizeResult(partial, essay), partial);
+  const ready = await grader.grade(question, essay);
+  assert.equal(ready.sampleKind, 'full-essay');
+  assert.equal(ready.sampleResponse, essay);
+  assert.deepEqual(ready.scores, partial.scores);
+  await grader.grade(question, essay);
+  assert.equal(calls, 3, 'The completed sample should be cached');
+});
+
+test('Assessment validation retries explain the actual failure and never return a fabricated grade', async () => {
+  let calls = 0;
+  const grader = createEssayGrader(async prompt => {
+    if (++calls > 1) assert.match(prompt, /VALIDATION RETRY: Return an integer score in range and feedback for content/);
+    const raw = good(); delete raw.scores.content; return raw;
+  });
+  await assert.rejects(grader.grade(question, essay), error => error.cause?.code === 'trait_content');
+});
+
 test('Missing ideas produce an honest next step and cannot suppress a full-score sample', () => {
   const raw = good(); raw.scores.content = 1;
   raw.promptCoverage = [{ requirement: 'A position about railways versus roads', status: 'missing', evidence: '',
@@ -214,7 +278,7 @@ test('Saved samples keep their paragraphs and copy as plain text; legacy excerpt
   const result = policy.normalizeResult(good(), essay);
   const stored = JSON.parse(JSON.stringify({ ...result, id: 'sample-attempt', date: 1, essayText: essay }));
   const restored = sync.mergeHistory([], [stored], [])[0];
-  const browser = { EssayScoring: policy };
+  const browser = { EssayScoring: policy, practiceSamplePendingId: null };
   vm.createContext(browser);
   vm.runInContext(['escapeHtml', 'renderPracticeSample', 'getCleanSampleResponse'].map(browserFunction).join('\n'), browser);
   const html = browser.renderPracticeSample(restored);
@@ -234,4 +298,7 @@ test('Saved samples keep their paragraphs and copy as plain text; legacy excerpt
   assert(!missing.includes('<script>'));
   assert.match(missing, /Add a position/);
   assert(!missing.includes('Copy sample essay'));
+  const unavailable = browser.renderPracticeSample({ id: 'retry', sampleKind: 'unavailable', sampleNote: 'Your score is ready.' });
+  assert.match(unavailable, /Retry sample/);
+  assert(!unavailable.includes('Copy sample essay'));
 });

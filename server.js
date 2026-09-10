@@ -216,7 +216,7 @@ const essayGrader = createEssayGrader(async prompt => {
   if (response.stop_reason === 'max_tokens') throw new Error('Incomplete assessment');
   const text = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
   return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || 'null');
-});
+}, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)) });
 app.post('/api/essay/grade', async (req, res) => {
   const { question, essay } = req.body || {};
   if (typeof question !== 'string' || !question.trim() || question.length > 5000

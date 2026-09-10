@@ -8,7 +8,7 @@ const args = Object.fromEntries(process.argv.slice(2).map(s => s.replace(/^--/, 
 if (!args.url || !['proxy','grade'].includes(args.mode)) throw new Error('Provide --url and --mode=proxy|grade');
 const base = new URL(args.url).origin;
 async function post(path, data) {
-  const r = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: AbortSignal.timeout(85000) });
+  const r = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: AbortSignal.timeout(180000) });
   const result = await r.json();
   if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (result.error || path));
   return result;
