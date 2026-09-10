@@ -6,9 +6,9 @@
   --ink: #18233b;
   --ink-soft: #53617a;
   --ink-mute: #66738a;
-  --accent: #4c46cf;
-  --accent-hover: #3932b0;
-  --accent-soft: #eeedff;
+  --accent: #005c8b;
+  --accent-hover: #00466b;
+  --accent-soft: #e5f3f8;
   --line: #d6ddea;
   --line-soft: #e1e6ef;
   --good: #087d65;
@@ -27,9 +27,9 @@ body.dark {
   --ink: #edf1fa;
   --ink-soft: #b4c0d4;
   --ink-mute: #a1afc6;
-  --accent: #b4afff;
-  --accent-hover: #cecaff;
-  --accent-soft: #323054;
+  --accent: #58b6df;
+  --accent-hover: #8fd1ec;
+  --accent-soft: #18384a;
   --line: #43516a;
   --line-soft: #35425a;
   --good: #69d7b7;
@@ -336,3 +336,21 @@ body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary {
   #practiceScreen.pane.active, .practice-body, .practice-main { position: static !important; display: block !important; height: auto !important; overflow: visible !important; width: 100% !important; }
   .practice-sidebar { display: none !important; }
 }
+
+
+/* IPT Brisbane sidebar brand */
+#portalSidebar .brand-logo {
+  width: 54px;
+  height: 44px;
+  object-fit: contain;
+  flex: 0 0 54px;
+  border-radius: 10px;
+  background: #fff;
+  padding: 3px;
+  box-shadow: 0 3px 10px rgba(0, 92, 139, 0.10);
+}
+
+#portalSidebar .brand-name { color: #0b3551; }
+#portalSidebar .brand-sub { color: #7a1f24; }
+body.dark #portalSidebar .brand-name { color: #e7f6ff; }
+body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
