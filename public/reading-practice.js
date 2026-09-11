@@ -172,6 +172,8 @@
     } finally { if (ticket === generation && startTicket === startGeneration) starting = false; }
   }
   function home() {
+    // A background completion must not interrupt a requested session while its passages load.
+    if (starting && !viewingQuestion) return;
     leave();
     const recent = state.history;
     host.innerHTML = `<div class="reading-intro"><p class="portal-eyebrow">IPT Brisbane · Reading</p><h2>Find your focus. Build your confidence.</h2><p>Practise a task, check your starting point, or rehearse with a timed mock.</p><p class="reading-note">Mocks and diagnostics use an exam screen: one question at a time, forward-only navigation, and explanations after submission. Your timer keeps running if you exit and return.</p></div>
@@ -192,8 +194,8 @@
   }
   function render() { if (!state.session) return home(); renderSession(); }
   function renderSession() {
-    if (expireSession()) return;
     viewingQuestion = true; activeSince = Date.now();
+    if (expireSession()) return;
     const s=state.session, q=s.questions[s.index], a=s.answers[q.uid]||[];
     const testing=exam.isExam(s)&&!s.done;
     setExamMode(testing);
@@ -312,6 +314,12 @@
     if (Date.now() - lastPersisted >= 10000) persist();
     updateAutoplay();
   }
+  function renderTimerUpdate() {
+    // Keep background deadlines current without reopening an exited or hidden test.
+    if (host.hidden || starting) return;
+    if (viewingQuestion) renderSession();
+    else home();
+  }
   function finish() {
     const s=state.session; if(!s||s.done)return;
     recordTime(); cancelAudio(); s.done=true;
@@ -319,7 +327,7 @@
     s.completionReason=s.deadline!=null&&Date.now()>=s.deadline?'timeout':'submitted';
     timing.complete(s,s.finishedAt,s.completionReason);
     selectedWord=''; examNotice=null; selectedParagraph={};
-    syncHistory(s); persist(); render();
+    syncHistory(s); persist(); renderTimerUpdate();
     s.questions.filter(q=>q.type==='swt'&&String(s.answers[q.uid]?.[0]||'').trim()).forEach(q=>gradeSwt(q));
   }
   function syncHistory(s) {
@@ -364,7 +372,7 @@
       changed=true;selectedWord='';selectedParagraph={};examNotice=null;
       s.stageNotice=stage.name+' time is up. Your saved answers are locked. '+timing.current(s).name+' has started.';
     }
-    if(changed){persist();renderSession();}
+    if(changed){persist();renderTimerUpdate();}
     return changed;
   }
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
@@ -458,7 +466,7 @@
   }
   function click(e) {
     if(!owner||identity()!==owner||!state)return;
-    if(expireSession())return;
+    if(expireSession() && viewingQuestion)return;
     // Pearson allows a selected single answer to be clicked again to clear it.
     if(e.target.matches?.('input[type="radio"][data-choice]')&&editable()){
       const q=state.session.questions[state.session.index],index=Number(e.target.dataset.choice);

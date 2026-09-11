@@ -411,3 +411,55 @@ test('Legacy mixed attempts keep their single timer and original SWT count on re
  h.values.set(key,JSON.stringify(legacy));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
  assert.equal(snapshot(h).session.questions.filter(q=>q.type==='swt').length,1);assert.equal(snapshot(h).session.deadline,legacy.session.deadline);
 });
+
+test('Stage expiry on Reading home stays on home and cannot start audio until Resume',async()=>{
+ const {h,clock,audio}=await mixedClient(true);nextQuestion(h);nextQuestion(h);
+ const reading=snapshot(h).session;
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
+ clock.set(reading.deadline+1);h.timers.at(-1)();
+ let s=snapshot(h).session;assert.equal(s.stageIndex,3);assert.equal(s.done,false);
+ assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);assert.match(h.host.innerHTML,/Continue session/);
+ assert.equal(s.audioStates[s.questions[s.index].uid],undefined);
+ clock.add(15000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
+ const deadline=s.deadline;h.click({action:'resume'});s=snapshot(h).session;
+ assert.match(h.host.innerHTML,/data-exam-player/);assert.equal(s.deadline,deadline);
+ assert.equal(s.audioStates[s.questions[s.index].uid].readyAt,clock.now+10000);
+ clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);
+});
+
+test('Automatic completion on Reading home saves both SWT grades without forcing open the report',async()=>{
+ const {h,clock,audio}=await mixedClient(true);let calls=0;h.ctx.requestSwtGrade=async()=>{calls++;return confirmedGrade;};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My first saved response.'}});nextQuestion(h);
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My second saved response.'}});
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
+ clock.set(snapshot(h).session.startedAt+80*60000);h.timers.at(-1)();await flush();
+ const saved=snapshot(h);assert(saved.session.done);assert.equal(saved.history.length,1);assert.equal(calls,2);assert.equal(saved.history[0].pending,0);
+ assert.doesNotMatch(h.host.innerHTML,/reading-report|data-exam-player/);assert.match(h.host.innerHTML,/Review result/);assert.equal(audio.utterances.length,0);
+ h.click({action:'resume'});assert.match(h.host.innerHTML,/reading-report/);
+});
+
+test('Background expiry and SWT grade completion cannot cancel a newly requested mixed test',async()=>{
+ const {h,clock}=await mixedClient();let calls=0;
+ h.ctx.requestSwtGrade=async()=>{calls++;return confirmedGrade;};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My saved response.'}});
+ const startedAt=snapshot(h).session.startedAt;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
+ delete h.ctx.passages;
+ let resolve;h.ctx.fetch=()=>new Promise(r=>resolve=r);const pending=h.click({start:'full'});
+ clock.set(startedAt+80*60000);h.timers.at(-1)();await flush();
+ assert.equal(calls,1);assert.equal(snapshot(h).history[0].pending,0);
+ assert.doesNotMatch(h.host.innerHTML,/reading-report|data-exam-player/);
+ resolve({ok:true,json:async()=>swtPassages});await pending;
+ const s=snapshot(h).session;assert.equal(s.mode,'full');assert.equal(s.done,false);assert.equal(s.stageIndex,0);
+});
+
+test('Resume opens the current stage or completed result on its first click when background timers were delayed',async()=>{
+ for(const expiredAll of [false,true]){
+  const {h,clock}=await mixedClient();nextQuestion(h);nextQuestion(h);
+  const reading=snapshot(h).session;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
+  clock.set(expiredAll?reading.startedAt+80*60000:reading.deadline+1);
+  h.click({action:'resume'});
+  const s=snapshot(h).session;assert.equal(s.done,expiredAll);
+  assert.match(h.host.innerHTML,expiredAll?/reading-report/:/data-exam-player/);
+  if(!expiredAll){assert.equal(s.stageIndex,3);assert.equal(s.deadline,reading.deadline+10*60000);}
+ }
+});
