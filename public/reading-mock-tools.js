@@ -5,27 +5,51 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
-  const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue']);
+  const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue', 'mixed']);
+  const AUDIO_BACKGROUNDS = Object.freeze([
+    { id: 'rain', label: 'Rain' }, { id: 'traffic', label: 'Passing traffic' },
+    { id: 'wind', label: 'Wind' }, { id: 'office', label: 'Office typing' }
+  ]);
+  const AUDIO_CUES = Object.freeze(['woodpecker-chirp', 'phone-ring']);
   function hash(value) {
     let n = 2166136261;
     for (const ch of String(value || '')) { n ^= ch.charCodeAt(0); n = Math.imul(n, 16777619); }
     return n >>> 0;
   }
-  // Every HIW entry point shares the same practice variation; the transcript
-  // and answer key are never changed by the audio layer.
-  function audioVariant(q, challenge = true) {
-    if (!q || q.type !== 'hiw' || !challenge) return 'single';
-    if (q.audioVariant && q.audioVariant !== 'single' && AUDIO_VARIANTS.includes(q.audioVariant)) return q.audioVariant;
-    return AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length] === 'single' ? 'ambient' : AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length];
-  }
-  function audioPlayback(q, challenge = true) {
-    const variant = audioVariant(q, challenge);
+  function audioSettings(settings = {}) {
+    if (!settings || typeof settings !== 'object') settings = {};
+    const level = Number(settings.distractionLevel);
     return {
-      variant,
-      label: variant === 'two-speakers' ? 'Two-speaker practice challenge' : variant === 'ambient' ? 'Light ambient practice challenge' : variant === 'sound-cue' ? 'Practice challenge with a brief woodpecker-style chirp cue' : 'Single-speaker audio',
-      cue: variant === 'sound-cue' ? (q.soundCue || 'woodpecker-chirp') : null,
+      background: AUDIO_BACKGROUNDS.some(item => item.id === settings.background) ? settings.background : 'auto',
+      distractionLevel: settings.distractionLevel != null && Number.isFinite(level) ? Math.max(0, Math.min(100, level)) : 55
+    };
+  }
+  // HIW combines both cue sounds, varied backgrounds and two speaker turns.
+  // The recording text and answer coordinates are independent of these layers.
+  function audioVariant(q, challenge = true) {
+    return q?.type === 'hiw' && challenge ? 'mixed' : 'single';
+  }
+  function audioPlayback(q, challenge = true, settings = {}) {
+    const variant = audioVariant(q, challenge);
+    if (variant === 'single') return { variant, label: 'Single-speaker audio', transcript: q?.audioText || '' };
+    const selected = audioSettings(settings);
+    const background = selected.background === 'auto' ? AUDIO_BACKGROUNDS[hash(q.id || q.uid) % AUDIO_BACKGROUNDS.length].id : selected.background;
+    return {
+      variant, speakers: 2, background, cues: [...AUDIO_CUES], distractionLevel: selected.distractionLevel,
+      label: 'Two speakers · ' + AUDIO_BACKGROUNDS.find(item => item.id === background).label + ' · Woodpecker chirps + phone ring',
       transcript: q?.audioText || ''
     };
+  }
+  function audioControlsHTML(q, settings = {}) {
+    if (q?.type !== 'hiw') return '';
+    const selected = audioSettings(settings), profile = audioPlayback(q, true, selected), uid = encodeURIComponent(q.uid || q.id);
+    return '<fieldset class="reading-audio-distractions"><legend>Distraction audio</legend>'
+      + '<p>Two-speaker narration with <strong>woodpecker chirps</strong> and a <strong>phone ring</strong>.</p>'
+      + '<div class="reading-audio-settings"><label>Background<select data-audio-background data-audio-uid="' + uid + '">'
+      + [{ id: 'auto', label: 'Vary by question' }, ...AUDIO_BACKGROUNDS].map(item => '<option value="' + item.id + '" ' + (selected.background === item.id ? 'selected' : '') + '>' + item.label + '</option>').join('')
+      + '</select></label><label>Distraction volume <output data-audio-level-for="' + uid + '">' + selected.distractionLevel + '%</output>'
+      + '<input type="range" min="0" max="100" step="5" value="' + selected.distractionLevel + '" data-audio-level data-audio-uid="' + uid + '" aria-label="Distraction volume"></label></div>'
+      + '<p class="reading-note" data-audio-profile="' + uid + '">Background: ' + AUDIO_BACKGROUNDS.find(item => item.id === profile.background).label + '. Both cue sounds play during the recording.</p></fieldset>';
   }
   function seeded(seed) {
     let n = hash(seed) || 1;
@@ -149,7 +173,7 @@
   // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
     let active = null, timeout = null, startTimeout = null, serial = 0;
-    let audioContext = null, effects = null, voiceCleanup = null;
+    let audioContext = null, effects = null, voiceCleanup = null, activePlayback = null;
     function clearTimers() {
       if (timeout !== null) env.clearTimeout(timeout);
       if (startTimeout !== null) env.clearTimeout(startTimeout);
@@ -179,6 +203,7 @@
     }
     function cancel() {
       serial++;
+      activePlayback = null;
       clearTimers();
       stopEffects();
       if (active !== null) {
@@ -188,78 +213,121 @@
       }
     }
     function startEffects(options, ticket, ready, unavailable) {
-      if (!['ambient', 'sound-cue'].includes(options.variant)) return;
+      const mixed = options.variant === 'mixed';
+      if (!mixed && !['ambient', 'sound-cue'].includes(options.variant)) return;
+      const background = mixed ? options.background : options.variant === 'ambient' ? 'wind' : null;
+      const cues = mixed ? AUDIO_CUES : options.variant === 'sound-cue' ? ['woodpecker-chirp'] : [];
       const begin = enabled => {
         if (ticket !== serial || active === null) return;
         if (!enabled || audioContext?.state !== 'running') return unavailable();
         stopEffects();
-        const layer = { nodes: [], timers: [] }; effects = layer;
+        const layer = { nodes: [], timers: [], background }; effects = layer;
+        const live = () => ticket === serial && effects === layer && active !== null;
         const track = node => { layer.nodes.push(node); return node; };
+        const later = (fn, ms) => {
+          const id = env.setTimeout(() => {
+            layer.timers = layer.timers.filter(timer => timer !== id);
+            if (live()) { try { fn(); } catch (_) { stopEffects(); unavailable(); } }
+          }, ms);
+          layer.timers.push(id);
+        };
+        const repeat = (fn, first, interval) => {
+          const next = () => { fn(); later(next, interval); };
+          later(next, first);
+        };
         try {
-          if (options.variant === 'ambient') {
-            // Quiet filtered air/room noise is audible behind speech without a
-            // continuous musical tone competing with the spoken words.
-            const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
-            const samples = buffer.getChannelData(0);
-            let previous = 0;
+          const master = track(audioContext.createGain()); layer.master = master;
+          master.gain.value = mixed ? audioSettings(options).distractionLevel / 100 : 0.55;
+          master.connect(audioContext.destination);
+          if (background) {
+            // Distinct environmental textures: steady rain, passing engines,
+            // slow wind gusts, and irregular office keystrokes.
+            const seconds = 6, rate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(1, rate * seconds, rate);
+            const samples = buffer.getChannelData(0), random = seeded('hiw:' + background);
+            let brown = 0, keyAt = 0.18, clickAge = 1;
             for (let i = 0; i < samples.length; i++) {
-              previous = (previous + 0.02 * (Math.random() * 2 - 1)) / 1.02;
-              samples[i] = previous * 3.5;
+              const t = i / rate, white = random() * 2 - 1;
+              brown = (brown + 0.025 * white) / 1.025;
+              const air = brown * 3.5;
+              if (background === 'rain') samples[i] = white * 0.48 + air * 0.25;
+              else if (background === 'traffic') {
+                const pass = Math.pow(Math.sin(Math.PI * t / seconds), 2);
+                const engine = Math.sin(2 * Math.PI * (72 * t + 8 * Math.sin(2 * Math.PI * t / seconds)));
+                samples[i] = (air * 0.85 + engine * 0.14) * (0.15 + pass * 0.85);
+              } else if (background === 'office') {
+                if (t >= keyAt) { clickAge = 0; keyAt = t + 0.055 + random() * 0.4; }
+                samples[i] = white * 0.025 + Math.exp(-clickAge * 150) * (white * 0.48 + Math.sin(2 * Math.PI * 1800 * clickAge) * 0.24);
+                clickAge += 1 / rate;
+              } else samples[i] = air * (0.3 + 0.7 * Math.pow(Math.sin(Math.PI * t / seconds), 2));
             }
             const source = track(audioContext.createBufferSource());
-            const filter = track(audioContext.createBiquadFilter());
-            const gain = track(audioContext.createGain());
+            const filter = track(audioContext.createBiquadFilter()), gain = track(audioContext.createGain());
             source.buffer = buffer; source.loop = true;
-            filter.type = 'lowpass'; filter.frequency.value = 1200;
+            filter.type = 'lowpass'; filter.frequency.value = { rain: 5500, traffic: 1200, wind: 700, office: 6500 }[background] || 1200;
             gain.gain.setValueAtTime(0, audioContext.currentTime);
-            gain.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.15);
-            source.connect(filter); filter.connect(gain); gain.connect(audioContext.destination);
-            source.start();
-          } else {
-            const chirp = () => {
-              if (ticket !== serial || effects !== layer || active === null) return;
-              const now = audioContext.currentTime;
-              for (let i = 0; i < 3; i++) {
-                const at = now + i * 0.09;
-                const oscillator = track(audioContext.createOscillator());
-                const gain = track(audioContext.createGain());
-                oscillator.type = 'triangle';
-                oscillator.frequency.setValueAtTime(1700, at);
-                oscillator.frequency.exponentialRampToValueAtTime(2700, at + 0.025);
-                oscillator.frequency.exponentialRampToValueAtTime(1900, at + 0.065);
-                gain.gain.setValueAtTime(0.0001, at);
-                gain.gain.exponentialRampToValueAtTime(0.06, at + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.07);
-                oscillator.connect(gain); gain.connect(audioContext.destination);
-                oscillator.onended = () => {
-                  oscillator.disconnect(); gain.disconnect();
-                  layer.nodes = layer.nodes.filter(node => node !== oscillator && node !== gain);
-                };
-                oscillator.start(at); oscillator.stop(at + 0.08);
-              }
-            };
-            // Cues follow actual speech, even when a voice takes time to load.
-            layer.timers.push(env.setTimeout(chirp, 700), env.setTimeout(chirp, 6500));
+            gain.gain.linearRampToValueAtTime(background === 'office' ? 0.42 : 0.23, audioContext.currentTime + 0.15);
+            source.connect(filter); filter.connect(gain); gain.connect(master); source.start();
           }
+          const tone = (frequency, at, duration, volume, chirp) => {
+            const oscillator = track(audioContext.createOscillator()), gain = track(audioContext.createGain());
+            oscillator.type = chirp ? 'triangle' : 'sine';
+            oscillator.frequency.setValueAtTime(frequency, at);
+            if (chirp) {
+              oscillator.frequency.exponentialRampToValueAtTime(2700, at + 0.025);
+              oscillator.frequency.exponentialRampToValueAtTime(1900, at + 0.065);
+            }
+            gain.gain.setValueAtTime(0.0001, at);
+            gain.gain.exponentialRampToValueAtTime(volume, at + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+            oscillator.connect(gain); gain.connect(master);
+            oscillator.onended = () => {
+              oscillator.disconnect(); gain.disconnect();
+              layer.nodes = layer.nodes.filter(node => node !== oscillator && node !== gain);
+            };
+            oscillator.start(at); oscillator.stop(at + duration + 0.01);
+          };
+          if (cues.includes('woodpecker-chirp')) repeat(() => {
+            const now = audioContext.currentTime;
+            for (let i = 0; i < 3; i++) tone(1700, now + i * 0.09, 0.07, 0.13, true);
+          }, 700, 18000);
+          if (cues.includes('phone-ring')) repeat(() => {
+            const now = audioContext.currentTime;
+            for (const offset of [0, 0.32]) {
+              tone(660, now + offset, 0.2, 0.075, false);
+              tone(880, now + offset, 0.2, 0.055, false);
+            }
+          }, 4500, 21000);
         } catch (_) { stopEffects(); unavailable(); }
       };
       if (audioContext?.state === 'running') begin(true);
       else ready.then(begin);
     }
+    function updateDistractions(key, nextOptions) {
+      if (active !== key || activePlayback?.options.variant !== 'mixed') return;
+      const options = activePlayback.options, before = options.background;
+      Object.assign(options, { background: nextOptions.background, distractionLevel: audioSettings(nextOptions).distractionLevel, label: nextOptions.label });
+      if (!activePlayback.started) return;
+      if (effects?.master && before === options.background) {
+        effects.master.gain.linearRampToValueAtTime(options.distractionLevel / 100, audioContext.currentTime + 0.08);
+        activePlayback.notify();
+      } else activePlayback.refresh(unlock());
+    }
     function play(key, text, options = {}) {
       cancel();
+      options = { ...options };
       const effectsReady = unlock();
       if (!env.speechSynthesis || !env.SpeechSynthesisUtterance) {
         onState(key, 'error', 'Audio is unavailable in this browser. Open the practice in a browser with an English speech voice. This item will be excluded if audio cannot play.');
         return;
       }
-      const ticket = serial, variant = options.variant || 'single';
+      const ticket = serial, variant = options.variant || 'single', twoSpeakers = variant === 'two-speakers' || variant === 'mixed';
       let started = false, effectsUnavailable = false, cursor = 0, utterances = [];
       active = key;
       const current = () => ticket === serial && active === key;
       const finish = (status, message) => {
         if (!current()) return;
-        active = null; serial++;
+        active = null; activePlayback = null; serial++;
         clearTimers(); stopEffects();
         if (status === 'error') env.speechSynthesis.cancel();
         onState(key, status, message);
@@ -269,9 +337,19 @@
         startTimeout = env.setTimeout(() => finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'), 8000);
       };
       const playingMessage = () => effectsUnavailable ? 'Playing speech. Practice background sound is unavailable in this browser.' :
+        variant === 'mixed' ? 'Playing: ' + options.label + '.' :
         variant === 'two-speakers' ? 'Playing. Follow both speakers.' :
         variant === 'sound-cue' ? 'Playing with brief woodpecker-style chirp cues.' :
         variant === 'ambient' ? 'Playing with light ambient practice sound.' : 'Playing. Follow the question on screen.';
+      const refreshEffects = (ready = effectsReady) => {
+        effectsUnavailable = false;
+        startEffects(options, ticket, ready, () => {
+          effectsUnavailable = true;
+          if (current()) onState(key, 'playing', playingMessage());
+        });
+        if (current()) onState(key, 'playing', playingMessage());
+      };
+      activePlayback = { options, started: false, refresh: refreshEffects, notify: () => { if (current()) onState(key, 'playing', playingMessage()); } };
       const playNext = () => {
         if (!current()) return;
         const utterance = utterances[cursor++];
@@ -284,11 +362,8 @@
           startTimeout = null;
           onState(key, 'playing', playingMessage());
           if (!started && current()) {
-            started = true;
-            startEffects(options, ticket, effectsReady, () => {
-              effectsUnavailable = true;
-              if (current()) onState(key, 'playing', playingMessage());
-            });
+            started = true; activePlayback.started = true;
+            refreshEffects();
           }
         };
         utterance.onend = () => {
@@ -305,7 +380,7 @@
         voiceCleanup?.(); voiceCleanup = null;
         const transcript = String(text || '');
         let parts = [transcript];
-        if (variant === 'two-speakers') {
+        if (twoSpeakers) {
           parts = transcript.match(/[\s\S]*?[.!?]+(?:["'”’)\]]+)?(?=\s|$)|[\s\S]+$/g)?.map(part => part.trim()).filter(Boolean) || [transcript];
           if (parts.length === 1) {
             const words = transcript.match(/\S+\s*/g) || [];
@@ -321,8 +396,8 @@
           const utterance = new env.SpeechSynthesisUtterance(part);
           utterance.voice = i % 2 ? second : first;
           utterance.lang = utterance.voice?.lang || (i % 2 ? 'en-US' : 'en-GB');
-          utterance.rate = variant === 'two-speakers' ? (i % 2 ? 0.96 : 1.03) : 1;
-          utterance.pitch = variant === 'two-speakers' ? (i % 2 ? (distinct ? 0.92 : 0.82) : (distinct ? 1.06 : 1.18)) : 1;
+          utterance.rate = twoSpeakers ? (i % 2 ? 0.96 : 1.03) : 1;
+          utterance.pitch = twoSpeakers ? (i % 2 ? (distinct ? 0.92 : 0.82) : (distinct ? 1.06 : 1.18)) : 1;
           return utterance;
         });
         playNext();
@@ -351,7 +426,7 @@
         voicesChanged();
       } catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
     }
-    return { play, cancel, unlock };
+    return { play, cancel, unlock, updateDistractions };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES, audioSettings, audioControlsHTML };
 });

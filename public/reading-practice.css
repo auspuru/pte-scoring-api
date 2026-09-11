@@ -314,3 +314,19 @@ body.dark .reading-mock-card .portal-button { color: #092333; }
   .reading-library-list li { gap: 12px; }
   .reading-library-list .portal-button { flex-shrink: 0; font-size: 12px; padding-inline: 10px; }
 }
+
+/* HIW sound layers can be adjusted without restarting the spoken passage. */
+#readingPane .reading-audio-distractions {
+  min-width: 0; margin: 0 0 22px; padding: 14px 16px;
+  border: 1px solid var(--border, #dbe3ee); border-radius: 12px;
+  background: var(--surface, #fff);
+}
+.reading-audio-distractions legend { padding: 0 6px; font-size: 14px; font-weight: 700; }
+.reading-audio-distractions p { margin: 0 0 12px; font-size: 14px; line-height: 1.5; }
+.reading-audio-settings { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; }
+.reading-audio-settings label { display: grid; gap: 7px; flex: 1 1 220px; min-width: 0; font-size: 14px; font-weight: 600; }
+.reading-audio-settings select { width: 100%; min-height: 40px; padding: 8px; border: 1px solid var(--border, #dbe3ee); border-radius: 7px; background: #fff; color: var(--ink); font: inherit; }
+.reading-audio-settings input[type="range"] { width: 100%; min-height: 32px; accent-color: var(--accent, #00759b); cursor: pointer; }
+.reading-audio-settings output { font-weight: 400; }
+.reading-audio-distractions .reading-note { margin: 10px 0 0; font-size: 12px; }
+.reading-audio-distractions :is(select,input):focus-visible { outline: 2px solid var(--accent, #00759b); outline-offset: 3px; }

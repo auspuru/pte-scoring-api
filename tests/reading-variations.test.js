@@ -39,13 +39,14 @@ test('One-page review reports the original answer index after visible choices ar
   assert.notEqual(displayIndex, raw.answer);
 });
 
-test('Every HIW receives deterministic ambient, two-speaker or sound-cue audio', () => {
+test('Every HIW combines two speakers and two cue sounds with varied backgrounds', () => {
   const questions = bank.practiceLibraries.find(l => l.id === 'hiw').questions;
-  const variants = questions.map(q => tools.audioVariant(q, true));
-  assert(!variants.includes('single')); assert(variants.includes('ambient')); assert(variants.includes('two-speakers')); assert(variants.includes('sound-cue'));
-  assert.equal(tools.audioVariant(questions[0], true), tools.audioVariant(questions[0], true));
-  assert.equal(tools.audioVariant({ type: 'hcs', id: 'hcs-test' }, true), 'single');
-  assert.match(tools.audioPlayback({ ...questions.find(q => tools.audioVariant(q, true) === 'sound-cue') }, true).label, /woodpecker/i);
+  const profiles = questions.map(q => tools.audioPlayback(q));
+  assert(profiles.every(p => p.variant === 'mixed' && p.speakers === 2));
+  assert(profiles.every(p => p.cues.includes('woodpecker-chirp') && p.cues.includes('phone-ring')));
+  assert.equal(new Set(profiles.map(p => p.background)).size, 4);
+  assert.deepEqual(tools.audioPlayback(questions[0]), tools.audioPlayback(questions[0]));
+  assert.equal(tools.audioVariant({ type: 'hcs', id: 'hcs-test' }), 'single');
 });
 
 function speakerHarness() {
@@ -91,12 +92,13 @@ test('Every reading practice screen keeps a final Next question control after th
  assert.deepEqual(tools.prepareQuestion(shuffled, 'reload'), shuffled);
  });
 
-test('Every playback path uses HIW variations without a practice-only mode gate', () => {
+test('Every playback path shares HIW sound settings in practice, mocks and review', () => {
  const source = fs.readFileSync(require.resolve('../public/reading-practice'), 'utf8');
- const calls = [...source.matchAll(/mock\.audioPlayback\(([^)]*)\)/g)].map(m => m[1]);
- assert.equal(calls.length, 4);
- assert(calls.every(arg => arg === 'q' || arg === 'item'));
- const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') assert.notEqual(tools.audioPlayback(value).variant, 'single'); Object.values(value).forEach(walk); };
+ assert.match(source, /function playback\(q\).*mock\.audioPlayback\(q, true, state\.session\?\.audioSettings\)/);
+ const calls = source.split('\n').filter(line => line.includes('speaker.play(') && !line.includes("'soundcheck'"));
+ assert.equal(calls.length, 3);
+ assert(calls.every(line => line.includes('playback(q)') || line.includes('playback(item)')));
+ const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') assert.equal(tools.audioPlayback(value).variant, 'mixed'); Object.values(value).forEach(walk); };
  walk(bank);
  assert.equal(tools.audioPlayback({type:'hcs'}).variant, 'single');
 });

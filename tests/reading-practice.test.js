@@ -109,6 +109,10 @@ test('Provisional SWT and unplayed audio are excluded from confirmed totals, wit
  s.assessments[swt.uid]={result:confirmedGrade};s.audioStates[hiw.uid]={status:'complete'};
  const after=totals(s);assert.equal(after.pending,0);assert.equal(after.excluded,3);assert.equal(after.earned,14);assert.equal(after.possible,before.possible+15);
 });
+function finishSpeech(audio, first = audio.utterances.length - 1) {
+ for(let i=first;i<audio.utterances.length;i++){audio.utterances[i].onstart();audio.utterances[i].onend();}
+ return audio.utterances.length;
+}
 function speechHarness(){
  const utterances=[],timeouts=[],events=[];
  const env={SpeechSynthesisUtterance:class{constructor(text){this.text=text;}},speechSynthesis:{getVoices:()=>[{lang:'en-AU'}],speak:u=>utterances.push(u),cancel(){}},setTimeout:fn=>{timeouts.push(fn);return timeouts.length;},clearTimeout(){}};
@@ -160,7 +164,7 @@ test('HIW selection stays interactive during audio; leaving interrupts playback 
  const q=saved().session.questions[index];assert.deepEqual(saved().session.answers[q.uid],[4]);
  h.ctx.ReadingPractice.leave();assert.equal(saved().session.audioStates[q.uid].status,'error');utterance.onend();assert.equal(saved().session.audioStates[q.uid].status,'error');
  await h.ctx.ReadingPractice.open();assert.match(h.host.innerHTML,/data-hiw-word="4"[^>]*aria-pressed="true"/);
- h.click({action:'play'});audio.utterances[1].onstart();audio.utterances[1].onend();h.click({action:'play'});assert.equal(audio.utterances.length,2);
+ h.click({action:'play'});const completedCount=finishSpeech(audio,1);h.click({action:'play'});assert.equal(audio.utterances.length,completedCount);
  h.click({action:'submit'});assert.equal(saved().session.audioStates[q.uid].status,'complete');
 });
 const examPlayer=require('../public/reading-exam-player');
@@ -357,10 +361,13 @@ test('Each HCS and HIW question counts down, autoplays once and shares the same 
   assert.equal(item.readyAt,clock.now+10000);const ready=item.readyAt;
   // A harmless re-render cannot reset the preparation interval or start a second player.
   h.click({action:'exam-exit'});h.click({action:'exam-stay'});assert.equal(snapshot(h).session.audioStates[q.uid].readyAt,ready);
-  clock.set(ready-1);h.timers.at(-1)();assert.equal(audio.utterances.length,i);
-  clock.set(ready);h.timers.at(-1)();assert.equal(audio.utterances.length,i+1);
-  const utterance=audio.utterances[i];utterance.onstart();h.timers.at(-1)();assert.equal(audio.utterances.length,i+1);
-  utterance.onend();h.click({action:'play'});assert.equal(audio.utterances.length,i+1);
+  const first=audio.utterances.length;
+  clock.set(ready-1);h.timers.at(-1)();assert.equal(audio.utterances.length,first);
+  clock.set(ready);h.timers.at(-1)();assert.equal(audio.utterances.length,first+1);
+  const utterance=audio.utterances[first];utterance.onstart();h.timers.at(-1)();assert.equal(audio.utterances.length,first+1);
+  const completedCount=finishSpeech(audio,first);
+  assert.equal(audio.utterances.slice(first).map(u=>u.text).join(' '),q.audioText);
+  h.click({action:'play'});assert.equal(audio.utterances.length,completedCount);
   assert.equal(snapshot(h).session.audioStates[q.uid].status,'complete');assert.equal(snapshot(h).session.deadline,deadline);
   nextQuestion(h);
  }
@@ -755,7 +762,8 @@ test('Question practice supports searching, paging, draft recovery, feedback and
 test('New HIW practice autoplays and saves its highlights with full feedback',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);await h.ctx.ReadingPractice.open();h.click({browseLibrary:'hiw'});
  assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});
- assert.match(h.host.innerHTML,/C2/);clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);assert.equal(audio.utterances[0].text,q.audioText);
- audio.utterances[0].onstart();q.answers.forEach(index=>h.click({hiwWord:String(index)}));audio.utterances[0].onend();h.click({action:'submit'});
+ assert.match(h.host.innerHTML,/<h2>Highlight Incorrect Words<\/h2>/);clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);
+ audio.utterances[0].onstart();q.answers.forEach(index=>h.click({hiwWord:String(index)}));finishSpeech(audio,0);
+ assert(audio.utterances.length>=2);assert.equal(audio.utterances.map(u=>u.text).join(' '),q.audioText);h.click({action:'submit'});
  assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
 });

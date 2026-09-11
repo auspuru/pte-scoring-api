@@ -113,12 +113,13 @@
       if (info.options) feedback += '<h4>Other options explained</h4>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason));
     }
     if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
-    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
+    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div>' + (options.audioControls || '') + '<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
     const status = points.pending ? 'Assessment pending' : excluded ? 'Audio item excluded' : points.earned + '/' + points.possible + ' points';
     const outcome=points.pending?'pending':excluded?'excluded':!hasAnswer(a)?'unanswered':points.earned===points.possible?'correct':'review';
     const outcomeLabel={pending:'Awaiting assessment',excluded:'Audio incomplete',unanswered:'Unanswered',correct:'Correct',review:'To improve'}[outcome];
     return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
+      + (excluded && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
       + '<section class="reading-explanation">' + feedback + '</section>' + audio + '</article>';
   }
   return { question, models, matches, controls, overview, filters, blankFeedback };

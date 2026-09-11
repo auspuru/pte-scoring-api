@@ -7,7 +7,7 @@ const bank = require('../public/reading-bank.json');
 function harness({ voices = [{ lang: 'en-GB', name: 'British' }, { lang: 'en-US', name: 'American' }], suspended = false } = {}) {
   const utterances = [], events = [], nodes = [], contexts = [], timers = new Map(), listeners = new Set();
   let nextTimer = 0, gesture = false;
-  const param = () => ({ value: 0, setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} });
+  const param = () => ({ value: 0, values: [], setValueAtTime(value) { this.value = value; this.values.push(value); }, linearRampToValueAtTime(value) { this.value = value; this.values.push(value); }, exponentialRampToValueAtTime(value) { this.value = value; this.values.push(value); } });
   const node = kind => {
     const value = { kind, started: false, stopped: false, disconnected: false, frequency: param(), gain: param(),
       connect() {}, disconnect() { this.disconnected = true; }, start() { this.started = true; }, stop() { this.stopped = true; } };
@@ -28,7 +28,7 @@ function harness({ voices = [{ lang: 'en-GB', name: 'British' }, { lang: 'en-US'
       createOscillator() { return node('oscillator'); }
       createBufferSource() { return node('buffer'); }
       createBiquadFilter() { return node('filter'); }
-      createBuffer(channels, length) { return { getChannelData: () => new Float32Array(length) }; }
+      createBuffer(channels, length) { const samples = new Float32Array(length); return { getChannelData: () => samples }; }
     }
   };
   return {
@@ -58,8 +58,8 @@ test('Chirps follow speech and cancellation removes both queued and sounding cue
   h.speaker.play('chirps', 'The voice can take time to load.', { variant: 'sound-cue' });
   h.fire(700); assert.equal(h.nodes.length, 0);
   h.utterances[0].onstart();
-  const lateCue = [...h.timers.values()].find(timer => timer.ms === 6500).fn;
   h.fire(700);
+  const lateCue = [...h.timers.values()].find(timer => timer.ms === 18000).fn;
   assert.equal(h.nodes.filter(node => node.kind === 'oscillator' && node.started).length, 3);
   h.speaker.cancel(); lateCue();
   assert.equal(h.nodes.filter(node => node.kind === 'oscillator').length, 3);
@@ -166,7 +166,7 @@ test('Two-speaker segmentation preserves punctuation, quotes and every spoken wo
   assert.equal(h.utterances.map(u => u.text).join(' '), transcript);
 });
 
-test('Every HIW question in practice, mocks and review keeps its complete transcript and answer key', () => {
+test('Every HIW combines two voices, both cues and a varied background without changing its answers', () => {
   const questions = [];
   const walk = value => {
     if (!value || typeof value !== 'object') return;
@@ -175,29 +175,77 @@ test('Every HIW question in practice, mocks and review keeps its complete transc
   };
   walk(bank);
   assert(questions.length >= 10);
-  const variants = new Set();
+  const backgrounds = new Set();
   for (const q of questions) {
     const h = harness(), before = JSON.stringify(q), profile = tools.audioPlayback(q);
-    variants.add(profile.variant);
+    assert.equal(profile.variant, 'mixed'); assert.equal(profile.speakers, 2);
+    assert.deepEqual(profile.cues, ['woodpecker-chirp', 'phone-ring']);
+    backgrounds.add(profile.background);
     h.speaker.play(q.uid || q.id, q.audioText, profile);
     for (let i = 0; i < h.utterances.length; i++) {
-      h.utterances[i].onstart();
-      h.fire(700);
-      h.utterances[i].onend();
+      h.utterances[i].onstart(); h.fire(700); h.fire(4500); h.utterances[i].onend();
     }
     assert.equal(h.utterances.map(u => u.text).join(' ').replace(/\s+/g, ' ').trim(), q.audioText.replace(/\s+/g, ' ').trim());
     assert.equal(h.events.at(-1)[1], 'complete');
     assert.equal(JSON.stringify(q), before);
     assert.equal(tools.scoreExtra(q, q.answers).earned, q.answers.length);
     assert.equal(h.timers.size, 0);
-    if (profile.variant === 'two-speakers') assert(h.utterances.length >= 2);
-    if (profile.variant === 'ambient') assert(h.nodes.some(node => node.kind === 'buffer' && node.started));
-    if (profile.variant === 'sound-cue') assert(h.nodes.some(node => node.kind === 'oscillator' && node.started));
+    assert(h.utterances.length >= 2);
+    assert.notEqual(h.utterances[0].voice.name, h.utterances[1].voice.name);
+    assert(h.nodes.some(node => node.kind === 'buffer' && node.started));
+    assert(h.nodes.some(node => node.kind === 'oscillator' && node.frequency.values.includes(1700)));
+    assert(h.nodes.some(node => node.kind === 'oscillator' && node.frequency.values.includes(660)));
   }
-  assert.deepEqual([...variants].sort(), ['ambient', 'sound-cue', 'two-speakers']);
+  assert.deepEqual([...backgrounds].sort(), ['office', 'rain', 'traffic', 'wind']);
 });
 
-test('Opening a HIW practice question unlocks audio in the click before its countdown', async () => {
+test('The four backgrounds contain different audible textures and both cue sounds recur', () => {
+  const q = bank.practiceLibraries.find(l => l.id === 'hiw').questions[0], textures = [];
+  for (const background of tools.AUDIO_BACKGROUNDS) {
+    const h = harness(), profile = tools.audioPlayback(q, true, { background: background.id, distractionLevel: 70 });
+    h.speaker.play(q.uid, q.audioText, profile); h.utterances[0].onstart();
+    const samples = h.nodes.find(node => node.kind === 'buffer').buffer.getChannelData(0);
+    assert(samples.some(value => Math.abs(value) > 0.05));
+    textures.push(Array.from(samples.slice(0, 100)));
+    h.fire(700); h.fire(4500);
+    const firstCount = h.nodes.filter(node => node.kind === 'oscillator').length;
+    assert.equal(firstCount, 7);
+    h.fire(18000); h.fire(21000);
+    assert.equal(h.nodes.filter(node => node.kind === 'oscillator').length, 14);
+    h.speaker.cancel();
+    assert(h.nodes.every(node => node.disconnected));
+    assert.equal(h.timers.size, 0);
+  }
+  for (let i = 0; i < textures.length; i++) for (let j = i + 1; j < textures.length; j++) assert.notDeepEqual(textures[i], textures[j]);
+});
+
+test('Changing distraction volume or background keeps the spoken passage running', () => {
+  const h = harness(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions[0];
+  h.speaker.play(q.uid, q.audioText, tools.audioPlayback(q)); h.utterances[0].onstart();
+  const firstBuffer = h.nodes.find(node => node.kind === 'buffer');
+  h.speaker.updateDistractions(q.uid, tools.audioPlayback(q, true, { distractionLevel: 0 }));
+  assert.equal(h.nodes.filter(node => node.kind === 'buffer').length, 1);
+  assert.equal(h.nodes.find(node => node.kind === 'gain').gain.value, 0);
+  const background = tools.AUDIO_BACKGROUNDS.find(item => item.id !== tools.audioPlayback(q).background).id;
+  h.speaker.updateDistractions(q.uid, tools.audioPlayback(q, true, { background, distractionLevel: 80 }));
+  assert(firstBuffer.stopped); assert(firstBuffer.disconnected);
+  assert.equal(h.nodes.filter(node => node.kind === 'buffer').length, 2);
+  assert.equal(h.utterances.length, 1);
+  assert(!h.events.some(event => event[1] === 'error'));
+  h.speaker.cancel();
+});
+
+test('Sound settings validate saved values and cannot enable distractions on HCS', () => {
+  assert.deepEqual(tools.audioSettings(null), { background: 'auto', distractionLevel: 55 });
+  assert.equal(tools.audioSettings({ distractionLevel: -25 }).distractionLevel, 0);
+  assert.equal(tools.audioSettings({ distractionLevel: 150 }).distractionLevel, 100);
+  assert.equal(tools.audioSettings({ distractionLevel: 'invalid', background: '<script>' }).background, 'auto');
+  const profile = tools.audioPlayback({ type: 'hcs' }, true, { background: 'rain' });
+  assert.equal(profile.variant, 'single'); assert.equal(profile.background, undefined);
+  assert.equal(tools.audioControlsHTML({ type: 'hcs' }), '');
+});
+
+async function readingClient() {
   const fs = require('node:fs'), vm = require('node:vm');
   const h = harness({ suspended: true }), values = new Map(), intervals = [];
   let now = 100000;
@@ -214,17 +262,61 @@ test('Opening a HIW practice question unlocks audio in the click before its coun
     vm.runInContext(fs.readFileSync(require.resolve('../public/' + file), 'utf8'), ctx);
   }
   await ctx.ReadingPractice.open();
-  const q = bank.practiceLibraries.find(l => l.id === 'hiw').questions.find(q => tools.audioPlayback(q).variant === 'ambient');
-  await h.gesture(() => host.onclick({ target: { closest: () => ({ dataset: { practiceUid: q.uid }, disabled: false }) } }));
+  return { ...h, ctx, host, values,
+    click: dataset => h.gesture(() => host.onclick({ target: { closest: () => ({ dataset, disabled: false, setAttribute() {} }) } })),
+    countdown() { now += (bank.mixedMock.audioPreparationSeconds + 1) * 1000; intervals.forEach(fn => fn()); },
+    snapshot: () => JSON.parse(values.get('ipt_reading_v1:audio-student'))
+  };
+}
+
+test('The HIW screen saves sound choices and unlocks the combined layers before countdown playback', async () => {
+  const h = await readingClient(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions[0];
+  await h.click({ practiceUid: q.uid });
   assert.equal(h.contexts[0].state, 'running');
+  assert.match(h.host.innerHTML, /woodpecker chirps/); assert.match(h.host.innerHTML, /phone ring/);
+  assert.match(h.host.innerHTML, /Office typing/); assert.match(h.host.innerHTML, /Distraction volume/);
+  h.host.onchange({ target: { dataset: { audioBackground: '', audioUid: encodeURIComponent(q.uid) }, value: 'office' } });
+  h.host.oninput({ target: { dataset: { audioLevel: '', audioUid: encodeURIComponent(q.uid) }, value: '80' } });
+  assert.deepEqual(h.snapshot().session.audioSettings, { background: 'office', distractionLevel: 80 });
   assert.equal(h.utterances.length, 0);
-  now += (bank.mixedMock.audioPreparationSeconds + 1) * 1000;
-  intervals.forEach(fn => fn());
-  assert.equal(h.utterances.length, 1);
-  h.utterances[0].onstart();
+  h.countdown(); assert.equal(h.utterances.length, 1);
+  for (let i = 0; i < h.utterances.length; i++) { h.utterances[i].onstart(); h.fire(700); h.fire(4500); h.utterances[i].onend(); }
+  assert.equal(h.snapshot().session.audioStates[q.uid].status, 'complete');
   assert(h.nodes.some(node => node.kind === 'buffer' && node.started));
-  h.utterances[0].onend();
-  const saved = JSON.parse(values.get('ipt_reading_v1:audio-student'));
-  assert.equal(saved.session.audioStates[q.uid].status, 'complete');
-  ctx.ReadingPractice.leave();
+  assert(h.nodes.some(node => node.kind === 'oscillator' && node.frequency.values.includes(660)));
+  h.ctx.ReadingPractice.leave();
+});
+
+test('Infrastructure practice warns before incomplete submission and grades six correct selections after listening finishes', async () => {
+  const h = await readingClient(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions.find(q => q.id === 'hiw-c2-07');
+  await h.click({ practiceUid: q.uid });
+  for (const index of q.answers) h.click({ hiwWord: String(index) });
+  let warning;
+  h.ctx.confirm = message => { warning = message; return false; };
+  h.click({ action: 'submit' });
+  assert.match(warning, /unassessed/); assert.equal(h.snapshot().session.done, false);
+  h.countdown();
+  for (let i = 0; i < h.utterances.length; i++) { h.utterances[i].onstart(); h.fire(700); h.fire(4500); h.utterances[i].onend(); }
+  h.ctx.confirm = () => true; h.click({ action: 'submit' });
+  const saved = h.snapshot();
+  assert.equal(saved.history[0].earned, 6); assert.equal(saved.history[0].possible, 6);
+  assert.equal(saved.history[0].excluded, 0);
+  assert.match(h.host.innerHTML, /Distraction audio/);
+  const count = h.utterances.length;
+  h.click({ action: 'play', reviewUid: q.uid });
+  h.utterances[count].onstart(); h.fire(700); h.fire(4500);
+  h.host.onchange({ target: { dataset: { audioBackground: '', audioUid: encodeURIComponent(q.uid) }, value: 'rain' } });
+  assert.equal(h.snapshot().history[0].earned, 6);
+  h.ctx.ReadingPractice.leave();
+});
+
+test('Review explains the saved audio failure without converting an incomplete attempt into a graded one', async () => {
+  const h = await readingClient(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions[0];
+  await h.click({ practiceUid: q.uid }); h.countdown();
+  h.utterances[0].onerror({ error: 'not-allowed' });
+  h.click({ action: 'submit' });
+  assert.match(h.host.innerHTML, /Playback status:/);
+  assert.match(h.host.innerHTML, /blocked autoplay/);
+  assert.equal(h.snapshot().history[0].excluded, 1);
+  h.ctx.ReadingPractice.leave();
 });
