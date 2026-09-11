@@ -40,7 +40,7 @@ function client(){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
  const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,confirm:()=>true};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
+ vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
 }
@@ -174,23 +174,22 @@ test('Every mock and diagnostic uses the same exam shell while practice keeps it
   }else assert.match(h.host.innerHTML,/data-action="check"/);
  }
 });
-test('Exam Next confirms unanswered parts, blocks backward movement, and restores the same question and deadline',async()=>{
+test('Exam Next immediately skips unanswered parts, blocks backward movement, and preserves the deadline',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
  const saved=()=>JSON.parse(h.values.get(storageKey('first'))),deadline=saved().session.deadline;
- h.click({action:'exam-next'});assert.equal(saved().session.index,0);assert.match(h.host.innerHTML,/unanswered parts/);
- h.click({action:'exam-stay'});assert.equal(saved().session.index,0);
- h.click({action:'exam-next'});h.click({action:'exam-confirm'});assert.equal(saved().session.index,1);
+ h.click({action:'exam-next'});assert.equal(saved().session.index,1);assert.doesNotMatch(h.host.innerHTML,/unanswered parts|Continue to next question|Keep working/);
+ assert.deepEqual(saved().session.answers,{});
  h.click({question:'0'});h.click({move:'-1'});h.click({action:'check'});assert.equal(saved().session.index,1);assert.equal(saved().session.checked.length,0);
  h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);assert.match(h.host.innerHTML,/Continue session/);
  h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.equal(saved().session.index,1);assert.equal(saved().session.deadline,deadline);assert.match(h.host.innerHTML,/Question 2 of 16/);
 });
-test('The last Next submits once, then unlocks review of earlier questions',async()=>{
+test('Finish mock submits once and shows every question on one review page',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
  const saved=()=>JSON.parse(h.values.get(storageKey('first')));
  for(let i=0;i<saved().session.questions.length-1;i++){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
- h.click({action:'exam-next'});assert.equal(saved().session.done,false);assert.match(h.host.innerHTML,/final question/);
- h.click({action:'exam-confirm'});assert.equal(saved().session.done,true);assert.equal(saved().history.length,1);assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);
- h.click({question:'0'});assert.match(h.host.innerHTML,/Question 1 of 20/);assert.equal(saved().session.index,0);
+ assert.match(h.host.innerHTML,/Finish mock/);h.click({action:'exam-next'});assert.equal(saved().session.done,true);assert.equal(saved().history.length,1);assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);
+ assert.match(h.host.innerHTML,/Question 1 of 20/);assert.match(h.host.innerHTML,/Question 20 of 20/);assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,20);
+ assert.doesNotMatch(h.host.innerHTML,/data-question=|data-move=|data-action="exam-next"/);
  h.timers.at(-1)();assert.equal(saved().history.length,1);
 });
 test('The two reorder panels transfer, return and reorder selected paragraphs without duplicate answers',async()=>{
@@ -462,4 +461,81 @@ test('Resume opens the current stage or completed result on its first click when
   assert.match(h.host.innerHTML,expiredAll?/reading-report/:/data-exam-player/);
   if(!expiredAll){assert.equal(s.stageIndex,3);assert.equal(s.deadline,reading.deadline+10*60000);}
  }
+});
+
+test('The home page offers exactly three practice and three sectional mocks covering every Reading contributor',async()=>{
+ const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();
+ const ids=[...h.host.innerHTML.matchAll(/data-start="([^"]+)"/g)].map(m=>m[1]);
+ assert.equal(ids.length,6);assert.equal(new Set(ids).size,6);
+ assert.equal(ids.filter(id=>id.startsWith('practice-mock-')).length,3);assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
+ assert.doesNotMatch(h.host.innerHTML,/01 \/ PRACTISE|02 \/ DISCOVER|03 \/ CONNECT|Find my starting point|data-start="(?:full|practice|diagnostic)"|id="readingType"/);
+ for(const id of ids){
+  await h.click({start:id});const s=snapshot(h).session;
+  assert.match(h.host.innerHTML,/data-exam-player/);assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
+  assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','hcs','hiw','mcma','mcsa','reorder','swt','wordbank'].sort());
+  assert.equal(s.questions.filter(q=>q.type==='hcs').length,2);assert.equal(s.questions.filter(q=>q.type==='hiw').length,2);
+  if(id.startsWith('practice')){assert.equal(s.deadline,null);assert.equal(s.stages,undefined);assert.match(h.host.innerHTML,/Untimed practice/);}
+  else {assert.equal(s.stages.length,4);assert.deepEqual(s.stages.map(stage=>stage.minutes),[10,10,25,10]);}
+ }
+});
+
+test('Three mock sets have distinct audio with accurate C2 HIW keys and explanations',()=>{
+ const forms=bank.mockCatalogue.filter(m=>m.timed),seen=new Set();
+ for(const form of forms){
+  const plan=compose(bank,form.id,'ignored',swtPassages);
+  assert.equal(plan.questions.length,bank.sets.find(s=>s.id===form.setId).questions.length+6);
+  for(const q of plan.questions.filter(q=>['hcs','hiw'].includes(q.type))){
+   assert(!seen.has(q.id));seen.add(q.id);assert(q.reasoning.correct);
+   if(q.type==='hcs'){assert(q.choices[q.answer]);assert.equal(Object.keys(q.reasoning.options).length,3);}
+   else{
+    const written=q.passage.split(/\s+/),spoken=q.audioText.split(/\s+/);assert.equal(q.cefrTarget,'C2');assert.equal(written.length,spoken.length);
+    assert.deepEqual(written.flatMap((word,i)=>word===spoken[i]?[]:[i]),q.answers);assert.equal(q.answers.length,6);
+    for(const c of q.corrections){assert.equal(written[c.index],c.written);assert.equal(spoken[c.index],c.spoken);}
+   }
+  }
+ }
+ assert.equal(seen.size,12);
+});
+
+test('Next saves a partial answer immediately, advances stage clocks and finishes without confirmation',async()=>{
+ const {h,clock}=await mixedClient();let s=snapshot(h).session;
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved but unfinished summary'}});
+ clock.add(30000);h.click({action:'exam-next'});s=snapshot(h).session;
+ assert.equal(s.index,1);assert.equal(s.stageIndex,1);assert.equal(s.deadline,clock.now+600000);
+ assert.equal(s.answers[s.questions[0].uid][0],'A saved but unfinished summary');assert.doesNotMatch(h.host.innerHTML,/reading-exam-confirm/);
+ h.click({action:'exam-next'});s=snapshot(h).session;
+ const q=s.questions[s.index];h.host.onchange({target:{dataset:{answer:'0'},value:q.answers[0]}});
+ h.click({action:'exam-next'});s=snapshot(h).session;assert.equal(s.answers[q.uid][0],q.answers[0]);assert.equal(s.index,3);
+ while(!snapshot(h).session.done)h.click({action:'exam-next'});
+ assert.match(h.host.innerHTML,/All answers &amp; feedback/);assert.doesNotMatch(h.host.innerHTML,/reading-exam-confirm|data-move=|data-question=/);
+});
+
+test('One-page review retries the correct SWT response even when another question was last visited',async()=>{
+ const {h}=await mixedClient(true);let calls=[],complete=false;
+ h.ctx.requestSwtGrade=async payload=>{calls.push(payload.passageId);if(!complete)throw Error('Temporary failure');return {...confirmedGrade,content_details:{notes:'Your main idea is accurate.'}};};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'First saved response.'}});nextQuestion(h);
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'Second saved response.'}});
+ while(!snapshot(h).session.done)h.click({action:'exam-next'});await flush();
+ const s=snapshot(h).session;assert.equal(s.index,s.questions.length-1);
+ assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,s.questions.length);
+ assert.match(h.host.innerHTML,/First saved response/);assert.match(h.host.innerHTML,/Second saved response/);assert.match(h.host.innerHTML,/Correct answer/);assert.match(h.host.innerHTML,/Correct highlights/);assert.match(h.host.innerHTML,/Correct order/);
+ complete=true;await h.click({action:'retry-swt',reviewUid:s.questions[0].uid});
+ assert.equal(calls.at(-1),s.questions[0].passageId);assert.equal(snapshot(h).session.assessments[s.questions[0].uid].status,'complete');
+ await h.click({action:'retry-all-swt'});assert.equal(snapshot(h).history[0].pending,0);assert.equal(calls.length,4);assert.match(h.host.innerHTML,/Your main idea is accurate/);
+});
+
+test('Review audio is selected by question identity and cannot change an excluded submitted result',async()=>{
+ const {h,audio}=await mixedClient(true);while(!snapshot(h).session.done)h.click({action:'exam-next'});
+ const before=snapshot(h),q=before.session.questions.find(q=>q.type==='hcs');
+ h.click({action:'play',reviewUid:q.uid});assert.equal(audio.utterances.at(-1).text,q.audioText);
+ audio.utterances.at(-1).onstart();audio.utterances.at(-1).onend();
+ const after=snapshot(h);assert.deepEqual(after.session.audioStates,before.session.audioStates);assert.equal(after.history[0].excluded,before.history[0].excluded);
+});
+
+test('The complete review escapes student and model content and exposes feedback without collapsed questions',()=>{
+ const review=require('../public/reading-review');
+ const q={uid:'swt:1',type:'swt',passage:'<script>bad()</script>',sampleResponse:'A useful example.'};
+ const result={...confirmedGrade,content_details:{notes:'<img src=x onerror=bad()>'},grammar_details:{grammar_annotations:[{phrase:'bad <word>',fix:'better',rationale:'Use a clear phrase.'}]}};
+ const html=review.question(q,['<svg onload=bad()>'],{result},null,{earned:8,possible:9},0,2,'SWT');
+ assert.doesNotMatch(html,/<script>|<img src=x|<svg|<details|data-question=/);assert.match(html,/&lt;svg/);assert.match(html,/A useful example/);assert.match(html,/Optional refinement/);
 });

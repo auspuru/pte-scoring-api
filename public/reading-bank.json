@@ -1,6 +1,6 @@
 {
   "source": "auspuru/ptemocktestreading",
-  "version": 4,
+  "version": 5,
   "sets": [
     {
       "id": "v1",
@@ -2277,6 +2277,550 @@
           "setId": "v3",
           "questionId": 15
         }
+      ]
+    }
+  ],
+  "audioQuestionBank": [
+    {
+      "id": "hcs-urban-cooling",
+      "uid": "mixed:hcs-urban-cooling",
+      "type": "hcs",
+      "title": "Urban cooling",
+      "instructions": "Listen to the recording, then select the one paragraph that best summarises its main argument.",
+      "audioText": "Planting trees is frequently presented as a straightforward way to cool a city. Shade certainly reduces the heat people experience, and evaporation from leaves can cool the surrounding air. But counting newly planted trees tells us little about whether those benefits will endure. Species must suit the local climate, roots need adequate space, and young trees require water and maintenance. Equally important is where planting occurs. A programme can increase a city's overall tree cover while leaving its hottest, least sheltered neighbourhoods almost untouched. Effective planning therefore combines long term care with a deliberate focus on places where residents have the fewest alternatives to outdoor exposure. The aim is not merely a greener map, but a reliable and fairly distributed reduction in heat.",
+      "choices": [
+        "Planting any tree species will reliably cool all neighbourhoods, so increasing the total number of trees should take priority over maintenance.",
+        "Trees can reduce urban heat, but lasting and equitable benefits depend on suitable species, continued care and planting in the areas that need protection most.",
+        "Tree planting has little influence on urban heat because evaporation offsets the advantages of shade.",
+        "Tree planting should be limited to neighbourhoods that already have abundant shade and reliable maintenance."
+      ],
+      "answer": 1,
+      "reasoning": {
+        "correct": "The speaker supports tree planting while making its success conditional on suitability, maintenance and equitable location.",
+        "options": {
+          "More trees alone": "The recording explicitly says that a count does not establish lasting benefits.",
+          "No cooling effect": "Both shade and evaporation are described as cooling mechanisms.",
+          "Already sheltered areas": "The proposed priority is residents with the fewest alternatives to outdoor exposure."
+        }
+      }
+    },
+    {
+      "id": "hcs-replication",
+      "uid": "mixed:hcs-replication",
+      "type": "hcs",
+      "title": "Replication and context",
+      "instructions": "Listen to the recording, then select the one paragraph that best summarises its main argument.",
+      "audioText": "When a study cannot be replicated, the immediate temptation is to conclude that the original finding was worthless. Sometimes that conclusion is warranted, particularly when the initial methods were weak. Yet a different result can also reveal that an effect depends on circumstances that the original explanation overlooked. A learning technique, for instance, might help experienced students while confusing beginners. The important question is therefore not simply whether a later study produces the same number, but whether it tests the same claim under conditions in which that claim was meant to hold. Replication remains essential because it exposes both unreliable findings and overly broad explanations. Its value lies in refining what we can responsibly conclude, rather than automatically confirming or dismissing an earlier result.",
+      "choices": [
+        "An unsuccessful replication always proves that the first study was worthless and that further investigation is unnecessary.",
+        "Replication is only useful when later researchers reproduce exactly the same numerical result.",
+        "Differences between studies should be ignored whenever the first result offers a convenient explanation.",
+        "Replication tests the dependability and limits of findings; different outcomes may expose weak methods or overlooked conditions and help refine an explanation."
+      ],
+      "answer": 3,
+      "reasoning": {
+        "correct": "The conclusion combines reliability with scope: a different outcome can reveal either an unreliable finding or a condition omitted from the original explanation.",
+        "options": {
+          "Automatic rejection": "The speaker explicitly qualifies this conclusion.",
+          "Identical numbers": "The recording distinguishes testing a claim from reproducing a number.",
+          "Ignore differences": "Differences are presented as useful evidence for refining explanations."
+        }
+      }
+    },
+    {
+      "id": "hiw-institutions-c2",
+      "uid": "mixed:hiw-institutions-c2",
+      "type": "hiw",
+      "title": "Institutional resilience",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted practice: abstract argument, nuanced qualification and dense academic vocabulary. Not a certified CEFR assessment.",
+      "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it. Correct selections earn 1 practice point; incorrect selections lose 1, with a minimum of 0 for the question.",
+      "audioText": "Institutional resilience is often conflated with an organisation's capacity to preserve existing arrangements. Yet an institution that remains impervious to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing indispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can entrench the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision constrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the reciprocal obligations that make collective action possible. Such responsiveness requires judgement, rather than the mechanical application of a universal blueprint.",
+      "passage": "Institutional resilience is often contrasted with an organisation's capacity to preserve existing arrangements. Yet an institution that remains receptive to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing dispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can eradicate the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision unconstrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the unilateral obligations that make collective action possible. Such responsiveness requires judgement, rather than the mechanical application of a universal blueprint.",
+      "answers": [
+        4,
+        18,
+        39,
+        57,
+        84,
+        100
+      ],
+      "corrections": [
+        {
+          "index": 4,
+          "written": "contrasted",
+          "spoken": "conflated"
+        },
+        {
+          "index": 18,
+          "written": "receptive",
+          "spoken": "impervious"
+        },
+        {
+          "index": 39,
+          "written": "dispensable",
+          "spoken": "indispensable"
+        },
+        {
+          "index": 57,
+          "written": "eradicate",
+          "spoken": "entrench"
+        },
+        {
+          "index": 84,
+          "written": "unconstrained",
+          "spoken": "constrained"
+        },
+        {
+          "index": 100,
+          "written": "unilateral",
+          "spoken": "reciprocal"
+        }
+      ],
+      "reasoning": {
+        "correct": "The speaker distinguishes preserving arrangements from principled revision. Each highlighted substitution changes a qualification or relationship in the original argument; select the written word only when it differs from the audio."
+      }
+    },
+    {
+      "id": "hiw-evidence-c2",
+      "uid": "mixed:hiw-evidence-c2",
+      "type": "hiw",
+      "title": "Evidence and explanation",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted practice: abstract argument, nuanced qualification and dense academic vocabulary. Not a certified CEFR assessment.",
+      "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it. Correct selections earn 1 practice point; incorrect selections lose 1, with a minimum of 0 for the question.",
+      "audioText": "The proliferation of finely resolved measurements does not, by itself, resolve the indeterminacy of an explanation. Several incompatible accounts may accommodate the same observations, especially when the mechanisms under investigation operate beyond the conditions in which the measurements were obtained. An apparently decisive correlation can therefore be evidentially weak without being spurious. The appropriate response is not to abandon quantification, but to articulate the assumptions that permit an inference to travel from one setting to another. This demands a distinction between uncertainty that further observations might reduce and uncertainty arising from the conceptual categories through which those observations become intelligible. A credible account makes these limitations explicit while remaining answerable to evidence capable of unsettling its preferred interpretation.",
+      "passage": "The proliferation of finely resolved measurements does not, by itself, resolve the certainty of an explanation. Several identical accounts may accommodate the same observations, especially when the mechanisms under investigation operate within the conditions in which the measurements were obtained. An apparently decisive correlation can therefore be evidentially strong without being spurious. The appropriate response is not to abandon quantification, but to articulate the assumptions that permit an inference to travel from one setting to another. This demands a distinction between uncertainty that further observations might increase and uncertainty arising from the conceptual categories through which those observations become intelligible. A credible account makes these limitations explicit while remaining answerable to evidence capable of confirming its preferred interpretation.",
+      "answers": [
+        12,
+        17,
+        31,
+        48,
+        86,
+        114
+      ],
+      "corrections": [
+        {
+          "index": 12,
+          "written": "certainty",
+          "spoken": "indeterminacy"
+        },
+        {
+          "index": 17,
+          "written": "identical",
+          "spoken": "incompatible"
+        },
+        {
+          "index": 31,
+          "written": "within",
+          "spoken": "beyond"
+        },
+        {
+          "index": 48,
+          "written": "strong",
+          "spoken": "weak"
+        },
+        {
+          "index": 86,
+          "written": "increase",
+          "spoken": "reduce"
+        },
+        {
+          "index": 114,
+          "written": "confirming",
+          "spoken": "unsettling"
+        }
+      ],
+      "reasoning": {
+        "correct": "The recording separates precise measurement from the strength and transferability of an explanation. The substitutions alter the argument about uncertainty, incompatible explanations and evidence that challenges a preferred account."
+      }
+    },
+    {
+      "id": "hcs-libraries",
+      "uid": "mock:hcs-libraries",
+      "type": "hcs",
+      "title": "Libraries and access",
+      "instructions": "Listen, then select the paragraph that best summarises the recording.",
+      "audioText": "Public libraries are sometimes judged by the number of books they lend. That measure remains useful, but it misses much of what a modern library makes possible. A person applying for work may need a computer, a reliable connection and help evaluating an unfamiliar website. Someone learning a language may need a quiet place to study and opportunities to practise with others. These activities do not make books obsolete. They show that access to information involves the ability to use it, not merely the availability of material. Libraries must therefore balance their established collections with services shaped by local needs. A successful library does not abandon reading in favour of technology; it connects resources, practical support and welcoming spaces so that more people can participate in everyday life.",
+      "choices": [
+        "Libraries should replace their book collections with computers because reading no longer supports participation.",
+        "Book loans are the only reliable measure of whether a public library serves its community.",
+        "Libraries support participation by combining collections with practical assistance and spaces that help people use information.",
+        "Every library should offer identical services regardless of the needs of its local users."
+      ],
+      "answer": 2,
+      "reasoning": {
+        "correct": "The speaker expands the idea of access: resources matter alongside the skills, assistance and space needed to use them.",
+        "options": {
+          "Replacing books": "The speaker explicitly says that books are not obsolete.",
+          "Loans alone": "Loan counts miss other activities that libraries support.",
+          "Identical services": "Services should reflect local needs."
+        }
+      }
+    },
+    {
+      "id": "hcs-measures",
+      "uid": "mock:hcs-measures",
+      "type": "hcs",
+      "title": "Targets and outcomes",
+      "instructions": "Listen, then select the paragraph that best summarises the recording.",
+      "audioText": "A hospital that shortens waiting times has usually made a valuable improvement. Problems arise when the waiting-time figure becomes the sole definition of success. Staff might then move patients between lists without improving the care they receive, or prioritise simple cases because those cases make the figures look better. This is not an argument against measurement. Without records, persistent delays can remain invisible. The lesson is that an indicator is a partial description of an outcome, not the outcome itself. Good evaluation combines several measures with evidence about patients' experiences and gives staff a reason to report problems honestly. Targets are most useful when they direct attention towards better care while remaining open to revision if they begin to reward behaviour that defeats their purpose.",
+      "choices": [
+        "Waiting-time targets should guide improvement alongside other evidence, because a single indicator can encourage behaviour that undermines patient care.",
+        "Hospitals should stop keeping records because measurement always damages the quality of treatment.",
+        "Moving patients between waiting lists necessarily improves their medical care.",
+        "Simple cases should always take priority because the shortest possible waiting-time figure is the only important result."
+      ],
+      "answer": 0,
+      "reasoning": {
+        "correct": "The argument supports measurement while warning against confusing a narrow indicator with the underlying goal of better care.",
+        "options": {
+          "No records": "Records are needed to reveal persistent delays.",
+          "Moving lists": "This is given as an example of improving figures without improving care.",
+          "Simple cases first": "That incentive can distort care rather than improve it."
+        }
+      }
+    },
+    {
+      "id": "hiw-translation-c2",
+      "uid": "mock:hiw-translation-c2",
+      "type": "hiw",
+      "title": "Translation and interpretation",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted academic listening and reading practice.",
+      "instructions": "Listen and select the written words that differ from the audio. Select a word again to remove it.",
+      "audioText": "Translation is frequently characterised as the substitution of equivalent expressions between languages. Such a description obscures the interpretative decisions required whenever a phrase acquires its force from an unstated convention. Fidelity cannot therefore be reduced to lexical correspondence, although departures from the wording require justification. A translator must distinguish ambiguities that belong to the source from uncertainties introduced by the act of translation itself. Eliminating the former can make an argument deceptively straightforward, while preserving the latter may render it needlessly opaque. The task is consequently neither mechanical reproduction nor unrestricted invention. It is an accountable negotiation between linguistic possibilities, historical circumstances and the expectations of a prospective audience, in which interpretative choices remain open to scrutiny rather than disappearing behind an appearance of perfect transparency.",
+      "passage": "Translation is frequently characterised as the substitution of unrelated expressions between languages. Such a description clarifies the interpretative decisions required whenever a phrase acquires its force from an explicit convention. Fidelity cannot therefore be reduced to lexical correspondence, although departures from the wording require imitation. A translator must distinguish ambiguities that belong to the source from uncertainties introduced by the act of translation itself. Eliminating the former can make an argument deceptively straightforward, while preserving the latter may render it needlessly opaque. The task is consequently neither mechanical reproduction nor restricted invention. It is an arbitrary negotiation between linguistic possibilities, historical circumstances and the expectations of a prospective audience, in which interpretative choices remain open to scrutiny rather than disappearing behind an appearance of perfect transparency.",
+      "answers": [
+        8,
+        15,
+        28,
+        44,
+        90,
+        95
+      ],
+      "corrections": [
+        {
+          "index": 8,
+          "written": "unrelated",
+          "spoken": "equivalent"
+        },
+        {
+          "index": 15,
+          "written": "clarifies",
+          "spoken": "obscures"
+        },
+        {
+          "index": 28,
+          "written": "explicit",
+          "spoken": "unstated"
+        },
+        {
+          "index": 44,
+          "written": "imitation.",
+          "spoken": "justification."
+        },
+        {
+          "index": 90,
+          "written": "restricted",
+          "spoken": "unrestricted"
+        },
+        {
+          "index": 95,
+          "written": "arbitrary",
+          "spoken": "accountable"
+        }
+      ],
+      "reasoning": {
+        "correct": "The recording presents translation as justified interpretation. The changed words alter equivalence, implicit context, the need for justification and accountability."
+      }
+    },
+    {
+      "id": "hiw-governance-c2",
+      "uid": "mock:hiw-governance-c2",
+      "type": "hiw",
+      "title": "Participation and authority",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted academic listening and reading practice.",
+      "instructions": "Listen and select the written words that differ from the audio. Select a word again to remove it.",
+      "audioText": "Inviting participation does not automatically redistribute authority. An institution may solicit extensive consultation while reserving every consequential decision for a small group whose assumptions remain unexamined. Nevertheless, it would be premature to dismiss consultation as invariably symbolic. Its significance depends on whether participants can challenge the terms of the discussion and whether decision makers must explain departures from their recommendations. Accountability is weakened when disagreement is interpreted as evidence that the public lacks competence, rather than as a reason to reconsider the available options. A defensible participatory arrangement therefore requires more than an accessible meeting. It needs procedures through which objections can influence subsequent action, alongside a transparent account of the constraints that prevent some proposals from being adopted.",
+      "passage": "Inviting participation does not automatically consolidate authority. An institution may solicit extensive consultation while reserving every consequential decision for a small group whose assumptions remain established. Nevertheless, it would be necessary to dismiss consultation as invariably symbolic. Its significance depends on whether participants can challenge the terms of the discussion and whether decision makers must explain departures from their recommendations. Accountability is strengthened when disagreement is interpreted as evidence that the public lacks competence, rather than as a reason to reconsider the available options. A defensible participatory arrangement therefore requires more than an accessible meeting. It needs procedures through which objections can influence previous action, alongside a selective account of the constraints that prevent some proposals from being adopted.",
+      "answers": [
+        5,
+        25,
+        30,
+        62,
+        103,
+        107
+      ],
+      "corrections": [
+        {
+          "index": 5,
+          "written": "consolidate",
+          "spoken": "redistribute"
+        },
+        {
+          "index": 25,
+          "written": "established.",
+          "spoken": "unexamined."
+        },
+        {
+          "index": 30,
+          "written": "necessary",
+          "spoken": "premature"
+        },
+        {
+          "index": 62,
+          "written": "strengthened",
+          "spoken": "weakened"
+        },
+        {
+          "index": 103,
+          "written": "previous",
+          "spoken": "subsequent"
+        },
+        {
+          "index": 107,
+          "written": "selective",
+          "spoken": "transparent"
+        }
+      ],
+      "reasoning": {
+        "correct": "The speaker distinguishes inviting views from sharing authority and argues that objections must influence later action. The substitutions change those qualifications and relationships."
+      }
+    },
+    {
+      "id": "hcs-coastal",
+      "uid": "mock:hcs-coastal",
+      "type": "hcs",
+      "title": "Planning for uncertain coastlines",
+      "instructions": "Listen, then select the paragraph that best summarises the recording.",
+      "audioText": "Coastal planners often have to make expensive decisions before they know exactly how quickly sea levels will rise. One response is to choose a single forecast and build a defence large enough for that scenario. A different approach begins by asking which actions remain useful across several plausible futures. Restoring wetlands, limiting new development in exposed areas and reserving space for future defences can reduce vulnerability without committing every resource immediately. Larger interventions can then be linked to observable thresholds, such as repeated flooding at a particular location. This approach does not remove uncertainty or guarantee that every decision will be correct. It makes the decision process more adaptable by specifying what can be done now, what should be monitored and what evidence would justify changing course.",
+      "choices": [
+        "Coastal uncertainty can be eliminated by selecting one forecast and treating it as certain.",
+        "Planners should delay every protective action until sea-level forecasts become exact.",
+        "Wetland restoration guarantees that no larger coastal defence will ever be required.",
+        "Planning can respond to uncertainty through useful early measures, monitoring and agreed thresholds for adapting later interventions."
+      ],
+      "answer": 3,
+      "reasoning": {
+        "correct": "The speaker recommends an adaptable sequence of decisions rather than relying on one certain prediction.",
+        "options": {
+          "One certain forecast": "The passage begins from continuing uncertainty.",
+          "Delay everything": "Several useful measures can be taken now.",
+          "Wetlands guarantee safety": "Larger interventions may still be needed."
+        }
+      }
+    },
+    {
+      "id": "hcs-archives",
+      "uid": "mock:hcs-archives",
+      "type": "hcs",
+      "title": "Digital archives and preservation",
+      "instructions": "Listen, then select the paragraph that best summarises the recording.",
+      "audioText": "Scanning a fragile document creates a useful copy, but the act of scanning does not by itself secure the document's future. A digital file can become unreadable when its format is no longer supported, and a collection without reliable descriptions may be technically intact but almost impossible to search. Preservation therefore involves maintaining both the files and the information that explains their origin and relationship to other records. Institutions must also decide what to keep, since the cost of checking, migrating and describing material continues long after its initial digitisation. A sound archive combines technical maintenance with documented selection policies and an understanding of how future users might interpret the material. Its purpose is not simply to accumulate more files, but to keep evidence accessible and meaningful over time.",
+      "choices": [
+        "Digitisation permanently removes the need to maintain records or describe their origins.",
+        "Digital preservation requires ongoing technical care, contextual descriptions and considered selection so that records remain usable and meaningful.",
+        "An archive succeeds whenever it stores the greatest possible number of files, regardless of whether they can be found.",
+        "Unsupported file formats are harmless because all digital documents remain readable indefinitely."
+      ],
+      "answer": 1,
+      "reasoning": {
+        "correct": "The main idea connects technical maintenance, context and selection with long-term accessibility and meaning.",
+        "options": {
+          "No maintenance": "Checking, migration and description continue after scanning.",
+          "Maximum file count": "Accumulating files is explicitly distinguished from the archive’s purpose.",
+          "Formats are harmless": "Unsupported formats can make files unreadable."
+        }
+      }
+    },
+    {
+      "id": "hiw-models-c2",
+      "uid": "mock:hiw-models-c2",
+      "type": "hiw",
+      "title": "Models and causal inference",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted academic listening and reading practice.",
+      "instructions": "Listen and select the written words that differ from the audio. Select a word again to remove it.",
+      "audioText": "The apparent precision of a computational model can conceal considerable uncertainty about the mechanisms it represents. A model may reproduce historical observations while relying on assumptions that cease to hold under unfamiliar conditions. This does not render modelling futile; it clarifies the distinction between fitting an existing pattern and explaining why that pattern arose. Robust evaluation consequently examines sensitivity to alternative assumptions and seeks observations capable of discriminating between competing accounts. Agreement with a preferred forecast is insufficient when several incompatible mechanisms could produce the same result. The most informative discrepancy may be one that exposes a previously unnoticed limitation, provided that researchers resist the temptation to dismiss inconvenient evidence as mere noise. Explanatory progress depends on making those vulnerabilities visible and revisable.",
+      "passage": "The apparent precision of a computational model can eliminate considerable uncertainty about the mechanisms it represents. A model may reproduce historical observations while relying on assumptions that cease to hold under identical conditions. This does not render modelling infallible; it clarifies the distinction between fitting an existing pattern and explaining why that pattern arose. Robust evaluation consequently examines sensitivity to alternative assumptions and seeks observations capable of compromising between competing accounts. Agreement with a preferred forecast is conclusive when several incompatible mechanisms could produce the same result. The most informative discrepancy may be one that exposes a previously unnoticed limitation, provided that researchers resist the temptation to dismiss supporting evidence as mere noise. Explanatory progress depends on making those vulnerabilities visible and revisable.",
+      "answers": [
+        8,
+        31,
+        38,
+        67,
+        77,
+        108
+      ],
+      "corrections": [
+        {
+          "index": 8,
+          "written": "eliminate",
+          "spoken": "conceal"
+        },
+        {
+          "index": 31,
+          "written": "identical",
+          "spoken": "unfamiliar"
+        },
+        {
+          "index": 38,
+          "written": "infallible;",
+          "spoken": "futile;"
+        },
+        {
+          "index": 67,
+          "written": "compromising",
+          "spoken": "discriminating"
+        },
+        {
+          "index": 77,
+          "written": "conclusive",
+          "spoken": "insufficient"
+        },
+        {
+          "index": 108,
+          "written": "supporting",
+          "spoken": "inconvenient"
+        }
+      ],
+      "reasoning": {
+        "correct": "The recording distinguishes fitting data from explaining mechanisms. The changes reverse claims about uncertainty, model limitations, discriminating evidence and inconvenient observations."
+      }
+    },
+    {
+      "id": "hiw-consent-c2",
+      "uid": "mock:hiw-consent-c2",
+      "type": "hiw",
+      "title": "Consent and meaningful choice",
+      "cefrTarget": "C2",
+      "difficultyNote": "C2-targeted academic listening and reading practice.",
+      "instructions": "Listen and select the written words that differ from the audio. Select a word again to remove it.",
+      "audioText": "Consent is often treated as a discrete event, recorded once and presumed to authorise every subsequent use of information. Yet permission obtained under one set of expectations does not necessarily remain adequate when the purposes or consequences of processing change. The difficulty is not resolved by presenting individuals with increasingly elaborate notices that few can reasonably scrutinise. Meaningful choice requires intelligible explanations, proportionate requests and a practicable opportunity to refuse without incurring unrelated disadvantages. These conditions cannot guarantee that every person will make an informed decision, but they constrain institutions from equating procedural compliance with substantive understanding. Consent should therefore be situated within continuing obligations of accountability, rather than invoked as a permanent exemption from responsibility for how information is used.",
+      "passage": "Consent is often treated as a continuous event, recorded once and presumed to authorise every subsequent use of information. Yet permission obtained under one set of expectations does not necessarily remain irrelevant when the purposes or consequences of processing change. The difficulty is not resolved by presenting individuals with increasingly elaborate notices that few can reasonably scrutinise. Meaningful choice requires technical explanations, proportionate requests and a practicable opportunity to comply without incurring unrelated disadvantages. These conditions cannot guarantee that every person will make an informed decision, but they release institutions from equating procedural compliance with substantive understanding. Consent should therefore be situated within continuing obligations of accountability, rather than invoked as a temporary exemption from responsibility for how information is used.",
+      "answers": [
+        6,
+        31,
+        60,
+        69,
+        88,
+        112
+      ],
+      "corrections": [
+        {
+          "index": 6,
+          "written": "continuous",
+          "spoken": "discrete"
+        },
+        {
+          "index": 31,
+          "written": "irrelevant",
+          "spoken": "adequate"
+        },
+        {
+          "index": 60,
+          "written": "technical",
+          "spoken": "intelligible"
+        },
+        {
+          "index": 69,
+          "written": "comply",
+          "spoken": "refuse"
+        },
+        {
+          "index": 88,
+          "written": "release",
+          "spoken": "constrain"
+        },
+        {
+          "index": 112,
+          "written": "temporary",
+          "spoken": "permanent"
+        }
+      ],
+      "reasoning": {
+        "correct": "The speaker argues that permission has limits and must be supported by understandable choices and ongoing accountability. The altered words change those limits and obligations."
+      }
+    }
+  ],
+  "mockCatalogue": [
+    {
+      "id": "practice-mock-1",
+      "name": "Practice Mock 1",
+      "setId": "v1",
+      "timed": false,
+      "swtOffset": 0,
+      "audioQuestionIds": [
+        "hcs-urban-cooling",
+        "hcs-replication",
+        "hiw-institutions-c2",
+        "hiw-evidence-c2"
+      ]
+    },
+    {
+      "id": "practice-mock-2",
+      "name": "Practice Mock 2",
+      "setId": "v2",
+      "timed": false,
+      "swtOffset": 2,
+      "audioQuestionIds": [
+        "hcs-libraries",
+        "hcs-measures",
+        "hiw-translation-c2",
+        "hiw-governance-c2"
+      ]
+    },
+    {
+      "id": "practice-mock-3",
+      "name": "Practice Mock 3",
+      "setId": "v3",
+      "timed": false,
+      "swtOffset": 4,
+      "audioQuestionIds": [
+        "hcs-coastal",
+        "hcs-archives",
+        "hiw-models-c2",
+        "hiw-consent-c2"
+      ]
+    },
+    {
+      "id": "sectional-mock-1",
+      "name": "Sectional Mock 1",
+      "setId": "v1",
+      "timed": true,
+      "swtOffset": 0,
+      "audioQuestionIds": [
+        "hcs-urban-cooling",
+        "hcs-replication",
+        "hiw-institutions-c2",
+        "hiw-evidence-c2"
+      ]
+    },
+    {
+      "id": "sectional-mock-2",
+      "name": "Sectional Mock 2",
+      "setId": "v2",
+      "timed": true,
+      "swtOffset": 2,
+      "audioQuestionIds": [
+        "hcs-libraries",
+        "hcs-measures",
+        "hiw-translation-c2",
+        "hiw-governance-c2"
+      ]
+    },
+    {
+      "id": "sectional-mock-3",
+      "name": "Sectional Mock 3",
+      "setId": "v3",
+      "timed": true,
+      "swtOffset": 4,
+      "audioQuestionIds": [
+        "hcs-coastal",
+        "hcs-archives",
+        "hiw-models-c2",
+        "hiw-consent-c2"
       ]
     }
   ]

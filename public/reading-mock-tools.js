@@ -49,6 +49,16 @@
     }
   }
   function compose(bank, mode, setId, swtPassages) {
+    const preset = bank.mockCatalogue?.find(item => item.id === mode);
+    if (preset) {
+      const set = bank.sets.find(item => item.id === preset.setId);
+      if (!set) throw Error('This mock question set is unavailable.');
+      const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
+      validateReading(reading, set.minutes);
+      const audio = preset.audioQuestionIds.map(id => bank.audioQuestionBank.find(q => q.id === id));
+      if (audio.some(q => !q) || audio.filter(q => q.type === 'hcs').length !== 2 || audio.filter(q => q.type === 'hiw').length !== 2) throw Error('This mock audio set is incomplete.');
+      return composeIntegrated(preset.name, reading, set.minutes, audio, bank.mixedMock.listeningMinutes, swtPassages, preset.timed);
+    }
     const sectional = bank.sectionalMocks.find(item => item.id === mode);
     const set = bank.sets.find(item => item.id === (sectional?.setId || setId));
     if (!set) throw Error('This question set is unavailable.');
@@ -65,16 +75,20 @@
     }
     if (mode === 'mock') validateReading(reading, set.minutes);
     if (mode !== 'full') return { name: set.name, minutes: set.minutes, questions: reading };
+    return composeIntegrated(bank.mixedMock.name, reading, set.minutes, bank.mixedMock.audioQuestions, bank.mixedMock.listeningMinutes, swtPassages, true);
+  }
+  function composeIntegrated(name, reading, readingMinutes, audio, listeningMinutes, swtPassages, timed) {
     if (!Array.isArray(swtPassages) || swtPassages.length !== 2 || swtPassages.some(p => p?.id == null || !p.text || !p.keyElements) || new Set(swtPassages.map(p => String(p.id))).size !== 2 || new Set(swtPassages.map(p => p.text.trim().replace(/\s+/g, ' ').toLowerCase())).size !== 2) throw Error('Two different SWT passages are required. Please try again.');
-    const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2, with its own 10-minute timer.' }));
-    const questions = [...swt, ...reading, ...bank.mixedMock.audioQuestions];
+    const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2.' + (timed ? ' You have 10 minutes for this question.' : ' Take your time in this untimed practice mock.') }));
+    const questions = [...swt, ...reading, ...audio];
+    if (new Set(questions.map(q => q.uid)).size !== questions.length) throw Error('This mock contains repeated questions.');
     const stages = [
       { id: 'swt-1', name: 'SWT 1 of 2', first: 0, last: 0, minutes: 10 },
       { id: 'swt-2', name: 'SWT 2 of 2', first: 1, last: 1, minutes: 10 },
-      { id: 'reading', name: 'Reading', first: 2, last: reading.length + 1, minutes: set.minutes },
-      { id: 'listening', name: 'HCS & HIW', first: reading.length + 2, last: questions.length - 1, minutes: bank.mixedMock.listeningMinutes }
+      { id: 'reading', name: 'Reading', first: 2, last: reading.length + 1, minutes: readingMinutes },
+      { id: 'listening', name: 'HCS & HIW', first: reading.length + 2, last: questions.length - 1, minutes: listeningMinutes }
     ];
-    return { name: bank.mixedMock.name, minutes: stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages };
+    return { name, minutes: stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages: timed ? stages : undefined };
   }
   // Autoplay and manual recovery share the same playback lifecycle.
   function createSpeaker(env, onState) {

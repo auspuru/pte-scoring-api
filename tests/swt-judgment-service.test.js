@@ -164,3 +164,56 @@ test('Paraphrased evidence triggers a fresh exact-quote check instead of a false
   assert.equal(corrected.needs_semantic_review, false);
   assert.equal(corrected.content_score, 4);
 });
+
+function indexed(j, summary=fixture.summary) {
+  const words=[...summary.matchAll(/\S+/g)];
+  const span=quote=>{
+    const start=summary.indexOf(quote),end=start+quote.length;
+    assert(start>=0);
+    return [words.findIndex(w=>w.index<=start&&w.index+w[0].length>start)+1,words.findIndex(w=>w.index<end&&w.index+w[0].length>=end)+1];
+  };
+  const result=structuredClone(j),a=result.summary_assessment;
+  a.main_idea_span=span(a.main_idea_evidence);a.supporting_spans=a.supporting_evidence.map(span);
+  return result;
+}
+
+test('Indexed citations repair the repeated supporting-evidence failure without changing judgments or traits',async()=>{
+  let calls=0;
+  const disputed=good();disputed.summary_assessment.relationships_clear=false;
+  const reviewed=indexed(good());reviewed.summary_assessment.supporting_evidence=['The judge retyped this incorrectly.'];
+  const svc=service(async prompt=>{
+    calls++;assert.match(prompt,/Student word data/);
+    return calls===1?disputed:reviewed;
+  });
+  const result=await invoke(svc),actual=applyScoringPolicy(result,fixture.summary),expected=applyScoringPolicy(good(),fixture.summary);
+  assert.equal(calls,2);assert(result.consistency_reviewed);assert.equal(actual.needs_semantic_review,false);
+  assert(actual.summary_assessment.supporting_evidence.every(quote=>fixture.summary.includes(quote)));
+  assert.equal(actual.summary_assessment.supporting_evidence.length,expected.summary_assessment.supporting_evidence.length);
+  assert.equal(actual.content_score,expected.content_score);assert.equal(actual.grammar_score,expected.grammar_score);assert.equal(actual.vocabulary_score,expected.vocabulary_score);
+  await invoke(svc);assert.equal(calls,2,'Only the complete, verified assessment may be cached');
+});
+
+test('Indexed citations preserve original whitespace and cannot fabricate or silently drop invalid evidence',()=>{
+  const {materialiseEvidence}=require('../swt-judgment-service');
+  const summary='Trees  cool\ncities while protecting residents.';
+  const result=materialiseEvidence({summary_assessment:{main_idea_span:[1,3],supporting_spans:[[4,6]]}},summary);
+  assert.equal(result.summary_assessment.main_idea_evidence,'Trees  cool\ncities');
+  assert.deepEqual(result.summary_assessment.supporting_evidence,['while protecting residents.']);
+  for(const span of [[0,3],[3,2],[1,99],[1.5,2],['1',3],[1],null]){
+    const j=indexed(good());j.summary_assessment.supporting_spans=[span];
+    const checked=applyScoringPolicy(materialiseEvidence(j,fixture.summary),fixture.summary);
+    assert.equal(checked.needs_semantic_review,true);assert(checked.assessment_issues.includes('supporting_evidence'));
+  }
+  const broken=indexed(good());broken.summary_assessment.supporting_spans='bad';
+  assert(applyScoringPolicy(materialiseEvidence(broken,fixture.summary),fixture.summary).needs_semantic_review);
+});
+
+test('Indexed evidence retains genuine omissions and language deductions rather than forcing full marks',async()=>{
+  const deduction=good();deduction.content_score=3;
+  deduction.summary_assessment.relationships_clear=false;
+  deduction.summary_assessment.missing_dependencies=[{effect:'pollination',missing_context:'The mechanism is missing.'}];
+  const svc=service(async()=>indexed(deduction));
+  const actual=applyScoringPolicy(await invoke(svc),fixture.summary),expected=applyScoringPolicy(deduction,fixture.summary);
+  assert.equal(actual.needs_semantic_review,false);assert.equal(actual.content_score,expected.content_score);
+  assert.equal(actual.full_content_eligible,false);assert.equal(actual.grammar_score,expected.grammar_score);
+});

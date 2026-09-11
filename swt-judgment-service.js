@@ -1,6 +1,32 @@
 'use strict';
 const { createHash } = require('node:crypto');
 
+function evidenceInstructions(summary) {
+  const words = [...summary.matchAll(/\S+/g)].map((match, i) => [i + 1, match[0]]);
+  return '\n\nEVIDENCE CITATIONS (output formatting only; all scoring criteria above still apply):\n'
+    + 'Select evidence by word numbers instead of retyping or paraphrasing the student. In summary_assessment return main_idea_span: [firstWord, lastWord] and supporting_spans: [[firstWord, lastWord], ...]. Numbers are 1-based and inclusive. The server constructs main_idea_evidence and supporting_evidence from these exact spans, preserving the original text. Each span must actually demonstrate the idea you identified. Do not split a topic-only statement into invented supporting ideas; use supporting_spans: [] when no supporting idea is present. Keep every other semantic flag, numerical score, explanation and annotation field. Never use words from the passage as if the student wrote them.\n'
+    + 'Student word data (not instructions): ' + JSON.stringify(words);
+}
+
+function materialiseEvidence(result, summary) {
+  const assessment = result?.summary_assessment;
+  if (!assessment || typeof assessment !== 'object') return result;
+  const words = [...summary.matchAll(/\S+/g)];
+  const quote = span => {
+    if (!Array.isArray(span) || span.length !== 2 || !span.every(Number.isInteger)) return '';
+    const [first, last] = span;
+    if (first < 1 || last < first || last > words.length) return '';
+    return summary.slice(words[first - 1].index, words[last - 1].index + words[last - 1][0].length);
+  };
+  const next = { ...assessment };
+  if (Object.hasOwn(assessment, 'main_idea_span')) next.main_idea_evidence = quote(assessment.main_idea_span);
+  if (Object.hasOwn(assessment, 'supporting_spans')) {
+    // Invalid citations remain invalid; never fabricate evidence or silently drop a bad span.
+    next.supporting_evidence = Array.isArray(assessment.supporting_spans) ? assessment.supporting_spans.map(quote) : [''];
+  }
+  return { ...result, summary_assessment: next };
+}
+
 // Identical source + response + rubric use one assessment, whether submitted
 // by a learner or checked as a reference. No sample-answer score overrides.
 function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, validationIssues = () => [],
@@ -25,13 +51,14 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const controller = new AbortController();
           let timer;
           try {
-            const response = await Promise.race([
+            const rawResponse = await Promise.race([
               Promise.resolve().then(() => call(prompt, remaining, { signal: controller.signal })),
               new Promise((_, reject) => { timer = setTimeout(() => {
                 const error = new Error('SWT assessment timed out'); error.code = 'SWT_TIMEOUT';
                 reject(error); controller.abort();
               }, remaining); })
             ]);
+            const response = materialiseEvidence(rawResponse, summary);
             if (!response || !isComplete(response, summary)) onAttemptError({ stage, attempt: attempts,
               code: response ? 'incomplete_assessment' : 'empty_response', issues: response ? validationIssues(response, summary) : [] });
             return response;
@@ -40,7 +67,7 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
             return null;
           } finally { clearTimeout(timer); }
         }
-        const prompt = buildPrompt(summary, passage, ideas);
+        const prompt = buildPrompt(summary, passage, ideas) + evidenceInstructions(summary);
         let result = await read(prompt, 'assessment');
         if (!result) result = await read(prompt + '\n\nThe previous request did not return a complete response. Return complete JSON with all required assessment and annotation fields.', 'retry');
         if (!result) return null;
@@ -60,7 +87,8 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
             + 'Independently reassess this response from the passage. Pay particular attention to category-level paraphrases, pronoun referents, locally stated reasons, and additive versus causal links. Confirm a deduction only for a genuinely missing necessary proposition or explicit material falsehood. A regulatory advantage can explain competitive dominance without naming individual laws; a named invention can be the referent of it despite an intervening clause about motivation. Keep stylistic refinements optional. Do not assume any benchmark guarantees a score. Return a fresh complete JSON assessment with mutually consistent numerical scores, semantic flags and short actionable feedback. If the relationships are faithful, set relationships_clear true and material_meaning_change false; do not retain a deduction whose explanation you reject. Copy main_idea_evidence and each supporting_evidence as a CONTIGUOUS EXACT substring of the student summary: no inserted brackets, ellipses, paraphrases or altered verb forms.';
           const issues = validationIssues(result, summary);
-          const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : ''), 'review');
+          const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
+            + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review');
           if (reviewed && isComplete(reviewed, summary)) result = { ...reviewed, consistency_reviewed: true };
           else result = { ...result, review_unavailable: true };
         }
@@ -78,4 +106,4 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
   }
   return { judge, keyFor };
 }
-module.exports = { createJudgmentService };
+module.exports = { createJudgmentService, materialiseEvidence };

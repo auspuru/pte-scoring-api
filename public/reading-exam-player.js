@@ -6,16 +6,7 @@
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const titles = { dropdown: 'Fill in the Blanks (Dropdown)', wordbank: 'Fill in the Blanks (Drag and Drop)', reorder: 'Reorder Paragraphs', mcsa: 'Multiple Choice, Single Answer', mcma: 'Multiple Choice, Multiple Answers', swt: 'Summarize Written Text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
-  function isExam(session) { return !!session && ['full','mock','sectional-1','sectional-2','diagnostic'].includes(session.mode); }
-  function needsAttention(q, answer = [], audioState) {
-    if (q.type === 'hcs' || q.type === 'hiw') {
-      if (audioState?.status !== 'complete') return 'Audio has not finished. Continuing will exclude this audio item from your graded total.';
-    }
-    const complete = q.type === 'swt' ? !!String(answer[0] || '').trim()
-      : q.type === 'reorder' ? answer.length === q.items.length
-      : ['dropdown','wordbank'].includes(q.type) ? q.answers.every((_,i)=>!!answer[i]) : answer.length > 0;
-    return complete ? '' : 'This question has unanswered parts. You will not be able to return after selecting Next.';
-  }
+  function isExam(session) { return !!session && (['full','mock','sectional-1','sectional-2','diagnostic'].includes(session.mode) || /^(practice|sectional)-mock-[1-3]$/.test(session.mode)); }
   function moveParagraph(q, answer = [], key, destination, position) {
     if (!q.items.some(item=>item.key===key) || !['source','target'].includes(destination)) return answer;
     const oldIndex=answer.indexOf(key), next=answer.filter(item=>item!==key);
@@ -34,12 +25,12 @@
   function render({ session:s, question:q, content, audio, timer, saved, notice }) {
     const section=q.type==='swt'?'Writing':q.type==='hcs'||q.type==='hiw'?'Listening & Reading':'Reading';
     const stage=s.stages?.[s.stageIndex];
-    const clockLabel=stage?stage.name+' · '+(q.type==='swt'?'Question':'Section')+' time remaining':'Time remaining';
+    const clockLabel=s.deadline==null?'Work at your own pace':stage?stage.name+' · '+(q.type==='swt'?'Question':'Section')+' time remaining':'Time remaining';
     return `<div class="reading-exam-player" data-exam-player>
       <header class="reading-exam-header"><div class="reading-exam-brand"><img src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane"><div><strong>IPT Brisbane</strong><span>${escape(s.name)}</span></div></div><div class="reading-exam-clock"><span>${escape(clockLabel)}</span><strong data-timer>${escape(timer)}</strong><span>${stage?'Stage '+(s.stageIndex+1)+' of '+s.stages.length+' · ':''}Question ${s.index+1} of ${s.questions.length}</span></div></header>
       <div class="reading-exam-stage"><div class="reading-exam-section"><span>${section}</span><button type="button" data-action="exam-exit">Exit test</button></div>${s.stageNotice?`<p class="reading-stage-notice" role="status">${escape(s.stageNotice)}</p>`:''}<article class="reading-exam-question" aria-labelledby="readingExamTitle"><h2 id="readingExamTitle" data-exam-title tabindex="-1">${titles[q.type]}</h2><p class="reading-exam-instructions">${escape(q.instructions)}</p>${audio||''}<fieldset><legend class="sr-only">Your answer</legend>${content}</fieldset></article></div>
-      <footer class="reading-exam-footer">${notice?`<section class="reading-exam-confirm" role="alert"><p>${escape(notice.message)}</p><div><button type="button" data-action="exam-stay">Keep working</button><button type="button" class="reading-exam-next" data-action="exam-confirm">${notice.action==='exit'?'Save and exit':notice.action==='submit'?'Submit test':'Continue to next question'}</button></div></section>`:''}<div class="reading-exam-footer-row"><div><span data-save-status role="status">${escape(saved)}</span><p>Next saves your answer. You cannot return to an earlier question.</p></div><button type="button" class="reading-exam-next" data-action="exam-next" ${notice?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></footer>
+      <footer class="reading-exam-footer">${notice?`<section class="reading-exam-confirm" role="alert"><p>${escape(notice.message)}</p><div><button type="button" data-action="exam-stay">Keep working</button><button type="button" class="reading-exam-next" data-action="exam-confirm">${notice.action==='exit'?'Save and exit':notice.action==='submit'?'Submit test':'Continue to next question'}</button></div></section>`:''}<div class="reading-exam-footer-row"><div><span data-save-status role="status">${escape(saved)}</span><p>Next saves your answer. You cannot return to an earlier question.</p></div><button type="button" class="reading-exam-next" data-action="exam-next" ${notice?'disabled':''}>${s.index===s.questions.length-1?'Finish mock':'Next'} <span aria-hidden="true">→</span></button></div></footer>
     </div>`;
   }
-  return { isExam, needsAttention, moveParagraph, reorderHTML, render };
+  return { isExam, moveParagraph, reorderHTML, render };
 });
