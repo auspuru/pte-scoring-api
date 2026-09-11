@@ -616,6 +616,8 @@
     }
     const b=e.target.closest('button');if(!b||b.disabled)return;
     const d=b.dataset,s=state.session;
+    // Unlock Web Audio while a real click is active, before any async load or countdown.
+    if(d.start||d.practiceUid||d.draft!==undefined||d.history!==undefined||d.question!==undefined||d.move!==undefined||['play','soundcheck','resume','exam-next','exam-confirm'].includes(d.action))speaker?.unlock();
     if(d.browseLibrary)return browseLibrary(d.browseLibrary);
     if(d.libraryPage!==undefined&&libraryView){
       const page=Number(d.libraryPage),max=Math.ceil(libraryQuestions().length/10);

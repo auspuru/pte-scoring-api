@@ -11,9 +11,8 @@
     for (const ch of String(value || '')) { n ^= ch.charCodeAt(0); n = Math.imul(n, 16777619); }
     return n >>> 0;
   }
-  // HIW practice can use a little listening variety. Full mock audio remains
-  // single-speaker so it keeps the real-test feel; the transcript and answer
-  // key are never changed by a challenge layer.
+  // Every HIW entry point shares the same practice variation; the transcript
+  // and answer key are never changed by the audio layer.
   function audioVariant(q, challenge = true) {
     if (!q || q.type !== 'hiw' || !challenge) return 'single';
     if (q.audioVariant && q.audioVariant !== 'single' && AUDIO_VARIANTS.includes(q.audioVariant)) return q.audioVariant;
@@ -147,106 +146,212 @@
     ];
     return { name, minutes: sharedMinutes || stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages: timed && !sharedMinutes ? stages : undefined };
   }
-  // Autoplay and manual recovery share the same playback lifecycle.
+  // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
     let active = null, timeout = null, startTimeout = null, serial = 0;
+    let audioContext = null, effects = null, voiceCleanup = null;
+    function clearTimers() {
+      if (timeout !== null) env.clearTimeout(timeout);
+      if (startTimeout !== null) env.clearTimeout(startTimeout);
+      timeout = startTimeout = null;
+      voiceCleanup?.();
+      voiceCleanup = null;
+    }
+    function stopEffects() {
+      if (!effects) return;
+      const previous = effects; effects = null;
+      previous.timers.forEach(id => env.clearTimeout(id));
+      previous.nodes.forEach(node => {
+        try { node.stop?.(); } catch (_) {}
+        try { node.disconnect?.(); } catch (_) {}
+      });
+    }
+    // Call during the click that opens/resumes a question, before its countdown.
+    // Unlocking only inside the later speech callback loses browser activation.
+    function unlock() {
+      try {
+        const Context = env.AudioContext || env.webkitAudioContext;
+        if (!Context) return Promise.resolve(false);
+        if (!audioContext || audioContext.state === 'closed') audioContext = new Context();
+        if (audioContext.state === 'running') return Promise.resolve(true);
+        return Promise.resolve(audioContext.resume?.()).then(() => audioContext.state === 'running', () => false);
+      } catch (_) { return Promise.resolve(false); }
+    }
     function cancel() {
       serial++;
-      if (timeout) env.clearTimeout(timeout);
-      if (startTimeout) env.clearTimeout(startTimeout);
-      timeout = null;
-      startTimeout = null;
-      stopEffects?.();
-      if (active) {
+      clearTimers();
+      stopEffects();
+      if (active !== null) {
         const previous = active; active = null;
         env.speechSynthesis?.cancel();
         onState(previous, 'error', 'Playback was interrupted. Replay this question before submitting.');
       }
     }
-    let audioContext = null, ambience = null, cueTimer = null;
-    function stopEffects() {
-      if (cueTimer) env.clearTimeout(cueTimer);
-      cueTimer = null;
-      if (ambience) { try { ambience.gain.gain.cancelScheduledValues(0); ambience.gain.gain.setTargetAtTime(0, ambience.context.currentTime, 0.02); ambience.oscillators.forEach(o => o.stop(ambience.context.currentTime + 0.04)); } catch (_) {} ambience = null; }
-    }
-    function startEffects(options) {
-      stopEffects();
-      if (!options || options.variant === 'single' || !env.AudioContext && !env.webkitAudioContext) return;
-      try {
-        audioContext ||= new (env.AudioContext || env.webkitAudioContext)();
-        if (audioContext.state === 'suspended') audioContext.resume?.().catch(() => {});
-        const gain = audioContext.createGain(); gain.gain.value = options.variant === 'ambient' ? 0.018 : 0.025; gain.connect(audioContext.destination);
-        const oscillators = [];
-        if (options.variant === 'ambient') {
-          for (const frequency of [196, 247]) { const oscillator = audioContext.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); oscillators.push(oscillator); }
-          ambience = { context: audioContext, gain, oscillators };
-        } else if (options.variant === 'sound-cue') {
-          const chirp = () => {
-            if (!audioContext) return;
-            const oscillator = audioContext.createOscillator(), cueGain = audioContext.createGain();
-            oscillator.type = 'triangle'; oscillator.frequency.setValueAtTime(1500, audioContext.currentTime); oscillator.frequency.exponentialRampToValueAtTime(2600, audioContext.currentTime + 0.12);
-            cueGain.gain.setValueAtTime(0.0001, audioContext.currentTime); cueGain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.02); cueGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.2);
-            oscillator.connect(cueGain); cueGain.connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + 0.22);
-          };
-          chirp(); cueTimer = env.setTimeout(chirp, 330);
-        }
-      } catch (_) { /* Speech remains usable when Web Audio is unavailable. */ }
+    function startEffects(options, ticket, ready, unavailable) {
+      if (!['ambient', 'sound-cue'].includes(options.variant)) return;
+      const begin = enabled => {
+        if (ticket !== serial || active === null) return;
+        if (!enabled || audioContext?.state !== 'running') return unavailable();
+        stopEffects();
+        const layer = { nodes: [], timers: [] }; effects = layer;
+        const track = node => { layer.nodes.push(node); return node; };
+        try {
+          if (options.variant === 'ambient') {
+            // Quiet filtered air/room noise is audible behind speech without a
+            // continuous musical tone competing with the spoken words.
+            const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
+            const samples = buffer.getChannelData(0);
+            let previous = 0;
+            for (let i = 0; i < samples.length; i++) {
+              previous = (previous + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+              samples[i] = previous * 3.5;
+            }
+            const source = track(audioContext.createBufferSource());
+            const filter = track(audioContext.createBiquadFilter());
+            const gain = track(audioContext.createGain());
+            source.buffer = buffer; source.loop = true;
+            filter.type = 'lowpass'; filter.frequency.value = 1200;
+            gain.gain.setValueAtTime(0, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.15);
+            source.connect(filter); filter.connect(gain); gain.connect(audioContext.destination);
+            source.start();
+          } else {
+            const chirp = () => {
+              if (ticket !== serial || effects !== layer || active === null) return;
+              const now = audioContext.currentTime;
+              for (let i = 0; i < 3; i++) {
+                const at = now + i * 0.09;
+                const oscillator = track(audioContext.createOscillator());
+                const gain = track(audioContext.createGain());
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(1700, at);
+                oscillator.frequency.exponentialRampToValueAtTime(2700, at + 0.025);
+                oscillator.frequency.exponentialRampToValueAtTime(1900, at + 0.065);
+                gain.gain.setValueAtTime(0.0001, at);
+                gain.gain.exponentialRampToValueAtTime(0.06, at + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.07);
+                oscillator.connect(gain); gain.connect(audioContext.destination);
+                oscillator.onended = () => {
+                  oscillator.disconnect(); gain.disconnect();
+                  layer.nodes = layer.nodes.filter(node => node !== oscillator && node !== gain);
+                };
+                oscillator.start(at); oscillator.stop(at + 0.08);
+              }
+            };
+            // Cues follow actual speech, even when a voice takes time to load.
+            layer.timers.push(env.setTimeout(chirp, 700), env.setTimeout(chirp, 6500));
+          }
+        } catch (_) { stopEffects(); unavailable(); }
+      };
+      if (audioContext?.state === 'running') begin(true);
+      else ready.then(begin);
     }
     function play(key, text, options = {}) {
       cancel();
-      startEffects(options);
+      const effectsReady = unlock();
       if (!env.speechSynthesis || !env.SpeechSynthesisUtterance) {
-        stopEffects();
-        onState(key, 'error', 'Audio is unavailable in this browser. Open the full mock in a browser with an English speech voice. This item will be excluded if audio cannot play.');
+        onState(key, 'error', 'Audio is unavailable in this browser. Open the practice in a browser with an English speech voice. This item will be excluded if audio cannot play.');
         return;
       }
-      const ticket = serial;
-      let started = false, utterances = [], cursor = 0;
-      let voices;
-      try {
-        voices = env.speechSynthesis.getVoices().filter(v => /^en(?:-|_)/i.test(v.lang));
-      } catch (_) {
-        onState(key, 'error', 'The speech voice could not load. Check your browser audio settings and retry.');
-        return;
-      }
-      const variant = options.variant || 'single';
-      const parts = variant === 'two-speakers' ? String(text || '').match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g)?.map(part => part.trim()).filter(Boolean) || [String(text || '')] : [String(text || '')];
-      utterances = parts.map((part, i) => {
-        const utterance = new env.SpeechSynthesisUtterance(part);
-        utterance.voice = voices.find(v => i % 2 === 0 ? /^en-(AU|GB)/i.test(v.lang) : /^en-(US|CA)/i.test(v.lang)) || voices[i % Math.max(1, voices.length)] || null;
-        utterance.lang = utterance.voice?.lang || (i % 2 ? 'en-US' : 'en-GB');
-        utterance.rate = variant === 'two-speakers' ? (i % 2 ? 0.96 : 1.03) : 1;
-        utterance.pitch = variant === 'two-speakers' ? (i % 2 ? 0.92 : 1.06) : 1;
-        return utterance;
-      });
+      const ticket = serial, variant = options.variant || 'single';
+      let started = false, effectsUnavailable = false, cursor = 0, utterances = [];
       active = key;
+      const current = () => ticket === serial && active === key;
       const finish = (status, message) => {
-        if (ticket !== serial || active !== key) return;
-        active = null;
-        if (timeout) env.clearTimeout(timeout);
-        if (startTimeout) env.clearTimeout(startTimeout);
-        timeout = null;
-        startTimeout = null;
-        serial++;
+        if (!current()) return;
+        active = null; serial++;
+        clearTimers(); stopEffects();
         if (status === 'error') env.speechSynthesis.cancel();
-        stopEffects();
         onState(key, status, message);
       };
+      const armStartTimeout = () => {
+        if (startTimeout !== null) env.clearTimeout(startTimeout);
+        startTimeout = env.setTimeout(() => finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'), 8000);
+      };
+      const playingMessage = () => effectsUnavailable ? 'Playing speech. Practice background sound is unavailable in this browser.' :
+        variant === 'two-speakers' ? 'Playing. Follow both speakers.' :
+        variant === 'sound-cue' ? 'Playing with brief woodpecker-style chirp cues.' :
+        variant === 'ambient' ? 'Playing with light ambient practice sound.' : 'Playing. Follow the question on screen.';
       const playNext = () => {
-        if (ticket !== serial || active !== key) return;
+        if (!current()) return;
         const utterance = utterances[cursor++];
-        if (!utterance) return finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
-        utterance.onstart = () => { if (ticket === serial) { started = true; if (startTimeout) env.clearTimeout(startTimeout); startTimeout = null; onState(key, 'playing', variant === 'two-speakers' ? 'Playing. Follow both speakers.' : variant === 'sound-cue' ? 'Playing with a brief woodpecker-style practice sound cue.' : variant === 'ambient' ? 'Playing with light ambient practice sound.' : 'Playing. Follow the question on screen.'); } };
-        utterance.onend = () => cursor < utterances.length ? playNext() : finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
+        let partStarted = false;
+        if (cursor > 1) armStartTimeout();
+        utterance.onstart = () => {
+          if (!current() || partStarted) return;
+          partStarted = true;
+          if (startTimeout !== null) env.clearTimeout(startTimeout);
+          startTimeout = null;
+          onState(key, 'playing', playingMessage());
+          if (!started && current()) {
+            started = true;
+            startEffects(options, ticket, effectsReady, () => {
+              effectsUnavailable = true;
+              if (current()) onState(key, 'playing', playingMessage());
+            });
+          }
+        };
+        utterance.onend = () => {
+          if (!current()) return;
+          if (!partStarted) return finish('error', 'Audio did not start. Check your sound and try again.');
+          if (cursor < utterances.length) return playNext();
+          finish('complete', effectsUnavailable ? 'Audio complete. Practice background sound was unavailable in this browser.' : 'Audio complete. Your answer is ready to submit.');
+        };
         utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
         try { env.speechSynthesis.speak(utterance); } catch (_) { finish('error', 'Audio could not start. Try another browser with an English voice.'); }
       };
+      const beginSpeech = voices => {
+        if (!current()) return;
+        voiceCleanup?.(); voiceCleanup = null;
+        const transcript = String(text || '');
+        let parts = [transcript];
+        if (variant === 'two-speakers') {
+          parts = transcript.match(/[\s\S]*?[.!?]+(?:["'”’)\]]+)?(?=\s|$)|[\s\S]+$/g)?.map(part => part.trim()).filter(Boolean) || [transcript];
+          if (parts.length === 1) {
+            const words = transcript.match(/\S+\s*/g) || [];
+            if (words.length > 1) { const middle = Math.ceil(words.length / 2); parts = [words.slice(0, middle).join('').trim(), words.slice(middle).join('').trim()]; }
+          }
+        }
+        const first = voices.find(v => /^en[-_](AU|GB)/i.test(v.lang)) || voices[0] || null;
+        const identity = v => v && (v.voiceURI || v.name || v.lang);
+        const others = voices.filter(v => identity(v) !== identity(first));
+        const second = others.find(v => /^en[-_](US|CA)/i.test(v.lang)) || others[0] || first;
+        const distinct = first && second && identity(first) !== identity(second);
+        utterances = parts.map((part, i) => {
+          const utterance = new env.SpeechSynthesisUtterance(part);
+          utterance.voice = i % 2 ? second : first;
+          utterance.lang = utterance.voice?.lang || (i % 2 ? 'en-US' : 'en-GB');
+          utterance.rate = variant === 'two-speakers' ? (i % 2 ? 0.96 : 1.03) : 1;
+          utterance.pitch = variant === 'two-speakers' ? (i % 2 ? (distinct ? 0.92 : 0.82) : (distinct ? 1.06 : 1.18)) : 1;
+          return utterance;
+        });
+        playNext();
+      };
+      const readVoices = () => env.speechSynthesis.getVoices().filter(v => /^en(?:[-_]|$)/i.test(v.lang));
       onState(key, 'loading', 'Starting audio…');
-      startTimeout = env.setTimeout(() => { if (!started) finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'); }, 8000);
+      if (!current()) return;
+      armStartTimeout();
       timeout = env.setTimeout(() => finish('error', 'Audio timed out. Replay the question before submitting.'), 150000);
-      playNext();
+      try {
+        const voices = readVoices();
+        if (voices.length || !env.speechSynthesis.addEventListener) return beginSpeech(voices);
+        // Browsers often return [] until voiceschanged fires on first use.
+        let voiceTimer = null;
+        const voicesChanged = () => {
+          if (!current()) return;
+          try { const available = readVoices(); if (available.length) beginSpeech(available); }
+          catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
+        };
+        voiceCleanup = () => {
+          env.speechSynthesis.removeEventListener?.('voiceschanged', voicesChanged);
+          if (voiceTimer !== null) env.clearTimeout(voiceTimer);
+        };
+        env.speechSynthesis.addEventListener('voiceschanged', voicesChanged);
+        voiceTimer = env.setTimeout(() => { if (current()) { try { beginSpeech(readVoices()); } catch (_) { beginSpeech([]); } } }, 1500);
+        voicesChanged();
+      } catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
     }
-    return { play, cancel };
+    return { play, cancel, unlock };
   }
   return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS };
 });
