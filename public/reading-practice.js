@@ -295,7 +295,7 @@
   }
   function audioHTML(q) {
     const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
-    const challenge = s.mode === 'practice';
+    const challenge = s.mode === 'practice' || /^practice-mock-/.test(String(s.mode || ''));
     const profile = mock.audioPlayback(q, challenge);
     return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || (profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : 'Practice challenge audio: '+profile.label+'. The transcript and scoring key are unchanged.'))}</span></div>`;
   }
@@ -313,7 +313,7 @@
     prepareAudio(q);
     const item=s.audioStates[q.uid]; if(item?.status!=='countdown')return;
     const seconds=Math.max(0,Math.ceil((item.readyAt-Date.now())/1000));
-    if(seconds===0){if(!expireSession())speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'));return;}
+    if(seconds===0){if(!expireSession())speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'||/^practice-mock-/.test(String(s.mode||''))));return;}
     item.message='Audio starts automatically in '+seconds+' second'+(seconds===1?'':'s')+'. Get ready to listen.';
     const label=host.querySelector('[data-audio-status]');if(label)label.textContent=item.message;
   }
@@ -643,7 +643,7 @@
     if(s.done && d.reviewUid){
       const item=s.questions.find(q=>q.uid===d.reviewUid);if(!item)return;
       if(d.action==='retry-swt'&&item.type==='swt')return gradeSwt(item);
-      if(d.action==='play'&&mock.isAudio(item))return speaker.play(item.uid,item.audioText,mock.audioPlayback(item,state.session?.mode==='practice'));
+      if(d.action==='play'&&mock.isAudio(item))return speaker.play(item.uid,item.audioText,mock.audioPlayback(item,state.session?.mode==='practice'||/^practice-mock-/.test(String(state.session?.mode||''))));
       return;
     }
     recordTime();const q=s.questions[s.index];
@@ -651,7 +651,7 @@
     if(testing&&d.action?.startsWith('exam-'))return examAction(d.action);
     // Exam questions can only advance through Next; review unlocks after submission.
     if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
-    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'));}
+    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'||/^practice-mock-/.test(String(s.mode||''))));}
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
     if(d.question!==undefined||d.move!==undefined){cancelAudio();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
