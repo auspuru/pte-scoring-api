@@ -437,7 +437,7 @@ tr:hover td { background: var(--surface-dim); }
         <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers(this.value)">
       </div>
       <table>
-        <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>Attempts</th><th>Avg Score</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>SWT</th><th>Reading</th><th>Avg Reading</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="usersBody"></tbody>
       </table>
     </div>
@@ -652,7 +652,8 @@ function renderUsers(users){
       <td>${fmtDate(u.createdAt)}</td>
       <td>${fmtDate(u.lastLogin)}</td>
       <td>${u.stats?.totalAttempts||0}</td>
-      <td>${u.stats?.averageScore||0}/90</td>
+      <td>${u.stats?.readingAttempts||0}${u.stats?.readingInProgress?' · active':''}</td>
+      <td>${u.stats?.readingAverage||0}%</td>
       <td><span class="badge ${u.blocked?'blocked':'active'}">${u.blocked?'Blocked':'Active'}</span></td>
       <td class="actions">
         <button class="btn-action" onclick="viewUser('${escH(u.username)}')">View</button>

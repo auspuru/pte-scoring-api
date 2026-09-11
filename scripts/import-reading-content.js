@@ -25,17 +25,17 @@ function hiw(item){
     corrections.push({index,written:replacement,spoken:word,explanation});
   }
   corrections.sort((a,b)=>a.index-b.index);
-  return {id:item.id,uid:'ipt:'+item.id,type:'hiw',title:item.title,cefrTarget:'C2',instructions:'Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.',audioText:item.audioText,passage:written.join(' '),answers:corrections.map(c=>c.index),corrections,reasoning:{correct:'Compare the written words with the recording. The explanations below show how each substitution changes the meaning.'}};
+  return {id:item.id,uid:'ipt:'+item.id,type:'hiw',title:item.title,instructions:'Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.',audioText:item.audioText,passage:written.join(' '),answers:corrections.map(c=>c.index),corrections,reasoning:{correct:'Compare the written words with the recording. The explanations below show how each substitution changes the meaning.'}};
 }
 function build(input){
   const bankPath=path.join(root,'public/reading-bank.json'),bank=JSON.parse(fs.readFileSync(bankPath,'utf8'));
   const importedSets=input.PRACTICE_SETS.map(s=>({id:'pte-'+s.id.toLowerCase(),sourceId:s.id,sourceTitle:s.title,sourceMinutes:s.timeLimitMinutes,minutes:25,questions:s.passages.map(p=>convert(p.passage,p.type==='rfib'?'dropdown':'wordbank'))}));
   assert.equal(importedSets.length,6);assert.equal(input.RFIB_PASSAGES.length,50);assert.equal(input.RDWD_PASSAGES.length,50);
-  bank.version=7;bank.importedSets=importedSets;bank.sourceImports={...source,mockSets:6,dropdownQuestions:50,dragAndDropQuestions:50};
+  bank.version=8;bank.importedSets=importedSets;bank.sourceImports={...source,mockSets:6,dropdownQuestions:50,dragAndDropQuestions:50};
   bank.mockCatalogue=bank.mockCatalogue.filter(m=>m.kind!=='reading-blanks');
   for(const preset of bank.mockCatalogue)preset.name=(preset.family==='practice'?'Practice':'Sectional')+' mock test '+preset.id.match(/\d+$/)[0];
   importedSets.forEach((s,i)=>bank.mockCatalogue.push({id:'practice-mock-'+(i+4),name:'Practice mock test '+(i+4),family:'practice',kind:'reading-blanks',setId:s.id,timed:true,minutes:25}));
-  const authored=JSON.parse(fs.readFileSync(path.join(root,'content/hiw-c2.json'),'utf8'));
+  const authored=['hiw-c2.json','hiw-additional.json'].flatMap(file=>JSON.parse(fs.readFileSync(path.join(root,'content',file),'utf8')));
   bank.practiceLibraries=[
     {id:'dropdown',name:'Reading dropdown blanks',questions:input.RFIB_PASSAGES.map(p=>convert(p,'dropdown'))},
     {id:'wordbank',name:'Reading drag and drop',questions:input.RDWD_PASSAGES.map(p=>convert(p,'wordbank'))},
@@ -46,3 +46,4 @@ function build(input){
 }
 if(require.main===module){assert(process.argv[2],'Supply the source JSON export path');console.log(build(JSON.parse(fs.readFileSync(process.argv[2],'utf8'))));}
 module.exports={convert,hiw};
+

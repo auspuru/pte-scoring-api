@@ -1352,7 +1352,22 @@ const AuthAPI = {
     return Object.values(data.accounts).map(a => ({
       username: a.username, createdAt: a.createdAt, lastLogin: a.lastLogin,
       blocked: a.blocked || false, role: a.role || 'user',
-      stats: (data.users[a.username] || {}).stats || { totalAttempts: 0, averageScore: 0 }
+      stats: (() => {
+        const progress = data.users[a.username] || {};
+        const base = progress.stats || { totalAttempts: 0, averageScore: 0 };
+        const reading = progress.readingProgress || {};
+        const readingHistory = Array.isArray(reading.history) ? reading.history : [];
+        const completed = readingHistory.filter(item => item && item.done);
+        const readingScores = completed.map(item => Number(item.percent)).filter(Number.isFinite);
+        return {
+          ...base,
+          readingAttempts: completed.length,
+          readingAverage: readingScores.length ? Math.round(readingScores.reduce((n, x) => n + x, 0) / readingScores.length) : 0,
+          readingInProgress: reading.session && !reading.session.done ? 1 : 0,
+          essayAttempts: Array.isArray(progress.essayLibrary) ? progress.essayLibrary.length : 0,
+          vocabularyWords: Object.keys(progress.vocabProgress?.read || {}).length
+        };
+      })()
     }));
   },
   async deleteUser(username) {
@@ -3661,19 +3676,10 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
 
 async function callSwtJudge(prompt, timeoutMs, { signal } = {}) {
   if (!anthropic) return null;
-  const response = await anthropic.messages.create({
-    model: CLAUDE_MODEL, max_tokens: 4000, temperature: 0,
-    messages: [{ role: 'user', content: prompt }]
-  }, { timeout: timeoutMs, maxRetries: 0, signal });
-  if (response.stop_reason === 'max_tokens') {
-    const error = new Error('Incomplete SWT assessment'); error.code = 'SWT_TRUNCATED'; throw error;
-  }
-  const text = (response.content || []).filter(part => part.type === 'text').map(part => part.text).join('\n');
-  const m = text.match(/\{[\s\S]*\}/);
-  if (!m) return null;
-  const parsed = JSON.parse(m[0]);
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
-  return { ...parsed, source: 'claude' };
+  const format = require('./swt-judge-format');
+  const response = await anthropic.messages.create(format.request(prompt, CLAUDE_MODEL),
+    { timeout: timeoutMs, maxRetries: 0, signal });
+  return format.response(response);
 }
 
 const swtJudgmentService = createJudgmentService({

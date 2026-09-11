@@ -84,10 +84,10 @@ test('Full mixed mock adds SWT and highlight tasks; two fixed sectionals contain
  assert(!sections[0].questions.some(q=>sections[1].questions.some(other=>other.uid===q.uid)));
  assert.throws(()=>compose(bank,'full','v1'),/SWT passage/);
 });
-test('C2-targeted HIW keys correspond exactly to transcript/audio differences',()=>{
+test('HIW keys correspond exactly to transcript/audio differences',()=>{
  for(const q of bank.mixedMock.audioQuestions.filter(q=>q.type==='hiw')){
   const written=q.passage.split(/\s+/),spoken=q.audioText.split(/\s+/);
-  assert.equal(q.cefrTarget,'C2');assert.equal(written.length,spoken.length);
+  assert(!q.cefrTarget);assert.equal(written.length,spoken.length);
   assert.deepEqual(written.flatMap((word,i)=>word===spoken[i]?[]:[i]),q.answers);
   for(const c of q.corrections){assert.equal(written[c.index],c.written);assert.equal(spoken[c.index],c.spoken);}
   assert.equal(score(q,q.answers).earned,6);
@@ -490,7 +490,7 @@ test('The mock catalogue keeps the six integrated mocks and adds six imported pr
  }
 });
 
-test('Three mock sets have distinct audio with accurate C2 HIW keys and explanations',()=>{
+test('Three mock sets have distinct audio with accurate HIW keys and explanations',()=>{
  const forms=bank.mockCatalogue.filter(m=>m.family==='sectional'),seen=new Set();
  for(const form of forms){
   const plan=compose(bank,form.id,'ignored',swtPassages);
@@ -499,7 +499,7 @@ test('Three mock sets have distinct audio with accurate C2 HIW keys and explanat
    assert(!seen.has(q.id));seen.add(q.id);assert(q.reasoning.correct);
    if(q.type==='hcs'){assert(q.choices[q.answer]);assert.equal(Object.keys(q.reasoning.options).length,3);}
    else{
-    const written=q.passage.split(/\s+/),spoken=q.audioText.split(/\s+/);assert.equal(q.cefrTarget,'C2');assert.equal(written.length,spoken.length);
+    const written=q.passage.split(/\s+/),spoken=q.audioText.split(/\s+/);assert(!q.cefrTarget);assert.equal(written.length,spoken.length);
     assert.deepEqual(written.flatMap((word,i)=>word===spoken[i]?[]:[i]),q.answers);assert.equal(q.answers.length,6);
     for(const c of q.corrections){assert.equal(written[c.index],c.written);assert.equal(spoken[c.index],c.spoken);}
    }
@@ -712,13 +712,13 @@ test('All imported mocks and practice questions have complete, usable answer key
   q.answers.forEach((answer,i)=>{assert((q.options?.[i]||q.bank).includes(answer));assert.equal(q.reasoning.blanks[i].answer,answer);assert(q.reasoning.blanks[i].explanation);});
   if(q.type==='wordbank')assert.equal(new Set(q.answers).size,q.answers.length,'Each word can fill one blank');
  }
- assert.deepEqual(bank.practiceLibraries.map(l=>l.questions.length),[50,50,10]);
+ assert.deepEqual(bank.practiceLibraries.map(l=>l.questions.length),[50,50,20]);
 });
 
-test('Ten new C2 HIW recordings have exact word-position keys and meaning feedback',()=>{
- const questions=bank.practiceLibraries.find(l=>l.id==='hiw').questions;assert.equal(questions.length,10);assert.equal(new Set(questions.map(q=>q.title)).size,10);
+test('Twenty HIW recordings have exact word-position keys and meaning feedback',()=>{
+ const questions=bank.practiceLibraries.find(l=>l.id==='hiw').questions;assert.equal(questions.length,20);assert.equal(new Set(questions.map(q=>q.title)).size,20);
  for(const q of questions){
-  const spoken=q.audioText.split(/\s+/),written=q.passage.split(/\s+/);assert.equal(q.cefrTarget,'C2');assert(spoken.length>=110&&spoken.length<=150);assert.equal(spoken.length,written.length);
+  const spoken=q.audioText.split(/\s+/),written=q.passage.split(/\s+/);assert(!q.cefrTarget);assert(spoken.length>=110&&spoken.length<=150);assert.equal(spoken.length,written.length);
   assert.deepEqual(written.flatMap((word,i)=>word===spoken[i]?[]:[i]),q.answers);assert.equal(q.answers.length,6);assert.equal(score(q,q.answers).earned,6);
   for(const c of q.corrections){assert.equal(c.written,written[c.index]);assert.equal(c.spoken,spoken[c.index]);assert(c.explanation.length>25);}
  }
