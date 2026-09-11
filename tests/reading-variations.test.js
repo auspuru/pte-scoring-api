@@ -92,9 +92,9 @@ test('Every reading practice screen keeps a final Next question control after th
  assert.deepEqual(tools.prepareQuestion(shuffled, 'reload'), shuffled);
  });
 
-test('Every playback path shares HIW sound settings in practice, mocks and review', () => {
+test('Every playback path uses automatic HIW sound in practice, mocks and review', () => {
  const source = fs.readFileSync(require.resolve('../public/reading-practice'), 'utf8');
- assert.match(source, /function playback\(q\).*mock\.audioPlayback\(q, true, state\.session\?\.audioSettings\)/);
+ assert.match(source, /function playback\(q\).*mock\.audioPlayback\(q\)/);
  const calls = source.split('\n').filter(line => line.includes('speaker.play(') && !line.includes("'soundcheck'"));
  assert.equal(calls.length, 3);
  assert(calls.every(line => line.includes('playback(q)') || line.includes('playback(item)')));

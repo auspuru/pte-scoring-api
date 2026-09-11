@@ -16,40 +16,21 @@
     for (const ch of String(value || '')) { n ^= ch.charCodeAt(0); n = Math.imul(n, 16777619); }
     return n >>> 0;
   }
-  function audioSettings(settings = {}) {
-    if (!settings || typeof settings !== 'object') settings = {};
-    const level = Number(settings.distractionLevel);
-    return {
-      background: AUDIO_BACKGROUNDS.some(item => item.id === settings.background) ? settings.background : 'auto',
-      distractionLevel: settings.distractionLevel != null && Number.isFinite(level) ? Math.max(0, Math.min(100, level)) : 55
-    };
-  }
+  const DISTRACTION_GAIN = 0.55;
   // HIW combines both cue sounds, varied backgrounds and two speaker turns.
   // The recording text and answer coordinates are independent of these layers.
   function audioVariant(q, challenge = true) {
     return q?.type === 'hiw' && challenge ? 'mixed' : 'single';
   }
-  function audioPlayback(q, challenge = true, settings = {}) {
+  function audioPlayback(q, challenge = true) {
     const variant = audioVariant(q, challenge);
     if (variant === 'single') return { variant, label: 'Single-speaker audio', transcript: q?.audioText || '' };
-    const selected = audioSettings(settings);
-    const background = selected.background === 'auto' ? AUDIO_BACKGROUNDS[hash(q.id || q.uid) % AUDIO_BACKGROUNDS.length].id : selected.background;
+    const background = AUDIO_BACKGROUNDS[hash(q.id || q.uid) % AUDIO_BACKGROUNDS.length].id;
     return {
-      variant, speakers: 2, background, cues: [...AUDIO_CUES], distractionLevel: selected.distractionLevel,
+      variant, speakers: 2, background, cues: [...AUDIO_CUES],
       label: 'Two speakers · ' + AUDIO_BACKGROUNDS.find(item => item.id === background).label + ' · Woodpecker chirps + phone ring',
       transcript: q?.audioText || ''
     };
-  }
-  function audioControlsHTML(q, settings = {}) {
-    if (q?.type !== 'hiw') return '';
-    const selected = audioSettings(settings), profile = audioPlayback(q, true, selected), uid = encodeURIComponent(q.uid || q.id);
-    return '<fieldset class="reading-audio-distractions"><legend>Distraction audio</legend>'
-      + '<p>Two-speaker narration with <strong>woodpecker chirps</strong> and a <strong>phone ring</strong>.</p>'
-      + '<div class="reading-audio-settings"><label>Background<select data-audio-background data-audio-uid="' + uid + '">'
-      + [{ id: 'auto', label: 'Vary by question' }, ...AUDIO_BACKGROUNDS].map(item => '<option value="' + item.id + '" ' + (selected.background === item.id ? 'selected' : '') + '>' + item.label + '</option>').join('')
-      + '</select></label><label>Distraction volume <output data-audio-level-for="' + uid + '">' + selected.distractionLevel + '%</output>'
-      + '<input type="range" min="0" max="100" step="5" value="' + selected.distractionLevel + '" data-audio-level data-audio-uid="' + uid + '" aria-label="Distraction volume"></label></div>'
-      + '<p class="reading-note" data-audio-profile="' + uid + '">Background: ' + AUDIO_BACKGROUNDS.find(item => item.id === profile.background).label + '. Both cue sounds play during the recording.</p></fieldset>';
   }
   function seeded(seed) {
     let n = hash(seed) || 1;
@@ -173,7 +154,7 @@
   // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
     let active = null, timeout = null, startTimeout = null, serial = 0;
-    let audioContext = null, effects = null, voiceCleanup = null, activePlayback = null;
+    let audioContext = null, effects = null, voiceCleanup = null;
     function clearTimers() {
       if (timeout !== null) env.clearTimeout(timeout);
       if (startTimeout !== null) env.clearTimeout(startTimeout);
@@ -203,7 +184,6 @@
     }
     function cancel() {
       serial++;
-      activePlayback = null;
       clearTimers();
       stopEffects();
       if (active !== null) {
@@ -237,7 +217,7 @@
         };
         try {
           const master = track(audioContext.createGain()); layer.master = master;
-          master.gain.value = mixed ? audioSettings(options).distractionLevel / 100 : 0.55;
+          master.gain.value = DISTRACTION_GAIN;
           master.connect(audioContext.destination);
           if (background) {
             // Distinct environmental textures: steady rain, passing engines,
@@ -303,16 +283,6 @@
       if (audioContext?.state === 'running') begin(true);
       else ready.then(begin);
     }
-    function updateDistractions(key, nextOptions) {
-      if (active !== key || activePlayback?.options.variant !== 'mixed') return;
-      const options = activePlayback.options, before = options.background;
-      Object.assign(options, { background: nextOptions.background, distractionLevel: audioSettings(nextOptions).distractionLevel, label: nextOptions.label });
-      if (!activePlayback.started) return;
-      if (effects?.master && before === options.background) {
-        effects.master.gain.linearRampToValueAtTime(options.distractionLevel / 100, audioContext.currentTime + 0.08);
-        activePlayback.notify();
-      } else activePlayback.refresh(unlock());
-    }
     function play(key, text, options = {}) {
       cancel();
       options = { ...options };
@@ -327,7 +297,7 @@
       const current = () => ticket === serial && active === key;
       const finish = (status, message) => {
         if (!current()) return;
-        active = null; activePlayback = null; serial++;
+        active = null; serial++;
         clearTimers(); stopEffects();
         if (status === 'error') env.speechSynthesis.cancel();
         onState(key, status, message);
@@ -349,7 +319,6 @@
         });
         if (current()) onState(key, 'playing', playingMessage());
       };
-      activePlayback = { options, started: false, refresh: refreshEffects, notify: () => { if (current()) onState(key, 'playing', playingMessage()); } };
       const playNext = () => {
         if (!current()) return;
         const utterance = utterances[cursor++];
@@ -362,7 +331,7 @@
           startTimeout = null;
           onState(key, 'playing', playingMessage());
           if (!started && current()) {
-            started = true; activePlayback.started = true;
+            started = true;
             refreshEffects();
           }
         };
@@ -426,7 +395,7 @@
         voicesChanged();
       } catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
     }
-    return { play, cancel, unlock, updateDistractions };
+    return { play, cancel, unlock };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES, audioSettings, audioControlsHTML };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });

@@ -297,11 +297,11 @@
       ${review?explanation(q,a):''}
       <div class="reading-actions"><button class="portal-button" data-move="-1" ${s.index===0?'disabled':''}>Previous</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${s.index===s.questions.length-1?'disabled':''}>Next question <span aria-hidden="true">→</span></button></div></article></div>`;
   }
-  function playback(q) { return mock.audioPlayback(q, true, state.session?.audioSettings); }
+  function playback(q) { return mock.audioPlayback(q); }
   function audioHTML(q) {
     const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
     const profile = playback(q);
-    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || (profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>${mock.audioControlsHTML(q,s.audioSettings)}`;
+    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || (profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>`;
   }
   function prepareAudio(q) {
     const s=state?.session;
@@ -413,7 +413,7 @@
     const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
     const retryable=pending.some(item=>s.assessments[item.q.uid]?.status!=='working');
     const retry=pending.length?'<button class="portal-button" data-action="retry-all-swt" '+(retryable?'':'disabled')+'>'+(retryable?'Retry pending SWT assessments':'Assessing SWT responses…')+'</button>':'';
-    const question=item=>review.question(item.q,s.answers[item.q.uid],s.assessments[item.q.uid],s.audioStates[item.q.uid],item.points,item.index,s.questions.length,taskLabels[item.q.type],{...reviewView,audioControls:mock.audioControlsHTML(item.q,s.audioSettings)});
+    const question=item=>review.question(item.q,s.answers[item.q.uid],s.assessments[item.q.uid],s.audioStates[item.q.uid],item.points,item.index,s.questions.length,taskLabels[item.q.type],reviewView);
     const existing=host.querySelector('[data-review-session="'+encodeURIComponent(s.id)+'"]');
     if(existing){
       // Keep filters, scroll and audio controls in place as SWT assessments arrive.
@@ -517,31 +517,8 @@
     return changed;
   }
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
-  function changeAudioSettings(target) {
-    const s = state?.session;
-    if (!s || !target?.dataset || (target.dataset.audioBackground === undefined && target.dataset.audioLevel === undefined)) return false;
-    let uid; try { uid = decodeURIComponent(target.dataset.audioUid || ''); } catch (_) { return false; }
-    if (!s.questions.some(q => q.uid === uid && q.type === 'hiw')) return false;
-    const selected = mock.audioSettings(s.audioSettings);
-    if (target.dataset.audioBackground !== undefined) selected.background = target.value;
-    else selected.distractionLevel = Number(target.value);
-    s.audioSettings = mock.audioSettings(selected);
-    speaker?.unlock();
-    for (const q of s.questions.filter(item => item.type === 'hiw')) {
-      const profile = playback(q);
-      speaker?.updateDistractions(q.uid, profile);
-      const label = host.querySelector('[data-audio-profile="' + encodeURIComponent(q.uid) + '"]');
-      if (label) label.textContent = 'Background: ' + mock.AUDIO_BACKGROUNDS.find(item => item.id === profile.background).label + '. Both cue sounds play during the recording.';
-    }
-    host.querySelectorAll('[data-audio-background]').forEach(select => { select.value = s.audioSettings.background; });
-    host.querySelectorAll('[data-audio-level]').forEach(input => { input.value = String(s.audioSettings.distractionLevel); });
-    host.querySelectorAll('[data-audio-level-for]').forEach(output => { output.textContent = s.audioSettings.distractionLevel + '%'; });
-    persist();
-    return true;
-  }
   function change(e) {
     if(!owner||identity()!==owner)return;
-    if(changeAudioSettings(e.target))return;
     if(state.session?.done&&e.target.dataset.reviewTask!==undefined){
       reviewView.type=Object.hasOwn(taskLabels,e.target.value)?e.target.value:'all';applyReviewFilters();return;
     }
@@ -553,7 +530,6 @@
     persist();
   }
   function input(e) {
-    if(owner&&identity()===owner&&changeAudioSettings(e.target))return;
     if(owner&&identity()===owner&&libraryView&&e.target.dataset.librarySearch!==undefined){libraryView.query=e.target.value;libraryView.page=0;refreshLibraryList();return;}
     if (!owner || identity()!==owner || !editable() || e.target.dataset.swtResponse===undefined) return;
     const q=state.session.questions[state.session.index]; if(q.type!=='swt')return;
