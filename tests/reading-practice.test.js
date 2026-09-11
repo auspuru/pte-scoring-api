@@ -474,13 +474,13 @@ test('The home page offers exactly three practice and three sectional mocks cove
   assert.match(h.host.innerHTML,/data-exam-player/);assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
   assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','hcs','hiw','mcma','mcsa','reorder','swt','wordbank'].sort());
   assert.equal(s.questions.filter(q=>q.type==='hcs').length,2);assert.equal(s.questions.filter(q=>q.type==='hiw').length,2);
-  if(id.startsWith('practice')){assert.equal(s.deadline,null);assert.equal(s.stages,undefined);assert.match(h.host.innerHTML,/Untimed practice/);}
+  if(id.startsWith('practice')){assert.equal(s.deadline-s.startedAt,25*60000);assert.equal(s.stages,undefined);assert.match(h.host.innerHTML,/25:00/);}
   else {assert.equal(s.stages.length,4);assert.deepEqual(s.stages.map(stage=>stage.minutes),[10,10,25,10]);}
  }
 });
 
 test('Three mock sets have distinct audio with accurate C2 HIW keys and explanations',()=>{
- const forms=bank.mockCatalogue.filter(m=>m.timed),seen=new Set();
+ const forms=bank.mockCatalogue.filter(m=>m.family==='sectional'),seen=new Set();
  for(const form of forms){
   const plan=compose(bank,form.id,'ignored',swtPassages);
   assert.equal(plan.questions.length,bank.sets.find(s=>s.id===form.setId).questions.length+6);
@@ -538,4 +538,96 @@ test('The complete review escapes student and model content and exposes feedback
  const result={...confirmedGrade,content_details:{notes:'<img src=x onerror=bad()>'},grammar_details:{grammar_annotations:[{phrase:'bad <word>',fix:'better',rationale:'Use a clear phrase.'}]}};
  const html=review.question(q,['<svg onload=bad()>'],{result},null,{earned:8,possible:9},0,2,'SWT');
  assert.doesNotMatch(html,/<script>|<img src=x|<svg|<details|data-question=/);assert.match(html,/&lt;svg/);assert.match(html,/A useful example/);assert.match(html,/Optional refinement/);
+});
+
+test('Practice mocks keep one 25-minute deadline across SWT, Reading, audio, reload and expiry',async()=>{
+ const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);h.ctx.passages=swtPassages;
+ await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-1'});
+ const initial=snapshot(h).session,deadline=initial.startedAt+25*60000;
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,deadline);
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.questions[2].type,'dropdown');assert.equal(snapshot(h).session.deadline,deadline);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});clock.add(60000);
+ h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ assert.equal(snapshot(h).session.deadline,deadline);assert.match(h.host.innerHTML,/20:00/);
+ goToAudio(h);assert.equal(snapshot(h).session.deadline,deadline);
+ const readyAt=snapshot(h).session.audioStates[snapshot(h).session.questions[snapshot(h).session.index].uid].readyAt;
+ clock.set(readyAt);h.timers.at(-1)();const utterance=audio.utterances.at(-1);utterance.onstart();
+ clock.set(deadline);h.timers.at(-1)();utterance.onend();
+ const finished=snapshot(h);assert.equal(finished.session.done,true);assert.equal(finished.session.completionReason,'timeout');assert.equal(finished.session.finishedAt,deadline);assert.equal(finished.history.length,1);assert.equal(finished.history[0].excluded,4);
+ h.timers.at(-1)();h.host.onchange({target:{dataset:{choice:'0'}}});h.host.oninput({target:{dataset:{swtResponse:''},value:'Too late'}});
+ assert.deepEqual(snapshot(h),finished);assert.match(h.host.innerHTML,/submitted automatically/);
+});
+
+test('Saved untimed practice drafts retain their original format while new mocks use 25 minutes',async()=>{
+ const h=client(),clock=clockFor(h);h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-2'});
+ const saved=snapshot(h);saved.session.deadline=null;saved.session.formatVersion=5;h.values.set(storageKey('first'),JSON.stringify(saved));
+ clock.add(60*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ assert.equal(snapshot(h).session.done,false);assert.equal(snapshot(h).session.deadline,null);assert.match(h.host.innerHTML,/Untimed practice/);
+ h.click({action:'home'});assert.match(h.host.innerHTML,/previous untimed format/);
+ await h.click({start:'practice-mock-2'});assert.equal(snapshot(h).session.deadline-clock.now,25*60000);
+});
+
+test('The mock format selector switches three-card groups without starting or replacing a session',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();
+ assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+ assert.doesNotMatch(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
+ h.click({mockFamily:'sectional'});
+ assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);assert.doesNotMatch(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+ assert.equal(snapshot(h).session,null);assert.equal(snapshot(h).history.length,0);
+ h.click({mockFamily:'practice'});assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+});
+
+test('Feedback filters distinguish partial, blank, pending and excluded answers without changing their points',()=>{
+ const review=require('../public/reading-review');
+ const questions=[{uid:'partial',type:'dropdown',answers:['a','b']},{uid:'right',type:'mcsa',answer:0},{uid:'wrong',type:'mcsa',answer:0},{uid:'blank',type:'swt'},{uid:'pending',type:'swt'},{uid:'audio',type:'hcs',answer:0}];
+ const session={questions,answers:{partial:['a'],right:[0],wrong:[1],blank:['   '],pending:['My response'],audio:[0]},assessments:{},audioStates:{}};
+ const before=JSON.stringify(session),points=totals(session),model=review.models(session,score);
+ assert.deepEqual(model.map(item=>item.status),['review','correct','review','unanswered','pending','excluded']);
+ const ids=(filter,type='all')=>model.filter(item=>review.matches(item,{filter,type})).map(item=>item.q.uid);
+ assert.deepEqual(ids('review'),['partial','wrong','blank']);assert.deepEqual(ids('correct'),['right']);assert.deepEqual(ids('unassessed'),['pending','audio']);assert.deepEqual(ids('unanswered'),['blank']);assert.deepEqual(ids('review','swt'),['blank']);assert.deepEqual(ids('correct','hcs'),[]);
+ assert.equal(JSON.stringify(session),before);assert.deepEqual(totals(session),points);
+});
+
+function mountReviewNodes(h,session){
+ const node=(dataset={})=>({dataset,hidden:false,textContent:'',attributes:{},setAttribute(key,value){this.attributes[key]=value;}});
+ const questions=new Map(session.questions.map(q=>[encodeURIComponent(q.uid),node()]));
+ const filters=['all','review','correct','unanswered','unassessed'].map(value=>node({reviewFilter:value}));
+ const types=[...new Set(session.questions.map(q=>q.type))].map(value=>node({reviewType:value}));
+ const contexts=[node(),node()],counts=filters.map(button=>node({filterCount:button.dataset.reviewFilter}));
+ const singles=Object.fromEntries(['context','task','reset','count','empty','overview','retry'].map(key=>['[data-review-'+key+']',node()]));
+ const originalHTML=h.host.innerHTML;
+ h.host.querySelector=selector=>selector==='[data-review-session="'+encodeURIComponent(session.id)+'"]'?node():singles[selector]||questions.get(selector.match(/^\[data-review-question="([^"]+)"\]$/)?.[1])||null;
+ h.host.querySelectorAll=selector=>({'[data-review-filter]':filters,'[data-review-type]':types,'[data-review-context-content]':contexts,'[data-filter-count]':counts}[selector]||[]);
+ return {questions,filters,types,contexts,counts,singles,originalHTML};
+}
+
+test('Feedback controls filter in place, show source passages and reset without altering saved answers',async()=>{
+ const {h}=await mixedClient();while(!snapshot(h).session.done)nextQuestion(h);
+ const before=snapshot(h),nodes=mountReviewNodes(h,before.session);
+ h.click({reviewFilter:'unanswered'});
+ assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,before.session.questions.length-4);
+ assert.equal(nodes.filters.find(node=>node.dataset.reviewFilter==='unanswered').attributes['aria-pressed'],'true');
+ h.host.onchange({target:{dataset:{reviewTask:''},value:'swt'}});
+ assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,2);assert.equal(nodes.singles['[data-review-task]'].value,'swt');assert.equal(nodes.counts.find(node=>node.dataset.filterCount==='all').textContent,'2');
+ h.click({reviewFilter:'correct'});assert.equal(nodes.singles['[data-review-empty]'].hidden,false);assert.equal(nodes.singles['[data-review-reset]'].hidden,false);
+ h.click({reviewContext:''});assert(nodes.contexts.every(node=>!node.hidden));assert.equal(nodes.singles['[data-review-context]'].textContent,'Hide passages');
+ h.click({reviewReset:''});assert([...nodes.questions.values()].every(node=>!node.hidden));assert.equal(nodes.singles['[data-review-empty]'].hidden,true);
+ h.click({reviewType:'hcs'});assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,2);
+ h.click({reviewType:'hcs'});assert([...nodes.questions.values()].every(node=>!node.hidden));
+ assert.equal(h.host.innerHTML,nodes.originalHTML);assert.deepEqual(snapshot(h),before);
+});
+
+test('A completed SWT assessment updates the review while preserving filters, source visibility and audio cards',async()=>{
+ const {h}=await mixedClient(true);h.ctx.requestSwtGrade=async()=>{throw Error('Try again');};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My saved summary.'}});while(!snapshot(h).session.done)nextQuestion(h);await flush();
+ const before=snapshot(h),nodes=mountReviewNodes(h,before.session),swt=before.session.questions[0];
+ h.click({reviewFilter:'unassessed'});h.click({reviewContext:''});
+ const pendingCount=[...nodes.questions.values()].filter(node=>!node.hidden).length;assert.equal(pendingCount,5);
+ h.ctx.requestSwtGrade=async()=>confirmedGrade;await h.click({action:'retry-swt',reviewUid:swt.uid});
+ assert.equal(h.host.innerHTML,nodes.originalHTML);assert.equal(nodes.filters.find(node=>node.dataset.reviewFilter==='unassessed').attributes['aria-pressed'],'true');
+ assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,4);assert(nodes.contexts.every(node=>!node.hidden));
+ assert.match(nodes.questions.get(encodeURIComponent(swt.uid)).outerHTML,/8\/9 SWT points/);
+ assert.match(nodes.singles['[data-review-overview]'].innerHTML,/4<\/strong> unassessed/);
+ for(const q of before.session.questions.filter(q=>['hcs','hiw'].includes(q.type)))assert.equal(nodes.questions.get(encodeURIComponent(q.uid)).outerHTML,undefined);
+ assert.deepEqual(snapshot(h).session.answers,before.session.answers);assert.equal(snapshot(h).history.length,1);assert.equal(snapshot(h).history[0].pending,0);
 });

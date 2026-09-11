@@ -386,3 +386,29 @@ body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
 /* Four task launchers fit without narrowing the writing tools. */
 @media (min-width: 761px) { .portal-task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 #portalSidebar .nav-group-secondary:has(#nav-admin[style*="display:none"]) { display: none; }
+
+/* Quiet branding stays in the header, clear of the student's work. */
+.portal-corner-brand { display: flex; align-items: center; gap: 9px; margin-left: 10px; padding-left: 16px; border-left: 1px solid var(--line-soft); color: var(--ink-soft); flex-shrink: 0; }
+.portal-corner-brand img { width: 42px; height: 26px; object-fit: contain; background: #fff; border-radius: 3px; }
+.portal-corner-brand strong { display: block; font: 650 12px/1.4 var(--sans); color: var(--accent); white-space: nowrap; }
+.portal-corner-brand small { display: block; font-size: 10px; line-height: 1.5; white-space: nowrap; }
+#dashboardPane .portal-task { box-shadow: none; padding: 22px; }
+#dashboardPane .portal-task-grid { margin-bottom: 20px; }
+#dashboardPane .portal-task-top { margin-bottom: 14px; }
+#dashboardPane .portal-task p { margin-bottom: 16px; max-width: 46ch; }
+.portal-library-shortcut { background: var(--bg-card); padding: 16px 20px; }
+.portal-library-shortcut p { font-size: 13px; }
+.portal-progress-panel { border-top: 1px solid var(--line); margin-top: 28px; }
+.portal-progress-panel > summary { cursor: pointer; padding: 20px 4px; color: var(--ink); }
+.portal-progress-panel > summary strong { font-size: 16px; }
+.portal-progress-panel > summary span { margin-left: 12px; color: var(--ink-soft); font-size: 13px; }
+.portal-progress-content { padding-top: 4px; }
+.portal-progress-content .streak-card { margin-bottom: 20px; }
+.portal-progress-panel > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 650px) {
+  .portal-corner-brand { gap: 6px; margin-left: 2px; padding-left: 8px; }
+  .portal-corner-brand img { width: 30px; height: 20px; }
+  .portal-corner-brand strong { font-size: 11px; }
+  .portal-corner-brand small { display: none; }
+  .portal-progress-panel > summary span { display: block; margin: 6px 0 0 17px; }
+}

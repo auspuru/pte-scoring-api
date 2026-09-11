@@ -6,6 +6,45 @@
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const items = value => Array.isArray(value) ? value : [];
+  const filters = { all:'All answers', review:'To improve', correct:'Correct', unanswered:'Unanswered', unassessed:'Unassessed' };
+  const hasAnswer = answer => answer.some(value => typeof value === 'string' ? value.trim().length > 0 : value != null);
+  function models(session, scorer) {
+    return session.questions.map((q,index)=>{
+      const answer=Array.isArray(session.answers[q.uid])?session.answers[q.uid]:[], points=scorer(q,answer,session.assessments?.[q.uid]);
+      const excluded=['hcs','hiw'].includes(q.type)&&session.audioStates?.[q.uid]?.status!=='complete';
+      const answered=hasAnswer(answer);
+      const status=points.pending?'pending':excluded?'excluded':!answered?'unanswered':points.earned===points.possible?'correct':'review';
+      return {q,index,points,status};
+    });
+  }
+  function matches(item, view) {
+    const status=view.filter==='all'||view.filter==='review'&&['review','unanswered'].includes(item.status)
+      ||view.filter==='unassessed'&&['pending','excluded'].includes(item.status)||view.filter===item.status;
+    return status&&(view.type==='all'||view.type===item.q.type);
+  }
+  function controls(model, labels, view) {
+    const types=[...new Set(model.map(item=>item.q.type))];
+    return '<div class="reading-review-tools"><div class="reading-filter-list" role="group" aria-label="Filter answers">'
+      + Object.entries(filters).map(([value,label])=>'<button type="button" data-review-filter="'+value+'" aria-pressed="'+(view.filter===value)+'">'+label+' <span data-filter-count="'+value+'">'+model.filter(item=>matches(item,{filter:value,type:view.type})).length+'</span></button>').join('')
+      + '</div><div class="reading-review-options"><label>Task <select data-review-task><option value="all">All task types</option>'+types.map(type=>'<option value="'+type+'" '+(view.type===type?'selected':'')+'>'+escape(labels[type])+'</option>').join('')+'</select></label>'
+      + '<button type="button" class="portal-button" data-review-context aria-pressed="'+view.context+'">'+(view.context?'Hide passages':'Show passages')+'</button><button class="portal-button" data-review-reset '+(view.filter==='all'&&view.type==='all'?'hidden':'')+'>Reset filters</button>'
+      + '<span class="reading-review-count" data-review-count role="status" aria-live="polite"></span></div></div>';
+  }
+  function overview(session, total, labels, model, view) {
+    const correct=model.filter(item=>item.status==='correct').length;
+    const improve=model.filter(item=>['review','unanswered'].includes(item.status)).length;
+    const grading=session.questions.some(q=>session.assessments?.[q.uid]?.status==='working');
+    const accuracy=total.percent==null?'—':total.percent+'%';
+    return '<section class="reading-card reading-report reading-review-overview"><div class="reading-review-hero"><div class="reading-score-orbit" style="--accuracy:'+(total.percent||0)+'%"><div><strong>'+accuracy+'</strong><span>Accuracy</span></div></div><div class="reading-review-headline"><p class="portal-eyebrow">IPT Brisbane · Session complete</p><h2>Your next step starts here.</h2><p>'+total.earned+'/'+total.possible+' graded points · '+Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' minutes elapsed</p>'
+      + (session.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':'')
+      + '<div class="reading-result-stats"><span><strong>'+correct+'</strong> correct</span><span><strong>'+improve+'</strong> to improve</span><span><strong>'+(total.pending+total.excluded)+'</strong> unassessed</span></div>'
+      + (improve?'<button class="portal-button" data-review-filter="review">Focus on improvements <span aria-hidden="true">↓</span></button>':'')+'</div></div>'
+      + (grading?'<div class="ipt-assessment-status" role="status" aria-live="polite"><img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane" width="112" height="68"><p>IPT Brisbane’s AI scoring engine is analysing your response…</p></div>':'')
+      + (total.pending||total.excluded?'<p class="reading-note" role="status">'+(total.pending?total.pending+' SWT response'+(total.pending===1?'':'s')+' awaiting grade. ':'')+(total.excluded?total.excluded+' audio items excluded because playback did not complete. ':'')+'Unassessed items are outside your graded total.</p>':'')
+      + '<div class="reading-performance-heading"><h3>Your task breakdown</h3><span>Select a task to focus your review</span></div><div class="reading-task-performance">'
+      + total.rows.map(row=>{const percent=row.gradedPossible?Math.round(row.earned/row.gradedPossible*100):0;return '<button type="button" data-review-type="'+row.type+'" aria-pressed="'+(view.type===row.type)+'"><span>'+escape(labels[row.type])+'</span><strong>'+(row.gradedPossible?row.earned+'/'+row.gradedPossible:'—')+'</strong><span class="reading-performance-track" aria-hidden="true"><i style="width:'+percent+'%"></i></span>'+(row.pending||row.excluded?'<small>'+(row.pending?'Awaiting assessment':'Audio incomplete')+'</small>':'')+'</button>';}).join('')
+      + '</div><p class="reading-note">IPT practice points, not an official PTE score. Previously practised questions may make this result less representative.</p></section>';
+  }
   const list = values => values.length ? '<ol>' + values.map(value => '<li>' + escape(value) + '</li>').join('') + '</ol>' : '<p class="reading-unanswered">Not answered</p>';
   const paragraph = text => '<p class="reading-review-text">' + escape(text) + '</p>';
   const table = (headings, rows) => '<div class="reading-table-wrap"><table><thead><tr>' + headings.map(h => '<th scope="col">' + escape(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map(cell => '<td>' + escape(cell) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
@@ -36,7 +75,7 @@
     if (q.sampleResponse) html += '<h4>Example summary</h4>' + paragraph(q.sampleResponse);
     return html;
   }
-  function question(q, answer, assessment, audioState, points, index, total, label) {
+  function question(q, answer, assessment, audioState, points, index, total, label, options = {}) {
     const a = Array.isArray(answer) ? answer : [];
     const excluded = ['hcs','hiw'].includes(q.type) && audioState?.status !== 'complete';
     let response = '', context = '', feedback = '';
@@ -63,14 +102,17 @@
         if (!a.length) response = '<p class="reading-unanswered">Not answered</p>' + response;
       }
       const info = q.reasoning || {};
-      feedback = '<h3>Feedback</h3>' + paragraph(info.correct || 'Compare your response with the correct answer and the supporting passage above.');
+      feedback = '<h3>Feedback</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
       if (info.options) feedback += '<h4>Other options explained</h4>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason));
     }
-    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><h3>Audio transcript</h3>' + paragraph(q.audioText) : '';
+    if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
+    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
     const status = points.pending ? 'Assessment pending' : excluded ? 'Audio item excluded' : points.earned + '/' + points.possible + ' points';
-    return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + '</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
+    const outcome=points.pending?'pending':excluded?'excluded':!hasAnswer(a)?'unanswered':points.earned===points.possible?'correct':'review';
+    const outcomeLabel={pending:'Awaiting assessment',excluded:'Audio incomplete',unanswered:'Unanswered',correct:'Correct',review:'To improve'}[outcome];
+    return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
       + '<section class="reading-explanation">' + feedback + '</section>' + audio + '</article>';
   }
-  return { question };
+  return { question, models, matches, controls, overview, filters };
 });

@@ -1,6 +1,6 @@
 {
   "source": "auspuru/ptemocktestreading",
-  "version": 5,
+  "version": 6,
   "sets": [
     {
       "id": "v1",
@@ -2749,40 +2749,46 @@
       "id": "practice-mock-1",
       "name": "Practice Mock 1",
       "setId": "v1",
-      "timed": false,
+      "timed": true,
       "swtOffset": 0,
       "audioQuestionIds": [
         "hcs-urban-cooling",
         "hcs-replication",
         "hiw-institutions-c2",
         "hiw-evidence-c2"
-      ]
+      ],
+      "family": "practice",
+      "minutes": 25
     },
     {
       "id": "practice-mock-2",
       "name": "Practice Mock 2",
       "setId": "v2",
-      "timed": false,
+      "timed": true,
       "swtOffset": 2,
       "audioQuestionIds": [
         "hcs-libraries",
         "hcs-measures",
         "hiw-translation-c2",
         "hiw-governance-c2"
-      ]
+      ],
+      "family": "practice",
+      "minutes": 25
     },
     {
       "id": "practice-mock-3",
       "name": "Practice Mock 3",
       "setId": "v3",
-      "timed": false,
+      "timed": true,
       "swtOffset": 4,
       "audioQuestionIds": [
         "hcs-coastal",
         "hcs-archives",
         "hiw-models-c2",
         "hiw-consent-c2"
-      ]
+      ],
+      "family": "practice",
+      "minutes": 25
     },
     {
       "id": "sectional-mock-1",
@@ -2795,7 +2801,8 @@
         "hcs-replication",
         "hiw-institutions-c2",
         "hiw-evidence-c2"
-      ]
+      ],
+      "family": "sectional"
     },
     {
       "id": "sectional-mock-2",
@@ -2808,7 +2815,8 @@
         "hcs-measures",
         "hiw-translation-c2",
         "hiw-governance-c2"
-      ]
+      ],
+      "family": "sectional"
     },
     {
       "id": "sectional-mock-3",
@@ -2821,7 +2829,8 @@
         "hcs-archives",
         "hiw-models-c2",
         "hiw-consent-c2"
-      ]
+      ],
+      "family": "sectional"
     }
   ]
 }

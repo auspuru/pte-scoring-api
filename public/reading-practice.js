@@ -55,6 +55,8 @@
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
   let selectedParagraph = {}, examNotice = null;
   let startGeneration = 0;
+  let homeFamily = 'practice';
+  let reviewView = { id: null, filter: 'all', type: 'all', context: false };
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [] });
   function identity() { return typeof currentUserId !== 'undefined' ? String(currentUserId).trim().toLowerCase() : ''; }
@@ -78,6 +80,7 @@
     document.removeEventListener?.('visibilitychange', visibilityChanged);
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
+    homeFamily='practice'; reviewView={id:null,filter:'all',type:'all',context:false};
     if (host) host.replaceChildren();
   }
   function setExamMode(enabled) {
@@ -95,7 +98,7 @@
     host.innerHTML = '<div class="reading-card" role="status">Preparing your reading practice…</div>';
     try {
       if (!bank) {
-        const response = await fetch('reading-bank.json?v=5', { signal: AbortSignal.timeout(15000) });
+        const response = await fetch('reading-bank.json?v=6', { signal: AbortSignal.timeout(15000) });
         if (!response.ok) throw Error('Unable to load question bank');
         bank = await response.json();
       }
@@ -178,18 +181,17 @@
     if (starting && !viewingQuestion) return;
     leave();
     const recent=state.history;
-    const cards=timed=>bank.mockCatalogue.filter(m=>m.timed===timed).map((m,i)=>{
-      const set=bank.sets.find(s=>s.id===m.setId),count=set.questions.length+6;
-      return `<article class="reading-card reading-mock-card"><span class="reading-number">${timed?'TIMED SECTIONAL':'UNTIMED PRACTICE'} · SET ${i+1}</span><h3>${escape(m.name)}</h3><p class="reading-mock-meta">${count} questions · ${timed?(set.minutes+30)+' minutes':'No time limit'}</p><p>2 SWT · ${set.questions.length} Reading · 2 HCS · 2 HIW</p><button class="portal-button primary" data-start="${m.id}">Start ${timed?'sectional':'practice'} mock ${i+1}</button></article>`;
+    const cards=family=>bank.mockCatalogue.filter(m=>m.family===family).map((m,i)=>{
+      const set=bank.sets.find(s=>s.id===m.setId),count=set.questions.length+6,minutes=m.minutes||set.minutes+30;
+      return `<article class="reading-card reading-mock-card"><span class="reading-mock-index" aria-hidden="true">0${i+1}</span><h3>${escape(m.name)}</h3><div class="reading-mock-meta"><span>${minutes} minutes</span><span>${count} questions</span></div><p>2 SWT · ${set.questions.length} Reading · 2 HCS · 2 HIW</p><button class="portal-button primary" data-start="${m.id}" aria-label="Start ${family} mock ${i+1}">Start mock <span aria-hidden="true">→</span></button></article>`;
     }).join('');
-    host.innerHTML=`<div class="reading-intro"><p class="portal-eyebrow">IPT Brisbane · Reading mocks</p><h2>Your next Reading milestone starts here.</h2><p>Three question sets. Practise each set at your own pace, then take its timed sectional mock. Every mock covers all eight task types that contribute to Reading.</p></div>
-      ${state.session?`<div class="portal-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'All your answers and feedback are ready on one page.':state.session.deadline==null?'Your untimed progress is saved.':'Your answers are saved. The timers keep running while you are away.'}</p>${!state.session.done&&state.session.formatVersion!==bank.version?'<p class="reading-note">Your saved session keeps its original questions and timer.</p>':''}</div><button class="portal-button primary" data-action="resume">${state.session.done?'Review result':'Continue session'}</button></div>`:''}
-      <section aria-labelledby="readingPracticeMocks"><div class="reading-section-heading"><h3 id="readingPracticeMocks">Practice mocks</h3><p>Build confidence without a timer. Review every answer after finishing.</p></div><div class="reading-mock-grid">${cards(false)}</div></section>
-      <section aria-labelledby="readingSectionalMocks"><div class="reading-section-heading"><h3 id="readingSectionalMocks">Sectional mocks</h3><p>Each SWT has 10 minutes, Reading has 25 minutes, then HCS and HIW share 10 minutes.</p></div><div class="reading-mock-grid">${cards(true)}</div></section>
-      <p data-start-status role="status" aria-live="polite"></p>
-      <details class="reading-card reading-format-guide"><summary>What is included and how the mocks work</summary><p>Every set contains Summarize Written Text, dropdown blanks, multiple answers, reorder paragraphs, drag-and-drop blanks, single answer, Highlight Correct Summary and Highlight Incorrect Words.</p><p>Next saves your response and moves straight on, including unanswered questions. Finish mock submits the final question. You cannot return to earlier questions during a mock. All answers and feedback appear together after submission.</p><p>These IPT mocks bring Reading-contributing tasks from across the exam into one session. They are not the real exam’s standalone Reading section. Timed mocks use separate clocks; unused time does not carry over and leaving does not pause them. The 10-minute allowance for HCS and HIW is an IPT practice preset.</p><p>Practice and sectional mocks 1, 2 and 3 share their corresponding question sets. Saved older sessions retain their original format. Progress is saved for this account on this browser; it does not sync between devices. Starting another mock replaces your current draft; completed results stay in history.</p><p><a href="${mock.readingFormat.source}" target="_blank" rel="noopener noreferrer">Pearson’s task and skill guide</a></p></details>
-      <div class="reading-card reading-sound-check"><div><h3>Check your sound</h3><p>HCS and HIW audio starts after a 10-second countdown and plays once. These practice recordings use your device’s English speech voice. If playback is blocked, select Play audio. HIW passages target C2 difficulty.</p></div><button class="portal-button" data-action="soundcheck">Test audio</button><p data-sound-status role="status"></p></div>
-      <div class="reading-card reading-progress"><h3>Your completed mocks</h3>${recent.length?`<ul class="reading-history">${recent.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}${r.excluded?' · '+r.excluded+' audio items excluded':''}</span></div><button class="portal-button" data-history="${i}">View all feedback</button></li>`).join('')}</ul>`:'<p>Your completed mocks and feedback will appear here.</p>'}</div>`;
+    const panels=['practice','sectional'].map(family=>`<section id="reading-${family}-mocks" class="reading-mock-panel" aria-labelledby="reading-${family}-tab" ${homeFamily===family?'':'hidden'}><p class="reading-mode-note">${family==='practice'?'One 25-minute timer for the whole mock.':'Two 10-minute SWT clocks, 25 minutes for Reading, then 10 minutes for HCS and HIW.'}</p><div class="reading-mock-grid">${cards(family)}</div></section>`).join('');
+    host.innerHTML=`<div class="reading-home-heading"><div><p class="portal-eyebrow">IPT Brisbane · Reading</p><h2>Choose your next mock.</h2><p>Three sets. All eight Reading-contributing task types.</p></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
+      ${state.session?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p>${!state.session.done&&state.session.formatVersion!==bank.version?'<p class="reading-note">Your saved session keeps its original questions and timer.</p>':''}</div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
+      <div class="reading-mode-switch" role="group" aria-label="Choose mock format">${['practice','sectional'].map(family=>`<button type="button" id="reading-${family}-tab" data-mock-family="${family}" aria-pressed="${homeFamily===family}" aria-controls="reading-${family}-mocks">${family==='practice'?'Practice':'Sectional'}<span>${family==='practice'?'25':'55'} min</span></button>`).join('')}</div>
+      ${panels}<p data-start-status role="status" aria-live="polite"></p>
+      <div class="reading-home-details"><details class="reading-home-help"><summary>How the mocks work</summary><p>Each mock contains two SWT questions, all five Reading tasks, two HCS and two C2-targeted HIW questions. Practice mocks share one 25-minute timer across all questions. Sectional mocks use separate SWT, Reading and audio clocks, totalling up to 55 minutes. Leaving does not pause a timer; expiry submits your saved responses.</p><p>Next saves and advances immediately, including unanswered questions. All answers and feedback are available together after finishing. Audio starts after a 10-second countdown using your device’s English speech voice; select Play audio if your browser blocks it.</p><p>Matching practice and sectional numbers share a question set. Progress is saved for this account on this browser. Starting a new mock replaces the current draft; completed results remain in history.</p><p>These are IPT Reading-skill presets, bringing tasks from across the exam into one session. <a href="${mock.readingFormat.source}" target="_blank" rel="noopener noreferrer">Pearson’s task guide</a></p></details>
+      <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
   }
   function render() { if (!state.session) return home(); renderSession(); }
   function renderSession() {
@@ -301,25 +303,52 @@
     const display=value=>['mcma','mcsa','hcs'].includes(q.type)?q.choices[value]:q.type==='reorder'?q.items.find(i=>i.key===value)?.text:q.type==='hiw'?`Word ${value+1}: ${q.corrections.find(c=>c.index===value).written} → ${q.corrections.find(c=>c.index===value).spoken}`:value;
     return `<section class="reading-explanation"><h3>${excluded?'Audio item excluded':(p.earned===p.possible?'Well done':'Review this answer')+' · '+p.earned+'/'+p.possible}</h3>${excluded?'<p>Audio did not complete before submission. This item is excluded from your graded total. You can replay it for review.</p>':''}<ol>${actual.map((correct,i)=>`<li><strong>${q.type==='dropdown'||q.type==='wordbank'?'Blank '+(i+1)+': ':''}${escape(display(correct))}</strong></li>`).join('')}</ol><p>${escape(info.correct||'Compare your response with the answer above, then reread the surrounding passage for the supporting meaning.')}</p>${info.options?`<details><summary>Why other options do not fit</summary><ul>${Object.entries(info.options).map(([option,reason])=>`<li><strong>${escape(option)}:</strong> ${escape(reason)}</li>`).join('')}</ul></details>`:''}${q.audioText?`<details><summary>Audio transcript</summary><p>${escape(q.audioText)}</p></details>`:''}</section>`;
   }
-  function summary() {
-    const s=state.session, { rows, earned, possible, percent, pending, excluded }=totals(s);
-    const weakest=rows.filter(r=>r.gradedPossible).sort((a,b)=>a.earned/a.gradedPossible-b.earned/b.gradedPossible)[0];
-    const unanswered=s.questions.filter(q=>!s.answers[q.uid]?.some(x=>x!==''&&x!=null)).length;
-    const grading=s.questions.some(q=>q.type==='swt'&&s.assessments?.[q.uid]?.status==='working');
-    return `<section class="reading-card reading-report"><p class="portal-eyebrow">IPT Brisbane · ${s.mode==='diagnostic'?'Your diagnostic snapshot':'Session complete'}</p><h2>${percent==null?'Awaiting results':percent+'% accuracy · '+earned+'/'+possible+' graded points'}</h2>${grading?`<div class="ipt-assessment-status" role="status" aria-live="polite"><img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="112" height="68"><p>IPT Brisbane’s AI scoring engine is analysing your response…</p></div>`:''}${s.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':''}<p>${unanswered} unanswered questions · ${Math.max(1,Math.round((s.finishedAt-s.startedAt)/60000))} minutes elapsed</p>${pending||excluded?`<p role="status">${pending?pending+' SWT response'+(pending===1?'':'s')+' awaiting grade. ':''}${excluded?excluded+' audio items excluded because playback did not complete. ':''}These items are outside the graded total.</p>`:''}<p class="reading-note">IPT Brisbane practice points, not an official PTE score or a full language-level assessment. Previously practised questions can make this result less representative.${s.mode==='full'?' This custom mixed mock includes SWT and listening tasks that also exercise reading.':''}</p><div class="reading-table-wrap"><table><thead><tr><th>Task</th><th>Graded points</th><th>Accuracy</th><th>Active time</th></tr></thead><tbody>${rows.map(r=>`<tr><th>${r.label}</th><td>${r.gradedPossible?r.earned+'/'+r.gradedPossible:'—'}${r.pending?' · Pending':''}${r.excluded?' · '+r.excluded+' excluded':''}</td><td>${r.gradedPossible?Math.round(r.earned/r.gradedPossible*100)+'%':'—'}</td><td>${Math.round(s.questions.filter(q=>q.type===r.type).reduce((n,q)=>n+(s.times[q.uid]||0),0)/1000)}s</td></tr>`).join('')}</tbody></table></div><div class="reading-next"><strong>${!weakest?'Review the available feedback':earned===possible?'Keep building consistency':'Your next practice focus: '+weakest.label}</strong><p>${weakest&&earned===possible?'Try another question set and keep checking the evidence for every choice.':'Review the missed answers below, then practise without a timer before trying another timed session.'}</p></div></section>`;
+  function summary(model = review.models(state.session,score)) {
+    return review.overview(state.session,totals(state.session),taskLabels,model,reviewView);
+  }
+  function applyReviewFilters(model = review.models(state.session,score)) {
+    if(!state.session?.done)return;
+    let visible=0;
+    for(const item of model){
+      const shown=review.matches(item,reviewView);if(shown)visible++;
+      const node=host.querySelector('[data-review-question="'+encodeURIComponent(item.q.uid)+'"]');
+      if(node)node.hidden=!shown;
+    }
+    host.querySelectorAll('[data-review-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.reviewFilter===reviewView.filter)));
+    host.querySelectorAll('[data-review-type]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.reviewType===reviewView.type)));
+    host.querySelectorAll('[data-review-context-content]').forEach(node=>{node.hidden=!reviewView.context;});
+    const context=host.querySelector('[data-review-context]');if(context){context.setAttribute('aria-pressed',String(reviewView.context));context.textContent=reviewView.context?'Hide passages':'Show passages';}
+    const task=host.querySelector('[data-review-task]');if(task)task.value=reviewView.type;
+    const reset=host.querySelector('[data-review-reset]');if(reset)reset.hidden=reviewView.filter==='all'&&reviewView.type==='all';
+    const count=host.querySelector('[data-review-count]');if(count)count.textContent='Showing '+visible+' of '+model.length+' answers';
+    const empty=host.querySelector('[data-review-empty]');if(empty)empty.hidden=visible>0;
+    host.querySelectorAll('[data-filter-count]').forEach(node=>{node.textContent=String(model.filter(item=>review.matches(item,{filter:node.dataset.filterCount,type:reviewView.type})).length);});
   }
   function renderReview() {
     const s=state.session;
     setExamMode(false);
-    const pending=s.questions.filter(q=>q.type==='swt'&&mock.scoreExtra(q,s.answers[q.uid],s.assessments[q.uid]).pending);
-    const retryable=pending.some(q=>s.assessments[q.uid]?.status!=='working');
-    const questions=s.questions.map((q,i)=>review.question(q,s.answers[q.uid],s.assessments[q.uid],s.audioStates[q.uid],score(q,s.answers[q.uid],s.assessments[q.uid]),i,s.questions.length,taskLabels[q.type]));
-    const scroll=host.scrollTop;
-    host.innerHTML='<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading mocks</button><strong>'+escape(s.name)+'</strong><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
-      + summary() + '<div class="reading-review-intro"><h2>All answers &amp; feedback</h2><p>Your responses, correct answers and explanations are together below.</p>'
-      + (pending.length?'<button class="portal-button" data-action="retry-all-swt" '+(retryable?'':'disabled')+'>'+(retryable?'Retry pending SWT assessments':'Assessing SWT responses…')+'</button>':'')
-      + '</div><div class="reading-complete-review">'+questions.join('')+'</div>';
-    host.scrollTop=scroll;
+    if(reviewView.id!==s.id)reviewView={id:s.id,filter:'all',type:'all',context:false};
+    const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
+    const retryable=pending.some(item=>s.assessments[item.q.uid]?.status!=='working');
+    const retry=pending.length?'<button class="portal-button" data-action="retry-all-swt" '+(retryable?'':'disabled')+'>'+(retryable?'Retry pending SWT assessments':'Assessing SWT responses…')+'</button>':'';
+    const question=item=>review.question(item.q,s.answers[item.q.uid],s.assessments[item.q.uid],s.audioStates[item.q.uid],item.points,item.index,s.questions.length,taskLabels[item.q.type],reviewView);
+    const existing=host.querySelector('[data-review-session="'+encodeURIComponent(s.id)+'"]');
+    if(existing){
+      // Keep filters, scroll and audio controls in place as SWT assessments arrive.
+      host.querySelector('[data-review-overview]').innerHTML=summary(model);
+      host.querySelector('[data-review-retry]').innerHTML=retry;
+      for(const item of model.filter(item=>item.q.type==='swt')){
+        const node=host.querySelector('[data-review-question="'+encodeURIComponent(item.q.uid)+'"]');
+        if(node)node.outerHTML=question(item);
+      }
+    }else{
+      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading mocks</button><strong>'+escape(s.name)+'</strong><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+        + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Explore your results. Your responses and explanations stay together.</p></div><div data-review-retry>'+retry+'</div></div>'
+        + review.controls(model,taskLabels,reviewView)
+        + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
+        + '<div class="reading-complete-review">'+model.map(question).join('')+'</div></section>';
+    }
+    applyReviewFilters(model);
   }
   function timerText() { const left=remaining(state.session, state.session.done ? state.session.finishedAt : Date.now()); return left===null?'Untimed practice':`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}${state.session.done?' · Finished':''}`; }
   function tick() {
@@ -396,7 +425,11 @@
   }
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
   function change(e) {
-    if(!owner||identity()!==owner||!editable())return;
+    if(!owner||identity()!==owner)return;
+    if(state.session?.done&&e.target.dataset.reviewTask!==undefined){
+      reviewView.type=Object.hasOwn(taskLabels,e.target.value)?e.target.value:'all';applyReviewFilters();return;
+    }
+    if(!editable())return;
     const q=state.session.questions[state.session.index];
     if(e.target.dataset.answer!==undefined) {
       const a=state.session.answers[q.uid]||[];a[Number(e.target.dataset.answer)]=e.target.value;state.session.answers[q.uid]=a;
@@ -488,12 +521,21 @@
     }
     const b=e.target.closest('button');if(!b||b.disabled)return;
     const d=b.dataset,s=state.session;
+    if(d.mockFamily&&!viewingQuestion&&['practice','sectional'].includes(d.mockFamily)){
+      homeFamily=d.mockFamily;home();host.querySelector('[data-mock-family="'+homeFamily+'"]')?.focus();return;
+    }
     if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? This replaces your current reading draft.'))return;return start(d.start);}
     if(d.action==='soundcheck')return speaker.play('soundcheck','Welcome to IPT Brisbane. If you can hear this sentence, your audio is ready for the mixed reading mock.');
     if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current reading draft will be replaced.'))return;cancelAudio();state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();return render();}
     if(d.action==='home')return home();
     if(d.action==='resume')return render();
     if(!s)return;
+    if(s.done){
+      if(d.reviewFilter!==undefined&&Object.hasOwn(review.filters,d.reviewFilter)){reviewView.filter=d.reviewFilter;applyReviewFilters();return;}
+      if(d.reviewType!==undefined&&Object.hasOwn(taskLabels,d.reviewType)){reviewView.type=reviewView.type===d.reviewType?'all':d.reviewType;applyReviewFilters();return;}
+      if(d.reviewContext!==undefined){reviewView.context=!reviewView.context;applyReviewFilters();return;}
+      if(d.reviewReset!==undefined){reviewView.filter='all';reviewView.type='all';applyReviewFilters();return;}
+    }
     if(s.done && d.action==='retry-all-swt')return Promise.all(s.questions.filter(q=>q.type==='swt'&&mock.scoreExtra(q,s.answers[q.uid],s.assessments[q.uid]).pending).map(q=>gradeSwt(q)));
     if(s.done && d.reviewUid){
       const item=s.questions.find(q=>q.uid===d.reviewUid);if(!item)return;
