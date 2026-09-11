@@ -21,7 +21,7 @@ function harness() {
     practiceRefreshInFlight: null, lastPracticeRefreshAt: 0,
     userProfile: { practiceHistory: [a('local')], templates: {} }, practiceHistoryDeleted: [],
     essays: [{ id: 'draft', intro: 'An unsaved paragraph' }], currentId: 'draft', attempted: new Set(),
-    BAND6_TEMPLATE: '', BAND9_TEMPLATE: '', API_URL: '',
+    BAND6_TEMPLATE: '', BAND9_TEMPLATE: '', API_URL: '', AbortSignal,
     console: { error() {} }, document: { visibilityState: 'visible', getElementById: () => null },
     canonicalClientUserId: sync.canonicalUserId, mergePracticeHistoryClient: sync.mergeHistory,
     mergePracticeDeletedClient: sync.mergeDeleted, todayStamp: () => '2026-09-09',

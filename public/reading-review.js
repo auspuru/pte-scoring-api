@@ -6,6 +6,7 @@
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const items = value => Array.isArray(value) ? value : [];
+  const originalChoiceIndex = (q, displayIndex) => Array.isArray(q?.choiceIndices) ? q.choiceIndices[displayIndex] : displayIndex;
   const filters = { all:'All answers', review:'To improve', correct:'Correct', unanswered:'Unanswered', unassessed:'Unassessed' };
   const hasAnswer = answer => answer.some(value => typeof value === 'string' ? value.trim().length > 0 : value != null);
   function models(session, scorer) {
@@ -103,7 +104,7 @@
         if (wrong.length) response += '<h4>Incorrect selections</h4>' + list(wrong.map(i=>'Word '+(i+1)+': '+words[i]+' — this word matched the audio.'));
       } else {
         const correct = q.type==='mcma' ? q.answers : [q.answer];
-        response = table(['Option', 'Answer option', 'Your selection', 'Correct answer'], q.choices.map((choice,i)=>[String.fromCharCode(65+i),choice,a.includes(i)?'Selected':'—',correct.includes(i)?'Correct':'—']));
+        response = table(['Option', 'Answer option', 'Your selection', 'Correct answer'], q.choices.map((choice,i)=>{ const originalIndex=originalChoiceIndex(q,i); return [String.fromCharCode(65+i),choice,a.includes(originalIndex)?'Selected':'—',correct.includes(originalIndex)?'Correct':'—']; }));
         if (!a.length) response = '<p class="reading-unanswered">Not answered</p>' + response;
       }
       const info = q.reasoning || {};

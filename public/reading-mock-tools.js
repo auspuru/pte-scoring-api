@@ -5,6 +5,60 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
+  const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue']);
+  function hash(value) {
+    let n = 2166136261;
+    for (const ch of String(value || '')) { n ^= ch.charCodeAt(0); n = Math.imul(n, 16777619); }
+    return n >>> 0;
+  }
+  // HIW practice can use a little listening variety. Full mock audio remains
+  // single-speaker so it keeps the real-test feel; the transcript and answer
+  // key are never changed by a challenge layer.
+  function audioVariant(q, challenge = true) {
+    if (!q || q.type !== 'hiw' || !challenge) return 'single';
+    if (q.audioVariant && AUDIO_VARIANTS.includes(q.audioVariant)) return q.audioVariant;
+    return AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length];
+  }
+  function audioPlayback(q, challenge = true) {
+    const variant = audioVariant(q, challenge);
+    return {
+      variant,
+      label: variant === 'two-speakers' ? 'Two-speaker practice challenge' : variant === 'ambient' ? 'Light ambient practice challenge' : variant === 'sound-cue' ? 'Practice challenge with a brief woodpecker-style chirp cue' : 'Single-speaker audio',
+      cue: variant === 'sound-cue' ? (q.soundCue || 'woodpecker-chirp') : null,
+      transcript: q?.audioText || ''
+    };
+  }
+  function seeded(seed) {
+    let n = hash(seed) || 1;
+    return () => { n = (Math.imul(n, 1664525) + 1013904223) >>> 0; return n / 4294967296; };
+  }
+  function shuffle(items, seed) {
+    const next = items.slice(), random = seeded(seed);
+    for (let i = next.length - 1; i > 0; i--) { const j = Math.floor(random() * (i + 1)); [next[i], next[j]] = [next[j], next[i]]; }
+    if (next.length > 1 && next.every((value, i) => value === items[i])) [next[0], next[1]] = [next[1], next[0]];
+    return next;
+  }
+  // Keep answer keys in their original coordinate system. Only the rendered
+  // order changes, and the same question receives the same order after reload.
+  function prepareQuestion(question, seed = question?.uid || question?.id) {
+    const q = JSON.parse(JSON.stringify(question || {}));
+    if (Array.isArray(q.options)) q.options = q.options.map((row, i) => shuffle(row, `${seed}:options:${i}`));
+    if (Array.isArray(q.bank)) q.bank = shuffle(q.bank, `${seed}:bank`);
+    if (Array.isArray(q.items)) q.items = shuffle(q.items, `${seed}:items`);
+    if (Array.isArray(q.choices)) {
+      const original = q.choices.slice(), indices = shuffle(original.map((_, i) => i), `${seed}:choices`);
+      q.originalChoices = original;
+      q.choiceIndices = indices;
+      q.choices = indices.map(i => original[i]);
+    }
+    return q;
+  }
+  function prepareQuestions(questions, seed = '') { return (Array.isArray(questions) ? questions : []).map((q, i) => prepareQuestion(q, `${seed}:${q.uid || q.id || i}`)); }
+  function choiceText(q, originalIndex) {
+    if (Array.isArray(q?.originalChoices)) return q.originalChoices[originalIndex];
+    if (Array.isArray(q?.choiceIndices)) return q.choices[q.choiceIndices.indexOf(originalIndex)];
+    return q?.choices?.[originalIndex];
+  }
   function scoreExtra(q, answer = [], assessment) {
     const a = Array.isArray(answer) ? answer : [];
     if (q.type === 'hcs') return { earned: a.length && a[0] === q.answer ? 1 : 0, possible: 1 };
@@ -100,31 +154,69 @@
       if (startTimeout) env.clearTimeout(startTimeout);
       timeout = null;
       startTimeout = null;
+      stopEffects?.();
       if (active) {
         const previous = active; active = null;
         env.speechSynthesis?.cancel();
         onState(previous, 'error', 'Playback was interrupted. Replay this question before submitting.');
       }
     }
-    function play(key, text) {
+    let audioContext = null, ambience = null, cueTimer = null;
+    function stopEffects() {
+      if (cueTimer) env.clearTimeout(cueTimer);
+      cueTimer = null;
+      if (ambience) { try { ambience.gain.gain.cancelScheduledValues(0); ambience.gain.gain.setTargetAtTime(0, ambience.context.currentTime, 0.02); ambience.oscillators.forEach(o => o.stop(ambience.context.currentTime + 0.04)); } catch (_) {} ambience = null; }
+    }
+    function startEffects(options) {
+      stopEffects();
+      if (!options || options.variant === 'single' || !env.AudioContext && !env.webkitAudioContext) return;
+      try {
+        audioContext ||= new (env.AudioContext || env.webkitAudioContext)();
+        if (audioContext.state === 'suspended') audioContext.resume?.().catch(() => {});
+        const gain = audioContext.createGain(); gain.gain.value = options.variant === 'ambient' ? 0.018 : 0.025; gain.connect(audioContext.destination);
+        const oscillators = [];
+        if (options.variant === 'ambient') {
+          for (const frequency of [196, 247]) { const oscillator = audioContext.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.value = frequency; oscillator.connect(gain); oscillator.start(); oscillators.push(oscillator); }
+          ambience = { context: audioContext, gain, oscillators };
+        } else if (options.variant === 'sound-cue') {
+          const chirp = () => {
+            if (!audioContext) return;
+            const oscillator = audioContext.createOscillator(), cueGain = audioContext.createGain();
+            oscillator.type = 'triangle'; oscillator.frequency.setValueAtTime(1500, audioContext.currentTime); oscillator.frequency.exponentialRampToValueAtTime(2600, audioContext.currentTime + 0.12);
+            cueGain.gain.setValueAtTime(0.0001, audioContext.currentTime); cueGain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.02); cueGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.2);
+            oscillator.connect(cueGain); cueGain.connect(audioContext.destination); oscillator.start(); oscillator.stop(audioContext.currentTime + 0.22);
+          };
+          chirp(); cueTimer = env.setTimeout(chirp, 330);
+        }
+      } catch (_) { /* Speech remains usable when Web Audio is unavailable. */ }
+    }
+    function play(key, text, options = {}) {
       cancel();
+      startEffects(options);
       if (!env.speechSynthesis || !env.SpeechSynthesisUtterance) {
+        stopEffects();
         onState(key, 'error', 'Audio is unavailable in this browser. Open the full mock in a browser with an English speech voice. This item will be excluded if audio cannot play.');
         return;
       }
       const ticket = serial;
-      let started = false;
-      let utterance, voices;
+      let started = false, utterances = [], cursor = 0;
+      let voices;
       try {
-        utterance = new env.SpeechSynthesisUtterance(text);
         voices = env.speechSynthesis.getVoices().filter(v => /^en(?:-|_)/i.test(v.lang));
       } catch (_) {
         onState(key, 'error', 'The speech voice could not load. Check your browser audio settings and retry.');
         return;
       }
-      utterance.voice = voices.find(v => /^en-(AU|GB)/i.test(v.lang)) || voices[0] || null;
-      utterance.lang = utterance.voice?.lang || 'en-GB';
-      utterance.rate = 1; utterance.pitch = 1;
+      const variant = options.variant || 'single';
+      const parts = variant === 'two-speakers' ? String(text || '').match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g)?.map(part => part.trim()).filter(Boolean) || [String(text || '')] : [String(text || '')];
+      utterances = parts.map((part, i) => {
+        const utterance = new env.SpeechSynthesisUtterance(part);
+        utterance.voice = voices.find(v => i % 2 === 0 ? /^en-(AU|GB)/i.test(v.lang) : /^en-(US|CA)/i.test(v.lang)) || voices[i % Math.max(1, voices.length)] || null;
+        utterance.lang = utterance.voice?.lang || (i % 2 ? 'en-US' : 'en-GB');
+        utterance.rate = variant === 'two-speakers' ? (i % 2 ? 0.96 : 1.03) : 1;
+        utterance.pitch = variant === 'two-speakers' ? (i % 2 ? 0.92 : 1.06) : 1;
+        return utterance;
+      });
       active = key;
       const finish = (status, message) => {
         if (ticket !== serial || active !== key) return;
@@ -135,17 +227,24 @@
         startTimeout = null;
         serial++;
         if (status === 'error') env.speechSynthesis.cancel();
+        stopEffects();
         onState(key, status, message);
       };
-      utterance.onstart = () => { if (ticket === serial) { started = true; if (startTimeout) env.clearTimeout(startTimeout); startTimeout = null; onState(key, 'playing', 'Playing. Follow the question on screen.'); } };
-      utterance.onend = () => finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
-      utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
+      const playNext = () => {
+        if (ticket !== serial || active !== key) return;
+        const utterance = utterances[cursor++];
+        if (!utterance) return finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
+        utterance.onstart = () => { if (ticket === serial) { started = true; if (startTimeout) env.clearTimeout(startTimeout); startTimeout = null; onState(key, 'playing', variant === 'two-speakers' ? 'Playing. Follow both speakers.' : variant === 'sound-cue' ? 'Playing with a brief woodpecker-style practice sound cue.' : variant === 'ambient' ? 'Playing with light ambient practice sound.' : 'Playing. Follow the question on screen.'); } };
+        utterance.onend = () => cursor < utterances.length ? playNext() : finish(started ? 'complete' : 'error', started ? 'Audio complete. Your answer is ready to submit.' : 'Audio did not start. Check your sound and try again.');
+        utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
+        try { env.speechSynthesis.speak(utterance); } catch (_) { finish('error', 'Audio could not start. Try another browser with an English voice.'); }
+      };
       onState(key, 'loading', 'Starting audio…');
       startTimeout = env.setTimeout(() => { if (!started) finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'); }, 8000);
       timeout = env.setTimeout(() => finish('error', 'Audio timed out. Replay the question before submitting.'), 150000);
-      try { env.speechSynthesis.speak(utterance); } catch (_) { finish('error', 'Audio could not start. Try another browser with an English voice.'); }
+      playNext();
     }
     return { play, cancel };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS };
 });

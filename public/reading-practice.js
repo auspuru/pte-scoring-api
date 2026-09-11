@@ -59,14 +59,51 @@
   let mockPage = 0, libraryView = null;
   let reviewView = { id: null, filter: 'all', type: 'all', context: false };
   const pendingGrades = new Map();
-  const initialState = () => ({ session: null, history: [], practiceResults: {} });
+  const initialState = () => ({ session: null, history: [], drafts: [], practiceResults: {} });
+  let lastSnapshot = null;
+  let cloudStatus = null;
+  const progressSync = () => globalThis.AccountProgress;
   function identity() { return typeof currentUserId !== 'undefined' ? String(currentUserId).trim().toLowerCase() : ''; }
   function authToken() { return typeof sessionToken !== 'undefined' ? sessionToken : null; }
   function persist() {
     if (!owner || identity() !== owner) return;
-    try { localStorage.setItem(storageKey(owner), JSON.stringify(state)); saveNotice = 'Saved on this device'; lastPersisted = Date.now(); }
+    if (progressSync()) {
+      const stamped = progressSync().stampReading(state, lastSnapshot);
+      // Keep session objects alive for in-flight assessment callbacks.
+      if (state.session && stamped.session) Object.assign(state.session, stamped.session);
+      state.sessionSelectedAt = stamped.sessionSelectedAt;
+      state.history = stamped.history; state.drafts = stamped.drafts;
+    }
+    const snapshot = progressSync() ? progressSync().packReading(state) : state;
+    const changed = JSON.stringify(snapshot) !== JSON.stringify(lastSnapshot);
+    try { localStorage.setItem(storageKey(owner), JSON.stringify(snapshot)); saveNotice = cloudStatus?.text || 'Saved on this device'; lastPersisted = Date.now(); }
     catch (_) { saveNotice = 'Could not save on this device. Keep this page open.'; }
+    lastSnapshot = JSON.parse(JSON.stringify(snapshot));
+    if (changed && typeof queueSync === 'function') queueSync();
     const el = host?.querySelector('[data-save-status]'); if (el) el.textContent = saveNotice;
+  }
+  function setSyncStatus(status, text) {
+    cloudStatus = { status, text };
+    saveNotice = text;
+    const el = host?.querySelector('[data-save-status]'); if (el) el.textContent = text;
+  }
+  function receiveProgress(remote, uid) {
+    if (!state || !progressSync() || owner !== String(uid).trim().toLowerCase() || owner !== identity()) return;
+    const before = state.session, beforeView = before && JSON.stringify([before.id, before.index, before.done, before.answers, before.assessments]);
+    const navigation = before && JSON.stringify([before.id, before.index, before.done]);
+    const merged = progressSync().mergeReading(state, remote);
+    // Recalculate display totals using the existing grader, never a sync rule.
+    merged.history = merged.history.map(s => ({ ...s, ...totals(s) }));
+    if (before?.id === merged.session?.id) { Object.assign(before, merged.session); merged.session = before; }
+    state = merged;
+    lastSnapshot = progressSync().packReading(state);
+    try { localStorage.setItem(storageKey(owner), JSON.stringify(lastSnapshot)); } catch (_) { /* The cloud copy remains available. */ }
+    const afterView = state.session && JSON.stringify([state.session.id, state.session.index, state.session.done, state.session.answers, state.session.assessments]);
+    const moved = navigation !== (state.session && JSON.stringify([state.session.id, state.session.index, state.session.done]));
+    if (beforeView !== afterView && !host.hidden && viewingQuestion && (moved || !document.activeElement?.matches?.('textarea,input'))) {
+      cancelAudio(); render();
+    } else if (!viewingQuestion && !host.hidden) renderHomeView();
+    resumeSwtAssessments();
   }
   function recordTime() {
     const s = state?.session;
@@ -80,6 +117,7 @@
   function reset() {
     document.removeEventListener?.('visibilitychange', visibilityChanged);
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
+    lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
     homeFamily='practice'; mockPage=0; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
     if (host) host.replaceChildren();
@@ -93,7 +131,7 @@
   async function open() {
     const nextOwner = identity();
     if (!nextOwner) return;
-    if (owner === nextOwner && state && bank) { activeSince = Date.now(); tick(); render(); return; }
+    if (owner === nextOwner && state && bank) { if (typeof resumeAccountSync === 'function') await resumeAccountSync(); if (owner !== nextOwner || nextOwner !== identity() || !state) return; activeSince = Date.now(); tick(); render(); return; }
     reset(); owner = nextOwner; host = document.getElementById('readingPane');
     const requestGeneration = generation;
     host.innerHTML = '<div class="reading-card" role="status">Preparing your reading practice…</div>';
@@ -106,13 +144,17 @@
       if (requestGeneration !== generation || nextOwner !== identity()) return;
       state = initialState();
       try {
-        const saved = JSON.parse(localStorage.getItem(storageKey(owner)) || 'null');
+        const raw = JSON.parse(localStorage.getItem(storageKey(owner)) || 'null');
+        const saved = progressSync() ? progressSync().unpackReading(raw) : raw;
         if (saved && Array.isArray(saved.history)) {
-          state.history = saved.history.slice(0, 30);
+          state.history = saved.history;
+          state.drafts = saved.drafts || [];
+          state.sessionSelectedAt = saved.sessionSelectedAt || saved.session?.startedAt || 0;
           state.practiceResults = saved.practiceResults && typeof saved.practiceResults==='object' && !Array.isArray(saved.practiceResults) ? saved.practiceResults : {};
           if (saved.session && Array.isArray(saved.session.questions) && saved.session.questions.length && Number.isInteger(saved.session.index) && saved.session.index >= 0 && saved.session.index < saved.session.questions.length && saved.session.answers && saved.session.times) state.session = saved.session;
         }
-        saveNotice = 'Progress is saved on this device';
+        lastSnapshot = progressSync() ? progressSync().packReading(state) : JSON.parse(JSON.stringify(state));
+        saveNotice = cloudStatus?.text || 'Progress is saved on this device';
       } catch (_) { saveNotice = 'Saved progress could not be restored on this device'; }
       if (state.session) repairSession(state.session);
       host.onclick = click; host.onchange = change; host.oninput = input;
@@ -120,6 +162,8 @@
       document.addEventListener?.('visibilitychange', visibilityChanged);
       host.ondragstart = dragStart; host.ondragover = dragOver; host.ondrop = drop;
       render(); resumeSwtAssessments(); interval = setInterval(tick, 1000); activeSince = Date.now(); tick();
+      if (typeof queueSync === 'function' && (state.session || state.history.length || Object.keys(state.practiceResults).length)) queueSync();
+      if (typeof resumeAccountSync === 'function') resumeAccountSync();
     } catch (_) {
       if (requestGeneration !== generation) return;
       host.innerHTML = '<div class="reading-card" role="alert"><h2>Reading could not load</h2><p>Your writing workspace is still available.</p><button class="portal-button" data-action="reload">Try again</button></div>';
@@ -174,10 +218,12 @@
           plan={questions:[{...q}],minutes:0,name:q.title};
         }
       }
-      cancelAudio();
       const startedAt = Date.now();
-      const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, formatVersion: bank.version, questions: plan.questions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
+      cancelAudio();
+      const preparedQuestions = mock.prepareQuestions(plan.questions, startedAt + ':' + mode);
+      const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, formatVersion: bank.version, questions: preparedQuestions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
       timing.initialise(session, plan.stages, startedAt);
+      if (state.session && !state.session.done) state.drafts = [state.session, ...(state.drafts || []).filter(s => s.id !== state.session.id)];
       state.session = session;
       if(practiceUid)session.practiceUid=practiceUid;
       libraryView=null;
@@ -200,7 +246,8 @@
       <div class="reading-mode-switch" role="group" aria-label="Choose mock format">${['practice','sectional'].map(family=>`<button type="button" id="reading-${family}-tab" data-mock-family="${family}" aria-pressed="${homeFamily===family}" aria-controls="reading-${family}-mocks">${family==='practice'?'Practice':'Sectional'} mock test</button>`).join('')}</div>
       ${panels}<p data-start-status role="status" aria-live="polite"></p>
       <div class="reading-library-shortcuts"><h3>Question practice</h3><div>${bank.practiceLibraries.map(l=>`<button class="portal-button" data-browse-library="${l.id}">${escape(l.name)} <span aria-hidden="true">→</span></button>`).join('')}</div></div>
-      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Next saves your answer and moves on immediately. The timer keeps running if you leave; expiry submits your saved responses. Check your sound before starting. Answers and feedback appear together after you finish.</p><p>Progress is saved for this account on this browser. Starting another mock or practice question replaces your current draft. Completed mock results remain in Recent results.</p></details>
+      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Next saves your answer and moves on immediately. The timer keeps running if you leave; expiry submits your saved responses. Check your sound before starting. Answers and feedback appear together after you finish.</p><p>Progress syncs across devices when you sign in to the same account. Offline changes are saved on this device and sync when you reconnect. Completed answers and feedback remain in Recent results.</p></details>
+      ${(state.drafts||[]).length?`<details class="reading-home-help"><summary>Other saved sessions <span>${state.drafts.length}</span></summary><ul class="reading-history">${state.drafts.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
       <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
   }
   function libraryQuestions() {
@@ -244,11 +291,13 @@
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions"><button class="portal-button" data-move="-1" ${s.index===0?'disabled':''}>Previous</button><button class="portal-button" data-move="1" ${s.index===s.questions.length-1?'disabled':''}>Next question</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}</div></article></div>`;
+      <div class="reading-actions"><button class="portal-button" data-move="-1" ${s.index===0?'disabled':''}>Previous</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${s.index===s.questions.length-1?'disabled':''}>Next question <span aria-hidden="true">→</span></button></div></article></div>`;
   }
   function audioHTML(q) {
     const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
-    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || 'Listen once, then answer. Check that your sound is on.')}</span></div>`;
+    const challenge = s.mode === 'practice';
+    const profile = mock.audioPlayback(q, challenge);
+    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || (profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : 'Practice challenge audio: '+profile.label+'. The transcript and scoring key are unchanged.'))}</span></div>`;
   }
   function prepareAudio(q) {
     const s=state?.session;
@@ -264,7 +313,7 @@
     prepareAudio(q);
     const item=s.audioStates[q.uid]; if(item?.status!=='countdown')return;
     const seconds=Math.max(0,Math.ceil((item.readyAt-Date.now())/1000));
-    if(seconds===0){if(!expireSession())speaker.play(q.uid,q.audioText);return;}
+    if(seconds===0){if(!expireSession())speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'));return;}
     item.message='Audio starts automatically in '+seconds+' second'+(seconds===1?'':'s')+'. Get ready to listen.';
     const label=host.querySelector('[data-audio-status]');if(label)label.textContent=item.message;
   }
@@ -318,7 +367,7 @@
       const order=a.length?a:q.items.map(x=>x.key);
       return `<ol class="reading-reorder">${order.map((key,i)=>`<li><p>${escape(q.items.find(x=>x.key===key).text)}</p><div><button class="portal-button" data-reorder="${i}" data-direction="-1" ${i===0?'disabled':''} aria-label="Move paragraph ${i+1} up">↑</button><button class="portal-button" data-reorder="${i}" data-direction="1" ${i===order.length-1?'disabled':''} aria-label="Move paragraph ${i+1} down">↓</button></div></li>`).join('')}</ol><p class="reading-note">Use the arrows to order the paragraphs. ${!a.length?'Move a paragraph to record your answer.':''}</p>`;
     }
-    return `<div class="reading-multiple-choice ${q.passage?'reading-has-passage':''}">${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}<div class="reading-choice-options">${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${i}" ${a.includes(i)?'checked':''}>${escape(choice)}</label>`).join('')}</div></div>`;
+    return `<div class="reading-multiple-choice ${q.passage?'reading-has-passage':''}">${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}<div class="reading-choice-options">${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${q.choiceIndices?.[i] ?? i}" ${a.includes(q.choiceIndices?.[i] ?? i)?'checked':''}>${escape(choice)}</label>`).join('')}</div></div>`;
   }
   function wordCount(text) { return String(text||'').trim().split(/\s+/).filter(Boolean).length; }
   function explanation(q,a) {
@@ -329,7 +378,7 @@
     }
     const excluded=mock.isAudio(q) && state.session.audioStates?.[q.uid]?.status!=='complete';
     const actual=['mcsa','hcs'].includes(q.type)?[q.answer]:q.answers;
-    const display=value=>['mcma','mcsa','hcs'].includes(q.type)?q.choices[value]:q.type==='reorder'?q.items.find(i=>i.key===value)?.text:q.type==='hiw'?`Word ${value+1}: ${q.corrections.find(c=>c.index===value).written} → ${q.corrections.find(c=>c.index===value).spoken}`:value;
+    const display=value=>['mcma','mcsa','hcs'].includes(q.type)?mock.choiceText(q,value):q.type==='reorder'?q.items.find(i=>i.key===value)?.text:q.type==='hiw'?`Word ${value+1}: ${q.corrections.find(c=>c.index===value).written} → ${q.corrections.find(c=>c.index===value).spoken}`:value;
     return `<section class="reading-explanation"><h3>${excluded?'Audio item excluded':(p.earned===p.possible?'Well done':'Review this answer')+' · '+p.earned+'/'+p.possible}</h3>${excluded?'<p>Audio did not complete before submission. This item is excluded from your graded total. You can replay it for review.</p>':''}<ol>${actual.map((correct,i)=>`<li><strong>${q.type==='dropdown'||q.type==='wordbank'?'Blank '+(i+1)+': ':''}${escape(display(correct))}</strong></li>`).join('')}</ol><p>${escape(info.correct||'Compare your response with the answer above, then reread the surrounding passage for the supporting meaning.')}</p>${info.options?`<details><summary>Why other options do not fit</summary><ul>${Object.entries(info.options).map(([option,reason])=>`<li><strong>${escape(option)}:</strong> ${escape(reason)}</li>`).join('')}</ul></details>`:''}${review.blankFeedback(q)}${q.audioText?`<details><summary>Audio transcript</summary><p>${escape(q.audioText)}</p></details>`:''}</section>`;
   }
   function summary(model = review.models(state.session,score)) {
@@ -411,7 +460,8 @@
     if(!s.done)return;
     const { earned, possible, percent, pending, excluded }=totals(s);
     const entry={...JSON.parse(JSON.stringify(s)),earned,possible,percent,pending,excluded};
-    state.history=[entry,...state.history.filter(r=>r.id!==s.id)].sort((a,b)=>b.finishedAt-a.finishedAt).slice(0,30);
+    state.history=[entry,...state.history.filter(r=>r.id!==s.id)].sort((a,b)=>b.finishedAt-a.finishedAt);
+    state.drafts=(state.drafts||[]).filter(r=>r.id!==s.id);
     if(s.practiceUid)state.practiceResults[s.practiceUid]={earned,possible,percent,finishedAt:s.finishedAt};
   }
   function resumeSwtAssessments() {
@@ -576,9 +626,10 @@
     if(d.mockFamily&&!viewingQuestion&&['practice','sectional'].includes(d.mockFamily)){
       homeFamily=d.mockFamily;mockPage=0;home();host.querySelector('[data-mock-family="'+homeFamily+'"]')?.focus();return;
     }
-    if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? This replaces your current reading draft.'))return;return start(d.start);}
+    if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? Your current draft will remain in Other saved sessions.'))return;return start(d.start);}
     if(d.action==='soundcheck')return speaker.play('soundcheck','Welcome to IPT Brisbane. If you can hear this sentence, your audio is ready for the mixed reading mock.');
-    if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current reading draft will be replaced.'))return;cancelAudio();state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();return render();}
+    if(d.draft!==undefined){const draft=state.drafts[Number(d.draft)];if(!draft)return;cancelAudio();state.drafts=state.drafts.filter(r=>r.id!==draft.id);if(s&&!s.done)state.drafts.push(s);state.session=draft;repairSession(draft);persist();return render();}
+    if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current draft will remain in Other saved sessions.'))return;cancelAudio();if(s&&!s.done)state.drafts=[s,...state.drafts.filter(r=>r.id!==s.id)];state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();return render();}
     if(d.action==='home')return home();
     if(d.action==='resume')return render();
     if(!s)return;
@@ -592,7 +643,7 @@
     if(s.done && d.reviewUid){
       const item=s.questions.find(q=>q.uid===d.reviewUid);if(!item)return;
       if(d.action==='retry-swt'&&item.type==='swt')return gradeSwt(item);
-      if(d.action==='play'&&mock.isAudio(item))return speaker.play(item.uid,item.audioText);
+      if(d.action==='play'&&mock.isAudio(item))return speaker.play(item.uid,item.audioText,mock.audioPlayback(item,state.session?.mode==='practice'));
       return;
     }
     recordTime();const q=s.questions[s.index];
@@ -600,7 +651,7 @@
     if(testing&&d.action?.startsWith('exam-'))return examAction(d.action);
     // Exam questions can only advance through Next; review unlocks after submission.
     if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
-    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText);}
+    if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText,mock.audioPlayback(q,s.mode==='practice'));}
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
     if(d.question!==undefined||d.move!==undefined){cancelAudio();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
@@ -621,5 +672,5 @@
     if(d.clear!==undefined){(s.answers[q.uid]||[])[Number(d.clear)]='';persist();return renderSession();}
     if(d.reorder!==undefined){const a=s.answers[q.uid]||q.items.map(x=>x.key),i=Number(d.reorder),j=i+Number(d.direction);[a[i],a[j]]=[a[j],a[i]];s.answers[q.uid]=a;persist();return renderSession();}
   }
-  return { open, leave, reset, score, diagnostic, report, remaining, storageKey, totals };
+  return { open, leave, reset, score, diagnostic, report, remaining, storageKey, totals, receiveProgress, setSyncStatus };
 });

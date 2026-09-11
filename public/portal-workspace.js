@@ -142,20 +142,24 @@
     function write(owner, state) {
       if (!owner || !state || state.view !== 'write') return false;
       try {
-        storage.setItem(key(owner), JSON.stringify({
+        const record = {
           version: 1, essayText: String(state.essayText || ''), questionText: String(state.questionText || ''),
           questionTitle: String(state.questionTitle || ''), selectedQuestionId: state.selectedQuestionId || null,
           questionSource: state.questionSource === 'custom' ? 'custom' : 'library',
           writeStep: state.writeStep === 2 ? 2 : 1, timerEnabled: !!state.timerEnabled,
           timerStartedAt: Number.isFinite(state.timerStartedAt) ? state.timerStartedAt : null,
           updatedAt: Date.now()
-        }));
+        };
+        const previous = read(owner);
+        if (previous && JSON.stringify({ ...previous, updatedAt: 0 }) === JSON.stringify({ ...record, updatedAt: 0 })) return true;
+        record.updatedAt = Math.max(record.updatedAt, (previous?.updatedAt || 0) + 1);
+        storage.setItem(key(owner), JSON.stringify(record));
         return true;
       } catch (_) { return false; }
     }
     function remove(owner) {
       if (!owner) return;
-      try { storage.removeItem(key(owner)); } catch (_) { /* Storage may be unavailable. */ }
+      try { storage.setItem(key(owner), JSON.stringify({ version: 1, deleted: true, updatedAt: Math.max(Date.now(), (read(owner)?.updatedAt || 0) + 1) })); } catch (_) { /* Storage may be unavailable. */ }
     }
     return { read, write, remove };
   }

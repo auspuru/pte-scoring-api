@@ -161,7 +161,7 @@ test('Returning to a running assessment or an existing editor does not reset or 
 
 test('A save scheduled by one account cannot write its draft under the next account', () => {
   const calls = [], status = { dataset: {} };
-  const ctx = { currentUserId: 'first', practiceState: { ...draft }, portalDraftTimer: 1,
+  const ctx = { currentUserId: 'first', practiceState: { ...draft }, portalDraftTimer: 1, portalDraftRevision: 0,
     portalDraftStore: { write: (...args) => { calls.push(args); return true; } },
     clearTimeout() {}, document: { getElementById: () => status } };
   vm.createContext(ctx); vm.runInContext(fn('savePortalEssayDraft'), ctx);

@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
+const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { studentPassage } = require('./swt-reference');
 const { createEssayGrader } = require('./essay-grading');
@@ -679,7 +680,7 @@ const PgStorage = {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
         essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
-        practiceHistoryDeleted: [], vocabProgress: {}
+        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}
       };
     }
     const u = rows[0].data || {};
@@ -687,7 +688,8 @@ const PgStorage = {
       attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
       quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
-      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || ''
+      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || '',
+      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}
     };
   },
   async setUserData(userId, userData) {
@@ -706,31 +708,16 @@ const PgStorage = {
       const existing = rows[0]?.data || {};
       const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
       const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
-      const clientHistory = incoming.history || {};
-      const serverHistory = existing.history || {};
-      const mergedHistory = {};
-      const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
-      for (const pid of allPassageIds) {
-        const all = [...(clientHistory[pid] || []), ...(serverHistory[pid] || [])];
-        const seen = new Set();
-        const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
-        merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        mergedHistory[pid] = merged.slice(0, 10);
-      }
+      const progress = AccountProgress.mergeProgress(existing, incoming);
       const u = {
-        attempted: [...new Set([...(existing.attempted || []), ...(incoming.attempted || [])])],
-        summaries: { ...(existing.summaries || {}), ...(incoming.summaries || {}) },
-        scores: { ...(existing.scores || {}), ...(incoming.scores || {}) },
-        history: mergedHistory,
+        ...existing, ...progress,
         email: incoming.email !== undefined ? incoming.email : (existing.email || ''),
-        essays: incoming.essays !== undefined ? incoming.essays : (existing.essays || []),
         templates: incoming.templates !== undefined ? incoming.templates : (existing.templates || {}),
         currentId: incoming.currentId !== undefined ? incoming.currentId : (existing.currentId || null),
         quotaUsed: incoming.quotaUsed !== undefined ? incoming.quotaUsed : (existing.quotaUsed || {}),
         quotaDate: incoming.quotaDate !== undefined ? incoming.quotaDate : (existing.quotaDate || ""),
         practiceHistory: mergedPracticeHistory,
-        practiceHistoryDeleted: deleted,
-        vocabProgress: incoming.vocabProgress !== undefined ? incoming.vocabProgress : (existing.vocabProgress || {})
+        practiceHistoryDeleted: deleted
       };
       let total = 0, count = 0;
       Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
@@ -741,7 +728,7 @@ const PgStorage = {
       );
       await client.query('COMMIT');
       return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
-        practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted };
+        practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
     } catch (e) {
       await client.query('ROLLBACK').catch(() => {});
       throw e;
@@ -819,14 +806,15 @@ const JsonStorage = {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
         essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
-        practiceHistoryDeleted: [], vocabProgress: {}
+        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}
       };
     }
     return {
       attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
       quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
-      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || ''
+      practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || '',
+      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}
     };
   },
   
@@ -838,33 +826,9 @@ const JsonStorage = {
     if (!data.users[userId]) data.users[userId] = {};
     const u = data.users[userId];
     
-    // Merge: keep server data if newer, accept client data if newer
-    const clientHistory = userData.history || {};
-    const serverHistory = u.history || {};
-    
-    // Merge histories per passage — combine and deduplicate by timestamp
-    const mergedHistory = {};
-    const allPassageIds = new Set([...Object.keys(clientHistory), ...Object.keys(serverHistory)]);
-    for (const pid of allPassageIds) {
-      const clientAttempts = clientHistory[pid] || [];
-      const serverAttempts = serverHistory[pid] || [];
-      const all = [...clientAttempts, ...serverAttempts];
-      // Deduplicate by timestamp
-      const seen = new Set();
-      const merged = all.filter(a => { const key = a.timestamp + '|' + (a.text || '').substring(0, 50); if (seen.has(key)) return false; seen.add(key); return true; });
-      // Sort newest first, keep max 10
-      merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      mergedHistory[pid] = merged.slice(0, 10);
-    }
-    
-    // Use client's latest summaries (they're the most recent by definition)
-    u.attempted = [...new Set([...(u.attempted || []), ...(userData.attempted || [])])];
-    u.summaries = { ...(u.summaries || {}), ...(userData.summaries || {}) };
-    u.scores = { ...(u.scores || {}), ...(userData.scores || {}) };
-    u.history = mergedHistory;
-    
+    Object.assign(u, AccountProgress.mergeProgress(u, userData));
+
     // Merge essay attributes
-    u.essays = userData.essays !== undefined ? userData.essays : (u.essays || []);
     u.templates = userData.templates !== undefined ? userData.templates : (u.templates || {});
     u.currentId = userData.currentId !== undefined ? userData.currentId : (u.currentId || null);
     u.quotaUsed = userData.quotaUsed !== undefined ? userData.quotaUsed : (u.quotaUsed || {});
@@ -873,7 +837,6 @@ const JsonStorage = {
     u.practiceHistory = mergeHistory(u.practiceHistory, userData.practiceHistory, deleted);
     u.practiceHistoryDeleted = deleted;
     u.email = userData.email !== undefined ? userData.email : (u.email || '');
-    u.vocabProgress = userData.vocabProgress !== undefined ? userData.vocabProgress : (u.vocabProgress || {});
     
     // Recalculate stats
     let total = 0, count = 0;
@@ -882,7 +845,7 @@ const JsonStorage = {
     
     await this.writeData(data);
     return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
-      practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted };
+      practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
   },
   
   async getProgress(userId) { return this.getUserData(userId); },
@@ -898,6 +861,16 @@ const JsonStorage = {
 // v19.10: Pick the active storage backend. Postgres when DATABASE_URL is set,
 // JSON file otherwise. Every consumer (AuthAPI, route handlers) uses StorageAPI
 // — they don't need to know which backend is active.
+let jsonProgressWrite = Promise.resolve();
+for (const name of ['setUserData', 'saveProgress']) {
+  const operation = JsonStorage[name];
+  JsonStorage[name] = function (...args) {
+    const result = jsonProgressWrite.then(() => operation.apply(this, args));
+    jsonProgressWrite = result.catch(() => {});
+    return result;
+  };
+}
+
 const StorageAPI = USE_POSTGRES ? PgStorage : JsonStorage;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2894,14 +2867,14 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
-app.post('/api/progress/:userId', async (req, res) => {
+app.post('/api/progress/:userId', requireSyncAuth, async (req, res) => {
   try {
     const { passageId, summary, scoreData } = req.body;
     res.json(await StorageAPI.saveProgress(canonicalUserId(req.params.userId), passageId, summary, scoreData));
   } catch (e) { res.status(500).json({ error: 'Failed to save progress' }); }
 });
 
-app.get('/api/progress/:userId', async (req, res) => {
+app.get('/api/progress/:userId', requireSyncAuth, async (req, res) => {
   try { res.json(await StorageAPI.getProgress(canonicalUserId(req.params.userId))); }
   catch (e) { res.status(500).json({ error: 'Failed to get progress' }); }
 });
@@ -2915,6 +2888,7 @@ app.get('/api/leaderboard', async (req, res) => {
 // Pull: get full user data from server (called on login)
 // C3: now requires a valid session token matching :userId.
 app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
   try { res.json({ success: true, data: await StorageAPI.getUserData(canonicalUserId(req.params.userId)) }); }
   catch (e) { res.status(500).json({ error: 'Sync pull failed' }); }
 });

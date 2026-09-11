@@ -432,6 +432,91 @@ function canonicalClientUserId(value) {
   return String(value || '').trim().toLowerCase();
 }
 
+// All practice uses the same signed-in account. Browser storage is the
+// recovery queue; the authenticated sync endpoint is the durable copy.
+const accountProgressMemory = new Map();
+const accountCloudSnapshot = new Map();
+function localAccountProgress(uid = currentUserId) {
+  uid = canonicalClientUserId(uid);
+  const get = suffix => LocalStore.get(`pte_${uid}_${suffix}`);
+  const scratch = get('scratch') || {}, scratchUpdatedAt = get('scratchUpdatedAt') || {};
+  const cached = {
+    attempted: get('attempted') || [], summaries: get('summaries') || {}, scores: get('scores') || {}, history: get('history') || {},
+    essays: get('essays') || [], essayLibraryDeleted: get('essayLibraryDeleted') || {}, vocabProgress: get('vocabProgress') || {},
+    scratch: Object.fromEntries(Object.entries(scratch).map(([id, text]) => [id, { text, updatedAt: scratchUpdatedAt[id] || 0 }])),
+    essayDraft: LocalStore.get('ipt_essay_draft_v1:' + encodeURIComponent(uid)),
+    readingProgress: LocalStore.get('ipt_reading_v1:' + encodeURIComponent(uid)) || {}
+  };
+  return window.AccountProgress.mergeProgress(accountProgressMemory.get(uid) || {}, cached);
+}
+
+function cacheAccountProgress(data, uid = currentUserId) {
+  uid = canonicalClientUserId(uid);
+  accountProgressMemory.set(uid, data);
+  let saved = true;
+  const set = (key, value) => { if (!LocalStore.set(key, value)) saved = false; };
+  for (const key of ['attempted', 'summaries', 'scores', 'history', 'essays', 'essayLibraryDeleted', 'vocabProgress']) set(`pte_${uid}_${key}`, data[key]);
+  set(`pte_${uid}_scratch`, Object.fromEntries(Object.entries(data.scratch || {}).map(([id, value]) => [id, value.text || ''])));
+  set(`pte_${uid}_scratchUpdatedAt`, Object.fromEntries(Object.entries(data.scratch || {}).map(([id, value]) => [id, value.updatedAt || 0])));
+  set('ipt_reading_v1:' + encodeURIComponent(uid), data.readingProgress);
+  if (data.essayDraft) set('ipt_essay_draft_v1:' + encodeURIComponent(uid), data.essayDraft);
+  return saved;
+}
+
+function captureAccountProgress() {
+  if (!currentUserId || !userProfile || !window.AccountProgress) return null;
+  const cached = localAccountProgress();
+  const library = window.AccountProgress.stampLibrary(essays, cached.essays, cached.essayLibraryDeleted);
+  essays = library.essays;
+  const progress = { ...cached, ...library,
+    attempted: [...new Set([...cached.attempted, ...attempted])],
+    vocabProgress: window.AccountProgress.stampVocab(userProfile.vocabProgress, cached.vocabProgress)
+  };
+  userProfile.vocabProgress = progress.vocabProgress;
+  cacheAccountProgress(progress);
+  return progress;
+}
+
+function receiveAccountProgress(remote, initial = false) {
+  if (!currentUserId || !window.AccountProgress) return remote;
+  accountCloudSnapshot.set(canonicalClientUserId(currentUserId), remote);
+  const local = initial ? localAccountProgress() : captureAccountProgress() || localAccountProgress();
+  const merged = window.AccountProgress.mergeProgress(remote, local);
+  cacheAccountProgress(merged);
+  attempted = new Set(merged.attempted);
+  essays = merged.essays;
+  if (userProfile) userProfile.vocabProgress = merged.vocabProgress;
+  if (!initial) {
+    window.ReadingPractice?.receiveProgress?.(merged.readingProgress, currentUserId);
+    const editing = document.activeElement?.matches?.('input,textarea,[contenteditable="true"]');
+    if (!editing) {
+      if (!currentId || !getCurrent()) currentId = essays[0]?.id || null;
+      renderList(); loadCurrent(); renderPreview();
+      if (currentVocabCategory) renderVocabMain();
+      updateVocabProgressSummary();
+      const input = document.getElementById('summaryInput');
+      if (input) { input.value = merged.summaries[currentPassageId]?.text || ''; onSummaryInput(); }
+      const scratch = document.getElementById('scratchInput');
+      if (scratch) scratch.value = merged.scratch[currentPassageId]?.text || '';
+      if (practiceState.view === 'write' && !practiceSubmissionPending && window.AccountProgress.time(merged.essayDraft?.updatedAt) > portalDraftRevision) {
+        restorePortalEssayDraft();
+        if (document.getElementById('practiceScreen')?.classList.contains('show')) renderPracticeMain();
+      }
+    }
+    updatePortalResume(); updateDashboard();
+  }
+  return { ...remote, ...merged };
+}
+
+function accountSyncPayload(full) {
+  const previous = accountCloudSnapshot.get(canonicalClientUserId(currentUserId)) || {};
+  const delta = window.AccountProgress.progressDelta(previous, full);
+  const oldAttempts = new Map((previous.practiceHistory || []).map(a => [String(a.id), a]));
+  return { ...delta, email: full.email, templates: full.templates, currentId: full.currentId, quotaUsed: full.quotaUsed, quotaDate: full.quotaDate,
+    practiceHistory: full.practiceHistory.filter(a => !window.AccountProgress.equal(a, oldAttempts.get(String(a.id)))),
+    practiceHistoryDeleted: full.practiceHistoryDeleted.filter(id => !(previous.practiceHistoryDeleted || []).includes(id)) };
+}
+
 function practiceHistoryCacheKey(uid = currentUserId) {
   const id = canonicalClientUserId(uid);
   return id ? `pte_${id}_practiceHistory` : 'ipt_practice';
@@ -714,7 +799,7 @@ async function handleRegisterSubmit(ev) {
 }
 
 function signOutUser() {
-  if (!confirm('Sign out? Your work is safely stored in the cloud.')) return;
+  if (!confirm('Sign out of this account? Any changes waiting for a connection will be kept on this device.')) return;
   signOut();
 }
 
@@ -729,6 +814,10 @@ window.exitImpersonation = exitImpersonation;
 
 function signOut() {
   savePortalEssayDraft();
+  window.ReadingPractice?.leave();
+  captureAccountProgress();
+  flushPendingSyncOnExit();
+  window.ReadingPractice?.reset();
   stopPracticeTimer();
   stopLoadingMessages();
   practiceState = emptyPracticeState();
@@ -826,18 +915,24 @@ async function enterApp(uid) {
 
 async function loadUserData(uid) {
   uid = canonicalClientUserId(uid);
+  const token = sessionToken;
+  const sameSession = () => uid === canonicalClientUserId(currentUserId) && token === sessionToken;
   setSync('syncing', 'Loading...');
   try {
     const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
-      headers: { 'x-session-token': sessionToken }
+      cache: 'no-store', signal: AbortSignal.timeout(20000),
+      headers: { 'x-session-token': token }
     });
+    if (!sameSession()) return false;
     if (r.status === 401 || r.status === 403) {
       handleAuthExpired();
       return false;
     }
+    if (!r.ok) throw Error('Account progress could not load');
     const d = await r.json();
+    if (!sameSession()) return false;
     if (d.success && d.data) {
-      const data = d.data;
+      const data = receiveAccountProgress(d.data, true);
       
       // Load SWT state components
       attempted = new Set(data.attempted || []);
@@ -923,17 +1018,18 @@ async function loadUserData(uid) {
         await flushSyncDirect();
       }
 
-      if (practiceNeedsPush) {
+      if (practiceNeedsPush || !window.AccountProgress.equal(window.AccountProgress.mergeProgress(d.data, {}), window.AccountProgress.mergeProgress(data, {}))) {
         syncQueued = true;
         await flushSyncDirect();
       }
 
-      setSync('synced', 'Synced');
+      setSync(syncQueued ? 'error' : 'synced', syncQueued ? 'Saved on this device — waiting to sync' : 'Synced across devices');
       maybeOfferDraftRecovery();
       return true;
     }
     return false;
   } catch (err) {
+    if (!sameSession()) return false;
     console.error(err);
     setSync('error', 'Sync failed');
     toast('Failed to load your data from cloud. Working offline.', true);
@@ -947,11 +1043,15 @@ async function loadUserData(uid) {
       essays = cachedEssays;
       currentId = LocalStore.get(`pte_${uid}_currentId`) || essays[0]?.id || null;
     }
+    const cachedProgress = localAccountProgress(uid);
+    attempted = new Set(cachedProgress.attempted);
+    essays = cachedProgress.essays;
     userProfile = {
       email: '', quotaUsed: {}, quotaDate: todayStamp(),
       practiceHistory: cachedPracticeHistory, practiceHistoryDeleted,
-      vocabProgress: {}, templates: getDefaultTemplates()
+      vocabProgress: cachedProgress.vocabProgress, templates: getDefaultTemplates()
     };
+    syncQueued = true;
     return true; // continue in offline mode
   }
 }
@@ -971,8 +1071,10 @@ function queueSync() {
   // account can still retry later; only a signed-out/local-only session is
   // excluded.
   if (!currentUserId || !sessionToken) return;
+  if (typeof captureAccountProgress === 'function') captureAccountProgress();
   syncQueued = true;
-  setSync('syncing', 'Syncing...');
+  LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_syncPending`, true);
+  setSync('syncing', 'Saving to your account…');
   clearTimeout(syncTimer);
   syncTimer = setTimeout(flushSync, 1200);
 }
@@ -1005,7 +1107,9 @@ async function flushSyncDirect(options = {}) {
     if (userProfile && userProfile.templates) {
       userProfile.templates.band9TemplateVersion = userProfile.band9TemplateVersion || 0;
     }
+    const accountProgress = typeof captureAccountProgress === 'function' ? captureAccountProgress() : null;
     const payload = {
+      ...(accountProgress || {}),
       // SWT progress fields
       attempted: Array.from(attempted),
       history: LocalStore.get('pte_' + currentUserId + '_history') || {},
@@ -1033,6 +1137,7 @@ async function flushSyncDirect(options = {}) {
         'x-session-token': syncToken
       },
       keepalive: !!options.keepalive,
+      signal: AbortSignal.timeout(20000),
       body: JSON.stringify(payload)
     });
     
@@ -1045,6 +1150,8 @@ async function flushSyncDirect(options = {}) {
     const response = await r.json().catch(() => ({}));
     if (!sameSession()) return false;
     if (response && response.success === false) throw new Error(response.error || 'Sync push rejected');
+    if (response.progress && typeof receiveAccountProgress === 'function') receiveAccountProgress({ ...response.progress,
+      practiceHistory: response.practiceHistory, practiceHistoryDeleted: response.practiceHistoryDeleted });
     if (Array.isArray(response.practiceHistory)) {
       const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
       practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, practiceHistoryDeleted);
@@ -1061,7 +1168,8 @@ async function flushSyncDirect(options = {}) {
     cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
     LocalStore.set(`pte_${currentUserId}_currentId`, currentId);
-    setSync(syncQueued ? 'syncing' : 'synced', syncQueued ? 'Saving latest changes…' : 'Synced');
+    LocalStore.set(`pte_${syncUserId}_syncPending`, syncQueued);
+    setSync(syncQueued ? 'syncing' : 'synced', syncQueued ? 'Saving latest changes…' : 'Synced across devices');
     lastSyncOk = true;
     syncRetryCount = 0;
     safeLSRemove('ipt_unsaved_backup');
@@ -1071,13 +1179,13 @@ async function flushSyncDirect(options = {}) {
     if (!sameSession()) return false;
     console.error(err);
     syncQueued = true;
-    setSync('error', 'Sync failed — retrying');
+    setSync('error', 'Saved on this device — waiting to sync');
     lastSyncOk = false;
     if (syncRetryCount < SYNC_MAX_RETRIES) {
       syncRetryCount++;
       setTimeout(() => { if (sameSession()) { syncQueued = true; flushSync(); } }, 5000);
     } else {
-      setSync('error', 'Sync failed — check connection');
+      setSync('error', 'Offline changes waiting to sync');
     }
     return false;
   }
@@ -1102,9 +1210,10 @@ async function refreshPracticeHistory(options = {}) {
   const sameSession = () => uid === canonicalClientUserId(currentUserId) && token === sessionToken;
   practiceRefreshInFlight = (async () => {
     try {
-      // Refresh only scored attempts. An open essay draft must not be replaced
-      // by a full-profile pull when another device finishes an attempt.
+      // Reconcile every practice area. Field clocks preserve newer edits,
+      // and active editors are never rebuilt by a background refresh.
       const response = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
+        cache: 'no-store', signal: AbortSignal.timeout(20000),
         headers: { 'x-session-token': token }
       });
       if (!sameSession()) return false;
@@ -1112,6 +1221,7 @@ async function refreshPracticeHistory(options = {}) {
       if (!response.ok) throw new Error('Could not refresh cloud history');
       const body = await response.json();
       if (!sameSession() || !userProfile || !body.success || !body.data) return false;
+      if (typeof receiveAccountProgress === 'function') receiveAccountProgress(body.data);
       const deleted = mergePracticeDeletedClient(body.data.practiceHistoryDeleted || [], practiceHistoryDeleted);
       const merged = mergePracticeHistoryClient(body.data.practiceHistory || [], getPracticeHistory(), deleted);
       practiceHistoryDeleted = deleted;
@@ -1120,10 +1230,10 @@ async function refreshPracticeHistory(options = {}) {
       cachePracticeHistory(merged, deleted, uid);
       lastPracticeRefreshAt = Date.now();
       renderPracticeHistory(); updatePracticeStats(); updateDashboard();
-      if (!syncQueued && !syncInFlight) setSync('synced', 'Synced');
+      if (!syncQueued && !syncInFlight) setSync('synced', 'Synced across devices');
       return true;
     } catch (error) {
-      if (sameSession() && !syncQueued && !syncInFlight) setSync('error', 'Cloud history unavailable — saved attempts remain on this device');
+      if (sameSession() && !syncQueued && !syncInFlight) setSync('error', 'Cloud sync unavailable — work is saved on this device');
       return false;
     }
   })();
@@ -1138,6 +1248,9 @@ async function manualSync() {
 }
 
 function setSync(state, text) {
+  window.ReadingPractice?.setSyncStatus?.(state, text);
+  const draft = document.getElementById('practiceDraftStatus');
+  if (draft && practiceState.view === 'write') { draft.textContent = state === 'synced' ? 'Draft synced across devices' : text; draft.dataset.state = state; }
   const dot = document.getElementById('syncDot');
   const txt = document.getElementById('syncText');
   if (!dot || !txt) return;
@@ -1146,7 +1259,7 @@ function setSync(state, text) {
   const practice = document.getElementById('practiceSyncStatus');
   if (practice) {
     practice.dataset.state = state;
-    practice.textContent = state === 'synced' ? 'Cloud history synced' : text;
+    practice.textContent = state === 'synced' ? 'Progress synced across devices' : text;
   }
 }
 
@@ -1161,12 +1274,22 @@ function flushPendingSyncOnExit() {
 window.addEventListener('pagehide', flushPendingSyncOnExit);
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') flushPendingSyncOnExit();
-  else refreshPracticeHistory();
+  else resumeAccountSync();
 });
-window.addEventListener('focus', () => refreshPracticeHistory());
+window.addEventListener('focus', () => resumeAccountSync());
 setInterval(() => {
-  if (document.getElementById('practiceScreen')?.classList.contains('show')) refreshPracticeHistory();
+  if (currentUserId && sessionToken && document.visibilityState !== 'hidden') resumeAccountSync();
 }, 30000);
+window.addEventListener('storage', event => {
+  if (event.key?.startsWith('pte_' + currentUserId + '_') || event.key === 'ipt_reading_v1:' + encodeURIComponent(currentUserId)) resumeAccountSync();
+});
+
+async function resumeAccountSync() {
+  if (!currentUserId || !sessionToken || !userProfile || document.visibilityState === 'hidden') return;
+  if (syncQueued || LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_syncPending`)) { syncQueued = true; if (!await flushSync()) return; }
+  return refreshPracticeHistory();
+}
+
 window.addEventListener('online', () => {
   if (!currentUserId || !sessionToken) return;
   offlineMode = false;
@@ -5938,6 +6061,8 @@ function deleteEssay(id) {
 //  EDITOR
 // ============================================================
 const FIELDS = ['title', 'question', 'explanation', 'pros', 'cons', 'approach', 'intro', 'bp1', 'bp2', 'concl'];
+let libraryRenderedId = null;
+let libraryRenderedValues = {};
 
 function loadCurrent() {
   const e = getCurrent();
@@ -5967,6 +6092,8 @@ function loadCurrent() {
 
   FIELDS.forEach(f => { document.getElementById('f_' + f).value = e[f] || ''; });
   document.getElementById('f_seedIdeas').value = e.seedIdeas || '';
+  libraryRenderedId = e.id;
+  libraryRenderedValues = Object.fromEntries([...FIELDS, 'seedIdeas'].map(f => [f, e[f] || '']));
 
   const idx = essays.findIndex(x => x.id === e.id) + 1;
   document.getElementById('bcEssayNum').textContent = 'ESSAY ' + String(idx).padStart(2, '0');
@@ -5999,8 +6126,12 @@ function loadCurrent() {
 function saveCurrent() {
   const e = getCurrent();
   if (!e) return;
-  FIELDS.forEach(f => { e[f] = document.getElementById('f_' + f).value; });
-  e.seedIdeas = document.getElementById('f_seedIdeas').value;
+  [...FIELDS, 'seedIdeas'].forEach(f => {
+    const input = document.getElementById('f_' + f);
+    if (libraryRenderedId !== e.id || input.value !== libraryRenderedValues[f]) e[f] = input.value;
+    else if (document.activeElement !== input) input.value = e[f] || '';
+    libraryRenderedValues[f] = input.value;
+  });
   saveAll();
   // Update breadcrumb status live
   const s = essayStatus(e);
@@ -9853,19 +9984,8 @@ function closeVocab() {
 // Get user's vocab progress object: { read: {"cat:word": true}, attempts: {...} }
 function getVocabProgress() {
   let progress = {};
-  if (offlineMode) {
-    try {
-      const raw = safeLSGet('ipt_vocab');
-      progress = raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      progress = {};
-    }
-  } else if (userProfile) {
-    if (!userProfile.vocabProgress) {
-      userProfile.vocabProgress = { read: {}, attempts: {} };
-    }
-    progress = userProfile.vocabProgress;
-  }
+  if (userProfile) progress = userProfile.vocabProgress || LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_vocabProgress`) || {};
+  else if (currentUserId) progress = LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_vocabProgress`) || {};
 
   // Ensure progress is parsed if it was loaded or synced as a JSON string
   if (typeof progress === 'string') {
@@ -9899,11 +10019,7 @@ function getVocabProgress() {
   return progress;
 }
 async function saveVocabProgress() {
-  if (offlineMode) {
-    safeLSSet('ipt_vocab', JSON.stringify(getVocabProgress()));
-    return;
-  }
-  if (!currentUser) return;
+  if (!currentUserId) return;
   queueSync();
 }
 
@@ -11677,6 +11793,7 @@ async function initApp() {
 let portalWorkspace = null;
 let portalDraftStore = null;
 let portalDraftTimer = null;
+let portalDraftRevision = 0;
 
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
@@ -11725,18 +11842,26 @@ function setPortalLibraryView(view) {
 function savePortalEssayDraft() {
   clearTimeout(portalDraftTimer);
   if (!currentUserId || practiceState.view !== 'write') return;
+  const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
+  if (savePortalEssayDraft.owner === currentUserId && savePortalEssayDraft.signature === signature) return;
   const saved = !!portalDraftStore?.write(currentUserId, practiceState);
+  if (saved) {
+    savePortalEssayDraft.owner = currentUserId;
+    savePortalEssayDraft.signature = signature;
+    portalDraftRevision = portalDraftStore?.read?.(currentUserId)?.updatedAt || 0;
+  }
   const status = document.getElementById('practiceDraftStatus');
   if (status) {
     status.textContent = saved ? 'Draft saved on this device' : 'Draft is open here. Device saving is unavailable.';
     status.dataset.state = saved ? 'saved' : 'error';
   }
+  if (typeof queueSync === 'function') queueSync();
 }
 
 function queuePortalEssayDraft() {
   clearTimeout(portalDraftTimer);
   const status = document.getElementById('practiceDraftStatus');
-  if (status) { status.textContent = 'Saving draft on this device…'; status.dataset.state = 'saving'; }
+  if (status) { status.textContent = 'Saving your draft…'; status.dataset.state = 'saving'; }
   portalDraftTimer = setTimeout(savePortalEssayDraft, 350);
 }
 
@@ -11744,6 +11869,7 @@ function restorePortalEssayDraft(resetSession = false) {
   stopPracticeTimer();
   practiceState = emptyPracticeState();
   const draft = portalDraftStore?.read(currentUserId);
+  portalDraftRevision = draft?.updatedAt || 0;
   if (draft && (draft.essayText.trim() || draft.questionText.trim())) {
     // Copy only fields produced by our draft schema, never arbitrary storage keys.
     for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt']) {
@@ -11751,6 +11877,8 @@ function restorePortalEssayDraft(resetSession = false) {
     }
     practiceState.view = 'write';
   }
+  savePortalEssayDraft.owner = currentUserId;
+  savePortalEssayDraft.signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
   practiceRevision = null;
   document.getElementById('practiceContent').replaceChildren();
   if (resetSession) {
@@ -13022,7 +13150,7 @@ async function submitPracticeEssay() {
       practiceRevision = null;
       practiceState.view = 'results';
       const savedDraft = portalDraftStore?.read(owner.uid);
-      if (savedDraft?.essayText.trim() === essay && savedDraft?.questionText.trim() === question) portalDraftStore.remove(owner.uid);
+      if (savedDraft?.essayText.trim() === essay && savedDraft?.questionText.trim() === question) { portalDraftStore.remove(owner.uid); queueSync(); }
       renderPracticeMain();
     }
     renderPracticeHistory();
@@ -13854,12 +13982,11 @@ function onSummaryInput(){
   if (undo) undo.hidden = true;
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  if(text.trim()){
-    summaries[currentPassageId] = { text, timestamp: new Date().toISOString(), score: (summaries[currentPassageId]||{}).score || 0 };
-  } else if(summaries[currentPassageId]) {
-    delete summaries[currentPassageId];
+  if (String(summaries[currentPassageId]?.text || '') !== text) {
+    summaries[currentPassageId] = { text, timestamp: new Date().toISOString(), score: summaries[currentPassageId]?.score || 0 };
+    LocalStore.set(getPteStorageKey('summaries'), summaries);
+    queueSync();
   }
-  LocalStore.set(getPteStorageKey('summaries'), summaries);
 }
 
 function setHealthRow(rowId, ok, value, cls){
@@ -13901,6 +14028,10 @@ document.addEventListener('input', function(e){
     const scratch = LocalStore.get(getPteStorageKey('scratch')) || {};
     scratch[currentPassageId] = e.target.value;
     LocalStore.set(getPteStorageKey('scratch'), scratch);
+    const updated = LocalStore.get(getPteStorageKey('scratchUpdatedAt')) || {};
+    updated[currentPassageId] = Date.now();
+    LocalStore.set(getPteStorageKey('scratchUpdatedAt'), updated);
+    queueSync();
   }
 });
 
