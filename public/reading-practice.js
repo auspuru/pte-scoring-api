@@ -270,6 +270,10 @@
   function renderHomeView() { if(starting)return;if(libraryView)browseLibrary(libraryView.id,libraryView.query,libraryView.page);else home(); }
   function render() { if (!state.session) return home(); renderSession(); }
   function renderSession() {
+    if (state.session && !state.session.done && state.session.questions.some(q => q.optionOrderVersion !== 1)) {
+      state.session.questions = mock.prepareQuestions(state.session.questions, state.session.id || state.session.startedAt);
+      persist();
+    }
     viewingQuestion = true; activeSince = Date.now();
     if (expireSession()) return;
     const s=state.session, q=s.questions[s.index], a=s.answers[q.uid]||[];

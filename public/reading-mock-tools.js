@@ -42,15 +42,17 @@
   // order changes, and the same question receives the same order after reload.
   function prepareQuestion(question, seed = question?.uid || question?.id) {
     const q = JSON.parse(JSON.stringify(question || {}));
+    if (q.optionOrderVersion === 1) return q;
     if (Array.isArray(q.options)) q.options = q.options.map((row, i) => shuffle(row, `${seed}:options:${i}`));
     if (Array.isArray(q.bank)) q.bank = shuffle(q.bank, `${seed}:bank`);
     if (Array.isArray(q.items)) q.items = shuffle(q.items, `${seed}:items`);
     if (Array.isArray(q.choices)) {
-      const original = q.choices.slice(), indices = shuffle(original.map((_, i) => i), `${seed}:choices`);
+      const original = (q.originalChoices || q.choices).slice(), indices = shuffle(original.map((_, i) => i), `${seed}:choices`);
       q.originalChoices = original;
       q.choiceIndices = indices;
       q.choices = indices.map(i => original[i]);
     }
+    q.optionOrderVersion = 1;
     return q;
   }
   function prepareQuestions(questions, seed = '') { return (Array.isArray(questions) ? questions : []).map((q, i) => prepareQuestion(q, `${seed}:${q.uid || q.id || i}`)); }

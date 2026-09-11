@@ -77,3 +77,16 @@ test('Every reading practice screen keeps a final Next question control after th
   const exam = fs.readFileSync(require.resolve('../public/reading-exam-player'), 'utf8');
   assert.match(exam, /reading-exam-next[^>]+data-action="exam-next"/);
 });
+
+ test('Saved questions migrate once without changing selected answer coordinates', () => {
+ const raw = { uid: 'saved', type: 'mcsa', choices: ['a', 'b', 'c'], answer: 1 };
+ const old = { ...raw, choices: ['c', 'a', 'b'], originalChoices: raw.choices, choiceIndices: [2,0,1] };
+ const migrated = tools.prepareQuestion(old, 'saved-session');
+ assert.equal(tools.choiceText(migrated, 1), 'b');
+ assert.deepEqual(score(migrated, [1]), score(raw, [1]));
+ assert.deepEqual(tools.prepareQuestion(migrated, 'another-device'), migrated);
+ const words = { uid: 'saved-bank', bank: ['carries', 'contains', 'copy', 'observable', 'stores', 'encodes', 'version', 'heritable'] };
+ const shuffled = tools.prepareQuestion(words, 'saved-session');
+ assert.notDeepEqual(shuffled.bank, words.bank);
+ assert.deepEqual(tools.prepareQuestion(shuffled, 'reload'), shuffled);
+ });
