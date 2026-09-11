@@ -39,10 +39,10 @@ test('One-page review reports the original answer index after visible choices ar
   assert.notEqual(displayIndex, raw.answer);
 });
 
-test('HIW practice receives deterministic single, ambient, two-speaker and sound-cue variants', () => {
+test('Every HIW receives deterministic ambient, two-speaker or sound-cue audio', () => {
   const questions = bank.practiceLibraries.find(l => l.id === 'hiw').questions;
   const variants = questions.map(q => tools.audioVariant(q, true));
-  assert(variants.includes('single')); assert(variants.includes('ambient')); assert(variants.includes('two-speakers')); assert(variants.includes('sound-cue'));
+  assert(!variants.includes('single')); assert(variants.includes('ambient')); assert(variants.includes('two-speakers')); assert(variants.includes('sound-cue'));
   assert.equal(tools.audioVariant(questions[0], true), tools.audioVariant(questions[0], true));
   assert.equal(tools.audioVariant({ type: 'hcs', id: 'hcs-test' }, true), 'single');
   assert.match(tools.audioPlayback({ ...questions.find(q => tools.audioVariant(q, true) === 'sound-cue') }, true).label, /woodpecker/i);
@@ -90,3 +90,13 @@ test('Every reading practice screen keeps a final Next question control after th
  assert.notDeepEqual(shuffled.bank, words.bank);
  assert.deepEqual(tools.prepareQuestion(shuffled, 'reload'), shuffled);
  });
+
+test('Every playback path uses HIW variations without a practice-only mode gate', () => {
+ const source = fs.readFileSync(require.resolve('../public/reading-practice'), 'utf8');
+ const calls = [...source.matchAll(/mock\.audioPlayback\(([^)]*)\)/g)].map(m => m[1]);
+ assert.equal(calls.length, 4);
+ assert(calls.every(arg => arg === 'q' || arg === 'item'));
+ const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') assert.notEqual(tools.audioPlayback(value).variant, 'single'); Object.values(value).forEach(walk); };
+ walk(bank);
+ assert.equal(tools.audioPlayback({type:'hcs'}).variant, 'single');
+});

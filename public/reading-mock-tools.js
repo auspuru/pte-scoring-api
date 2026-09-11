@@ -16,8 +16,8 @@
   // key are never changed by a challenge layer.
   function audioVariant(q, challenge = true) {
     if (!q || q.type !== 'hiw' || !challenge) return 'single';
-    if (q.audioVariant && AUDIO_VARIANTS.includes(q.audioVariant)) return q.audioVariant;
-    return AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length];
+    if (q.audioVariant && q.audioVariant !== 'single' && AUDIO_VARIANTS.includes(q.audioVariant)) return q.audioVariant;
+    return AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length] === 'single' ? 'ambient' : AUDIO_VARIANTS[hash(q.id || q.uid) % AUDIO_VARIANTS.length];
   }
   function audioPlayback(q, challenge = true) {
     const variant = audioVariant(q, challenge);
