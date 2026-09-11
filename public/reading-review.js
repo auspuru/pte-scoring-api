@@ -48,6 +48,10 @@
   const list = values => values.length ? '<ol>' + values.map(value => '<li>' + escape(value) + '</li>').join('') + '</ol>' : '<p class="reading-unanswered">Not answered</p>';
   const paragraph = text => '<p class="reading-review-text">' + escape(text) + '</p>';
   const table = (headings, rows) => '<div class="reading-table-wrap"><table><thead><tr>' + headings.map(h => '<th scope="col">' + escape(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map(cell => '<td>' + escape(cell) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+  function blankFeedback(q) {
+    const notes=items(q.reasoning?.blanks);
+    return notes.length?'<h4>Why each answer fits</h4>'+table(['Blank','Correct answer','Explanation'],notes.map((note,i)=>[i+1,note.answer,[note.explanation,note.meaning].filter(Boolean).join(' ')])):'';
+  }
   function swtFeedback(q, answer, assessment, points) {
     const data = assessment?.result, traits = data?.trait_scores;
     const working = assessment?.status === 'working';
@@ -94,6 +98,7 @@
         const words = q.passage.split(/\s+/);
         response = '<h3>Your selected words</h3>' + list(a.map(i=>'Word '+(i+1)+': '+words[i]))
           + '<h3>Correct highlights</h3>' + table(['Position', 'Written word', 'Spoken word', 'Your selection'], q.corrections.map(c => [c.index+1,c.written,c.spoken,a.includes(c.index)?'Selected correctly':'Missed']));
+        const notes=q.corrections.filter(c=>c.explanation);if(notes.length)response+='<h4>Meaning in context</h4>'+table(['Written → spoken','Explanation'],notes.map(c=>[c.written+' → '+c.spoken,c.explanation]));
         const wrong = a.filter(i=>!q.answers.includes(i));
         if (wrong.length) response += '<h4>Incorrect selections</h4>' + list(wrong.map(i=>'Word '+(i+1)+': '+words[i]+' — this word matched the audio.'));
       } else {
@@ -103,6 +108,7 @@
       }
       const info = q.reasoning || {};
       feedback = '<h3>Feedback</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
+      feedback += blankFeedback(q);
       if (info.options) feedback += '<h4>Other options explained</h4>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason));
     }
     if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
@@ -114,5 +120,5 @@
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
       + '<section class="reading-explanation">' + feedback + '</section>' + audio + '</article>';
   }
-  return { question, models, matches, controls, overview, filters };
+  return { question, models, matches, controls, overview, filters, blankFeedback };
 });

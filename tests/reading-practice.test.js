@@ -263,7 +263,7 @@ test('Existing saved sectionals retain their original questions and deadline aft
  old.session.formatVersion=2;old.session.deadline=old.session.startedAt+25*60000;
  h.values.set(key,JSON.stringify(old));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
  const saved=JSON.parse(h.values.get(key));assert.equal(saved.session.questions.length,15);assert.equal(saved.session.deadline,old.session.deadline);
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.match(h.host.innerHTML,/keeps its original questions and timer/);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.match(h.host.innerHTML,/Continue session/);
 });
 
 test('Clicking a selected single answer again clears it without changing any other answers',async()=>{
@@ -463,15 +463,19 @@ test('Resume opens the current stage or completed result on its first click when
  }
 });
 
-test('The home page offers exactly three practice and three sectional mocks covering every Reading contributor',async()=>{
+test('The mock catalogue keeps the six integrated mocks and adds six imported practice mocks',async()=>{
  const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();
  const ids=[...h.host.innerHTML.matchAll(/data-start="([^"]+)"/g)].map(m=>m[1]);
- assert.equal(ids.length,6);assert.equal(new Set(ids).size,6);
- assert.equal(ids.filter(id=>id.startsWith('practice-mock-')).length,3);assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
+ assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);
+ assert.equal(ids.filter(id=>id.startsWith('practice-mock-')).length,9);assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
  assert.doesNotMatch(h.host.innerHTML,/01 \/ PRACTISE|02 \/ DISCOVER|03 \/ CONNECT|Find my starting point|data-start="(?:full|practice|diagnostic)"|id="readingType"/);
  for(const id of ids){
   await h.click({start:id});const s=snapshot(h).session;
-  assert.match(h.host.innerHTML,/data-exam-player/);assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
+  assert.match(h.host.innerHTML,/data-exam-player/);
+  if(bank.mockCatalogue.find(m=>m.id===id).kind==='reading-blanks'){
+   assert.equal(s.questions.length,20);assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','wordbank']);assert.equal(s.deadline-s.startedAt,25*60000);continue;
+  }
+  assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
   assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','hcs','hiw','mcma','mcsa','reorder','swt','wordbank'].sort());
   assert.equal(s.questions.filter(q=>q.type==='hcs').length,2);assert.equal(s.questions.filter(q=>q.type==='hiw').length,2);
   if(id.startsWith('practice')){assert.equal(s.deadline-s.startedAt,25*60000);assert.equal(s.stages,undefined);assert.match(h.host.innerHTML,/25:00/);}
@@ -630,4 +634,128 @@ test('A completed SWT assessment updates the review while preserving filters, so
  assert.match(nodes.singles['[data-review-overview]'].innerHTML,/4<\/strong> unassessed/);
  for(const q of before.session.questions.filter(q=>['hcs','hiw'].includes(q.type)))assert.equal(nodes.questions.get(encodeURIComponent(q.uid)).outerHTML,undefined);
  assert.deepEqual(snapshot(h).session.answers,before.session.answers);assert.equal(snapshot(h).history.length,1);assert.equal(snapshot(h).history[0].pending,0);
+});
+
+test('Sectional SWT assessment starts on Next and both grades are ready at finish without interrupting answers',async()=>{
+ const h=client(),clock=clockFor(h),jobs=[];h.ctx.passages=swtPassages;
+ h.ctx.requestSwtGrade=payload=>new Promise(resolve=>jobs.push({payload,resolve}));
+ await h.ctx.ReadingPractice.open();await h.click({start:'sectional-mock-1'});
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My first submitted summary.'}});nextQuestion(h);
+ assert.equal(jobs.length,1);assert.equal(jobs[0].payload.text,'My first submitted summary.');assert.equal(snapshot(h).session.index,1);assert.equal(snapshot(h).history.length,0);
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'I am still writing the second summary.'}});const secondHTML=h.host.innerHTML,secondDeadline=snapshot(h).session.deadline;
+ jobs[0].resolve(confirmedGrade);await flush();assert.equal(h.host.innerHTML,secondHTML);assert.equal(snapshot(h).session.deadline,secondDeadline);assert.equal(snapshot(h).session.answers[snapshot(h).session.questions[1].uid][0],'I am still writing the second summary.');
+ nextQuestion(h);assert.equal(jobs.length,2);const readingHTML=h.host.innerHTML,readingDeadline=snapshot(h).session.deadline;
+ jobs[1].resolve(confirmedGrade);await flush();assert.equal(h.host.innerHTML,readingHTML);assert.equal(snapshot(h).session.deadline,readingDeadline);assert.equal(snapshot(h).history.length,0);
+ while(!snapshot(h).session.done)nextQuestion(h);
+ assert.equal(jobs.length,2);assert.equal(snapshot(h).history.length,1);assert.equal(snapshot(h).history[0].pending,0);assert.equal((h.host.innerHTML.match(/8\/9 SWT points/g)||[]).length,2);
+ assert.doesNotMatch(h.host.innerHTML,/SWT assessment pending|Retry pending SWT/);assert.equal(clock.now<readingDeadline,true);
+});
+
+test('SWT timeout starts background assessment and refresh recovers only the locked response',async()=>{
+ const {h,clock}=await mixedClient(),jobs=[];h.ctx.requestSwtGrade=payload=>new Promise(resolve=>jobs.push({payload,resolve}));
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'A response submitted when time expires.'}});
+ clock.set(snapshot(h).session.deadline);h.timers.at(-1)();assert.equal(jobs.length,1);assert.equal(snapshot(h).session.index,1);assert.equal(snapshot(h).history.length,0);
+ const deadline=snapshot(h).session.deadline;h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ assert.equal(jobs.length,2);assert.equal(jobs[1].payload.text,jobs[0].payload.text);assert.equal(snapshot(h).session.deadline,deadline);
+ jobs[0].resolve({...confirmedGrade,raw_score:1});await flush();assert.equal(snapshot(h).session.assessments[snapshot(h).session.questions[0].uid].status,'working');
+ jobs[1].resolve(confirmedGrade);await flush();assert.equal(snapshot(h).session.assessments[snapshot(h).session.questions[0].uid].result.raw_score,8);assert.equal(snapshot(h).history.length,0);
+ nextQuestion(h);assert.equal(jobs.length,2,'The blank second SWT must not be sent for assessment');
+});
+
+test('An unfinished mock background grade cannot create history or overwrite a replacement attempt',async()=>{
+ const {h}=await mixedClient();let resolve;h.ctx.requestSwtGrade=()=>new Promise(r=>resolve=r);
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'A submitted response in an abandoned mock.'}});nextQuestion(h);
+ await h.click({start:'practice-mock-4'});const before=snapshot(h),html=h.host.innerHTML;
+ resolve(confirmedGrade);await flush();assert.deepEqual(snapshot(h),before);assert.equal(h.host.innerHTML,html);assert.equal(snapshot(h).history.length,0);
+});
+
+test('Account switching discards in-flight background SWT writes',async()=>{
+ const {h}=await mixedClient();let resolve;h.ctx.requestSwtGrade=()=>new Promise(r=>resolve=r);
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'Private submitted response.'}});nextQuestion(h);
+ const first=h.values.get(storageKey('first'));h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();const second=h.values.get(storageKey('second'));
+ resolve(confirmedGrade);await flush();assert.equal(h.values.get(storageKey('first')),first);assert.equal(h.values.get(storageKey('second')),second);assert.doesNotMatch(h.host.innerHTML,/Private submitted response/);
+});
+
+test('A background SWT failure preserves the answer and is retried once on final submission',async()=>{
+ const {h}=await mixedClient();let calls=0;h.ctx.requestSwtGrade=async()=>{if(++calls===1)throw Error('Temporary connection failure');return confirmedGrade;};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved summary for background assessment.'}});nextQuestion(h);await flush();
+ assert.equal(calls,1);assert.equal(snapshot(h).history.length,0);assert.equal(snapshot(h).session.assessments[snapshot(h).session.questions[0].uid].status,'error');
+ while(!snapshot(h).session.done)nextQuestion(h);await flush();assert.equal(calls,2);assert.equal(snapshot(h).history[0].pending,0);
+ await h.click({action:'retry-swt',reviewUid:snapshot(h).session.questions[0].uid});assert.equal(calls,2,'Confirmed background grades must be reused');
+});
+
+test('Fast completion shows an honest pending result that updates as the background assessment finishes',async()=>{
+ const {h}=await mixedClient();let resolve,calls=0;h.ctx.requestSwtGrade=()=>{calls++;return new Promise(r=>resolve=r);};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My submitted response.'}});nextQuestion(h);while(!snapshot(h).session.done)nextQuestion(h);
+ assert.equal(calls,1);assert.equal(snapshot(h).history[0].pending,1);assert.match(h.host.innerHTML,/SWT assessment pending/);
+ resolve(confirmedGrade);await flush();assert.equal(snapshot(h).history[0].pending,0);assert.match(h.host.innerHTML,/8\/9 SWT points/);
+});
+
+test('All imported mocks and practice questions have complete, usable answer keys and per-blank feedback',()=>{
+ assert.equal(bank.importedSets.length,6);assert.equal(bank.sourceImports.commit,'439880edb0989697275809e9e82b00eb0c3176e9');
+ const seen=new Set();
+ for(const [i,set] of bank.importedSets.entries()){
+  assert.equal(set.questions.length,20);assert.equal(set.questions.filter(q=>q.type==='dropdown').length,10);assert.equal(set.questions.filter(q=>q.type==='wordbank').length,10);assert.equal(set.questions.reduce((n,q)=>n+q.answers.length,0),[90,90,90,91,99,90][i]);
+ }
+ const questions=[...bank.importedSets.flatMap(s=>s.questions),...bank.practiceLibraries.filter(l=>l.id!=='hiw').flatMap(l=>l.questions)];
+ assert.equal(questions.length,220);
+ for(const q of questions){
+  assert(!seen.has(q.uid));seen.add(q.uid);assert.equal(score(q,q.answers).earned,q.answers.length);assert.equal(score(q,[]).earned,0);
+  assert.equal([...q.passage.matchAll(/\[\[\d+\]\]/g)].length,q.answers.length);assert.equal(q.reasoning.blanks.length,q.answers.length);
+  q.answers.forEach((answer,i)=>{assert((q.options?.[i]||q.bank).includes(answer));assert.equal(q.reasoning.blanks[i].answer,answer);assert(q.reasoning.blanks[i].explanation);});
+  if(q.type==='wordbank')assert.equal(new Set(q.answers).size,q.answers.length,'Each word can fill one blank');
+ }
+ assert.deepEqual(bank.practiceLibraries.map(l=>l.questions.length),[50,50,10]);
+});
+
+test('Ten new C2 HIW recordings have exact word-position keys and meaning feedback',()=>{
+ const questions=bank.practiceLibraries.find(l=>l.id==='hiw').questions;assert.equal(questions.length,10);assert.equal(new Set(questions.map(q=>q.title)).size,10);
+ for(const q of questions){
+  const spoken=q.audioText.split(/\s+/),written=q.passage.split(/\s+/);assert.equal(q.cefrTarget,'C2');assert(spoken.length>=110&&spoken.length<=150);assert.equal(spoken.length,written.length);
+  assert.deepEqual(written.flatMap((word,i)=>word===spoken[i]?[]:[i]),q.answers);assert.equal(q.answers.length,6);assert.equal(score(q,q.answers).earned,6);
+  for(const c of q.corrections){assert.equal(c.written,written[c.index]);assert.equal(c.spoken,spoken[c.index]);assert(c.explanation.length>25);}
+ }
+});
+
+test('Imported mock navigation preserves its 25-minute timer and produces a single complete review',async()=>{
+ const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();h.ctx.fetch=async()=>{throw Error('Imported mocks must not fetch SWT passages');};
+ await h.click({start:'practice-mock-4'});const initial=snapshot(h).session;assert.equal(initial.questions.length,20);assert.equal(initial.deadline-clock.now,25*60000);assert.match(h.host.innerHTML,/data-exam-player/);
+ for(const q of initial.questions){
+  if(q.type==='dropdown')q.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));
+  else q.answers.forEach((word,i)=>{h.click({word});h.click({blank:String(i)});});
+  clock.add(15000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,initial.deadline);
+ }
+ const done=snapshot(h);assert.equal(done.history.length,1);assert.equal(done.history[0].earned,90);assert.equal(done.history[0].possible,90);assert.equal(done.history[0].pending,0);
+ assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,20);assert.match(h.host.innerHTML,/Why each answer fits/);
+});
+
+test('Mock cards show simple labels and paginate the imported mocks without exposing task descriptions',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();
+ const visible=()=>[...h.host.innerHTML.split('id="reading-practice-mocks"')[1].split('</section>')[0].matchAll(/<article([^>]*)>[\s\S]*?data-start="([^"]+)"/g)].filter(m=>!m[1].includes('hidden')).map(m=>m[2]);
+ assert.deepEqual(visible(),['practice-mock-1','practice-mock-2','practice-mock-3']);
+ assert.doesNotMatch(h.host.innerHTML,/All eight|2 SWT|two SWT|C2-targeted|Reading-contributing|Diagnostic test|Grammar rules|How the mocks work/);
+ h.click({mockPage:'1'});assert.deepEqual(visible(),['practice-mock-4','practice-mock-5','practice-mock-6']);
+ h.click({mockPage:'2'});assert.deepEqual(visible(),['practice-mock-7','practice-mock-8','practice-mock-9']);assert.equal(snapshot(h).session,null);
+});
+
+test('Question practice supports searching, paging, draft recovery, feedback and account-isolated progress',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();h.click({browseLibrary:'dropdown'});
+ assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);assert.match(h.host.innerHTML,/50 questions/);
+ const listing={innerHTML:''},query=h.host.querySelector.bind(h.host);h.host.querySelector=s=>s==='[data-library-list]'?listing:query(s);
+ h.click({libraryPage:'1'});assert.match(listing.innerHTML,/pte:RFIB_011/);assert.doesNotMatch(listing.innerHTML,/pte:RFIB_001/);
+ h.host.oninput({target:{dataset:{librarySearch:''},value:'How Winds Form'}});assert.match(listing.innerHTML,/1 questions/);assert.match(listing.innerHTML,/pte:RFIB_001/);
+ const q=bank.practiceLibraries[0].questions[0];await h.click({practiceUid:q.uid});assert.equal(snapshot(h).session.practiceUid,q.uid);assert.equal(snapshot(h).session.deadline,null);
+ h.host.onchange({target:{dataset:{answer:'0'},value:q.answers[0]}});h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.equal(snapshot(h).session.answers[q.uid][0],q.answers[0]);
+ q.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));h.click({action:'check'});assert.match(h.host.innerHTML,/Why each answer fits/);h.click({action:'submit'});
+ assert.equal(snapshot(h).practiceResults[q.uid].earned,4);assert.match(h.host.innerHTML,/Your answer/);
+ h.click({browseLibrary:'dropdown'});assert.match(h.host.innerHTML,/4\/4 points · Completed/);
+ h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();h.click({browseLibrary:'dropdown'});assert.doesNotMatch(h.host.innerHTML,/points · Completed/);assert.equal(h.values.get(storageKey('first')).includes(q.uid),true);
+});
+
+test('New HIW practice autoplays and saves its highlights with full feedback',async()=>{
+ const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);await h.ctx.ReadingPractice.open();h.click({browseLibrary:'hiw'});
+ assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});
+ assert.match(h.host.innerHTML,/C2/);clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);assert.equal(audio.utterances[0].text,q.audioText);
+ audio.utterances[0].onstart();q.answers.forEach(index=>h.click({hiwWord:String(index)}));audio.utterances[0].onend();h.click({action:'submit'});
+ assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
 });

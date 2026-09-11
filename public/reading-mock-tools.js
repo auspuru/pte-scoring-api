@@ -51,8 +51,9 @@
   function compose(bank, mode, setId, swtPassages) {
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
     if (preset) {
-      const set = bank.sets.find(item => item.id === preset.setId);
+      const set = [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
       if (!set) throw Error('This mock question set is unavailable.');
+      if(preset.kind==='reading-blanks')return {name:preset.name,minutes:preset.minutes,questions:set.questions.map(q=>({...q}))};
       const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
       validateReading(reading, set.minutes);
       const audio = preset.audioQuestionIds.map(id => bank.audioQuestionBank.find(q => q.id === id));

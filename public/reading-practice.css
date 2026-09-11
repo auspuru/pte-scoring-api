@@ -291,3 +291,26 @@ body.dark .reading-mock-card .portal-button { color: #092333; }
   .reading-review-count { width: 100%; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .reading-mock-card { transition: none; } }
+
+.reading-mock-panel { margin-top: 22px; }
+.reading-mock-card .reading-mock-meta { margin-bottom: 24px; }
+.reading-catalogue-pages { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
+.reading-library-shortcuts { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--line-soft); }
+.reading-library-shortcuts h3 { font-size: 15px; margin: 0 0 14px; }
+.reading-library-shortcuts > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.reading-library-shortcuts .portal-button { font-size: 13px; }
+.reading-library-search { display: grid; gap: 8px; max-width: 520px; color: var(--ink-soft); font-size: 13px; }
+.reading-library-search input { padding: 12px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg-card); color: var(--ink); }
+.reading-library-list { list-style: none; margin: 12px 0; padding: 0; border-top: 1px solid var(--line-soft); }
+.reading-library-list li { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 2px; border-bottom: 1px solid var(--line-soft); }
+.reading-library-list strong { font-size: 15px; }
+.reading-library-list li > div { display: grid; gap: 6px; }
+.reading-library-list li > div > span { font-size: 12px; color: var(--ink-soft); }
+.reading-explanation table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; line-height: 1.7; }
+.reading-explanation td, .reading-explanation th { padding: 10px; vertical-align: top; border-bottom: 1px solid var(--line-soft); }
+@media(max-width:650px) {
+  .reading-mode-switch button { font-size: 13px; }
+  .reading-library-shortcuts > div { display: grid; }
+  .reading-library-list li { gap: 12px; }
+  .reading-library-list .portal-button { flex-shrink: 0; font-size: 12px; padding-inline: 10px; }
+}

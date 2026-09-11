@@ -6,7 +6,7 @@
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const titles = { dropdown: 'Fill in the Blanks (Dropdown)', wordbank: 'Fill in the Blanks (Drag and Drop)', reorder: 'Reorder Paragraphs', mcsa: 'Multiple Choice, Single Answer', mcma: 'Multiple Choice, Multiple Answers', swt: 'Summarize Written Text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
-  function isExam(session) { return !!session && (['full','mock','sectional-1','sectional-2','diagnostic'].includes(session.mode) || /^(practice|sectional)-mock-[1-3]$/.test(session.mode)); }
+  function isExam(session) { return !!session && (['full','mock','sectional-1','sectional-2','diagnostic'].includes(session.mode) || /^(practice|sectional)-mock-[1-9]\d*$/.test(session.mode)); }
   function moveParagraph(q, answer = [], key, destination, position) {
     if (!q.items.some(item=>item.key===key) || !['source','target'].includes(destination)) return answer;
     const oldIndex=answer.indexOf(key), next=answer.filter(item=>item!==key);

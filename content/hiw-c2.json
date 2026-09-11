@@ -1,0 +1,132 @@
+[
+  {
+    "id": "hiw-c2-01",
+    "title": "Standards and discretion",
+    "audioText": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains contingent on the purposes they serve and the circumstances in which they are applied. A rule may constrain discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as provisional does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are authorised through reasons that others can examine. Where decisions are reversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations contestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+    "changes": [
+      ["contingent", "inevitable", "Legitimacy depends on purposes and circumstances; the speaker does not describe it as inevitable."],
+      ["constrain", "preclude", "A rule limits discretion without removing the need for judgement."],
+      ["provisional", "definitive", "The classifications remain open to reconsideration."],
+      ["authorised", "imposed", "Departures are justified through reasons others can examine."],
+      ["reversible,", "irreversible,", "The ability to revise decisions enables institutional learning."],
+      ["contestable", "incontestable", "Accountability requires interpretations to be open to challenge."]
+    ]
+  },
+  {
+    "id": "hiw-c2-02",
+    "title": "Models and evidence",
+    "audioText": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when observational data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving confounding unresolved. Even a statistically identifiable relationship need not remain invariant when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain conditional on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by scrutiny of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+    "changes": [
+      ["observational", "experimental", "The speaker is discussing data observed without the intervention that an experiment would introduce."],
+      ["confounding", "corroboration", "An unmeasured influence creates confounding rather than confirmation."],
+      ["identifiable", "inevitable", "Statistical identification does not establish inevitability."],
+      ["invariant", "incidental", "The issue is whether a relationship remains unchanged across circumstances."],
+      ["conditional", "categorical", "The conclusions depend on stated assumptions."],
+      ["scrutiny", "deference", "The speaker calls for examination of the analysis, not deference to it."]
+    ]
+  },
+  {
+    "id": "hiw-c2-03",
+    "title": "Archival absences",
+    "audioText": "An archive is a selective residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is corroborated by independent records, confidence may increase, but the provenance of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish contingent gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of consent. A responsible interpretation remains provisional where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+    "changes": [
+      ["selective", "comprehensive", "The archive preserves only part of past activity."],
+      ["corroborated", "contradicted", "Agreement from independent records can increase confidence."],
+      ["provenance", "prominence", "The origin of a record matters, rather than how prominent it is."],
+      ["contingent", "intrinsic", "Some gaps arise from circumstances rather than being inherent in documentation."],
+      ["consent.", "dissent.", "The speaker warns against assuming that an absence of records means agreement."],
+      ["provisional", "conclusive", "An interpretation remains open where the evidence cannot distinguish explanations."]
+    ]
+  },
+  {
+    "id": "hiw-c2-04",
+    "title": "Ecological thresholds",
+    "audioText": "The apparent stability of an ecosystem can obscure a gradual erosion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve nonlinearity, a modest additional disturbance may produce a disproportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can perpetuate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow symmetrical paths. Effective management attends to early indications of diminishing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+    "changes": [
+      ["erosion", "expansion", "The system is losing some capacity to absorb disturbance."],
+      ["nonlinearity,", "uniformity,", "The response need not grow in a simple proportion to the disturbance."],
+      ["disproportionate", "proportionate", "A modest disturbance can trigger a much larger change."],
+      ["perpetuate", "eliminate", "Feedback can maintain the altered condition."],
+      ["symmetrical", "sequential", "The speaker questions whether restoration mirrors degradation."],
+      ["diminishing", "increasing", "The early indications concern a loss of resilience."]
+    ]
+  },
+  {
+    "id": "hiw-c2-05",
+    "title": "Translation and ambiguity",
+    "audioText": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry pragmatic implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are constitutive of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately withholds; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between intelligibility and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes defensible when the translator can explain how a particular choice sustains the force of an utterance, including what it insinuates without explicitly asserting.",
+    "changes": [
+      ["pragmatic", "numerical", "The implications concern language in context and its effect on an audience."],
+      ["constitutive", "derivative", "Some ambiguities form an essential part of the argument."],
+      ["withholds;", "supplies;", "The original may deliberately leave some uncertainty unresolved."],
+      ["intelligibility", "interchangeability", "The balance concerns being understandable while retaining meaningful difference."],
+      ["defensible", "indefensible", "Explaining a translation choice can justify the judgement behind it."],
+      ["insinuates", "contradicts", "The final distinction is between implications and explicit assertions."]
+    ]
+  },
+  {
+    "id": "hiw-c2-06",
+    "title": "Credibility and participation",
+    "audioText": "Inviting people to speak does not by itself ensure that their contributions receive equitable consideration. A participant may be formally included while the credibility of their testimony is discounted through assumptions about expertise or social standing. Conversely, familiar institutional language can confer authority on a claim whose evidential basis remains weak. Addressing this asymmetry requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences intelligible within the discussion. Deliberation improves when these conditions become explicit and revisable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+    "changes": [
+      ["equitable", "identical", "Equitable consideration is fair consideration, rather than an assumption of identical weight."],
+      ["discounted", "amplified", "The testimony may receive less credibility because of assumptions about the speaker."],
+      ["confer", "withdraw", "Familiar institutional language can give a claim authority."],
+      ["asymmetry", "uniformity", "The problem is an unequal allocation of credibility."],
+      ["intelligible", "invisible", "Participants need ways to make their experiences understandable."],
+      ["revisable.", "immutable.", "The conditions of deliberation should remain open to revision."]
+    ]
+  },
+  {
+    "id": "hiw-c2-07",
+    "title": "Infrastructure and future choices",
+    "audioText": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may foreclose alternatives that later generations would have preferred. This does not imply that all irreversible investments should be deferred, since postponement also imposes costs and can entrench existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated separately instead of being compressed into a single forecast. Where feasible, modular designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they retain, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+    "changes": [
+      ["foreclose", "facilitate", "A current investment can close off future alternatives."],
+      ["deferred,", "accelerated,", "The speaker rejects the view that every irreversible investment should be postponed."],
+      ["entrench", "eradicate", "Postponement can reinforce disadvantages that already exist."],
+      ["separately", "collectively", "Different uncertainties and value disagreements should be explained separately."],
+      ["modular", "monolithic", "Designs with adaptable components can preserve flexibility."],
+      ["retain,", "relinquish,", "The value includes keeping options available for later decisions."]
+    ]
+  },
+  {
+    "id": "hiw-c2-08",
+    "title": "Classification and accountability",
+    "audioText": "Automated classification acquires an appearance of neutrality when its categories are presented as purely technical. Yet the choice of a target variable already embeds a judgement about which differences matter. A system trained to reproduce previous decisions may faithfully replicate patterns that an institution ought to reconsider. Evaluating its performance therefore requires attention to the provenance of the labels as well as the frequency of predictive errors. Aggregated accuracy can conceal uneven consequences for groups whose circumstances are inadequately represented in the training material. Accountability depends on making these limitations legible to those affected and providing a practicable route for contesting decisions. The central challenge is not simply to increase computational sophistication, but to ensure that the purposes governing classification remain explicit, revisable and answerable to public reasons.",
+    "changes": [
+      ["neutrality", "partiality", "The system appears neutral when its categories are described as technical."],
+      ["embeds", "excludes", "Choosing a target includes a judgement about relevant differences."],
+      ["replicate", "rectify", "A trained system may reproduce questionable patterns rather than correct them."],
+      ["conceal", "reveal", "A combined accuracy figure can hide unequal consequences."],
+      ["legible", "negligible", "Affected people should be able to understand the limitations."],
+      ["contesting", "endorsing", "A route for challenging decisions is part of accountability."]
+    ]
+  },
+  {
+    "id": "hiw-c2-09",
+    "title": "Conservation and authenticity",
+    "audioText": "Conserving a historic building involves interpreting continuity rather than simply arresting change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can erase evidence of the very processes that make it valuable. Authenticity is therefore not exhausted by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license unrestricted redevelopment. It calls for a discriminating judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements traceable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+    "changes": [
+      ["arresting", "accelerating", "The opening contrasts interpreting continuity with trying to stop change."],
+      ["erase", "authenticate", "An imagined restoration can remove historical evidence."],
+      ["exhausted", "enhanced", "Surviving components do not fully define authenticity."],
+      ["unrestricted", "provisional", "The broader account does not permit unlimited redevelopment."],
+      ["discriminating", "indiscriminate", "The judgement should distinguish interventions carefully."],
+      ["traceable,", "irretrievable,", "Documentation lets later conservators follow the reasoning behind decisions."]
+    ]
+  },
+  {
+    "id": "hiw-c2-10",
+    "title": "Indicators and public value",
+    "audioText": "A public programme may satisfy its numerical targets while failing to realise the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so displaces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a proxy as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits endure beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are nominal rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories subordinate to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+    "changes": [
+      ["realise", "relinquish", "The programme may fail to achieve its underlying purpose."],
+      ["displaces", "reinforces", "Optimising measured targets may push aside other responsibilities."],
+      ["proxy", "prerequisite", "An indicator stands in for an outcome; it does not fully define it."],
+      ["endure", "dissipate", "The evaluation asks whether the benefits last."],
+      ["nominal", "substantial", "Some achievements exist mainly in name rather than in their actual effects."],
+      ["subordinate", "indifferent", "Measurement categories should remain governed by public purposes."]
+    ]
+  }
+]

@@ -8,7 +8,7 @@
     swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
-    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: '25-minute practice mocks, sectional mocks and feedback you can explore.' },
+    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practice mock test · Sectional mock test' },
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 
