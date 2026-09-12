@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 197905)
-Total output lines: 16630
-
 // ============================================================
 //  GLOBAL ERROR BOUNDARY — surface failures as a friendly toast
 //  instead of silent console-only errors or a frozen UI.
@@ -4399,7 +4396,6586 @@ const VOCAB_DATA = {
         word: "tournament", pos: "noun", level: "C1",
         meaning: "A series of contests between a number of competitors, leading to one overall winner.",
         examples: [
-          "Wimbledon is one of the oldest…77905 tokens truncated… 60);
+          "Wimbledon is one of the oldest tennis tournaments in the world.",
+          "The chess tournament attracted players from over thirty countries.",
+          "Winning the tournament qualified them for the international championship."
+        ]
+      },
+      {
+        word: "exhilaration", pos: "noun", level: "C2",
+        meaning: "A feeling of excitement, happiness, and energy.",
+        examples: [
+          "Crossing the finish line, she felt pure exhilaration.",
+          "The sheer exhilaration of skydiving keeps people coming back.",
+          "There is no exhilaration quite like scoring the winning goal."
+        ]
+      }
+    ]
+  },
+  media: {
+    label: "Media & Communication", icon: "📡", order: 10,
+    words: [
+      {
+        word: "censorship", pos: "noun", level: "C1",
+        meaning: "The suppression of speech, public communication, or information considered objectionable.",
+        examples: [
+          "State censorship of the press is a hallmark of authoritarian regimes.",
+          "Censorship of social media platforms remains a contentious issue.",
+          "Many artists have spoken out against government censorship."
+        ]
+      },
+      {
+        word: "propaganda", pos: "noun", level: "C1",
+        meaning: "Information, especially biased or misleading, used to promote a political cause or point of view.",
+        examples: [
+          "Wartime propaganda was designed to maintain public morale.",
+          "Critics dismissed the documentary as little more than political propaganda.",
+          "Modern propaganda often spreads through targeted social media campaigns."
+        ]
+      },
+      {
+        word: "broadcast", pos: "verb / noun", level: "C1",
+        meaning: "(verb) To transmit a programme by radio or television; (noun) the programme itself.",
+        examples: [
+          "The concert will be broadcast live on national television.",
+          "Yesterday's news broadcast covered the floods extensively.",
+          "Royal weddings are broadcast to audiences worldwide."
+        ]
+      },
+      {
+        word: "sensationalism", pos: "noun", level: "C2",
+        meaning: "The presentation of information in a way that provokes strong emotion, especially at the expense of accuracy.",
+        examples: [
+          "Tabloid newspapers are often criticised for sensationalism.",
+          "Sensationalism in reporting can distort public perception of crime rates.",
+          "She refused to engage with the sensationalism surrounding her divorce."
+        ]
+      },
+      {
+        word: "discourse", pos: "noun", level: "C2",
+        meaning: "Written or spoken communication or debate, often formal and on a particular subject.",
+        examples: [
+          "Public discourse on climate change has shifted dramatically in recent years.",
+          "The book contributed to academic discourse on post-colonial identity.",
+          "Social media has both broadened and coarsened political discourse."
+        ]
+      }
+    ]
+  },
+  politics: {
+    label: "Politics & Government", icon: "🏛", order: 11,
+    words: [
+      {
+        word: "democracy", pos: "noun", level: "C1",
+        meaning: "A system of government where citizens choose leaders through free and fair elections.",
+        examples: [
+          "Democracy depends on an informed and engaged electorate.",
+          "Many young democracies struggle with corruption.",
+          "Press freedom is essential to any functioning democracy."
+        ]
+      },
+      {
+        word: "constituency", pos: "noun", level: "C1",
+        meaning: "A group of voters in a specified area who elect a representative; or a body of supporters.",
+        examples: [
+          "She has represented this constituency in parliament for over a decade.",
+          "The new policy alienates the party's traditional working-class constituency.",
+          "Each constituency elects one member to the lower house."
+        ]
+      },
+      {
+        word: "legislation", pos: "noun", level: "C1",
+        meaning: "Laws considered as a body, or the process of making them.",
+        examples: [
+          "The government introduced legislation to tighten environmental standards.",
+          "Anti-discrimination legislation has improved workplace fairness.",
+          "New legislation on data privacy will take effect next year."
+        ]
+      },
+      {
+        word: "autocracy", pos: "noun", level: "C2",
+        meaning: "A system of government by one person with absolute power.",
+        examples: [
+          "The country slid from democracy into autocracy within a single decade.",
+          "Critics argue that increased surveillance is a step toward autocracy.",
+          "Autocracy thrives where civil institutions are weak."
+        ],
+        compare: "vs. dictatorship: very similar; 'autocracy' is broader and includes monarchies with absolute rule."
+      },
+      {
+        word: "demagogue", pos: "noun", level: "C2",
+        meaning: "A political leader who gains popularity by appealing to emotions and prejudices rather than reason.",
+        examples: [
+          "Historians have studied how demagogues exploit economic hardship to gain power.",
+          "She accused her opponent of being a populist demagogue.",
+          "A demagogue thrives on dividing the electorate into 'us' and 'them'."
+        ]
+      }
+    ]
+  },
+  culture: {
+    label: "Culture & Traditions", icon: "🎭", order: 12,
+    words: [
+      {
+        word: "heritage", pos: "noun", level: "C1",
+        meaning: "Valued objects, traditions, and qualities passed down from previous generations.",
+        examples: [
+          "The old town is a UNESCO World Heritage site.",
+          "She is proud of her Irish heritage.",
+          "Cultural heritage must be protected for future generations."
+        ]
+      },
+      {
+        word: "indigenous", pos: "adjective", level: "C1",
+        meaning: "Originating or naturally occurring in a particular place; native.",
+        examples: [
+          "Indigenous communities have lived in the region for thousands of years.",
+          "The festival celebrates indigenous music and dance.",
+          "Many indigenous languages are at risk of disappearing."
+        ]
+      },
+      {
+        word: "assimilation", pos: "noun", level: "C2",
+        meaning: "The process by which a person or group becomes part of a different culture and adopts its customs.",
+        examples: [
+          "Government policies of forced assimilation caused lasting harm.",
+          "Second-generation immigrants often experience tension between assimilation and tradition.",
+          "Schools play a major role in the assimilation of newcomers."
+        ],
+        compare: "vs. integration: 'integration' allows keeping one's original culture; 'assimilation' implies adopting the dominant culture and giving up the original."
+      },
+      {
+        word: "ritual", pos: "noun", level: "C1",
+        meaning: "A ceremony or series of actions performed in a fixed way, especially for religious or cultural reasons.",
+        examples: [
+          "Tea ceremonies are an important ritual in Japanese culture.",
+          "Morning rituals can structure the day and reduce stress.",
+          "The wedding ritual has remained largely unchanged for centuries."
+        ]
+      },
+      {
+        word: "ethnocentric", pos: "adjective", level: "C2",
+        meaning: "Judging other cultures by the standards and values of one's own.",
+        examples: [
+          "Anthropologists must guard against ethnocentric assumptions in their research.",
+          "Ethnocentric thinking often leads to misunderstanding of unfamiliar customs.",
+          "The textbook was criticised for its ethnocentric portrayal of history."
+        ]
+      }
+    ]
+  },
+  food: {
+    label: "Food & Nutrition", icon: "🍎", order: 13,
+    words: [
+      {
+        word: "nutrient", pos: "noun", level: "C1",
+        meaning: "A substance in food that the body needs to live and grow.",
+        examples: [
+          "Leafy greens are packed with essential nutrients.",
+          "Processed foods often strip away natural nutrients.",
+          "A varied diet is the best way to get all the nutrients you need."
+        ]
+      },
+      {
+        word: "obesity", pos: "noun", level: "C1",
+        meaning: "The condition of being seriously overweight, posing health risks.",
+        examples: [
+          "Childhood obesity rates have tripled in many developed nations.",
+          "Obesity is linked to diabetes, heart disease, and certain cancers.",
+          "Combating obesity requires both individual and policy-level changes."
+        ]
+      },
+      {
+        word: "perishable", pos: "adjective", level: "C1",
+        meaning: "(Of food) likely to decay or go bad quickly, especially if not refrigerated.",
+        examples: [
+          "Perishable goods like fresh fish must be transported in cooled containers.",
+          "Always check the dates on perishable products before buying.",
+          "The store discounts perishable items late in the evening."
+        ]
+      },
+      {
+        word: "palatable", pos: "adjective", level: "C2",
+        meaning: "Pleasant to taste; (figuratively) acceptable or agreeable.",
+        examples: [
+          "The cook found a way to make the bitter vegetables palatable to children.",
+          "The compromise was barely palatable to either side, but it ended the dispute.",
+          "Adding a little honey made the medicine more palatable."
+        ]
+      },
+      {
+        word: "gastronomy", pos: "noun", level: "C2",
+        meaning: "The practice or art of preparing and eating good food.",
+        examples: [
+          "Lyon is widely regarded as the heart of French gastronomy.",
+          "She wrote her thesis on the influence of immigration on local gastronomy.",
+          "The festival celebrates the gastronomy of the Mediterranean region."
+        ]
+      }
+    ]
+  },
+  transport: {
+    label: "Transportation", icon: "🚆", order: 14,
+    words: [
+      {
+        word: "congestion", pos: "noun", level: "C1",
+        meaning: "Crowding that causes traffic or other things to move slowly or stop.",
+        examples: [
+          "Rush-hour congestion adds an hour to most commutes.",
+          "Many cities introduce congestion charges to reduce inner-city traffic.",
+          "Air traffic congestion has worsened with the rise of low-cost airlines."
+        ]
+      },
+      {
+        word: "commute", pos: "verb / noun", level: "C1",
+        meaning: "(verb) To travel regularly between home and work; (noun) the journey itself.",
+        examples: [
+          "She commutes nearly two hours each way to her office in the city.",
+          "The new train line has shortened his commute considerably.",
+          "Remote work has eliminated the daily commute for millions."
+        ]
+      },
+      {
+        word: "infrastructure", pos: "noun", level: "C1",
+        meaning: "The basic physical systems of a country, such as roads, bridges, and public transport.",
+        examples: [
+          "Decades of underinvestment have left the country's infrastructure in poor condition.",
+          "The government has pledged billions for green infrastructure projects.",
+          "Robust transport infrastructure is essential for economic growth."
+        ]
+      },
+      {
+        word: "logistics", pos: "noun", level: "C1",
+        meaning: "The detailed organisation of a complex operation; especially the movement of goods.",
+        examples: [
+          "Global logistics chains were severely disrupted by the pandemic.",
+          "The logistics of moving a thousand troops overnight are formidable.",
+          "She works in logistics, coordinating shipments across three continents."
+        ]
+      },
+      {
+        word: "decarbonise", pos: "verb", level: "C2",
+        meaning: "To reduce or eliminate carbon dioxide emissions from a sector, especially transport or energy.",
+        examples: [
+          "Many governments aim to decarbonise their transport networks by 2050.",
+          "Electric vehicles play a central role in efforts to decarbonise.",
+          "Decarbonising heavy industry remains technologically challenging."
+        ]
+      }
+    ]
+  },
+  entertainment: {
+    label: "Entertainment", icon: "🎬", order: 15,
+    words: [
+      {
+        word: "blockbuster", pos: "noun", level: "C1",
+        meaning: "A film, book, or other work that achieves very high commercial success.",
+        examples: [
+          "The studio's latest blockbuster has earned over a billion dollars worldwide.",
+          "Summer is traditionally blockbuster season at the cinema.",
+          "Not every blockbuster is a critical success — and vice versa."
+        ]
+      },
+      {
+        word: "ovation", pos: "noun", level: "C1",
+        meaning: "A long, enthusiastic round of applause from an audience.",
+        examples: [
+          "The performance received a five-minute standing ovation.",
+          "Her speech ended to a thunderous ovation.",
+          "It is rare for a debut author to earn such an ovation."
+        ]
+      },
+      {
+        word: "binge", pos: "verb / noun", level: "C1",
+        meaning: "To indulge excessively in something, especially watching many TV episodes in a row.",
+        examples: [
+          "I spent the whole weekend binge-watching that new crime drama.",
+          "Streaming services have changed how we binge content.",
+          "Binge eating disorder requires professional treatment."
+        ]
+      },
+      {
+        word: "renowned", pos: "adjective", level: "C1",
+        meaning: "Known and admired by many people; famous for some specific quality.",
+        examples: [
+          "The renowned author drew a huge crowd at the book festival.",
+          "She is renowned for her interpretations of Mozart.",
+          "The restaurant is renowned across Asia for its dim sum."
+        ]
+      },
+      {
+        word: "highbrow", pos: "adjective", level: "C2",
+        meaning: "Intellectually demanding; suited to or aimed at people of high taste or education.",
+        examples: [
+          "He prefers highbrow literature over popular fiction.",
+          "The festival mixes highbrow opera with mainstream pop concerts.",
+          "Critics dismissed her debut film as too highbrow for general audiences."
+        ],
+        compare: "vs. lowbrow: 'highbrow' = intellectual/sophisticated; 'lowbrow' = popular/unsophisticated. Both can be neutral or insulting depending on tone."
+      }
+    ]
+  },
+  social: {
+    label: "Social Issues", icon: "🤝", order: 16,
+    words: [
+      {
+        word: "inequality", pos: "noun", level: "C1",
+        meaning: "Unequal distribution of opportunities, wealth, or social status across groups in a society.",
+        examples: [
+          "Rising income inequality has become a major political issue.",
+          "The pandemic worsened existing inequalities in healthcare access.",
+          "Gender inequality persists in many traditionally male-dominated industries."
+        ]
+      },
+      {
+        word: "marginalised", pos: "adjective", level: "C1",
+        meaning: "Treated as unimportant or pushed to the edges of a society, group, or system.",
+        examples: [
+          "Marginalised communities often lack a voice in policymaking.",
+          "The programme is designed to support marginalised youth.",
+          "She writes powerfully about the lives of marginalised women."
+        ]
+      },
+      {
+        word: "stigma", pos: "noun", level: "C1",
+        meaning: "A strong feeling of social disapproval associated with a particular trait or condition.",
+        examples: [
+          "There is still significant stigma surrounding mental illness.",
+          "Many former prisoners struggle with the stigma of incarceration.",
+          "Campaigns aim to reduce the stigma attached to seeking therapy."
+        ]
+      },
+      {
+        word: "homelessness", pos: "noun", level: "C1",
+        meaning: "The state of having no permanent place to live.",
+        examples: [
+          "Homelessness has risen sharply in major urban centres.",
+          "Charities provide emergency shelter to those experiencing homelessness.",
+          "Tackling homelessness requires both housing and mental-health support."
+        ]
+      },
+      {
+        word: "disenfranchised", pos: "adjective", level: "C2",
+        meaning: "Deprived of a right or privilege, especially the right to vote; (more broadly) feeling powerless.",
+        examples: [
+          "Voter ID laws have left many low-income citizens disenfranchised.",
+          "Generations of disenfranchised workers fuelled the political uprising.",
+          "She works with disenfranchised refugee communities."
+        ]
+      }
+    ]
+  },
+  work: {
+    label: "Work & Employment", icon: "💼", order: 17,
+    words: [
+      {
+        word: "remuneration", pos: "noun", level: "C2",
+        meaning: "Money paid for work or a service; compensation.",
+        examples: [
+          "The role offers competitive remuneration and excellent benefits.",
+          "His remuneration was tied to the company's annual performance.",
+          "Adequate remuneration is essential for retaining skilled staff."
+        ],
+        compare: "vs. salary: 'remuneration' is formal and includes salary + bonuses + benefits."
+      },
+      {
+        word: "burnout", pos: "noun", level: "C1",
+        meaning: "Physical or mental collapse caused by overwork or stress.",
+        examples: [
+          "Burnout is increasingly common among healthcare workers.",
+          "She left the law firm after experiencing severe burnout.",
+          "Companies are now investing in programmes to prevent employee burnout."
+        ]
+      },
+      {
+        word: "delegate", pos: "verb", level: "C1",
+        meaning: "To assign a task or responsibility to another person, typically one in a more junior position.",
+        examples: [
+          "Good managers delegate effectively rather than micromanaging.",
+          "He delegated the report to his deputy and focused on strategy.",
+          "Learning to delegate is essential as a small business grows."
+        ]
+      },
+      {
+        word: "redundancy", pos: "noun", level: "C1",
+        meaning: "The state of being no longer needed at work, leading to job loss.",
+        examples: [
+          "Hundreds of staff face redundancy after the merger.",
+          "The company offered generous redundancy packages.",
+          "Voluntary redundancy was preferred to forced layoffs."
+        ]
+      },
+      {
+        word: "headhunt", pos: "verb", level: "C2",
+        meaning: "To actively recruit a specific person, often from another company, for a senior role.",
+        examples: [
+          "She was headhunted by a rival firm with a much higher salary offer.",
+          "Top executives are routinely headhunted across industries.",
+          "Specialist agencies headhunt talent for technology start-ups."
+        ]
+      }
+    ]
+  },
+  housing: {
+    label: "Housing & Architecture", icon: "🏠", order: 18,
+    words: [
+      {
+        word: "affordability", pos: "noun", level: "C1",
+        meaning: "The degree to which something is reasonably priced; especially housing within reach of average incomes.",
+        examples: [
+          "Housing affordability is a major challenge in most large cities.",
+          "Government policies aim to improve affordability for first-time buyers.",
+          "The crisis of affordability is pushing young people out of the capital."
+        ]
+      },
+      {
+        word: "gentrification", pos: "noun", level: "C2",
+        meaning: "The process whereby a poor area becomes more affluent, often displacing original residents.",
+        examples: [
+          "Gentrification has transformed once-affordable neighbourhoods into luxury enclaves.",
+          "Local activists protest against gentrification of their community.",
+          "Gentrification raises difficult questions about who benefits from urban renewal."
+        ]
+      },
+      {
+        word: "tenant", pos: "noun", level: "C1",
+        meaning: "A person who rents and lives in a property owned by someone else.",
+        examples: [
+          "Tenants have legal protection against unfair eviction.",
+          "Long-term tenants often build strong ties to the local community.",
+          "The landlord agreed to lower the rent to keep his existing tenants."
+        ],
+        compare: "vs. landlord: 'tenant' rents; 'landlord' owns and rents out."
+      },
+      {
+        word: "skyscraper", pos: "noun", level: "C1",
+        meaning: "A very tall building consisting of many storeys.",
+        examples: [
+          "Dubai is home to some of the world's most spectacular skyscrapers.",
+          "The new skyscraper will dominate the city skyline.",
+          "Modern skyscrapers are built to withstand earthquakes and high winds."
+        ]
+      },
+      {
+        word: "dilapidated", pos: "adjective", level: "C2",
+        meaning: "(Of a building or object) in a state of severe disrepair due to age or neglect.",
+        examples: [
+          "They restored the dilapidated farmhouse over many years.",
+          "Children should not have to attend such a dilapidated school.",
+          "The dilapidated factory was finally demolished to make way for housing."
+        ]
+      }
+    ]
+  },
+  nature: {
+    label: "Nature & Wildlife", icon: "🦁", order: 19,
+    words: [
+      {
+        word: "extinction", pos: "noun", level: "C1",
+        meaning: "The state or process of a species ceasing to exist; dying out completely.",
+        examples: [
+          "Hundreds of species face extinction due to habitat loss.",
+          "The dodo's extinction is a famous example of human impact on wildlife.",
+          "Conservation efforts have brought several species back from the brink of extinction."
+        ]
+      },
+      {
+        word: "habitat", pos: "noun", level: "C1",
+        meaning: "The natural environment in which a particular type of plant or animal lives.",
+        examples: [
+          "Logging is destroying the habitat of countless rainforest species.",
+          "Beavers create wetland habitats that support many other animals.",
+          "Each species is adapted to its own habitat."
+        ]
+      },
+      {
+        word: "migration", pos: "noun", level: "C1",
+        meaning: "Seasonal movement of animals (or large-scale movement of people) from one region to another.",
+        examples: [
+          "Whales undertake one of the longest migrations of any mammal.",
+          "Climate change is altering the timing of bird migration.",
+          "The wildebeest migration across the Serengeti is a remarkable spectacle."
+        ]
+      },
+      {
+        word: "predator", pos: "noun", level: "C1",
+        meaning: "An animal that naturally preys on others; (figuratively) someone who exploits others.",
+        examples: [
+          "Lions and wolves are apex predators in their ecosystems.",
+          "Without natural predators, deer populations can grow unchecked.",
+          "Online predators target vulnerable young users."
+        ]
+      },
+      {
+        word: "symbiosis", pos: "noun", level: "C2",
+        meaning: "A close, often mutually beneficial relationship between two different organisms or things.",
+        examples: [
+          "Bees and flowering plants exist in a remarkable symbiosis.",
+          "There is a strange symbiosis between the artist and her loyal critics.",
+          "Healthy coral reefs depend on the symbiosis between coral and algae."
+        ]
+      }
+    ]
+  },
+  space: {
+    label: "Space & Astronomy", icon: "🌌", order: 20,
+    words: [
+      {
+        word: "galaxy", pos: "noun", level: "C1",
+        meaning: "A vast system of stars, gas, and dust held together by gravity.",
+        examples: [
+          "The Milky Way is the galaxy that contains our solar system.",
+          "Some galaxies contain hundreds of billions of stars.",
+          "Modern telescopes have observed galaxies billions of light years away."
+        ]
+      },
+      {
+        word: "orbit", pos: "noun / verb", level: "C1",
+        meaning: "The curved path of a celestial object around a star, planet, or moon.",
+        examples: [
+          "The International Space Station orbits Earth roughly every 90 minutes.",
+          "The new satellite was successfully placed in geostationary orbit.",
+          "Mercury has the most eccentric orbit of any planet in our solar system."
+        ]
+      },
+      {
+        word: "asteroid", pos: "noun", level: "C1",
+        meaning: "A small rocky body orbiting the Sun, mostly found between Mars and Jupiter.",
+        examples: [
+          "A large asteroid impact may have caused the extinction of the dinosaurs.",
+          "Scientists track thousands of near-Earth asteroids.",
+          "The mission plans to land on an asteroid and return samples."
+        ]
+      },
+      {
+        word: "cosmic", pos: "adjective", level: "C2",
+        meaning: "Relating to the universe or cosmos, especially on a vast scale.",
+        examples: [
+          "Cosmic radiation poses a serious challenge for long-duration space travel.",
+          "On a cosmic timescale, human history is barely a moment.",
+          "The discovery had cosmic implications for our understanding of dark matter."
+        ]
+      },
+      {
+        word: "interstellar", pos: "adjective", level: "C2",
+        meaning: "Existing or occurring between stars, often referring to vast distances of space.",
+        examples: [
+          "Voyager 1 was the first spacecraft to enter interstellar space.",
+          "Interstellar travel remains in the realm of science fiction.",
+          "She studies interstellar dust clouds that give birth to new stars."
+        ]
+      }
+    ]
+  },
+  psychology: {
+    label: "Psychology & Human Behaviour", icon: "🧠", order: 21,
+    words: [
+      {
+        word: "cognitive", pos: "adjective", level: "C1",
+        meaning: "Relating to mental processes such as thinking, learning, and remembering.",
+        examples: [
+          "Cognitive decline is a major concern in ageing populations.",
+          "The therapist used cognitive behavioural techniques to treat the patient's anxiety.",
+          "Sleep deprivation impairs cognitive performance significantly."
+        ]
+      },
+      {
+        word: "introvert", pos: "noun", level: "C1",
+        meaning: "A person who tends to be reserved and gain energy from being alone rather than in groups.",
+        examples: [
+          "As a strong introvert, she finds large parties exhausting.",
+          "Introverts often excel at deep focus and reflective work.",
+          "Many writers describe themselves as introverts."
+        ],
+        compare: "vs. extrovert: 'introvert' recharges alone; 'extrovert' recharges from social interaction."
+      },
+      {
+        word: "resilience", pos: "noun", level: "C1",
+        meaning: "The ability to recover quickly from difficulties; mental toughness.",
+        examples: [
+          "Children's resilience often surprises adults.",
+          "Building resilience is essential for coping with workplace stress.",
+          "Her resilience after the accident inspired everyone around her."
+        ]
+      },
+      {
+        word: "empathy", pos: "noun", level: "C1",
+        meaning: "The ability to understand and share the feelings of another person.",
+        examples: [
+          "Empathy is a vital skill for therapists and teachers.",
+          "Reading fiction has been shown to increase empathy.",
+          "He listened with genuine empathy to his friend's difficulties."
+        ],
+        compare: "vs. sympathy: 'empathy' is feeling WITH someone; 'sympathy' is feeling FOR them."
+      },
+      {
+        word: "self-actualisation", pos: "noun", level: "C2",
+        meaning: "The realisation of one's full potential and inner gifts.",
+        examples: [
+          "Maslow placed self-actualisation at the top of his hierarchy of needs.",
+          "Creative work was, for her, a path to self-actualisation.",
+          "Therapy helped him pursue self-actualisation rather than mere happiness."
+        ]
+      }
+    ]
+  },
+  internet: {
+    label: "Internet & Social Media", icon: "🌐", order: 22,
+    words: [
+      {
+        word: "viral", pos: "adjective", level: "C1",
+        meaning: "(Of content) spreading very quickly and widely on the internet.",
+        examples: [
+          "Her cooking video went viral overnight.",
+          "Brands try to create viral marketing campaigns, with mixed success.",
+          "A single viral tweet can change a person's life."
+        ]
+      },
+      {
+        word: "anonymity", pos: "noun", level: "C1",
+        meaning: "The condition of being unknown or unidentified.",
+        examples: [
+          "Online anonymity can encourage cruelty as well as honest discussion.",
+          "Many whistleblowers depend on anonymity for their safety.",
+          "The platform allows users to comment under conditions of anonymity."
+        ]
+      },
+      {
+        word: "echo chamber", pos: "noun", level: "C2",
+        meaning: "An environment, often online, where people only encounter views that reinforce their own.",
+        examples: [
+          "Social media algorithms can create dangerous echo chambers.",
+          "Stepping outside one's echo chamber requires conscious effort.",
+          "Echo chambers contribute to political polarisation."
+        ]
+      },
+      {
+        word: "cyberbullying", pos: "noun", level: "C1",
+        meaning: "The use of digital technologies to bully, harass, or intimidate someone.",
+        examples: [
+          "Schools now have specific policies addressing cyberbullying.",
+          "Cyberbullying can have serious mental health consequences.",
+          "Parents should talk to their children about how to respond to cyberbullying."
+        ]
+      },
+      {
+        word: "influencer", pos: "noun", level: "C1",
+        meaning: "A person who has gained a following on social media and can influence audience purchasing decisions.",
+        examples: [
+          "Brands pay influencers handsomely to promote their products.",
+          "Some influencers have larger audiences than traditional media outlets.",
+          "She started as a fashion influencer before launching her own clothing line."
+        ]
+      }
+    ]
+  },
+  climate: {
+    label: "Climate Change", icon: "🌡", order: 23,
+    words: [
+      {
+        word: "emissions", pos: "noun (plural)", level: "C1",
+        meaning: "The release of gases, especially polluting ones, into the atmosphere.",
+        examples: [
+          "Reducing carbon emissions is essential to limit global warming.",
+          "The factory's emissions exceeded legal limits.",
+          "Electric vehicles produce no tailpipe emissions."
+        ]
+      },
+      {
+        word: "renewable", pos: "adjective", level: "C1",
+        meaning: "(Of energy or resources) able to be replaced naturally; not running out.",
+        examples: [
+          "Wind and solar are the fastest-growing forms of renewable energy.",
+          "The country aims to generate 80% of its electricity from renewable sources by 2030.",
+          "Renewable resources offer a sustainable alternative to fossil fuels."
+        ]
+      },
+      {
+        word: "greenhouse effect", pos: "noun phrase", level: "C1",
+        meaning: "The trapping of the sun's heat in Earth's atmosphere by certain gases, leading to warming.",
+        examples: [
+          "The greenhouse effect is essential for life but is being amplified by human activity.",
+          "Methane is a far more potent greenhouse gas than carbon dioxide.",
+          "Without the greenhouse effect, Earth would be too cold to inhabit."
+        ]
+      },
+      {
+        word: "mitigation", pos: "noun", level: "C2",
+        meaning: "Action taken to reduce the severity or seriousness of something.",
+        examples: [
+          "Climate mitigation focuses on reducing emissions at the source.",
+          "Effective mitigation requires international cooperation.",
+          "Flood mitigation measures saved hundreds of homes."
+        ],
+        compare: "vs. adaptation: 'mitigation' = reducing the cause; 'adaptation' = adjusting to the effects."
+      },
+      {
+        word: "anthropogenic", pos: "adjective", level: "C2",
+        meaning: "Caused or produced by human activity.",
+        examples: [
+          "Scientists agree that current climate change is anthropogenic.",
+          "Anthropogenic noise disrupts marine wildlife.",
+          "The data clearly shows an anthropogenic source for the temperature rise."
+        ]
+      }
+    ]
+  },
+  art: {
+    label: "Art & Literature", icon: "🎨", order: 24,
+    words: [
+      {
+        word: "masterpiece", pos: "noun", level: "C1",
+        meaning: "A work of outstanding artistry, skill, or workmanship.",
+        examples: [
+          "The Mona Lisa is widely regarded as Leonardo's masterpiece.",
+          "Her debut novel was hailed as a literary masterpiece.",
+          "Visitors travel from around the world to see this Renaissance masterpiece."
+        ]
+      },
+      {
+        word: "protagonist", pos: "noun", level: "C1",
+        meaning: "The leading character in a play, novel, or film; the main figure in any event.",
+        examples: [
+          "The protagonist undergoes a profound transformation by the novel's end.",
+          "Children often identify strongly with the protagonist of their favourite books.",
+          "She was a key protagonist in the civil rights movement."
+        ],
+        compare: "vs. antagonist: 'protagonist' is the hero/main character; 'antagonist' is the opponent."
+      },
+      {
+        word: "abstract", pos: "adjective", level: "C1",
+        meaning: "(Of art) not representing physical objects realistically; existing as an idea rather than a concrete thing.",
+        examples: [
+          "Picasso's later work moved toward more abstract forms.",
+          "Mathematics deals with abstract concepts that may have practical applications.",
+          "Abstract paintings can mean different things to different viewers."
+        ]
+      },
+      {
+        word: "satire", pos: "noun", level: "C1",
+        meaning: "The use of humour, irony, or exaggeration to criticise people's stupidity or vices.",
+        examples: [
+          "Jonathan Swift's 'A Modest Proposal' is a classic example of political satire.",
+          "Late-night television relies heavily on political satire.",
+          "Her novel is a sharp satire of contemporary office life."
+        ]
+      },
+      {
+        word: "evocative", pos: "adjective", level: "C2",
+        meaning: "Bringing strong images, memories, or feelings to mind.",
+        examples: [
+          "The poem is deeply evocative of childhood summers.",
+          "Her paintings are evocative of the colours of Provence.",
+          "The novel's evocative descriptions transport the reader to 19th-century Russia."
+        ]
+      }
+    ]
+  },
+  history: {
+    label: "History", icon: "📜", order: 25,
+    words: [
+      {
+        word: "civilisation", pos: "noun", level: "C1",
+        meaning: "A complex society marked by urban development, social hierarchy, and cultural achievement.",
+        examples: [
+          "Ancient Egyptian civilisation flourished along the Nile for thousands of years.",
+          "The Mayan civilisation made significant advances in astronomy and mathematics.",
+          "Historians debate what caused the collapse of certain ancient civilisations."
+        ]
+      },
+      {
+        word: "revolution", pos: "noun", level: "C1",
+        meaning: "A forcible overthrow of a government or social order; a fundamental change.",
+        examples: [
+          "The French Revolution transformed European politics forever.",
+          "The Industrial Revolution reshaped how people lived and worked.",
+          "The digital revolution has changed nearly every aspect of daily life."
+        ]
+      },
+      {
+        word: "colonialism", pos: "noun", level: "C1",
+        meaning: "The policy of acquiring and maintaining colonies, often by exploiting indigenous populations.",
+        examples: [
+          "European colonialism shaped much of the modern world's borders.",
+          "The lasting effects of colonialism are still studied by historians today.",
+          "Many countries gained independence after long struggles against colonialism."
+        ]
+      },
+      {
+        word: "treaty", pos: "noun", level: "C1",
+        meaning: "A formal agreement between two or more countries.",
+        examples: [
+          "The Treaty of Versailles formally ended the First World War.",
+          "Climate treaties commit nations to specific emission reductions.",
+          "A peace treaty was signed after decades of conflict."
+        ]
+      },
+      {
+        word: "abolition", pos: "noun", level: "C2",
+        meaning: "The formal ending of a system, practice, or institution, especially slavery.",
+        examples: [
+          "The abolition of slavery was a long and bloody struggle.",
+          "Many reformers fought for the abolition of capital punishment.",
+          "The abolition of feudalism transformed European society."
+        ]
+      }
+    ]
+  },
+  fashion: {
+    label: "Fashion & Lifestyle", icon: "👗", order: 26,
+    words: [
+      {
+        word: "trend", pos: "noun", level: "C1",
+        meaning: "A general direction in which something is developing or changing; a current fashion.",
+        examples: [
+          "Sustainable fashion is one of the biggest trends in the industry.",
+          "She has a knack for spotting trends before they become mainstream.",
+          "The trend toward minimalism is reshaping interior design."
+        ]
+      },
+      {
+        word: "bespoke", pos: "adjective", level: "C2",
+        meaning: "Made specifically for an individual customer; custom-made.",
+        examples: [
+          "He had a bespoke suit tailored on Savile Row.",
+          "The company offers bespoke kitchen design services.",
+          "Bespoke products usually cost considerably more than ready-made alternatives."
+        ],
+        compare: "vs. tailor-made: very similar; 'bespoke' is more common in British English and implies high-end craftsmanship."
+      },
+      {
+        word: "wardrobe", pos: "noun", level: "C1",
+        meaning: "A collection of clothes belonging to a person; also a piece of furniture for storing clothes.",
+        examples: [
+          "She refreshed her entire wardrobe for the new job.",
+          "A capsule wardrobe focuses on a small number of versatile pieces.",
+          "He has an entire wardrobe dedicated to vintage suits."
+        ]
+      },
+      {
+        word: "minimalist", pos: "adjective", level: "C1",
+        meaning: "Using or favouring simple, uncluttered designs with few elements.",
+        examples: [
+          "Her minimalist apartment contains only essential furniture.",
+          "Minimalist fashion focuses on classic cuts and neutral colours.",
+          "The brand is known for its sleek, minimalist aesthetic."
+        ]
+      },
+      {
+        word: "haute couture", pos: "noun", level: "C2",
+        meaning: "Expensive, high-fashion clothing designed and made to a customer's exact specifications.",
+        examples: [
+          "Paris remains the world capital of haute couture.",
+          "Haute couture pieces are works of art rather than everyday wear.",
+          "She owned a few cherished haute couture dresses from the 1960s."
+        ]
+      }
+    ]
+  },
+  relationships: {
+    label: "Relationships & Family", icon: "❤", order: 27,
+    words: [
+      {
+        word: "sibling", pos: "noun", level: "C1",
+        meaning: "A brother or sister.",
+        examples: [
+          "He has three older siblings.",
+          "Sibling rivalry is common in early childhood.",
+          "Adult siblings often become each other's closest friends."
+        ]
+      },
+      {
+        word: "estranged", pos: "adjective", level: "C2",
+        meaning: "No longer close to a family member or partner because of an argument or separation.",
+        examples: [
+          "She had been estranged from her father for over a decade.",
+          "The estranged couple met to discuss custody arrangements.",
+          "Therapy helped him reconnect with his estranged brother."
+        ]
+      },
+      {
+        word: "spouse", pos: "noun", level: "C1",
+        meaning: "A married partner — husband or wife.",
+        examples: [
+          "He listed his spouse as his next of kin.",
+          "Many benefits extend to spouses and dependents.",
+          "Both spouses contributed to the household income."
+        ]
+      },
+      {
+        word: "nurture", pos: "verb", level: "C1",
+        meaning: "To care for and encourage the growth or development of someone or something.",
+        examples: [
+          "Good parents nurture their children's curiosity.",
+          "She nurtured her writing talent throughout her teenage years.",
+          "The mentorship programme nurtures young entrepreneurs."
+        ],
+        compare: "vs. nature vs. nurture: 'nature' = innate biology; 'nurture' = environment and upbringing."
+      },
+      {
+        word: "reconcile", pos: "verb", level: "C1",
+        meaning: "To restore friendly relations between people; to bring conflicting things into agreement.",
+        examples: [
+          "The siblings finally reconciled after years of silence.",
+          "It is hard to reconcile his public image with his private behaviour.",
+          "She struggled to reconcile her career ambitions with family life."
+        ]
+      }
+    ]
+  },
+  globalisation: {
+    label: "Globalisation", icon: "🌍", order: 28,
+    words: [
+      {
+        word: "multinational", pos: "adjective / noun", level: "C1",
+        meaning: "(adj) Operating in several countries; (noun) a large company that does so.",
+        examples: [
+          "Multinational corporations employ millions of people worldwide.",
+          "The country offers tax incentives to attract multinationals.",
+          "Multinational supply chains were disrupted during the pandemic."
+        ]
+      },
+      {
+        word: "outsourcing", pos: "noun", level: "C1",
+        meaning: "Obtaining goods or services from an outside or foreign supplier, especially in place of an internal source.",
+        examples: [
+          "Outsourcing customer service to overseas call centres has cut costs but raised concerns about quality.",
+          "Many software companies rely on outsourcing for routine development tasks.",
+          "Critics argue that outsourcing has hollowed out manufacturing in developed countries."
+        ]
+      },
+      {
+        word: "homogenisation", pos: "noun", level: "C2",
+        meaning: "The process of making things similar or uniform, especially across cultures.",
+        examples: [
+          "Globalisation has led to a homogenisation of consumer tastes.",
+          "Activists fight cultural homogenisation by preserving local traditions.",
+          "The homogenisation of high streets is a common complaint in many countries."
+        ]
+      },
+      {
+        word: "expatriate", pos: "noun", level: "C1",
+        meaning: "A person who lives outside their native country, often for work.",
+        examples: [
+          "Singapore hosts a large expatriate community.",
+          "Many expatriates miss the food of their homeland.",
+          "He returned to his country after fifteen years as an expatriate."
+        ],
+        compare: "vs. immigrant: 'expatriate' is usually temporary or skilled professional; 'immigrant' usually implies permanent settlement."
+      },
+      {
+        word: "interdependence", pos: "noun", level: "C2",
+        meaning: "The state of two or more people, countries, or systems depending on each other.",
+        examples: [
+          "Modern economies are characterised by deep interdependence.",
+          "The pandemic exposed our global interdependence.",
+          "Healthy ecosystems rely on interdependence among species."
+        ]
+      }
+    ]
+  },
+  advertising: {
+    label: "Advertising & Marketing", icon: "📣", order: 29,
+    words: [
+      {
+        word: "endorsement", pos: "noun", level: "C1",
+        meaning: "A public expression of approval or support, especially for a product or person.",
+        examples: [
+          "The brand secured a high-profile celebrity endorsement.",
+          "Political candidates compete for newspaper endorsements.",
+          "An endorsement from a trusted figure can dramatically boost sales."
+        ]
+      },
+      {
+        word: "demographic", pos: "noun / adjective", level: "C1",
+        meaning: "A particular section of a population, defined by age, gender, income, etc.",
+        examples: [
+          "The product is aimed at the 18-to-24 demographic.",
+          "Demographic shifts are reshaping the consumer market.",
+          "Advertisers tailor messages to specific demographics."
+        ]
+      },
+      {
+        word: "branding", pos: "noun", level: "C1",
+        meaning: "The activity of giving a company or product a particular design, name, and image.",
+        examples: [
+          "Strong branding helps customers recognise and trust a product.",
+          "The company spent millions on rebranding.",
+          "Personal branding has become essential for freelancers."
+        ]
+      },
+      {
+        word: "consumerism", pos: "noun", level: "C2",
+        meaning: "The preoccupation with buying and accumulating consumer goods, often seen as excessive.",
+        examples: [
+          "Critics blame consumerism for the rise of disposable culture.",
+          "Black Friday epitomises modern consumerism.",
+          "Some communities try to resist consumerism through minimalism."
+        ]
+      },
+      {
+        word: "subliminal", pos: "adjective", level: "C2",
+        meaning: "Acting below the level of conscious awareness; influencing without being noticed.",
+        examples: [
+          "Some advertisers have been accused of using subliminal messaging.",
+          "Subliminal cues in store music can influence purchasing.",
+          "Research on subliminal advertising remains controversial."
+        ]
+      }
+    ]
+  },
+  agriculture: {
+    label: "Agriculture", icon: "🌾", order: 30,
+    words: [
+      {
+        word: "irrigation", pos: "noun", level: "C1",
+        meaning: "The supply of water to land or crops to help growth, typically by means of channels.",
+        examples: [
+          "Modern irrigation systems are essential in arid farming regions.",
+          "Inefficient irrigation wastes huge amounts of water.",
+          "Drip irrigation delivers water directly to plant roots."
+        ]
+      },
+      {
+        word: "pesticide", pos: "noun", level: "C1",
+        meaning: "A substance used to destroy insects or other organisms harmful to cultivated plants.",
+        examples: [
+          "Overuse of pesticides can contaminate water supplies.",
+          "Organic farming avoids synthetic pesticides altogether.",
+          "Some pesticides have been linked to declines in bee populations."
+        ]
+      },
+      {
+        word: "yield", pos: "noun / verb", level: "C1",
+        meaning: "(noun) The amount of crop produced from an area of land; (verb) to produce.",
+        examples: [
+          "The new wheat variety produces significantly higher yields.",
+          "Drought has reduced yields across the region.",
+          "Better farming techniques can yield more food without expanding farmland."
+        ]
+      },
+      {
+        word: "agrarian", pos: "adjective", level: "C2",
+        meaning: "Relating to cultivated land or the cultivation of land; rural.",
+        examples: [
+          "Many developing countries still have predominantly agrarian economies.",
+          "The novel depicts traditional agrarian life in rural India.",
+          "Land reform has been a key demand of agrarian movements."
+        ]
+      },
+      {
+        word: "sustainable farming", pos: "noun phrase", level: "C1",
+        meaning: "Farming practices that protect the environment and remain productive over the long term.",
+        examples: [
+          "Sustainable farming reduces reliance on chemical fertilisers.",
+          "Many young farmers are turning to sustainable farming methods.",
+          "Sustainable farming aims to feed people without harming future generations."
+        ]
+      }
+    ]
+  },
+  energy: {
+    label: "Energy & Resources", icon: "⚡", order: 31,
+    words: [
+      {
+        word: "fossil fuel", pos: "noun phrase", level: "C1",
+        meaning: "A natural fuel such as coal, oil, or gas formed from ancient organisms.",
+        examples: [
+          "Fossil fuels still provide most of the world's energy.",
+          "Burning fossil fuels releases greenhouse gases.",
+          "The transition away from fossil fuels is one of the great challenges of our time."
+        ]
+      },
+      {
+        word: "depletion", pos: "noun", level: "C1",
+        meaning: "Reduction in the number or quantity of something, especially natural resources.",
+        examples: [
+          "Rapid depletion of freshwater reserves threatens many regions.",
+          "Soil depletion reduces farmland productivity over time.",
+          "Companies must report on natural-resource depletion in their sustainability reports."
+        ]
+      },
+      {
+        word: "grid", pos: "noun", level: "C1",
+        meaning: "A network of cables that carry electrical power from generators to consumers.",
+        examples: [
+          "Storms knocked out the electrical grid across the region.",
+          "Solar panels can feed surplus power back into the grid.",
+          "Modernising the grid is essential for integrating renewable energy."
+        ]
+      },
+      {
+        word: "conservation", pos: "noun", level: "C1",
+        meaning: "Preserving and protecting natural environments and resources.",
+        examples: [
+          "Water conservation is critical in drought-prone areas.",
+          "Energy conservation can save households hundreds of dollars a year.",
+          "Conservation efforts have saved several species from extinction."
+        ]
+      },
+      {
+        word: "harness", pos: "verb", level: "C2",
+        meaning: "To use the energy or strength of something for a specific purpose.",
+        examples: [
+          "Engineers are finding new ways to harness wind energy.",
+          "Harnessing the power of artificial intelligence requires careful regulation.",
+          "Solar panels harness sunlight to produce electricity."
+        ]
+      }
+    ]
+  }
+};
+
+
+
+
+// Check whether a saved template object is byte-identical to a known legacy version (any field).
+function isLegacyBand9(t) {
+  if (!t) return false;
+  const fields = ['intro', 'bp1', 'bp2', 'concl'];
+  for (const f of fields) {
+    if ((t[f] || '') !== (BAND9_TEMPLATE_LEGACY_V1[f] || '')) return false;
+  }
+  return true;
+}
+
+// Migrate a user's templates bag.
+// Returns { bag, changed, notifyUntouched, notifyCustomKept }.
+//
+// Rules:
+//   - bag.band9 is the READ-ONLY preset → always force to current BAND9_TEMPLATE.
+//     This is cheap because users never edit band9, so we never destroy any user work.
+//   - bag.custom is user-editable:
+//       * Only touched during a version migration (gated by BAND9_TEMPLATE_VERSION)
+//       * If byte-identical to OLD Band 9 (untouched) → update to new BAND9_TEMPLATE silently
+//       * If customised → keep as-is, notify the user they can reset if they want
+function migrateBand9IfNeeded(bag) {
+  if (!bag) return { bag: getDefaultTemplates(), changed: false };
+
+  let changed = false;
+  let notifyUntouched = false;
+  let notifyCustomKept = false;
+  const newBag = { ...bag };
+
+  // ALWAYS force band9 to the current preset (safe — read-only field, never user-edited).
+  // This applies even if BAND9_TEMPLATE_VERSION hasn't bumped — handles any drift.
+  if (!isCurrentBand9(newBag.band9)) {
+    newBag.band9 = BAND9_TEMPLATE;
+    changed = true;
+  }
+
+  // Custom field migration is gated by version bump (avoids overwriting user edits twice).
+  const currentVer = parseInt(userProfile?.band9TemplateVersion || 0, 10);
+  if (currentVer < BAND9_TEMPLATE_VERSION) {
+    if (isLegacyBand9(newBag.custom)) {
+      // Untouched — safe to update silently
+      newBag.custom = BAND9_TEMPLATE;
+      changed = true;
+      notifyUntouched = true;
+    } else if (newBag.custom && !isCurrentBand9(newBag.custom)) {
+      // Customised — keep theirs, let them know they can reset
+      notifyCustomKept = true;
+    }
+  }
+
+  return { bag: newBag, changed, notifyUntouched, notifyCustomKept };
+}
+
+function isCurrentBand9(t) {
+  if (!t) return false;
+  return ['intro','bp1','bp2','concl'].every(f => (t[f] || '') === (BAND9_TEMPLATE[f] || ''));
+}
+
+
+
+// Migrate legacy single-template state to new shape + apply Band 9 version migration
+function getTemplatesBag() {
+  // Cloud mode
+  if (userProfile) {
+    if (userProfile.templates) {
+      // Apply Band 9 version migration if needed
+      const migrated = migrateBand9IfNeeded(userProfile.templates);
+      if (migrated.changed) {
+        userProfile.templates = migrated.bag;
+        userProfile.band9TemplateVersion = BAND9_TEMPLATE_VERSION;
+        saveAll();  // persist the migration
+        if (migrated.notifyUntouched || migrated.notifyCustomKept) {
+          // Defer toast to next tick so it doesn't fire during init render
+          setTimeout(() => {
+            if (migrated.notifyUntouched) {
+              toast('Band 9 template updated — examples in both body paragraphs + a personal conclusion. ✓');
+            } else if (migrated.notifyCustomKept) {
+              toast('Your custom template was kept as-is. Tap "Reset to Band 9" to use the new improved version.');
+            }
+          }, 1500);
+        }
+      }
+      return userProfile.templates;
+    }
+    // Legacy: a single template field exists from older versions
+    if (userProfile.template) {
+      const bag = getDefaultTemplates();
+      bag.custom = userProfile.template;  // promote their edited template to "custom"
+      bag.default = 'custom';
+      userProfile.templates = bag;
+      userProfile.band9TemplateVersion = BAND9_TEMPLATE_VERSION;
+      return bag;
+    }
+    return getDefaultTemplates();
+  }
+  // Offline mode
+  const raw = safeLSGet('ipt_templates');
+  if (raw) {
+    try {
+      const bag = JSON.parse(raw);
+      // Apply migration in offline mode too
+      const ver = parseInt(safeLSGet('ipt_band9_v') || '1', 10);
+      if (ver < BAND9_TEMPLATE_VERSION) {
+        const migrated = migrateBand9IfNeeded(bag);
+        if (migrated.changed) {
+          safeLSSet('ipt_templates', JSON.stringify(migrated.bag));
+          safeLSSet('ipt_band9_v', String(BAND9_TEMPLATE_VERSION));
+          return migrated.bag;
+        }
+        safeLSSet('ipt_band9_v', String(BAND9_TEMPLATE_VERSION));
+      }
+      return bag;
+    } catch (e) {}
+  }
+  // Migrate from legacy local key
+  const legacy = safeLSGet('ipt_template');
+  if (legacy) {
+    try {
+      const bag = getDefaultTemplates();
+      bag.custom = JSON.parse(legacy);
+      bag.default = 'custom';
+      return bag;
+    } catch (e) {}
+  }
+  return getDefaultTemplates();
+}
+
+// Get the right template for a given essay
+// essay.templateChoice can be: undefined/'default' (use the user's default), 'band6', 'band9', or 'custom'
+function getTemplateForEssay(essay) {
+  const bag = getTemplatesBag();
+  let key = essay && essay.templateChoice;
+  if (!key || key === 'default') key = bag.default || 'band9';
+  return bag[key] || bag.band9 || BAND9_TEMPLATE;
+}
+
+// Resolve which template KEY ('band6' | 'band9' | 'custom') an essay actually uses
+function getTemplateKeyForEssay(essay) {
+  const bag = getTemplatesBag();
+  let key = essay && essay.templateChoice;
+  if (!key || key === 'default') key = bag.default || 'band9';
+  // Treat 'custom' as Band 9-flavoured for labelling (it's seeded from Band 9 and edited by user)
+  return key;
+}
+
+// Pretty label for the template tier — used in PDF headers / cover
+// Returns "Band 6", "Band 9" (custom counts as Band 9 since it's derived from Band 9)
+function templateTierLabel(key) {
+  if (key === 'band6') return 'Band 6';
+  return 'Band 9';
+}
+
+// Label for the default — used by cover & TOC headers
+function defaultTemplateTierLabel() {
+  const bag = getTemplatesBag();
+  return templateTierLabel(bag.default || 'band9');
+}
+
+// Save the templates bag (used when user edits "custom" or changes default)
+async function saveTemplatesBag(bag) {
+  if (offlineMode || !currentUser) {
+    safeLSSet('ipt_templates', JSON.stringify(bag));
+    return;
+  }
+  userProfile.templates = bag;
+  queueSync();
+}
+
+// ============================================================
+//  STATE
+// ============================================================
+// (state variables are declared higher up in the AUTH section now)
+
+function saveAll() {
+  // In cloud mode: queue a debounced Firestore sync
+  // In offline mode: write to localStorage
+  queueSync();
+}
+function uid() { return 'e' + Date.now() + Math.random().toString(36).slice(2, 6); }
+
+// Safe localStorage wrappers — setItem throws in Safari private mode / at quota.
+// These never throw; they log and continue so the app keeps working.
+function safeLSSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    console.warn('localStorage write failed (private mode or quota?):', key, e.name);
+    return false;
+  }
+}
+function safeLSGet(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    console.warn('localStorage read failed:', key, e.name);
+    return null;
+  }
+}
+function safeLSRemove(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) { /* ignore */ }
+}
+
+const workspaceLoadingMessages = [
+  'Setting up your practice space...',
+  'Bringing your latest progress into view...',
+  "Preparing today's writing practice...",
+  'Loading your tools and saved work...'
+];
+let workspaceLoadingTimer = null;
+let workspaceLoadingIndex = 0;
+
+function showLoading(on, context = 'workspace'){
+  const el = document.getElementById('loadingVeil');
+  if (!el) return;
+  const scoring = on && context === 'scoring';
+  el.classList.toggle('hidden', !on);
+  el.classList.toggle('ipt-assessment', scoring);
+  const logo = document.getElementById('loadingBrandLogo');
+  if (logo) logo.classList.toggle('hidden', !scoring);
+  if (workspaceLoadingTimer) {
+    clearInterval(workspaceLoadingTimer);
+    workspaceLoadingTimer = null;
+  }
+  if (on) {
+    const label = el.querySelector('span');
+    if (scoring) {
+      if (label) label.textContent = 'IPT Brisbane’s AI scoring engine is analysing your response…';
+      return;
+    }
+    if (label) label.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
+    workspaceLoadingTimer = setInterval(() => {
+      workspaceLoadingIndex = (workspaceLoadingIndex + 1) % workspaceLoadingMessages.length;
+      const currentLabel = el.querySelector('span');
+      if (currentLabel && !el.classList.contains('hidden')) {
+        currentLabel.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
+      }
+    }, 1800);
+  }
+}
+
+// If beforeunload stashed a backup that's newer than what we loaded, offer to restore it.
+function maybeOfferDraftRecovery() {
+  try {
+    const raw = safeLSGet('ipt_unsaved_backup');
+    if (!raw) return;
+    const backup = JSON.parse(raw);
+    // Only offer if backup is recent (< 24h) and has essays
+    if (!backup || !Array.isArray(backup.essays) || !backup.ts) {
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    const ageMs = Date.now() - backup.ts;
+    if (ageMs > 24 * 60 * 60 * 1000) {
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    // Compare: does the backup differ from what we just loaded?
+    const sameLength = backup.essays.length === essays.length;
+    const backupStr = JSON.stringify(backup.essays);
+    const loadedStr = JSON.stringify(essays);
+    if (backupStr === loadedStr) {
+      // No difference — backup is stale, clear it
+      safeLSRemove('ipt_unsaved_backup');
+      return;
+    }
+    // There's a meaningful difference — offer recovery
+    setTimeout(() => {
+      const mins = Math.max(1, Math.round(ageMs / 60000));
+      if (confirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`)) {
+        essays = backup.essays;
+        if (backup.currentId) currentId = backup.currentId;
+        renderList();
+        if (typeof loadEssay === 'function' && currentId) loadEssay(currentId);
+        queueSync();
+        toast('Unsaved changes restored ✓');
+      }
+      safeLSRemove('ipt_unsaved_backup');
+    }, 800);
+  } catch (e) {
+    console.warn('Draft recovery check failed:', e);
+    safeLSRemove('ipt_unsaved_backup');
+  }
+}
+
+function getCurrent() { return essays.find(e => e.id === currentId); }
+
+async function checkAIStatus(){
+  try {
+    const r = await fetch(API_URL+'/api/health');
+    const d = await r.json();
+    const live = !!d.anthropicConfigured;
+    ['aiStatusTag','aiStatusTag2'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
+    });
+  } catch(e){ /* leave default */ }
+}
+
+function essayStatus(e) {
+  const body = (e.intro || '') + (e.bp1 || '') + (e.bp2 || '') + (e.concl || '');
+  if (!body.trim()) return 'empty';
+  // count how many of the 4 paragraphs have content
+  const filled = [e.intro, e.bp1, e.bp2, e.concl].filter(p => p && p.trim().length > 30).length;
+  return filled === 4 ? 'written' : 'draft';
+}
+
+// ============================================================
+//  LIST + FILTERS + SEARCH
+// ============================================================
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.filter === f));
+  renderList();
+}
+
+function renderList() {
+  const list = document.getElementById('essayList');
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+  document.getElementById('essayCount').textContent = essays.length;
+
+  // status counts
+  let cWritten = 0, cDraft = 0, cEmpty = 0;
+  essays.forEach(e => {
+    const s = essayStatus(e);
+    if (s === 'written') cWritten++;
+    else if (s === 'draft') cDraft++;
+    else cEmpty++;
+  });
+  document.getElementById('cnt-all').textContent = essays.length;
+  document.getElementById('cnt-written').textContent = cWritten;
+  document.getElementById('cnt-draft').textContent = cDraft;
+  document.getElementById('cnt-empty').textContent = cEmpty;
+  const progressDoneEl = document.getElementById('progressDone');
+  if (progressDoneEl) progressDoneEl.textContent = cWritten;
+  const progressTotalEl = document.getElementById('progressTotal');
+  if (progressTotalEl) progressTotalEl.textContent = essays.length;
+  const progressFillEl = document.getElementById('progressFill');
+  if (progressFillEl) progressFillEl.style.width = (essays.length ? (cWritten / essays.length * 100) : 0) + '%';
+
+  let filtered = essays.map((e, i) => ({ e, i }));
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(({e}) => essayStatus(e) === currentFilter);
+  }
+  if (q) {
+    filtered = filtered.filter(({e}) =>
+      (e.title || '').toLowerCase().includes(q) ||
+      (e.question || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--ink-mute);font-size:12px;padding:24px 8px;font-style:italic;font-family:var(--serif);">No essays match this filter.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(({e, i}) => {
+    const s = essayStatus(e);
+    const statusLabel = s === 'written' ? 'WRITTEN' : (s === 'draft' ? 'DRAFT' : 'EMPTY');
+    const statusClass = 'status-' + s;
+    const isActive = e.id === currentId;
+    return `
+      <div class="essay-item ${isActive ? 'active' : ''}" onclick="selectEssay('${e.id}')">
+        <div class="essay-item-meta">
+          <span>ESSAY ${String(i + 1).padStart(2, '0')}</span>
+          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
+          <span class="essay-item-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="essay-item-title">${escapeHtml(e.title || 'Untitled')}</div>
+        ${isActive ? `
+          <div class="essay-item-practice-lnk" onclick="event.stopPropagation(); practiceCurrentEssay()" title="Test yourself under exam conditions">
+            ✏️ Practice this essay →
+          </div>
+        ` : ''}
+        <button class="essay-item-del" onclick="event.stopPropagation(); deleteEssay('${e.id}')" title="Delete">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function addEssay() {
+  const e = {
+    id: uid(), title: '', question: '', explanation: '',
+    pros: '', cons: '', approach: '',
+    intro: '', bp1: '', bp2: '', concl: '',
+    vocab: 3, seedIdeas: ''
+  };
+  essays.push(e);
+  currentId = e.id;
+  saveAll(); renderList(); loadCurrent(); renderPreview();
+}
+
+// ----- BULK IMPORT -----
+function openBulkImport() {
+  document.getElementById('bulkImportText').value = '';
+  document.getElementById('bulkPreview').innerHTML = 'Paste topics above to see a preview.';
+  document.getElementById('bulkImportBtn').disabled = true;
+  document.getElementById('bulkImportBtn').textContent = 'Add 0 topics';
+  document.getElementById('bulkImportModal').classList.add('show');
+}
+function closeBulkImport() { document.getElementById('bulkImportModal').classList.remove('show'); }
+
+// Parse the textarea into a list of { title, question, explanation }
+function parseBulkInput(text) {
+  text = (text || '').trim();
+  if (!text) return [];
+  const topics = [];
+
+  // Format 2: pipe-separated lines
+  if (text.split('\n').some(l => l.includes('|'))) {
+    text.split('\n').forEach(line => {
+      line = line.trim();
+      if (!line) return;
+      const parts = line.split('|').map(s => s.trim());
+      if (parts[0]) {
+        topics.push({
+          title: parts[0],
+          question: parts[1] || '',
+          explanation: parts[2] || ''
+        });
+      }
+    });
+    return topics;
+  }
+
+  // Format 1: blank-line-separated blocks (title + question)
+  if (text.includes('\n\n')) {
+    text.split(/\n\s*\n/).forEach(block => {
+      const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length === 0) return;
+      topics.push({
+        title: lines[0],
+        question: lines.slice(1).join(' '),
+        explanation: ''
+      });
+    });
+    return topics;
+  }
+
+  // Format 3: one title per line
+  text.split('\n').forEach(line => {
+    line = line.trim();
+    if (line) topics.push({ title: line, question: '', explanation: '' });
+  });
+  return topics;
+}
+
+function updateBulkPreview() {
+  const text = document.getElementById('bulkImportText').value;
+  const parsed = parseBulkInput(text);
+  const preview = document.getElementById('bulkPreview');
+  const btn = document.getElementById('bulkImportBtn');
+  if (parsed.length === 0) {
+    preview.innerHTML = 'Paste topics above to see a preview.';
+    btn.disabled = true;
+    btn.textContent = 'Add 0 topics';
+    return;
+  }
+  const first3 = parsed.slice(0, 3).map((t, i) =>
+    `<div style="padding:6px 8px; background:var(--bg); border-radius:4px; margin:4px 0;">
+      <strong>${escapeHtml(t.title || '(no title)')}</strong>
+      ${t.question ? `<div style="color:var(--ink-mute); font-size:11px; margin-top:2px;">${escapeHtml(t.question.slice(0, 100))}${t.question.length > 100 ? '…' : ''}</div>` : ''}
+    </div>`
+  ).join('');
+  preview.innerHTML = `
+    <div style="font-style:normal; font-family:var(--sans); color:var(--ink);">
+      <strong>${parsed.length} topic${parsed.length === 1 ? '' : 's'} detected.</strong> Preview of first ${Math.min(3, parsed.length)}:
+    </div>
+    ${first3}
+    ${parsed.length > 3 ? `<div style="text-align:center; color:var(--ink-mute); padding:4px;">… and ${parsed.length - 3} more</div>` : ''}
+  `;
+  btn.disabled = false;
+  btn.textContent = `Add ${parsed.length} topic${parsed.length === 1 ? '' : 's'}`;
+}
+
+function doBulkImport() {
+  const parsed = parseBulkInput(document.getElementById('bulkImportText').value);
+  if (parsed.length === 0) { toast('Nothing to import', true); return; }
+
+  // Check for duplicates against existing essays
+  const existing = new Set(essays.map(e => (e.title || '').toLowerCase().trim()));
+  const dupes = parsed.filter(t => existing.has((t.title || '').toLowerCase().trim()));
+  if (dupes.length > 0) {
+    if (!confirm(`${dupes.length} of ${parsed.length} topics have titles that already exist. Skip duplicates and add the rest?`)) return;
+  }
+
+  let added = 0;
+  let firstAddedId = null;
+  parsed.forEach(t => {
+    const title = (t.title || '').trim();
+    if (!title) return;
+    if (existing.has(title.toLowerCase())) return;
+    const e = {
+      id: uid(),
+      title: title,
+      question: t.question || '',
+      explanation: t.explanation || '',
+      pros: '', cons: '', approach: '',
+      intro: '', bp1: '', bp2: '', concl: '',
+      vocab: 3, seedIdeas: ''
+    };
+    essays.push(e);
+    if (!firstAddedId) firstAddedId = e.id;
+    existing.add(title.toLowerCase());
+    added++;
+  });
+
+  if (added > 0 && firstAddedId) currentId = firstAddedId;
+  saveAll(); renderList(); loadCurrent(); renderPreview();
+  closeBulkImport();
+  toast(`Added ${added} new ${added === 1 ? 'topic' : 'topics'}`);
+}
+// ----- END BULK IMPORT -----
+
+function selectEssay(id) {
+  currentId = id;
+  saveAll(); renderList(); loadCurrent(); renderPreview();
+  setPortalLibraryView('edit');
+}
+
+function deleteEssay(id) {
+  if (!confirm('Delete this essay? This cannot be undone.')) return;
+  essays = essays.filter(e => e.id !== id);
+  if (currentId === id) currentId = essays.length ? essays[0].id : null;
+  saveAll(); renderList(); loadCurrent(); renderPreview();
+}
+
+// ============================================================
+//  EDITOR
+// ============================================================
+const FIELDS = ['title', 'question', 'explanation', 'pros', 'cons', 'approach', 'intro', 'bp1', 'bp2', 'concl'];
+let libraryRenderedId = null;
+let libraryRenderedValues = {};
+
+function loadCurrent() {
+  const e = getCurrent();
+  document.getElementById('emptyState').style.display = e ? 'none' : 'block';
+  document.getElementById('editor').style.display = e ? 'block' : 'none';
+  if (!e) return;
+  
+  // Initialize and normalize state fields to strings
+  const cleanField = item => {
+    if (!item) return '';
+    if (typeof item === 'object') return (item.text || '').trim();
+    const str = String(item).trim();
+    return str === '[object Object]' ? '' : str;
+  };
+  e.selectedReasonIds = (e.selectedReasonIds || []).map(cleanField).filter(Boolean);
+  e.selectedExampleIds = (e.selectedExampleIds || []).map(cleanField).filter(Boolean);
+  e.selectedSolutionIds = (e.selectedSolutionIds || []).map(cleanField).filter(Boolean);
+  e.optionalContrastIds = (e.optionalContrastIds || []).map(cleanField).filter(Boolean);
+  
+  // Local classification fallback for old essays
+  if (!e.detectedQuestionType && !e.manualQuestionTypeOverride && !e.questionType) {
+    const localType = staticClassifyQuestion(e.question);
+    e.detectedQuestionType = localType;
+    e.questionType = localType;
+    saveAll();
+  }
+
+  FIELDS.forEach(f => { document.getElementById('f_' + f).value = e[f] || ''; });
+  document.getElementById('f_seedIdeas').value = e.seedIdeas || '';
+  libraryRenderedId = e.id;
+  libraryRenderedValues = Object.fromEntries([...FIELDS, 'seedIdeas'].map(f => [f, e[f] || '']));
+
+  const idx = essays.findIndex(x => x.id === e.id) + 1;
+  document.getElementById('bcEssayNum').textContent = 'ESSAY ' + String(idx).padStart(2, '0');
+  const s = essayStatus(e);
+  document.getElementById('bcStatus').textContent = s.toUpperCase();
+  document.getElementById('editorTitle').textContent = e.title || 'Untitled essay';
+  document.getElementById('previewEssayNum').textContent = 'ESSAY ' + String(idx).padStart(2, '0');
+
+  // Topic banner: show the full question above the AI Writer card
+  updateTopicBanner(e);
+
+  setVocab(e.vocab || 3, true);
+  updateEssayTplPills();
+  updateGenerationModeUI();
+  updateCounters();
+  
+  // Restore and render ideas picker if we have suggested ideas
+  ensureSuggestedIdeas(e);
+  if (e.suggestedIdeas && e.suggestedIdeas.length > 0) {
+    renderIdeasPicker();
+    document.getElementById('ideasPicker').classList.add('show');
+  } else {
+    document.getElementById('ideasPicker').classList.remove('show');
+  }
+
+  // Render sentence lists for each paragraph
+  ['intro', 'bp1', 'bp2', 'concl'].forEach(p => renderSentenceList(p));
+}
+
+function saveCurrent() {
+  const e = getCurrent();
+  if (!e) return;
+  [...FIELDS, 'seedIdeas'].forEach(f => {
+    const input = document.getElementById('f_' + f);
+    if (libraryRenderedId !== e.id || input.value !== libraryRenderedValues[f]) e[f] = input.value;
+    else if (document.activeElement !== input) input.value = e[f] || '';
+    libraryRenderedValues[f] = input.value;
+  });
+  saveAll();
+  // Update breadcrumb status live
+  const s = essayStatus(e);
+  document.getElementById('bcStatus').textContent = s.toUpperCase();
+  document.getElementById('editorTitle').textContent = e.title || 'Untitled essay';
+  // Keep topic banner in sync as the user edits the question field
+  updateTopicBanner(e);
+  // Lightly refresh list counts
+  renderList();
+}
+
+// Topic banner: shows the essay's question above the AI Writer card so the user
+// can keep the prompt in view while picking ideas / writing.
+function updateTopicBanner(e) {
+  const banner = document.getElementById('topicBanner');
+  const qEl = document.getElementById('topicBannerQuestion');
+  if (!banner || !qEl) return;
+  const q = (e && e.question) ? e.question.trim() : '';
+  if (q) {
+    qEl.textContent = q;
+    banner.style.display = '';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function setVocab(v, suppressSave) {
+  v = parseInt(v);
+  document.querySelectorAll('.vocab-pill').forEach(p => p.classList.toggle('active', parseInt(p.dataset.v) === v));
+  document.getElementById('vocabLabelAux').textContent = VOCAB_LEVELS[v-1].label;
+  document.getElementById('vocabDesc').textContent = VOCAB_LEVELS[v-1].desc;
+  const e = getCurrent();
+  if (e && !suppressSave) {
+    e.vocab = v;
+    e.previewSignature = '';
+    saveAll();
+    renderPreview();
+    renderIdeasPicker();
+  }
+}
+
+function updateCounters() {
+  const wordCount = s => (s || '').trim() ? (s.trim().split(/\s+/).length) : 0;
+  const ch = id => document.getElementById('f_' + id)?.value || '';
+  const $ = id => document.getElementById('ch_' + id);
+  if ($('title')) $('title').textContent = ch('title').length + ' ch';
+  if ($('question')) $('question').textContent = wordCount(ch('question')) + ' words';
+  if ($('explanation')) $('explanation').textContent = wordCount(ch('explanation')) + ' words';
+  if ($('intro')) $('intro').textContent = wordCount(ch('intro')) + ' words';
+  if ($('bp1')) $('bp1').textContent = wordCount(ch('bp1')) + ' words';
+  if ($('bp2')) $('bp2').textContent = wordCount(ch('bp2')) + ' words';
+  if ($('concl')) $('concl').textContent = wordCount(ch('concl')) + ' words';
+}
+
+// ============================================================
+//  HIGHLIGHTING
+// ============================================================
+// Phrases that mark the START of a key idea clause. The highlight runs from
+// AFTER the phrase to the end of that clause (next sentence boundary).
+// These match the actual phrasing AI produces from the user's template.
+const KEY_IDEA_TRIGGERS = [
+  // BP1 — first key idea (Band 9 style)
+  /\b(one major (?:merit|advantage|benefit|cause|problem|reason)(?: of [^,.]+?)? is(?: that(?: it)?)?)\s+/i,
+  // BP1 — second key idea (Band 9 style)
+  /\b(another significant (?:point in favour|advantage|benefit|reason|merit|challenge|point) is(?: that(?: it)?)?)\s+/i,
+  // BP2 — first demerit (Band 9 style)
+  /\b(one notable (?:demerit|drawback|disadvantage|negative effect|limitation|solution|concern)(?: of [^,.]+?)? is(?: that(?: it)?)?)\s+/i,
+  // BP2 — second demerit (Band 9 style)
+  /\b(another (?:notable |significant |major )?(?:demerit|drawback|disadvantage|adverse consequence|limitation|negative effect|measure)(?: to be taken)? is(?: that(?: it)?)?)\s+/i,
+  // Generic fallbacks (Band 9 style)
+  /\b(furthermore,? another [a-z]+(?: [a-z]+)? is(?: that(?: it)?)?)\s+/i,
+  /\b(additionally,? another [a-z]+(?: [a-z]+)? is(?: that(?: it)?)?)\s+/i,
+  // ---- Band 6 phrasing ----
+  /\b(one important (?:benefit|advantage|reason|point) (?:of [^,.]+?)?is(?: that(?: it)?)?)\s+/i,
+  /\b(another key (?:advantage|benefit|reason|point) is(?: that(?: it)?)?)\s+/i,
+  /\b(a major concern (?:regarding [^,.]+?)?is(?: that(?: it)?)?)\s+/i,
+  /\b(this issue can result in)\s+/i,
+  /\b(another (?:major )?problem is(?: that(?: it)?)?)\s+/i,
+];
+
+function highlightParagraph(text, opts = {}) {
+  if (!text) return '';
+  const { section } = opts; // 'intro', 'bp1', 'bp2', 'concl'
+  const isConcl = section === 'concl';
+  // Pre-process: if "Therefore," appears mid-line in conclusion, split it onto its own line
+  if (isConcl) {
+    text = text.replace(/([^\n])\s+(Therefore[,\s])/g, '$1\n$2');
+  }
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  return lines.map((line) => {
+    // 1. EXTRA IDEA — green pill on its own line
+    if (/^\[EXTRA\s*IDEA\]/i.test(line)) {
+      const rest = line.replace(/^\[EXTRA\s*IDEA\]\s*/i, '');
+      return `<p class="essay-body-text extra-line"><span class="hl-extra">[EXTRA IDEA]</span> ${escapeHtml(rest.replace(/==/g, ''))}</p>`;
+    }
+    // 2. Therefore line in CONCLUSION — yellow + red highlight (the punchy closing sentence)
+    if (isConcl && /^therefore[,\s]/i.test(line)) {
+      const cleanLine = line.replace(/==/g, '');
+      return `<p class="essay-body-text therefore-line"><span class="hl-red hl-yellow">${escapeHtml(cleanLine)}</span></p>`;
+    }
+    // 3. Regular line
+    return `<p class="essay-body-text">${highlightLine(line)}</p>`;
+  }).join('');
+}
+
+function highlightLine(line) {
+  // If the AI already added ==markers==, honor them and skip auto-detection.
+  if (/==[^=]{3,}==/.test(line)) {
+    return applyInlineMarkers(line);
+  }
+  // Otherwise, auto-detect key idea clauses using transition phrases.
+  const segments = [];
+  for (const trigger of KEY_IDEA_TRIGGERS) {
+    const m = trigger.exec(line);
+    if (!m) continue;
+    const triggerEnd = m.index + m[0].length;
+    // The clause runs from triggerEnd to the EARLIEST natural break.
+    // Breaks include: comma, ", which/as/leading/etc", or sentence end.
+    // We require a minimum clause length (25 chars) so we don't stop too early.
+    const rest = line.slice(triggerEnd);
+    const minLen = 25;
+    let clauseEnd = -1;
+    const breakPatterns = [
+      /[.!?](?=\s|$)/,                   // sentence end
+      /,\s+(?:which|as|leading|but|and|so|that|when|where|while|since|because)\b/i,  // smart break
+      /,\s/,                             // any comma
+    ];
+    // Find the EARLIEST break across all patterns (not first matching pattern)
+    let earliestIdx = -1;
+    for (const pat of breakPatterns) {
+      const idx = rest.slice(minLen).search(pat);
+      if (idx !== -1) {
+        const actual = minLen + idx;
+        if (earliestIdx === -1 || actual < earliestIdx) earliestIdx = actual;
+      }
+    }
+    if (earliestIdx !== -1) clauseEnd = triggerEnd + earliestIdx;
+    // No length cap — highlight the full clause up to its natural break.
+    // (Puppeteer renders multi-line highlighted spans correctly.)
+    if (clauseEnd === -1) {
+      const sentEnd = rest.search(/[.!?](?=\s|$)/);
+      clauseEnd = triggerEnd + (sentEnd !== -1 ? sentEnd : rest.length);
+    }
+    if (!segments.some(s => s.hl && triggerEnd < s.end && clauseEnd > s.start)) {
+      segments.push({ start: triggerEnd, end: clauseEnd, hl: true });
+    }
+  }
+  if (segments.length === 0) return escapeHtml(line);
+  segments.sort((a, b) => a.start - b.start);
+  let out = '';
+  let cursor = 0;
+  for (const seg of segments) {
+    if (seg.start > cursor) out += escapeHtml(line.slice(cursor, seg.start));
+    const clauseText = line.slice(seg.start, seg.end).trim();
+    if (clauseText) {
+      out += `<span class="hl-yellow">${escapeHtml(clauseText)}</span>`;
+    }
+    const after = line.slice(seg.start, seg.end);
+    const tail = after.length - after.trimEnd().length;
+    if (tail > 0) out += escapeHtml(after.slice(after.trimEnd().length));
+    cursor = seg.end;
+  }
+  if (cursor < line.length) out += escapeHtml(line.slice(cursor));
+  return out;
+}
+
+function applyInlineMarkers(text) {
+  const parts = text.split(/(==[^=]+==)/);
+  return parts.map(part => {
+    const m = part.match(/^==([^=]+)==$/);
+    if (m) {
+      const clause = m[1].trim();
+      // Highlight the FULL clause — no length cap. The PDF renders server-side
+      // via Puppeteer, which wraps multi-line highlighted spans correctly (and
+      // .hl-yellow uses box-decoration-break: clone), so the old html2canvas
+      // truncation — which silently DROPPED the tail of any clause over 90
+      // chars — has been removed.
+      return `<span class="hl-yellow">${escapeHtml(clause)}</span>`;
+    }
+    return escapeHtml(part);
+  }).join('');
+}
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// ============================================================
+//  PREVIEW + ZOOM
+// ============================================================
+function setZoom(z) {
+  currentZoom = z;
+  document.querySelectorAll('.zoom-btn').forEach(b => b.classList.toggle('active', parseFloat(b.dataset.zoom) === z));
+  document.getElementById('previewWrap').style.transform = `scale(${z})`;
+}
+
+function renderPreview() {
+  const e = getCurrent();
+  const area = document.getElementById('previewArea');
+  if (!e) {
+    area.innerHTML = '<div style="text-align:center; padding:60px; color:var(--ink-mute); font-style:italic;">Select an essay to preview.</div>';
+    return;
+  }
+  
+  const validation = validateEssayConsistency(e);
+  
+  let validationAlertHtml = '';
+  if (validation.shouldRegenerate) {
+    validationAlertHtml = `
+      <div class="validation-alerts-box" style="background: #e2f0fe; border: 1px solid #b8daff; border-radius: 8px; padding: 12px 16px; margin: 16px auto; max-width: 800px; color: #004085; font-size: 12px; font-family: var(--sans); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="spinner-dark" style="width: 14px; height: 14px; border-width: 2px;"></div>
+        <div>
+          <strong>Updating Preview...</strong> Generating a new Band 9 model essay aligning with your selected stance and ideas.
+        </div>
+      </div>
+    `;
+    triggerDebouncedRegeneration(e);
+  } else if (validation.warnings.length > 0) {
+    const alerts = validation.errors.concat(validation.warnings);
+    validationAlertHtml = `
+      <div class="validation-alerts-box" style="background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 12px 16px; margin: 16px auto; max-width: 800px; color: #856404; font-size: 12px; font-family: var(--sans); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <strong style="display: block; margin-bottom: 6px; font-size: 13px; color: #664d03;">⚠️ Essay Preview Warnings</strong>
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
+          ${alerts.map(a => `<li>${escapeHtml(a)}</li>`).join('')}
+        </ul>
+        <div style="margin-top: 8px; font-size: 11.5px; font-style: italic; color: #664d03;">
+          If the essay does not match your chosen options, click <strong>Write the full essay</strong> to manually regenerate.
+        </div>
+      </div>
+    `;
+  }
+  
+  area.innerHTML = validationAlertHtml + renderEssayPageHTML(e, essays.findIndex(x => x.id === e.id) + 1);
+}
+
+function renderEssayPageHTML(e, num) {
+  const prosList = (e.pros || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const consList = (e.cons || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const templateKey = getTemplateKeyForEssay(e);
+  const bandLabel = templateTierLabel(templateKey);
+  // Diagnostic: log once per render so we can verify the right band is being used
+  console.log('[render] essay#' + num, 'templateChoice=', e.templateChoice, 'resolvedKey=', templateKey, 'bandLabel=', bandLabel);
+  return `
+    <div class="essay-page">
+      <div class="essay-page-header">
+        <span class="essay-page-header-brand">IPT Brisbane — ${bandLabel} Essay Template Guide</span>
+        <span class="essay-page-header-tag">2026 Edition</span>
+      </div>
+      <div class="essay-num-label">ESSAY ${String(num).padStart(2, '0')}</div>
+      <h1 class="essay-title">${escapeHtml(e.title || 'Untitled')}</h1>
+      ${e.question ? `<div class="essay-question">${escapeHtml(e.question)}</div>` : ''}
+      ${e.explanation ? `<div class="essay-topic-exp"><strong>Topic Explanation:</strong> ${escapeHtml(e.explanation)}</div>` : ''}
+      ${(prosList.length || consList.length) ? `
+        <table class="pros-cons-table">
+          <tr><th style="width:50%;">Key Points</th><th>Counter-Points / Solutions</th></tr>
+          <tr>
+            <td><ul>${prosList.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul></td>
+            <td><ul>${consList.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></td>
+          </tr>
+        </table>` : ''}
+      ${e.approach ? `<div class="approach-tip"><strong>APPROACH TIP:</strong> ${escapeHtml(e.approach)}</div>` : ''}
+      <div class="model-essay-label">COMPLETE MODEL ESSAY</div>
+      ${e.intro ? `<div class="essay-body-section-title">INTRODUCTION</div>${highlightParagraph(e.intro, { section: 'intro' })}` : ''}
+      ${e.bp1 ? `<div class="essay-body-section-title">BODY PARAGRAPH 1</div>${highlightParagraph(e.bp1, { section: 'bp1' })}` : ''}
+      ${e.bp2 ? `<div class="essay-body-section-title">BODY PARAGRAPH 2</div>${highlightParagraph(e.bp2, { section: 'bp2' })}` : ''}
+      ${e.concl ? `<div class="essay-body-section-title">CONCLUSION</div>${highlightParagraph(e.concl, { section: 'concl' })}` : ''}
+    </div>
+  `;
+}
+
+function renderCoverHTML() {
+  const bandLabel = defaultTemplateTierLabel();
+  return `
+    <div class="essay-page cover">
+      <div class="cover-accent"></div>
+      <div class="cover-body">
+        <div class="cover-top">
+          <div class="cover-logo-box">IPT</div>
+          <div class="cover-tag">IELTS &amp; PTE Tutorial Brisbane</div>
+        </div>
+        <div class="cover-center">
+          <div class="cover-edition">2026 Edition</div>
+          <h1 class="cover-title">${bandLabel} Essay<br><strong>Template Guide</strong></h1>
+          <div class="cover-subtitle">${essays.length} Updated Model Essays for PTE Academic &amp; IELTS Writing Success</div>
+          <div class="cover-badge">Premium Essay Collection</div>
+        </div>
+        <div style="width:100%;">
+          <div class="cover-features">
+            <div class="cover-features-title">What's Inside</div>
+            ✓ High-Scoring Templates<br>
+            ✓ Competent-Level Vocabulary<br>
+            ✓ ${bandLabel === 'Band 9' ? 'Band 9 Structures &amp; Real-World Examples' : 'Band 6 Structures &amp; Clear Examples'}<br>
+            ✓ Key Ideas &amp; Explanations Highlighted
+          </div>
+          <div class="cover-footer">
+            <div class="cover-footer-line">iptbrisbane.com.au &nbsp;·&nbsp; portal.ptepro.com.au</div>
+            <div>2072 Logan Road, Upper Mount Gravatt, Brisbane, QLD</div>
+            <div>© 2026 IPT Brisbane. All Rights Reserved. Personal Use Only. Not for Resale or Distribution.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function renderTocFor(list) {
+  const bandLabel = defaultTemplateTierLabel();
+  return `
+    <div class="essay-page">
+      <div class="essay-page-header">
+        <span class="essay-page-header-brand">IPT Brisbane — ${bandLabel} Essay Template Guide</span>
+        <span class="essay-page-header-tag">Table of Contents</span>
+      </div>
+      <div class="toc-title">TABLE OF CONTENTS</div>
+      <div class="toc-hint">— Click any title to jump to that essay —</div>
+      <div class="toc-list">
+        ${list.map((e, i) => `
+          <div class="toc-row">
+            <span class="toc-num">${String(i+1).padStart(2,'0')}</span>
+            <span class="toc-name">${escapeHtml(e.title || 'Untitled')}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+//  EXPORT MENU
+// ============================================================
+let exportPicked = new Set();
+
+function openExportMenu() {
+  const e = getCurrent();
+  const written = essays.filter(x => essayStatus(x) !== 'empty');
+  document.getElementById('exportCurrentName').textContent = e ? `"${e.title || 'Untitled'}" — current essay only` : 'Select an essay first';
+  document.getElementById('exportBookCount').textContent = `${written.length} essays · cover page + table of contents + every written essay`;
+
+  // Email option label
+  const emailEl = document.getElementById('emailRecipient');
+  const emailOpt = document.getElementById('emailOption');
+  if (offlineMode || !currentUser) {
+    emailEl.textContent = 'Sign in with an email account to use this';
+    emailOpt.style.opacity = '0.5';
+    emailOpt.style.pointerEvents = 'none';
+  } else if (!e) {
+    emailEl.textContent = 'Select an essay first';
+    emailOpt.style.opacity = '0.5';
+    emailOpt.style.pointerEvents = 'none';
+  } else if (essayStatus(e) === 'empty') {
+    emailEl.textContent = 'This essay is empty — write it first';
+    emailOpt.style.opacity = '0.5';
+    emailOpt.style.pointerEvents = 'none';
+  } else {
+    emailEl.textContent = `Sending to ${currentUser.email}`;
+    emailOpt.style.opacity = '1';
+    emailOpt.style.pointerEvents = '';
+  }
+
+  // Email book option label
+  const emailBookEl = document.getElementById('emailBookRecipient');
+  const emailBookOpt = document.getElementById('emailBookOption');
+  if (offlineMode || !currentUser) {
+    emailBookEl.textContent = 'Sign in to email essays';
+    emailBookOpt.style.opacity = '0.5';
+    emailBookOpt.style.pointerEvents = 'none';
+  } else if (written.length === 0) {
+    emailBookEl.textContent = 'No written essays yet';
+    emailBookOpt.style.opacity = '0.5';
+    emailBookOpt.style.pointerEvents = 'none';
+  } else {
+    emailBookEl.textContent = `Sending ${written.length} essays to ${currentUser.email} (~${Math.round(written.length * 3)}s to generate)`;
+    emailBookOpt.style.opacity = '1';
+    emailBookOpt.style.pointerEvents = '';
+  }
+
+  // Reset picker
+  document.getElementById('exportPicker').style.display = 'none';
+  exportPicked = new Set();
+  document.getElementById('exportModal').classList.add('show');
+}
+function closeExportMenu() { document.getElementById('exportModal').classList.remove('show'); }
+
+function doExportCurrent() {
+  closeExportMenu();
+  downloadSingle();
+}
+function doExportBook() {
+  closeExportMenu();
+  downloadBook();
+}
+
+function getValidatedRecipientEmail(confirmMessagePrefix = "Send this essay as a PDF to") {
+  if (offlineMode || !currentUser) {
+    toast('Sign in to email essays', true);
+    return null;
+  }
+  let email = '';
+  // Prioritize registered/real email of currentUser
+  if (currentUser.email && currentUser.email.includes('@') && !currentUser.email.toLowerCase().endsWith('@ptewriting.com')) {
+    email = currentUser.email;
+  } else {
+    email = localStorage.getItem('pte_preferred_email') || '';
+  }
+
+  if (!email || email.toLowerCase().endsWith('@ptewriting.com')) {
+    email = currentUser.email || '';
+  }
+  // If the email is a real one (contains @ and is not ptewriting.com), confirm it directly.
+  if (email && email.includes('@') && !email.toLowerCase().endsWith('@ptewriting.com')) {
+    if (confirm(`${confirmMessagePrefix} ${email}?`)) {
+      return email;
+    }
+    // If they cancel, they might want to enter a different one, so fall through to prompt.
+  }
+  const userEmail = prompt("Please enter the email address to send the PDF to:", email.toLowerCase().endsWith('@ptewriting.com') ? "" : email);
+  if (!userEmail) return null; // cancelled
+  const trimmedEmail = userEmail.trim();
+  if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+    toast('Invalid email address', true);
+    return null;
+  }
+  if (trimmedEmail.toLowerCase().endsWith('@ptewriting.com')) {
+    toast('Cannot send to ptewriting.com addresses. Please use your real email.', true);
+    return null;
+  }
+  localStorage.setItem('pte_preferred_email', trimmedEmail);
+
+  // Update userProfile and currentUser to save it back to cloud next sync
+  if (userProfile && (!userProfile.email || userProfile.email !== trimmedEmail)) {
+    userProfile.email = trimmedEmail;
+    currentUser.email = trimmedEmail;
+    flushSync();
+  }
+
+  return trimmedEmail;
+}
+
+async function doEmailCurrent() {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  if (essayStatus(e) === 'empty') { toast('This essay is empty — write it first', true); return; }
+  if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
+
+  const recipient = getValidatedRecipientEmail("Send this essay as a PDF to");
+  if (!recipient) return;
+
+  closeExportMenu();
+  toast('Sending to server for PDF render…');
+
+  const idx = essays.findIndex(x => x.id === e.id) + 1;
+  const fileName = `${(e.title || 'Essay').replace(/[^a-zA-Z0-9 _-]/g, '').slice(0, 80) || 'Essay'}.pdf`;
+  const html = buildFullPdfHtml([renderEssayPageHTML(e, idx)], fileName);
+
+  try {
+    const res = await fetch(API_URL + '/api/email-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: recipient,
+        essayTitle: e.title || `Essay ${idx}`,
+        fileName: fileName,
+        html: html
+      })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Server returned ${res.status}`);
+    }
+    toast(`PDF emailed to ${recipient} ✓`);
+  } catch (err) {
+    console.error(err);
+    toast('Email failed: ' + err.message, true);
+  }
+}
+
+// Email the entire book (cover + TOC + all written essays) as one PDF
+async function doEmailBook() {
+  if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
+  const written = essays.filter(e => essayStatus(e) !== 'empty');
+  if (written.length === 0) { toast('No written essays to include in the book', true); return; }
+
+  const recipient = getValidatedRecipientEmail(`Send the whole book (${written.length} essays + cover + table of contents) as a PDF to`);
+  if (!recipient) return;
+
+  closeExportMenu();
+  await generateAndEmailBook(written, `IPT_Essay_Book_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Book', recipient);
+}
+
+// Email a custom selection of essays
+async function doEmailPicked() {
+  if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return; }
+  if (exportPicked.size === 0) { toast('Pick at least one essay first', true); return; }
+  const selected = essays.filter(e => exportPicked.has(e.id));
+  const recipient = getValidatedRecipientEmail(`Send ${selected.length} selected essay${selected.length === 1 ? '' : 's'} as a PDF to`);
+  if (!recipient) return;
+  closeExportMenu();
+  await generateAndEmailBook(selected, `IPT_Essays_Selection_${new Date().toISOString().slice(0,10)}.pdf`, 'IPT Brisbane Essay Selection', recipient);
+}
+
+// Shared: build a multi-essay PDF + email it (server-side render via Puppeteer)
+async function generateAndEmailBook(essayList, fileName, displayTitle, recipient) {
+  const targetEmail = recipient || getValidatedRecipientEmail();
+  if (!targetEmail) return;
+  const t0 = Date.now();
+  showProgressToast(`Preparing ${essayList.length} essays…`);
+  try {
+    // Build all pages as HTML (cover + TOC + essays)
+    const pages = [
+      renderCoverHTML(),
+      renderTocFor(essayList),
+      ...essayList.map((e, i) => renderEssayPageHTML(e, i + 1))
+    ];
+    const html = buildFullPdfHtml(pages, fileName);
+    const htmlSizeKb = Math.round(html.length / 1024);
+
+    // Send HTML to server; server renders + emails. ~3-8s for 30 essays.
+    showProgressToast(`Server is rendering ${essayList.length} essays to PDF…`);
+    const res = await fetch(API_URL + '/api/email-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: targetEmail,
+        essayTitle: displayTitle,
+        fileName: fileName,
+        html: html
+      })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Server returned ${res.status}`);
+    }
+    const reply = await res.json().catch(() => ({}));
+    const pdfSize = reply.pdfSize || 0;
+    const pdfSizeStr = pdfSize >= 1024 * 1024
+      ? (pdfSize / 1024 / 1024).toFixed(1) + 'MB'
+      : Math.round(pdfSize / 1024) + 'KB';
+    hideProgressToast();
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+    toast(`PDF book (${essayList.length} essays, ${pdfSizeStr}) emailed to ${targetEmail} ✓ (${elapsed}s)`);
+  } catch (err) {
+    console.error(err);
+    hideProgressToast();
+    toast('Email failed: ' + err.message, true);
+  }
+}
+
+// Progress toast — a sticky toast that updates instead of disappearing
+let progressToastVisible = false;
+function showProgressToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span class="spinner-dark" style="border-color:rgba(255,255,255,0.3); border-top-color:#fff;"></span> ${escapeHtml(msg)}`;
+  t.classList.remove('error');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  progressToastVisible = true;
+}
+function hideProgressToast() {
+  if (!progressToastVisible) return;
+  progressToastVisible = false;
+  const t = document.getElementById('toast');
+  t.classList.remove('show');
+}
+
+// Render the essay-page HTML into an A4 PDF and return base64 (no data: prefix).
+// Uses html2canvas (rasterize the page node) + jsPDF (wrap image into PDF, handle multi-page).
+// Render a single essay page into a canvas. Caller is responsible for cleanup.
+async function rasterizeEssayPage(pageHtml, opts = {}) {
+  const stage = document.createElement('div');
+  stage.style.cssText = 'position:fixed; left:-99999px; top:0; width:210mm; background:#fff; z-index:-1;';
+  stage.innerHTML = pageHtml;
+  document.body.appendChild(stage);
+  try {
+    // FIX 1: Wait for web fonts to actually be loaded.
+    // Without this, html2canvas captures BEFORE Fraunces/Inter finish downloading,
+    // producing glyph corruption like 'd' → 'a', 'f' → 't', 'b' → 'p'.
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (e) { /* ignore */ }
+    }
+    await new Promise(r => requestAnimationFrame(() => r()));
+    await new Promise(r => setTimeout(r, 250));   // give fonts another beat to settle
+    const pageNode = stage.querySelector('.essay-page');
+    if (!pageNode) throw new Error('Essay page node not found');
+
+    // FIX 2: Force highlight spans to have explicit padding + line-height so multi-line
+    // wraps don't clip text. This is the root cause of the "missing words before highlight"
+    // bug in the emailed PDF. html2canvas measures spans incorrectly when box-decoration-break
+    // is used; we force inline-block-ish behaviour with explicit metrics instead.
+    const highlightStyle = document.createElement('style');
+    highlightStyle.id = 'rasterize-highlight-fix';
+    highlightStyle.textContent = `
+      .essay-page .hl-yellow,
+      .essay-page .hl-orange,
+      .essay-page .hl-green {
+        padding: 1px 3px !important;
+        line-height: 1.85 !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+      }
+      .essay-page p, .essay-page .essay-para {
+        line-height: 1.85 !important;
+      }
+    `;
+    stage.appendChild(highlightStyle);
+    await new Promise(r => requestAnimationFrame(() => r()));
+
+    // Optionally extract bounding rectangles of selected elements, relative to the page node.
+    // Returned as { selector: [{x, y, w, h} in mm] }.
+    // Caller passes opts.extractRects = ['.toc-row'] etc.
+    let extractedRects = null;
+    if (opts.extractRects && opts.extractRects.length) {
+      extractedRects = {};
+      const pageRect = pageNode.getBoundingClientRect();
+      // Page is rendered at 210mm wide; compute px-to-mm using actual width
+      const pxPerMm = pageRect.width / 210;
+      for (const sel of opts.extractRects) {
+        extractedRects[sel] = [];
+        pageNode.querySelectorAll(sel).forEach((node) => {
+          const r = node.getBoundingClientRect();
+          extractedRects[sel].push({
+            x: (r.left - pageRect.left) / pxPerMm,
+            y: (r.top - pageRect.top) / pxPerMm,
+            w: r.width / pxPerMm,
+            h: r.height / pxPerMm
+          });
+        });
+      }
+    }
+
+    // FIX 3: scale 3 (was 2) for sharper glyph rasterization. Eliminates pixel-level
+    // glyph corruption. Trade-off: ~2.25× larger canvas, ~2× larger PDF file.
+    const canvas = await window.html2canvas(pageNode, {
+      scale: 3,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+      // Crisp text rendering — disable letter-spacing optimizations
+      letterRendering: true,
+      onclone: (clonedDoc) => {
+        const style = clonedDoc.createElement('style');
+        style.textContent = `
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          /* Force fonts on cloned doc too */
+          .essay-page, .essay-page * {
+            font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif !important;
+          }
+          .essay-page h1, .essay-page h2, .essay-page h3,
+          .essay-page .essay-title, .essay-page .cover-title {
+            font-family: 'Fraunces', Georgia, serif !important;
+          }
+          /* Same highlight fix in cloned doc */
+          .hl-yellow, .hl-orange, .hl-green {
+            padding: 1px 3px !important;
+            line-height: 1.85 !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+      }
+    });
+    if (extractedRects) return { canvas, rects: extractedRects };
+    return canvas;
+  } finally {
+    document.body.removeChild(stage);
+  }
+}
+
+// Add a single canvas as one or more A4 pages of an existing jsPDF document.
+// Returns the number of PDF pages this canvas consumed.
+function addCanvasToPdf(pdf, canvas, isFirstPageOfDoc) {
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  const canvasMmH = (canvas.height * pageW) / canvas.width;
+  const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+  if (!isFirstPageOfDoc) pdf.addPage();
+
+  if (canvasMmH <= pageH + 0.5) {
+    pdf.addImage(imgData, 'JPEG', 0, 0, pageW, canvasMmH);
+    return 1;
+  }
+  // Slice into A4-height chunks
+  const pxPerMm = canvas.width / pageW;
+  const pageHpx = Math.floor(pageH * pxPerMm);
+  let y = 0;
+  let slice = 0;
+  while (y < canvas.height) {
+    const sliceHeight = Math.min(pageHpx, canvas.height - y);
+    const sliceCanvas = document.createElement('canvas');
+    sliceCanvas.width = canvas.width;
+    sliceCanvas.height = sliceHeight;
+    const ctx = sliceCanvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+    ctx.drawImage(canvas, 0, -y);
+    const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+    const sliceMmH = (sliceHeight * pageW) / canvas.width;
+    if (slice > 0) pdf.addPage();
+    pdf.addImage(sliceData, 'JPEG', 0, 0, pageW, sliceMmH);
+    y += sliceHeight;
+    slice++;
+  }
+  return slice;
+}
+
+// Build a single-essay PDF and return base64
+async function renderEssayToPdfBase64(essay, num) {
+  if (!window.html2canvas || !window.jspdf) throw new Error('PDF libraries not loaded yet');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const canvas = await rasterizeEssayPage(renderEssayPageHTML(essay, num));
+  addCanvasToPdf(pdf, canvas, true);
+  const dataUri = pdf.output('datauristring');
+  return dataUri.replace(/^data:application\/pdf;base64,/, '').replace(/^data:application\/pdf;filename=[^;]+;base64,/, '');
+}
+
+// Build a multi-essay book PDF (cover + TOC + each essay) and return base64.
+// Calls onProgress(stepIndex, totalSteps, label) so the UI can show progress.
+// Adds clickable hyperlinks on the TOC pointing to each essay.
+async function renderBookToPdfBase64(essayList, onProgress) {
+  if (!window.html2canvas || !window.jspdf) throw new Error('PDF libraries not loaded yet');
+  if (!essayList || essayList.length === 0) throw new Error('No essays to include in the book');
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+
+  const totalSteps = essayList.length + 2; // cover + TOC + N essays
+  let step = 0;
+  let currentPage = 0;  // 1-indexed page tracker
+  const essayStartPages = [];  // essayStartPages[i] = PDF page number where essay i begins
+
+  // Cover (page 1)
+  if (onProgress) onProgress(++step, totalSteps, 'Rendering cover');
+  const coverCanvas = await rasterizeEssayPage(renderCoverHTML());
+  const coverPages = addCanvasToPdf(pdf, coverCanvas, true);
+  currentPage += coverPages;
+  coverCanvas.width = 0; coverCanvas.height = 0;
+
+  // TOC (next pages) — extract row rectangles so we can add hyperlinks afterward
+  if (onProgress) onProgress(++step, totalSteps, 'Rendering table of contents');
+  const tocResult = await rasterizeEssayPage(renderTocFor(essayList), { extractRects: ['.toc-row'] });
+  const tocCanvas = tocResult.canvas;
+  const tocRowRects = (tocResult.rects && tocResult.rects['.toc-row']) || [];
+  const tocStartPage = currentPage + 1;
+  const tocPagesUsed = addCanvasToPdf(pdf, tocCanvas, false);
+  currentPage += tocPagesUsed;
+  tocCanvas.width = 0; tocCanvas.height = 0;
+
+  // Each essay
+  for (let i = 0; i < essayList.length; i++) {
+    const e = essayList[i];
+    if (onProgress) onProgress(++step, totalSteps, `Rendering essay ${i + 1} of ${essayList.length}: ${e.title || 'Untitled'}`);
+    const canvas = await rasterizeEssayPage(renderEssayPageHTML(e, i + 1));
+    essayStartPages[i] = currentPage + 1;  // first PDF page of this essay
+    const pagesUsed = addCanvasToPdf(pdf, canvas, false);
+    currentPage += pagesUsed;
+    canvas.width = 0; canvas.height = 0;
+    await new Promise(r => setTimeout(r, 10));
+  }
+
+  // Add hyperlinks on the TOC page(s).
+  // The TOC may span multiple pages if there are many essays — but typical case is 1 page.
+  // If TOC fits on one page (tocPagesUsed === 1), all rows map to page tocStartPage.
+  // For simplicity we assume TOC fits on 1 page (34 essays in 2 columns fits comfortably on A4).
+  if (tocRowRects.length > 0 && essayStartPages.length === tocRowRects.length) {
+    pdf.setPage(tocStartPage);
+    for (let i = 0; i < tocRowRects.length; i++) {
+      const r = tocRowRects[i];
+      const targetPage = essayStartPages[i];
+      if (!targetPage) continue;
+      try {
+        pdf.link(r.x, r.y, r.w, r.h, { pageNumber: targetPage });
+      } catch (err) {
+        console.warn('Could not add TOC link for row', i, err);
+      }
+    }
+  }
+
+  const dataUri = pdf.output('datauristring');
+  return dataUri.replace(/^data:application\/pdf;base64,/, '').replace(/^data:application\/pdf;filename=[^;]+;base64,/, '');
+}
+
+function openExportPicker() {
+  // Default-select written essays
+  exportPicked = new Set(essays.filter(e => essayStatus(e) !== 'empty').map(e => e.id));
+  document.getElementById('exportPicker').style.display = 'block';
+  renderExportPicker();
+}
+
+function renderExportPicker() {
+  const list = document.getElementById('exportPickerList');
+  list.innerHTML = essays.map((e, i) => {
+    const s = essayStatus(e);
+    const statusLabel = s === 'written' ? 'WRITTEN' : (s === 'draft' ? 'DRAFT' : 'EMPTY');
+    const statusClass = 'status-' + s;
+    const checked = exportPicked.has(e.id) ? 'checked' : '';
+    return `
+      <label class="export-pick-row">
+        <input type="checkbox" ${checked} onchange="toggleExportPick('${e.id}', this.checked)">
+        <span class="export-pick-num">ESSAY ${String(i+1).padStart(2,'0')}</span>
+        <span class="export-pick-title">${escapeHtml(e.title || 'Untitled')}</span>
+        <span class="export-pick-status ${statusClass}">${statusLabel}</span>
+      </label>
+    `;
+  }).join('');
+  updateExportPickedCount();
+}
+
+function toggleExportPick(id, checked) {
+  if (checked) exportPicked.add(id);
+  else exportPicked.delete(id);
+  updateExportPickedCount();
+}
+
+function selectAllForExport(all) {
+  exportPicked = all ? new Set(essays.map(e => e.id)) : new Set();
+  renderExportPicker();
+}
+
+function selectWrittenForExport() {
+  exportPicked = new Set(essays.filter(e => essayStatus(e) !== 'empty').map(e => e.id));
+  renderExportPicker();
+}
+
+function updateExportPickedCount() {
+  const n = exportPicked.size;
+  document.getElementById('exportPickedCount').textContent = n;
+  const disabled = (n === 0);
+  document.getElementById('exportPickedBtn').disabled = disabled;
+  const emailBtn = document.getElementById('emailPickedBtn');
+  if (emailBtn) {
+    // Also disable email if user isn't signed in
+    emailBtn.disabled = disabled || offlineMode || !currentUser;
+  }
+}
+
+function doExportPicked() {
+  if (exportPicked.size === 0) return;
+  const selected = essays.filter(e => exportPicked.has(e.id));
+  closeExportMenu();
+  if (selected.length === 1) {
+    const idx = essays.findIndex(x => x.id === selected[0].id) + 1;
+    openPrintWindow([renderEssayPageHTML(selected[0], idx)], `${selected[0].title || 'essay'}.pdf`);
+    return;
+  }
+  // Multiple — include cover + TOC
+  const pages = [renderCoverHTML(), renderTocFor(selected)];
+  selected.forEach((e, i) => pages.push(renderEssayPageHTML(e, i + 1)));
+  openPrintWindow(pages, 'IPT_Brisbane_Selection.pdf');
+}
+
+// ============================================================
+//  PDF EXPORT
+// ============================================================
+function downloadSingle() {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  openPrintWindow([renderEssayPageHTML(e, essays.findIndex(x => x.id === e.id) + 1)], `${e.title || 'essay'}.pdf`);
+}
+function downloadBook() {
+  if (essays.length === 0) { toast('No essays to export', true); return; }
+  const written = essays.filter(e => essayStatus(e) !== 'empty');
+  if (written.length < essays.length) {
+    if (!confirm(`Only ${written.length} of ${essays.length} essays have content. Export only the written ones?`)) return;
+    const pages = [renderCoverHTML(), renderTocFor(written)];
+    written.forEach((e, i) => pages.push(renderEssayPageHTML(e, i + 1)));
+    openPrintWindow(pages, 'IPT_Brisbane_Essay_Book.pdf');
+    return;
+  }
+  const pages = [renderCoverHTML(), renderTocFor(essays), ...essays.map((e, i) => renderEssayPageHTML(e, i + 1))];
+  openPrintWindow(pages, 'IPT_Brisbane_Essay_Book.pdf');
+}
+function openPrintWindow(pages, filename) {
+  const w = window.open('', '_blank');
+  if (!w) { toast('Pop-up blocked — please allow pop-ups', true); return; }
+  w.document.write(buildFullPdfHtml(pages, filename, { withPrintScript: true }));
+  w.document.close();
+  toast('Opening print preview — save as PDF from there');
+}
+
+// Build a complete standalone HTML document (CSS + Google Fonts link + pages).
+// Used by:
+//  - openPrintWindow (browser native print → user saves as PDF)
+//  - sendEssayToServerForEmail (server renders via Puppeteer → emails PDF)
+// Identical HTML in both paths → identical output.
+function buildFullPdfHtml(pages, filename, opts = {}) {
+    let styles = '';
+  try {
+    for (const sheet of document.styleSheets) {
+      if (sheet.href && sheet.href.includes('index.css')) {
+        for (const rule of sheet.cssRules) {
+          styles += rule.cssText + '\n';
+        }
+        break;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not read index.css dynamically:', e);
+  }
+  const printScript = opts.withPrintScript
+    ? '<script>window.addEventListener("load", () => { setTimeout(() => { window.print(); }, 400); });<\/script>'
+    : '';
+  return `<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<title>${escapeHtml(filename || 'Essay')}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+${styles}
+body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; }
+* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.essay-page { box-shadow: none; margin: 0 auto; page-break-after: always; }
+.essay-page:last-child { page-break-after: auto; }
+@page { size: A4; margin: 0; }
+</style>
+</head>
+<body>
+${pages.join('')}
+${printScript}
+</body></html>`;
+}
+
+// ============================================================
+//  TEMPLATE MODAL
+// ============================================================
+// ============================================================
+//  TEMPLATE MODAL — 3 slots (Band 6, Band 9, Custom) with default selector
+// ============================================================
+let currentTplTab = 'band6';
+
+function openTemplate() {
+  // Default to opening on whichever slot the user picked as default
+  const bag = getTemplatesBag();
+  currentTplTab = bag.default || 'band9';
+  switchTemplateTab(currentTplTab);
+  updateDefaultPills();
+  document.getElementById('templateModal').classList.add('show');
+}
+function closeTemplate() { document.getElementById('templateModal').classList.remove('show'); }
+
+function closeBand6ModeModal() {
+  document.getElementById('band6ModeModal').classList.remove('show');
+}
+
+function selectBand6Mode(mode) {
+  closeBand6ModeModal();
+  const e = getCurrent();
+  if (!e) return;
+  e.band6Mode = mode;
+  saveAll();
+  aiWriteFullEssay({ band6Mode: mode, skipConfirm: true });
+}
+
+function switchTemplateTab(tab) {
+  currentTplTab = tab;
+  // Update tab visuals
+  document.querySelectorAll('.tpl-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  // Load the template into the textareas
+  const bag = getTemplatesBag();
+  const t = bag[tab] || BAND9_TEMPLATE;
+  document.getElementById('tpl_intro').value = t.intro || '';
+  document.getElementById('tpl_bp1').value = t.bp1 || '';
+  document.getElementById('tpl_bp2').value = t.bp2 || '';
+  document.getElementById('tpl_concl').value = t.concl || '';
+  document.getElementById('tpl_notes').value = t.notes || '';
+  // Toggle read-only state
+  const readonly = (tab !== 'custom');
+  ['tpl_intro', 'tpl_bp1', 'tpl_bp2', 'tpl_concl', 'tpl_notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.readOnly = readonly;
+      el.style.background = readonly ? 'var(--bg)' : 'var(--bg-card)';
+      el.style.opacity = readonly ? '0.85' : '1';
+    }
+  });
+  document.getElementById('tplReadonlyBanner').style.display = readonly ? 'block' : 'none';
+  document.getElementById('tplCopyToCustom').style.display = readonly ? 'inline-flex' : 'none';
+  document.getElementById('tplSaveBtn').style.display = readonly ? 'none' : 'inline-flex';
+  const resetBtn = document.getElementById('tplResetBtn');
+  if (resetBtn) resetBtn.style.display = (tab === 'custom') ? 'inline-flex' : 'none';
+  updateTemplateCharCount();
+}
+
+function updateDefaultPills() {
+  const bag = getTemplatesBag();
+  document.querySelectorAll('.tpl-default-pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.tpl === (bag.default || 'band9'))
+  );
+}
+
+async function setDefaultTemplate(tpl) {
+  const bag = getTemplatesBag();
+  bag.default = tpl;
+  await saveTemplatesBag(bag);
+  updateDefaultPills();
+  updateTplDefaultNote();
+  // Also refresh the AI Writer's "Default" pill label
+  loadCurrent();
+  toast(`Default template set to ${tplLabel(tpl)}`);
+}
+
+async function saveTemplate() {
+  // Only "custom" is editable
+  if (currentTplTab !== 'custom') {
+    toast('Band 6 and Band 9 are read-only. Switch to "My Custom" to edit.', true);
+    return;
+  }
+  const t = {
+    intro: document.getElementById('tpl_intro').value.trim(),
+    bp1: document.getElementById('tpl_bp1').value.trim(),
+    bp2: document.getElementById('tpl_bp2').value.trim(),
+    concl: document.getElementById('tpl_concl').value.trim(),
+    notes: document.getElementById('tpl_notes').value.trim()
+  };
+  if (!t.intro || !t.bp1 || !t.bp2 || !t.concl) {
+    toast('Please fill all four paragraphs', true); return;
+  }
+  const bag = getTemplatesBag();
+  bag.custom = t;
+  await saveTemplatesBag(bag);
+  closeTemplate();
+  toast('My Custom template saved');
+}
+
+async function copyPresetToCustom() {
+  if (!confirm(`Copy ${tplLabel(currentTplTab)} into "My Custom"? Your current custom template will be overwritten.`)) return;
+  const bag = getTemplatesBag();
+  bag.custom = JSON.parse(JSON.stringify(bag[currentTplTab]));
+  await saveTemplatesBag(bag);
+  switchTemplateTab('custom');
+  toast(`${tplLabel(currentTplTab)} copied into My Custom — you can now edit it`);
+}
+
+// Legacy reset (kept for backward compatibility, just resets Custom to Band 9)
+function resetTemplateToDefault() {
+  if (!confirm('Reset My Custom template to the Band 9 preset?')) return;
+  const bag = getTemplatesBag();
+  bag.custom = JSON.parse(JSON.stringify(BAND9_TEMPLATE));
+  saveTemplatesBag(bag);
+  if (currentTplTab === 'custom') switchTemplateTab('custom');
+}
+
+function updateTemplateCharCount() {
+  const total = ['tpl_intro', 'tpl_bp1', 'tpl_bp2', 'tpl_concl', 'tpl_notes']
+    .reduce((sum, id) => sum + (document.getElementById(id)?.value.length || 0), 0);
+  document.getElementById('tplCharCount').textContent = total.toLocaleString() + ' characters';
+}
+
+function tplLabel(key) {
+  return ({ band6: 'Band 6', band9: 'Band 9', custom: 'My Custom', default: 'Default' })[key] || key;
+}
+
+// Per-essay template selector (in the AI Writer card)
+async function setEssayTemplate(choice) {
+  const e = getCurrent();
+  if (!e) return;
+  e.templateChoice = choice;
+  e.previewSignature = '';
+  saveAll();
+  updateEssayTplPills();
+  renderPreview();
+  renderIdeasPicker();
+}
+
+function updateEssayTplPills() {
+  const e = getCurrent();
+  if (!e) return;
+  const choice = e.templateChoice || 'default';
+  document.querySelectorAll('.tpl-essay-pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.tpl === choice)
+  );
+  // Update "Using default" label
+  const bag = getTemplatesBag();
+  const effective = (choice === 'default') ? (bag.default || 'band9') : choice;
+  document.getElementById('tplChoiceAux').textContent =
+    (choice === 'default') ? `Using default (${tplLabel(effective)})` : `Override: ${tplLabel(effective)}`;
+  updateTplDefaultNote();
+}
+
+function updateTplDefaultNote() {
+  const bag = getTemplatesBag();
+  const note = document.getElementById('tplDefaultNote');
+  if (note) note.textContent = `(${tplLabel(bag.default || 'band9')})`;
+}
+
+function setGenerationMode(mode) {
+  const e = getCurrent();
+  if (!e) return;
+  e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  saveAll();
+  updateGenerationModeUI();
+  renderPreview();
+}
+
+function setGenerationModeFromFs(mode) {
+  const e = getCurrent();
+  if (!e) return;
+  e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  saveAll();
+  updateGenerationModeUI();
+}
+
+function updateGenerationModeUI() {
+  const e = getCurrent();
+  if (!e) return;
+  const mode = e.generationMode || 'template';
+  
+  const mainSelect = document.getElementById('generationModeSelect');
+  if (mainSelect) {
+    mainSelect.value = mode;
+  }
+  const labelAux = document.getElementById('generationModeAux');
+  if (labelAux) {
+    labelAux.textContent = mode === 'natural' ? 'Natural Band 8/9 Mode' : 'Exam Template Mode';
+  }
+  const fsSelect = document.getElementById('fsStyle');
+  if (fsSelect) {
+    fsSelect.value = mode;
+  }
+}
+
+// ============================================================
+//  AI: SUGGEST IDEAS (5 pros + 5 cons → pick 2+2)
+// ============================================================
+// ============================================================
+// (Old globals pickedPros/pickedCons/suggestedPros/suggestedCons + parseIdeas
+//  removed — replaced by pickedLeftIdeas / pickedRightIdeas / etc. defined
+//  near QUESTION_TYPES at the top.)
+// ============================================================
+
+async function aiSuggestIdeas() {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  if (!e.title || !e.question) { toast('Need essay title and question first', true); return; }
+
+  if (!await consumeQuota('idea')) return;
+
+  const vocabIdx = (e.vocab || 3) - 1;
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+  const bag = getTemplatesBag();
+  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+  const isBand6 = (effectiveTplKey === 'band6');
+
+  // ---- v20.2.0 classification lock -------------------------------------
+  // Priority: (1) the student's manual override, (2) the curated library
+  // type stamped on seed topics, (3) a confident local pattern match.
+  // Only when none of these exist is the AI allowed to classify.
+  const isSeedEssay = typeof e.id === 'string' && e.id.indexOf('seed_') === 0;
+  const curatedTypeRaw = e.manualQuestionTypeOverride || (isSeedEssay ? (e.questionType || '') : '');
+  const curatedType = normalizeQuestionType(curatedTypeRaw);
+  const localCls = classifyQuestionLocally(e.question || '');
+  const lockedType = (curatedType && QUESTION_TYPES[curatedType])
+    ? curatedType
+    : ((localCls.confident && QUESTION_TYPES[localCls.type]) ? localCls.type : '');
+  const lockedFeatures = curatedType
+    ? ((e.secondaryFeatures || []).slice())
+    : (localCls.confident ? (localCls.secondaryFeatures || []).slice() : []);
+  const lockedCfg = lockedType ? QUESTION_TYPES[lockedType] : null;
+  // -----------------------------------------------------------------------
+
+  const picker = document.getElementById('ideasPicker');
+  const body = document.getElementById('ideasPickerBody');
+  picker.classList.add('show');
+  body.innerHTML = '<div class="ideas-loading"><div class="spinner-dark"></div> Analyzing the question and finding ideas...</div>';
+
+  const btn = document.getElementById('suggestIdeasBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-dark"></span> Thinking...';
+
+  const typeOptions = Object.keys(QUESTION_TYPES)
+    .filter(key => QUESTION_TYPES[key].id === key)
+    .map(key => `  "${key}" — ${QUESTION_TYPES[key].displayName}: ${QUESTION_TYPES[key].detect}`)
+    .join('\n');
+
+  const bandVocabRule = isBand6
+    ? `- Use SIMPLE, PLAIN ENGLISH — the kind of words a Band 6 student already knows from everyday life.
+- Stay in A2-B1 territory (CEFR). Words like "good", "important", "helpful", "hard", "easy", "save money", "stay healthy", "learn faster".
+- AVOID any academic vocabulary, sophisticated phrasing, formal Latinate words, or anything a Band 7+ student would use.
+- BANNED words (these are too advanced for Band 6): foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted.
+- Keep phrases short and direct: "saves money", "helps students learn", "makes traffic worse" — NOT "yields substantial economic benefits" or "ameliorates traffic congestion".
+- A 12-year-old should be able to understand every phrase.`
+    : `- Use simple Band 7-8 vocabulary students recognise from class — clear and accessible, not overly academic.
+- Avoid fancy academic words students don't know — favour everyday phrasing over Latinate vocabulary.`;
+
+  const bandHeadline = isBand6 ? 'a Band 6 IELTS/PTE essay (simple, plain English)' : 'a Band 9 IELTS/PTE essay';
+
+  const task1Block = lockedType ? `TASK 1 — THE QUESTION TYPE IS ALREADY DETERMINED. DO NOT RE-CLASSIFY.
+The verified question type for this prompt is:
+  "${lockedType}" — ${lockedCfg.displayName}: ${lockedCfg.detect}
+${lockedFeatures.length ? `Secondary features (verified): ${lockedFeatures.join(', ')}
+` : ''}You MUST set "primaryQuestionType" to exactly "${lockedType}"${lockedFeatures.length ? ` and "secondaryFeatures" to ${JSON.stringify(lockedFeatures)}` : ''} in your JSON output. Choosing any other type is an error.
+Generate ideas that fit THIS type's paragraph roles:
+- Body Paragraph 1: ${lockedCfg.bp1Role}
+- Body Paragraph 2: ${lockedCfg.bp2Role}` : `TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
+
+${typeOptions}
+
+*DISAMBIGUATION RULES — APPLY IN THIS ORDER*:
+1. "discuss both views/sides" → discuss_both_views (even if it also says "give your own opinion").
+2. "agree or disagree" / "to what extent do you agree" → agree_disagree — NEVER problem_solution, even when the statement inside the prompt mentions problems, causes or solutions.
+3. advantages + disadvantages + ("outweigh" or "your opinion") → advantages_disadvantages_opinion; without an opinion demand → advantages_disadvantages.
+4. Only classify as problem_solution / cause_solution when the question ITSELF asks for problems/causes AND solutions/measures. A topic that merely mentions a problem is NOT a problem_solution question.
+5. "which do you prefer" / "is it better to" with two options → two_option_preference.
+6. If the question only asks for your view ("do you think…?", "should…?", "what is your opinion?") → opinion.`;
+
+  const prompt = `You are helping a tutor at IPT Brisbane prepare ${bandHeadline}. There are TWO tasks:
+
+═══════════════════════════════════════════════════
+${task1Block}
+
+*SPECIAL RULE FOR "MOST PRESSING PROBLEM" QUESTIONS*:
+If the question prompt asks about the "most pressing problem", "most important issue", "biggest problem", "most serious global issue", or similar:
+- You MUST classify it as primaryQuestionType: "single_best_option" and secondaryFeatures: ["solution_required"].
+- The detectedOptions array should contain the main problem/option chosen (e.g. ["climate change"]).
+
+*SPECIAL RULE FOR "CHOOSE ONE AREA / ASPECT TO FOCUS ON" QUESTIONS*:
+If the question asks the writer to choose ONE area, aspect, or field of a broad topic and justify that choice (e.g. "Which area of climate change will you focus on and why?", "Which aspect of education would you research?"):
+- You MUST classify it as primaryQuestionType: "single_best_option" and secondaryFeatures: ["focus_area"].
+- The detectedOptions array MUST list 4 distinct CANDIDATE SUB-AREAS the writer could pick (these become the choice pills). For "climate change" these would be things like ["agriculture and food security", "human health", "sea-level rise", "extreme weather events"]. Each must be a real sub-area of the topic — NOT a generic impact phrase.
+- This is NOT a problem/solution debate and NOT a two-sided agree/disagree essay. The writer picks ONE sub-area, explains WHY it matters (Body Paragraph 1), then gives EXAMPLES and SOLUTIONS for it (Body Paragraph 2).
+- Do NOT generate two opposing columns of generic impacts. Do NOT duplicate the same idea across categories.
+
+═══════════════════════════════════════════════════
+TASK 2 — Generate high-quality, topic-specific ideas so the student can CHOOSE (they will pick only 2 per body paragraph, so give them a real menu).
+You MUST generate:
+- 5-6 supporting reasons (category "main_support" or "advantage") for EACH body paragraph role. For stance-based or option-based types this means 5-6 reasons FOR EACH stance side or option (tagged via "supports"/"opposes"), so whichever side the student picks they still see 5-6 reasons to choose from.
+- 5-6 supporting examples (category "example"). These examples must be extremely simple, concrete, everyday, and relatable scenarios that students can easily relate to (e.g. "employees using translation apps", "students submitting homework online", "travelers taking buses in cities", "people buying groceries online"). Avoid academic, formal, or abstract examples.
+- 2-3 optional contrast points (category "optional_contrast").
+- HALLUCINATION BAN: every idea must be a plain, real-world point about the topic. Do NOT put statistics, studies, named organizations, named people, brands, or invented facts inside any idea.
+
+Each idea must be represented as a JSON object with:
+- id: short unique string (e.g. "city_hospitals")
+- text: a concrete 3-7 word phrase (no filler)
+- category: one of ["main_support", "example", "solution", "optional_contrast", "counter_point", "advantage", "disadvantage", "cause", "effect"]
+- supports: array of strings representing stances or options that this idea aligns with.
+- opposes: array of strings representing stances or options that this idea contradicts.
+- essayTypes: array of matching essay types.
+- strength: integer 1 to 5.
+
+*RULES FOR "OPINION_ALTERNATIVES" QUESTIONS*:
+If the question is classified as "opinion_alternatives":
+- The "ideas" array MUST contain:
+  - At least 5 supporting reasons to agree with the topic/practice (category "advantage").
+  - At least 5 supporting reasons to disagree with the topic/practice (category "disadvantage").
+  - At least 5 alternative actions (category "solution") representing alternative actions to take instead.
+- For each reason (category "advantage" or "disadvantage"), define "supports" and "opposes" arrays using the stance choices:
+  - Agreeing ideas: supports = ["strongly agree", "largely agree", "partially agree"], opposes = ["strongly disagree", "largely disagree", "partially disagree"]
+  - Disagreeing ideas: supports = ["strongly disagree", "largely disagree", "partially disagree"], opposes = ["strongly agree", "largely agree", "partially agree"]
+- For alternative action ideas (category "solution"), set supports array to contain all stance choices: ["strongly agree", "largely agree", "partially agree", "strongly disagree", "largely disagree", "partially disagree"].
+
+*RELATIONSHIP PAIRING FIELD RULES*:
+If the question is relation-based (problem_solution, cause_solution, cause_effect, problem_effect, causes_solutions, causes_effects) or is a "most pressing problem" single_best_option question requiring solutions:
+- Each left-side idea (of category "problem", "cause", or "challenge") MUST include these extra fields:
+  - pairedText: a concrete 3-7 word phrase representing the matching solution, effect, or consequence for this problem/cause.
+  - pairedType: "solution", "effect", or "consequence".
+  - pairedId: a unique string for the paired solution/effect/consequence.
+  - supportsStance: the stance/option this pair is associated with (if any).
+- If the question is about a "most pressing problem" (single_best_option + solution_required), select exactly ONE main problem as the choice, and generate 5-6 cause/challenge ideas under that problem, where each has a "pairedText" solution. Do NOT suggest multiple unrelated problems.
+
+If the question is a "choose one area/aspect to focus on" question (single_best_option + focus_area):
+- Put EXACTLY 3 candidate sub-areas in detectedOptions (these are the choice pills), e.g. ["agriculture and food security", "human health", "sea-level rise and coastal flooding"]. Each must be a real sub-area of the topic.
+- For EVERY ONE of the 3 sub-areas you listed, you MUST generate BOTH of the following (do this per area — do not concentrate ideas on one area and starve the others):
+  - At least 5 "main_support" ideas = REASONS this area matters / how the broad topic harms this area (Body Paragraph 1 material). Noun phrases. Example for "agriculture and food security": "droughts reduce wheat yields", "irregular rainfall ruins harvests", "rising heat lowers crop quality".
+  - At least 5 "solution" ideas = EXAMPLES and practical SOLUTIONS for that area (Body Paragraph 2 material). Actionable where natural. Example for "agriculture and food security": "use drought-resistant crops", "install drip irrigation", "build local food storage".
+- TAGGING IS CRITICAL: every "main_support" and "solution" idea MUST have a "supports" array containing the EXACT sub-area string from detectedOptions it belongs to (copy it verbatim, e.g. supports: ["agriculture and food security"]). Do NOT use stance words like "agree"/"left"/"right" here. Do NOT leave the supports array empty.
+- This means you will produce at least 15 reasons (3 areas × 5) and at least 15 solutions (3 areas × 5), each tagged to its area. Whichever area the student picks, there MUST be at least 5 reasons and 5 solutions tagged to it.
+- Do NOT generate a generic two-column impacts list and do NOT repeat the same phrase in both categories.
+
+ESSAY DETAILS:
+TITLE: ${e.title}
+QUESTION: ${e.question}
+${e.explanation ? `TOPIC EXPLANATION: ${e.explanation}` : ''}
+TEMPLATE BAND: ${isBand6 ? 'Band 6 — plain English only' : 'Band 9 — sophisticated but student-friendly'}
+VOCABULARY LEVEL: ${vocabSpec.label}
+
+═══════════════════════════════════════════════════
+RULES FOR IDEAS:
+- Each idea is a short phrase, 3-7 words.
+- Concrete and topic-specific — NOT generic.
+${bandVocabRule}
+- Each idea is a distinct angle — no overlap.
+- Order from strongest/most obvious to more nuanced.
+- For "solution" categories or "pairedText" solutions: write ACTIONABLE items (start with a verb where natural).
+- For "cause", "problem" or "challenge" categories: state them clearly as a noun phrase.
+
+═══════════════════════════════════════════════════
+RETURN ONLY A JSON OBJECT — no preamble, no markdown fences.
+CRITICAL:
+1. Do NOT use smart quotes (like “ or ”). Use standard straight double quotes (").
+2. Do NOT write nested double quotes inside any string properties. If you want to quote a word inside a string, use single quotes (e.g. "better access to 'smart' devices").
+3. Do NOT add any comments (like // or /* */) or trailing commas.
+4. Ensure the JSON is 100% syntactically correct and fully complete.
+
+Format:
+
+{
+  "primaryQuestionType": "two_option_preference",
+  "secondaryFeatures": ["personal_experience_required"],
+  "confidenceScore": 0.95,
+  "detectedOptions": ["city living", "countryside living"],
+  "explanationForDetection": "Question asks to choose between living in cities or countryside.",
+  "stanceRequired": true,
+  "ideas": [
+    {
+      "id": "city_healthcare",
+      "text": "better access to hospitals and schools",
+      "category": "main_support",
+      "supports": ["city living"],
+      "opposes": ["countryside living"],
+      "essayTypes": ["two_option_preference"],
+      "strength": 5,
+      "pairedText": "promoting electric public transit",
+      "pairedType": "solution",
+      "pairedId": "transit_promo"
+    }
+  ]
+}`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 3500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    let text = data.content.map(c => c.text || '').join('').trim();
+    let result = cleanAndParseJSON(text);
+    
+    if (!result.ideas || !Array.isArray(result.ideas)) {
+      throw new Error('AI did not return the expected ideas format');
+    }
+    
+    let activeType = lockedType || normalizeQuestionType(result.primaryQuestionType) || 'advantages_disadvantages';
+    if (!QUESTION_TYPES[activeType]) activeType = 'advantages_disadvantages';
+    const lowerQ = (e.question || '').toLowerCase();
+    // Legacy keyword backstops below only apply when NO lock exists —
+    // a manual override, curated seed type, or confident local match
+    // must never be second-guessed by substring sniffing.
+    const isMostPressing = !lockedType && (lowerQ.includes('most pressing problem') || lowerQ.includes('most important issue') || lowerQ.includes('biggest problem') || lowerQ.includes('most serious global issue') || lowerQ.includes('most serious problem'));
+
+    // If the library preset this essay to single_best_option, that wins over the
+    // AI's free classification. The AI sometimes downgrades these "choose one X
+    // and justify it" prompts into a generic 2-column type, which produces the
+    // wrong ideas. Honour the curated preset instead.
+    const presetType = e.questionType || e.detectedQuestionType || '';
+    if (!lockedType && presetType === 'single_best_option') {
+      activeType = 'single_best_option';
+    }
+
+    if (isMostPressing) {
+      activeType = 'single_best_option';
+      if (!result.secondaryFeatures) result.secondaryFeatures = [];
+      if (!result.secondaryFeatures.includes('solution_required')) {
+        result.secondaryFeatures.push('solution_required');
+      }
+    }
+
+    // Distinguish the two single_best_option sub-variants:
+    //  - "most pressing problem": pick ONE problem, list causes + paired solutions
+    //  - "focus area": pick ONE sub-area of a topic, give reasons + examples/solutions
+    // The focus-area variant is signalled by "which area / aspect ... focus on".
+    const isFocusArea = !lockedType && (activeType === 'single_best_option') && !isMostPressing && (
+      (lowerQ.includes('area') || lowerQ.includes('aspect') || lowerQ.includes('field')) &&
+      (lowerQ.includes('focus') || lowerQ.includes('choose') || lowerQ.includes('which') || lowerQ.includes('select'))
+    );
+    if (isFocusArea) {
+      if (!result.secondaryFeatures) result.secondaryFeatures = [];
+      if (!result.secondaryFeatures.includes('focus_area')) {
+        result.secondaryFeatures.push('focus_area');
+      }
+    }
+
+    e.detectedQuestionType = activeType;
+    e.questionType = activeType;
+    e.detectedOptions = result.detectedOptions || [];
+    e.suggestedIdeas = result.ideas;
+    // Locked classifications carry their own verified features; the AI's
+    // guesses are discarded so curated seeds stay exactly as curated.
+    e.secondaryFeatures = lockedType ? lockedFeatures.slice() : (result.secondaryFeatures || []);
+
+    // For focus-area questions, stamp each idea with a durable `area` field
+    // derived from its `supports` tag (matched against the candidate areas).
+    // Filtering reads this field instead of `supports`, which the idea
+    // normalizer can overwrite with stance sides for main_support ideas.
+    const focusAreaActive = (activeType === 'single_best_option') && e.secondaryFeatures.includes('focus_area');
+    if (focusAreaActive && Array.isArray(e.suggestedIdeas)) {
+      const areaOpts = (e.detectedOptions || []).map(a => (a || '').toLowerCase());
+      e.suggestedIdeas.forEach(idea => {
+        if (idea.area) return;
+        const sup = idea.supports || [];
+        let matched = '';
+        for (const s of sup) {
+          const sl = (s || '').toLowerCase();
+          const hit = (e.detectedOptions || []).find((opt, i) => areaOpts[i].includes(sl) || sl.includes(areaOpts[i]));
+          if (hit) { matched = hit; break; }
+        }
+        idea.area = matched || (sup.length ? sup[0] : '');
+      });
+    }
+    
+    e.chosenStance = '';
+    e.selectedReasonIds = [];
+    e.selectedExampleIds = [];
+    e.selectedSolutionIds = [];
+    e.optionalContrastIds = [];
+    
+    const leftIdeas = result.ideas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+    const rightIdeas = result.ideas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+    suggestedLeftIdeas = leftIdeas.slice(0, 5).map(i => ({
+      id: i.id || '',
+      text: i.text || '',
+      category: i.category || 'main_support',
+      pairedText: i.pairedText || i.pairedSolutionOrEffect || '',
+      pairedType: i.pairedType || '',
+      pairedId: i.pairedId || '',
+      supportsStance: i.supportsStance || '',
+      supports: i.supports || [],
+      opposes: i.opposes || []
+    }));
+    suggestedRightIdeas = rightIdeas.slice(0, 5).map(i => ({
+      id: i.id || '',
+      text: i.text || '',
+      category: i.category || 'example',
+      pairedText: i.pairedText || i.pairedSolutionOrEffect || '',
+      pairedType: i.pairedType || '',
+      pairedId: i.pairedId || '',
+      supportsStance: i.supportsStance || '',
+      supports: i.supports || [],
+      opposes: i.opposes || []
+    }));
+    pickedLeftIdeas = new Set();
+    pickedRightIdeas = new Set();
+    
+    saveAll();
+    renderIdeasPicker();
+  } catch (err) {
+    console.error(err);
+    body.innerHTML = `<div style="text-align:center; padding:16px; color:var(--accent); font-size:12px;">${escapeHtml(err.message)}</div>`;
+    toast('Failed to get ideas: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💡 Let AI suggest ideas for me';
+  }
+}
+
+function renderStanceController(e) {
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  
+  if (!typeCfg.stanceRequired) {
+    return '';
+  }
+  
+  const vocabIdx = (e.vocab || 3) - 1;
+  const bag = getTemplatesBag();
+  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+  const isBand6 = (effectiveTplKey === 'band6' || e.vocab === 1);
+  const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
+
+  if (isBand6 && isAgreementType) {
+    if (e.chosenStance !== 'partially disagree') {
+      e.chosenStance = 'partially disagree';
+      setTimeout(() => {
+        saveAll();
+        revalidateSelectedIdeas(e);
+        renderIdeasPicker();
+        renderPreview();
+      }, 0);
+    }
+  }
+
+  let options = [];
+  if (isBand6 && isAgreementType) {
+    options = ["partially disagree"];
+  } else if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+    options = [
+      `${e.detectedOptions[0]} is better`,
+      `${e.detectedOptions[1]} is better`
+    ];
+  } else if (activeType === 'discuss_both_views' && e.detectedOptions && e.detectedOptions.length === 2) {
+    options = [
+      `strongly support ${e.detectedOptions[0]}`,
+      `strongly support ${e.detectedOptions[1]}`,
+      `balanced perspective/neutral`
+    ];
+  } else if (activeType === 'single_best_option') {
+    const opts = (e.detectedOptions && e.detectedOptions.length > 0) ? e.detectedOptions : (typeCfg.stanceOptions || []);
+    const isFocusAreaQ = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+    if (isFocusAreaQ) {
+      // Focus-area questions: the pill is simply the chosen sub-area, read naturally.
+      options = opts.map(opt => /^focus/i.test(opt) ? opt : `Focus: ${opt}`);
+    } else {
+      options = opts.map(opt => opt.toLowerCase().includes('pressing problem') || opt.toLowerCase().includes('is best') ? opt : `${opt} is the most pressing problem`);
+    }
+  } else {
+    options = typeCfg.stanceOptions || [];
+  }
+  
+  if (options.length === 0) return '';
+
+  const stanceHeaderLabel = (activeType === 'single_best_option' && e.secondaryFeatures && e.secondaryFeatures.includes('focus_area'))
+    ? 'Choose Your Focus Area'
+    : 'Choose Your Stance';
+
+  const pillsHtml = options.map(opt => {
+    const isSelected = e.chosenStance === opt;
+    return `
+      <button class="stance-pill ${isSelected ? 'active' : ''}" 
+              onclick="event.preventDefault(); changeChosenStance('${escapeHtml(opt)}')"
+              style="padding: 6px 12px; font-size: 11.5px; border-radius: 20px; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; background: ${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; color: ${isSelected ? 'var(--accent-deep)' : 'var(--ink-soft)'}; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-bottom: 4px;">
+        ${escapeHtml(opt)}
+      </button>
+    `;
+  }).join('');
+  
+  return `
+    <div class="stance-controller" style="margin-bottom: 14px;">
+      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); font-weight: 700; margin-bottom: 6px;">
+        ${stanceHeaderLabel}
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        ${pillsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function renderIdeasPicker() {
+  const e = getCurrent();
+  if (!e) return;
+  
+  ensureSuggestedIdeas(e);
+  revalidateSelectedIdeas(e);
+  
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
+  
+  const helpEl = document.getElementById('ideasPickerHelp');
+  if (helpEl) {
+    if (activeType === 'single_best_option') {
+      const isFocusArea = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+      if (isFocusArea) {
+        helpEl.innerHTML = `Choose a focus area, then pick exactly 2 reasons and 2 examples/solutions`;
+      } else {
+        helpEl.innerHTML = `Choose a stance, pick exactly 2 causes/challenges`;
+      }
+    } else if (activeType === 'opinion_alternatives') {
+      helpEl.innerHTML = `Choose a stance, pick exactly 2 supporting reasons and 2 alternative actions`;
+    } else if (isStanceAgreement) {
+      helpEl.innerHTML = `Choose a stance, pick exactly 2 reasons`;
+    } else if (typeCfg.stanceRequired) {
+      helpEl.innerHTML = `Choose a stance, pick exactly 2 left-side + 2 right-side ideas`;
+    } else if (['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType)) {
+      helpEl.innerHTML = `Choose exactly 2 problems/causes (solutions are auto-paired)`;
+    } else if (['cause_effect', 'problem_effect', 'causes_effects'].includes(activeType)) {
+      helpEl.innerHTML = `Choose exactly 2 causes/problems (effects are auto-paired)`;
+    } else {
+      helpEl.innerHTML = `Choose exactly 2 left-side + 2 right-side ideas`;
+    }
+  }
+
+  const body = document.getElementById('ideasPickerBody');
+  if (!body) return;
+
+  // 1. Question Type status with manual override Change button
+  let typeHeaderHtml = `
+    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:11.5px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:14px;">🤖</span>
+        <span><strong>Question type:</strong> ${escapeHtml(typeCfg.displayName)}</span>
+      </div>
+      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:11px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
+    </div>
+  `;
+
+  // 1b. Static, deterministic explanation of what the question is asking.
+  const questionExplanationHtml = buildQuestionExplanationHtml(e, activeType, typeCfg);
+
+  // 2. Stance Selector if stance is required
+  let stanceSelectorHtml = '';
+  if (typeCfg.stanceRequired) {
+    stanceSelectorHtml = renderStanceController(e);
+  }
+
+  // 2b. Stance gate: for stance-based types the idea lists stay hidden
+  // until the student makes a deliberate choice.
+  const stanceGateActive = !!typeCfg.stanceRequired && !e.chosenStance && stanceSelectorHtml !== '';
+  const gateNoun = (activeType === 'single_best_option' && (e.secondaryFeatures || []).includes('focus_area'))
+    ? 'focus area'
+    : (activeType === 'single_best_option' ? 'option' : 'stance');
+
+  // 3. Main columns / lists
+  let listsHtml = '';
+  const relationTypes = ['problem_solution', 'cause_solution', 'cause_effect', 'problem_effect', 'causes_solutions', 'causes_effects'];
+  const isRel = relationTypes.includes(activeType) || activeType === 'single_best_option';
+
+  if (activeType === 'single_best_option') {
+    // Single-best-option layout
+    const isFocusArea = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+
+    if (isFocusArea) {
+      // FOCUS-AREA layout: pick ONE sub-area (stance), then pick 2 reasons it
+      // matters (BP1) and 2 examples/solutions (BP2). Ideas are filtered to the
+      // chosen sub-area via their "supports" tag. No auto-pairing.
+      const reasonIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge' || i.category === 'advantage');
+      const solutionIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'solution' || i.category === 'example');
+
+      // Restrict to the chosen area when one is selected.
+      const areaText = (e.chosenStance || '').replace(/^focus:\s*/i, '').toLowerCase();
+      const matchArea = (val) => {
+        const v = (val || '').toLowerCase();
+        return v && (v.includes(areaText) || areaText.includes(v));
+      };
+      const belongsToArea = (idea) => {
+        if (!areaText) return true;
+        // Prefer the durable `area` field (immune to supports clobbering).
+        if (idea.area) return matchArea(idea.area);
+        if (idea.supports && idea.supports.length) {
+          return idea.supports.some(matchArea);
+        }
+        return true; // untagged ideas stay visible so the column is never empty
+      };
+      // Filter to the chosen area, but never leave a column unusable: if the AI
+      // tagged fewer than 2 ideas to this area, fall back to showing all ideas of
+      // that category so the student can always pick 2.
+      let leftFiltered = reasonIdeas.filter(belongsToArea);
+      let rightFiltered = solutionIdeas.filter(belongsToArea);
+      const leftFellBack = areaText && leftFiltered.length < 2 && reasonIdeas.length > leftFiltered.length;
+      const rightFellBack = areaText && rightFiltered.length < 2 && solutionIdeas.length > rightFiltered.length;
+      if (leftFellBack) leftFiltered = reasonIdeas;
+      if (rightFellBack) rightFiltered = solutionIdeas;
+
+      const pickedReasons = e.selectedReasonIds || [];
+      const pickedSolutions = e.selectedSolutionIds || [];
+      const needStance = !e.chosenStance;
+      const fallbackHint = `<div style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
+
+      const colA = leftFiltered.length === 0
+        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
+        : (leftFellBack ? fallbackHint : '') + leftFiltered.map((idea) => {
+            const isSelected = pickedReasons.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('');
+
+      const colB = rightFiltered.length === 0
+        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
+        : (rightFellBack ? fallbackHint : '') + rightFiltered.map((idea) => {
+            const isSelected = pickedSolutions.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('solution', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('');
+
+      listsHtml = `
+        <div class="ideas-cols">
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+              Why this area matters
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${colA}
+          </div>
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+              Examples &amp; solutions
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${colB}
+          </div>
+        </div>
+      `;
+    } else {
+    const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+    const leftIdeas = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge');
+    const pickedReasons = e.selectedReasonIds || [];
+    
+    listsHtml = `
+      <div class="ideas-cols">
+        <!-- Left Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            Causes / Challenges
+            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          </div>
+          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
+            const isSelected = pickedReasons.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            Solutions (Auto-paired)
+            <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+                ${window.ideasEditMode ? 'Done' : 'Edit'}
+              </button>
+            </span>
+          </div>
+          ${leftIdeas.map((leftIdea, idx) => {
+            const isSelected = pickedReasons.includes(leftIdea.text);
+            const pairedVal = getPairedTextForIdea(e, leftIdea, idx);
+            
+            let rightContentHtml = '';
+            if (window.ideasEditMode) {
+              rightContentHtml = `
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+              `;
+            } else {
+              rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
+            }
+            
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                ${rightContentHtml}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+    }
+
+  } else if (isStanceAgreement) {
+    const isOpinionAlts = (activeType === 'opinion_alternatives');
+    if (isOpinionAlts) {
+      // 3-column layout: Column A (Agree Reasons), Column B (Disagree Reasons), Column C (Alternative Actions)
+      const agreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'advantage') : [];
+      const disagreeReasons = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'disadvantage') : [];
+      const alternativeActions = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'solution') : [];
+      
+      const pickedReasons = e.selectedReasonIds || [];
+      const pickedSolutions = e.selectedSolutionIds || [];
+      
+      // Determine columns state based on stance
+      const stanceLower = (e.chosenStance || '').toLowerCase();
+      const isAgreeStance = e.chosenStance && ['strongly agree', 'largely agree', 'partially agree', 'agree'].some(s => stanceLower.includes(s));
+      const isDisagreeStance = e.chosenStance && ['strongly disagree', 'largely disagree', 'partially disagree', 'disagree'].some(s => stanceLower.includes(s));
+      
+      const agreeColDisabled = e.chosenStance && !isAgreeStance;
+      const disagreeColDisabled = e.chosenStance && !isDisagreeStance;
+      
+      listsHtml = `
+        <div class="ideas-cols ideas-cols-3">
+          <!-- Column A: Reasons to Agree -->
+          <div class="ideas-side-col ${agreeColDisabled ? 'col-disabled' : ''}" style="${agreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+              Reasons to Agree
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+            </div>
+            ${agreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- Column B: Reasons to Disagree -->
+          <div class="ideas-side-col ${disagreeColDisabled ? 'col-disabled' : ''}" style="${disagreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+              Reasons to Disagree
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+            </div>
+            ${disagreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- Column C: Alternative Actions -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">C</span>
+              Alternative Actions
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${alternativeActions.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
+              const isSelected = pickedSolutions.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      // Stance-based layout (2-column: reasons and optional contrast)
+      const { alignedIdeas, optionalContrastIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+      const mainSupport = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage' || i.category === 'cause' || i.category === 'problem');
+      
+      const pickedReasons = e.selectedReasonIds || [];
+      const pickedSecondCol = e.optionalContrastIds || [];
+      const secondColIdeas = optionalContrastIdeas;
+      const secondColLabel = 'Optional Contrast';
+      const secondColCategory = 'optional_contrast';
+      const secondColLimit = 1;
+      
+      listsHtml = `
+        <div class="ideas-cols">
+          <!-- Main reasons -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+              Supporting Reasons
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            </div>
+            ${mainSupport.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
+              const isSelected = pickedReasons.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          
+          <!-- Second Column (Optional Contrast) -->
+          <div>
+            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+              ${secondColLabel}
+              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
+            </div>
+            ${secondColIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
+              const isSelected = pickedSecondCol.includes(idea.text);
+              return `
+                <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${secondColCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: 0.8; transition:all 0.2s;">
+                  <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  </div>
+                  <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+  } else if (relationTypes.includes(activeType)) {
+    // Relation-pair layout (2-column)
+    const leftLabel = ['problem_solution', 'causes_solutions', 'cause_solution'].includes(activeType) ? 'Problems / Causes' : 'Causes / Problems';
+    const rightLabel = ['problem_solution', 'causes_solutions', 'cause_solution'].includes(activeType) ? 'Solutions (Auto-paired)' : 'Effects (Auto-paired)';
+    
+    const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left')));
+    const pickedReasons = e.selectedReasonIds || [];
+    
+    listsHtml = `
+      <div class="ideas-cols">
+        <!-- Left Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            ${escapeHtml(leftLabel)}
+            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          </div>
+          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+            const isSelected = pickedReasons.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            ${escapeHtml(rightLabel)}
+            <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+                ${window.ideasEditMode ? 'Done' : 'Edit'}
+              </button>
+            </span>
+          </div>
+          ${leftIdeas.map((leftIdea, idx) => {
+            const isSelected = pickedReasons.includes(leftIdea.text);
+            const pairedVal = getPairedTextForIdea(e, leftIdea, idx);
+            
+            let rightContentHtml = '';
+            if (window.ideasEditMode) {
+              rightContentHtml = `
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+              `;
+            } else {
+              rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
+            }
+            
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                ${rightContentHtml}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+    
+  } else {
+    // Normal two-column layout
+    const leftLabel = typeCfg.leftLabel || 'Advantages / Benefits';
+    const rightLabel = typeCfg.rightLabel || 'Disadvantages / Drawbacks';
+    
+    const leftIdeas = e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || (i.supports && i.supports.includes('left')));
+    const rightIdeas = e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right')));
+    
+    const pickedReasons = e.selectedReasonIds || [];
+    const pickedRight = (activeType === 'problem_solution' || activeType === 'causes_solutions' || activeType === 'cause_solution') ? (e.selectedSolutionIds || []) : (e.selectedExampleIds || []);
+    const rightCategory = (activeType === 'problem_solution' || activeType === 'causes_solutions' || activeType === 'cause_solution') ? 'solution' : 'example';
+    
+    listsHtml = `
+      <div class="ideas-cols">
+        <!-- Left Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            ${escapeHtml(leftLabel)}
+            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          </div>
+          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+            const isSelected = pickedReasons.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            ${escapeHtml(rightLabel)}
+            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          </div>
+          ${rightIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : rightIdeas.map((idea) => {
+            const isSelected = pickedRight.includes(idea.text);
+            return `
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${rightCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
+                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
+                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                </div>
+                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  let warningsHtml = '';
+  if (e.ideaValidationWarnings && e.ideaValidationWarnings.length > 0) {
+    warningsHtml = e.ideaValidationWarnings.map(w => `
+      <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+        <span>⚠️</span>
+        <span>${escapeHtml(w)}</span>
+      </div>
+    `).join('');
+  }
+  
+  if (stanceGateActive) {
+    listsHtml = `
+      <div style="border:1.5px dashed var(--line); border-radius:8px; padding:24px 16px; text-align:center; background:var(--bg); color:var(--ink-soft); font-size:12.5px; line-height:1.6;">
+        <div style="font-size:22px; margin-bottom:6px;">🧭</div>
+        <strong>Step 2 — choose your ${escapeHtml(gateNoun)} above.</strong><br>
+        The idea lists stay hidden until you pick, so the decision is yours — not the AI's.
+      </div>`;
+  }
+
+  let errorsHtml = '';
+  if (e.ideaValidationErrors && e.ideaValidationErrors.length > 0) {
+    errorsHtml = e.ideaValidationErrors.map(err => `
+      <div style="background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+        <span>❌</span>
+        <span>${escapeHtml(err)}</span>
+      </div>
+    `).join('');
+  }
+
+  let isReady = false;
+  const pickedReasonsCount = (e.selectedReasonIds || []).length;
+  const pickedExamplesCount = (e.selectedExampleIds || []).length;
+  const pickedSolutionsCount = (e.selectedSolutionIds || []).length;
+  
+  if (activeType === 'single_best_option') {
+    const isFocusArea = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+    if (isFocusArea) {
+      isReady = e.chosenStance && pickedReasonsCount === 2 && pickedSolutionsCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
+    } else {
+      isReady = e.chosenStance && pickedReasonsCount === 2;
+    }
+  } else if (activeType === 'opinion_alternatives') {
+    isReady = e.chosenStance && pickedReasonsCount === 2 && pickedSolutionsCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
+  } else if (isStanceAgreement) {
+    isReady = e.chosenStance && pickedReasonsCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
+  } else if (typeCfg.stanceRequired) {
+    isReady = e.chosenStance && pickedReasonsCount === 2 && pickedExamplesCount === 2 && (!e.ideaValidationErrors || e.ideaValidationErrors.length === 0);
+  } else if (relationTypes.includes(activeType)) {
+    isReady = pickedReasonsCount === 2;
+  } else {
+    isReady = pickedReasonsCount === 2 && pickedExamplesCount === 2;
+  }
+
+  const isFocusAreaStatus = (activeType === 'single_best_option') && e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+  let statusText = isReady 
+    ? `<strong>Ready! All required ideas selected.</strong>` 
+    : isFocusAreaStatus
+      ? `Choose a focus area, then select exactly 2 reasons and 2 examples/solutions.`
+      : (activeType === 'single_best_option')
+        ? `Pick a stance/option, then select exactly 2 causes/challenges.`
+        : (activeType === 'opinion_alternatives')
+          ? `Pick a stance, then select exactly 2 supporting reasons and 2 alternative actions.`
+          : isStanceAgreement
+            ? `Pick a stance, then select exactly 2 supporting reasons.`
+            : typeCfg.stanceRequired
+              ? `Pick a stance, then select 2 reasons and 2 examples.` 
+              : relationTypes.includes(activeType)
+                ? `Select exactly 2 causes/problems/challenges.` 
+                : `Select 2 left-side and 2 right-side ideas.`;
+
+  if (stanceGateActive) {
+    errorsHtml = '';
+    warningsHtml = '';
+    statusText = `Pick your ${escapeHtml(gateNoun)} to reveal the ideas.`;
+  }
+
+  body.innerHTML = `
+    ${typeHeaderHtml}
+    ${questionExplanationHtml}
+    ${stanceSelectorHtml}
+    <div style="margin-top:14px; margin-bottom:14px;">
+      ${listsHtml}
+    </div>
+    ${errorsHtml}
+    ${warningsHtml}
+    <div class="ideas-actions" style="margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+      <div class="ideas-counter" style="font-size:11.5px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
+      <div style="display:flex; gap:8px;">
+        <button class="ideas-refresh-btn" onclick="aiSuggestIdeas()" style="background:var(--bg); border:1px solid var(--line); color:var(--ink-soft); font-size:12px; cursor:pointer; padding:6px 12px; border-radius:6px; font-weight:600; font-family:var(--sans);">↻ Refresh</button>
+        <button class="ideas-use-btn" id="ideasUseBtn" onclick="usePickerSelectedIdeas()" ${isReady ? '' : 'disabled'} style="background:${isReady ? 'var(--accent)' : 'var(--line-soft)'}; color:${isReady ? 'white' : 'var(--ink-mute)'}; border:none; font-size:12px; cursor:${isReady ? 'pointer' : 'default'}; padding:6px 14px; border-radius:6px; font-weight:600; font-family:var(--sans);">Use these &amp; write essay →</button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+//  AI: WRITE FULL ESSAY
+// ============================================================
+function autoSelectIdeas(e) {
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  
+  const leftIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left'))) : [];
+  const rightIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right'))) : [];
+  
+  e.selectedReasonIds = [];
+  e.selectedExampleIds = [];
+  e.selectedSolutionIds = [];
+  e.optionalContrastIds = [];
+  
+  const isSolution = ['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType);
+  const isEffect = ['cause_effect', 'problem_effect', 'causes_effects', 'problems_effects'].includes(activeType);
+  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
+  
+  if (isSolution) {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => {
+      e.selectedReasonIds.push(i.text);
+      if (i.pairedText) {
+        e.selectedSolutionIds.push(i.pairedText);
+      }
+    });
+  } else if (isEffect) {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => {
+      e.selectedReasonIds.push(i.text);
+      if (i.pairedText) {
+        e.selectedExampleIds.push(i.pairedText);
+      }
+    });
+  } else if (activeType === 'single_best_option') {
+    const leftToPick = leftIdeas.slice(0, 2);
+    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
+  } else if (activeType === 'opinion_alternatives') {
+    let aligned = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage') : [];
+    if (e.chosenStance) {
+      const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
+      aligned = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage');
+    }
+    const reasonsToPick = aligned.slice(0, 2);
+    reasonsToPick.forEach(i => e.selectedReasonIds.push(i.text));
+
+    const alts = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'solution') : [];
+    const altsToPick = alts.slice(0, 2);
+    altsToPick.forEach(i => e.selectedSolutionIds.push(i.text));
+  } else if (isStanceAgreement) {
+    let aligned = leftIdeas;
+    if (e.chosenStance) {
+      const stanceLower = e.chosenStance.toLowerCase();
+      aligned = leftIdeas.filter(i => i.supports && i.supports.some(s => s.toLowerCase() === stanceLower));
+      if (aligned.length < 2) {
+        aligned = leftIdeas;
+      }
+    }
+    const toPick = aligned.slice(0, 2);
+    toPick.forEach(i => e.selectedReasonIds.push(i.text));
+  } else {
+    const leftToPick = leftIdeas.slice(0, 2);
+    const rightToPick = rightIdeas.slice(0, 2);
+    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
+    rightToPick.forEach(i => e.selectedExampleIds.push(i.text));
+  }
+  
+  pickedLeftIdeas = new Set(e.selectedReasonIds);
+  if (isSolution || activeType === 'opinion_alternatives') {
+    pickedRightIdeas = new Set(e.selectedSolutionIds);
+  } else {
+    pickedRightIdeas = new Set(e.selectedExampleIds);
+  }
+  
+  saveAll();
+  renderIdeasPicker();
+}
+
+async function aiWriteFullEssay(opts = {}) {
+  const e = opts.essay || getCurrent();
+  if (!e) { if (!opts.silent) toast('No essay selected', true); return false; }
+  if (!e.title || !e.question) { if (!opts.silent) toast('Need essay title and question first', true); return false; }
+
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+
+  // Auto-select stance if required but missing
+  if (typeCfg.stanceRequired && !e.chosenStance) {
+    let options = [];
+    if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+      options = [`${e.detectedOptions[0]} is better`, `${e.detectedOptions[1]} is better`];
+    } else if (activeType === 'discuss_both_views' && e.detectedOptions && e.detectedOptions.length === 2) {
+      options = [`strongly support ${e.detectedOptions[0]}`, `strongly support ${e.detectedOptions[1]}`, `balanced perspective/neutral`];
+    } else if (activeType === 'single_best_option') {
+      const opts = (e.detectedOptions && e.detectedOptions.length > 0) ? e.detectedOptions : (typeCfg.stanceOptions || []);
+      options = opts.map(opt => opt.toLowerCase().includes('pressing problem') || opt.toLowerCase().includes('is best') ? opt : `${opt} is the most pressing problem`);
+    } else {
+      options = typeCfg.stanceOptions || [];
+    }
+    const bag = getTemplatesBag();
+    const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+    const isBand6 = (effectiveTplKey === 'band6');
+    const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
+
+    if (isBand6 && isAgreementType) {
+      e.chosenStance = 'partially disagree';
+    } else if (options.length > 0) {
+      e.chosenStance = options[0];
+    }
+    if (e.chosenStance) {
+      saveAll();
+      if (!opts.silent) toast(`Auto-selected stance: "${e.chosenStance}"`);
+    }
+  }
+
+  // Auto-suggest and auto-select ideas if missing
+  const hasIdeas = (e.seedIdeas && e.seedIdeas.trim().length > 0) || 
+                    (e.selectedReasonIds && e.selectedReasonIds.length > 0);
+  if (!hasIdeas) {
+    if (!opts.silent) toast('Auto-suggesting and selecting ideas...');
+    if (!e.suggestedIdeas || e.suggestedIdeas.length === 0) {
+      await aiSuggestIdeas();
+    }
+    autoSelectIdeas(e);
+  }
+
+  const stateValidation = validateEssayStateBeforeGeneration(e);
+  if (!stateValidation.valid) {
+    if (!opts.silent) {
+      toast('Validation failed: ' + stateValidation.errors.join(' '), true);
+    }
+    return false;
+  }
+
+  const bag = getTemplatesBag();
+  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+  const isBand6 = (effectiveTplKey === 'band6');
+
+  const mode = opts.band6Mode || (opts.silent ? (e.band6Mode || 'full_essay') : null);
+  if (isBand6 && !mode && !opts.silent) {
+    document.getElementById('band6ModeModal').classList.add('show');
+    return false;
+  }
+  if (isBand6 && mode) {
+    e.band6Mode = mode;
+  }
+
+  const hasContent = (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0;
+  if (hasContent && !opts.skipConfirm) {
+    if (!confirm('This essay already has content. Overwrite it with a new AI-written essay?')) return false;
+  }
+  if (!await consumeQuota('essay')) return false;
+  
+  const template = getTemplateForEssay(e);
+  const btn = opts.silent ? null : document.getElementById('aiWriteBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = mode === 'just_phrases' ? '<span class="spinner"></span> Writing explanations...' : '<span class="spinner"></span> Writing essay...';
+    startWriteButtonMessages(btn);
+  }
+
+  let bp2Template = template.bp2 || '';
+  const isStrong = isStrongStance(activeType, e.chosenStance);
+  if (isStrong) {
+    if (isBand6) {
+      bp2Template = bp2Template
+        .replace("On the other hand, a major concern regarding [topic] is that [negative idea 1]", "Furthermore, another key advantage of [topic] is that [positive idea 1]")
+        .replace("this issue can result in [negative idea 2], including financial burden or reduced well-being", "this can lead to [positive idea 2], including financial benefits or improved well-being")
+        .replace("However, with effective planning and appropriate measures, these challenges can be controlled and reduced.", "Hence, with proper implementation, these advantages can be further maximised.");
+    } else {
+      if (bp2Template.includes("On the other hand, one notable [demerit / negative effect / solution] is [point 1]")) {
+        bp2Template = bp2Template.replace("On the other hand, one notable [demerit / negative effect / solution] is [point 1]", "Furthermore, another significant [merit / benefit / positive effect] is [point 1]");
+      } else if (bp2Template.trim().startsWith("On the other hand,")) {
+        bp2Template = bp2Template.replace("On the other hand,", "Furthermore,");
+      } else if (bp2Template.trim().startsWith("On the other hand")) {
+        bp2Template = bp2Template.replace("On the other hand", "Furthermore");
+      } else if (bp2Template.trim().startsWith("However,")) {
+        bp2Template = bp2Template.replace("However,", "In addition,");
+      } else if (bp2Template.trim().startsWith("Conversely,")) {
+        bp2Template = bp2Template.replace("Conversely,", "Furthermore,");
+      }
+
+      bp2Template = bp2Template
+        .replace("illustrates this [drawback / consequence] clearly", "illustrates this [benefit / outcome] clearly")
+        .replace("another [limitation / adverse consequence / measure to be taken] is [point 2]", "another [advantage / positive consequence / further point in support] is [point 2]")
+        .replace("demonstrating the impact on [affected group / outcome]", "demonstrating the positive impact on [affected group / outcome]");
+    }
+  }
+
+  const templateCopy = { ...template, bp2: bp2Template };
+  const plan = buildStructuredEssayPlan(e);
+
+  try {
+    const res = await fetch(API_URL + '/api/generate-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, template: templateCopy })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      let errDetail = '';
+      try {
+        const parsed = JSON.parse(t);
+        if (parsed.details) errDetail = '\nDetails: ' + parsed.details.join(' | ');
+        else if (parsed.error) errDetail = '\n' + parsed.error;
+      } catch (e) {
+        errDetail = `\nAPI error ${res.status}: ${t.slice(0, 300)}`;
+      }
+      throw new Error(errDetail || `Server failed to generate essay`);
+    }
+    const data = await res.json();
+    if (!data.success || !data.text) {
+      throw new Error(data.error || 'Server returned empty generation');
+    }
+    const text = data.text;
+
+    if (data.warnings && data.warnings.length > 0 && !opts.silent) {
+      console.warn("Generated essay warnings:", data.warnings);
+      toast("Warning: " + data.warnings[0], false);
+    }
+
+    const sections = parseEssaySections(text);
+    if (!sections.intro || !sections.bp1 || !sections.bp2 || !sections.concl) {
+      throw new Error('AI response was incomplete. Try again.');
+    }
+    e.intro = sections.intro;
+    e.bp1 = sections.bp1;
+    e.bp2 = sections.bp2;
+    e.concl = sections.concl;
+    e.previewSignature = generatePreviewSignature(e);
+    e.stanceUsed = e.chosenStance || '';
+    e.questionTypeUsed = getActiveQuestionType(e);
+    e.ideasUsed = (e.selectedReasonIds || []).concat(e.selectedExampleIds || []).concat(e.selectedSolutionIds || []).concat(e.optionalContrastIds || []);
+    e.generatedAt = new Date().toISOString();
+    saveAll();
+    if (!opts.silent) {
+      loadCurrent(); renderPreview(); renderList();
+      if (isBand6 && mode === 'just_phrases') {
+        toast('Idea explanations and phrases written!');
+      } else {
+        toast('Essay written! Auto-extracting pros/cons next...');
+        setTimeout(() => aiGenerate('all', { skipQuota: true }), 600);
+      }
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    if (!opts.silent) toast('AI failed: ' + err.message, true);
+    if (opts.silent) throw err;
+    return false;
+  } finally {
+    if (btn) {
+      stopWriteButtonMessages();
+      btn.disabled = false;
+      btn.innerHTML = 'Write the full essay';
+    }
+  }
+}
+
+// Cycling progress messages on the "Write the full essay" button so the ~15s
+// wait feels responsive instead of frozen.
+let writeBtnMsgTimer = null;
+function startWriteButtonMessages(btn) {
+  const messages = [
+    'Reading the question…',
+    'Planning the structure…',
+    'Writing the introduction…',
+    'Developing body paragraphs…',
+    'Adding examples…',
+    'Polishing the conclusion…'
+  ];
+  let i = 0;
+  if (writeBtnMsgTimer) clearInterval(writeBtnMsgTimer);
+  writeBtnMsgTimer = setInterval(() => {
+    i = (i + 1) % messages.length;
+    if (btn) btn.innerHTML = '<span class="spinner"></span> ' + messages[i];
+  }, 2500);
+}
+function stopWriteButtonMessages() {
+  if (writeBtnMsgTimer) { clearInterval(writeBtnMsgTimer); writeBtnMsgTimer = null; }
+}
+
+// ============================================================
+//  FREESTYLE — quick AI essay on ANY question (not saved unless chosen)
+// ============================================================
+let freestyleLast = null;
+let fsSuggestedLeftIdeas = [];
+let fsSuggestedRightIdeas = [];
+let fsSuggestedThirdIdeas = [];
+let fsPickedLeftIdeas = new Set();
+let fsPickedRightIdeas = new Set();
+let fsPickedThirdIdeas = new Set();
+let fsDetectedQuestionType = null;
+let fsChosenSide = null;
+let fsPickedCols = {};
+
+function openFreestyle() {
+  document.getElementById('fsQuestion').value = '';
+  document.getElementById('fsResultArea').style.display = 'none';
+  document.getElementById('fsResult').innerHTML = '';
+  document.getElementById('fsIdeasArea').style.display = 'none';
+  document.getElementById('fsIdeasArea').innerHTML = '';
+  populateFreestyleLibrary();
+  freestyleResetActions();
+  freestyleLast = null;
+  const e = getCurrent();
+  const currentMode = e ? (e.generationMode || 'template') : 'template';
+  const fsStyle = document.getElementById('fsStyle');
+  if (fsStyle) fsStyle.value = currentMode;
+  document.getElementById('freestyleModal').classList.add('show');
+  setTimeout(() => { const q = document.getElementById('fsQuestion'); if (q) q.focus(); }, 50);
+}
+
+function populateFreestyleLibrary() {
+  const sel = document.getElementById('fsLibrarySelect');
+  if (!sel) return;
+  const opts = ['<option value="">— Choose from your library —</option>'];
+  essays
+    .filter(e => (e.title || '').trim() && (e.question || '').trim())
+    .forEach(e => { opts.push(`<option value="${e.id}">${escapeHtml(e.title)}</option>`); });
+  sel.innerHTML = opts.join('');
+  sel.value = '';
+}
+
+function fsPickFromLibrary(id) {
+  if (!id) return;
+  const e = essays.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('fsQuestion').value = e.question || '';
+  // Match the saved essay's band where possible (custom/default → Band 9)
+  const key = (typeof getTemplateKeyForEssay === 'function') ? getTemplateKeyForEssay(e) : 'band9';
+  document.getElementById('fsBand').value = (key === 'band6') ? 'band6' : 'band9';
+  if (e.vocab) {
+    const vocabSel = document.getElementById('fsVocab');
+    if (vocabSel) vocabSel.value = String(Math.min(5, Math.max(1, e.vocab)));
+  }
+  // If a result is already showing, clear it so the picked topic writes fresh
+  if (freestyleLast) {
+    document.getElementById('fsResultArea').style.display = 'none';
+    document.getElementById('fsResult').innerHTML = '';
+    document.getElementById('fsIdeasArea').style.display = 'none';
+    document.getElementById('fsIdeasArea').innerHTML = '';
+    freestyleLast = null;
+    freestyleResetActions();
+  }
+}
+
+function closeFreestyle() {
+  document.getElementById('freestyleModal').classList.remove('show');
+}
+
+function freestyleResetActions() {
+  document.getElementById('fsActions').innerHTML =
+    '<button class="tb-text-btn" onclick="closeFreestyle()">Close</button>' +
+    '<button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleSuggestIdeas()">💡 Suggest Ideas</button>';
+}
+
+function freestyleReset() {
+  document.getElementById('fsResultArea').style.display = 'none';
+  document.getElementById('fsResult').innerHTML = '';
+  document.getElementById('fsIdeasArea').style.display = 'none';
+  document.getElementById('fsIdeasArea').innerHTML = '';
+  freestyleLast = null;
+  freestyleResetActions();
+  const q = document.getElementById('fsQuestion');
+  if (q) q.focus();
+}
+
+async function freestyleSuggestIdeas() {
+  const question = document.getElementById('fsQuestion').value.trim();
+  if (!question) { toast('Paste an essay question first', true); return; }
+  if (!await consumeQuota('idea')) return;
+
+  const band = document.getElementById('fsBand').value === 'band6' ? 'band6' : 'band9';
+  const isBand6 = band === 'band6';
+
+  // v20.2.0 — deterministic classification lock for Freestyle.
+  // Canonical local types are mapped onto Freestyle's column recipes.
+  const FS_CANON_TO_FSID = {
+    problem_solution: 'problems_solutions',
+    cause_solution: 'causes_solutions',
+    cause_effect: 'causes_effects',
+    problem_effect: 'causes_effects',
+    advantages_disadvantages: 'advantages_disadvantages',
+    advantages_disadvantages_opinion: 'advantages_disadvantages',
+    agree_disagree: 'agree_disagree',
+    opinion: 'agree_disagree',
+    discuss_both_views: 'discuss_both_views',
+    positive_negative_impact: 'positive_negative_impacts',
+    blessing_curse: 'positive_negative_impacts',
+    two_option_preference: 'single_focus',
+    opinion_alternatives: 'opinion_alternatives'
+  };
+  const fsLocal = classifyQuestionLocally(question);
+  const fsLockedId = (fsLocal.confident && FS_CANON_TO_FSID[fsLocal.type]) ? FS_CANON_TO_FSID[fsLocal.type] : '';
+  const fsLockHint = fsLockedId ? `
+LOCKED TYPE — the question type has been verified as "${fsLockedId}". You MUST return exactly this questionType and generate ideas for its columns as described below. Choosing any other type is an error.
+` : `
+DISAMBIGUATION: "agree or disagree" → agree_disagree (NEVER a problems/solutions type, even if the statement mentions problems). Only pick a problems/causes + solutions type when the question ITSELF asks for solutions or measures.
+`;
+  const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+
+  const btn = document.getElementById('fsWriteBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Suggesting ideas...';
+  }
+
+  const ideasArea = document.getElementById('fsIdeasArea');
+  ideasArea.style.display = 'block';
+  ideasArea.innerHTML = '<div class="ideas-loading" style="padding:16px; text-align:center;"><div class="spinner-dark" style="margin:0 auto 8px auto; border:3px solid var(--line); border-top-color:var(--accent); border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite;"></div>Analyzing the question and finding ideas...</div>';
+
+  const typeOptions = Object.entries(QUESTION_TYPES)
+    .filter(([key, t]) => t.id === key)
+    .map(([key, t]) => `  "${key}" — ${t.detect}`)
+    .join('\n');
+
+  const bandVocabRule = isBand6
+    ? `- Use SIMPLE, PLAIN ENGLISH — the kind of words a Band 6 student already knows from everyday life.
+- Stay in A2-B1 territory (CEFR). Words like "good", "important", "helpful", "hard", "easy", "save money", "stay healthy", "learn faster".
+- AVOID any academic vocabulary, sophisticated phrasing, formal Latinate words, or anything a Band 7+ student would use.
+- BANNED words: foster, cultivate, facilitate, enhance, mitigate, exacerbate, prioritise, optimise, leverage, harness, undermine, sustainable, comprehensive, substantial, pivotal, paramount, deleterious, multifaceted.
+- Keep phrases short and direct: "saves money", "helps students learn" — NOT "yields substantial economic benefits".`
+    : `- Use simple Band 7-8 vocabulary students recognise from class.
+- Avoid fancy academic words students don't know — favour everyday phrasing over Latinate vocabulary.`;
+
+  const prompt = `You are helping a tutor at IPT Brisbane prepare a high-scoring ${isBand6 ? 'Band 6 (simple, plain English)' : 'Band 9'} IELTS/PTE essay. There are TWO tasks:
+
+TASK 1 — CLASSIFY the question type. Read the question carefully and pick ONE type that best matches:
+${typeOptions}
+${fsLockHint}
+TASK 2 — Generate ideas for the columns that match the chosen type.
+
+For MOST types, generate 5 ideas for EACH of TWO columns (leftIdeas + rightIdeas):
+- "causes_solutions": left = 5 causes, right = 5 solutions/measures. Crucially, the solution at index i in rightIdeas must address the cause at index i in leftIdeas (e.g. rightIdeas[0] is the solution to leftIdeas[0]).
+- "agree_disagree": left = 5 reasons to agree, right = 5 reasons to disagree
+- "problems_solutions": left = 5 problems, right = 5 solutions. Crucially, the solution at index i in rightIdeas must address the problem at index i in leftIdeas (e.g. rightIdeas[0] is the solution to leftIdeas[0]).
+- "advantages_disadvantages": left = 5 advantages, right = 5 disadvantages
+- "causes_effects": left = 5 causes, right = 5 effects. Crucially, the effect at index i in rightIdeas must be the consequence of the cause at index i in leftIdeas (e.g. rightIdeas[0] is the effect of leftIdeas[0]).
+- "problems_benefits": left = 5 benefits, right = 5 problems
+- "positive_negative_impacts": left = 5 positive impacts, right = 5 negative impacts
+- "discuss_both_views": left = 5 reasons for view A, right = 5 reasons for view B
+
+For TWO SPECIAL types, generate THREE columns (leftIdeas + rightIdeas + thirdIdeas):
+- "opinion_alternatives": left = 5 reasons to AGREE with the practice, right = 5 reasons to DISAGREE, third = 5 ALTERNATIVE ACTIONS to take instead
+- "single_focus": left = 5 reasons for Option A, right = 5 reasons for Option B, third = 5 supporting examples
+
+For the "single_focus" type, the question asks the student to choose between two focus areas/options (Option A or Option B) and justify it.
+For "single_focus" specifically, you MUST identify what Option A and Option B actually represent for this question, and output:
+1. "optionALabel": A short, clear label for Option A (e.g. "Focus on rising sea levels" or "Governments should act").
+2. "optionBLabel": A short, clear label for Option B (e.g. "Focus on extreme weather" or "Individuals should act").
+Additionally, because the student will choose either Option A or Option B, the "thirdIdeas" column (supporting examples) MUST contain exactly 5 examples total:
+- Exactly 2 examples that specifically and clearly support Option A (the first option).
+- Exactly 2 examples that specifically and clearly support Option B (the second option).
+- Exactly 1 general/neutral example that can relate to either focus or is neutral.
+Do NOT make it one-sided (e.g. do NOT provide 3 examples for one side and 2 for the other side, or 4 and 1). It must be an exact 2-2-1 split, and the examples must clearly correspond to the two option labels you defined.
+
+ESSAY DETAILS:
+QUESTION: ${question}
+TEMPLATE BAND: ${isBand6 ? 'Band 6' : 'Band 9'}
+VOCABULARY LEVEL: ${vocabSpec.label}
+
+RULES FOR IDEAS:
+- Each idea is a short phrase, 3-7 words.
+- Concrete and topic-specific — NOT generic (BAD: "it's good for society"; GOOD: "boosts career opportunities").
+${bandVocabRule}
+- Each idea is a distinct angle — no overlap.
+- For "solution / measure / alternative action" columns: write ACTIONABLE items (start with a verb where natural).
+- For "cause" or "problem" columns: state the cause/problem clearly as a noun phrase.
+
+RETURN ONLY A JSON OBJECT — no preamble, no markdown fences. Format for TWO-column types:
+{
+  "questionType": "causes_solutions",
+  "reasoning": "Question asks about causes and measures to improve",
+  "leftIdeas": ["population growth in cities", "...", "...", "...", "..."],
+  "rightIdeas": ["invest in sustainable agriculture", "...", "...", "...", "..."]
+}
+
+Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE thirdIdeas. For "single_focus", also include "optionALabel" and "optionBLabel":
+{
+  "questionType": "single_focus",
+  "reasoning": "Select one focus area and justify it",
+  "optionALabel": "Focus on rising sea levels",
+  "optionBLabel": "Focus on extreme weather events",
+  "leftIdeas": ["rising sea levels threaten coastal cities", "...", "...", "...", "..."],
+  "rightIdeas": ["extreme weather events increasing globally", "...", "...", "...", "..."],
+  "thirdIdeas": ["Miami and Bangladesh already flood regularly", "...", "...", "...", "..."]
+}`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('\n').trim();
+    
+    let parsed;
+    try {
+      parsed = cleanAndParseJSON(text);
+    } catch (e) {
+      console.error('Failed to parse Claude ideas JSON:', text);
+      throw new Error('Could not parse the suggested ideas. Please try again.');
+    }
+
+    fsDetectedQuestionType = fsLockedId || parsed.questionType || 'advantages_disadvantages';
+    fsSuggestedLeftIdeas = parsed.leftIdeas || [];
+    fsSuggestedRightIdeas = parsed.rightIdeas || [];
+    fsSuggestedThirdIdeas = parsed.thirdIdeas || [];
+    fsPickedLeftIdeas = new Set();
+    fsPickedRightIdeas = new Set();
+    fsPickedThirdIdeas = new Set();
+    fsChosenSide = null;
+    fsPickedCols = {};
+    fsDynamicLabels = {};
+    if (parsed.optionALabel) fsDynamicLabels['optionA'] = String(parsed.optionALabel).trim();
+    if (parsed.optionBLabel) fsDynamicLabels['optionB'] = String(parsed.optionBLabel).trim();
+    if (parsed.agreeLabel) fsDynamicLabels['agree'] = String(parsed.agreeLabel).trim();
+    if (parsed.disagreeLabel) fsDynamicLabels['disagree'] = String(parsed.disagreeLabel).trim();
+
+    renderFreestyleIdeasPicker();
+  } catch (err) {
+    console.error(err);
+    ideasArea.innerHTML = `<div style="text-align:center; padding:16px; color:var(--bad); font-size:12px;">${escapeHtml(err.message)}</div>`;
+    toast('Failed to get ideas: ' + err.message, true);
+    freestyleResetActions();
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '💡 Suggest Ideas';
+    }
+  }
+}
+
+function renderFreestyleIdeasPicker() {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const area = document.getElementById('fsIdeasArea');
+  if (!area) return;
+
+  const writeBtnHtml = `<button class="tb-text-btn" onclick="closeFreestyle()">Close</button>` +
+                       `<button class="tb-text-btn dark" id="fsWriteBtn" onclick="freestyleWriteWithIdeas()" disabled>Write essay</button>`;
+  document.getElementById('fsActions').innerHTML = writeBtnHtml;
+
+  if (type.pickMode === 'sided' && Array.isArray(type.columns)) {
+    renderFreestyleSidedPicker(type);
+    return;
+  }
+
+  // Column labels: prefer the recipe-specific pair, then any labels on the
+  // type config, then the paragraph roles — never blank headers.
+  const FS_COL_LABELS = {
+    causes_solutions: ['Causes', 'Solutions / measures'],
+    problems_solutions: ['Problems', 'Solutions'],
+    agree_disagree: ['Reasons to agree', 'Reasons to disagree'],
+    advantages_disadvantages: ['Advantages', 'Disadvantages'],
+    causes_effects: ['Causes', 'Effects'],
+    problems_benefits: ['Benefits', 'Problems']
+  };
+  const fsLbls = FS_COL_LABELS[fsDetectedQuestionType] ||
+    [type.leftLabel || type.bp1Role || 'Column A', type.rightLabel || type.bp2Role || 'Column B'];
+
+  area.innerHTML = `
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:14px;">🤖</span>
+      <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
+    </div>
+    ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
+    <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
+      <div>
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">A</span>
+          ${escapeHtml(fsLbls[0])}
+        </div>
+        ${fsSuggestedLeftIdeas.map((p, i) => `
+          <div class="idea-item ${fsPickedLeftIdeas.has(i) ? 'selected' : ''}" onclick="toggleFreestyleIdea('left', ${i})" id="fs-left-${i}">
+            <div class="idea-checkbox"></div>
+            <div class="idea-text">${escapeHtml(p)}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div>
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">B</span>
+          ${escapeHtml(fsLbls[1])}
+        </div>
+        ${fsSuggestedRightIdeas.map((c, i) => `
+          <div class="idea-item ${fsPickedRightIdeas.has(i) ? 'selected' : ''}" onclick="toggleFreestyleIdea('right', ${i})" id="fs-right-${i}">
+            <div class="idea-checkbox"></div>
+            <div class="idea-text">${escapeHtml(c)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+      <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">Pick <strong>2 from each side</strong> (4 total)</div>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+    </div>
+  `;
+  updateFreestyleIdeasCounter();
+}
+
+function toggleFreestyleIdea(side, idx) {
+  if (side === 'left') {
+    if (fsPickedLeftIdeas.has(idx)) {
+      fsPickedLeftIdeas.delete(idx);
+    } else {
+      if (fsPickedLeftIdeas.size >= 2) {
+        const first = fsPickedLeftIdeas.values().next().value;
+        fsPickedLeftIdeas.delete(first);
+      }
+      fsPickedLeftIdeas.add(idx);
+    }
+  } else if (side === 'right') {
+    if (fsPickedRightIdeas.has(idx)) {
+      fsPickedRightIdeas.delete(idx);
+    } else {
+      if (fsPickedRightIdeas.size >= 2) {
+        const first = fsPickedRightIdeas.values().next().value;
+        fsPickedRightIdeas.delete(first);
+      }
+      fsPickedRightIdeas.add(idx);
+    }
+  }
+
+  fsSuggestedLeftIdeas.forEach((_, i) => {
+    const el = document.getElementById(`fs-left-${i}`);
+    if (el) {
+      if (fsPickedLeftIdeas.has(i)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    }
+  });
+  fsSuggestedRightIdeas.forEach((_, i) => {
+    const el = document.getElementById(`fs-right-${i}`);
+    if (el) {
+      if (fsPickedRightIdeas.has(i)) el.classList.add('selected');
+      else el.classList.remove('selected');
+    }
+  });
+
+  updateFreestyleIdeasCounter();
+}
+
+function updateFreestyleIdeasCounter() {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const isSided = type.pickMode === 'sided';
+  const writeBtn = document.getElementById('fsWriteBtn');
+
+  if (isSided) {
+    const sideCol = type.columns.find(c => c.key === fsChosenSide);
+    const fixedCol = type.columns.find(c => !c.side);
+    const sidePicks = fsChosenSide ? (fsPickedCols[fsChosenSide] || new Set()) : new Set();
+    const fixedPicks = fsPickedCols[fixedCol.key] || new Set();
+
+    const sideCount = sidePicks.size;
+    const fixedCount = fixedPicks.size;
+    const isComplete = sideCount === 2 && fixedCount === 2;
+
+    const labelEl = document.getElementById('fsIdeasCounter');
+    if (labelEl) {
+      if (!fsChosenSide) {
+        labelEl.innerHTML = '👈 First, click an idea to choose your stance.';
+      } else {
+        const sideLabel = getFsColLabel(sideCol).replace('Reasons to ', '').replace('If you choose ', '');
+        const sideColor = fsChosenSide === 'agree' || fsChosenSide === 'optionA' ? '#16803d' : '#b91c1c';
+        labelEl.innerHTML = `Stance: <strong style="color:${sideColor}">${escapeHtml(sideLabel)}</strong> (reasons: ${sideCount}/2) &amp; ${escapeHtml(getFsColLabel(fixedCol))} (${fixedCount}/2)`;
+      }
+    }
+
+    if (writeBtn) {
+      writeBtn.disabled = !isComplete;
+    }
+  } else {
+    const lCount = fsPickedLeftIdeas.size;
+    const rCount = fsPickedRightIdeas.size;
+    const isComplete = lCount === 2 && rCount === 2;
+
+    const labelEl = document.getElementById('fsIdeasCounter');
+    if (labelEl) {
+      labelEl.innerHTML = `Picked: <strong>${escapeHtml(type.leftLabel)}</strong> (${lCount}/2) &amp; <strong>${escapeHtml(type.rightLabel)}</strong> (${rCount}/2)`;
+      if (isComplete) {
+        labelEl.classList.add('complete');
+      } else {
+        labelEl.classList.remove('complete');
+      }
+    }
+
+    if (writeBtn) {
+      writeBtn.disabled = !isComplete;
+    }
+  }
+}
+
+function renderFreestyleSidedPicker(type) {
+  const area = document.getElementById('fsIdeasArea');
+  if (!area) return;
+
+  const cols = type.columns;
+  const sideCols = cols.filter(c => c.side);
+  const fixedCol = cols.find(c => !c.side);
+
+  cols.forEach(c => {
+    if (!fsPickedCols[c.key]) {
+      fsPickedCols[c.key] = new Set();
+    }
+  });
+
+  const palette = [
+    { bg: '#d4ebf5', fg: '#2a5577' },
+    { bg: '#f5dbd4', fg: '#7a4030' },
+  ];
+  const thirdPalette = { bg: '#d8ecd8', fg: '#2a5a3a' };
+
+  function colHtml(col, badge, badgeColor) {
+    let ideas = [];
+    if (col.key === 'agree' || col.key === 'optionA') {
+      ideas = fsSuggestedLeftIdeas;
+    } else if (col.key === 'disagree' || col.key === 'optionB') {
+      ideas = fsSuggestedRightIdeas;
+    } else {
+      ideas = fsSuggestedThirdIdeas;
+    }
+
+    const picks = fsPickedCols[col.key] || new Set();
+    const isDisabledSide = col.side && fsChosenSide && fsChosenSide !== col.key;
+    const colLabel = getFsColLabel(col);
+
+    return `
+      <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="fs-col-${col.key}" style="opacity:${isDisabledSide ? '0.4' : '1'}; pointer-events:${isDisabledSide ? 'none' : 'auto'};">
+        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
+          ${escapeHtml(colLabel)}
+          <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+        </div>
+        ${ideas.map((idea, i) => {
+          let badgeHtml = '';
+          if (col.key === 'examples' && fsDetectedQuestionType === 'single_focus') {
+            const sideCols = cols.filter(c => c.side);
+            if (sideCols.length >= 2) {
+              const labelA = getFsColLabel(sideCols[0]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
+              const labelB = getFsColLabel(sideCols[1]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
+              if (i === 0 || i === 1) {
+                badgeHtml = `<span style="font-size:9px; background:#d4ebf5; color:#2a5577; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelA)}</span>`;
+              } else if (i === 2 || i === 3) {
+                badgeHtml = `<span style="font-size:9px; background:#f5dbd4; color:#7a4030; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelB)}</span>`;
+              } else if (i === 4) {
+                badgeHtml = `<span style="font-size:9px; background:#f3f4f6; color:#4b5563; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">neutral</span>`;
+              }
+            }
+          }
+          return `
+            <div class="idea-item ${picks.has(i) ? 'selected' : ''}" onclick="toggleFreestyleSidedIdea('${col.key}', ${i})" id="fs-sided-${col.key}-${i}">
+              <div class="idea-checkbox"></div>
+              <div class="idea-text" style="display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
+                <span>${escapeHtml(idea)}</span>
+                ${badgeHtml}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  const sideColsHtml = sideCols.map((c, i) => colHtml(c, String.fromCharCode(65 + i), palette[i])).join('');
+  const fixedColHtml = colHtml(fixedCol, '+', thirdPalette);
+
+  area.innerHTML = `
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+      <span style="font-size:14px;">🤖</span>
+      <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
+    </div>
+    ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
+    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
+      <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(getFsColLabel(sideCols[0]))}</strong> or <strong>${escapeHtml(getFsColLabel(sideCols[1]))}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(getFsColLabel(fixedCol))}</strong>.
+    </div>
+    <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
+      <div style="display:flex; flex-col; gap:16px; grid-column:span 2; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        ${sideColsHtml}
+      </div>
+      <div style="grid-column:span 2; margin-top:8px;">
+        ${fixedColHtml}
+      </div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+      <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">👈 First, click an idea to choose your stance.</div>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+    </div>
+  `;
+  updateFreestyleIdeasCounter();
+}
+
+function toggleFreestyleSidedIdea(colKey, idx) {
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  const cols = type.columns;
+  const targetCol = cols.find(c => c.key === colKey);
+
+  if (targetCol.side) {
+    if (fsChosenSide && fsChosenSide !== colKey) {
+      if (fsPickedCols[fsChosenSide]) {
+        fsPickedCols[fsChosenSide].clear();
+      }
+    }
+    fsChosenSide = colKey;
+  }
+
+  const picks = fsPickedCols[colKey] || new Set();
+  if (picks.has(idx)) {
+    picks.delete(idx);
+    if (targetCol.side && picks.size === 0) {
+      fsChosenSide = null;
+    }
+  } else {
+    if (picks.size >= 2) {
+      const first = picks.values().next().value;
+      picks.delete(first);
+    }
+    picks.add(idx);
+  }
+
+  renderFreestyleSidedPicker(type);
+}
+
+async function freestyleWriteWithIdeas() {
+  const question = document.getElementById('fsQuestion').value.trim();
+  if (!question) { toast('Paste an essay question first', true); return; }
+  if (!await consumeQuota('essay')) return;
+
+  const band = document.getElementById('fsBand').value === 'band6' ? 'band6' : 'band9';
+  const isBand6 = band === 'band6';
+  const vocabIdx = Math.min(4, Math.max(0, (parseInt(document.getElementById('fsVocab').value, 10) || 3) - 1));
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+
+  const btn = document.getElementById('fsWriteBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Writing essay...';
+    startWriteButtonMessages(btn);
+  }
+
+  const type = QUESTION_TYPES[fsDetectedQuestionType] || QUESTION_TYPES.advantages_disadvantages;
+  let bp1Ideas = [];
+  let bp2Ideas = [];
+  let sidedNote = '';
+
+  if (type.pickMode === 'sided') {
+    const sideCol = type.columns.find(c => c.key === fsChosenSide);
+    const fixedCol = type.columns.find(c => !c.side);
+    
+    let sideSource = [];
+    if (fsChosenSide === 'agree' || fsChosenSide === 'optionA') {
+      sideSource = fsSuggestedLeftIdeas;
+    } else {
+      sideSource = fsSuggestedRightIdeas;
+    }
+    const sidePicks = fsPickedCols[fsChosenSide] || new Set();
+    bp1Ideas = Array.from(sidePicks).map(idx => sideSource[idx]);
+
+    const fixedPicks = fsPickedCols[fixedCol.key] || new Set();
+    bp2Ideas = Array.from(fixedPicks).map(idx => fsSuggestedThirdIdeas[idx]);
+
+    const sideLabel = getFsColLabel(sideCol);
+    const fixedLabel = getFsColLabel(fixedCol);
+
+    sidedNote = `
+=== STANCE INFORMATION ===
+The student has taken a clear position: "${sideLabel}".
+- The WHOLE essay must argue consistently for this stance. Do NOT present the opposing side as if it were equally valid.
+- Body Paragraph 1: develop the chosen stance and explicitly explain WHY this choice was made, using these specific ideas: ${bp1Ideas.map(x => `"${x}"`).join(' and ')}.
+- Body Paragraph 2: present the ${fixedLabel} using these specific ideas: ${bp2Ideas.map(x => `"${x}"`).join(' and ')}.
+- The introduction's opinion sentence must clearly state this stance.
+- The conclusion must reaffirm this stance.`;
+  } else {
+    bp1Ideas = Array.from(fsPickedLeftIdeas).map(idx => fsSuggestedLeftIdeas[idx]);
+    bp2Ideas = Array.from(fsPickedRightIdeas).map(idx => fsSuggestedRightIdeas[idx]);
+  }
+
+  const plan = {
+    question: question,
+    question_type: fsDetectedQuestionType || 'advantages_disadvantages',
+    stance: fsChosenSide || '',
+    selected_ideas: {
+      reasons: bp1Ideas,
+      examples: bp2Ideas,
+      advantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp1Ideas : [],
+      disadvantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp2Ideas : [],
+      problems: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'problem_effect') ? bp1Ideas : [],
+      solutions: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'single_best_option') ? bp2Ideas : [],
+      causes: (fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'cause_effect') ? bp1Ideas : [],
+      effects: (fsDetectedQuestionType === 'cause_effect' || fsDetectedQuestionType === 'problem_effect') ? bp2Ideas : []
+    },
+    manual_ideas: [],
+    paired_ideas: [],
+    paragraph_roles: {
+      intro: "Introduce the topic and state a clear opinion or paraphrase the essay question",
+      bp1: type.bp1Role || "Discuss body paragraph 1 arguments",
+      bp2: type.bp2Role || "Discuss body paragraph 2 arguments",
+      conclusion: type.conclusionRole || "Summarise the main arguments and provide a final recommendation"
+    },
+    target_band_level: band,
+    generation_mode: document.getElementById('fsStyle').value || 'template',
+    vocabulary_level: vocabIdx + 1
+  };
+
+  const paired_ideas = [];
+  if (type.ideasPaired) {
+    for (let i = 0; i < bp1Ideas.length; i++) {
+      const leftText = bp1Ideas[i];
+      const rightText = bp2Ideas[i] || '';
+      if (fsDetectedQuestionType === 'problem_solution') {
+        paired_ideas.push({ problem: leftText, solution: rightText });
+      } else if (fsDetectedQuestionType === 'cause_solution') {
+        paired_ideas.push({ cause: leftText, solution: rightText });
+      } else if (fsDetectedQuestionType === 'cause_effect') {
+        paired_ideas.push({ cause: leftText, effect: rightText });
+      } else if (fsDetectedQuestionType === 'problem_effect') {
+        paired_ideas.push({ problem: leftText, effect: rightText });
+      } else if (fsDetectedQuestionType === 'single_best_option') {
+        paired_ideas.push({ cause: leftText, solution: rightText });
+      }
+    }
+  }
+  plan.paired_ideas = paired_ideas;
+
+  const template = getTemplateForEssay({ templateChoice: band });
+
+  try {
+    const res = await fetch(API_URL + '/api/generate-essay', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan, template, sidedNote })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      let errDetail = '';
+      try {
+        const parsed = JSON.parse(t);
+        if (parsed.details) errDetail = '\nDetails: ' + parsed.details.join(' | ');
+        else if (parsed.error) errDetail = '\n' + parsed.error;
+      } catch (e) {
+        errDetail = `\nAPI error ${res.status}: ${t.slice(0, 300)}`;
+      }
+      throw new Error(errDetail || `Server failed to generate essay`);
+    }
+    const data = await res.json();
+    if (!data.success || !data.text) {
+      throw new Error(data.error || 'Server returned empty generation');
+    }
+    const text = data.text;
+
+    if (data.warnings && data.warnings.length > 0) {
+      console.warn("Generated essay warnings:", data.warnings);
+      toast("Warning: " + data.warnings[0], false);
+    }
+
+    const titleMatch = text.match(/===TITLE===\s*([\s\S]*?)(?====INTRO===)/);
+    const title = titleMatch ? titleMatch[1].trim().replace(/^["']|["']$/g, '').slice(0, 80) : '';
+    const sections = parseEssaySections(text);
+    if (!sections.intro || !sections.bp1 || !sections.bp2 || !sections.concl) {
+      throw new Error('The essay came back incomplete. Please try again.');
+    }
+
+    document.getElementById('fsIdeasArea').style.display = 'none';
+
+    freestyleLast = { question, band, vocab: vocabIdx + 1, title, sections };
+    renderFreestyleResult(sections);
+  } catch (err) {
+    console.error(err);
+    toast('AI failed: ' + err.message, true);
+  } finally {
+    if (btn) {
+      stopWriteButtonMessages();
+      btn.disabled = false;
+      btn.innerHTML = 'Write essay';
+    }
+  }
+}
+
+function fsRenderText(s) {
+  let html = escapeHtml(s);
+  html = html.replace(/==([^=]+)==/g, '<mark>$1</mark>');
+  html = html.replace(/\[EXTRA IDEA\]\s*/g, '<span class="fs-extra">+ Extra idea: </span>');
+  return html.replace(/\n/g, '<br>');
+}
+
+function renderFreestyleResult(sections) {
+  const parts = [
+    ['Introduction', sections.intro],
+    ['Body paragraph 1', sections.bp1],
+    ['Body paragraph 2', sections.bp2],
+    ['Conclusion', sections.concl]
+  ];
+  document.getElementById('fsResult').innerHTML = parts.map(([label, txt]) =>
+    `<div class="fs-result-para"><div class="fs-result-label">${label}</div><div class="fs-result-text">${fsRenderText(txt)}</div></div>`
+  ).join('');
+  document.getElementById('fsResultArea').style.display = 'block';
+  document.getElementById('fsActions').innerHTML =
+    '<button class="tb-text-btn" onclick="closeFreestyle()">Close</button>' +
+    '<button class="tb-text-btn" onclick="copyFreestyle()">📋 Copy</button>' +
+    '<button class="tb-text-btn" onclick="freestyleReset()">↻ Write another</button>' +
+    '<button class="tb-text-btn dark" onclick="saveFreestyleToLibrary()">💾 Save to library</button>';
+  document.getElementById('fsResultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyFreestyle() {
+  if (!freestyleLast) return;
+  const s = freestyleLast.sections;
+  const txt = [s.intro, s.bp1, s.bp2, s.concl]
+    .map(p => p.replace(/==/g, '').replace(/\[EXTRA IDEA\]\s*/g, ''))
+    .join('\n\n');
+  navigator.clipboard.writeText(txt).then(
+    () => toast('Essay copied ✓'),
+    () => toast('Copy failed', true)
+  );
+}
+
+function saveFreestyleToLibrary() {
+  if (!freestyleLast) return;
+  const fl = freestyleLast;
+  const derived = fl.question.replace(/\s+/g, ' ').trim().split(/[.?!]/)[0].slice(0, 60);
+  const e = {
+    id: uid(),
+    title: fl.title || derived || 'Freestyle essay',
+    question: fl.question,
+    explanation: '',
+    pros: '', cons: '', approach: '',
+    intro: fl.sections.intro, bp1: fl.sections.bp1, bp2: fl.sections.bp2, concl: fl.sections.concl,
+    vocab: fl.vocab,
+    seedIdeas: '',
+    templateChoice: fl.band
+  };
+  essays.push(e);
+  currentId = e.id;
+  saveAll(); renderList(); loadCurrent(); renderPreview();
+  closeFreestyle();
+  toast('Saved to your library ✓');
+}
+
+// ============================================================
+//  BULK WRITE — pick essays, AI writes them sequentially
+// ============================================================
+let bulkWritePicked = new Set();
+let bulkWriteAborted = false;
+let bulkWriteRunning = false;
+
+function openBulkWrite() {
+  // Default: pre-select empty essays so the most common path is one click
+  bulkWritePicked = new Set(essays.filter(e => essayStatus(e) === 'empty' && e.title && e.question).map(e => e.id));
+  bulkWriteAborted = false;
+  document.getElementById('bulkWriteProgress').style.display = 'none';
+  document.getElementById('bulkWriteAbortBtn').style.display = 'none';
+  document.getElementById('bulkWriteStartBtn').style.display = '';
+  document.getElementById('bulkWriteStartBtn').disabled = bulkWritePicked.size === 0;
+  document.getElementById('bulkWriteCloseBtn').textContent = 'Cancel';
+  renderBulkWritePicker();
+  document.getElementById('bulkWriteModal').classList.add('show');
+}
+
+function closeBulkWrite() {
+  if (bulkWriteRunning) {
+    if (!confirm('A bulk write is still running. Close anyway? Completed essays are saved; in-progress one will finish then stop.')) return;
+    bulkWriteAborted = true;
+  }
+  document.getElementById('bulkWriteModal').classList.remove('show');
+}
+
+function renderBulkWritePicker() {
+  const list = document.getElementById('bulkWritePickerList');
+  list.innerHTML = essays.map((e, i) => {
+    const s = essayStatus(e);
+    const statusLabel = s === 'written' ? 'WRITTEN' : (s === 'draft' ? 'DRAFT' : 'EMPTY');
+    const statusClass = 'status-' + s;
+    const checked = bulkWritePicked.has(e.id) ? 'checked' : '';
+    const missingFields = !e.title || !e.question;
+    const disabled = missingFields ? 'disabled title="No title or question — fill these in first"' : '';
+    return `
+      <label class="export-pick-row${missingFields ? ' export-pick-row-disabled' : ''}" style="${missingFields ? 'opacity:0.4;' : ''}">
+        <input type="checkbox" ${checked} ${disabled} onchange="toggleBulkWritePick('${e.id}', this.checked)">
+        <span class="export-pick-num">ESSAY ${String(i+1).padStart(2,'0')}</span>
+        <span class="export-pick-title">${escapeHtml(e.title || '(no title)')}</span>
+        <span class="export-pick-status ${statusClass}">${statusLabel}</span>
+      </label>
+    `;
+  }).join('');
+  updateBulkWritePickedCount();
+}
+
+function toggleBulkWritePick(id, checked) {
+  if (checked) bulkWritePicked.add(id);
+  else bulkWritePicked.delete(id);
+  updateBulkWritePickedCount();
+}
+
+function updateBulkWritePickedCount() {
+  const n = bulkWritePicked.size;
+  document.getElementById('bulkWritePickedCount').textContent = n;
+  document.getElementById('bulkWriteStartBtn').disabled = (n === 0);
+  const est = document.getElementById('bulkWriteEstimate');
+  if (n === 0) {
+    est.textContent = 'Pick essays below to see total time and quota usage.';
+  } else {
+    const secs = n * 12;
+    const mins = Math.floor(secs / 60);
+    const remainder = secs % 60;
+    const timeStr = mins > 0 ? `${mins}m ${remainder}s` : `${secs}s`;
+    est.textContent = `Selected ${n} essay${n === 1 ? '' : 's'} — about ${timeStr} total, uses ${n} quota credit${n === 1 ? '' : 's'}.`;
+  }
+}
+
+function selectAllForBulkWrite(mode) {
+  if (mode === 'all') {
+    bulkWritePicked = new Set(essays.filter(e => e.title && e.question).map(e => e.id));
+  } else if (mode === 'none') {
+    bulkWritePicked = new Set();
+  } else if (mode === 'empty') {
+    bulkWritePicked = new Set(essays.filter(e => essayStatus(e) === 'empty' && e.title && e.question).map(e => e.id));
+  } else if (mode === 'draft') {
+    bulkWritePicked = new Set(essays.filter(e => (essayStatus(e) === 'empty' || essayStatus(e) === 'draft') && e.title && e.question).map(e => e.id));
+  }
+  renderBulkWritePicker();
+}
+
+async function doBulkWrite() {
+  if (bulkWritePicked.size === 0) return;
+  const targets = essays.filter(e => bulkWritePicked.has(e.id));
+  if (targets.length === 0) return;
+
+  // Final confirm if user is about to overwrite already-written essays
+  const overwriteCount = targets.filter(e => (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0).length;
+  if (overwriteCount > 0) {
+    if (!confirm(`${overwriteCount} of the selected ${targets.length} essays already have content. Continuing will overwrite them. Continue?`)) return;
+  }
+
+  // Quota check upfront (warn if user will hit limit mid-run)
+  const q = getQuota();
+  if (!offlineMode && q.essay < targets.length) {
+    if (!confirm(`You have ${q.essay} essay quota credits left today but selected ${targets.length} essays. The first ${q.essay} will be written, the rest will fail with a quota error. Continue?`)) return;
+  }
+
+  // Switch UI to "running" mode
+  bulkWriteRunning = true;
+  bulkWriteAborted = false;
+  document.getElementById('bulkWriteStartBtn').style.display = 'none';
+  document.getElementById('bulkWriteAbortBtn').style.display = '';
+  document.getElementById('bulkWriteCloseBtn').textContent = 'Close';
+  document.getElementById('bulkWriteProgress').style.display = '';
+
+  let done = 0;
+  let failed = 0;
+  let skipped = 0;
+  const errors = [];
+
+  for (let i = 0; i < targets.length; i++) {
+    if (bulkWriteAborted) break;
+    const e = targets[i];
+    updateBulkWriteProgress(done + failed + skipped + 1, targets.length, `Writing essay ${i + 1} of ${targets.length}: "${e.title}"`);
+
+    try {
+      const ok = await aiWriteFullEssay({ essay: e, skipConfirm: true, silent: true });
+      if (ok) done++;
+      else { skipped++; errors.push(`Essay ${i+1} (${e.title}): skipped (no quota or missing fields)`); }
+    } catch (err) {
+      failed++;
+      errors.push(`Essay ${i+1} (${e.title}): ${err.message}`);
+      // If the error looks like a quota/auth issue, stop the run early
+      if (/quota|limit|401|403|auth/i.test(err.message)) {
+        errors.push('Stopping bulk run due to error.');
+        break;
+      }
+    }
+    // Small delay between requests to be polite to the API
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  bulkWriteRunning = false;
+
+  // Final summary
+  document.getElementById('bulkWriteAbortBtn').style.display = 'none';
+  document.getElementById('bulkWriteStartBtn').style.display = '';
+  document.getElementById('bulkWriteStartBtn').textContent = 'Write more →';
+
+  const summary =
+    `Bulk write complete: ${done} written` +
+    (failed > 0 ? `, ${failed} failed` : '') +
+    (skipped > 0 ? `, ${skipped} skipped` : '') +
+    (bulkWriteAborted ? ' (stopped by user)' : '');
+  updateBulkWriteProgress(done + failed + skipped, targets.length, summary);
+  if (errors.length > 0) {
+    console.warn('Bulk write errors:', errors);
+    document.getElementById('bulkWriteProgressNote').innerHTML =
+      `<span style="color:var(--accent);">Some essays had issues — check browser console for details.</span>`;
+  } else {
+    document.getElementById('bulkWriteProgressNote').textContent = 'All done! Close this window to see the results.';
+  }
+
+  // Refresh the main UI
+  renderList(); loadCurrent(); renderPreview();
+  toast(summary);
+}
+
+function abortBulkWrite() {
+  if (!bulkWriteRunning) return;
+  bulkWriteAborted = true;
+  document.getElementById('bulkWriteAbortBtn').textContent = 'Stopping after current…';
+  document.getElementById('bulkWriteAbortBtn').disabled = true;
+}
+
+function updateBulkWriteProgress(step, total, label) {
+  document.getElementById('bulkWriteProgressText').textContent = label;
+  document.getElementById('bulkWriteProgressBar').style.width = `${Math.min(100, Math.round((step / total) * 100))}%`;
+}
+
+
+// ============================================================
+//  PARAGRAPH + SENTENCE REGENERATE
+// ============================================================
+const PARA_LABELS = {
+  intro: 'Introduction',
+  bp1: 'Body Paragraph 1',
+  bp2: 'Body Paragraph 2',
+  concl: 'Conclusion'
+};
+
+// Render the sentence list under each paragraph textarea
+function renderSentenceList(which) {
+  const container = document.getElementById('sentences_' + which);
+  if (!container) return;
+  const text = (document.getElementById('f_' + which).value || '').trim();
+  if (!text) {
+    container.innerHTML = '';
+    container.classList.remove('has-content');
+    return;
+  }
+  const sentences = splitSentences(text);
+  if (sentences.length <= 1) {
+    container.innerHTML = '';
+    container.classList.remove('has-content');
+    return;
+  }
+  container.innerHTML = sentences.map((s, i) =>
+    `<div class="sentence-row">
+       <span class="sentence-row-num">${i + 1}.</span>
+       <span class="sentence-row-text">${escapeHtml(s)}</span>
+       <button class="sentence-regen-btn" onclick="regenerateSentence('${which}', ${i})" title="Rewrite this sentence">✎ Rewrite</button>
+     </div>`
+  ).join('');
+  container.classList.add('has-content');
+}
+
+// Split paragraph into sentences (handles common edge cases: abbreviations, EXTRA IDEA / Therefore lines)
+function splitSentences(text) {
+  // Treat [EXTRA IDEA] lines and Therefore lines as their own sentences
+  const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  const out = [];
+  for (const line of lines) {
+    if (/^\[EXTRA\s*IDEA\]/i.test(line) || /^therefore[,\s]/i.test(line)) {
+      out.push(line);
+      continue;
+    }
+    // Split on sentence boundaries — period/!/? followed by whitespace + capital letter
+    // (Avoids breaking on "e.g." or "i.e." or numbered lists)
+    const parts = line.split(/(?<=[.!?])\s+(?=[A-Z\[])/);
+    for (const p of parts) {
+      const trimmed = p.trim();
+      if (trimmed) out.push(trimmed);
+    }
+  }
+  return out;
+}
+
+async function regenerateParagraph(which) {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  const existing = (e[which] || '').trim();
+  if (!existing) {
+    toast('This paragraph is empty — use "Write the full essay" first', true);
+    return;
+  }
+  if (!await consumeQuota('idea')) return;
+
+  const btn = document.querySelector(`.regen-btn[onclick*="regenerateParagraph('${which}')"]`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Rewriting…'; }
+
+  const template = getTemplateForEssay(e);
+  const effTemplate = getEffectiveTemplateForEssay(e, template);
+  const bag = getTemplatesBag();
+  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
+  const isBand6 = (effectiveTplKey === 'band6');
+  const vocabIdx = (e.vocab || 3) - 1;
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+  const seedIdeas = (e.seedIdeas || '').trim();
+  const isNatural = (e.generationMode === 'natural');
+
+  // Build context: the OTHER paragraphs so AI knows what it's connecting to
+  const others = ['intro', 'bp1', 'bp2', 'concl']
+    .filter(p => p !== which)
+    .map(p => `[${PARA_LABELS[p].toUpperCase()}]\n${e[p] || '(empty)'}`)
+    .join('\n\n');
+
+  const naturalStyleInstruction = `
+=== WRITING STYLE: NATURAL MODE (CRITICAL) ===
+Write naturally and avoid standard templates or rigid, formulaic transitions. Focus on fluid, sophisticated, and varied sentence structures that feel authentic and custom-written.
+- Do NOT use formulaic transitional boilerplate.
+- Do NOT use robotic, rehearsed transitions.
+- Smoothly connect ideas with diverse, natural transitions.
+- AVOID adding unsupported statistics or research claims.
+`;
+
+  const templateStyleInstruction = `
+=== WRITING STYLE: EXAM TEMPLATE MODE (STRICT — FOLLOW THE TEMPLATE EXACTLY) ===
+This is a memorised exam template. Copy the template's fixed wording and replace ONLY the [square bracket] slots with topic-specific content.
+- The rewritten paragraph must START with the template's opening words (e.g. "The topic of", "To begin with,", "On the other hand,", "In conclusion,").
+- Where brackets show slashed alternatives [A / B / C], choose exactly ONE option.
+- Do NOT reorder, merge, drop, or add sentences. Do NOT paraphrase the fixed wording.
+`;
+
+  const prompt = `You are rewriting ONE paragraph of an IELTS/PTE essay for IPT Brisbane tutoring. Keep the same overall meaning and key points, but rephrase the language so it differs from the existing version.
+
+ESSAY TOPIC: ${e.title}
+QUESTION: ${e.question}
+${seedIdeas ? `KEY IDEAS TO USE: ${seedIdeas}` : ''}
+VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
+
+${isNatural ? naturalStyleInstruction : templateStyleInstruction}
+
+EXISTING ${PARA_LABELS[which].toUpperCase()} (rewrite this):
+${existing}
+
+OTHER PARAGRAPHS (do NOT rewrite — for context only):
+${others}
+
+TEMPLATE FOR ${PARA_LABELS[which].toUpperCase()} (only relevant in Exam Template Mode):
+${effTemplate[which]}
+
+INSTRUCTIONS:
+- Rewrite the paragraph text according to the selected WRITING STYLE.
+- Wrap key idea clauses in ==yellow markers==.
+${which === 'bp1' && !isBand6 ? '- Keep the [EXTRA IDEA] Moreover, ... line at the end.' : ''}
+${which === 'concl' && !isBand6 ? '- The "Therefore, [solution]" line is OPTIONAL. Include it only if the conclusion would otherwise be under the target word count.' : ''}
+${which === 'bp2' ? '- Do NOT add a "Therefore" line at the end of BP2.' : ''}
+- Do NOT introduce any unsupported claims or fake statistics (e.g. invented percentages or citations).
+- Output ONLY the rewritten paragraph text. No preamble, no labels, no markdown headers.`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const newText = data.content.map(c => c.text || '').join('\n').trim();
+    if (!newText) throw new Error('Empty response from AI');
+    e[which] = newText;
+    document.getElementById('f_' + which).value = newText;
+    saveAll();
+    renderPreview();
+    updateCounters();
+    renderSentenceList(which);
+    toast(`${PARA_LABELS[which]} rewritten ✓`);
+  } catch (err) {
+    console.error(err);
+    toast('Rewrite failed: ' + err.message, true);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '↻ Rewrite'; }
+  }
+}
+
+async function regenerateSentence(which, sentenceIdx) {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  const text = (e[which] || '').trim();
+  const sentences = splitSentences(text);
+  if (sentenceIdx < 0 || sentenceIdx >= sentences.length) {
+    toast('Sentence not found', true);
+    return;
+  }
+  const original = sentences[sentenceIdx];
+  if (!await consumeQuota('idea')) return;
+
+  const btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+
+  const template = getTemplateForEssay(e);
+  const vocabIdx = (e.vocab || 3) - 1;
+  const vocabSpec = VOCAB_LEVELS[vocabIdx];
+  const seedIdeas = (e.seedIdeas || '').trim();
+  const isNatural = (e.generationMode === 'natural');
+
+  const naturalStyleInstruction = `
+=== WRITING STYLE: NATURAL MODE ===
+- Make the sentence smoother and improve fluency.
+- Reduce robotic, rehearsed phrasing.
+- AVOID adding unsupported statistics or research claims.
+`;
+
+  const templateStyleInstruction = `
+=== WRITING STYLE: EXAM TEMPLATE MODE ===
+- Preserve exam-safe wording and clear template transitions.
+`;
+
+  const prompt = `You are rewriting ONE sentence inside an essay paragraph. Keep the same meaning and any specific facts/examples. Just rephrase the language naturally.
+
+ESSAY TOPIC: ${e.title}
+QUESTION: ${e.question}
+${seedIdeas ? `KEY IDEAS: ${seedIdeas}` : ''}
+VOCABULARY LEVEL: ${vocabSpec.label} — ${vocabSpec.desc}
+
+${isNatural ? naturalStyleInstruction : templateStyleInstruction}
+
+FULL PARAGRAPH (for context — do not rewrite this whole paragraph):
+${text}
+
+THE SENTENCE TO REWRITE:
+${original}
+
+INSTRUCTIONS:
+- Rewrite ONLY this single sentence according to the WRITING STYLE.
+- Preserve any ==yellow markers== if they exist in the original.
+- Preserve [EXTRA IDEA] prefix if present.
+- Match the surrounding paragraph's tone and complexity.
+- Do NOT introduce any unsupported claims or fake statistics.
+- Output ONLY the rewritten sentence. No preamble, no quotes, no labels.`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    let newSentence = data.content.map(c => c.text || '').join('\n').trim();
+    // Strip any wrapping quotes the AI may have added
+    newSentence = newSentence.replace(/^["'`](.*)["'`]$/, '$1').trim();
+    if (!newSentence) throw new Error('Empty response from AI');
+
+    // Reassemble the paragraph with the new sentence in place
+    sentences[sentenceIdx] = newSentence;
+    const rebuilt = reassembleSentences(text, sentences);
+    e[which] = rebuilt;
+    document.getElementById('f_' + which).value = rebuilt;
+    saveAll();
+    renderPreview();
+    updateCounters();
+    renderSentenceList(which);
+    toast('Sentence rewritten ✓');
+  } catch (err) {
+    console.error(err);
+    toast('Rewrite failed: ' + err.message, true);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '✎ Rewrite'; }
+  }
+}
+
+// Stitch sentences back together preserving line breaks where the original had them
+function reassembleSentences(originalText, sentences) {
+  // Track which sentences were on their own line in the original (e.g. [EXTRA IDEA], Therefore lines)
+  const originalLines = originalText.split(/\n+/).map(l => l.trim()).filter(Boolean);
+  // Build a fresh string by walking original lines and consuming sentences from the array
+  const out = [];
+  let sIdx = 0;
+  for (const line of originalLines) {
+    if (/^\[EXTRA\s*IDEA\]/i.test(line) || /^therefore[,\s]/i.test(line)) {
+      // These are single-sentence lines
+      out.push(sentences[sIdx++] || '');
+    } else {
+      // This line may have had multiple sentences — count how many
+      const lineSentenceCount = splitSentences(line).length;
+      const lineSentences = sentences.slice(sIdx, sIdx + lineSentenceCount);
+      sIdx += lineSentenceCount;
+      out.push(lineSentences.join(' '));
+    }
+  }
+  // If any extra sentences leftover (shouldn't happen but be safe), append them
+  if (sIdx < sentences.length) {
+    out.push(sentences.slice(sIdx).join(' '));
+  }
+  return out.join('\n');
+}
+
+function parseEssaySections(text) {
+  const out = { intro: '', bp1: '', bp2: '', concl: '' };
+  const intro = text.match(/===INTRO===\s*([\s\S]*?)(?====BP1===)/);
+  const bp1 = text.match(/===BP1===\s*([\s\S]*?)(?====BP2===)/);
+  const bp2 = text.match(/===BP2===\s*([\s\S]*?)(?====CONCL===)/);
+  const concl = text.match(/===CONCL===\s*([\s\S]*?)$/);
+  if (intro) out.intro = intro[1].trim();
+  if (bp1) out.bp1 = bp1[1].trim();
+  if (bp2) out.bp2 = bp2[1].trim();
+  if (concl) out.concl = concl[1].trim();
+  return out;
+}
+
+// ============================================================
+//  AI: SMALLER HELPERS
+// ============================================================
+function openSettings() {
+  document.getElementById('apiKeyInput').value = safeLSGet('ipt_apikey') || '';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+function saveApiKey() {
+  safeLSSet('ipt_apikey', document.getElementById('apiKeyInput').value.trim());
+  closeSettings();
+  toast('API key saved');
+}
+
+async function aiGenerate(kind, opts = {}) {
+  const e = getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+
+  // Quota check (skip if called automatically right after a write)
+  if (!opts.skipQuota) {
+    if (!await consumeQuota('idea')) return;
+  }
+  const essayText = [e.intro, e.bp1, e.bp2, e.concl].filter(Boolean).join('\n\n');
+  if (!essayText.trim()) { toast('Write or generate essay text first', true); return; }
+  const btns = document.querySelectorAll('.gen-btn');
+  btns.forEach(b => b.disabled = true);
+
+  let prompt = '';
+  if (kind === 'proscons') {
+    prompt = `Read this Band 9 essay and extract:
+1. KEY POINTS (pros from BP1) — 3 short bullets, 2-4 words each
+2. COUNTER-POINTS (from BP2) — 3 short bullets, 2-4 words each
+
+Title: ${e.title}
+Question: ${e.question}
+Essay:
+${essayText}
+
+Format:
+KEY POINTS:
+- ...
+- ...
+- ...
+COUNTER-POINTS:
+- ...
+- ...
+- ...`;
+  } else if (kind === 'approach') {
+    prompt = `Write a one-sentence APPROACH TIP. 12-20 words, starts with a verb.
+Title: ${e.title}
+Essay: ${essayText}
+Respond with ONLY the sentence.`;
+  } else if (kind === 'explanation') {
+    prompt = `Write a one-sentence Topic Explanation. 10-18 words, starts with Evaluate/Examine/Discuss.
+Question: ${e.question}
+Title: ${e.title}
+Respond with ONLY the sentence.`;
+  } else if (kind === 'all') {
+    prompt = `Read this essay and produce:
+TOPIC_EXPLANATION: one sentence, 10-18 words, starts with Evaluate/Examine/Discuss
+KEY_POINTS: 3 phrases, 2-4 words each, from BP1
+COUNTER_POINTS: 3 phrases, 2-4 words each, from BP2
+APPROACH_TIP: one sentence, 12-20 words, starts with verb
+
+Title: ${e.title}
+Question: ${e.question}
+Essay:
+${essayText}
+
+Format EXACTLY:
+TOPIC_EXPLANATION: ...
+KEY_POINTS:
+- ...
+- ...
+- ...
+COUNTER_POINTS:
+- ...
+- ...
+- ...
+APPROACH_TIP: ...`;
+  }
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`API error ${res.status}: ${t.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const text = data.content.map(c => c.text || '').join('\n').trim();
+    applyAiResult(kind, text);
+    toast('AI done');
+  } catch (err) {
+    console.error(err);
+    toast('AI failed: ' + err.message, true);
+  } finally {
+    btns.forEach(b => b.disabled = false);
+  }
+}
+
+function applyAiResult(kind, text) {
+  const e = getCurrent();
+  if (kind === 'approach') { e.approach = text.replace(/^["']|["']$/g, ''); }
+  else if (kind === 'explanation') { e.explanation = text.replace(/^["']|["']$/g, ''); }
+  else if (kind === 'proscons' || kind === 'all') {
+    const lines = text.split('\n').map(l => l.trim());
+    let section = '';
+    const pros = [], cons = [];
+    let approach = '', expl = '';
+    for (const line of lines) {
+      if (/^TOPIC_EXPLANATION/i.test(line)) { expl = line.replace(/^TOPIC_EXPLANATION:?\s*/i, ''); section = ''; continue; }
+      if (/^KEY[_\s]POINTS/i.test(line)) { section = 'pros'; continue; }
+      if (/^COUNTER[_\s-]POINTS/i.test(line)) { section = 'cons'; continue; }
+      if (/^APPROACH[_\s]TIP/i.test(line)) { approach = line.replace(/^APPROACH[_\s]TIP:?\s*/i, ''); section = ''; continue; }
+      const bullet = line.replace(/^[-•*]\s*/, '').trim();
+      if (!bullet) continue;
+      if (section === 'pros') pros.push(bullet);
+      else if (section === 'cons') cons.push(bullet);
+    }
+    if (pros.length) e.pros = pros.join('\n');
+    if (cons.length) e.cons = cons.join('\n');
+    if (approach) e.approach = approach;
+    if (expl) e.explanation = expl;
+  }
+  saveAll(); loadCurrent(); renderPreview();
+}
+
+// ============================================================
+//  BACKUP / RESTORE
+// ============================================================
+function exportData() {
+  const blob = new Blob([JSON.stringify({ essays, templates: getTemplatesBag(), version: 6 }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ipt_essays_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup downloaded');
+}
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (ev) => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!Array.isArray(data.essays)) throw new Error('Invalid backup');
+        if (!confirm(`Restore ${data.essays.length} essays?`)) return;
+        essays = data.essays;
+        if (data.templates) {
+          await saveTemplatesBag(data.templates);
+        } else if (data.template) {
+          // Legacy backup — promote single template to custom
+          const bag = getDefaultTemplates();
+          bag.custom = data.template;
+          bag.default = 'custom';
+          await saveTemplatesBag(bag);
+        }
+        currentId = essays[0]?.id || null;
+        saveAll(); renderList(); loadCurrent(); renderPreview();
+        toast('Backup restored');
+      } catch (err) {
+        toast('Invalid backup file', true);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ============================================================
+//  TOAST
+// ============================================================
+let toastTimer;
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('error', !!isError);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ============================================================
+//  LEARN VOCABULARY
+// ============================================================
+let currentVocabCategory = null;
+
+function openVocab(options = {}) {
+  savePortalEssayDraft();
+  portalWorkspace.activate('vocab', options);
+  if (!document.getElementById('vocabMainContent').children.length) {
+    renderVocabCategoryList();
+    renderVocabMain();
+  }
+  updateVocabProgressSummary();
+}
+function closeVocab() {
+  switchSection('dashboard');
+}
+
+// Get user's vocab progress object: { read: {"cat:word": true}, attempts: {...} }
+function getVocabProgress() {
+  let progress = {};
+  if (userProfile) progress = userProfile.vocabProgress || LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_vocabProgress`) || {};
+  else if (currentUserId) progress = LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_vocabProgress`) || {};
+
+  // Ensure progress is parsed if it was loaded or synced as a JSON string
+  if (typeof progress === 'string') {
+    try {
+      progress = JSON.parse(progress);
+    } catch (e) {
+      progress = {};
+    }
+  }
+
+  // Ensure progress is a valid plain object
+  if (!progress || typeof progress !== 'object') {
+    progress = {};
+  }
+
+  // Ensure read property is a valid plain object
+  if (!progress.read || typeof progress.read !== 'object') {
+    progress.read = {};
+  }
+
+  // Ensure attempts property is a valid plain object
+  if (!progress.attempts || typeof progress.attempts !== 'object') {
+    progress.attempts = {};
+  }
+
+  // Sync back to userProfile reference to keep them in sync
+  if (userProfile && typeof userProfile === 'object') {
+    userProfile.vocabProgress = progress;
+  }
+
+  return progress;
+}
+async function saveVocabProgress() {
+  if (!currentUserId) return;
+  queueSync();
+}
+
+function vocabKey(catId, word) { return `${catId}:${word}`; }
+function isWordRead(catId, word) {
+  return !!getVocabProgress().read[vocabKey(catId, word)];
+}
+function totalWordsRead() {
+  return Object.keys(getVocabProgress().read || {}).length;
+}
+function totalWordsAvailable() {
+  let n = 0;
+  for (const k of Object.keys(VOCAB_DATA)) n += VOCAB_DATA[k].words.length;
+  return n;
+}
+
+function updateVocabProgressSummary() {
+  const r = totalWordsRead();
+  const total = totalWordsAvailable();
+  const el = document.getElementById('vocabProgressSummary');
+  if (el) el.textContent = `${r} / ${total} words read`;
+  
+  // Update streak text in vocab hub from dashboard
+  const dashStreakText = document.getElementById('dashStreakCurrent')?.textContent || '0 days';
+  const vocabStreakEl = document.getElementById('vocabStreak');
+  if (vocabStreakEl) {
+    vocabStreakEl.textContent = dashStreakText;
+  }
+}
+
+function renderVocabCategoryList() {
+  const q = (document.getElementById('vocabSearch')?.value || '').toLowerCase().trim();
+  const list = document.getElementById('vocabCategoryList');
+  if (!list) return;
+  const progress = getVocabProgress();
+  const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
+  
+  let html = '';
+  
+  if (!q) {
+    const isHubActive = (currentVocabCategory === null);
+    const isMasterActive = (currentVocabCategory === 'master1000');
+    html += `
+      <div class="vocab-cat-item ${isHubActive ? 'active' : ''}" onclick="selectVocabCategory(null)">
+        <span class="vocab-cat-icon">🏠</span>
+        <span class="vocab-cat-label">Vocabulary Hub</span>
+        <span class="vocab-cat-progress">All</span>
+      </div>
+      <div class="vocab-cat-item ${isMasterActive ? 'active' : ''}" onclick="selectVocabCategory('master1000')">
+        <span class="vocab-cat-icon">🏆</span>
+        <span class="vocab-cat-label">1000 Exam Words</span>
+        
+      </div>
+      <div class="h-[1px] bg-outline-variant/20 w-full my-2"></div>
+    `;
+  } else if ("1000 exam words".includes(q) || "master list".includes(q) || "exam essentials".includes(q)) {
+    const isMasterActive = (currentVocabCategory === 'master1000');
+    html += `
+      <div class="vocab-cat-item ${isMasterActive ? 'active' : ''}" onclick="selectVocabCategory('master1000')">
+        <span class="vocab-cat-icon">🏆</span>
+        <span class="vocab-cat-label">1000 Exam Words</span>
+        
+      </div>
+      <div class="h-[1px] bg-outline-variant/20 w-full my-2"></div>
+    `;
+  }
+  
+  sorted.forEach(([catId, cat]) => {
+    // If search term matches category title or id
+    if (q && !cat.label.toLowerCase().includes(q) && !catId.toLowerCase().includes(q)) {
+      return;
+    }
+    
+    const read = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+    const total = cat.words.length;
+    const percent = total > 0 ? Math.round((read / total) * 100) : 0;
+    const isActive = (currentVocabCategory === catId);
+    
+    html += `
+      <div class="vocab-cat-item ${isActive ? 'active' : ''}" onclick="selectVocabCategory('${catId}')" title="${escapeHtml(cat.label)}">
+        <span class="vocab-cat-icon">${escapeHtml(cat.icon || '📚')}</span>
+        <span class="vocab-cat-label">${escapeHtml(cat.label)}</span>
+        <span class="vocab-cat-progress">${percent}%</span>
+      </div>
+    `;
+  });
+  
+  list.innerHTML = html;
+}
+
+function selectVocabCategory(catId) {
+  currentVocabCategory = catId;
+  renderVocabCategoryList();
+  renderVocabMain();
+  closePortalSecondary('vocab');
+}
+
+function jumpToVocabWord(catId, word) {
+  // 1. Open Vocab Pane
+  openVocab();
+  // 2. Select the category
+  selectVocabCategory(catId);
+  // 3. Find the word index
+  const cat = VOCAB_DATA[catId];
+  if (!cat) return;
+  const idx = cat.words.findIndex(w => w.word.toLowerCase() === word.toLowerCase());
+  if (idx !== -1) {
+    // 4. Force List view
+    setVocabViewState('list');
+    // 5. Scroll to the card element
+    setTimeout(() => {
+      const cardEl = document.getElementById(`word-card-${idx}`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight card temporarily with a beautiful frosted accent glow
+        cardEl.style.transition = 'all 0.4s ease';
+        cardEl.style.boxShadow = '0 0 25px var(--accent)';
+        cardEl.style.borderColor = 'var(--accent)';
+        cardEl.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          cardEl.style.boxShadow = '';
+          cardEl.style.borderColor = '';
+          cardEl.style.transform = '';
+        }, 2500);
+      }
+    }, 150);
+  }
+}
+
+let vocabViewState = 'list'; // 'list' or 'flashcard'
+
+let masterSearchQuery = '';
+let masterPage = 0;
+const masterPageSize = 15;
+let masterLevelFilter = 'all';
+
+function renderVocabMain() {
+  const progress = getVocabProgress();
+  const main = document.getElementById('vocabMainContent');
+  if (!main) return;
+
+  if (currentVocabCategory === 'master1000') {
+    renderMaster1000Vocab();
+    return;
+  }
+
+  const descriptions = {
+    law: "Criminal justice, court proceedings, and legal rights.",
+    education: "Learning frameworks, pedagogical systems, and academic performance.",
+    tech: "Technological advancements, digital societies, and data systems.",
+    env: "Natural ecology, climate policies, urban architecture, and resource conservation.",
+    health: "Public health, medical research, ethics, and wellness ecosystems.",
+    econ: "Financial systems, market trends, social policies, and corporate responsibility.",
+    society: "Social structures, community relations, demographics, and cultural norms.",
+    science: "Scientific inquiry, experimental research, methodologies, and natural phenomena.",
+    media: "Information dissemination, journalism, advertising, and digital communication.",
+    culture: "Artistic expression, societal values, heritage, and modern beliefs.",
+    politics: "Government structures, policy formulation, civil liberties, and international relations.",
+    history: "Historical events, cultural evolutions, societal shifts, and chronological eras.",
+    philosophy: "Theoretical frameworks, ethical dilemmas, cognitive logic, and abstract reasoning.",
+    psychology: "Human behavior, cognitive functions, mental health, and social psychology.",
+    business: "Commerce, corporate strategies, organizational structures, and entrepreneurship.",
+    art: "Visual arts, architecture, aesthetics, creative expression, and design principles.",
+    sports: "Athletic activities, wellness, competition dynamics, and physical performance.",
+    travel: "Tourism, migration patterns, cultural exploration, and globalization.",
+    food: "Gastronomy, nutrition science, global supply chains, and culinary traditions.",
+    fashion: "Textile industries, design trends, visual identity, and cultural style expressions.",
+    music: "Acoustics, cultural significance, auditory art, and historical genres.",
+    nature: "Biodiversity, ecosystems, botanical studies, and environmental dynamics.",
+    space: "Cosmology, space exploration, astrophysics, and orbital systems.",
+    weather: "Meteorological systems, climate patterns, atmospheric conditions, and forecasting.",
+    family: "Kinship systems, domestic structures, child development, and social cohesion.",
+    communication: "Linguistics, interpersonal dynamics, structural semiotics, and language acquisition.",
+    transport: "Logistical infrastructure, transit systems, urban planning, and mechanical systems.",
+    shopping: "Consumer patterns, marketing strategies, e-commerce, and retail economics.",
+    hobbies: "Recreational activities, cognitive engagement, skill development, and leisure studies.",
+    work: "Labor markets, professional ethics, workplace dynamics, and human resource management."
+  };
+
+  if (!currentVocabCategory) {
+    const sorted = Object.entries(VOCAB_DATA).sort((a, b) => (a[1].order || 99) - (b[1].order || 99));
+    const totalRead = totalWordsRead();
+    const totalAvail = totalWordsAvailable();
+    const totalPercent = totalAvail > 0 ? Math.round((totalRead / totalAvail) * 100) : 0;
+    
+    const catTitleEl = document.getElementById('vocabCatTitle');
+    if (catTitleEl) catTitleEl.textContent = "Vocabulary Vault";
+    
+    const catDescEl = document.getElementById('vocabCatDesc');
+    if (catDescEl) catDescEl.textContent = "Build your academic vocabulary. Practice using advanced terms in context, grade sentences using AI, and pass writing quizzes.";
+    
+    const catStatsEl = document.getElementById('vocabCatStats');
+    if (catStatsEl) catStatsEl.textContent = `${totalRead} / ${totalAvail}`;
+    
+    const catPercentEl = document.getElementById('vocabCatPercent');
+    if (catPercentEl) catPercentEl.textContent = `${totalPercent}%`;
+    
+    const progressRing = document.getElementById('vocabCatProgressRing');
+    if (progressRing) {
+      const radius = 50;
+      const circumference = 2 * Math.PI * radius; // ~314.16
+      const offset = circumference - (totalPercent / 100) * circumference;
+      progressRing.style.strokeDasharray = `${circumference}`;
+      progressRing.style.strokeDashoffset = `${offset}`;
+    }
+    
+    const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+    if (studyModeBlock) studyModeBlock.style.display = 'none';
+    const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+    if (studyModePlaceholder) studyModePlaceholder.style.display = 'block';
+
+    let gridHtml = `
+      <div style="margin-bottom: 8px;">
+        <h3 class="vocab-grid-title">Categories</h3>
+      </div>
+      <div class="vocab-grid">
+    `;
+    
+    sorted.forEach(([catId, cat]) => {
+      const read = cat.words.filter(w => progress.read[vocabKey(catId, w.word)]).length;
+      const total = cat.words.length;
+      const percent = total > 0 ? Math.round((read / total) * 100) : 0;
+      
+      gridHtml += `
+        <div class="vocab-grid-card" onclick="selectVocabCategory('${catId}')">
+          <div>
+            <div class="vocab-grid-card-header">
+              <span class="vocab-grid-card-icon">${escapeHtml(cat.icon || '📚')}</span>
+              <h4 class="vocab-grid-card-label">${escapeHtml(cat.label)}</h4>
+            </div>
+            <p class="vocab-grid-card-desc">
+              ${escapeHtml(descriptions[catId] || cat.desc || `Practice vocabulary in the ${cat.label} domain.`)}
+            </p>
+          </div>
+          <div class="vocab-grid-card-progress">
+            <div class="vocab-grid-card-progress-text">
+              <span>PROGRESS</span>
+              <span>${read} / ${total} words (${percent}%)</span>
+            </div>
+            <div class="vocab-grid-card-progress-bar-bg">
+              <div class="vocab-grid-card-progress-bar" style="width: ${percent}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    gridHtml += `</div>`;
+    
+    main.innerHTML = gridHtml;
+    return;
+  }
+
+  const cat = VOCAB_DATA[currentVocabCategory];
+  if (!cat || !Array.isArray(cat.words)) return;
+  const readCount = cat.words.filter(w => w && w.word && progress.read[vocabKey(currentVocabCategory, w.word)]).length;
+  const percent = cat.words.length > 0 ? Math.round((readCount / cat.words.length) * 100) : 0;
+  
+  const catTitleEl = document.getElementById('vocabCatTitle');
+  if (catTitleEl) catTitleEl.textContent = cat.label;
+  
+  const catDescEl = document.getElementById('vocabCatDesc');
+  if (catDescEl) catDescEl.textContent = descriptions[currentVocabCategory] || `Improve vocabulary in the ${cat.label} domain.`;
+  
+  const catStatsEl = document.getElementById('vocabCatStats');
+  if (catStatsEl) catStatsEl.textContent = `${readCount} / ${cat.words.length}`;
+  
+  const catPercentEl = document.getElementById('vocabCatPercent');
+  if (catPercentEl) catPercentEl.textContent = `${percent}%`;
+  
+  const progressRing = document.getElementById('vocabCatProgressRing');
+  if (progressRing) {
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius; // ~314.16
+    const offset = circumference - (percent / 100) * circumference;
+    progressRing.style.strokeDasharray = `${circumference}`;
+    progressRing.style.strokeDashoffset = `${offset}`;
+  }
+  
+  const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+  if (studyModeBlock) studyModeBlock.style.display = 'block';
+  const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+  if (studyModePlaceholder) studyModePlaceholder.style.display = 'none';
+
+  const btnList = document.getElementById('vocabToggleList');
+  const btnFlashcard = document.getElementById('vocabToggleFlashcard');
+  if (btnList && btnFlashcard) {
+    if (vocabViewState === 'list') {
+      btnList.className = "vocab-mode-btn active";
+      btnFlashcard.className = "vocab-mode-btn";
+    } else {
+      btnFlashcard.className = "vocab-mode-btn active";
+      btnList.className = "vocab-mode-btn";
+    }
+  }
+  
+  let contentHtml = '';
+  if (vocabViewState === 'list') {
+    contentHtml = cat.words.filter(w => w && w.word).map((w, i) => renderVocabWordCard(w, i)).join('');
+    main.innerHTML = `<div class="vocab-word-list">${contentHtml}</div>`;
+  } else {
+    contentHtml = renderVocabFlashcardContainer();
+    main.innerHTML = contentHtml;
+    showVocabFlashcard();
+  }
+}
+
+function setVocabViewState(state) {
+  vocabViewState = state;
+  renderVocabMain();
+}
+
+function speakWord(word) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+  } else {
+    toast('Text-to-speech not supported in this browser.');
+  }
+}
+
+function renderVocabWordCard(w, idx) {
+  if (!w || !w.word) return '';
+  const wordText = w.word;
+  const read = isWordRead(currentVocabCategory, wordText);
+  const safeWord = wordText.replace(/'/g, "\\'");
+  const safeCat = (currentVocabCategory || '').replace(/'/g, "\\'");
+  
+  const posVal = (w.pos || '').toLowerCase().trim();
+  let posClass = 'pos-noun';
+  if (posVal.includes('verb')) posClass = 'pos-verb';
+  else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = 'pos-adjective';
+  else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = 'pos-adverb';
+  
+  const posHtml = `<span class="pos-badge ${posClass}">${escapeHtml(w.pos || '')}</span>`;
+  
+  const readBtnHtml = read 
+    ? `<button class="vocab-read-btn read vocab-mark-read" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>✓ Read</span>
+       </button>`
+    : `<button class="vocab-read-btn vocab-mark-read" onclick="toggleWordRead('${safeCat}', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>Mark as read</span>
+       </button>`;
+
+  const regex = new RegExp(`\\b(${wordText})\\b`, 'i');
+  const examplesHtml = (w.examples || []).map(ex => {
+    const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
+    return `<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
+      <span style="position: absolute; left: 0; color: var(--accent);">•</span>
+      "${bolded}"
+    </li>`;
+  }).join('');
+
+  return `
+    <div class="vocab-word-card" id="word-card-${idx}">
+      <div class="vocab-card-top">
+        <div class="vocab-word-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span>${escapeHtml(w.word)}</span>
+          <div class="vocab-badges" style="display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 4px;">
+            ${posHtml}
+            
+          </div>
+          <button class="vocab-audio-btn" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
+            <span class="material-symbols-outlined" style="font-size: 18px;">volume_up</span>
+          </button>
+        </div>
+        ${readBtnHtml}
+      </div>
+      
+      <div class="vocab-word-meaning" style="margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5;">
+        ${escapeHtml(w.meaning)}
+      </div>
+      
+      ${w.compare ? `
+      <div style="font-size: 12px; margin-top: 8px; color: var(--ink-soft); font-style: italic; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 6px; padding: 10px 14px;">
+        <strong>Compare:</strong> ${escapeHtml(w.compare)}
+      </div>` : ''}
+      
+      <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; display: flex; flex-direction: column;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
+          <ul style="margin: 0; padding: 0;">
+            ${examplesHtml}
+          </ul>
+        </div>
+        <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="vocab-try-label">Practice Bench</div>
+            <div class="vocab-try-row">
+              <input type="text" placeholder="Write a sentence using '${safeWord}'..." id="try-${idx}" onkeypress="if(event.key==='Enter') checkSentence(${idx}, '${safeWord}')">
+              <button class="vocab-try-check" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
+              <button class="vocab-try-ai" onclick="aiGradeSentence(${idx}, '${safeWord}', '${safeCat}')">🤖 AI Grade</button>
+            </div>
+          </div>
+          <div class="vocab-try-feedback" id="try-fb-${idx}"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMaster1000Vocab() {
+  const main = document.getElementById('vocabMainContent');
+  if (!main) return;
+  
+  // Save focus and cursor selection state
+  const activeElId = document.activeElement ? document.activeElement.id : null;
+  let selectionStart = null;
+  let selectionEnd = null;
+  if (activeElId && document.activeElement instanceof HTMLInputElement) {
+    selectionStart = document.activeElement.selectionStart;
+    selectionEnd = document.activeElement.selectionEnd;
+  }
+  
+  // 1. Update Hero Statistics to show Master List info
+  const progress = getVocabProgress();
+  const readMasterKeys = Object.keys(progress.read).filter(k => k.startsWith('master1000:'));
+  const totalRead = readMasterKeys.length;
+  const totalAvail = typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000.length : 0;
+  const totalPercent = totalAvail > 0 ? Math.round((totalRead / totalAvail) * 100) : 0;
+  
+  const catTitleEl = document.getElementById('vocabCatTitle');
+  if (catTitleEl) catTitleEl.textContent = "1000 Exam Essentials";
+  
+  const catDescEl = document.getElementById('vocabCatDesc');
+  if (catDescEl) catDescEl.textContent = "Interactive master list of the 1,000 most repeated C1 & C2 words for IELTS, PTE, and TOEFL. Click on any word to load its definitions in different contexts, plus 5 example sentences.";
+  
+  const catStatsEl = document.getElementById('vocabCatStats');
+  if (catStatsEl) catStatsEl.textContent = `${totalRead} / ${totalAvail}`;
+  
+  const catPercentEl = document.getElementById('vocabCatPercent');
+  if (catPercentEl) catPercentEl.textContent = `${totalPercent}%`;
+  
+  const progressRing = document.getElementById('vocabCatProgressRing');
+  if (progressRing) {
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius; // ~314.16
+    const offset = circumference - (totalPercent / 100) * circumference;
+    progressRing.style.strokeDasharray = `${circumference}`;
+    progressRing.style.strokeDashoffset = `${offset}`;
+  }
+  
+  // Hide study mode block for category view since master list has custom built-in controls
+  const studyModeBlock = document.getElementById('vocabStudyModeBlock');
+  if (studyModeBlock) studyModeBlock.style.display = 'none';
+  const studyModePlaceholder = document.getElementById('vocabStudyModePlaceholder');
+  if (studyModePlaceholder) studyModePlaceholder.style.display = 'block';
+
+  // 2. Filter words
+  let filtered = typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000 : [];
+  filtered = filtered.filter(w => w && w.w);
+  if (masterLevelFilter !== 'all') {
+    filtered = filtered.filter(w => w.l === masterLevelFilter);
+  }
+  if (masterSearchQuery) {
+    const q = masterSearchQuery.toLowerCase().trim();
+    filtered = filtered.filter(w => (w.w || '').toLowerCase().includes(q) || (w.p || '').toLowerCase().includes(q));
+  }
+  
+  // Pagination math
+  const totalFiltered = filtered.length;
+  const maxPage = Math.max(0, Math.ceil(totalFiltered / masterPageSize) - 1);
+  if (masterPage > maxPage) masterPage = maxPage;
+  
+  const startIdx = masterPage * masterPageSize;
+  const endIdx = Math.min(startIdx + masterPageSize, totalFiltered);
+  const pageWords = filtered.slice(startIdx, endIdx);
+  
+  // Build controls HTML
+  let controlsHtml = `
+    <div class="vocab-control-card" style="margin-bottom: 24px; padding: 20px; display: flex; flex-direction: row; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+      <div style="display: flex; gap: 12px; align-items: center; flex: 1; min-width: 280px;">
+        <input type="text" id="masterSearch" class="vocab-search" style="margin: 0; flex: 1;" placeholder="Search 1000 words..." value="${escapeHtml(masterSearchQuery)}" oninput="handleMasterSearch(this.value)">
+        
+        <select id="masterLevelSelect" onchange="handleMasterLevelFilter(this.value)" style="padding: 8px 12px; border: 1px solid var(--line-soft); border-radius: 6px; background: var(--bg-card); color: var(--ink); font-size: 13px;">
+          <option value="all" ${masterLevelFilter === 'all' ? 'selected' : ''}>All Levels</option>
+          <option value="C1" ${masterLevelFilter === 'C1' ? 'selected' : ''}>C1 Words</option>
+          <option value="C2" ${masterLevelFilter === 'C2' ? 'selected' : ''}>C2 Words</option>
+        </select>
+      </div>
+      
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="vocab-action-btn" onclick="changeMasterPage(-1)" ${masterPage === 0 ? 'disabled style="opacity: 0.5; cursor: default;"' : ''}>
+          <span class="material-symbols-outlined">chevron_left</span> Prev
+        </button>
+        <span style="font-size: 13px; font-weight: 700; color: var(--ink-soft); min-width: 90px; text-align: center;">
+          ${totalFiltered > 0 ? `${startIdx + 1} - ${endIdx} of ${totalFiltered}` : '0 of 0'}
+        </span>
+        <button class="vocab-action-btn" onclick="changeMasterPage(1)" ${masterPage >= maxPage ? 'disabled style="opacity: 0.5; cursor: default;"' : ''}>
+          Next <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Build list HTML
+  let listHtml = '';
+  if (totalFiltered === 0) {
+    const qClean = (masterSearchQuery || '').trim();
+    if (qClean) {
+      listHtml = `
+        <div class="vocab-word-card" style="border: 1px dashed var(--line-soft); text-align: center; padding: 30px; width: 100%;">
+          <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
+          <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">"${escapeHtml(qClean)}" not found in Exam Essentials</h4>
+          <p style="color: var(--ink-soft); font-size: 13.5px; margin-bottom: 16px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            We couldn't find this exact word in our 1,000 IELTS/PTE database. You can query Claude AI to generate layman-friendly definition contexts and examples, or suggest spell-checks if it was mistyped.
+          </p>
+          <button class="vocab-action-btn coach" onclick="queryExternalWord('${escapeHtml(qClean.replace(/'/g, "\\'"))}')" style="padding: 10px 24px; border-radius: 30px; margin: 0 auto; display: inline-flex; gap: 8px;">
+            <span class="material-symbols-outlined">psychology</span>
+            <span>Ask Claude AI for Definitions &amp; Options</span>
+          </button>
+          <div id="externalWordResult" style="margin-top: 20px; text-align: left; width: 100%;"></div>
+        </div>
+      `;
+    } else {
+      listHtml = `<div class="list-empty-state">No matching words found. Try adjusting your search query.</div>`;
+    }
+  } else {
+    listHtml = `<div class="vocab-word-list" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      ${pageWords.map((w, i) => renderMasterWordCard(w, startIdx + i)).join('')}
+    </div>`;
+  }
+  
+  main.innerHTML = controlsHtml + listHtml;
+  
+  // Restore focus and cursor selection state
+  if (activeElId) {
+    const el = document.getElementById(activeElId);
+    if (el) {
+      el.focus();
+      if (selectionStart !== null && selectionEnd !== null && typeof el.setSelectionRange === 'function') {
+        try { el.setSelectionRange(selectionStart, selectionEnd); } catch (e) {}
+      }
+    }
+  }
+}
+
+function handleMasterSearch(q) {
+  masterSearchQuery = q;
+  masterPage = 0;
+  renderMaster1000Vocab();
+}
+
+function handleMasterLevelFilter(lvl) {
+  masterLevelFilter = lvl;
+  masterPage = 0;
+  renderMaster1000Vocab();
+}
+
+function changeMasterPage(delta) {
+  masterPage += delta;
+  renderMaster1000Vocab();
+  // Scroll to top of content
+  document.getElementById('vocabMainContent')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderMasterWordCard(w, idx) {
+  if (!w || !w.w) return '';
+  const wordText = w.w;
+  const cacheKey = `cached_master_vocab_${wordText}`;
+  const cached = localStorage.getItem(cacheKey);
+  const data = cached ? JSON.parse(cached) : null;
+  
+  const read = isWordRead('master1000', wordText);
+  const safeWord = wordText.replace(/'/g, "\\'");
+  
+  const posVal = (w.p || '').toLowerCase().trim();
+  let posClass = 'pos-noun';
+  if (posVal.includes('verb')) posClass = 'pos-verb';
+  else if (posVal.includes('adj') || posVal.includes('adjective')) posClass = 'pos-adjective';
+  else if (posVal.includes('adv') || posVal.includes('adverb')) posClass = 'pos-adverb';
+  
+  const posHtml = `<span class="pos-badge ${posClass}">${escapeHtml(w.p || '')}</span>`;
+  
+  const readBtnHtml = read 
+    ? `<button class="vocab-read-btn read vocab-mark-read" onclick="toggleWordRead('master1000', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>✓ Read</span>
+       </button>`
+    : `<button class="vocab-read-btn vocab-mark-read" onclick="toggleWordRead('master1000', '${safeWord}', ${idx})">
+         <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">done_all</span>
+         <span>Mark as read</span>
+       </button>`;
+
+  let innerHtml = '';
+  if (data) {
+    const contextsHtml = (data.contexts || []).map(ctx => {
+      const examplesList = (ctx.examples || []).map(ex => {
+        const regex = new RegExp(`\\b(${w.w})\\b`, 'i');
+        const bolded = escapeHtml(ex).replace(regex, '<strong>$1</strong>');
+        return `<li style="font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; line-height: 1.45; list-style-type: none; position: relative; padding-left: 14px;">
+          <span style="position: absolute; left: 0; color: var(--accent);">•</span>
+          "${bolded}"
+        </li>`;
+      }).join('');
+      return `
+        <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+          <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
+          <ul style="margin: 0; padding: 0;">${examplesList}</ul>
+        </div>
+      `;
+    }).join('');
+
+    innerHtml = `
+      <div class="vocab-word-meaning" style="margin-top: 8px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; text-align: left;">
+        <strong>Definition:</strong> ${escapeHtml(data.meaning || '')}
+      </div>
+      
+      ${data.compare ? `
+      <div style="font-size: 12px; margin-top: 8px; color: var(--ink-soft); font-style: italic; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; text-align: left;">
+        <strong>Compare:</strong> ${escapeHtml(data.compare)}
+      </div>` : ''}
+      
+      <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+          ${contextsHtml}
+        </div>
+        <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="vocab-try-label" style="text-align: left;">Practice Bench</div>
+            <div class="vocab-try-row">
+              <input type="text" placeholder="Write a sentence using '${safeWord}'..." id="try-${idx}" onkeypress="if(event.key==='Enter') checkSentence(${idx}, '${safeWord}')">
+              <button class="vocab-try-check" onclick="checkSentence(${idx}, '${safeWord}')">Check</button>
+              <button class="vocab-try-ai" onclick="aiGradeSentence(${idx}, '${safeWord}', 'master1000')">🤖 AI Grade</button>
+            </div>
+          </div>
+          <div class="vocab-try-feedback" id="try-fb-${idx}" style="text-align: left;"></div>
+        </div>
+      </div>
+    `;
+  } else {
+    innerHtml = `
+      <div style="margin-top: 12px; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); border: 1px dashed var(--line-soft); border-radius: 12px;">
+        <button class="vocab-action-btn coach" id="load-btn-${idx}" onclick="loadMasterWordDetails('${safeWord}', ${idx})" style="padding: 10px 20px; gap: 8px; border-radius: 30px;">
+          <span class="material-symbols-outlined">psychology</span>
+          <span>💡 Load AI Definitions &amp; 5 Examples</span>
+        </button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="vocab-word-card" id="word-card-${idx}">
+      <div class="vocab-card-top">
+        <div class="vocab-word-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span>${escapeHtml(w.w)}</span>
+          <div class="vocab-badges" style="display: inline-flex; gap: 4px; align-items: center; vertical-align: middle; margin-left: 4px;">
+            ${posHtml}
+            
+          </div>
+          <button class="vocab-audio-btn" onclick="speakWord('${safeWord}')" title="Listen to pronunciation">
+            <span class="material-symbols-outlined" style="font-size: 18px;">volume_up</span>
+          </button>
+        </div>
+        ${readBtnHtml}
+      </div>
+      
+      ${innerHtml}
+    </div>
+  `;
+}
+
+async function loadMasterWordDetails(word, idx) {
+  const btn = document.getElementById(`load-btn-${idx}`);
+  if (!btn) return;
+  
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner-dark" style="border-color: var(--accent); border-top-color: transparent; width: 14px; height: 14px; margin-right: 6px;"></span><span>Loading details...</span>`;
+  
+  if (offlineMode) {
+    const data = {
+      meaning: `Academic vocabulary word.`,
+      compare: `Connect to the internet to trigger AI generation of comparison notes and context examples.`,
+      contexts: [
+        { name: "General Usage", meaning: "Standard academic vocabulary item.", examples: [`Please practice using "${word}" in your own sentences.`] }
+      ]
+    };
+    localStorage.setItem(`cached_master_vocab_${word}`, JSON.stringify(data));
+    renderMaster1000Vocab();
+    return;
+  }
+  
+  const prompt = `Define the C1/C2 academic word "${word}" for English tests (PTE/IELTS). Provide:
+1. One general formal meaning (written in simple, clear, layman-friendly plain English so that a student can easily grasp it without looking up other difficult words).
+2. A comparison note (e.g. versus a similar word).
+3. Context-specific meanings for 2-3 different academic/professional contexts (explained in clear, layman-friendly language).
+4. Exactly 5 example sentences total demonstrating the word in these contexts.
+
+Return ONLY a valid JSON object matching this structure (do not include markdown outside JSON, just output the JSON plain text):
+{
+  "meaning": "general meaning here",
+  "compare": "comparison note here",
+  "contexts": [
+    { "name": "Academic Writing", "meaning": "meaning in this context", "examples": ["example sentence 1", "example sentence 2"] },
+    { "name": "Professional/Business", "meaning": "meaning in this context", "examples": ["example sentence 3", "example sentence 4"] },
+    { "name": "General/Scientific", "meaning": "meaning in this context", "examples": ["example sentence 5"] }
+  ]
+}`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const resData = await res.json();
+    const text = (resData.content || []).map(c => c.text || '').join('\n').trim();
+    
+    const data = cleanAndParseJSON(text);
+    localStorage.setItem(`cached_master_vocab_${word}`, JSON.stringify(data));
+    renderMaster1000Vocab();
+  } catch (err) {
+    console.error('Failed to load AI vocab details:', err);
+    toast('AI generation failed: ' + err.message, true);
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+async function toggleWordRead(catId, word, idx) {
+  const progress = getVocabProgress();
+  const key = vocabKey(catId, word);
+  if (progress.read[key]) {
+    delete progress.read[key];
+  } else {
+    progress.read[key] = Date.now();
+  }
+  await saveVocabProgress();
+  
+  if (catId === 'master1000') {
+    renderMaster1000Vocab();
+    updateVocabProgressSummary();
+    return;
+  }
+  
+  // Update UI in place
+  const card = document.getElementById(`word-card-${idx}`);
+  if (card) card.classList.toggle('read', !!progress.read[key]);
+  const btn = card?.querySelector('.vocab-mark-read');
+  if (btn) {
+    btn.classList.toggle('read', !!progress.read[key]);
+    btn.textContent = progress.read[key] ? '✓ Read' : 'Mark as read';
+  }
+  renderVocabCategoryList();
+  updateVocabProgressSummary();
+}
+
+// Free instant check: is the word present in the user's sentence?
+function checkSentence(idx, word) {
+  const input = document.getElementById(`try-${idx}`);
+  const fb = document.getElementById(`try-fb-${idx}`);
+  if (!input || !fb) return;
+  const text = (input.value || '').trim();
+  if (!text) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'Write a sentence first.';
+    return;
+  }
+  // Word-present check — match the word stem (handles plurals, verb endings)
+  const stem = word.toLowerCase().replace(/(ation|isation|ing|ed|ies|es|s)$/, '').slice(0, Math.max(4, word.length - 3));
+  const re = new RegExp(`\\b${stem}[a-z]*\\b`, 'i');
+  if (!re.test(text)) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.innerHTML = `Hmm — I couldn't find <strong>"${escapeHtml(word)}"</strong> (or a form of it) in your sentence. Try again.`;
+    return;
+  }
+  if (text.length < 15) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'Your sentence is very short. Try a sentence with more context.';
+    return;
+  }
+  fb.className = 'vocab-try-feedback show ok';
+  fb.innerHTML = `✓ Nice — you used <strong>"${escapeHtml(word)}"</strong>. For deeper feedback on grammar and meaning, click 🤖 AI grade.`;
+}
+
+async function aiGradeSentence(idx, word, catId) {
+  if (offlineMode) { toast('AI grade requires sign-in', true); return; }
+  const input = document.getElementById(`try-${idx}`);
+  const fb = document.getElementById(`try-fb-${idx}`);
+  if (!input || !fb) return;
+  const sentence = (input.value || '').trim();
+  if (!sentence) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'Write a sentence first.';
+    return;
+  }
+  // Quota
+  if (!await consumeQuota('idea')) return;
+
+  let wordData = null;
+  if (catId === 'master1000') {
+    const found = (typeof VOCAB_1000 !== 'undefined' ? VOCAB_1000 : []).find(w => w.w === word);
+    if (found) {
+      const cached = localStorage.getItem(`cached_master_vocab_${word}`);
+      const cachedData = cached ? JSON.parse(cached) : null;
+      wordData = {
+        word: found.w,
+        pos: found.p,
+        meaning: cachedData ? cachedData.meaning : "Academic vocabulary word"
+      };
+    }
+  } else if (catId === 'external') {
+    wordData = {
+      word: word,
+      pos: lastExternalWordData ? lastExternalWordData.pos : '',
+      meaning: lastExternalWordData ? lastExternalWordData.meaning : 'Vocabulary word'
+    };
+  } else {
+    wordData = (VOCAB_DATA[catId]?.words || []).find(w => w.word === word);
+  }
+  fb.className = 'vocab-try-feedback show thinking';
+  fb.innerHTML = '<span class="spinner-dark"></span> AI is reviewing your sentence…';
+
+  const prompt = `You are an IELTS / PTE English tutor at IPT Brisbane. A student is practising the C1/C2 word "${word}" (${wordData?.pos || ''}). The word means: ${wordData?.meaning || ''}
+
+The student's sentence: "${sentence}"
+
+Evaluate it in 2-3 short bullet points, written in very simple, clear, layman-friendly plain English. Avoid complex grammatical jargon; explain any mistakes in a straightforward way that a beginner can easily understand:
+1. Did they USE the word correctly (right meaning + grammar)? Yes/No + brief, simple explanation of why.
+2. Is the sentence grammatically correct overall? Brief note in simple terms.
+3. ONE concrete, easy-to-understand improvement if relevant (or a "well done" if it's already great).
+
+Keep total response under 80 words. Be encouraging, simple, and accurate. Plain text, no markdown.`;
+
+  try {
+    const res = await fetch(API_URL + '/api/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 250,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const data = await res.json();
+    const text = (data.content || []).map(c => c.text || '').join('\n').trim();
+    fb.className = 'vocab-try-feedback show ok';
+    fb.innerHTML = '🤖 ' + escapeHtml(text).replace(/\n/g, '<br>');
+    // Save attempt
+    const progress = getVocabProgress();
+    if (!progress.attempts[vocabKey(catId, word)]) progress.attempts[vocabKey(catId, word)] = [];
+    progress.attempts[vocabKey(catId, word)].push({ sentence, feedback: text.slice(0, 200), ts: Date.now() });
+    if (progress.attempts[vocabKey(catId, word)].length > 5) {
+      progress.attempts[vocabKey(catId, word)] = progress.attempts[vocabKey(catId, word)].slice(-5);
+    }
+    await saveVocabProgress();
+  } catch (err) {
+    fb.className = 'vocab-try-feedback show warn';
+    fb.textContent = 'AI grade failed: ' + err.message;
+  }
+}
+
+// ============================================================
+//  PRACTICE QUIZ
+// ============================================================
+let quizWords = [];
+let quizUserAnswers = {};
+
+function openVocabPractice() {
+  const progress = getVocabProgress();
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push({ ...w, catId, catLabel: cat.label, read: !!progress.read[vocabKey(catId, w.word)] });
+    }
+  }
+  const readPool = allWords.filter(w => w.read);
+  const unreadPool = allWords.filter(w => !w.read);
+
+  document.getElementById('vocabPracticeContent').innerHTML = `
+    <h2>🎯 Vocabulary Practice Center</h2>
+    <p style="margin-bottom: 20px;">Choose a practice mode to test your vocabulary knowledge.</p>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+      <!-- Quiz Panel -->
+      <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+        <h3 style="font-size:15px; margin-bottom:6px; color:var(--accent);">🎯 Definition Quiz</h3>
+        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
+        <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
+          <button class="tb-text-btn dark" onclick="startQuizMode('spelling')">Start Spelling Quiz</button>
+          <button class="tb-text-btn dark" onclick="startQuizMode('mcq')">Start Multiple Choice</button>
+        </div>
+      </div>
+      
+      <!-- Matching Game Panel -->
+      <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+        <h3 style="font-size:15px; margin-bottom:6px; color:#10b981;">⚡ Synonyms Matcher</h3>
+        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
+        <div style="margin-top:14px;">
+          <button class="tb-text-btn dark" onclick="startSynonymsMatcher()" style="background:#10b981; border-color:#10b981; width:100%;">Play Matcher Game</button>
+        </div>
+      </div>
+    </div>
+    
+    <div style="font-size:12.5px; color:var(--ink-mute); border-top:1px solid var(--line-soft); padding-top:12px; display:flex; justify-content:space-between; align-items:center;">
+      <span>Pool: <strong>${readPool.length}</strong> read words · <strong>${unreadPool.length}</strong> unread</span>
+      <button class="tb-text-btn" onclick="closeVocabPractice()">Close</button>
+    </div>
+  `;
+  document.getElementById('vocabPracticeModal').classList.add('show');
+}
+function closeVocabPractice() { document.getElementById('vocabPracticeModal').classList.remove('show'); }
+
+function startQuiz(n, pool) {
+  const progress = getVocabProgress();
+  const allWords = [];
+  for (const [catId, cat] of Object.entries(VOCAB_DATA)) {
+    for (const w of cat.words) {
+      allWords.push({ ...w, catId, catLabel: cat.label, read: !!progress.read[vocabKey(catId, w.word)] });
+    }
+  }
+  const source = (pool === 'read') ? allWords.filter(w => w.read) : allWords;
+  if (source.length === 0) { toast('No words available — read some first', true); return; }
+  // Shuffle and pick n
+  const shuffled = [...source].sort(() => Math.random() - 0.5).slice(0, Math.min(n, source.length));
+  quizWords = shuffled;
+  quizUserAnswers = {};
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const c = document.getElementById('vocabPracticeContent');
+  c.innerHTML = `
+    <h2>🎯 Practice Quiz — ${quizWords.length} words</h2>
+    <p>For each meaning, type the matching word.</p>
+    <div style="max-height:420px; overflow-y:auto; padding-right:4px;">
+      ${quizWords.map((w, i) => `
+        <div class="quiz-question">
+          <div class="quiz-question-prompt">
+            <strong>${i+1}.</strong> <em>${escapeHtml(w.catLabel)}</em><br>
+            ${escapeHtml(w.meaning)}
+          </div>
+          <input type="text" id="quiz-q-${i}" placeholder="Your answer…" autocomplete="off" spellcheck="false">
+          <div class="quiz-result" id="quiz-r-${i}"></div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="modal-actions">
+      <button class="tb-text-btn" onclick="closeVocabPractice()">Cancel</button>
+      <button class="tb-text-btn dark" onclick="submitQuiz()">Check answers</button>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('quiz-q-0')?.focus(), 60);
 }
 
 function submitQuiz() {

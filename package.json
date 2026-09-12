@@ -4,6 +4,8 @@
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
+    "postinstall": "node scripts/validate-public-assets.js",
+    "validate:assets": "node scripts/validate-public-assets.js",
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node --test tests/*.test.js",

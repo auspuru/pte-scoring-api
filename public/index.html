@@ -160,9 +160,9 @@
 <script src="reading-exam-player.js?v=4" defer></script>
 <script src="reading-session-timing.js?v=1" defer></script>
 <script src="reading-review.js?v=6" defer></script>
-<script src="reading-practice.js?v=17" defer></script>
+<script src="reading-practice.js?v=18" defer></script>
 <script src="portal-workspace.js?v=20.4.15" defer></script>
-<script src="index.js?v=20.4.12" defer></script>
+<script src="index.js?v=20.4.13" defer></script>
 </head>
 <body>
 
@@ -185,7 +185,7 @@
       <h1 class="login-title">Welcome back</h1>
       <p class="login-sub">Sign in to practice SWT and essays</p>
       <div class="login-error" id="loginError"></div>
-      <form onsubmit="handleLoginSubmit(event)">
+      <form onsubmit="event.preventDefault(); if (typeof handleLoginSubmit === 'function') { handleLoginSubmit(event); } else { const error = document.getElementById('loginError'); error.textContent = 'Sign-in has not finished loading. Please refresh this page and try again.'; error.style.display = 'block'; }">
         <div class="login-field">
           <label for="loginUsername">Username</label>
           <input type="text" id="loginUsername" autocomplete="username" required placeholder="your username">
