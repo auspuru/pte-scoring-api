@@ -1371,9 +1371,14 @@ const AuthAPI = {
     }));
   },
   async deleteUser(username) {
+    const uid = String(username || '').toLowerCase().trim();
+    if (!uid) return { success: false, error: 'Username is required' };
     const data = await this.readAccounts();
-    const uid = username.toLowerCase().trim();
     if (!data.accounts[uid]) return { success: false, error: 'User not found' };
+    if (USE_POSTGRES) {
+      await PgStorage._deleteAccount(uid);
+      return { success: true };
+    }
     delete data.accounts[uid];
     delete data.users[uid];
     await StorageAPI.writeData(data);
