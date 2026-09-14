@@ -10,10 +10,10 @@
   let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
   const grading = new Set();
-  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
+  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0, speechFallback = false, speechUtterance = null;
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd'].includes(q.type);
-  function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
+  function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); if(window.speechSynthesis) window.speechSynthesis.cancel(); speechUtterance=null; }
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
@@ -204,7 +204,7 @@
       audio=new Audio(q.audioUrl); audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
       audioFinished=!!saved?.finished || !!local?.audioFinished;
     }
-    const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
+    const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status'); speechFallback=false; speechUtterance=null;
     const current=()=>attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
     const completeText=q.type==='wfd'?'Recording complete. Check your sentence.':'Recording complete. Write your summary.';
     let prepared=false;
@@ -216,6 +216,22 @@
     const play=async()=>{
       clearInterval(audioCountdown);
       if(!current() || audioFinished || document.hidden) return;
+      if(speechFallback) {
+        startButton.disabled=true;
+        try {
+          if(attempt.status==='ready') {
+            const value=await api('/attempts/'+id+'/begin');
+            if(!current()) return;
+            setAttempt(value); document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
+          }
+          speechUtterance=new SpeechSynthesisUtterance(q.text); speechUtterance.rate=0.95;
+          speechUtterance.onend=()=>{ if(current()) { audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false); } };
+          speechUtterance.onerror=()=>{ if(current()) { startButton.disabled=false; status.textContent='Press Play recording to retry.'; } };
+          window.speechSynthesis.cancel(); window.speechSynthesis.speak(speechUtterance);
+          status.textContent='Playing with browser speech audio…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
+        } catch(e) { if(current()) { startButton.disabled=false; status.textContent='Press Play recording to continue.'; } }
+        return;
+      }
       if(player.error) { player.load(); status.textContent='Loading audio…'; startButton.disabled=true; return; }
       startButton.disabled=true;
       try {
@@ -272,8 +288,9 @@
     };
     player.onerror=()=>{
       if(!current()) return;
-      clearInterval(audioCountdown); status.textContent='Audio could not load. Check your connection and retry.';
-      startButton.textContent='Retry audio'; startButton.disabled=false; startButton.classList.remove('hidden');
+      clearInterval(audioCountdown); speechFallback=true;
+      status.textContent='Server audio is busy. Browser speech audio is ready.';
+      startButton.textContent='Play browser speech audio'; startButton.disabled=false; startButton.classList.remove('hidden');
     };
     document.getElementById('audio-volume').oninput=e=>player.volume=Number(e.target.value);
     startButton.onclick=play;
