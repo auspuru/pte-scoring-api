@@ -1,5 +1,6 @@
 'use strict';
-const VERSION = 'exam-practice-2026-09-14';
+const VERSION = 'exam-practice-2026-09-14.2';
+const report = require('./public/writing-lab-report');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
   sst: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 },
@@ -85,6 +86,7 @@ function normalize(q, text, raw) {
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
 }
 async function grade(q, text, call) {
+  if (q.type === 'wfd') return gradeDictation(q, text);
   const form = formFor(q.type, text);
   if (!form.score) return zeroResult(q.type, text, form.reasons);
   let error;
@@ -94,4 +96,29 @@ async function grade(q, text, call) {
   }
   throw error;
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade };
+function gradeDictation(q, text) {
+  const expected = report.tokens(q.text), answer = report.tokens(text);
+  // Match words in sequence without shifting every later word after one omission.
+  // A response token can earn at most one point; extra words earn no points.
+  const table = Array.from({ length: expected.length + 1 }, () => new Uint16Array(answer.length + 1));
+  for (let i = expected.length - 1; i >= 0; i--) for (let j = answer.length - 1; j >= 0; j--)
+    table[i][j] = expected[i] === answer[j] ? 1 + table[i + 1][j + 1] : Math.max(table[i + 1][j], table[i][j + 1]);
+  const matched = new Set(), used = new Set();
+  let i = 0, j = 0;
+  while (i < expected.length && j < answer.length) {
+    if (expected[i] === answer[j]) { matched.add(i++); used.add(j++); }
+    else if (table[i + 1][j] >= table[i][j + 1]) i++;
+    else j++;
+  }
+  const missing = expected.filter((_, index) => !matched.has(index)), extra = answer.filter((_, index) => !used.has(index));
+  const total = matched.size, maximum = expected.length;
+  const improvements = [];
+  if (missing.length) improvements.push('Check the missing, misspelled or out-of-order words: ' + missing.join(', ') + '.');
+  if (extra.length) improvements.push('Words that did not earn a point: ' + extra.join(', ') + '.');
+  return { version: VERSION, assessmentType: 'Word-by-word practice assessment', scores: { content: total }, maxima: { content: maximum },
+    total, maximum, wordCount: wordCount(text), gated: false, reasons: [],
+    feedback: { content: total + ' of ' + maximum + ' words matched with correct spelling in sequence. Capitalisation and sentence punctuation do not change this practice mark.' },
+    strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
+    wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
+}
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeDictation };

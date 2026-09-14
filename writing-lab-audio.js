@@ -6,7 +6,7 @@ const bank = require('./content/writing-lab.json');
 function createNarration(directory, generate) {
   const pending = new Map();
   async function get(id) {
-    const q = bank.spoken.find(item => item.id === id);
+    const q = [...bank.spoken, ...bank.mocks.flatMap(mock => mock.questions)].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
     const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95 };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);

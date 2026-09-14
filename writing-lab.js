@@ -2,22 +2,28 @@
 const express = require('express');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
+const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
+  const previous = a.questions[a.index];
   a.completed[a.index] = { at, reason };
   if (a.index === a.questions.length - 1) { a.status = 'submitted'; a.finishedAt = at; a.deadline = null; }
-  else { a.index++; a.deadline = at + a.questions[a.index].minutes * 60000; }
+  else {
+    a.index++; a.notes = '';
+    const next = a.questions[a.index];
+    if (!next.timeGroup || next.timeGroup !== previous.timeGroup) a.deadline = at + next.minutes * 60000;
+  }
 }
 function reconcile(a, now = Date.now()) {
   while (a.status === 'active' && now >= a.deadline) advance(a, a.deadline, 'Time expired');
   return a;
 }
 function present(a) {
-  const result = { ...a, serverNow: Date.now() };
-  result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes,
-    ...(a.status === 'submitted' || i <= a.index ? { text:q.type === 'sst' && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...(q.type === 'sst' ? { audioUrl:'/writing-audio/' + q.id + '.mp3' } : {}),
+  const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
+  result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
+    ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
+    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3' } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
   return result;
 }
@@ -35,7 +41,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
     spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3' })),
-    mocks:bank.mocks.map(m => ({ id:m.id,title:m.title,description:m.description,minutes:40,questionCount:3 })) }));
+    mocks:bank.mocks.map(m => ({ id:m.id,title:m.title,description:m.description,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
+      tasks:Object.entries(report.labels).flatMap(([type,label]) => {
+        const questions=m.questions.filter(q=>q.type===type);
+        return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];
+      }) })) }));
   router.get('/session', route(async(req,res) => { res.set('Cache-Control','no-store'); res.json({ username:await identify(req) }); }));
   router.use(async(req,res,next) => {
     try {
@@ -54,10 +64,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const entries = [];
     for (const a of all) {
       const current = await store.update(req.labUser,a.id, value => reconcile(value));
+      const summary = report.summarize(current.questions, current.results);
       entries.push({ id:current.id,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
         completed:current.completed.filter(Boolean).length,questions:current.questions.length,
-        total:current.results.every(Boolean) ? current.results.reduce((n,r) => n+r.total,0) : null,
-        maximum:current.questions.reduce((n,q) => n+Object.values(scoring.MAXIMA[q.type]).reduce((x,y)=>x+y,0),0) });
+        total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90 });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
@@ -70,7 +80,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if (existing) return reconcile(existing);
       return { id,testId,title:mock?.title || spoken.title,kind:mock ? 'mock' : 'sst',questions:q,index:0,
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
-        answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null) };
+        answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null) };
     });
     res.json(present(a));
   }));
@@ -87,8 +97,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     res.json(present(a));
   }));
   router.post('/attempts/:id/answer', route(async(req,res) => {
-    const { index,text,revision,next,notes } = req.body || {};
+    const { index,text,revision,next,notes,playback } = req.body || {};
     if (!Number.isInteger(index) || typeof text !== 'string' || text.length>20000 || !Number.isSafeInteger(revision) || revision<1 || (notes != null && (typeof notes !== 'string' || notes.length>10000))) throw bad('Invalid answer.');
+    if (playback != null && (!Number.isFinite(playback.position) || playback.position < 0 || playback.position > 600 || typeof playback.finished !== 'boolean')) throw bad('Invalid playback position.');
     const a = await store.update(req.labUser,req.params.id,value => {
       if(!value) throw bad('Attempt not found.',404);
       reconcile(value);
@@ -97,6 +108,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(revision <= value.revisions[index]) return value;
       value.answers[index]=text; value.revisions[index]=revision;
       if(typeof notes === 'string') value.notes=notes;
+      if (playback && ['sst','wfd'].includes(value.questions[index].type)) {
+        value.playback ||= value.questions.map(()=>null);
+        const old = value.playback[index];
+        value.playback[index] = {position:Math.max(old?.position || 0, playback.position),finished:!!old?.finished || playback.finished};
+      }
       if(next === true) advance(value,Date.now(),'Submitted');
       return value;
     });
