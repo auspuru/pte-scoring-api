@@ -1384,6 +1384,40 @@ const AuthAPI = {
     await StorageAPI.writeData(data);
     return { success: true };
   },
+  async deleteUsers(usernames) {
+    const ids = [...new Set((Array.isArray(usernames) ? usernames : [])
+      .map(x => String(x || '').toLowerCase().trim()).filter(Boolean))];
+    if (!ids.length) return { success: false, error: 'At least one username is required' };
+    if (USE_POSTGRES) {
+      const client = await pgPool.connect();
+      try {
+        await client.query('BEGIN');
+        await client.query('DELETE FROM user_data WHERE username = ANY($1::text[])', [ids]);
+        const result = await client.query(
+          'DELETE FROM accounts WHERE username = ANY($1::text[]) RETURNING username', [ids]
+        );
+        await client.query('COMMIT');
+        const deleted = result.rows.map(row => row.username);
+        return { success: true, deleted, notFound: ids.filter(id => !deleted.includes(id)) };
+      } catch (e) {
+        await client.query('ROLLBACK').catch(() => {});
+        throw e;
+      } finally {
+        client.release();
+      }
+    }
+    const data = await this.readAccounts();
+    const deleted = [], notFound = [];
+    ids.forEach(uid => {
+      if (data.accounts[uid]) {
+        delete data.accounts[uid];
+        delete data.users[uid];
+        deleted.push(uid);
+      } else notFound.push(uid);
+    });
+    await StorageAPI.writeData(data);
+    return { success: true, deleted, notFound };
+  },
   async blockUser(username, blocked) {
     const data = await this.readAccounts();
     const uid = username.toLowerCase().trim();
@@ -3002,6 +3036,11 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
 app.post('/api/admin/delete-user', requireAdmin, async (req, res) => {
   try { res.json(await AuthAPI.deleteUser(req.body.username)); }
   catch (e) { res.status(500).json({ error: 'Delete failed' }); }
+});
+
+app.post('/api/admin/delete-users', requireAdmin, async (req, res) => {
+  try { res.json(await AuthAPI.deleteUsers(req.body.usernames)); }
+  catch (e) { console.error('Bulk delete failed:', e); res.status(500).json({ error: 'Bulk delete failed' }); }
 });
 
 app.post('/api/admin/block-user', requireAdmin, async (req, res) => {
