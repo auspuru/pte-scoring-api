@@ -574,6 +574,14 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 function escH(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 function fmtDate(d){if(!d)return '—';const dt=new Date(d);return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'2-digit'});}
 
+async function loadUsers(){
+  const r=await fetch(API+'/api/admin/users',{headers:{'x-admin-key':adminKey},cache:'no-store'});
+  if(!r.ok){const e=new Error('Failed to load users (HTTP '+r.status+')');e.is403=r.status===403;throw e;}
+  allUsers=await r.json();
+  renderUsers(userList());
+  return allUsers;
+}
+
 function adminLogin(opts){
   const silent = opts && opts.silent;   // true when called by auto-login at page load
   adminKey=document.getElementById('adminKeyInput').value.trim();
@@ -584,18 +592,10 @@ function adminLogin(opts){
     }
     return;
   }
-  fetch(API+'/api/admin/users',{headers:{'x-admin-key':adminKey}})
-    .then(r=>{
-      if(r.status===403){ const e=new Error('Invalid key'); e.is403=true; throw e; }
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
-    })
-    .then(users=>{
+  loadUsers().then(users=>{
       document.getElementById('authCard').style.display='none';
       document.getElementById('dashboard').style.display='block';
       sessionStorage.setItem('adminKey',adminKey);
-      allUsers=users;
-      renderUsers(users);
     })
     .catch(e=>{
       // A 403 means the key is wrong. If it came from a stale saved key during
