@@ -94,7 +94,9 @@
     const merged = progressSync().mergeReading(state, remote);
     // Recalculate display totals using the existing grader, never a sync rule.
     merged.history = merged.history.map(s => ({ ...s, ...totals(s) }));
-    if (before?.id === merged.session?.id) { Object.assign(before, merged.session); merged.session = before; }
+    // Only preserve an existing session reference. Two empty sessions also have
+    // matching optional IDs, but there is no object to update on the home page.
+    if (before && merged.session && before.id === merged.session.id) { Object.assign(before, merged.session); merged.session = before; }
     state = merged;
     lastSnapshot = progressSync().packReading(state);
     try { localStorage.setItem(storageKey(owner), JSON.stringify(lastSnapshot)); } catch (_) { /* The cloud copy remains available. */ }

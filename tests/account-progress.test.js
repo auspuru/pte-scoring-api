@@ -143,7 +143,7 @@ function clientFunction(name) {
   return clientSource.slice(start, clientSource.indexOf('\n}', start) + 2);
 }
 function device(store, owner = 'student') {
-  const values = new Map(), requests = [], statuses = [], timers = [];
+  const values = new Map(), requests = [], statuses = [], timers = [], errors = [];
   let offline = false;
   const host = { hidden: false, innerHTML: '', replaceChildren() { this.innerHTML = ''; }, querySelector: () => null, querySelectorAll: () => [] };
   const ctx = { currentUserId: owner, sessionToken: owner + '-token', currentUser: { uid: owner }, userProfile: { vocabProgress: {}, practiceHistory: [], templates: {} },
@@ -152,7 +152,7 @@ function device(store, owner = 'student') {
     practiceHistoryDeleted: [], practiceRefreshInFlight: null, lastPracticeRefreshAt: 0, API_URL: '', BAND6_TEMPLATE: '', BAND9_TEMPLATE: '',
     document: { visibilityState: 'visible', hidden: false, activeElement: null, getElementById: id => id === 'readingPane' ? host : null },
     localStorage: { getItem: k => values.get(k) || null, setItem: (k, v) => values.set(k, v) }, AbortSignal, Date,
-    console: { error() {} }, setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout() {}, setInterval: () => 1, clearInterval() {}, confirm: () => true,
+    console: { error: (...args) => errors.push(args.map(String).join(' ')) }, setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout() {}, setInterval: () => 1, clearInterval() {}, confirm: () => true,
     canonicalClientUserId: essaySync.canonicalUserId, mergePracticeHistoryClient: essaySync.mergeHistory, mergePracticeDeletedClient: essaySync.mergeDeleted,
     todayStamp: () => '2026-09-11', safeLSRemove() {}, cachePracticeHistory() {}, getCurrent: () => ctx.essays.find(e => e.id === ctx.currentId),
     setSync: (state, text) => { statuses.push([state, text]); ctx.ReadingPractice?.setSyncStatus(state, text); },
@@ -175,8 +175,44 @@ function device(store, owner = 'student') {
   vm.runInContext('const accountProgressMemory = new Map(); const accountCloudSnapshot = new Map();\n' +
     ['localAccountProgress', 'cacheAccountProgress', 'captureAccountProgress', 'receiveAccountProgress', 'accountSyncPayload', 'queueSync', 'flushSync', 'flushSyncDirect', 'refreshPracticeHistory', 'resumeAccountSync'].map(clientFunction).join('\n'), ctx);
   const click = dataset => host.onclick({ target: { closest: () => ({ dataset, disabled: false, setAttribute() {} }) } });
-  return { ctx, host, values, requests, statuses, timers, click, offline(value) { offline = value; } };
+  return { ctx, host, values, requests, statuses, timers, errors, click, offline(value) { offline = value; } };
 }
+
+test('Opening reading with no current session still downloads and uploads cloud progress', async () => {
+  const store = backend(), browser = device(store);
+  await browser.ctx.ReadingPractice.open();
+  await browser.ctx.practiceRefreshInFlight;
+  await store.setUserData('student', { summaries: { 1: { text: 'Draft from another device', timestamp: 20 } } });
+
+  assert.equal(await browser.ctx.refreshPracticeHistory({ force: true }), true);
+  assert.equal(browser.ctx.localAccountProgress().summaries[1].text, 'Draft from another device');
+  assert.equal(P.unpackReading(browser.ctx.localAccountProgress().readingProgress).session, null);
+  assert.deepEqual(browser.statuses.at(-1), ['synced', 'Synced across devices']);
+
+  browser.ctx.userProfile.vocabProgress = { read: { wordA: 30 } };
+  browser.ctx.queueSync();
+  assert.equal(await browser.ctx.flushSync(), true, browser.errors.join('\n'));
+  assert.equal(browser.ctx.LocalStore.get('pte_student_syncPending'), false);
+  assert.equal((await store.getUserData('student')).vocabProgress.read.wordA, 30);
+  assert.equal(browser.ctx.syncQueued, false);
+});
+
+test('Reading history can refresh without an active session or losing saved results', async () => {
+  const store = backend(), browser = device(store);
+  const completed = { ...session('finished'), done: true, finishedAt: 5000, answers: { 'test:q1': ['answer'] } };
+  browser.values.set('ipt_reading_v1:student', JSON.stringify({ session: null, history: [completed], practiceResults: {} }));
+  await browser.ctx.ReadingPractice.open();
+  await browser.ctx.syncInFlight;
+  await browser.ctx.practiceRefreshInFlight;
+
+  assert.doesNotThrow(() => browser.ctx.ReadingPractice.receiveProgress({ session: null, history: [completed] }, 'student'));
+  browser.ctx.queueSync();
+  assert.equal(await browser.ctx.flushSync(), true, browser.errors.join('\n'));
+  const cloud = P.unpackReading((await store.getUserData('student')).readingProgress);
+  assert.equal(cloud.session, null);
+  assert.equal(cloud.history.length, 1);
+  assert.deepEqual(cloud.history[0].answers['test:q1'], ['answer']);
+});
 
 test('Two real client coordinators sync library practice answers, results, SWT, essays and vocabulary', async () => {
   const store = backend(), phone = device(store), laptop = device(store);
