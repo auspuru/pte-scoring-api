@@ -5657,6 +5657,26 @@ function escapeHtmlServer(s) {
   return String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
+require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
+require('./writing-lab').installWritingLab(app, {
+  pool: pgPool,
+  directory: path.join(DATA_DIR, 'writing-lab'),
+  verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
+  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  callModel: async prompt => {
+    if (!anthropic) throw new Error('Writing assessment is not configured.');
+    const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
+      max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
+    if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
+    const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
+    return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
+  }
+});
+app.get(['/writing-mocks', '/spoken-text'], (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'writing-lab.html'));
+});
+
 // Friendly shortcut routes — let /admin and /practice work without the .html
 // extension. These must come BEFORE the catch-all, which would otherwise serve
 // index.html for any path that isn't a real file.
