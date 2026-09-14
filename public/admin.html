@@ -377,6 +377,7 @@ tr:hover td { background: var(--surface-dim); }
     display: none !important;
   }
 }
+.user-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.user-controls .search-input{width:180px}.btn-danger{color:var(--red);border-color:rgba(239,68,68,.3)}.btn-danger:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -420,7 +421,6 @@ tr:hover td { background: var(--surface-dim); }
 
   <div class="tabs">
     <button class="tab active" id="tabUsers" onclick="switchTab('users')">Users</button>
-    <button class="tab" id="tabPassages" onclick="switchTab('passages')">Passages</button>
   </div>
 
   <div class="tab-panel active" id="panelUsers">
@@ -434,33 +434,16 @@ tr:hover td { background: var(--surface-dim); }
     <div class="table-card">
       <div class="table-header">
         <h3>Users</h3>
-        <input type="text" class="search-input" id="userSearch" placeholder="Search users..." oninput="filterUsers(this.value)">
+        <div class="user-controls"><input type="text" class="search-input" id="userSearch" placeholder="Search by name..." oninput="filterUsers(this.value)"><select class="search-input" id="userSort" onchange="sortUsers(this.value)" aria-label="Sort users"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="name-asc">Name A–Z</option><option value="name-desc">Name Z–A</option></select><button class="btn-sm btn-danger" id="bulkDeleteBtn" onclick="deleteSelectedUsers()" disabled>Delete selected</button></div>
       </div>
       <table>
-        <thead><tr><th>User</th><th>Created</th><th>Last Login</th><th>SWT</th><th>Reading</th><th>Avg Reading</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onchange="toggleAllUsers(this.checked)" aria-label="Select all users"></th><th>User</th><th>Created</th><th>Last Login</th><th>SWT</th><th>Reading</th><th>Avg Reading</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="usersBody"></tbody>
       </table>
     </div>
   </div>
 
-  <div class="tab-panel" id="panelPassages">
-    <div class="table-card">
-      <div class="table-header">
-        <h3>Practice Passages</h3>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" class="search-input" id="passageSearch" placeholder="Search passages..." oninput="filterPassages(this.value)">
-          <button class="btn-sm" id="bulkExtractBtn" onclick="runBulkExtract()">✨ Extract &amp; apply all</button>
-          <button class="btn-sm btn-accent" onclick="openPassageEditor(null)">+ New Passage</button>
-        </div>
-      </div>
-      <div style="padding:14px 20px 4px;font-size:0.8rem;color:var(--ink-muted);line-height:1.5;">
-        Edits are saved to the server and load instantly for all students. Each passage's <strong>Key Elements</strong> drive the strict content gate — keep each field one atomic fact for accurate scoring.
-      </div>
-      <div id="bulkExtractReport"></div>
-      <div class="passage-list" id="passageList" style="padding:8px 16px 16px;"></div>
-    </div>
-  </div>
-  </div>
+
 
 <!-- Reset Password Modal -->
 <div class="modal" id="resetModal" onclick="if(event.target===this)this.classList.remove('show')">
@@ -638,38 +621,10 @@ function loadUsers(){
     .catch(()=>toast('Failed to load'));
 }
 
-function renderUsers(users){
-  const stats={total:users.length,active:users.filter(u=>!u.blocked).length,blocked:users.filter(u=>u.blocked).length,attempts:users.reduce((s,u)=>(s+(u.stats?.totalAttempts||0)),0)};
-  document.getElementById('statTotal').textContent=stats.total;
-  document.getElementById('statActive').textContent=stats.active;
-  document.getElementById('statBlocked').textContent=stats.blocked;
-  document.getElementById('statAttempts').textContent=stats.attempts;
-
-  const body=document.getElementById('usersBody');
-  body.innerHTML=users.map(u=>`
-    <tr>
-      <td class="username-cell">${escH(u.username)}</td>
-      <td>${fmtDate(u.createdAt)}</td>
-      <td>${fmtDate(u.lastLogin)}</td>
-      <td>${u.stats?.totalAttempts||0}</td>
-      <td>${u.stats?.readingAttempts||0}${u.stats?.readingInProgress?' · active':''}</td>
-      <td>${u.stats?.readingAverage||0}%</td>
-      <td><span class="badge ${u.blocked?'blocked':'active'}">${u.blocked?'Blocked':'Active'}</span></td>
-      <td class="actions">
-        <button class="btn-action" onclick="viewUser('${escH(u.username)}')">View</button>
-        <button class="btn-action" onclick="openPortalAsUser('${escH(u.username)}')">Open as User</button>
-        <button class="btn-action" onclick="showResetModal('${escH(u.username)}')">Reset PW</button>
-        <button class="btn-action warn" onclick="toggleBlock('${escH(u.username)}',${!u.blocked})">${u.blocked?'Unblock':'Block'}</button>
-        <button class="btn-action danger" onclick="deleteUser('${escH(u.username)}')">Delete</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function filterUsers(q){
-  const term=q.toLowerCase();
-  renderUsers(allUsers.filter(u=>u.username.toLowerCase().includes(term)));
-}
+function renderUsers(users){const stats={total:users.length,active:users.filter(u=>!u.blocked).length,blocked:users.filter(u=>u.blocked).length,attempts:users.reduce((s,u)=>(s+(u.stats?.totalAttempts||0)),0)};['Total','Active','Blocked','Attempts'].forEach((k,i)=>document.getElementById('stat'+k).textContent=[stats.total,stats.active,stats.blocked,stats.attempts][i]);document.getElementById('usersBody').innerHTML=users.map(u=>`<tr><td><input type="checkbox" class="user-select" value="${escH(u.username)}" onchange="updateBulkDeleteState()"></td><td class="username-cell">${escH(u.username)}</td><td>${fmtDate(u.createdAt)}</td><td>${fmtDate(u.lastLogin)}</td><td>${u.stats?.totalAttempts||0}</td><td>${u.stats?.readingAttempts||0}${u.stats?.readingInProgress?' · active':''}</td><td>${u.stats?.readingAverage||0}%</td><td><span class="badge ${u.blocked?'blocked':'active'}">${u.blocked?'Blocked':'Active'}</span></td><td class="actions"><button class="btn-action" onclick="viewUser('${escH(u.username)}')">View</button><button class="btn-action" onclick="openPortalAsUser('${escH(u.username)}')">Open as User</button><button class="btn-action" onclick="showResetModal('${escH(u.username)}')">Reset PW</button><button class="btn-action warn" onclick="toggleBlock('${escH(u.username)}',${!u.blocked})">${u.blocked?'Unblock':'Block'}</button><button class="btn-action danger" onclick="deleteUser('${escH(u.username)}')">Delete</button></td></tr>`).join('');updateBulkDeleteState();}
+function userList(){const q=(document.getElementById('userSearch')?.value||'').toLowerCase(),o=document.getElementById('userSort')?.value||'newest';const a=allUsers.filter(u=>(u.username||'').toLowerCase().includes(q));return a.sort((x,y)=>o.startsWith('name')?((x.username||'').localeCompare(y.username||'')*(o==='name-desc'?-1:1)):((Date.parse(y.createdAt||0)-Date.parse(x.createdAt||0))*(o==='oldest'?-1:1)));}
+function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}
+async function deleteSelectedUsers(){const s=[...document.querySelectorAll('.user-select:checked')].map(e=>e.value);if(!s.length||!confirm('Delete '+s.length+' selected user(s) and all their data permanently?')||!confirm('This cannot be undone. Continue?'))return;await Promise.all(s.map(username=>fetch(API+'/api/admin/delete-user',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({username})})));toast('Deleted '+s.length+' user(s)');loadUsers();}
 
 function showResetModal(username){
   document.getElementById('resetUser').textContent=username;
