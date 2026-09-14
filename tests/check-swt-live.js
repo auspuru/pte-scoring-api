@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const { studentPassage } = require('../swt-reference');
 const { POLICY_VERSION, buildJudgingPrompt, applyScoringPolicy } = require('../swt-scoring-policy');
 const { createJudgmentService } = require('../swt-judgment-service');
+const judgeFormat = require('../swt-judge-format');
 const seeds = require('../passages.json');
 const args = Object.fromEntries(process.argv.slice(2).map(value => value.replace(/^--/, '').split('=')));
 if (!args.url || !['proxy', 'grade'].includes(args.mode)) {
@@ -13,21 +14,51 @@ if (!args.url || !['proxy', 'grade'].includes(args.mode)) {
   process.exit(1);
 }
 const origin = new URL(args.url).origin;
-async function request(path, body) {
+async function request(path, body, { timeoutMs = 70000, signal } = {}) {
+  // Curl uses the environment's configured proxy when Node fetch cannot reach
+  // the deployed app. Only fixed calibration fixtures are sent, never accounts.
+  if (args.curl) {
+    const { spawn } = require('node:child_process');
+    const options = ['--fail-with-body', '--silent', '--show-error', '--max-time', String(timeoutMs / 1000), origin + path];
+    if (body) options.push('-H', 'Content-Type: application/json', '--data-binary', '@-');
+    return new Promise((resolve, reject) => {
+      const child = spawn('curl', options, { signal });
+      let output = '', errorOutput = '';
+      child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
+      child.stdout.on('data', chunk => { output += chunk; });
+      child.stderr.on('data', chunk => { errorOutput += chunk; });
+      child.on('error', reject);
+      child.on('close', code => {
+        try {
+          const data = JSON.parse(output);
+          if (code) reject(new Error(data.error?.message || errorOutput || 'Calibration request failed'));
+          else resolve(data);
+        } catch (error) { reject(new Error(errorOutput || error.message)); }
+      });
+      child.stdin.on('error', reject);
+      child.stdin.end(body ? JSON.stringify(body) : undefined);
+    });
+  }
   const response = await fetch(origin + path, { method: body ? 'POST' : 'GET',
     headers: body ? { 'Content-Type': 'application/json' } : {},
-    body: body && JSON.stringify(body), signal: AbortSignal.timeout(70000) });
+    body: body && JSON.stringify(body), signal: signal || AbortSignal.timeout(timeoutMs) });
   const data = await response.json();
   if (!response.ok) throw new Error('HTTP ' + response.status + ' from ' + path);
   return data;
 }
 const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt: buildJudgingPrompt,
   isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review,
-  call: async prompt => {
-    const result = await request('/api/claude', { model: args.model || 'claude-haiku-4-5-20251001',
-      max_tokens: 2800, temperature: 0, messages: [{ role: 'user', content: prompt }] });
-    const text = result.content?.filter(part => part.type === 'text').map(part => part.text).join('\n') || '';
-    return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || 'null');
+  validationIssues: (j, text) => applyScoringPolicy(j, text).assessment_issues,
+  onAttemptError: details => console.error(JSON.stringify({ assessmentAttempt: details })),
+  call: async (prompt, timeoutMs, { signal } = {}) => {
+    // Exercise the same structured response contract as the production grader.
+    let response;
+    try {
+      response = await request('/api/claude', judgeFormat.request(prompt, args.model || 'claude-haiku-4-5-20251001'), { timeoutMs, signal });
+    } catch (error) { console.error('Calibration provider error: ' + error.message); throw error; }
+    const result = judgeFormat.response(response);
+    if (args.debug) console.error(JSON.stringify({ fixtureAssessment: result }));
+    return result;
   }
 });
 async function main() {
