@@ -55,7 +55,7 @@
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
   let selectedParagraph = {}, examNotice = null;
   let startGeneration = 0;
-  let homeFamily = 'practice';
+  let homeFamily = 'sectional';
   let mockPage = 0, libraryView = null;
   let reviewView = { id: null, filter: 'all', type: 'all', context: false };
   const pendingGrades = new Map();
@@ -121,7 +121,7 @@
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
-    homeFamily='practice'; mockPage=0; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
+    homeFamily='sectional'; mockPage=0; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
     if (host) host.replaceChildren();
   }
   function setExamMode(enabled) {
@@ -180,6 +180,8 @@
     for (const item of Object.values(s.audioStates)) if (['countdown','loading','playing'].includes(item.status)) { item.status = 'error'; item.message = 'Audio was interrupted. Select Play audio when you are ready.'; }
   }
   function questionList(set) { return set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} })); }
+  function catalogueFamily(item) { return item.kind === 'reading-blanks' ? 'practice' : 'sectional'; }
+  function catalogueItems(family) { return bank.mockCatalogue.filter(item => catalogueFamily(item) === family); }
   async function start(mode, practiceUid) {
     if (starting || !owner || identity() !== owner) return;
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
@@ -238,14 +240,14 @@
     if (starting && !viewingQuestion) return;
     leave(); libraryView=null;
     const recent=state.history;
-    const panels=['practice','sectional'].map(family=>{
-      const items=bank.mockCatalogue.filter(m=>m.family===family),page=family===homeFamily?mockPage:0,pages=Math.ceil(items.length/3);
-      const cards=items.map((m,i)=>`<article class="reading-card reading-mock-card" ${Math.floor(i/3)===page?'':'hidden'}><span class="reading-mock-index" aria-hidden="true">${String(i+1).padStart(2,'0')}</span><h3>${escape(m.name)}</h3><div class="reading-mock-meta"><span>${m.minutes||55} minutes</span></div><button class="portal-button primary" data-start="${m.id}" aria-label="Start ${escape(m.name)}">Start <span aria-hidden="true">→</span></button></article>`).join('');
+    const panels=['sectional','practice'].map(family=>{
+      const items=catalogueItems(family),page=family===homeFamily?mockPage:0,pages=Math.ceil(items.length/3);
+      const cards=items.map((m,i)=>{const title=family==='sectional'?'Reading Sectional Mock '+(i+1):'Reading Practice Set '+(i+1),scope=family==='sectional'?'SWT + Reading + HIW + HCS':'Focused Reading questions';return `<article class="reading-card reading-mock-card" ${Math.floor(i/3)===page?'':'hidden'}><span class="reading-mock-index" aria-hidden="true">${String(i+1).padStart(2,'0')}</span><h3>${escape(title)}</h3><div class="reading-mock-meta"><span>${m.minutes||55} minutes</span><span>${scope}</span></div><button class="portal-button primary" data-start="${m.id}" aria-label="Start ${escape(title)}">Start <span aria-hidden="true">→</span></button></article>`;}).join('');
       return `<section id="reading-${family}-mocks" class="reading-mock-panel" aria-labelledby="reading-${family}-tab" ${homeFamily===family?'':'hidden'}><div class="reading-mock-grid">${cards}</div>${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-mock-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span role="status">${page+1} / ${pages}</span><button class="portal-button" data-mock-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}</section>`;
     }).join('');
     host.innerHTML=`<div class="reading-home-heading"><div><h2>Reading</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
       ${state.session?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
-      <div class="reading-mode-switch" role="group" aria-label="Choose mock format">${['practice','sectional'].map(family=>`<button type="button" id="reading-${family}-tab" data-mock-family="${family}" aria-pressed="${homeFamily===family}" aria-controls="reading-${family}-mocks">${family==='practice'?'Practice':'Sectional'} mock test</button>`).join('')}</div>
+      <div class="reading-mode-switch" role="group" aria-label="Choose test mode">${['sectional','practice'].map(family=>`<button type="button" id="reading-${family}-tab" data-mock-family="${family}" aria-pressed="${homeFamily===family}" aria-controls="reading-${family}-mocks">${family==='sectional'?'Sectional Mock':'Practice'}</button>`).join('')}</div>
       ${panels}<p data-start-status role="status" aria-live="polite"></p>
       <div class="reading-library-shortcuts"><h3>Question practice</h3><div>${bank.practiceLibraries.map(l=>`<button class="portal-button" data-browse-library="${l.id}">${escape(l.name)} <span aria-hidden="true">→</span></button>`).join('')}</div></div>
       <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Next saves your answer and moves on immediately. The timer keeps running if you leave; expiry submits your saved responses. Check your sound before starting. Answers and feedback appear together after you finish.</p><p>Progress syncs across devices when you sign in to the same account. Offline changes are saved on this device and sync when you reconnect. Completed answers and feedback remain in Recent results.</p></details>
@@ -628,7 +630,7 @@
     }
     if(d.practiceUid){if(s&&!s.done&&!confirm('Start this practice question? This replaces your current draft.'))return;return start('practice',d.practiceUid);}
     if(d.mockPage!==undefined&&!viewingQuestion){
-      const page=Number(d.mockPage),max=Math.ceil(bank.mockCatalogue.filter(m=>m.family===homeFamily).length/3);
+      const page=Number(d.mockPage),max=Math.ceil(catalogueItems(homeFamily).length/3);
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>mockPage?1:-1);mockPage=page;home();(host.querySelector('[data-mock-page="'+next+'"]:not([disabled])')||host.querySelector('[data-mock-page]:not([disabled])'))?.focus();}return;
     }
     if(d.mockFamily&&!viewingQuestion&&['practice','sectional'].includes(d.mockFamily)){

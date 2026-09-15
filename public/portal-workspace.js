@@ -5,12 +5,13 @@
   'use strict';
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
+    'test-centre': { pane: 'testCentrePane', nav: 'nav-test-centre', title: 'Test centre', path: 'test-centre', eyebrow: 'Choose a test mode', context: 'Full mocks, single-task practice and complete module sectionals.' },
     swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
     'spoken-text': { pane: 'writingLabScreen', nav: 'nav-sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Practice · SST', context: 'Listen once, write a clear summary, and review your feedback.' },
-    'writing-mocks': { pane: 'writingLabScreen', nav: 'nav-writing-mocks', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Practice · Writing mocks', context: 'Complete SWT, essay, SST and dictation in one timed mock.' },
+    'writing-mocks': { pane: 'writingLabScreen', nav: 'nav-writing-mocks', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Sectional Mock · Writing', context: 'Every task contributing to Writing: SWT, Essay, SST and WFD.' },
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
-    reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practice mock test · Sectional mock test' },
+    reading: { pane: 'readingPane', title: 'Reading practice & sectionals', path: 'reading', eyebrow: 'Practice and Sectional Mock · Reading', context: 'Reading sectional: SWT, all Reading question types, HIW and HCS.' },
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 

@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-<link rel="stylesheet" href="index.css?v=20.4.7">
+<link rel="stylesheet" href="index.css?v=20.4.8">
 <link rel="stylesheet" href="swt-ui.css?v=20.3.5">
 <link rel="stylesheet" href="portal-workspace.css?v=20.4.13">
 <link rel="stylesheet" href="reading-practice.css?v=11">
@@ -160,8 +160,8 @@
 <script src="reading-exam-player.js?v=4" defer></script>
 <script src="reading-session-timing.js?v=1" defer></script>
 <script src="reading-review.js?v=6" defer></script>
-<script src="reading-practice.js?v=19" defer></script>
-<script src="portal-workspace.js?v=20.4.16" defer></script>
+<script src="reading-practice.js?v=20" defer></script>
+<script src="portal-workspace.js?v=20.4.17" defer></script>
 <script src="index.js?v=20.4.14" defer></script>
 </head>
 <body>
@@ -304,6 +304,10 @@
           <span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span>
           <span>Home</span>
         </button>
+        <button class="nav-item" id="nav-test-centre" onclick="switchSection('test-centre')">
+          <span class="nav-icon material-symbols-outlined text-[22px]">view_module</span>
+          <span>Test centre</span>
+        </button>
         <button class="nav-item" id="nav-swt" onclick="switchSection('swt')">
           <span class="nav-icon material-symbols-outlined text-[22px]">edit_document</span>
           <span>Summarise written text</span>
@@ -389,7 +393,52 @@
 
     <!-- Panes Container -->
     <div class="panes-container" id="portalContent" role="main" tabindex="-1">
-      
+
+      <section id="testCentrePane" class="pane" hidden aria-label="PTE test centre">
+        <div class="test-centre">
+          <header class="test-centre-heading">
+            <span class="test-centre-kicker">Choose how you want to practise</span>
+            <h2>One clear place for every test mode</h2>
+            <p>Full mocks cover the complete exam, practice focuses on one skill or task set, and sectional mocks combine every task that contributes to one module.</p>
+          </header>
+
+          <div class="test-centre-grid">
+            <article class="test-centre-card test-centre-full">
+              <div class="test-centre-card-title"><span class="material-symbols-outlined" aria-hidden="true">fact_check</span><div><span class="test-centre-label">Complete exam</span><h3>Full Mock</h3></div></div>
+              <p>A complete timed mock containing all four PTE modules.</p>
+              <ul class="test-centre-list test-centre-modules" aria-label="Full mock modules">
+                <li>Speaking</li><li>Writing</li><li>Reading</li><li>Listening</li>
+              </ul>
+              <button type="button" class="test-centre-action" disabled>Being organised</button>
+            </article>
+
+            <article class="test-centre-card test-centre-practice">
+              <div class="test-centre-card-title"><span class="material-symbols-outlined" aria-hidden="true">target</span><div><span class="test-centre-label">Focused skill or task</span><h3>Practice</h3></div></div>
+              <p>Work on a selected skill or question type with its existing feedback and saved attempts.</p>
+              <div class="test-centre-links" aria-label="Single-task practice">
+                <button type="button" onclick="switchSection('swt')"><span>Summarise Written Text</span><span aria-hidden="true">→</span></button>
+                <button type="button" onclick="switchSection('practice')"><span>Write Essay</span><span aria-hidden="true">→</span></button>
+                <button type="button" onclick="switchSection('spoken-text')"><span>Summarise Spoken Text</span><span aria-hidden="true">→</span></button>
+                <button type="button" onclick="switchSection('reading')"><span>Reading task practice</span><span aria-hidden="true">→</span></button>
+              </div>
+            </article>
+
+            <article class="test-centre-card test-centre-sectional">
+              <div class="test-centre-card-title"><span class="material-symbols-outlined" aria-hidden="true">dashboard_customize</span><div><span class="test-centre-label">One score module</span><h3>Sectional Mock</h3></div></div>
+              <p>Complete every question type that contributes to the selected module.</p>
+              <div class="test-centre-links test-centre-sectional-links" aria-label="Sectional mock tests">
+                <button type="button" onclick="switchSection('writing-mocks')"><span><strong>Writing</strong><small>SWT + Essay + SST + WFD</small></span><span aria-hidden="true">→</span></button>
+                <button type="button" onclick="switchSection('reading')"><span><strong>Reading</strong><small>SWT + all Reading tasks + HIW + HCS</small></span><span aria-hidden="true">→</span></button>
+                <button type="button" class="is-pending" disabled><span><strong>Speaking</strong><small>Complete module bank to be connected</small></span><span>Planned</span></button>
+                <button type="button" class="is-pending" disabled><span><strong>Listening</strong><small>Complete module bank to be connected</small></span><span>Planned</span></button>
+              </div>
+            </article>
+          </div>
+
+          <p class="test-centre-note"><span class="material-symbols-outlined" aria-hidden="true">info</span>This update organises the existing content only. Question banks, scoring, timers and saved attempts stay in their current practice screens.</p>
+        </div>
+      </section>
+
       <section id="readingPane" class="pane" hidden aria-label="Reading practice"></section>
       <section id="writingLabScreen" class="pane" hidden aria-label="Writing sectional mocks and spoken text practice">
         <iframe id="writingLabFrame" title="Writing practice" loading="lazy"></iframe>

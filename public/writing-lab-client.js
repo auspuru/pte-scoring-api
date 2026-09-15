@@ -40,33 +40,48 @@
   }
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
   function scoringNote() { return '<div class="note"><p><b>About your score.</b> Your Writing practice estimate is shown out of 90. Summaries and essays receive AI feedback using the task criteria in <a href="'+source+'" target="_blank" rel="noopener">Pearson’s score guide</a>; dictation is checked word by word.</p><details><summary>How the estimate is calculated</summary><p>We combine the marks earned across this attempt, then calculate 10 + 80 × (marks earned ÷ marks available), rounded to a whole number. The same method is used for each task breakdown. Missing assessments stay pending. This is an independent practice scale, not an official Pearson score or a calibrated prediction of your exam result.</p><p>Each new mock contains SWT, an essay, SST and dictation. The three dictation sentences share a four-minute practice allocation; the full exam uses the remaining Listening section time.</p></details></div>'; }
-  let mockBoardFilter='all', mockBoardLayout='grid', mockBoardSort='number', mockBoardPageSize='all';
+  let mockBoardFilter='sectional', mockBoardLayout='grid', mockBoardSort='number', mockBoardPageSize='all';
+  function boardItems() {
+    const sectionals=catalog.mocks.map((m,index)=>({...m,boardMode:'sectional',module:'writing',boardIndex:index}));
+    const practice=catalog.spoken.map((q,index)=>({
+      ...q,boardMode:'practice',module:'listening-writing',boardIndex:index,category:'practice',questionCount:1,
+      description:'One Summarise Spoken Text question with feedback and a saved result.',
+      tasks:[{count:1,label:'Summarise Spoken Text'}]
+    }));
+    return [...sectionals,...practice];
+  }
   function mockCard(m, index) {
-    const prediction=m.category==='prediction', number=prediction?m.predictionNumber:index+1;
-    const code=prediction?'W Prediction '+String(number).padStart(2,'0'):'W Special '+String(number).padStart(2,'0');
+    const practice=m.boardMode==='practice', prediction=m.category==='prediction';
+    const number=practice?m.boardIndex+1:(prediction?m.predictionNumber:m.boardIndex+1);
+    const code=practice?'SST Practice '+String(number).padStart(2,'0'):(prediction?'W Sectional '+String(number).padStart(2,'0'):'W Sectional · Special '+String(number).padStart(2,'0'));
+    const section=practice?'🎧 Listening + Writing':'✎ Writing';
     const taskText=(m.tasks||[]).map(t=>t.count+' × '+t.label).join(' · ');
-    return '<article class="assignment-card" data-category="'+esc(m.category)+'" data-title="'+esc((m.title||'')+' '+(m.description||''))+'"><div class="assignment-card-top"><span class="assignment-code">'+esc(code)+'</span><span class="assignment-section">✎ Writing</span></div><h2>'+esc(m.title)+'</h2><p>'+esc(m.description||'Essay prediction practice')+'</p><div class="assignment-card-meta"><span>'+m.questionCount+' questions</span><span>'+m.minutes+' minutes</span><span>/90</span></div><div class="assignment-card-tasks">'+esc(taskText)+'</div><div class="card-footer"><span class="meta">Writing estimate /90</span><button class="primary" data-start="'+esc(m.id)+'">Start Exam</button></div></article>';
+    return '<article class="assignment-card" data-category="'+esc(m.category)+'" data-title="'+esc((m.title||'')+' '+(m.description||''))+'"><div class="assignment-card-top"><span class="assignment-code">'+esc(code)+'</span><span class="assignment-section">'+esc(section)+'</span></div><h2>'+esc(m.title)+'</h2><p>'+esc(m.description||'Essay prediction practice')+'</p><div class="assignment-card-meta"><span>'+m.questionCount+' question'+(m.questionCount===1?'':'s')+'</span><span>'+m.minutes+' minutes</span><span>/90</span></div><div class="assignment-card-tasks">'+esc(taskText)+'</div><div class="card-footer"><span class="meta">'+(practice?'Task':'Writing')+' estimate /90</span><button class="primary" data-start="'+esc(m.id)+'">'+(practice?'Practise':'Start Exam')+'</button></div></article>';
   }
   function renderMockBoard() {
     const board=document.getElementById('mock-board'); if(!board || !catalog) return;
     const search=(document.getElementById('mock-search')?.value||'').trim().toLowerCase();
     const section=document.getElementById('mock-section')?.value||'all';
-    let list=catalog.mocks.filter(m=>{
-      if(mockBoardFilter==='prediction' && m.category!=='prediction') return false;
-      if(mockBoardFilter==='special' && m.category!=='special') return false;
-      if(mockBoardFilter==='long' && m.minutes<50) return false;
-      if(section!=='all' && m.category!==section) return false;
+    let list=boardItems().filter(m=>{
+      if(m.boardMode!==mockBoardFilter) return false;
+      if(section!=='all' && m.module!==section) return false;
       return !search || ((m.title+' '+(m.description||'')).toLowerCase().includes(search));
     });
     if(mockBoardSort==='title') list.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
     else if(mockBoardSort==='longest') list.sort((a,b)=>b.minutes-a.minutes || a.title.localeCompare(b.title));
-    else list.sort((a,b)=>(a.category===b.category?((a.predictionNumber||999)-(b.predictionNumber||999)):a.category==='prediction'?-1:1));
+    else list.sort((a,b)=>(a.category===b.category?((a.predictionNumber??a.boardIndex)-(b.predictionNumber??b.boardIndex)):a.category==='prediction'?-1:1));
     const shown=mockBoardPageSize==='all'?list:list.slice(0,Number(mockBoardPageSize));
     board.classList.toggle('list-layout',mockBoardLayout==='list');
     board.innerHTML=shown.map((m,i)=>mockCard(m,i)).join('');
     const count=document.getElementById('mock-count');
     if(count) count.textContent=list.length?'Showing 1–'+shown.length+' of '+list.length+' tests':'Showing 0 of 0 tests';
-    const empty=document.getElementById('mock-empty'); if(empty) empty.hidden=!!shown.length;
+    const empty=document.getElementById('mock-empty');
+    if(empty) {
+      empty.hidden=!!shown.length;
+      empty.textContent=mockBoardFilter==='full'
+        ? 'The complete Full Mock will appear here after all four module banks are connected.'
+        : 'No tests match your filters.';
+    }
     document.querySelectorAll('[data-board-layout]').forEach(b=>b.classList.toggle('selected',b.dataset.boardLayout===mockBoardLayout));
   }
   async function hub(tab=view) {
@@ -80,13 +95,22 @@
     if(tab==='history') {
       content='<h1>My attempts</h1><p class="muted">Resume an unfinished attempt or review your saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
     } else if(tab==='mocks') {
-      content='<section class="assignment-shell"><div class="assignment-heading"><div><div class="assignment-pills" role="tablist" aria-label="Writing assignment type"><button class="assignment-pill selected" data-board-filter="all">Mock</button><button class="assignment-pill" data-board-filter="special">Practice</button><button class="assignment-pill" data-board-filter="prediction">Prediction</button><button class="assignment-pill" data-board-filter="long">Long</button></div><p class="eyebrow">PTE Academic · Writing practice</p><p class="assignment-subtitle">Timed writing, spoken summary and dictation rehearsals</p></div><h1>Assignments</h1></div>'+auth+'<div class="assignment-toolbar"><div class="assignment-filter-group"><input id="mock-search" type="search" placeholder="Filter by test name" aria-label="Filter by test name"><button class="assignment-filter" type="button" disabled>In Progress</button><select id="mock-section" aria-label="Filter by section"><option value="all">All Sections</option><option value="prediction">Writing Predictions</option><option value="special">Special Practice</option></select></div><div class="assignment-view-group"><span>Items per page:</span><select id="mock-page-size" aria-label="Items per page"><option value="all">All</option><option value="8">8</option><option value="12">12</option></select><span>Sort by:</span><select id="mock-sort" aria-label="Sort assignments"><option value="number">Prediction number</option><option value="title">Title</option><option value="longest">Longest first</option></select><span class="layout-label">Layout:</span><button class="layout-button selected" data-board-layout="grid" aria-label="Grid layout">▦</button><button class="layout-button" data-board-layout="list" aria-label="List layout">☰</button></div></div><div class="assignment-count" id="mock-count"></div><div id="mock-board" class="mock-board"></div><p id="mock-empty" class="empty" hidden>No assignments match your filters.</p><div class="rules assignment-rules"><span><b>One question at a time</b>Submitted answers are locked.</span><span><b>No pause</b>The clock continues if you leave.</span><span><b>Automatic submission</b>Saved answers submit when time expires.</span></div></section>'+scoringNote();
+      content='<section class="assignment-shell">'
+        +'<div class="assignment-heading"><div><div class="assignment-pills" role="tablist" aria-label="Test mode">'
+        +'<button type="button" class="assignment-pill" data-board-filter="full">Full Mock</button>'
+        +'<button type="button" class="assignment-pill" data-board-filter="practice">Practice</button>'
+        +'<button type="button" class="assignment-pill selected" data-board-filter="sectional">Sectional Mock</button>'
+        +'</div><p class="eyebrow">PTE Academic · Test centre</p><p class="assignment-subtitle">Full exam, focused practice and score-module sectionals are kept separate.</p></div><h1>Assignments</h1></div>'
+        +auth
+        +'<div class="assignment-toolbar"><div class="assignment-filter-group"><input id="mock-search" type="search" placeholder="Filter by test name" aria-label="Filter by test name"><button class="assignment-filter" type="button" disabled>In Progress</button><select id="mock-section" aria-label="Filter by module"><option value="all">All Modules</option><option value="writing">Writing</option><option value="listening-writing">Listening + Writing</option></select></div>'
+        +'<div class="assignment-view-group"><span>Items per page:</span><select id="mock-page-size" aria-label="Items per page"><option value="all">All</option><option value="8">8</option><option value="12">12</option></select><span>Sort by:</span><select id="mock-sort" aria-label="Sort assignments"><option value="number">Test number</option><option value="title">Title</option><option value="longest">Longest first</option></select><span class="layout-label">Layout:</span><button class="layout-button selected" data-board-layout="grid" aria-label="Grid layout">▦</button><button class="layout-button" data-board-layout="list" aria-label="List layout">☰</button></div></div>'
+        +'<div class="assignment-count" id="mock-count"></div><div id="mock-board" class="mock-board"></div><p id="mock-empty" class="empty" hidden>No tests match your filters.</p><div class="rules assignment-rules"><span><b>One question at a time</b>Submitted answers are locked.</span><span><b>No pause</b>The clock continues if you leave.</span><span><b>Automatic submission</b>Saved answers submit when time expires.</span></div></section>'+scoringNote();
     } else {
       content='<section class="hero"><div><p class="eyebrow">PTE Academic · Listening & writing</p><h1>Listen. Connect. Summarise.</h1><p>Practise with five original short lectures. Listen once, take notes and write a clear summary of 50–70 words.</p></div><div class="hero-metric"><strong>05</strong><span>LISTENING EXERCISES</span></div></section>'+auth+
         '<div class="section-heading"><h2>Summarise Spoken Text</h2><span class="muted">10 minutes per question</span></div><div class="cards">'+catalog.spoken.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+' · '+esc(q.topic)+'</span><h2>'+esc(q.title)+'</h2><p>Listen to a short lecture, then summarise its central idea and essential supporting points.</p><div class="card-footer"><span class="meta">50–70 words · estimate /90</span><button class="primary" data-start="'+q.id+'">Practise →</button></div></article>').join('')+'</div><div class="note">Original practice material with AI-generated narration. Audio plays once per attempt; the transcript and sample summary appear after submission. Choose <b>Reattempt this question</b> on the results screen whenever you want another try. The 10-minute timer includes listening time.</div>'+scoringNote();
     }
     root.innerHTML='<div class="hub"><nav class="tabs" aria-label="Practice sections"><button data-tab="mocks" class="'+(tab==='mocks'?'selected':'')+'">Writing mocks</button><button data-tab="sst" class="'+(tab==='sst'?'selected':'')+'">Spoken text practice</button><button data-tab="history" class="'+(tab==='history'?'selected':'')+'">My attempts</button></nav>'+content+'</div>';
-    if(tab==='mocks') { mockBoardFilter='all'; mockBoardLayout='grid'; mockBoardSort='number'; mockBoardPageSize='all'; renderMockBoard(); }
+    if(tab==='mocks') { mockBoardFilter='sectional'; mockBoardLayout='grid'; mockBoardSort='number'; mockBoardPageSize='all'; renderMockBoard(); }
     if(tab==='history') {
       const target=document.getElementById('history-list');
       if(!username) { target.innerHTML=auth; return; }
@@ -394,7 +418,7 @@
   });
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
-    if(b.dataset.boardFilter) { mockBoardFilter=b.dataset.boardFilter; document.querySelectorAll('[data-board-filter]').forEach(x=>x.classList.toggle('selected',x.dataset.boardFilter===mockBoardFilter)); renderMockBoard(); return; }
+    if(b.dataset.boardFilter) { mockBoardFilter=b.dataset.boardFilter; document.querySelectorAll('[data-board-filter]').forEach(x=>{const selected=x.dataset.boardFilter===mockBoardFilter;x.classList.toggle('selected',selected);x.setAttribute('aria-selected',String(selected));}); renderMockBoard(); return; }
     if(b.dataset.boardLayout) { mockBoardLayout=b.dataset.boardLayout; renderMockBoard(); return; }
     if(b.dataset.tab) return hub(b.dataset.tab);
     if(b.dataset.start) return start(b.dataset.start,b);

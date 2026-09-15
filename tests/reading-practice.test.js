@@ -580,12 +580,12 @@ test('Saved untimed practice drafts retain their original format while new mocks
 
 test('The mock format selector switches three-card groups without starting or replacing a session',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();
- assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
- assert.doesNotMatch(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
- h.click({mockFamily:'sectional'});
- assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);assert.doesNotMatch(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+ assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
+ assert.doesNotMatch(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+ h.click({mockFamily:'practice'});
+ assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);assert.doesNotMatch(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
  assert.equal(snapshot(h).session,null);assert.equal(snapshot(h).history.length,0);
- h.click({mockFamily:'practice'});assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
+ h.click({mockFamily:'sectional'});assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
 });
 
 test('Feedback filters distinguish partial, blank, pending and excluded answers without changing their points',()=>{
@@ -736,13 +736,15 @@ test('Imported mock navigation preserves its 25-minute timer and produces a sing
  assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,20);assert.match(h.host.innerHTML,/Why each answer fits/);
 });
 
-test('Mock cards show simple labels and paginate the imported mocks without exposing task descriptions',async()=>{
+test('Mock cards separate integrated sectionals from focused practice sets and paginate both',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();
- const visible=()=>[...h.host.innerHTML.split('id="reading-practice-mocks"')[1].split('</section>')[0].matchAll(/<article([^>]*)>[\s\S]*?data-start="([^"]+)"/g)].filter(m=>!m[1].includes('hidden')).map(m=>m[2]);
- assert.deepEqual(visible(),['practice-mock-1','practice-mock-2','practice-mock-3']);
+ const visible=family=>[...h.host.innerHTML.split('id="reading-'+family+'-mocks"')[1].split('</section>')[0].matchAll(/<article([^>]*)>[\s\S]*?data-start="([^"]+)"/g)].filter(m=>!m[1].includes('hidden')).map(m=>m[2]);
+ assert.deepEqual(visible('sectional'),['practice-mock-1','practice-mock-2','practice-mock-3']);
+ assert.match(h.host.innerHTML,/SWT \+ Reading \+ HIW \+ HCS/);
+ h.click({mockPage:'1'});assert.deepEqual(visible('sectional'),['sectional-mock-1','sectional-mock-2','sectional-mock-3']);
+ h.click({mockFamily:'practice'});assert.deepEqual(visible('practice'),['practice-mock-4','practice-mock-5','practice-mock-6']);
  assert.doesNotMatch(h.host.innerHTML,/All eight|2 SWT|two SWT|C2-targeted|Reading-contributing|Diagnostic test|Grammar rules|How the mocks work/);
- h.click({mockPage:'1'});assert.deepEqual(visible(),['practice-mock-4','practice-mock-5','practice-mock-6']);
- h.click({mockPage:'2'});assert.deepEqual(visible(),['practice-mock-7','practice-mock-8','practice-mock-9']);assert.equal(snapshot(h).session,null);
+ h.click({mockPage:'1'});assert.deepEqual(visible('practice'),['practice-mock-7','practice-mock-8','practice-mock-9']);assert.equal(snapshot(h).session,null);
 });
 
 test('Question practice supports searching, paging, draft recovery, feedback and account-isolated progress',async()=>{
