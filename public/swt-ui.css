@@ -50,7 +50,7 @@ body.dark #swtPane {
 #swtPane select option { background: var(--swt-surface); color: var(--swt-text); }
 #swtPane button { font-family: inherit; cursor: pointer; }
 #swtPane .btn, #swtPane .nav-arrow, #swtPane .timer-toggle { min-height: 44px; border: 1px solid var(--swt-border); border-radius: 9px; background: var(--swt-surface); color: var(--swt-text); font-size: 14px; font-weight: 650; letter-spacing: 0; text-transform: none; padding: 10px 15px; box-shadow: none; line-height: 1.4; }
-#swtPane .nav-arrow { min-width: 44px; width: 44px; height: 44px; padding: 0; font-size: 20px; }
+#swtPane .nav-arrow { min-width: 72px; width: auto; height: 44px; padding: 0 10px; font-size: 14px; }
 #swtPane .btn-primary { color: #fff; background: #4338ca; border-color: #4338ca; }
 #swtPane .btn-ghost { background: transparent; border-color: transparent; color: var(--swt-muted); }
 #swtPane button:hover:not(:disabled) { background: var(--swt-tint); color: var(--swt-accent); }
