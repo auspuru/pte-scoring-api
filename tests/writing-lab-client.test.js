@@ -51,7 +51,7 @@ function harness({ audioReadyState = 4 } = {}) {
   };
   context.window={WritingLabReport:report,addEventListener(){},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,showAttempt,tick,writeDraft,renderResults,saveAnswer}; return;\n  (async()=>{\n    try { const values=`);
+  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt}; return;\n  (async()=>{\n    try { const values=`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -128,6 +128,28 @@ test('A start API failure pauses playback and permits a fresh click to retry',as
   await h.nodes.get('audio-start').onclick();await flush();
   assert.equal(h.hooks.current().status,'active');
   assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+});
+
+test('Submitted standalone SST results offer a fresh reattempt while retaining the completed attempt',async()=>{
+  const h=harness();
+  const q=structuredClone(bank.spoken[0]);
+  const result={total:report.maximumFor(q),maximum:report.maximumFor(q),maxima:{content:4,form:2,grammar:2,vocabulary:2,spelling:2},scores:{content:4,form:2,grammar:2,vocabulary:2,spelling:2},feedback:{content:'Complete',form:'Complete',grammar:'Complete',vocabulary:'Complete',spelling:'Complete'},strengths:[],improvements:[],errors:[]};
+  const submitted=present({id:'old-id',testId:q.id,title:q.title,kind:'sst',index:0,status:'submitted',startedAt:100000,deadline:null,questions:[q],answers:[q.sample],notes:'',revisions:[1],completed:[{at:100100,reason:'Submitted'}],results:[result],playback:[{position:75,finished:true}],serverNow:100000});
+  h.hooks.set(submitted);h.hooks.renderResults();
+  assert.match(h.nodes.get('lab').innerHTML,/Reattempt this question/);
+  assert.match(h.nodes.get('lab').innerHTML,/data-reattempt="sst-urban-trees"/);
+  const fresh=present({id:'new-id',testId:q.id,title:q.title,kind:'sst',index:0,status:'ready',startedAt:200000,deadline:null,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null],serverNow:200000});
+  h.context.reply=fresh;
+  const button={disabled:false};
+  await h.hooks.reattempt(q.id,button);
+  assert.equal(button.disabled,true);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/attempts')).length,1);
+  const request=h.requests[0];
+  assert.equal(request.body.testId,q.id);
+  assert.notEqual(request.body.id,'old-id');
+  assert.equal(h.hooks.current().id,'new-id');
+  assert.equal(h.hooks.current().status,'ready');
+  assert.equal(h.nodes.get('audio-start').textContent,'Start recording & timer');
 });
 
 test('Integrated audio advances to each new recording and ignores late events from the previous question',async()=>{

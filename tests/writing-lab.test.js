@@ -54,6 +54,8 @@ test('Original content has correct task counts, lengths and usable reference ans
       if(q.type==='sst') assert(policy.wordCount(q.text)>=175);
     }
   }
+  assert.equal(bank.mocks[0].questions[2].text,"Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.");
+  assert.equal(bank.mocks[1].questions[2].text,"Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.");
 });
 test('Authenticated attempts persist, isolate users and lock submitted answers',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'writing-lab-test-'));

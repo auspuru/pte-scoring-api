@@ -1,6 +1,6 @@
 # Writing sectional mocks and spoken-text practice
 
-The student sidebar links to `/writing-mocks` and `/spoken-text`. Both use the existing signed-in account. New attempts in both mocks contain two written summaries (10 minutes each), one essay (20 minutes), one spoken summary (10 minutes) and three dictation sentences sharing four minutes: seven questions and 54 minutes in total. The dictation allowance is a practice allocation; the full exam uses the remaining Listening section time. Five original narrated lectures also remain available for separate spoken-text practice. Each mock has its own additional spoken summary and three distinct dictation recordings.
+The student sidebar links to `/writing-mocks` and `/spoken-text`. Both use the existing signed-in account. New attempts in both mocks contain two written summaries (10 minutes each), one essay (20 minutes), one spoken summary (10 minutes) and three dictation sentences sharing four minutes: seven questions and 54 minutes in total. Mock 1 uses the Age Restrictions essay from the essay practice bank, and Mock 2 uses Late Submission and Mark Deduction. The dictation allowance is a practice allocation; the full exam uses the remaining Listening section time. Five original narrated lectures also remain available for separate spoken-text practice. Each mock has its own additional spoken summary and three distinct dictation recordings.
 
 ## Assessment
 
@@ -18,7 +18,7 @@ References verified on 14 September 2026:
 
 The `/api/writing-lab` router verifies the existing session and checks that the account still exists and is not blocked. PostgreSQL attempts use their own table with an account foreign key and cascading deletion. Per-attempt transactions serialize changes. Local development uses atomic JSON files under the configured data directory.
 
-The server owns deadlines and submitted answers. Dictation questions share one deadline which does not reset on Next or refresh; expiry locks all remaining sentences together. Audio progress and completion are stored separately for each question, merged monotonically, and restored on another device. Refreshing never resets time. Each attempt stores its original question snapshots and validated results. Completed results can be retried individually without reassessing successful items. The client also keeps an account-scoped recovery draft and reports conflicting updates from another tab. Future questions and reference answers are withheld until their appropriate stage.
+The server owns deadlines and submitted answers. Dictation questions share one deadline which does not reset on Next or refresh; expiry locks all remaining sentences together. Audio progress and completion are stored separately for each question, merged monotonically, and restored on another device. Refreshing never resets time. Each attempt stores its original question snapshots and validated results. Completed results can be retried individually without reassessing successful items. A submitted standalone SST result has a Reattempt this question action that creates a new UUID and a fresh ten-minute attempt, while the previous result remains in My attempts. The client also keeps an account-scoped recovery draft and reports conflicting updates from another tab. Future questions and reference answers are withheld until their appropriate stage.
 
 ## Audio
 

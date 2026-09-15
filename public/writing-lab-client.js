@@ -54,7 +54,7 @@
         '<div class="section-heading"><h2>Choose your mock</h2><span class="muted">'+catalog.mocks.length+' papers · '+catalog.mocks[0].questionCount+' questions each</span></div><div class="cards">'+catalog.mocks.map((m,i)=>'<article class="card"><span class="tag">Mock '+String(i+1).padStart(2,'0')+'</span><h2>'+esc(m.title)+'</h2><p>'+esc(m.description)+'</p><div class="rules task-rules">'+m.tasks.map(t=>'<span><b>'+t.count+' × '+esc(t.label)+'</b>'+t.minutes+' minutes'+(t.shared?' shared':t.count>1?' each':'')+'</span>').join('')+'</div><div class="card-footer"><span class="meta">Writing estimate /90</span><button class="primary" data-start="'+m.id+'">Start mock '+(i+1)+' →</button></div></article>').join('')+'</div><div class="rules"><span><b>One question at a time</b>Submitted answers are locked.</span><span><b>No pause</b>The clock continues if you leave.</span><span><b>Automatic submission</b>Saved answers submit when time expires.</span></div>'+scoringNote();
     } else {
       content='<section class="hero"><div><p class="eyebrow">PTE Academic · Listening & writing</p><h1>Listen. Connect. Summarise.</h1><p>Practise with five original short lectures. Listen once, take notes and write a clear summary of 50–70 words.</p></div><div class="hero-metric"><strong>05</strong><span>LISTENING EXERCISES</span></div></section>'+auth+
-        '<div class="section-heading"><h2>Summarise Spoken Text</h2><span class="muted">10 minutes per question</span></div><div class="cards">'+catalog.spoken.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+' · '+esc(q.topic)+'</span><h2>'+esc(q.title)+'</h2><p>Listen to a short lecture, then summarise its central idea and essential supporting points.</p><div class="card-footer"><span class="meta">50–70 words · estimate /90</span><button class="primary" data-start="'+q.id+'">Practise →</button></div></article>').join('')+'</div><div class="note">Original practice material with AI-generated narration. Audio plays once per attempt; the transcript and sample summary appear after submission. The 10-minute timer includes listening time.</div>'+scoringNote();
+        '<div class="section-heading"><h2>Summarise Spoken Text</h2><span class="muted">10 minutes per question</span></div><div class="cards">'+catalog.spoken.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+' · '+esc(q.topic)+'</span><h2>'+esc(q.title)+'</h2><p>Listen to a short lecture, then summarise its central idea and essential supporting points.</p><div class="card-footer"><span class="meta">50–70 words · estimate /90</span><button class="primary" data-start="'+q.id+'">Practise →</button></div></article>').join('')+'</div><div class="note">Original practice material with AI-generated narration. Audio plays once per attempt; the transcript and sample summary appear after submission. Choose <b>Reattempt this question</b> on the results screen whenever you want another try. The 10-minute timer includes listening time.</div>'+scoringNote();
     }
     root.innerHTML='<div class="hub"><nav class="tabs" aria-label="Practice sections"><button data-tab="mocks" class="'+(tab==='mocks'?'selected':'')+'">Writing mocks</button><button data-tab="sst" class="'+(tab==='sst'?'selected':'')+'">Spoken text practice</button><button data-tab="history" class="'+(tab==='history'?'selected':'')+'">My attempts</button></nav>'+content+'</div>';
     if(tab==='history') {
@@ -100,6 +100,15 @@
       }
       showAttempt();
       if(attempt?.status==='active') saveAnswer(false);
+    } catch(e) { notify(e.message); button.disabled=false; }
+  }
+  async function reattempt(testId,button) {
+    if(!username || !testId) return;
+    button.disabled=true;
+    try {
+      // A new UUID keeps the completed attempt and its feedback in My attempts.
+      setAttempt(await api('/attempts',{id:crypto.randomUUID(),testId}));
+      showAttempt();
     } catch(e) { notify(e.message); button.disabled=false; }
   }
   function showAttempt() {
@@ -295,7 +304,8 @@
   function renderResults() {
     document.body.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><button class="secondary" data-tab="history">My attempts</button></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Writing practice estimate</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p><p>Independent practice estimate · not an official Pearson score</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+' · '+(g.score90==null?'Feedback pending':g.total+'/'+g.maximum+' raw marks')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+scoringNote()+'</section>';
+    const retry=attempt.kind==='sst' && attempt.questions[0]?.type==='sst' ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Writing practice estimate</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p><p>Independent practice estimate · not an official Pearson score</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+' · '+(g.score90==null?'Feedback pending':g.total+'/'+g.maximum+' raw marks')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+scoringNote()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -346,6 +356,7 @@
     const b=e.target.closest('button'); if(!b) return;
     if(b.dataset.tab) return hub(b.dataset.tab);
     if(b.dataset.start) return start(b.dataset.start,b);
+    if(b.dataset.reattempt) return reattempt(b.dataset.reattempt,b);
     if(b.dataset.resume) return resume(b.dataset.resume,b);
     if(b.dataset.edit) return edit(b.dataset.edit);
     if(b.dataset.leave && await confirmAction('Leave this attempt?','Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {

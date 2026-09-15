@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-15.1",
+  "version": "2026-09-15.2",
   "spoken": [
     {
       "id": "sst-urban-trees",
@@ -9,7 +9,11 @@
       "minutes": 10,
       "voice": "nova",
       "text": "When people discuss urban trees, they often begin with appearance. A street with trees looks more attractive than one without them. However, the value of trees extends well beyond decoration. Their shade keeps pavements and buildings cooler, while water released through their leaves helps cool the surrounding air. This matters especially in neighbourhoods with large areas of concrete and little open space. Trees can also make walking more comfortable, encouraging people to spend time outside and meet their neighbours. Yet planting a tree is only the beginning. A young tree needs suitable soil, enough space for its roots, and regular care while it becomes established. Choosing an unsuitable species can create problems for footpaths or water supplies. City planners therefore need to consider local conditions, future maintenance, and where shade is needed most. Involving residents can help because people who understand the benefits are more likely to support long-term care. The central point is that urban trees should be planned as useful infrastructure. A successful programme measures the health and survival of trees, rather than simply counting how many were planted.",
-      "keyPoints": ["Urban trees provide cooling and community benefits beyond appearance.", "Suitable species, space and ongoing maintenance are necessary.", "Planning should prioritise local needs, resident involvement and tree survival."],
+      "keyPoints": [
+        "Urban trees provide cooling and community benefits beyond appearance.",
+        "Suitable species, space and ongoing maintenance are necessary.",
+        "Planning should prioritise local needs, resident involvement and tree survival."
+      ],
       "sample": "The lecture explains that urban trees provide practical benefits, including cooling streets and encouraging outdoor social activity. However, successful planting requires suitable species, adequate root space and continuing maintenance. Planners should respond to local conditions and involve residents in tree care, evaluating programmes through tree health and survival rather than the number planted."
     },
     {
@@ -20,7 +24,11 @@
       "minutes": 10,
       "voice": "onyx",
       "text": "Many students prepare for examinations by reading the same notes repeatedly. This can make the material feel familiar, but familiarity is not the same as being able to explain it without help. One alternative is retrieval practice. After studying a topic, learners close their books and try to recall the main ideas, answer a question, or explain the concept to someone else. The purpose is not simply to discover a score. The attempt to remember helps learners recognise what they understand and what still needs attention. Feedback is essential because an incorrect answer should be checked and corrected before it becomes a habit. Timing also matters. Short periods of practice spread across several days give students opportunities to return to ideas after some forgetting has occurred. This can be more useful than concentrating all revision into one long session. Teachers can support the process with low-pressure questions at the beginning of a lesson and opportunities to discuss the answers afterwards. The important message is that effective revision involves actively using knowledge, checking mistakes, and revisiting material over time, rather than judging learning only by how familiar a page appears.",
-      "keyPoints": ["Familiarity from rereading is different from independently recalling knowledge.", "Retrieval practice with corrective feedback reveals gaps in understanding.", "Spaced, low-pressure practice supports effective revision."],
+      "keyPoints": [
+        "Familiarity from rereading is different from independently recalling knowledge.",
+        "Retrieval practice with corrective feedback reveals gaps in understanding.",
+        "Spaced, low-pressure practice supports effective revision."
+      ],
       "sample": "The speaker distinguishes familiarity from genuine recall and recommends retrieval practice instead of relying solely on rereading. Learners should remember or explain ideas without notes, then use feedback to correct mistakes and identify gaps. Spreading practice across several days and using low-pressure classroom questions helps students revisit and actively apply their knowledge over time."
     },
     {
@@ -31,7 +39,11 @@
       "minutes": 10,
       "voice": "fable",
       "text": "Household food waste is often described as a disposal problem, but much of the solution begins before food reaches the kitchen. Shopping without checking what is already available can lead to duplicate purchases. Special offers may also encourage people to buy more than they can reasonably use. A simple meal plan and a list based on existing supplies can reduce this problem. Once food is at home, storage and visibility become important. Items that are hidden at the back of a refrigerator are easily forgotten, so placing food that needs using soon in a visible area can help. Leftovers can be planned into another meal, provided they have been stored safely. However, advice must recognise that households differ. A rigid weekly plan may be difficult for someone working unpredictable hours or caring for family members. Flexible suggestions, such as keeping a small number of adaptable ingredients, may be more practical. Composting can deal with unavoidable scraps, but it does not recover all the resources used to produce food. Prevention should therefore come first, supported by shopping habits and storage routines that fit everyday life.",
-      "keyPoints": ["Food waste prevention starts with shopping and checking existing supplies.", "Visible storage and planned use of leftovers reduce avoidable waste.", "Flexible routines should fit different households; prevention comes before composting."],
+      "keyPoints": [
+        "Food waste prevention starts with shopping and checking existing supplies.",
+        "Visible storage and planned use of leftovers reduce avoidable waste.",
+        "Flexible routines should fit different households; prevention comes before composting."
+      ],
       "sample": "The lecture argues that preventing household food waste begins with checking supplies and planning realistic purchases. Visible storage and safe use of leftovers can further reduce waste. Advice should accommodate different household routines through flexible meal planning and adaptable ingredients. Although composting handles unavoidable scraps, preventing waste better preserves the resources used in food production."
     },
     {
@@ -42,7 +54,11 @@
       "minutes": 10,
       "voice": "shimmer",
       "text": "Hybrid work combines time in a shared workplace with time working elsewhere. It can give employees greater flexibility, but changing location alone does not guarantee better working conditions. Teams need to decide which activities benefit from being together and which can be completed independently. For example, an early discussion of an unfamiliar problem may benefit from direct conversation, while a task requiring sustained concentration may be easier in a quiet setting. Communication rules are equally important. If decisions are made informally by people in the office, remote colleagues may miss essential information. Recording decisions in a shared place and making meeting participation accessible can reduce this imbalance. Managers also need to judge work through agreed outcomes rather than simply noticing who is physically present. At the same time, flexibility should not mean that employees must be available at every hour. Clear expectations about response times and working hours help protect boundaries. The main lesson is that hybrid arrangements work best when they are designed around tasks, fair access to information, and clear expectations. There is no single schedule that will suit every team.",
-      "keyPoints": ["Hybrid arrangements should match tasks rather than apply one universal schedule.", "Shared decisions and accessible meetings support fairness for remote staff.", "Outcome-based management and clear working boundaries are necessary."],
+      "keyPoints": [
+        "Hybrid arrangements should match tasks rather than apply one universal schedule.",
+        "Shared decisions and accessible meetings support fairness for remote staff.",
+        "Outcome-based management and clear working boundaries are necessary."
+      ],
       "sample": "The speaker explains that effective hybrid work requires more than flexible locations. Teams should match workplace attendance to tasks, share decisions clearly and make meetings accessible to remote colleagues. Managers should assess agreed outcomes and establish expectations about availability. Successful arrangements therefore depend on fair communication, suitable working conditions and boundaries tailored to each team."
     },
     {
@@ -53,7 +69,11 @@
       "minutes": 10,
       "voice": "echo",
       "text": "A museum collection can tell us about the past, but the meaning of an object is not always obvious from its appearance. A simple tool may reveal little until someone explains who used it, how it was made, and why it mattered in everyday life. This is one reason museums increasingly invite communities to contribute stories as well as objects. Personal accounts can connect a collection to experiences that formal records overlook. However, collecting a story creates responsibilities. Contributors should understand how their words will be used, and museums should distinguish personal memories from independently verified facts. Different people may remember the same event in different ways. Presenting these differences carefully can encourage visitors to think about how historical knowledge is constructed. Digital recordings can make stories available to wider audiences, but they also require attention to accessibility and long-term preservation. A recording is of limited value if future visitors cannot open it or understand it. Community participation therefore involves an ongoing relationship. Museums need to combine professional care with respect for contributors, allowing collections to represent a broader range of experiences without abandoning careful interpretation.",
-      "keyPoints": ["Community stories give objects context and include experiences missing from formal records.", "Consent and careful distinction between memory and verified fact are essential.", "Accessible preservation and continuing community relationships support responsible interpretation."],
+      "keyPoints": [
+        "Community stories give objects context and include experiences missing from formal records.",
+        "Consent and careful distinction between memory and verified fact are essential.",
+        "Accessible preservation and continuing community relationships support responsible interpretation."
+      ],
       "sample": "The lecture describes how community stories give museum objects context and represent experiences overlooked by formal records. Museums must obtain informed participation, distinguish memories from verified facts and present differing accounts carefully. Digital access also requires preservation and accessibility. Combining professional interpretation with respect for contributors makes community involvement an ongoing relationship rather than a single collection activity."
     }
   ],
@@ -61,58 +81,200 @@
     {
       "id": "writing-mock-1",
       "title": "Writing Sectional Mock 1",
-      "description": "Cities, knowledge and education",
+      "description": "Cities, knowledge and age restrictions",
       "questions": [
         {
-          "id": "wm1-swt1", "type": "swt", "title": "Public libraries", "minutes": 10,
+          "id": "wm1-swt1",
+          "type": "swt",
+          "title": "Public libraries",
+          "minutes": 10,
           "text": "Public libraries are often associated with shelves of books, yet their role is changing as information becomes increasingly available online. Some observers assume that digital access makes physical libraries unnecessary. This view overlooks the difference between the availability of information and the ability to use it effectively. People may lack reliable internet connections, appropriate devices, or the skills needed to assess competing claims. Libraries can help address these gaps by providing equipment and guidance in an accessible public setting.\n\nTheir buildings also offer resources that a website cannot fully replace. Quiet study areas support learners whose homes are crowded, while group spaces allow local organisations to meet. Staff may help visitors locate services or navigate unfamiliar information systems. These activities extend the traditional purpose of enabling people to learn and participate in society.\n\nHowever, expanding services creates practical choices. Funding, staff time and building space are limited. A library that attempts every possible activity may weaken its essential services. Decisions should therefore be based on local needs and regular consultation with users, including people who rarely visit. The future of libraries is best understood as adaptation: combining books, digital support and shared space in ways that make knowledge genuinely accessible.",
-          "keyPoints": ["Libraries remain relevant by addressing unequal access to information and digital skills.", "Physical spaces support learning and community participation.", "Services should adapt to local needs within resource limits."],
+          "keyPoints": [
+            "Libraries remain relevant by addressing unequal access to information and digital skills.",
+            "Physical spaces support learning and community participation.",
+            "Services should adapt to local needs within resource limits."
+          ],
           "sample": "Public libraries remain important by combining books, digital guidance and shared spaces to improve access to knowledge and community participation, although limited resources require them to adapt services carefully to local needs."
         },
         {
-          "id": "wm1-swt2", "type": "swt", "title": "Repairable products", "minutes": 10,
+          "id": "wm1-swt2",
+          "type": "swt",
+          "title": "Repairable products",
+          "minutes": 10,
           "text": "Replacing a broken household appliance can appear easier than repairing it. If spare parts are unavailable, technical information is difficult to obtain, or a product is sealed in a way that prevents safe access, even a minor fault may lead to disposal. This means that the lifespan of a product depends partly on decisions made long before the customer buys it. Design can either support repair or make it impractical.\n\nA repairable product uses components that can be reached and replaced, supported by instructions and a reliable supply of parts. Such arrangements can allow equipment to remain useful for longer and reduce demand for new materials. They may also support local repair businesses. Nevertheless, repairability alone does not guarantee that repairs will occur. Customers compare costs, time and confidence in the result. If the total repair price approaches the cost of a replacement, the environmental argument may not determine the decision.\n\nEncouraging repair therefore requires cooperation across the product's life. Manufacturers influence design and spare parts, repair services provide expertise, and consumers need clear information about practical options. The aim is not to insist that every damaged item must be repaired, but to make repair a realistic choice when it is safe and worthwhile.",
-          "keyPoints": ["Design and spare-part availability shape product repairability and lifespan.", "Repair can conserve materials and support local services, but cost and confidence affect choices.", "Cooperation should make safe, worthwhile repairs practical."],
+          "keyPoints": [
+            "Design and spare-part availability shape product repairability and lifespan.",
+            "Repair can conserve materials and support local services, but cost and confidence affect choices.",
+            "Cooperation should make safe, worthwhile repairs practical."
+          ],
           "sample": "Making household products repairable through accessible design, spare parts and reliable information can extend their lives and conserve materials, but manufacturers, repair services and consumers must also address cost and confidence to make safe repairs a practical choice."
         },
         {
-          "id": "wm1-essay", "type": "essay", "title": "Practical skills at university", "minutes": 20,
-          "text": "Some people believe universities should focus on practical skills for employment, while others believe they should provide a broad academic education. Discuss both views and give your own opinion.",
-          "keyPoints": ["Discuss the case for employment-related practical skills.", "Discuss the case for broad academic education.", "Give and support a personal opinion."],
-          "sample": "Universities face competing expectations about the education they should provide. Some people want graduates to enter employment with practical skills, while others value broad academic learning. Both purposes are important, and I believe universities should combine professional preparation with opportunities for wider intellectual development.\n\nPractical training can help students understand how knowledge is used in the workplace. Projects, placements and realistic exercises allow them to practise communication, solve problems and receive feedback before taking responsibility for professional tasks. For example, a business student who prepares a budget for a simulated organisation can connect financial concepts to actual decisions. Such experience may also help students identify the type of work that interests them. However, training focused too narrowly on current procedures can become less useful when industries change.\n\nA broad academic education offers a different but equally valuable foundation. Studying theories, examining evidence and considering different perspectives can develop independent judgement. These abilities matter beyond a graduate's first job because unfamiliar problems rarely come with a complete set of instructions. Exposure to subjects outside a chosen profession can also help students understand the social consequences of their decisions. Nevertheless, abstract learning needs clear connections to situations that students may encounter.\n\nIn conclusion, practical skills and broad education should support each other. Universities should give students experience applying knowledge while teaching them to question assumptions and adapt their thinking. This balanced approach prepares graduates for immediate responsibilities and for changes throughout their working lives."
+          "id": "wm1-essay",
+          "type": "essay",
+          "title": "Age Restrictions",
+          "minutes": 20,
+          "text": "Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.",
+          "keyPoints": [
+            "Choose a specific activity affected by age restrictions.",
+            "State and justify a suitable minimum age for that activity.",
+            "Share relevant personal experience and connect it to the chosen age restriction.",
+            "One well-developed example is sufficient; the response does not need to discuss every activity listed in the question."
+          ],
+          "sample": "Age restrictions can protect people when an activity requires judgement and responsibility. One important example is independent driving, because a driver's decisions affect passengers, pedestrians and other road users. I believe eighteen is a suitable minimum age for driving without supervision, provided the learner has also completed practical training and demonstrated safe driving skills.\n\nThe main reason for choosing this age is that independent driving involves much more than controlling a vehicle. A driver must assess changing conditions, resist distractions and consider the consequences of taking risks. By eighteen, many young people have gained greater experience managing responsibilities at school, at work or at home. However, age alone cannot guarantee sensible behaviour. A clear minimum age should therefore be combined with supervised practice, a practical assessment and education about dangerous situations. This would make the restriction meaningful rather than simply treating a birthday as proof of readiness.\n\nMy own experience of learning to drive showed me why preparation matters. During my early lessons, I could follow basic instructions but found busy intersections difficult. Regular practice with an experienced instructor helped me anticipate other drivers' actions and remain calm when conditions changed. If I had driven alone before developing these habits, I would have felt less confident and might have made avoidable mistakes. This experience supports allowing young people to learn under supervision before they become eligible to drive independently.\n\nIn conclusion, I would set eighteen as the minimum age for independent driving. Combining this age restriction with training and demonstrated competence would balance young people's independence with their responsibility to protect others."
         },
-        {"id": "wm1-sst", "type": "sst", "title": "Designing quiet learning spaces", "minutes": 10, "voice": "nova", "text": "When a university plans a learning space, the discussion often begins with furniture and technology. Yet sound can have just as much influence on how people use the room. A conversation that helps one group solve a problem may interrupt another student who is trying to read. The answer is not necessarily to make every room silent. Different activities require different conditions. A useful building can offer separate areas for discussion, individual concentration and short informal meetings. Clear signs help students choose a suitable place, but the physical design must support those expectations. Soft surfaces can reduce echoes, while doors and partitions can limit sound travelling between areas. Location matters too. A quiet study zone beside a busy entrance may be difficult to protect, regardless of how many notices are displayed. Planners should also listen to students who have particular difficulties processing speech in noisy environments. Their experience can reveal problems that a simple sound measurement misses. Finally, spaces should be reviewed after they open. Observing actual use and inviting feedback allows the university to adjust layouts and rules as learning needs change.", "keyPoints": ["Learning spaces need different sound conditions for different activities.", "Physical design and location must support quiet and collaborative areas.", "Student feedback and continuing evaluation help meet diverse learning needs."], "sample": "The lecture explains that university learning spaces should provide different sound conditions for discussion and individual concentration. Effective planning combines clear expectations with suitable locations, partitions and materials that reduce unwanted noise. Universities should consult students with different listening needs and review how rooms are used, adjusting layouts and rules in response to continuing feedback."},
-        {"id": "wm1-wfd1", "type": "wfd", "title": "Dictation sentence 1", "minutes": 4, "timeGroup": "dictation", "voice": "echo", "text": "The university library will remain open throughout the examination period.", "sample": "The university library will remain open throughout the examination period.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]},
-        {"id": "wm1-wfd2", "type": "wfd", "title": "Dictation sentence 2", "minutes": 4, "timeGroup": "dictation", "voice": "shimmer", "text": "Students should submit their research proposals before the end of September.", "sample": "Students should submit their research proposals before the end of September.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]},
-        {"id": "wm1-wfd3", "type": "wfd", "title": "Dictation sentence 3", "minutes": 4, "timeGroup": "dictation", "voice": "fable", "text": "Regular feedback helps learners identify their strengths and improve their performance.", "sample": "Regular feedback helps learners identify their strengths and improve their performance.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]}
+        {
+          "id": "wm1-sst",
+          "type": "sst",
+          "title": "Designing quiet learning spaces",
+          "minutes": 10,
+          "voice": "nova",
+          "text": "When a university plans a learning space, the discussion often begins with furniture and technology. Yet sound can have just as much influence on how people use the room. A conversation that helps one group solve a problem may interrupt another student who is trying to read. The answer is not necessarily to make every room silent. Different activities require different conditions. A useful building can offer separate areas for discussion, individual concentration and short informal meetings. Clear signs help students choose a suitable place, but the physical design must support those expectations. Soft surfaces can reduce echoes, while doors and partitions can limit sound travelling between areas. Location matters too. A quiet study zone beside a busy entrance may be difficult to protect, regardless of how many notices are displayed. Planners should also listen to students who have particular difficulties processing speech in noisy environments. Their experience can reveal problems that a simple sound measurement misses. Finally, spaces should be reviewed after they open. Observing actual use and inviting feedback allows the university to adjust layouts and rules as learning needs change.",
+          "keyPoints": [
+            "Learning spaces need different sound conditions for different activities.",
+            "Physical design and location must support quiet and collaborative areas.",
+            "Student feedback and continuing evaluation help meet diverse learning needs."
+          ],
+          "sample": "The lecture explains that university learning spaces should provide different sound conditions for discussion and individual concentration. Effective planning combines clear expectations with suitable locations, partitions and materials that reduce unwanted noise. Universities should consult students with different listening needs and review how rooms are used, adjusting layouts and rules in response to continuing feedback."
+        },
+        {
+          "id": "wm1-wfd1",
+          "type": "wfd",
+          "title": "Dictation sentence 1",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "echo",
+          "text": "The university library will remain open throughout the examination period.",
+          "sample": "The university library will remain open throughout the examination period.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        },
+        {
+          "id": "wm1-wfd2",
+          "type": "wfd",
+          "title": "Dictation sentence 2",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "shimmer",
+          "text": "Students should submit their research proposals before the end of September.",
+          "sample": "Students should submit their research proposals before the end of September.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        },
+        {
+          "id": "wm1-wfd3",
+          "type": "wfd",
+          "title": "Dictation sentence 3",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "fable",
+          "text": "Regular feedback helps learners identify their strengths and improve their performance.",
+          "sample": "Regular feedback helps learners identify their strengths and improve their performance.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        }
       ]
     },
     {
-      "id": "writing-mock-2", "title": "Writing Sectional Mock 2",
-      "description": "Research, transport and working life",
+      "id": "writing-mock-2",
+      "title": "Writing Sectional Mock 2",
+      "description": "Research, transport and university assessment",
       "questions": [
         {
-          "id": "wm2-swt1", "type": "swt", "title": "Citizen science", "minutes": 10,
+          "id": "wm2-swt1",
+          "type": "swt",
+          "title": "Citizen science",
+          "minutes": 10,
           "text": "Scientific projects sometimes require observations from more places and over longer periods than a small research team can cover. Citizen science offers one way to meet this challenge by inviting members of the public to contribute observations. Volunteers might record flowering times, report wildlife sightings or classify images. Their participation can extend the reach of a project while creating opportunities to learn about scientific methods.\n\nThe usefulness of these contributions depends on how the work is organised. A large number of observations does not automatically produce reliable evidence. Participants need clear instructions, suitable training and a way to report uncertainty. Researchers must also check records and consider whether volunteers are concentrated in particular areas. Otherwise, an apparent pattern may reflect where people looked rather than what is happening in nature.\n\nSuccessful projects treat communication as a continuing process. Explaining why an observation matters can improve engagement, and sharing findings helps contributors see the value of their effort. Volunteers should also receive appropriate recognition. Citizen science is therefore more than a source of inexpensive labour. When carefully designed, it combines wider data collection with public involvement, while maintaining the standards needed for useful research.",
-          "keyPoints": ["Public participation extends scientific observation and learning.", "Training, verification and attention to sampling bias are necessary for reliable data.", "Ongoing communication and recognition make citizen science a meaningful partnership."],
+          "keyPoints": [
+            "Public participation extends scientific observation and learning.",
+            "Training, verification and attention to sampling bias are necessary for reliable data.",
+            "Ongoing communication and recognition make citizen science a meaningful partnership."
+          ],
           "sample": "Citizen science can expand data collection and public learning, provided projects use clear training, verification and checks for sampling bias, while continuing communication and recognition help maintain meaningful participation and reliable research."
         },
         {
-          "id": "wm2-swt2", "type": "swt", "title": "Reliable public transport", "minutes": 10,
+          "id": "wm2-swt2",
+          "type": "swt",
+          "title": "Reliable public transport",
+          "minutes": 10,
           "text": "Discussions about public transport often concentrate on the speed of a journey. A faster train or a shorter bus route seems an obvious improvement. Yet passengers also care about whether the journey will take roughly the time they expect. An unusually fast trip on one day may offer little reassurance if the service is frequently delayed on others. Reliability influences the extra time people allow when travelling to work, education or appointments.\n\nTransport authorities can improve reliability through measures that receive less attention than new vehicles. Bus priority at busy intersections, realistic timetables and well-planned connections can make existing services more dependable. Accurate information is also useful when disruptions occur, because passengers can make alternative arrangements. However, information cannot compensate indefinitely for a service that fails to arrive.\n\nDifferent travellers experience unreliability differently. Someone who can change their working hours may manage a delay more easily than a person collecting a child at a fixed time. Evaluating improvements should therefore include passengers' experiences as well as average journey times. A useful transport system is one people can plan their lives around; its value comes from consistent service, accessible information and an understanding of everyday travel needs.",
-          "keyPoints": ["Predictability matters alongside speed because passengers plan around journeys.", "Operational improvements and accurate disruption information can help reliability.", "Evaluation should consider differing passenger needs, not only average travel times."],
+          "keyPoints": [
+            "Predictability matters alongside speed because passengers plan around journeys.",
+            "Operational improvements and accurate disruption information can help reliability.",
+            "Evaluation should consider differing passenger needs, not only average travel times."
+          ],
           "sample": "Reliable public transport enables people to plan daily activities, so authorities should complement speed improvements with dependable operations and accurate information, evaluating services against different passengers' needs as well as average journey times."
         },
         {
-          "id": "wm2-essay", "type": "essay", "title": "Working from home", "minutes": 20,
-          "text": "More employees now have the opportunity to work from home. Discuss the advantages and disadvantages of this arrangement for employees and employers.",
-          "keyPoints": ["Discuss advantages for employees and employers.", "Discuss disadvantages for employees and employers.", "Develop relevant explanations or examples; a personal preference is not required."],
-          "sample": "Working from home changes how employees complete their responsibilities and how employers organise their businesses. It can offer flexibility and reduce the need for daily travel, but it also creates challenges for communication and working conditions. Its advantages and disadvantages affect both sides of the employment relationship.\n\nFor employees, avoiding a commute can free time for rest, family responsibilities or concentrated work. A suitable home environment may also reduce interruptions during tasks that require sustained attention. Employers can benefit by recruiting from a wider geographical area and, where arrangements permit, using less office space. For example, a small organisation may be able to hire a specialist who lives too far away to travel to its office every day. These benefits depend on reliable equipment and clear expectations about the work to be completed.\n\nHowever, home working is not equally convenient for everyone. Employees who share crowded accommodation may struggle to find a quiet place, while others may feel isolated or find it difficult to separate work from personal time. Employers can face difficulties helping new staff learn informal practices and ensuring that important decisions reach everyone. A misunderstanding that would be resolved through a brief conversation may require several messages when colleagues are working separately. Regular contact can help, although excessive online meetings may interrupt productive work.\n\nIn conclusion, working from home provides opportunities for flexibility, recruitment and efficient use of time, alongside risks involving isolation, communication and unsuitable workspaces. Its effects depend on the tasks involved, employees' circumstances and the quality of organisational support."
+          "id": "wm2-essay",
+          "type": "essay",
+          "title": "Late Submission and Mark Deduction",
+          "minutes": 20,
+          "text": "Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.",
+          "keyPoints": [
+            "Give and explain an opinion about deducting marks for late university submissions.",
+            "Suggest relevant alternative actions and explain how they would work.",
+            "Support the discussion with reasons or examples; personal experience is optional."
+          ],
+          "sample": "Deadlines are an important part of university assessment because they help students organise their work and allow teachers to provide feedback fairly. Although deducting marks can encourage timely submission, I believe penalties should be proportionate and should take genuine difficulties into account. Universities should also use practical alternatives that help students meet deadlines.\n\nA reasonable deduction may be justified when a student submits work late without an acceptable explanation. Students who complete an assignment on time have managed within the same stated conditions, so unlimited extra time could create an unfair advantage. A published penalty also makes expectations clear. However, automatically applying the same deduction to every case can be unreasonable. Illness, caring responsibilities or an unexpected technical problem may prevent a capable student from submitting on time. In such circumstances, a severe penalty could obscure what the student actually understands about the subject.\n\nSeveral alternative actions could support both fairness and learning. First, universities could offer short extensions when students explain their circumstances and provide appropriate evidence. Second, a limited grace period for occasional minor delays could prevent a small mistake from causing a disproportionate academic loss. Third, teachers could divide major assignments into planning, draft and final submission stages. These checkpoints would identify difficulties early and encourage steady progress. Students who repeatedly miss deadlines could attend time management sessions or agree on an improvement plan with an adviser.\n\nIn conclusion, moderate mark deductions can be appropriate for unexplained late submissions, but they should not be the only response. Clear extension procedures, early checkpoints and targeted support would maintain academic expectations while addressing the reasons students fall behind."
         },
-        {"id": "wm2-sst", "type": "sst", "title": "Explaining uncertainty in research", "minutes": 10, "voice": "onyx", "text": "When researchers communicate a result, people often want a single clear answer. However, scientific findings usually come with some uncertainty. This does not automatically mean that the research is poor. A study may involve only a sample of a larger population, and measurements can be affected by small variations in the equipment or the conditions. Responsible researchers explain these limitations so that others can judge how much confidence to place in the findings. The challenge is to communicate uncertainty without making useful evidence seem meaningless. Simply listing technical qualifications can overwhelm an audience. It is often better to explain what the study supports, what it cannot establish, and which further observations would help. Comparisons with other studies are also valuable. A result becomes more convincing when different methods produce similar conclusions, although agreement does not remove the need for critical examination. Communicators should avoid presenting an early finding as a final discovery, particularly when decisions could affect many people. At the same time, waiting for perfect certainty may delay worthwhile action. The aim is to make decisions that reflect the strength of the available evidence while remaining open to revision.", "keyPoints": ["Uncertainty is normal because studies use samples and imperfect measurements.", "Researchers should explain both findings and limitations in accessible language.", "Decisions should reflect available evidence, comparison across studies and openness to revision."], "sample": "The speaker explains that uncertainty is a normal feature of scientific research, arising from sampling and measurement limitations. Researchers should clearly communicate what findings support and what remains unknown, while considering evidence from other studies. Decisions should reflect the strength of available knowledge without treating early results as final or waiting indefinitely for perfect certainty."},
-        {"id": "wm2-wfd1", "type": "wfd", "title": "Dictation sentence 1", "minutes": 4, "timeGroup": "dictation", "voice": "echo", "text": "The results of the experiment will be discussed in tomorrow's lecture.", "sample": "The results of the experiment will be discussed in tomorrow's lecture.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]},
-        {"id": "wm2-wfd2", "type": "wfd", "title": "Dictation sentence 2", "minutes": 4, "timeGroup": "dictation", "voice": "shimmer", "text": "Public transport services connect the new campus with the city centre.", "sample": "Public transport services connect the new campus with the city centre.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]},
-        {"id": "wm2-wfd3", "type": "wfd", "title": "Dictation sentence 3", "minutes": 4, "timeGroup": "dictation", "voice": "fable", "text": "All participants must complete the survey before attending the final workshop.", "sample": "All participants must complete the survey before attending the final workshop.", "keyPoints": ["Reproduce the sentence with accurate words, spelling and word order."]}
+        {
+          "id": "wm2-sst",
+          "type": "sst",
+          "title": "Explaining uncertainty in research",
+          "minutes": 10,
+          "voice": "onyx",
+          "text": "When researchers communicate a result, people often want a single clear answer. However, scientific findings usually come with some uncertainty. This does not automatically mean that the research is poor. A study may involve only a sample of a larger population, and measurements can be affected by small variations in the equipment or the conditions. Responsible researchers explain these limitations so that others can judge how much confidence to place in the findings. The challenge is to communicate uncertainty without making useful evidence seem meaningless. Simply listing technical qualifications can overwhelm an audience. It is often better to explain what the study supports, what it cannot establish, and which further observations would help. Comparisons with other studies are also valuable. A result becomes more convincing when different methods produce similar conclusions, although agreement does not remove the need for critical examination. Communicators should avoid presenting an early finding as a final discovery, particularly when decisions could affect many people. At the same time, waiting for perfect certainty may delay worthwhile action. The aim is to make decisions that reflect the strength of the available evidence while remaining open to revision.",
+          "keyPoints": [
+            "Uncertainty is normal because studies use samples and imperfect measurements.",
+            "Researchers should explain both findings and limitations in accessible language.",
+            "Decisions should reflect available evidence, comparison across studies and openness to revision."
+          ],
+          "sample": "The speaker explains that uncertainty is a normal feature of scientific research, arising from sampling and measurement limitations. Researchers should clearly communicate what findings support and what remains unknown, while considering evidence from other studies. Decisions should reflect the strength of available knowledge without treating early results as final or waiting indefinitely for perfect certainty."
+        },
+        {
+          "id": "wm2-wfd1",
+          "type": "wfd",
+          "title": "Dictation sentence 1",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "echo",
+          "text": "The results of the experiment will be discussed in tomorrow's lecture.",
+          "sample": "The results of the experiment will be discussed in tomorrow's lecture.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        },
+        {
+          "id": "wm2-wfd2",
+          "type": "wfd",
+          "title": "Dictation sentence 2",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "shimmer",
+          "text": "Public transport services connect the new campus with the city centre.",
+          "sample": "Public transport services connect the new campus with the city centre.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        },
+        {
+          "id": "wm2-wfd3",
+          "type": "wfd",
+          "title": "Dictation sentence 3",
+          "minutes": 4,
+          "timeGroup": "dictation",
+          "voice": "fable",
+          "text": "All participants must complete the survey before attending the final workshop.",
+          "sample": "All participants must complete the survey before attending the final workshop.",
+          "keyPoints": [
+            "Reproduce the sentence with accurate words, spelling and word order."
+          ]
+        }
       ]
     }
   ]
