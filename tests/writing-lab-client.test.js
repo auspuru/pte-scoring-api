@@ -39,7 +39,7 @@ function harness({ audioReadyState = 4 } = {}) {
   class Clock extends Date { static now() { return now; } }
   const document={getElementById:id=>nodes.get(id)||null,body:new Element('body'),hidden:false,events:{},addEventListener(name,fn){this.events[name]=fn;}};
   const context={document,Audio,Date:Clock,console,AbortSignal,crypto:require('node:crypto').webcrypto,
-    location:{pathname:'/writing-mocks'},navigator:{},
+    location:{pathname:'/writing-mocks',origin:'https://practice.test'},navigator:{},
     localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},
     sessionStorage:{getItem:()=>null},
     setInterval:(fn,ms)=>{const id=++seq;intervals.set(id,{fn,ms});return id;},clearInterval:id=>intervals.delete(id),
@@ -49,9 +49,9 @@ function harness({ audioReadyState = 4 } = {}) {
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={WritingLabReport:report,addEventListener(){},scrollTo(){}};
+  context.window={WritingLabReport:report,parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt}; return;\n  (async()=>{\n    try { const values=`);
+  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt}; return;\n  (async()=>{\n    try { const values=`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -64,6 +64,32 @@ function attempt(index=3) {
 }
 function open(h,a) { a.serverNow=100000;h.hooks.set(a);h.hooks.showAttempt(); }
 async function flush() { for(let i=0;i<5;i++) await new Promise(resolve=>setImmediate(resolve)); }
+
+test('Task pages and saved attempts stay scoped to individual practice or mocks',async()=>{
+ const h=harness();h.hooks.setCatalog({mocks:bank.mocks,spoken:bank.spoken,dictation:bank.mocks[0].questions.filter(q=>q.type==='wfd')});
+ await h.hooks.hub('sst');assert.match(h.nodes.get('lab').innerHTML,/Summarise Spoken Text/);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-board|Start Exam/);
+ await h.hooks.hub('wfd');assert.match(h.nodes.get('lab').innerHTML,/Write From Dictation/);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/Summarise Spoken Text/);
+ h.context.reply=[{id:'d',kind:'wfd',title:'Dictation saved',startedAt:1,status:'ready'}, {id:'s',kind:'sst',title:'Spoken saved',startedAt:1,status:'ready'}, {id:'m',kind:'mock',title:'Mock saved',startedAt:1,status:'active'}];
+ await h.hooks.hub('history');assert.match(h.nodes.get('history-list').innerHTML,/Dictation saved/);assert.doesNotMatch(h.nodes.get('history-list').innerHTML,/Spoken saved|Mock saved/);
+ await h.hooks.handleRequest({tab:'history',requestId:'mock-history'});
+ assert.match(h.nodes.get('history-list').innerHTML,/Mock saved/);assert.doesNotMatch(h.nodes.get('history-list').innerHTML,/Dictation saved|Spoken saved/);
+});
+test('Returning to an active task preserves its attempt and deadline without another start',async()=>{
+ const h=harness(),a=attempt(3);a.kind='sst';open(h,a);h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});
+ await h.hooks.handleRequest({tab:'sst',requestId:'return-sst'});
+ assert.equal(h.hooks.current().id,a.id);assert.equal(h.hooks.current().deadline,a.deadline);
+ assert(!h.requests.some(r=>r.url.endsWith('/attempts')));
+ const n=h.requests.length;await h.hooks.handleRequest({tab:'sst',requestId:'return-sst'});assert.equal(h.requests.length,n);
+});
+test('A delayed navigation cannot reopen a suspended lab',async()=>{
+ const h=harness();open(h,attempt());h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});
+ const old=h.nodes.get('lab').innerHTML;let release;
+ h.context.fetch=()=>new Promise(resolve=>release=()=>resolve({ok:true,json:async()=>attempt()}));
+ const request=h.hooks.handleRequest({tab:'wfd',requestId:'slow'});await flush();
+ h.context.window.events.message({source:h.context.window.parent,origin:h.context.location.origin,data:{type:'writing-lab-suspend'}});
+ release();await request;
+ assert.equal(h.nodes.get('lab').innerHTML,old);assert.equal(h.hooks.current().kind,'mock');
+});
 
 test('The standalone SST Play button starts through the real API, saves playback, and resumes the same timer',async t=>{
   const directory=await fs.promises.mkdtemp(path.join(os.tmpdir(),'sst-start-flow-'));

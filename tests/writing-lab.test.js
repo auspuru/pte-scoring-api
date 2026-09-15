@@ -84,6 +84,34 @@ test('Authenticated attempts persist, isolate users and lock submitted answers',
   const restarted=createStore(null,dir);assert.equal((await restarted.list('alice'))[0].results[0].total,0);
   assert.equal((await restarted.list('bob')).length,0);
 });
+test('Standalone dictation reuses recordings, hides answers, starts on play and keeps independent attempts',async t=>{
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dictation-practice-test-'));
+  const app=express();app.use(express.json());
+  installWritingLab(app,{directory:dir,verifyToken:t=>t==='tester'?'tester':null,getAccount:async()=>({}),callModel:async()=>{throw Error('Dictation needs no model');}});
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
+  const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
+  async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
+  const before=JSON.stringify(bank),catalog=await request('/catalog');
+  assert.equal(catalog.dictation.length,6);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,6);
+  for(const q of catalog.dictation) {assert(q.audioUrl.includes(q.id));assert.equal(q.text,undefined);assert.equal(q.sample,undefined);}
+  const q=bank.mocks[0].questions.find(q=>q.type==='wfd'),id=randomUUID();
+  const ready=await request('/attempts',{id,testId:q.id});
+  assert.equal(ready.kind,'wfd');assert.equal(ready.status,'ready');assert.equal(ready.deadline,null);assert.equal(ready.questions.length,1);
+  assert.equal(ready.questions[0].text,'');assert.equal(ready.questions[0].timeGroup,undefined);
+  const active=await request('/attempts/'+id+'/begin',{});
+  assert.equal(active.deadline-active.startedAt,q.minutes*60000);
+  assert.equal((await request('/attempts/'+id+'/begin',{})).deadline,active.deadline);
+  const done=await request('/attempts/'+id+'/answer',{index:0,text:q.text,revision:1,next:true,playback:{position:5,finished:true}});
+  assert.equal(done.status,'submitted');assert.equal(done.questions[0].text,q.text);
+  const result=await request('/attempts/'+id+'/score/0',{});assert.equal(result.total,result.maximum);
+  const retryId=randomUUID(),retry=await request('/attempts',{id:retryId,testId:q.id});
+  assert.equal(retry.status,'ready');assert.equal(retry.answers[0],'');
+  const history=await request('/attempts');assert.equal(history.length,2);
+  assert.equal(history.find(a=>a.id===id).score90,90);assert.equal(history.find(a=>a.id===retryId).kind,'wfd');
+  assert.equal(JSON.stringify(bank),before,'The original mock dictation timer group is unchanged');
+});
+
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'writing-audio-test-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));
   let calls=0;const audio=createNarration(dir,async data=>{calls++;assert.equal(data.input,bank.spoken[0].text);return Buffer.alloc(2000,7);});

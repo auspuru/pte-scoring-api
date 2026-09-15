@@ -8,6 +8,7 @@
   const labels = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
   const source = 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf';
   let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view;
+  let workspaceVisible = true, navigationSerial = 0, pendingRequest = null, handledRequest = null, historyKind = 'mock';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
   const grading = new Set();
   let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
@@ -40,84 +41,38 @@
   }
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
   function scoringNote() { return '<div class="note"><p><b>About your score.</b> Your Writing practice estimate is shown out of 90. Summaries and essays receive AI feedback using the task criteria in <a href="'+source+'" target="_blank" rel="noopener">Pearson’s score guide</a>; dictation is checked word by word.</p><details><summary>How the estimate is calculated</summary><p>We combine the marks earned across this attempt, then calculate 10 + 80 × (marks earned ÷ marks available), rounded to a whole number. The same method is used for each task breakdown. Missing assessments stay pending. This is an independent practice scale, not an official Pearson score or a calibrated prediction of your exam result.</p><p>Each new mock contains SWT, an essay, SST and dictation. The three dictation sentences share a four-minute practice allocation; the full exam uses the remaining Listening section time.</p></details></div>'; }
-  let mockBoardFilter='sectional', mockBoardLayout='grid', mockBoardSort='number', mockBoardPageSize='all';
-  function boardItems() {
-    const sectionals=catalog.mocks.map((m,index)=>({...m,boardMode:'sectional',module:'writing',boardIndex:index}));
-    const practice=catalog.spoken.map((q,index)=>({
-      ...q,boardMode:'practice',module:'listening-writing',boardIndex:index,category:'practice',questionCount:1,
-      description:'One Summarise Spoken Text question with feedback and a saved result.',
-      tasks:[{count:1,label:'Summarise Spoken Text'}]
-    }));
-    return [...sectionals,...practice];
-  }
-  function mockCard(m, index) {
-    const practice=m.boardMode==='practice', prediction=m.category==='prediction';
-    const number=practice?m.boardIndex+1:(prediction?m.predictionNumber:m.boardIndex+1);
-    const code=practice?'SST Practice '+String(number).padStart(2,'0'):(prediction?'W Sectional '+String(number).padStart(2,'0'):'W Sectional · Special '+String(number).padStart(2,'0'));
-    const section=practice?'🎧 Listening + Writing':'✎ Writing';
-    const taskText=(m.tasks||[]).map(t=>t.count+' × '+t.label).join(' · ');
-    return '<article class="assignment-card" data-category="'+esc(m.category)+'" data-title="'+esc((m.title||'')+' '+(m.description||''))+'"><div class="assignment-card-top"><span class="assignment-code">'+esc(code)+'</span><span class="assignment-section">'+esc(section)+'</span></div><h2>'+esc(m.title)+'</h2><p>'+esc(m.description||'Essay prediction practice')+'</p><div class="assignment-card-meta"><span>'+m.questionCount+' question'+(m.questionCount===1?'':'s')+'</span><span>'+m.minutes+' minutes</span><span>/90</span></div><div class="assignment-card-tasks">'+esc(taskText)+'</div><div class="card-footer"><span class="meta">'+(practice?'Task':'Writing')+' estimate /90</span><button class="primary" data-start="'+esc(m.id)+'">'+(practice?'Practise':'Start Exam')+'</button></div></article>';
-  }
-  function renderMockBoard() {
-    const board=document.getElementById('mock-board'); if(!board || !catalog) return;
-    const search=(document.getElementById('mock-search')?.value||'').trim().toLowerCase();
-    const section=document.getElementById('mock-section')?.value||'all';
-    let list=boardItems().filter(m=>{
-      if(m.boardMode!==mockBoardFilter) return false;
-      if(section!=='all' && m.module!==section) return false;
-      return !search || ((m.title+' '+(m.description||'')).toLowerCase().includes(search));
-    });
-    if(mockBoardSort==='title') list.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
-    else if(mockBoardSort==='longest') list.sort((a,b)=>b.minutes-a.minutes || a.title.localeCompare(b.title));
-    else list.sort((a,b)=>(a.category===b.category?((a.predictionNumber??a.boardIndex)-(b.predictionNumber??b.boardIndex)):a.category==='prediction'?-1:1));
-    const shown=mockBoardPageSize==='all'?list:list.slice(0,Number(mockBoardPageSize));
-    board.classList.toggle('list-layout',mockBoardLayout==='list');
-    board.innerHTML=shown.map((m,i)=>mockCard(m,i)).join('');
-    const count=document.getElementById('mock-count');
-    if(count) count.textContent=list.length?'Showing 1–'+shown.length+' of '+list.length+' tests':'Showing 0 of 0 tests';
-    const empty=document.getElementById('mock-empty');
-    if(empty) {
-      empty.hidden=!!shown.length;
-      empty.textContent=mockBoardFilter==='full'
-        ? 'The complete Full Mock will appear here after all four module banks are connected.'
-        : 'No tests match your filters.';
-    }
-    document.querySelectorAll('[data-board-layout]').forEach(b=>b.classList.toggle('selected',b.dataset.boardLayout===mockBoardLayout));
+  function returnToPortal(section) {
+    if (window.parent !== window) window.parent.postMessage({ type: 'writing-lab-navigate', section }, location.origin);
+    else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : 'mock-tests');
   }
   async function hub(tab=view) {
     requestedView=tab;
-    clearInterval(timer); clearTimeout(saveTimer);
-    stopAudio();
+    if(tab !== 'history') historyKind=tab === 'mocks' ? 'mock' : tab;
+    clearInterval(timer); clearTimeout(saveTimer); stopAudio();
     document.body.classList.remove('exam-mode');
     attempt=null; view=tab;
-    const auth=username?'':'<div class="auth-note"><a href="/">Sign in to your existing account</a>, then open Writing sectional mocks or Summarise spoken text from the sidebar.</div>';
+    const destination=historyKind==='mock'?'mock-tests':'practice-hub';
+    const back='<button class="secondary" data-portal="'+destination+'">← '+(destination==='mock-tests'?'Mock Tests':'Practice')+'</button>';
+    const auth=username?'':'<p class="auth-note">Sign in to your existing workspace account to practise.</p>';
     let content='';
     if(tab==='history') {
-      content='<h1>My attempts</h1><p class="muted">Resume an unfinished attempt or review your saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
+      content='<h1>'+(historyKind==='mock'?'Writing mock attempts':historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h1><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
     } else if(tab==='mocks') {
-      content='<section class="assignment-shell">'
-        +'<div class="assignment-heading"><div><div class="assignment-pills" role="tablist" aria-label="Test mode">'
-        +'<button type="button" class="assignment-pill" data-board-filter="full">Full Mock</button>'
-        +'<button type="button" class="assignment-pill" data-board-filter="practice">Practice</button>'
-        +'<button type="button" class="assignment-pill selected" data-board-filter="sectional">Sectional Mock</button>'
-        +'</div><p class="eyebrow">PTE Academic · Test centre</p><p class="assignment-subtitle">Full exam, focused practice and score-module sectionals are kept separate.</p></div><h1>Assignments</h1></div>'
-        +auth
-        +'<div class="assignment-toolbar"><div class="assignment-filter-group"><input id="mock-search" type="search" placeholder="Filter by test name" aria-label="Filter by test name"><button class="assignment-filter" type="button" disabled>In Progress</button><select id="mock-section" aria-label="Filter by module"><option value="all">All Modules</option><option value="writing">Writing</option><option value="listening-writing">Listening + Writing</option></select></div>'
-        +'<div class="assignment-view-group"><span>Items per page:</span><select id="mock-page-size" aria-label="Items per page"><option value="all">All</option><option value="8">8</option><option value="12">12</option></select><span>Sort by:</span><select id="mock-sort" aria-label="Sort assignments"><option value="number">Test number</option><option value="title">Title</option><option value="longest">Longest first</option></select><span class="layout-label">Layout:</span><button class="layout-button selected" data-board-layout="grid" aria-label="Grid layout">▦</button><button class="layout-button" data-board-layout="list" aria-label="List layout">☰</button></div></div>'
-        +'<div class="assignment-count" id="mock-count"></div><div id="mock-board" class="mock-board"></div><p id="mock-empty" class="empty" hidden>No tests match your filters.</p><div class="rules assignment-rules"><span><b>One question at a time</b>Submitted answers are locked.</span><span><b>No pause</b>The clock continues if you leave.</span><span><b>Automatic submission</b>Saved answers submit when time expires.</span></div></section>'+scoringNote();
+      content='<h1>Writing sectional mock</h1><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
     } else {
-      content='<section class="hero"><div><p class="eyebrow">PTE Academic · Listening & writing</p><h1>Listen. Connect. Summarise.</h1><p>Practise with five original short lectures. Listen once, take notes and write a clear summary of 50–70 words.</p></div><div class="hero-metric"><strong>05</strong><span>LISTENING EXERCISES</span></div></section>'+auth+
-        '<div class="section-heading"><h2>Summarise Spoken Text</h2><span class="muted">10 minutes per question</span></div><div class="cards">'+catalog.spoken.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+' · '+esc(q.topic)+'</span><h2>'+esc(q.title)+'</h2><p>Listen to a short lecture, then summarise its central idea and essential supporting points.</p><div class="card-footer"><span class="meta">50–70 words · estimate /90</span><button class="primary" data-start="'+q.id+'">Practise →</button></div></article>').join('')+'</div><div class="note">Original practice material with AI-generated narration. Audio plays once per attempt; the transcript and sample summary appear after submission. Choose <b>Reattempt this question</b> on the results screen whenever you want another try. The 10-minute timer includes listening time.</div>'+scoringNote();
+      const dictation=tab==='wfd', questions=dictation?(catalog.dictation||[]):catalog.spoken;
+      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h1>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h1><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
+        +'<div class="cards">'+questions.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+'</span><h2>'+esc(q.title)+'</h2><p>'+(dictation?'Check your listening, spelling and word order.':'Capture the central idea and relevant supporting points.')+'</p><div class="card-footer"><span class="meta">'+q.minutes+' minutes · estimate /90</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><div class="note">Audio plays once per attempt. Answers and feedback are available after submission. Use <b>Reattempt this question</b> to try again without losing earlier results.</div>';
     }
-    root.innerHTML='<div class="hub"><nav class="tabs" aria-label="Practice sections"><button data-tab="mocks" class="'+(tab==='mocks'?'selected':'')+'">Writing mocks</button><button data-tab="sst" class="'+(tab==='sst'?'selected':'')+'">Spoken text practice</button><button data-tab="history" class="'+(tab==='history'?'selected':'')+'">My attempts</button></nav>'+content+'</div>';
-    if(tab==='mocks') { mockBoardFilter='sectional'; mockBoardLayout='grid'; mockBoardSort='number'; mockBoardPageSize='all'; renderMockBoard(); }
+    root.innerHTML='<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>';
     if(tab==='history') {
       const target=document.getElementById('history-list');
       if(!username) { target.innerHTML=auth; return; }
       try {
-        const history=await api('/attempts');
+        const all=await api('/attempts');
         if(!target.isConnected) return;
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.status==='submitted'?(a.score90==null?'Submitted · feedback pending':a.score90+'/90 · practice estimate'):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start practising.</p>';
+        const history=all.filter(a=>a.kind===historyKind);
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.status==='submitted'?(a.score90==null?'Submitted · feedback pending':a.score90+'/90 · practice estimate'):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
   }
@@ -134,13 +89,16 @@
       dialog.onclose=()=>resolve(accepted);
     });
   }
-  async function start(testId, button) {
+  async function start(testId, button, serial=navigationSerial) {
     if(!username) { notify('Sign in from your workspace first. Your existing account works here.'); return; }
     const mock=catalog.mocks.find(m=>m.id===testId);
     if(mock && !await confirmAction('Ready to begin?','This mock includes 2 written summaries, 1 essay, 1 spoken summary and 3 dictation sentences. Allow '+mock.minutes+' minutes and check your audio volume. Dictation shares one four-minute timer. You cannot return to submitted questions; the timer continues if you leave.','Begin '+mock.minutes+'-minute mock')) return;
+    if (serial!==navigationSerial || !workspaceVisible) return;
     button.disabled=true;
     try {
-      setAttempt(await api('/attempts',{id:crypto.randomUUID(),testId}));
+      const started=await api('/attempts',{id:crypto.randomUUID(),testId});
+      if (serial!==navigationSerial || !workspaceVisible) return;
+      setAttempt(started);
       showAttempt();
     } catch(e) { notify(e.message); button.disabled=false; }
   }
@@ -152,6 +110,7 @@
       if(attempt.status==='active' && local?.index===attempt.index && local.at<attempt.deadline && local.revision>=attempt.revisions[attempt.index]) {
         attempt.answers[attempt.index]=local.text; attempt.revisions[attempt.index]=local.revision; attempt.notes=local.notes||'';
       }
+      historyKind=attempt.kind;
       showAttempt();
       if(attempt?.status==='active') saveAnswer(false);
     } catch(e) { notify(e.message); button.disabled=false; }
@@ -170,7 +129,7 @@
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
     document.body.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
-    const instruction=q.type==='wfd'?'Listen to the sentence once and type exactly what you hear. Check your spelling and word order. The dictation questions share the remaining time shown above.':sst?'Listen to the recording and write a summary of 50–70 words. You have 10 minutes in total, including listening time.':q.type==='swt'?'Read the passage and summarise it in one complete sentence. Write 5–75 words. You have 10 minutes.':'Write an essay of 200–300 words in response to the question below. Support your ideas with reasons and examples. You have 20 minutes.';
+    const instruction=q.type==='wfd'?'Listen to the sentence once and type exactly what you hear. Check your spelling and word order. '+(attempt.kind==='mock'?'The dictation questions share the remaining time shown above.':'You have '+q.minutes+' minutes, including listening time.') :sst?'Listen to the recording and write a summary of 50–70 words. You have 10 minutes in total, including listening time.':q.type==='swt'?'Read the passage and summarise it in one complete sentence. Write 5–75 words. You have 10 minutes.':'Write an essay of 200–300 words in response to the question below. Support your ideas with reasons and examples. You have 20 minutes.';
     root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+' · '+esc(attempt.title)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>Question '+(attempt.index+1)+' of '+attempt.questions.length+'</span></div><div class="exam-main"><p class="instruction">'+instruction+'</p>'+
       (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><p class="muted">AI-generated narration · one play per question</p><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Start recording & timer':'Play recording')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><label class="answer-label" for="notes">My notes (not scored)</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea>':'<div class="passage">'+esc(q.text)+'</div>')+
       '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Total Word Count: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'The timer starts when you start the recording.':'Your answers are saved to your account as you write.')+'</p></div><footer class="exam-footer"><button class="secondary" data-leave="1">Exit</button><p>Check your response before continuing.</p><button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Finish & submit':'Next →')+'</button></footer></section>';
@@ -321,12 +280,12 @@
       startButton.textContent=attempt.status==='ready'?'Start recording & timer':player.currentTime>0?'Continue recording':'Play recording';
       if(!player.paused) startButton.classList.add('hidden');
       update();
-      if(!prepared && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden) {
+      if(!prepared && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden && workspaceVisible) {
         let remaining=3;
         status.textContent='Recording starts in '+remaining+'…';
         clearInterval(audioCountdown);
         audioCountdown=setInterval(()=>{
-          if(!current() || document.hidden) { clearInterval(audioCountdown); return; }
+          if(!current() || document.hidden || !workspaceVisible) { clearInterval(audioCountdown); return; }
           if(--remaining<=0) { clearInterval(audioCountdown); play(); }
           else status.textContent='Recording starts in '+remaining+'…';
         },1000);
@@ -358,8 +317,8 @@
   function renderResults() {
     document.body.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
-    const retry=attempt.kind==='sst' && attempt.questions[0]?.type==='sst' ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Writing practice estimate</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p><p>Independent practice estimate · not an official Pearson score</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+' · '+(g.score90==null?'Feedback pending':g.total+'/'+g.maximum+' raw marks')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+scoringNote()+'</section>';
+    const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>'+(attempt.kind==='mock'?'Writing practice estimate':'Task practice estimate')+'</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p><p>Independent practice estimate · not an official Pearson score</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+' · '+(g.score90==null?'Feedback pending':g.total+'/'+g.maximum+' raw marks')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+scoringNote()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -406,42 +365,56 @@
       editor.focus();
     } catch(_) {notify('Use your keyboard shortcut for '+command+' (Ctrl or Command + '+({cut:'X',copy:'C',paste:'V'}[command])+').');editor.focus();}
   }
-  window.addEventListener('message',e=>{
-    if(e.source!==window.parent || e.origin!==location.origin || !e.data || e.data.type!=='writing-lab-tab') return;
-    const tab=e.data.tab==='sst'?'sst':'mocks'; requestedView=tab;
-    if(!catalog) return;
-    if(attempt?.status==='active') {
-      if((attempt.kind==='sst'?'sst':'mocks')!==tab) notify('Your current attempt is still open. Its timer continues while you are away.');
-      return;
+  async function handleRequest(request) {
+    if (!catalog) { pendingRequest=request; return; }
+    if (request.requestId && handledRequest === request.requestId) return;
+    handledRequest=request.requestId;
+    const serial=++navigationSerial;
+    workspaceVisible=true;
+    const tab=['sst','wfd','mocks','history'].includes(request.tab)?request.tab:'mocks';
+    requestedView=tab;
+    if (attempt?.status==='active') await saveAnswer(false);
+    if (serial!==navigationSerial || !workspaceVisible) return;
+    if (request.testId) {
+      historyKind='mock';
+      if (attempt?.testId===request.testId && ['active','ready'].includes(attempt.status)) return showAttempt();
+      // Opening another paper never deletes the attempt already saved on the server.
+      return start(request.testId,{disabled:false},serial);
     }
-    hub(tab);
+    if (tab==='history') { historyKind='mock'; return hub(tab); }
+    const kind=tab==='mocks'?'mock':tab;
+    historyKind=kind;
+    if (attempt?.kind===kind && ['active','ready'].includes(attempt.status)) return showAttempt();
+    return hub(tab);
+  }
+  window.addEventListener('message',e=>{
+    if(e.source!==window.parent || e.origin!==location.origin || !e.data) return;
+    if(e.data.type==='writing-lab-suspend') {
+      navigationSerial++; pendingRequest=null; workspaceVisible=false; stopAudio(); writeDraft(); saveAnswer(false); return;
+    }
+    if(e.data.type==='writing-lab-tab') handleRequest(e.data).catch(error=>notify(error.message));
   });
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
-    if(b.dataset.boardFilter) { mockBoardFilter=b.dataset.boardFilter; document.querySelectorAll('[data-board-filter]').forEach(x=>{const selected=x.dataset.boardFilter===mockBoardFilter;x.classList.toggle('selected',selected);x.setAttribute('aria-selected',String(selected));}); renderMockBoard(); return; }
-    if(b.dataset.boardLayout) { mockBoardLayout=b.dataset.boardLayout; renderMockBoard(); return; }
+    if(b.dataset.portal) { writeDraft(); await saveAnswer(false); stopAudio(); return returnToPortal(b.dataset.portal); }
     if(b.dataset.tab) return hub(b.dataset.tab);
     if(b.dataset.start) return start(b.dataset.start,b);
     if(b.dataset.reattempt) return reattempt(b.dataset.reattempt,b);
     if(b.dataset.resume) return resume(b.dataset.resume,b);
     if(b.dataset.edit) return edit(b.dataset.edit);
     if(b.dataset.leave && await confirmAction('Leave this attempt?','Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {
-      await saveAnswer(false); hub(attempt?.kind==='sst'?'sst':'mocks');
+      const kind=attempt?.kind; await saveAnswer(false); hub(kind==='mock'?'mocks':kind || 'sst');
+      if(kind==='mock')returnToPortal('mock-tests');
     }
   });
-  root.addEventListener('input',e=>{if(e.target.id==='mock-search') renderMockBoard();});
-  root.addEventListener('change',e=>{
-    if(e.target.id==='mock-section') renderMockBoard();
-    if(e.target.id==='mock-sort') { mockBoardSort=e.target.value; renderMockBoard(); }
-    if(e.target.id==='mock-page-size') { mockBoardPageSize=e.target.value; renderMockBoard(); }
-  });
+
   window.addEventListener('beforeunload',e=>{ if(attempt?.status==='active') {writeDraft();e.preventDefault();e.returnValue='';} });
   document.addEventListener('visibilitychange',()=>{if(document.hidden) {stopAudio();writeDraft();saveAnswer(false);} else tick();});
   window.addEventListener('online',()=>saveAnswer(false));
   window.addEventListener('storage',event=>{if(event.key==='pte_session_token') location.reload();});
   setInterval(()=>{if(attempt?.status==='active' && !moving) saveAnswer(false);},15000);
   (async()=>{
-    try { const values=await Promise.all([api('/catalog'),api('/session')]); catalog=values[0];username=values[1].username;await hub(requestedView); }
+    try { const values=await Promise.all([api('/catalog'),api('/session')]); catalog=values[0];username=values[1].username;if(pendingRequest)await handleRequest(pendingRequest);else await hub(requestedView); }
     catch(e) {root.innerHTML='<div class="hub"><h1>Unable to load practice</h1><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';document.getElementById('reload-lab').onclick=()=>location.reload();}
   })();
 })();

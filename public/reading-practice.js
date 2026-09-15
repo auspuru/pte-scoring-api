@@ -3,10 +3,11 @@
   const api = factory(typeof module === 'object' && module.exports ? require('./reading-mock-tools') : root.ReadingMockTools,
     typeof module === 'object' && module.exports ? require('./reading-exam-player') : root.ReadingExamPlayer,
     typeof module === 'object' && module.exports ? require('./reading-session-timing') : root.ReadingSessionTiming,
-    typeof module === 'object' && module.exports ? require('./reading-review') : root.ReadingReview);
+    typeof module === 'object' && module.exports ? require('./reading-review') : root.ReadingReview,
+    typeof module === 'object' && module.exports ? require('./practice-catalogue') : root.PracticeCatalogue);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingPractice = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam, timing, review) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam, timing, review, catalogue) {
   'use strict';
   const labels = { dropdown: 'Dropdown blanks', wordbank: 'Drag-and-drop blanks', reorder: 'Reorder paragraphs', mcsa: 'Single answer', mcma: 'Multiple answers' };
   const taskLabels = { ...labels, ...mock.extraLabels };
@@ -55,8 +56,8 @@
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
   let selectedParagraph = {}, examNotice = null;
   let startGeneration = 0;
-  let homeFamily = 'sectional';
-  let mockPage = 0, libraryView = null;
+  let libraryView = null, requestSerial = 0;
+  const practiceLibraries = () => catalogue ? catalogue.readingLibraries(bank) : bank.practiceLibraries;
   let reviewView = { id: null, filter: 'all', type: 'all', context: false };
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [], drafts: [], practiceResults: {} });
@@ -121,7 +122,7 @@
     clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
-    homeFamily='sectional'; mockPage=0; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
+    requestSerial++; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
     if (host) host.replaceChildren();
   }
   function setExamMode(enabled) {
@@ -129,12 +130,33 @@
     host?.classList?.toggle('reading-exam-active',active);
     document.body?.classList?.toggle('reading-exam-open',active);
   }
-  function leave() { startGeneration++; starting=false; recordTime(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
-  async function open() {
+  function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
+  async function showRequested(request) {
+    if (request.libraryId) {
+      if (state.session?.practiceUid && !state.session.done && state.session.questions[0].type === request.libraryId) return render();
+      return browseLibrary(request.libraryId);
+    }
+    if (request.mockId) {
+      home();
+      if (!bank.mockCatalogue.some(m => m.id === request.mockId)) return;
+      if (state.session && !state.session.done && !confirm('Start a new mock? Your current answers remain saved and its timer continues.')) return render();
+      speaker?.unlock();
+      return start(request.mockId);
+    }
+    if (request.history || (request.mockOnly && state.session?.practiceUid)) return home();
+    return render();
+  }
+  async function open(request = {}) {
     const nextOwner = identity();
     if (!nextOwner) return;
-    if (owner === nextOwner && state && bank) { if (typeof resumeAccountSync === 'function') await resumeAccountSync(); if (owner !== nextOwner || nextOwner !== identity() || !state) return; activeSince = Date.now(); tick(); render(); return; }
+    if (owner === nextOwner && state && bank) {
+      const serial = ++requestSerial;
+      if (typeof resumeAccountSync === 'function') await resumeAccountSync();
+      if (serial !== requestSerial || owner !== nextOwner || nextOwner !== identity() || !state || host.hidden) return;
+      activeSince = Date.now(); tick(); await showRequested(request); return;
+    }
     reset(); owner = nextOwner; host = document.getElementById('readingPane');
+    const serial = ++requestSerial;
     const requestGeneration = generation;
     host.innerHTML = '<div class="reading-card" role="status">Preparing your reading practice…</div>';
     try {
@@ -143,7 +165,7 @@
         if (!response.ok) throw Error('Unable to load question bank');
         bank = await response.json();
       }
-      if (requestGeneration !== generation || nextOwner !== identity()) return;
+      if (serial !== requestSerial || requestGeneration !== generation || nextOwner !== identity() || host.hidden) return;
       state = initialState();
       try {
         const raw = JSON.parse(localStorage.getItem(storageKey(owner)) || 'null');
@@ -163,13 +185,13 @@
       speaker ||= mock.createSpeaker(globalThis, audioState);
       document.addEventListener?.('visibilitychange', visibilityChanged);
       host.ondragstart = dragStart; host.ondragover = dragOver; host.ondrop = drop;
-      render(); resumeSwtAssessments(); interval = setInterval(tick, 1000); activeSince = Date.now(); tick();
+      await showRequested(request); resumeSwtAssessments(); interval = setInterval(tick, 1000); activeSince = Date.now(); tick();
       if (typeof queueSync === 'function' && (state.session || state.history.length || Object.keys(state.practiceResults).length)) queueSync();
       if (typeof resumeAccountSync === 'function') resumeAccountSync();
     } catch (_) {
       if (requestGeneration !== generation) return;
       host.innerHTML = '<div class="reading-card" role="alert"><h2>Reading could not load</h2><p>Your writing workspace is still available.</p><button class="portal-button" data-action="reload">Try again</button></div>';
-      host.onclick = () => { reset(); open(); };
+      host.onclick = () => { reset(); open(request); };
     }
   }
   function repairSession(s) {
@@ -180,8 +202,7 @@
     for (const item of Object.values(s.audioStates)) if (['countdown','loading','playing'].includes(item.status)) { item.status = 'error'; item.message = 'Audio was interrupted. Select Play audio when you are ready.'; }
   }
   function questionList(set) { return set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} })); }
-  function catalogueFamily(item) { return item.kind === 'reading-blanks' ? 'practice' : 'sectional'; }
-  function catalogueItems(family) { return bank.mockCatalogue.filter(item => catalogueFamily(item) === family); }
+
   async function start(mode, practiceUid) {
     if (starting || !owner || identity() !== owner) return;
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
@@ -217,7 +238,7 @@
         const questions = questionList(set).filter(q => type === 'all' || q.type === type);
         plan = { questions, minutes: questions.length * 2, name: labels[type] || 'Mixed reading practice' };
         if(practiceUid){
-          const q=bank.practiceLibraries.flatMap(l=>l.questions).find(item=>item.uid===practiceUid);
+          const q=practiceLibraries().flatMap(l=>l.questions).find(item=>item.uid===practiceUid);
           if(!q)throw Error('This practice question is unavailable.');
           plan={questions:[{...q}],minutes:0,name:q.title};
         }
@@ -225,7 +246,7 @@
       const startedAt = Date.now();
       cancelAudio();
       const preparedQuestions = mock.prepareQuestions(plan.questions, startedAt + ':' + mode);
-      const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: plan.name, formatVersion: bank.version, questions: preparedQuestions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
+      const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: catalogue?.readingMocks(bank).find(m=>m.id===mode)?.title || plan.name, formatVersion: bank.version, questions: preparedQuestions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
       timing.initialise(session, plan.stages, startedAt);
       if (state.session && !state.session.done) state.drafts = [state.session, ...(state.drafts || []).filter(s => s.id !== state.session.id)];
       state.session = session;
@@ -239,23 +260,18 @@
   function home() {
     if (starting && !viewingQuestion) return;
     leave(); libraryView=null;
-    const recent=state.history;
-    const panels=['sectional','practice'].map(family=>{
-      const items=catalogueItems(family),page=family===homeFamily?mockPage:0,pages=Math.ceil(items.length/3);
-      const cards=items.map((m,i)=>{const title=family==='sectional'?'Reading Sectional Mock '+(i+1):'Reading Practice Set '+(i+1),scope=family==='sectional'?'SWT + Reading + HIW + HCS':'Focused Reading questions';return `<article class="reading-card reading-mock-card" ${Math.floor(i/3)===page?'':'hidden'}><span class="reading-mock-index" aria-hidden="true">${String(i+1).padStart(2,'0')}</span><h3>${escape(title)}</h3><div class="reading-mock-meta"><span>${m.minutes||55} minutes</span><span>${scope}</span></div><button class="portal-button primary" data-start="${m.id}" aria-label="Start ${escape(title)}">Start <span aria-hidden="true">→</span></button></article>`;}).join('');
-      return `<section id="reading-${family}-mocks" class="reading-mock-panel" aria-labelledby="reading-${family}-tab" ${homeFamily===family?'':'hidden'}><div class="reading-mock-grid">${cards}</div>${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-mock-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span role="status">${page+1} / ${pages}</span><button class="portal-button" data-mock-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}</section>`;
-    }).join('');
-    host.innerHTML=`<div class="reading-home-heading"><div><h2>Reading</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
-      ${state.session?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
-      <div class="reading-mode-switch" role="group" aria-label="Choose test mode">${['sectional','practice'].map(family=>`<button type="button" id="reading-${family}-tab" data-mock-family="${family}" aria-pressed="${homeFamily===family}" aria-controls="reading-${family}-mocks">${family==='sectional'?'Sectional Mock':'Practice'}</button>`).join('')}</div>
-      ${panels}<p data-start-status role="status" aria-live="polite"></p>
-      <div class="reading-library-shortcuts"><h3>Question practice</h3><div>${bank.practiceLibraries.map(l=>`<button class="portal-button" data-browse-library="${l.id}">${escape(l.name)} <span aria-hidden="true">→</span></button>`).join('')}</div></div>
+    const recent=state.history.map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
+    const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
+
+    host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
+      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
+      <p data-start-status role="status" aria-live="polite"></p>
       <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Next saves your answer and moves on immediately. The timer keeps running if you leave; expiry submits your saved responses. Check your sound before starting. Answers and feedback appear together after you finish.</p><p>Progress syncs across devices when you sign in to the same account. Offline changes are saved on this device and sync when you reconnect. Completed answers and feedback remain in Recent results.</p></details>
-      ${(state.drafts||[]).length?`<details class="reading-home-help"><summary>Other saved sessions <span>${state.drafts.length}</span></summary><ul class="reading-history">${state.drafts.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
-      <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map((r,i)=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
+      ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
+      <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
   }
   function libraryQuestions() {
-    const library=bank.practiceLibraries.find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase();
+    const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase();
     return (library?.questions||[]).filter(q=>!query||[q.title,q.topic,q.id].join(' ').toLowerCase().includes(query));
   }
   function libraryList() {
@@ -266,9 +282,15 @@
     }).join('')}</ul>${questions.length?'':'<p>No questions match your search.</p>'}${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-library-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span>${page+1} / ${pages}</span><button class="portal-button" data-library-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}`;
   }
   function browseLibrary(id, query='', page=0) {
-    const library=bank.practiceLibraries.find(l=>l.id===id);if(!library)return;
+    const library=practiceLibraries().find(l=>l.id===id);if(!library)return;
     leave();libraryView={id,query,page};
-    host.innerHTML=`<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading</button></div><div class="reading-home-heading"><h2>${escape(library.name)}</h2></div><label class="reading-library-search">Find a question<input type="search" data-library-search value="${escape(query)}" placeholder="Search titles or topics"></label><p data-start-status role="status" aria-live="polite"></p><div data-library-list>${libraryList()}</div>`;
+    const matches=r=>r.practiceUid&&r.questions?.[0]?.type===id;
+    const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>matches(r));
+    const history=state.history.map((r,i)=>({r,i})).filter(({r})=>matches(r));
+    const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
+      + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
+      + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
+    host.innerHTML=`<div class="reading-session-toolbar"><button class="portal-button" data-action="practice-home">← Practice</button></div><div class="reading-home-heading"><h2>${escape(library.name)}</h2></div>${saved}<label class="reading-library-search">Find a question<input type="search" data-library-search value="${escape(query)}" placeholder="Search titles or topics"></label><p data-start-status role="status" aria-live="polite"></p><div data-library-list>${libraryList()}</div>`;
   }
   function refreshLibraryList() { const node=host.querySelector('[data-library-list]');if(node)node.innerHTML=libraryList(); }
   function renderHomeView() { if(starting)return;if(libraryView)browseLibrary(libraryView.id,libraryView.query,libraryView.page);else home(); }
@@ -292,7 +314,7 @@
       return;
     }
     const review=s.done || s.checked.includes(q.uid);
-    host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading home</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
+    host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
       <div class="reading-layout"><aside class="reading-card reading-nav" aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
       <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${s.index+1} of ${s.questions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2><p>${escape(q.instructions)}</p>
@@ -428,7 +450,7 @@
         if(node)node.outerHTML=question(item);
       }
     }else{
-      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Reading mocks</button><strong>'+escape(s.name)+'</strong><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Explore your results. Your responses and explanations stay together.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
@@ -628,19 +650,14 @@
       const page=Number(d.libraryPage),max=Math.ceil(libraryQuestions().length/10);
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>libraryView.page?1:-1);libraryView.page=page;refreshLibraryList();(host.querySelector('[data-library-page="'+next+'"]:not([disabled])')||host.querySelector('[data-library-page]:not([disabled])'))?.focus();}return;
     }
-    if(d.practiceUid){if(s&&!s.done&&!confirm('Start this practice question? This replaces your current draft.'))return;return start('practice',d.practiceUid);}
-    if(d.mockPage!==undefined&&!viewingQuestion){
-      const page=Number(d.mockPage),max=Math.ceil(catalogueItems(homeFamily).length/3);
-      if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>mockPage?1:-1);mockPage=page;home();(host.querySelector('[data-mock-page="'+next+'"]:not([disabled])')||host.querySelector('[data-mock-page]:not([disabled])'))?.focus();}return;
-    }
-    if(d.mockFamily&&!viewingQuestion&&['practice','sectional'].includes(d.mockFamily)){
-      homeFamily=d.mockFamily;mockPage=0;home();host.querySelector('[data-mock-family="'+homeFamily+'"]')?.focus();return;
-    }
+    if(d.practiceUid){if(s&&!s.done&&!confirm('Start this practice question? Your current answers remain saved. Any running mock timer will continue.'))return;return start('practice',d.practiceUid);}
+    if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();
+    if(d.action==='mock-home')return typeof switchSection==='function'?switchSection('mock-tests'):home();
     if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? Your current draft will remain in Other saved sessions.'))return;return start(d.start);}
     if(d.action==='soundcheck')return speaker.play('soundcheck','Welcome to IPT Brisbane. If you can hear this sentence, your audio is ready for the mixed reading mock.');
     if(d.draft!==undefined){const draft=state.drafts[Number(d.draft)];if(!draft)return;cancelAudio();state.drafts=state.drafts.filter(r=>r.id!==draft.id);if(s&&!s.done)state.drafts.push(s);state.session=draft;repairSession(draft);persist();return render();}
     if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current draft will remain in Other saved sessions.'))return;cancelAudio();if(s&&!s.done)state.drafts=[s,...state.drafts.filter(r=>r.id!==s.id)];state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();render();resumeSwtAssessments();return;}
-    if(d.action==='home')return home();
+    if(d.action==='home')return s?.practiceUid ? browseLibrary(s.questions[0].type) : home();
     if(d.action==='resume')return render();
     if(!s)return;
     if(s.done){

@@ -48,7 +48,7 @@ test('A section URL opens the requested task after authentication, including on 
   assert.equal(h.controller.current(), 'practice');
   assert.equal(h.nodes.get('practiceScreen').hidden, false);
   assert.equal(h.nodes.get('practiceScreen').parentElement, h.nodes.get('container'));
-  assert.equal(h.nodes.get('nav-practice').attrs['aria-current'], 'page');
+  assert.equal(h.nodes.get('nav-practice-hub').attrs['aria-current'], 'page');
   assert.equal(h.nodes.get('pageTitle').textContent, 'Essay practice');
   assert.equal(h.nodes.get('pageEyebrow').textContent, 'Practice · Essays');
   assert.equal(h.nodes.get('pageContext').textContent, 'Choose a question, develop your ideas, and write with purpose.');
@@ -64,17 +64,48 @@ test('Each workspace route provides a clear section context for the current task
   assert.equal(h.nodes.get('pageContext').textContent, 'Return to a draft, refine a response, or prepare an export.');
 });
 
-test('Writing mocks and spoken text stay in one shared in-page practice pane', () => {
+test('Individual audio practice and mock runners share a persistent pane with distinct parent navigation', () => {
   const h = harness(); h.controller.start();
   h.controller.activate('spoken-text');
   assert.equal(h.nodes.get('writingLabScreen').hidden, false);
-  assert(h.nodes.get('nav-sst').classList.contains('active'));
+  assert(h.nodes.get('nav-practice-hub').classList.contains('active'));
   assert.equal(h.nodes.get('pageTitle').textContent, 'Summarise spoken text');
-  h.controller.activate('writing-mocks');
+  h.controller.activate('writing-run');
   assert.equal(h.nodes.get('writingLabScreen').hidden, false);
-  assert(h.nodes.get('nav-writing-mocks').classList.contains('active'));
-  assert(!h.nodes.get('nav-sst').classList.contains('active'));
-  assert.equal(h.nodes.get('pageTitle').textContent, 'Writing sectional mocks');
+  assert(h.nodes.get('nav-mock-tests').classList.contains('active'));
+  assert(!h.nodes.get('nav-practice-hub').classList.contains('active'));
+  assert.equal(h.nodes.get('pageTitle').textContent, 'Writing sectional mock');
+  h.controller.activate('dictation');
+  assert(h.nodes.get('nav-practice-hub').classList.contains('active'));
+  assert(!h.nodes.get('nav-mock-tests').classList.contains('active'));
+  h.controller.activate('writing-mocks');
+  assert.equal(h.nodes.get('mockTestsPane').hidden, false);
+  assert.equal(h.nodes.get('writingLabScreen').hidden, true);
+});
+
+test('The practice URL opens the hub while essay and legacy mock links retain their destinations', () => {
+  assert.equal(routeFromHash('#/practice'), 'practice-hub');
+  assert.equal(routeFromHash('#/essays'), 'practice');
+  assert.equal(routeFromHash('#/test-centre'), 'mock-tests');
+  assert.equal(routeFromHash('#/writing-mocks'), 'writing-mocks');
+});
+
+test('Every Reading and Listening library opens the requested type without starting a mock', () => {
+  const h = harness(), opened = []; let left = 0;
+  h.win.ReadingPractice = { open: request => opened.push(request), leave: () => left++ };
+  h.controller.start();
+  for (const [key, route] of Object.entries(routes).filter(([, r]) => r.readingLibrary)) {
+    h.controller.activate(key);
+    assert.equal(opened.at(-1).libraryId, route.readingLibrary);
+    assert.equal(opened.at(-1).mockOnly, false);
+    assert.equal(h.nodes.get('readingPane').hidden, false);
+    assert.equal(h.nodes.get('nav-practice-hub').attrs['aria-current'], 'page');
+  }
+  assert.equal(left, 6);
+  h.controller.activate('reading', { readingRequest: { mockId: 'practice-mock-4' } });
+  assert.equal(opened.at(-1).mockId, 'practice-mock-4');
+  assert.equal(opened.at(-1).mockOnly, true);
+  assert.equal(h.nodes.get('nav-mock-tests').attrs['aria-current'], 'page');
 });
 
 test('Switching sections preserves draft nodes, cursor position and scroll, with only one active pane', () => {
@@ -158,6 +189,14 @@ function fn(name) {
   assert(start >= 0, name);
   return source.slice(start, source.indexOf('\n}', start) + 2);
 }
+test('The Home resume banner does not depend on the removed duplicate essay card', () => {
+  const nodes = Object.fromEntries(['portalResume', 'portalResumeTitle', 'portalResumeDetail'].map(id => [id, {}]));
+  const ctx = { document: { getElementById: id => nodes[id] }, portalDraftStore: null, currentUserId: 'tester',
+    practiceState: { view: 'write', essayText: 'Saved response', questionText: 'Question', questionTitle: 'Topic' }, countWords: () => 2 };
+  vm.createContext(ctx); vm.runInContext(fn('updatePortalResume') + ';updatePortalResume();', ctx);
+  assert.equal(nodes.portalResume.hidden, false);
+  assert.match(nodes.portalResumeDetail.textContent, /Topic/);
+});
 test('Returning to a running assessment or an existing editor does not reset or render over it', () => {
   for (const view of ['write', 'loading', 'results']) {
     let rendered = 0;

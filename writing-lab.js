@@ -25,6 +25,7 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   };
 });
 const allMocks = [...bank.mocks, ...predictionMocks];
+const dictation = [...new Map(bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')).map(q => [q.id, q])).values()];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -62,6 +63,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
     spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
+    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
     mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
@@ -94,12 +96,13 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   }));
   router.post('/attempts', route(async(req,res) => {
     const { id, testId } = req.body || {};
-    const mock = allMocks.find(m => m.id === testId), spoken = bank.spoken.find(q => q.id === testId);
-    if (!mock && !spoken) throw bad('Question set not found.',404);
-    const q = structuredClone(mock ? mock.questions : [spoken]);
+    const mock = allMocks.find(m => m.id === testId), individual = [...bank.spoken, ...dictation].find(q => q.id === testId);
+    if (!mock && !individual) throw bad('Question set not found.',404);
+    const q = structuredClone(mock ? mock.questions : [individual]);
+    if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
       if (existing) return reconcile(existing);
-      return { id,testId,title:mock?.title || spoken.title,kind:mock ? 'mock' : 'sst',questions:q,index:0,
+      return { id,testId,title:mock?.title || individual.title,kind:mock ? 'mock' : individual.type,questions:q,index:0,
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null) };
     });
@@ -112,7 +115,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.post('/attempts/:id/begin', route(async(req,res) => {
     const a = await store.update(req.labUser,req.params.id,value => {
       if (!value) throw bad('Attempt not found.',404);
-      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=Date.now()+600000; }
+      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.startedAt+value.questions[0].minutes*60000; }
       return reconcile(value);
     });
     res.json(present(a));

@@ -11792,6 +11792,7 @@ async function initApp() {
 }
 
 let portalWorkspace = null;
+let portalCatalogue = null;
 let portalDraftStore = null;
 let portalDraftTimer = null;
 let portalDraftRevision = 0;
@@ -11799,6 +11800,16 @@ let portalDraftRevision = 0;
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
   portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
+  portalCatalogue = PracticeCatalogue.createController({
+    document, navigate: switchSection,
+    launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
+    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } })
+  });
+  window.addEventListener('message', event => {
+    const frame = document.getElementById('writingLabFrame');
+    if (event.source !== frame?.contentWindow || event.origin !== location.origin || event.data?.type !== 'writing-lab-navigate') return;
+    if (['practice-hub', 'mock-tests'].includes(event.data.section)) switchSection(event.data.section);
+  });
   // Access to storage can be denied by browser privacy settings.
   try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
   window.addEventListener('pagehide', savePortalEssayDraft);
@@ -11807,24 +11818,22 @@ function initialisePortalWorkspace() {
   });
 }
 
-function openWritingLab(tab = 'mocks') {
+function openWritingLab(tab = 'mocks', options = {}) {
   const frame = document.getElementById('writingLabFrame');
   if (!frame) return;
-  const nextTab = tab === 'sst' ? 'sst' : 'mocks';
-  frame.dataset.writingLabTab = nextTab;
-  const sendTab = () => frame.contentWindow?.postMessage({ type: 'writing-lab-tab', tab: nextTab }, window.location.origin);
-  if (frame.dataset.writingLabLoaded === 'true') {
-    sendTab();
-    return;
-  }
+  const nextTab = ['sst','wfd','mocks','history'].includes(tab) ? tab : 'mocks';
+  const request = { type: 'writing-lab-tab', tab: nextTab, ...options, requestId: crypto.randomUUID() };
+  frame.dataset.writingLabRequest = JSON.stringify(request);
+  const send = () => frame.contentWindow?.postMessage(JSON.parse(frame.dataset.writingLabRequest), window.location.origin);
+  if (frame.dataset.writingLabLoaded === 'true') { send(); return; }
   if (frame.dataset.writingLabLoading === 'true') return;
   frame.dataset.writingLabLoading = 'true';
   frame.addEventListener('load', () => {
     frame.dataset.writingLabLoading = 'false';
     frame.dataset.writingLabLoaded = 'true';
-    frame.contentWindow?.postMessage({ type: 'writing-lab-tab', tab: frame.dataset.writingLabTab || 'mocks' }, window.location.origin);
+    if (frame.dataset.writingLabRequest) send();
   }, { once: true });
-  frame.src = '/' + (nextTab === 'sst' ? 'spoken-text' : 'writing-mocks') + '?embedded=1';
+  frame.src = '/writing-mocks?embedded=1';
 }
 
 function resetWritingLabFrame() {
@@ -11832,7 +11841,7 @@ function resetWritingLabFrame() {
   if (!frame) return;
   frame.dataset.writingLabLoaded = 'false';
   frame.dataset.writingLabLoading = 'false';
-  delete frame.dataset.writingLabTab;
+  delete frame.dataset.writingLabRequest;
   frame.src = 'about:blank';
 }
 
@@ -11840,12 +11849,16 @@ function switchSection(section, options = {}) {
   savePortalEssayDraft();
   if (section === 'practice') { openPractice(false, options); return; }
   if (section === 'vocab') { openVocab(options); return; }
-  if (section === 'spoken-text' || section === 'writing-mocks') {
+  if (section === 'test-centre') section = 'mock-tests';
+  const route = PortalWorkspace.routes[section];
+  if (route?.labTab) {
     portalWorkspace.activate(section, options);
-    openWritingLab(section === 'spoken-text' ? 'sst' : 'mocks');
+    openWritingLab(route.labTab, options.labRequest || {});
     return;
   }
   const active = portalWorkspace.activate(section, options);
+  if (active === 'practice-hub') portalCatalogue.openPractice();
+  if (PortalWorkspace.routes[active]?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();
     updatePortalResume();
@@ -11936,7 +11949,6 @@ function updatePortalResume() {
   document.getElementById('portalResumeTitle').textContent = reviewing ? 'Your essay review is in progress' : 'Continue your essay';
   document.getElementById('portalResumeDetail').textContent = reviewing ? 'You can move around while your feedback is prepared.' :
     ((writing ? practiceState.questionTitle : draft?.questionTitle) || 'Your unfinished response') + ' · ' + countWords(writing ? practiceState.essayText : draft?.essayText || '') + ' words';
-  document.getElementById('portalEssayAction').textContent = writing ? 'Continue writing →' : reviewing ? 'View progress →' : 'Practise essays →';
 }
 
 function resumePortalEssay() {

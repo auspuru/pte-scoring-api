@@ -1,0 +1,119 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const catalogue = require('../public/practice-catalogue');
+const { routes } = require('../public/portal-workspace');
+const bank = require('../public/reading-bank.json');
+const writing = { mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 })) };
+
+test('Each available individual task has exactly one primary home and a working portal route', () => {
+  const all = catalogue.groups.flatMap(g => g.tasks);
+  assert.equal(new Set(all.map(t => t.route)).size, all.length);
+  all.forEach(t => assert(routes[t.route], t.route));
+  assert.deepEqual(catalogue.groups.find(g => g.id === 'writing').tasks.map(t => t.route), ['swt', 'practice']);
+  assert.deepEqual(catalogue.groups.find(g => g.id === 'listening').tasks.map(t => t.route), ['spoken-text', 'listening-hcs', 'listening-hiw', 'dictation']);
+  assert(!all.some(t => /mock/.test(t.route)));
+});
+
+test('Reading and Listening individual libraries reuse complete keys and stable identities without modifying banks', () => {
+  const before = JSON.stringify(bank), libraries = catalogue.readingLibraries(bank);
+  assert.equal(libraries.length, 7);
+  for (const lib of libraries) {
+    assert(lib.questions.length > 0, lib.id);
+    assert.equal(new Set(lib.questions.map(q => q.uid)).size, lib.questions.length);
+    for (const q of lib.questions) {
+      assert.equal(q.type, lib.id);
+      assert(q.answer !== undefined || q.answers?.length, q.uid);
+    }
+  }
+  for (const original of bank.practiceLibraries) assert.deepEqual(libraries.find(l => l.id === original.id), original);
+  assert.equal(JSON.stringify(bank), before);
+});
+
+test('The single catalogue classifies integrated Reading sets as sectional and focused sets as practice', () => {
+  const items = catalogue.mockItems(bank, writing);
+  const sectionals = catalogue.filterMocks(items, { module: 'reading' });
+  const focused = catalogue.filterMocks(items, { mode: 'practice', module: 'reading' });
+  assert.deepEqual(sectionals.map(m => m.id), ['practice-mock-1', 'practice-mock-2', 'practice-mock-3', 'sectional-mock-1', 'sectional-mock-2', 'sectional-mock-3']);
+  assert.deepEqual(focused.map(m => m.id), ['practice-mock-4', 'practice-mock-5', 'practice-mock-6', 'practice-mock-7', 'practice-mock-8', 'practice-mock-9']);
+  assert(sectionals.every(m => /SWT.*Reading.*HIW.*HCS/.test(m.description)));
+  assert.deepEqual(catalogue.filterMocks(items, { mode: 'full' }), []);
+  assert.equal(catalogue.filterMocks(items, { module: 'writing' }).length, 33);
+  assert.equal(catalogue.filterMocks(items, { search: 'essay topic 33' })[0].id, 'writing-33');
+});
+
+function harness() {
+  const nodes = new Map(), modes = [], calls = [], navigations = [], starts = [];
+  class Element {
+    constructor(id) { this.id = id; this.dataset = {}; this.attrs = {}; this.value = ''; this.hidden = false; nodes.set(id, this); }
+    set innerHTML(html) {
+      this.html = html;
+      for (const match of html.matchAll(/id="([^"]+)"/g)) new Element(match[1]);
+      if (this.id === 'mockTestsPane') {
+        modes.length = 0;
+        for (const match of html.matchAll(/data-catalogue-mode="([^"]+)"/g)) {
+          const e = new Element('mode-' + match[1]); e.dataset.catalogueMode = match[1]; modes.push(e);
+        }
+      }
+    }
+    get innerHTML() { return this.html || ''; }
+    setAttribute(key, value) { this.attrs[key] = value; }
+  }
+  const practice = new Element('practiceHubPane'), mocks = new Element('mockTestsPane');
+  const document = { getElementById: id => nodes.get(id), querySelectorAll: () => modes };
+  let fail = false;
+  const controller = catalogue.createController({ document, navigate: (...args) => navigations.push(args),
+    launchReading: id => starts.push(['reading', id]), launchWriting: id => starts.push(['writing', id]),
+    fetch: async url => { calls.push(url); return { ok: !fail, json: async () => url.includes('reading-bank') ? bank : writing }; } });
+  return { controller, nodes, practice, mocks, calls, navigations, starts, fail: value => fail = value,
+    click: data => mocks.onclick({ target: { closest: () => ({ dataset: data }) } }),
+    change: (id, value) => mocks.onchange({ target: { id, value } }) };
+}
+
+test('Practice renders only task banners and routes clicks without loading or starting any mock', () => {
+  const h = harness(); h.controller.openPractice();
+  assert.match(h.practice.innerHTML, /Writing Practice/); assert.match(h.practice.innerHTML, /Reading Practice/); assert.match(h.practice.innerHTML, /Listening Practice/);
+  assert.doesNotMatch(h.practice.innerHTML, /Start Exam|data-mock-id/);
+  h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'dictation' } }) } });
+  assert.deepEqual(h.navigations, [['dictation']]); assert.equal(h.calls.length, 0); assert.equal(h.starts.length, 0);
+});
+
+test('Mock tabs, module filtering, pagination, topic search and launch keep one catalogue', async () => {
+  const h = harness(); await h.controller.openMocks();
+  const board = () => h.nodes.get('catalogue-board').innerHTML;
+  assert.equal((board().match(/data-mock-id=/g) || []).length, 12);
+  assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 39 tests');
+  h.click({ cataloguePage: '1' }); assert.equal(h.nodes.get('catalogue-page').textContent, '2 / 4');
+  h.change('catalogue-module', 'reading'); assert.equal((board().match(/data-mock-id=/g) || []).length, 6);
+  h.click({ catalogueMode: 'practice' }); assert.match(board(), /practice-mock-4/); assert.doesNotMatch(board(), /SWT/);
+  h.click({ mockId: 'practice-mock-4' }); assert.deepEqual(h.starts, [['reading', 'practice-mock-4']]);
+  h.click({ catalogueMode: 'sectional' }); h.change('catalogue-module', 'writing');
+  h.mocks.oninput({ target: { id: 'catalogue-search', value: 'essay topic 33' } });
+  assert.match(board(), /writing-33/); assert.equal((board().match(/data-mock-id=/g) || []).length, 1);
+  h.click({ mockId: 'writing-33' }); assert.deepEqual(h.starts[1], ['writing', 'writing-33']);
+  h.click({ catalogueMode: 'full' }); assert.equal(board(), ''); assert.match(h.nodes.get('catalogue-empty').textContent, /No complete four-module mock/);
+  assert.equal(h.starts.length, 2, 'Filtering never starts or replaces an attempt');
+  await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
+  assert.equal(h.nodes.get('catalogue-module').value, 'writing');
+  assert.match(h.mocks.innerHTML, /value="essay topic 33"/);
+  h.click({ mockHistory: 'reading' }); h.click({ mockHistory: 'writing' });
+  assert.deepEqual(h.navigations.map(n => n[0]), ['reading', 'writing-history']);
+  assert.equal(h.navigations[0][1].readingRequest.history, true);
+});
+
+test('Catalogue load failures have a retry, without creating an empty successful catalogue', async () => {
+  const h = harness(); h.fail(true); await h.controller.openMocks();
+  assert.match(h.mocks.innerHTML, /role="alert"/); assert.match(h.mocks.innerHTML, /data-retry-catalogue/);
+  h.fail(false); await h.controller.openMocks(); assert.match(h.nodes.get('catalogue-board').innerHTML, /Start Exam/);
+});
+
+test('Portal markup removes redundant navigation and embedded catalogues', () => {
+  const html = fs.readFileSync(require.resolve('../public/index.html'), 'utf8');
+  assert.equal((html.match(/id="nav-practice-hub"/g) || []).length, 1);
+  assert.equal((html.match(/id="nav-mock-tests"/g) || []).length, 1);
+  assert.doesNotMatch(html, /id="(?:testCentrePane|nav-test-centre|nav-writing-mocks|nav-sst|nav-reading|nav-swt|nav-practice)"/);
+  assert(html.indexOf('practice-catalogue.js') < html.indexOf('reading-practice.js'));
+  const lab = fs.readFileSync(require.resolve('../public/writing-lab-client.js'), 'utf8');
+  assert.doesNotMatch(lab, /renderMockBoard|assignment-board|data-board-mode/);
+});

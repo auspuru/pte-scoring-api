@@ -40,7 +40,7 @@ function client(){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
  const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,confirm:()=>true};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
+ vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
 }
@@ -472,12 +472,12 @@ test('Resume opens the current stage or completed result on its first click when
 
 test('The mock catalogue keeps the six integrated mocks and adds six imported practice mocks',async()=>{
  const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();
- const ids=[...h.host.innerHTML.matchAll(/data-start="([^"]+)"/g)].map(m=>m[1]);
+ const ids=require('../public/practice-catalogue').readingMocks(bank).map(m=>m.id);
  assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);
  assert.equal(ids.filter(id=>id.startsWith('practice-mock-')).length,9);assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
  assert.doesNotMatch(h.host.innerHTML,/01 \/ PRACTISE|02 \/ DISCOVER|03 \/ CONNECT|Find my starting point|data-start="(?:full|practice|diagnostic)"|id="readingType"/);
  for(const id of ids){
-  await h.click({start:id});const s=snapshot(h).session;
+  await h.ctx.ReadingPractice.open({mockId:id});const s=snapshot(h).session;
   assert.match(h.host.innerHTML,/data-exam-player/);
   if(bank.mockCatalogue.find(m=>m.id===id).kind==='reading-blanks'){
    assert.equal(s.questions.length,20);assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','wordbank']);assert.equal(s.deadline-s.startedAt,25*60000);continue;
@@ -578,14 +578,14 @@ test('Saved untimed practice drafts retain their original format while new mocks
  await h.click({start:'practice-mock-2'});assert.equal(snapshot(h).session.deadline-clock.now,25*60000);
 });
 
-test('The mock format selector switches three-card groups without starting or replacing a session',async()=>{
- const h=client();await h.ctx.ReadingPractice.open();
- assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
- assert.doesNotMatch(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);
- h.click({mockFamily:'practice'});
- assert.match(h.host.innerHTML,/id="reading-sectional-mocks"[^>]* hidden/);assert.doesNotMatch(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
- assert.equal(snapshot(h).session,null);assert.equal(snapshot(h).history.length,0);
- h.click({mockFamily:'sectional'});assert.match(h.host.innerHTML,/id="reading-practice-mocks"[^>]* hidden/);
+test('Switching task libraries leaves a running mock and its deadline intact',async()=>{
+ const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open({mockId:'practice-mock-1'});
+ const before=snapshot(h).session;
+ await h.ctx.ReadingPractice.open({libraryId:'mcma'});
+ assert.match(h.host.innerHTML,/Reading Multiple Answers/);assert.doesNotMatch(h.host.innerHTML,/data-start=/);
+ assert.equal(snapshot(h).session.id,before.id);assert.equal(snapshot(h).session.deadline,before.deadline);
+ await h.ctx.ReadingPractice.open({history:true});
+ assert.match(h.host.innerHTML,/Reading mock attempts/);assert.match(h.host.innerHTML,/Continue session/);
 });
 
 test('Feedback filters distinguish partial, blank, pending and excluded answers without changing their points',()=>{
@@ -736,15 +736,20 @@ test('Imported mock navigation preserves its 25-minute timer and produces a sing
  assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,20);assert.match(h.host.innerHTML,/Why each answer fits/);
 });
 
-test('Mock cards separate integrated sectionals from focused practice sets and paginate both',async()=>{
- const h=client();await h.ctx.ReadingPractice.open();
- const visible=family=>[...h.host.innerHTML.split('id="reading-'+family+'-mocks"')[1].split('</section>')[0].matchAll(/<article([^>]*)>[\s\S]*?data-start="([^"]+)"/g)].filter(m=>!m[1].includes('hidden')).map(m=>m[2]);
- assert.deepEqual(visible('sectional'),['practice-mock-1','practice-mock-2','practice-mock-3']);
- assert.match(h.host.innerHTML,/SWT \+ Reading \+ HIW \+ HCS/);
- h.click({mockPage:'1'});assert.deepEqual(visible('sectional'),['sectional-mock-1','sectional-mock-2','sectional-mock-3']);
- h.click({mockFamily:'practice'});assert.deepEqual(visible('practice'),['practice-mock-4','practice-mock-5','practice-mock-6']);
- assert.doesNotMatch(h.host.innerHTML,/All eight|2 SWT|two SWT|C2-targeted|Reading-contributing|Diagnostic test|Grammar rules|How the mocks work/);
- h.click({mockPage:'1'});assert.deepEqual(visible('practice'),['practice-mock-7','practice-mock-8','practice-mock-9']);assert.equal(snapshot(h).session,null);
+test('Practice draft and result links stay under their task, using original saved indices',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'mcma'});
+ const libraries=require('../public/practice-catalogue').readingLibraries(bank);
+ const one=libraries.find(l=>l.id==='mcma').questions[0],two=libraries.find(l=>l.id==='mcsa').questions[0];
+ await h.click({practiceUid:one.uid});const id=snapshot(h).session.id;
+ await h.ctx.ReadingPractice.open({libraryId:'mcsa'});await h.click({practiceUid:two.uid});
+ await h.ctx.ReadingPractice.open({libraryId:'mcma'});
+ assert.match(h.host.innerHTML,/Saved question drafts/);assert.match(h.host.innerHTML,/data-draft="0"/);
+ h.click({draft:'0'});assert.equal(snapshot(h).session.id,id);
+ h.click({action:'submit'});await h.ctx.ReadingPractice.open({libraryId:'mcma'});
+ assert.match(h.host.innerHTML,/Question attempts/);assert.match(h.host.innerHTML,/data-history="0"/);
+ await h.ctx.ReadingPractice.open({history:true});
+ assert.doesNotMatch(h.host.innerHTML,/data-history=/);assert.doesNotMatch(h.host.innerHTML,/data-draft=/);
+ assert.doesNotMatch(h.host.innerHTML,/data-start=|data-browse-library=|mockFamily/);
 });
 
 test('Question practice supports searching, paging, draft recovery, feedback and account-isolated progress',async()=>{
