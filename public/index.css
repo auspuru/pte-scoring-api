@@ -2045,6 +2045,203 @@ body.dark .vocab-word-compare {
   margin-top: 20px;
 }
 
+/* Preference-first essay generation flow */
+.generation-flow-intro {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  margin: 12px 0 14px;
+  border: 1px solid #d8e3f2;
+  border-radius: 8px;
+  background: #f5f8fc;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.generation-flow-kicker,
+.generation-modal-kicker {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.generation-flow-kicker { flex: 0 0 auto; padding-top: 2px; }
+.generation-setup-modal { max-height: 88vh; }
+.generation-setup-question {
+  padding: 12px 14px;
+  margin: 12px 0 16px;
+  border: 1px solid #e8dcc0;
+  border-radius: 8px;
+  background: #fdf9ef;
+  color: #4a4030;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.generation-setup-section {
+  padding-top: 14px;
+  margin-top: 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.generation-setup-section-title {
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.generation-pref-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.generation-pref-field {
+  display: block;
+  margin-top: 10px;
+}
+.generation-pref-field > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+}
+.generation-pref-field em {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+.generation-option-list {
+  display: grid;
+  gap: 8px;
+}
+.generation-option-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.generation-option-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-card);
+}
+.generation-option-card input { margin-top: 3px; accent-color: var(--accent); }
+.generation-option-card strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12.5px;
+}
+.generation-option-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.generation-manual-ideas-field { display: none; }
+.generation-manual-ideas-field.show { display: block; }
+.generation-setup-help {
+  margin-top: 7px;
+  color: var(--ink-mute);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.generation-stance-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.generation-stance-pill {
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font: 600 11.5px var(--sans);
+}
+.generation-stance-pill:hover,
+.generation-stance-pill.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+.generation-plan-modal { max-height: 88vh; }
+.generation-plan-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0;
+}
+.generation-plan-meta-item {
+  padding: 9px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: 7px;
+  background: var(--bg);
+}
+.generation-plan-meta-item span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink-mute);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.generation-plan-meta-item strong {
+  color: var(--ink);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+.generation-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.generation-plan-card {
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.generation-plan-card h3 {
+  margin: 0 0 7px;
+  color: var(--ink);
+  font-size: 12px;
+}
+.generation-plan-card ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.generation-plan-note {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .generation-pref-grid,
+  .generation-plan-grid,
+  .generation-plan-meta { grid-template-columns: 1fr; }
+  .generation-flow-intro { flex-direction: column; gap: 4px; }
+}
+
 .toast {
   position: fixed;
   bottom: 24px;

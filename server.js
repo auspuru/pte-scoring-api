@@ -4607,6 +4607,9 @@ function detectUnsupportedClaims(text, question, sourceText = '', plan = null) {
     if (plan.manual_ideas) {
       plan.manual_ideas.forEach(i => addAllowedText(i));
     }
+    if (plan.student_ideas) {
+      plan.student_ideas.forEach(i => addAllowedText(i));
+    }
     if (plan.selected_ideas) {
       Object.values(plan.selected_ideas).forEach(arr => {
         if (Array.isArray(arr)) {
@@ -4949,13 +4952,26 @@ function generateEssayPrompt(plan, template) {
   const isNatural = (plan.generation_mode === 'natural');
 
   const vocabSpec = VOCAB_LEVELS[(plan.vocabulary_level || 3) - 1] || VOCAB_LEVELS[2];
+  const ideaSource = ['ai', 'manual', 'mixed'].includes(plan.idea_source) ? plan.idea_source : (plan.manual_ideas && plan.manual_ideas.length ? 'manual' : 'ai');
+  const studentIdeas = Array.isArray(plan.student_ideas) ? plan.student_ideas : [];
+  const userPreferences = plan.user_preferences || {};
+  const topicKeywords = Array.isArray(plan.topic_keywords) ? plan.topic_keywords : [];
+  const examLabel = { pte: 'PTE Essay', ielts: 'IELTS Writing Task 2', met_naati: 'MET / NAATI adaptable writing practice' }[userPreferences.target_exam] || 'PTE Essay';
+  const exampleInstruction = {
+    topic_everyday: 'Use concrete everyday scenarios that directly illustrate this question.',
+    student_experience: 'Use student-life scenarios or experiences the student supplied. Do not invent personal history or claim the student experienced a hypothetical event.',
+    local_australian: 'Use everyday Australian or local settings relevant to the topic, without inventing local laws, statistics, or named authorities.',
+    general_realistic: 'Use plausible hypothetical scenarios closely related to this topic, clearly presented as examples rather than reported facts.'
+  }[userPreferences.example_preference] || 'Use concrete everyday scenarios that directly illustrate this question.';
+  const wordRange = userPreferences.target_exam === 'ielts' ? '250-330' : '240-285';
 
   let ideasBlock = '';
-  if (plan.manual_ideas && plan.manual_ideas.length > 0) {
+  if (ideaSource === 'manual' && plan.manual_ideas && plan.manual_ideas.length > 0) {
     ideasBlock = `
 === KEY IDEAS TO USE (MANDATORY) ===
 You MUST write the essay using these manual ideas. Address them clearly.
 - Manual ideas: ${plan.manual_ideas.map(x => `"${x}"`).join(' and ')}
+Use every idea at least once, distribute them across the body paragraphs according to the question type, and add a concrete topic-linked example for each idea. Do not invent extra arguments to fill space.
 `;
   } else {
     const reasons = plan.selected_ideas.reasons || [];
@@ -4996,6 +5012,15 @@ You MUST write the essay using exactly these chosen supporting reasons and alter
   * Alternative Action 1: "${solutions[0] || 'a relevant alternative action'}" (provide a supporting explanation and a short relatable example for it).
   * Alternative Action 2: "${solutions[1] || 'another alternative action'}" (provide a supporting explanation and a short relatable example for it).
   * Keep the discussion very simple, presenting the opinion/stance in Body Paragraph 1 and the alternative actions in Body Paragraph 2.
+`;
+    } else if (userPreferences.idea_source && isOpinionOrPreference) {
+      ideasBlock = `
+=== APPROVED ARGUMENTS (MANDATORY) ===
+Keep the student's chosen stance: "${plan.stance || ''}". Do not force a balanced opinion or invent opposing arguments.
+${contrast.length ? `- Body Paragraph 1: Develop these approved supporting reasons: ${reasons.map(x => `"${x}"`).join(' and ')}.
+- Body Paragraph 2: Address these approved contrast points without contradicting the chosen stance: ${contrast.map(x => `"${x}"`).join(' and ')}.` : `- Body Paragraph 1: Develop the first approved reason: "${reasons[0] || ''}".
+- Body Paragraph 2: Develop the second approved reason: "${reasons[1] || ''}".`}
+Give a concrete example tied to the question for each argument. Expand these ideas with explanations and consequences; do not add unapproved reasons.
 `;
     } else if (isOpinionOrAgreeDisagree) {
       ideasBlock = `
@@ -5040,6 +5065,16 @@ You MUST write the essay using exactly these chosen ideas. Do NOT substitute syn
 ${contrast.length > 0 ? `- Optional Contrast: "${contrast[0]}"` : ''}
 `;
     }
+  }
+
+  if (ideaSource === 'mixed' && studentIdeas.length > 0) {
+    ideasBlock = `
+=== STUDENT IDEAS TO KEEP CENTRAL ===
+The student supplied these starting ideas. Keep them central and develop them faithfully, while using the selected AI ideas to add structure or a second layer of support:
+- ${studentIdeas.map(x => `"${x}"`).join('\n- ')}
+Do not replace these with generic arguments, and do not introduce unrelated reasons.
+
+${ideasBlock}`;
   }
 
   const naturalStyleInstruction = `
@@ -5093,6 +5128,19 @@ ${template.concl}
 ESSAY TOPIC: ${plan.topic || ''}
 QUESTION: ${plan.question}
 
+=== LEARNER PREFERENCES ===
+- Exam context: ${examLabel}
+- Writing style: ${userPreferences.writing_style === 'natural' ? 'natural, individual wording' : 'exam template structure'}
+- Vocabulary level: ${vocabSpec.label}
+- Idea source: ${ideaSource}
+- Example preference: ${exampleInstruction}
+Follow these preferences while keeping the selected question type and stance consistent.
+
+=== TOPIC-SPECIFICITY REQUIREMENT ===
+Use the exact topic anchors below naturally instead of generic phrases such as "in modern society" or "in many places":
+- ${topicKeywords.length ? topicKeywords.join(', ') : (plan.topic || 'the stated topic')}
+Every example must name a concrete actor, setting, action or outcome connected to this question. Keep examples realistic and unnamed unless a name appears in the question or selected ideas.
+
 === STANCE INFORMATION ===
 Stance/Opinion: "${plan.stance || 'None'}"
 - The essay must align with this stance consistently from intro to conclusion.
@@ -5110,7 +5158,7 @@ ${isBand6 ? band6VocabRule : band9VocabRule}
 - If you are unsure whether a detail is real, leave it out. Plain and true beats impressive and invented.
 
 === LENGTH GUIDANCE ===
-Aim for a well-developed essay of roughly 250-330 words in total (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion). As a rough guide: introduction ~45-55 words, each body paragraph ~90-110 words, conclusion ~45-55 words.
+Aim for a well-developed ${examLabel} response of roughly ${wordRange} words in total (introduction + Body Paragraph 1 + Body Paragraph 2 + conclusion). Distribute the words across all four paragraphs, giving each body paragraph room to explain and illustrate its approved ideas.
 There is NO hard upper limit and the essay will not be rejected for length, so prioritise complete, well-supported paragraphs over hitting an exact count. Do not pad with filler or repetitive transitions, and do not compress the content: keep BOTH key ideas, keep BOTH examples in each body paragraph, and keep the opinion.
 
 === STRUCTURAL REQUIREMENTS ===
@@ -5286,42 +5334,26 @@ function validateGeneratedEssayText(plan, text, template) {
   const stopwords = ['the', 'a', 'an', 'and', 'but', 'or', 'for', 'nor', 'so', 'yet', 'at', 'by', 'in', 'of', 'on', 'to', 'with', 'is', 'are', 'was', 'were', 'been', 'being'];
   const textLower = fullEssayClean.toLowerCase();
 
-  if (plan.manual_ideas && plan.manual_ideas.length > 0) {
-    plan.manual_ideas.forEach(idea => {
-      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
-      if (keywords.length > 0) {
-        const hasMatch = keywords.some(w => textLower.includes(w));
-        if (!hasMatch) {
-          errors.push(`Your manual idea "${idea}" was not used in the generated essay.`);
-        }
-      }
-    });
+  const ideaCoverage = [];
+  if (plan.idea_source === 'manual' || (!plan.idea_source && plan.manual_ideas && plan.manual_ideas.length > 0)) {
+    (plan.manual_ideas || []).forEach(idea => ideaCoverage.push({ idea, label: 'Your manual idea' }));
   } else {
     const reasons = plan.selected_ideas.reasons || [];
     const solutions = plan.selected_ideas.solutions || [];
     const examples = plan.selected_ideas.examples || [];
-
-    reasons.forEach(idea => {
-      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
-      if (keywords.length > 0) {
-        const hasMatch = keywords.some(w => textLower.includes(w));
-        if (!hasMatch) {
-          errors.push(`Selected idea "${idea}" was not used in the generated essay.`);
-        }
-      }
-    });
-    
-    const secondParaIdeas = solutions.length > 0 ? solutions : examples;
-    secondParaIdeas.forEach(idea => {
-      const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
-      if (keywords.length > 0) {
-        const hasMatch = keywords.some(w => textLower.includes(w));
-        if (!hasMatch) {
-          errors.push(`Selected idea "${idea}" was not used in the generated essay.`);
-        }
-      }
-    });
+    reasons.forEach(idea => ideaCoverage.push({ idea, label: 'Selected idea' }));
+    (solutions.length > 0 ? solutions : examples).forEach(idea => ideaCoverage.push({ idea, label: 'Selected idea' }));
+    if (plan.idea_source === 'mixed') {
+      (plan.student_ideas || []).forEach(idea => ideaCoverage.push({ idea, label: 'Your student idea' }));
+    }
   }
+  ideaCoverage.forEach(({ idea, label }) => {
+    const keywords = idea.toLowerCase().split(/[\s,.:;?!"'()]+/).filter(w => w.length > 3 && !stopwords.includes(w));
+    if (keywords.length > 0) {
+      const hasMatch = keywords.some(w => textLower.includes(w));
+      if (!hasMatch) errors.push(`${label} "${idea}" was not used in the generated essay.`);
+    }
+  });
 
   const bp1Sentences = splitSentences(bp1);
   const bp2Sentences = splitSentences(bp2);

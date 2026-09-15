@@ -2837,6 +2837,11 @@ function revalidateSelectedIdeas(e) {
 }
 
 function syncSelectedIdeasToSeed(e) {
+  const prefs = getEssayGenerationPreferences(e);
+  if (prefs.ideaSource !== 'ai') {
+    setGenerationSeedIdeas(e, e.userManualIdeasRaw || prefs.manualIdeas.join('\n'));
+    return;
+  }
   const qType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[qType] || QUESTION_TYPES.advantages_disadvantages;
   let lines = [
@@ -2856,17 +2861,26 @@ function syncSelectedIdeasToSeed(e) {
     lines.push(`OPTIONAL CONTRAST: ${e.optionalContrastIds.join('; ')}`);
   }
   const joined = lines.join('\n');
-  e.seedIdeas = joined;
-  const el = document.getElementById('f_seedIdeas');
-  if (el) el.value = joined;
+  setGenerationSeedIdeas(e, joined);
+}
+
+function setGenerationSeedIdeas(e, value) {
+  e.seedIdeas = value;
+  if (getCurrent()?.id !== e.id) return;
+  const input = document.getElementById('f_seedIdeas');
+  if (input) input.value = value;
+  if (libraryRenderedId === e.id) libraryRenderedValues.seedIdeas = value;
 }
 
 function buildStructuredEssayPlan(e) {
   const qType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[qType] || QUESTION_TYPES.advantages_disadvantages;
   const bag = getTemplatesBag();
-  const templateChoice = e.templateChoice || bag.default || 'band9';
-  const manualIdeas = parseManualIdeas(e.seedIdeas || '');
+  const selectedTemplateChoice = e.templateChoice || 'default';
+  const templateChoice = selectedTemplateChoice === 'default' ? (bag.default || 'band9') : selectedTemplateChoice;
+  const prefs = getEssayGenerationPreferences(e);
+  const manualIdeas = prefs.manualIdeas || [];
+  const studentIdeas = prefs.ideaSource === 'mixed' ? manualIdeas : [];
 
   // Compile paired ideas if they are paired in the question type
   const paired_ideas = [];
@@ -2926,10 +2940,21 @@ function buildStructuredEssayPlan(e) {
       effects: qType === 'cause_effect' || qType === 'problem_effect' ? (e.selectedExampleIds || []) : [],
       contrast: e.optionalContrastIds || []
     },
-    manual_ideas: manualIdeas,
+    manual_ideas: prefs.ideaSource === 'manual' ? manualIdeas : [],
+    student_ideas: studentIdeas,
+    idea_source: prefs.ideaSource,
     paired_ideas: paired_ideas,
     secondary_features: e.secondaryFeatures || [],
     detected_options: e.detectedOptions || [],
+    topic_keywords: deriveTopicKeywords(e.question || '', e.title || ''),
+    user_preferences: {
+      target_exam: prefs.targetExam,
+      template_choice: templateChoice,
+      writing_style: prefs.writingStyle,
+      vocabulary_level: prefs.vocabularyLevel,
+      idea_source: prefs.ideaSource,
+      example_preference: prefs.examplePreference
+    },
     paragraph_roles: planParagraphRoles,
     target_band_level: templateChoice,
     generation_mode: e.generationMode || 'template',
@@ -2940,11 +2965,13 @@ function buildStructuredEssayPlan(e) {
 function generatePreviewSignature(e) {
   if (!e) return '';
   const activeType = getActiveQuestionType(e);
+  const prefs = getEssayGenerationPreferences(e);
   const templateKey = getTemplateKeyForEssay(e);
   const bag = getTemplatesBag();
   const customStr = (templateKey === 'custom' && bag && bag.custom) ? JSON.stringify(bag.custom) : '';
   const parts = [
     e.id || '',
+    e.title || '',
     (e.question || '').trim(),
     activeType,
     e.chosenStance || '',
@@ -2954,10 +2981,23 @@ function generatePreviewSignature(e) {
     (e.optionalContrastIds || []).join(','),
     e.templateChoice || '',
     e.vocab || '',
+    e.generationMode || '',
+    prefs.targetExam || '',
+    prefs.ideaSource || '',
+    prefs.examplePreference || '',
+    (prefs.manualIdeas || []).join(','),
+    JSON.stringify(e.secondaryFeatures || []),
+    JSON.stringify(e.detectedOptions || []),
     templateKey,
     customStr
   ];
-  return parts.join('|');
+  return JSON.stringify(parts);
+}
+
+function hasApprovedEssayPlan(e) {
+  const prefs = e && e.generationPreferences;
+  return !!(prefs && prefs.setupComplete && prefs.planApproved &&
+    prefs.approvedSignature === generatePreviewSignature(e));
 }
 
 function validateEssayConsistency(e) {
@@ -2966,21 +3006,18 @@ function validateEssayConsistency(e) {
   const results = {
     valid: true,
     errors: [],
-    warnings: [],
-    shouldRegenerate: false
+    warnings: []
   };
   const currentSig = generatePreviewSignature(e);
   if (!e.previewSignature || e.previewSignature !== currentSig) {
     results.valid = false;
-    results.shouldRegenerate = true;
-    results.errors.push("Preview signature is out of date.");
+    results.errors.push("Essay plan or preferences have changed. Review them before generating again.");
     return results;
   }
   const essayText = `${e.intro || ''} ${e.bp1 || ''} ${e.bp2 || ''} ${e.concl || ''}`.trim();
   if (!essayText) {
     results.valid = false;
-    results.shouldRegenerate = true;
-    results.errors.push("Essay is empty.");
+    results.errors.push("Essay has not been generated yet. Review the plan to generate it.");
     return results;
   }
   if (e.band6Mode === 'just_phrases') {
@@ -3134,15 +3171,360 @@ function parseManualIdeas(text) {
   return ideas;
 }
 
+// ============================================================
+//  PREFERENCE-FIRST ESSAY GENERATION
+// ============================================================
+const ESSAY_GENERATION_PREFERENCES_VERSION = 1;
+let essayGenerationSetupId = null;
+let essayGenerationSetupStance = '';
+
+function normalizeGenerationIdeaSource(source) {
+  return ['ai', 'manual', 'mixed'].includes(source) ? source : 'ai';
+}
+
+function getStudentManualIdeas(e) {
+  if (!e) return [];
+  const prefs = e.generationPreferences || {};
+  if (Array.isArray(prefs.manualIdeas)) {
+    return prefs.manualIdeas.map(x => String(x || '').trim()).filter(x => x.length >= 6);
+  }
+  if (Array.isArray(e.userManualIdeas)) {
+    return e.userManualIdeas.map(x => String(x || '').trim()).filter(x => x.length >= 6);
+  }
+  return parseManualIdeas(e.seedIdeas || '');
+}
+
+function getEssayGenerationPreferences(e) {
+  const explicit = (e && e.generationPreferences && typeof e.generationPreferences === 'object')
+    ? e.generationPreferences
+    : {};
+  const rawSeed = (e && e.seedIdeas) || '';
+  const manualIdeas = getStudentManualIdeas(e);
+  const selectedCount = (e && ((e.selectedReasonIds || []).length + (e.selectedExampleIds || []).length + (e.selectedSolutionIds || []).length)) || 0;
+  const hasStructuredIdeaState = /(?:QUESTION TYPE|MAIN REASONS|EXAMPLES|SOLUTIONS|OPTIONAL CONTRAST):/i.test(rawSeed);
+  const inferredSource = hasStructuredIdeaState || selectedCount > 0
+    ? 'ai'
+    : (manualIdeas.length > 0 ? 'manual' : 'ai');
+  const hasExplicitManualIdeas = Object.prototype.hasOwnProperty.call(explicit, 'manualIdeas');
+  const resolvedManualIdeas = hasExplicitManualIdeas || explicit.ideaSource || explicit.setupComplete
+    ? (hasExplicitManualIdeas ? manualIdeas : [])
+    : manualIdeas;
+  const templateChoice = explicit.templateChoice || (e && e.templateChoice) || 'default';
+  const vocabularyLevel = Math.max(1, Math.min(5, parseInt(explicit.vocabularyLevel || (e && e.vocab) || 3, 10) || 3));
+  return {
+    version: explicit.version || ESSAY_GENERATION_PREFERENCES_VERSION,
+    targetExam: explicit.targetExam || 'pte',
+    templateChoice,
+    vocabularyLevel,
+    writingStyle: explicit.writingStyle || (e && e.generationMode) || 'template',
+    ideaSource: normalizeGenerationIdeaSource(explicit.ideaSource || inferredSource),
+    examplePreference: explicit.examplePreference || 'topic_everyday',
+    stance: explicit.stance || (e && e.chosenStance) || '',
+    manualIdeas: resolvedManualIdeas,
+    setupComplete: !!explicit.setupComplete,
+    planApproved: !!explicit.planApproved
+  };
+}
+
+function getGenerationStanceOptions(e) {
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  if (!typeCfg.stanceRequired) return [];
+
+  let options = [];
+  if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+    options = [`${e.detectedOptions[0]} is better`, `${e.detectedOptions[1]} is better`];
+  } else if (activeType === 'discuss_both_views' && e.detectedOptions && e.detectedOptions.length === 2) {
+    options = [
+      `strongly support ${e.detectedOptions[0]}`,
+      `strongly support ${e.detectedOptions[1]}`,
+      'balanced perspective/neutral'
+    ];
+  } else if (activeType === 'single_best_option') {
+    const detected = (e.detectedOptions && e.detectedOptions.length > 0) ? e.detectedOptions : (typeCfg.stanceOptions || []);
+    const isFocusArea = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
+    options = detected.map(opt => isFocusArea
+      ? (/^focus/i.test(opt) ? opt : `Focus: ${opt}`)
+      : (opt.toLowerCase().includes('pressing problem') || opt.toLowerCase().includes('is best') ? opt : `${opt} is the most pressing problem`));
+  } else {
+    options = typeCfg.stanceOptions || [];
+  }
+  return Array.from(new Set(options.filter(Boolean)));
+}
+
+function deriveTopicKeywords(question, title) {
+  const stopwords = new Set([
+    'about', 'after', 'again', 'also', 'among', 'because', 'before', 'being', 'between', 'could',
+    'does', 'from', 'give', 'have', 'how', 'into', 'many', 'more', 'most', 'people', 'should',
+    'some', 'such', 'than', 'that', 'their', 'them', 'there', 'these', 'they', 'this', 'those',
+    'what', 'when', 'which', 'while', 'with', 'would', 'your', 'opinion', 'think', 'agree',
+    'disagree', 'extent', 'following', 'question', 'view', 'views', 'ways', 'write', 'using'
+  ]);
+  return Array.from(new Set(`${title || ''} ${question || ''}`
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/)
+    .map(w => w.trim())
+    .filter(w => w.length >= 4 && !stopwords.has(w))))
+    .slice(0, 12);
+}
+
+function updateGenerationIdeaSourceUI() {
+  const source = document.querySelector('input[name="genIdeaSource"]:checked')?.value || 'ai';
+  const field = document.getElementById('genSetupManualIdeasField');
+  if (field) field.classList.toggle('show', source === 'manual' || source === 'mixed');
+}
+
+function setGenerationSetupStanceFromButton(button) {
+  if (!button) return;
+  essayGenerationSetupStance = button.dataset.stance || '';
+  document.querySelectorAll('#genSetupStanceChoices .generation-stance-pill').forEach(pill => {
+    pill.classList.toggle('active', pill === button);
+  });
+  const custom = document.getElementById('genSetupCustomStance');
+  if (custom) custom.value = '';
+}
+
+function setGenerationSetupCustomStance(value) {
+  essayGenerationSetupStance = (value || '').trim();
+  if (essayGenerationSetupStance) {
+    document.querySelectorAll('#genSetupStanceChoices .generation-stance-pill').forEach(pill => pill.classList.remove('active'));
+  }
+}
+
+function renderGenerationSetupStance(e) {
+  const section = document.getElementById('genSetupStanceSection');
+  const choices = document.getElementById('genSetupStanceChoices');
+  const custom = document.getElementById('genSetupCustomStance');
+  if (!section || !choices || !custom) return;
+
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  const options = getGenerationStanceOptions(e);
+  if (!typeCfg.stanceRequired) {
+    section.style.display = 'none';
+    choices.innerHTML = '';
+    custom.value = '';
+    return;
+  }
+
+  section.style.display = '';
+  choices.innerHTML = options.length
+    ? `<div class="generation-stance-list">${options.map(option => `
+        <button type="button" class="generation-stance-pill ${essayGenerationSetupStance === option ? 'active' : ''}" data-stance="${escapeHtml(option)}" onclick="setGenerationSetupStanceFromButton(this)">${escapeHtml(option)}</button>
+      `).join('')}</div>`
+    : '<div class="generation-setup-help" style="margin:0 0 8px;">Write the position you want the essay to take.</div>';
+  custom.value = options.includes(essayGenerationSetupStance) ? '' : essayGenerationSetupStance;
+}
+
+function openEssayGenerationSetup(e = getCurrent()) {
+  if (!e) { toast('No essay selected', true); return; }
+  if (!e.title || !e.question) { toast('Add the essay title and question first.', true); return; }
+
+  essayGenerationSetupId = e.id;
+  const prefs = getEssayGenerationPreferences(e);
+  essayGenerationSetupStance = prefs.stance || e.chosenStance || '';
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+
+  const questionEl = document.getElementById('generationSetupQuestion');
+  if (questionEl) {
+    questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(typeCfg.displayName)} question</div><div>${escapeHtml(e.question)}</div>`;
+  }
+  const exam = document.getElementById('genSetupExam');
+  const band = document.getElementById('genSetupBand');
+  const vocab = document.getElementById('genSetupVocab');
+  const style = document.getElementById('genSetupStyle');
+  const example = document.getElementById('genSetupExamplePreference');
+  if (exam) exam.value = prefs.targetExam;
+  if (band) band.value = ['default', 'band6', 'band9', 'custom'].includes(prefs.templateChoice) ? prefs.templateChoice : 'default';
+  if (vocab) vocab.value = String(prefs.vocabularyLevel);
+  if (style) style.value = prefs.writingStyle === 'natural' ? 'natural' : 'template';
+  if (example) example.value = prefs.examplePreference;
+  const manual = document.getElementById('genSetupManualIdeas');
+  if (manual) manual.value = prefs.manualIdeas.join('\n');
+  document.querySelectorAll('input[name="genIdeaSource"]').forEach(input => {
+    input.checked = input.value === prefs.ideaSource;
+  });
+  updateGenerationIdeaSourceUI();
+  renderGenerationSetupStance(e);
+  document.getElementById('essayGenerationSetupModal')?.classList.add('show');
+}
+
+function closeEssayGenerationSetup() {
+  document.getElementById('essayGenerationSetupModal')?.classList.remove('show');
+  essayGenerationSetupId = null;
+  essayGenerationSetupStance = '';
+}
+
+async function continueEssayGenerationSetup() {
+  const e = essays.find(item => item.id === essayGenerationSetupId) || getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  const source = normalizeGenerationIdeaSource(document.querySelector('input[name="genIdeaSource"]:checked')?.value || 'ai');
+  const manualRaw = document.getElementById('genSetupManualIdeas')?.value || '';
+  const manualIdeas = parseManualIdeas(manualRaw);
+  const activeType = getActiveQuestionType(e);
+  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
+  const selectedStance = (essayGenerationSetupStance || document.getElementById('genSetupCustomStance')?.value || '').trim();
+
+  if ((source === 'manual' || source === 'mixed') && manualIdeas.length === 0) {
+    toast('Add at least one clear idea before using your own ideas.', true);
+    return;
+  }
+  if (typeCfg.stanceRequired && !selectedStance) {
+    toast('Choose the position you want the essay to take before continuing.', true);
+    return;
+  }
+
+  const previousPrefs = getEssayGenerationPreferences(e);
+  const previousManual = JSON.stringify(previousPrefs.manualIdeas || []);
+  const templateChoice = ['default', 'band6', 'band9', 'custom'].includes(document.getElementById('genSetupBand')?.value)
+    ? document.getElementById('genSetupBand').value
+    : 'default';
+  const vocabularyLevel = Math.max(1, Math.min(5, parseInt(document.getElementById('genSetupVocab')?.value || '3', 10) || 3));
+  const writingStyle = document.getElementById('genSetupStyle')?.value === 'natural' ? 'natural' : 'template';
+  const targetExam = document.getElementById('genSetupExam')?.value || 'pte';
+  const examplePreference = document.getElementById('genSetupExamplePreference')?.value || 'topic_everyday';
+
+  e.templateChoice = templateChoice;
+  e.vocab = vocabularyLevel;
+  e.generationMode = writingStyle;
+  if (typeCfg.stanceRequired) e.chosenStance = selectedStance;
+  else if (selectedStance) e.chosenStance = selectedStance;
+  e.userManualIdeas = source === 'ai' ? [] : manualIdeas.slice();
+  e.userManualIdeasRaw = source === 'ai' ? '' : manualRaw;
+  if (source === 'ai') {
+    if (!/QUESTION TYPE:|MAIN REASONS:|EXAMPLES:|SOLUTIONS:/i.test(e.seedIdeas || '')) e.seedIdeas = '';
+  } else {
+    e.seedIdeas = manualRaw;
+  }
+  setGenerationSeedIdeas(e, e.seedIdeas);
+  e.generationPreferences = {
+    version: ESSAY_GENERATION_PREFERENCES_VERSION,
+    targetExam,
+    templateChoice,
+    vocabularyLevel,
+    writingStyle,
+    ideaSource: source,
+    examplePreference,
+    stance: e.chosenStance || '',
+    manualIdeas: e.userManualIdeas,
+    setupComplete: true,
+    planApproved: false
+  };
+  e.previewSignature = '';
+  saveAll();
+  closeEssayGenerationSetup();
+  updateEssayTplPills();
+  setVocab(vocabularyLevel, true);
+  updateGenerationModeUI();
+
+  const needsFreshIdeas = source !== 'manual' && (!e.suggestedIdeas || e.suggestedIdeas.length === 0 || e.suggestedIdeasQuestion !== e.question || (source === 'mixed' && previousManual !== JSON.stringify(manualIdeas)));
+  if (needsFreshIdeas) {
+    if (await aiSuggestIdeas()) toast('Ideas are ready. Choose the arguments before generating the essay.');
+    return;
+  }
+  if (source !== 'manual') {
+    renderIdeasPicker();
+    document.getElementById('ideasPicker')?.classList.add('show');
+    toast('Review the topic-specific ideas, then choose the arguments.');
+    return;
+  }
+  openEssayPlanReview(e);
+}
+
+function openEssayPlanReview(e = getCurrent()) {
+  if (!e) { toast('No essay selected', true); return; }
+  const prefs = getEssayGenerationPreferences(e);
+  if (!prefs.setupComplete) {
+    openEssayGenerationSetup(e);
+    return;
+  }
+  const stateValidation = validateEssayStateBeforeGeneration(e);
+  if (!stateValidation.valid) {
+    toast(stateValidation.errors.join(' '), true);
+    return;
+  }
+
+  essayGenerationSetupId = e.id;
+  const plan = buildStructuredEssayPlan(e);
+  const typeCfg = QUESTION_TYPES[plan.question_type] || QUESTION_TYPES.advantages_disadvantages;
+  const examLabels = { pte: 'PTE Essay', ielts: 'IELTS Writing Task 2', met_naati: 'MET / NAATI CCL adaptable' };
+  const exampleLabels = {
+    topic_everyday: 'Specific everyday topic examples',
+    student_experience: 'Student or personal experience',
+    local_australian: 'Australian or local context',
+    general_realistic: 'General realistic examples'
+  };
+  const templateKey = getTemplateKeyForEssay(e);
+  const meta = document.getElementById('generationPlanMeta');
+  if (meta) meta.innerHTML = [
+    ['Exam', examLabels[prefs.targetExam] || prefs.targetExam],
+    ['Question type', typeCfg.displayName],
+    ['Template', tplLabel(templateKey)],
+    ['Vocabulary', (VOCAB_LEVELS[prefs.vocabularyLevel - 1] || VOCAB_LEVELS[2]).label],
+    ['Style', prefs.writingStyle === 'natural' ? 'Natural mode' : 'Exam template mode'],
+    ['Examples', exampleLabels[prefs.examplePreference] || prefs.examplePreference]
+  ].map(([label, value]) => `<div class="generation-plan-meta-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
+
+  const questionEl = document.getElementById('generationPlanQuestion');
+  if (questionEl) questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(e.title || 'Essay topic')}</div><div>${escapeHtml(e.question)}</div>`;
+  const card = (title, items) => `<div class="generation-plan-card"><h3>${escapeHtml(title)}</h3><ul>${(items.length ? items : ['No item selected']).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
+  const reasons = plan.selected_ideas.reasons || [];
+  const second = plan.selected_ideas.solutions?.length ? plan.selected_ideas.solutions : (plan.selected_ideas.examples || []);
+  const manual = prefs.manualIdeas || [];
+  const grid = document.getElementById('generationPlanGrid');
+  if (grid) {
+    const cards = [];
+    if (prefs.ideaSource === 'manual') {
+      cards.push(card('Student ideas', manual));
+    } else {
+      cards.push(card('Selected arguments', reasons));
+      if (second.length) cards.push(card('Supporting examples or solutions', second));
+      if (plan.selected_ideas.contrast?.length) cards.push(card('Contrast points', plan.selected_ideas.contrast));
+      if (prefs.ideaSource === 'mixed') cards.push(card('Your ideas to keep central', manual));
+    }
+    if (plan.stance) cards.push(card('Position', [plan.stance]));
+    grid.innerHTML = cards.join('');
+  }
+  const note = document.getElementById('generationPlanNote');
+  const wordRange = prefs.targetExam === 'ielts' ? '250–330' : '240–285';
+  if (note) note.innerHTML = `The writer will develop these arguments across two body paragraphs, use concrete examples tied to <strong>${escapeHtml((plan.topic || e.title || 'this topic'))}</strong>, aim for ${wordRange} words, and avoid unsupported statistics, studies or named authorities.`;
+  document.getElementById('essayPlanReviewModal')?.classList.add('show');
+}
+
+function backToEssayGenerationSetup() {
+  const e = essays.find(item => item.id === essayGenerationSetupId) || getCurrent();
+  document.getElementById('essayPlanReviewModal')?.classList.remove('show');
+  if (e) openEssayGenerationSetup(e);
+}
+
+function confirmEssayPlanAndGenerate() {
+  const e = essays.find(item => item.id === essayGenerationSetupId) || getCurrent();
+  if (!e) { toast('No essay selected', true); return; }
+  const validation = validateEssayStateBeforeGeneration(e);
+  if (!validation.valid) { toast(validation.errors.join(' '), true); return; }
+  if (!e.generationPreferences) e.generationPreferences = getEssayGenerationPreferences(e);
+  e.generationPreferences.setupComplete = true;
+  e.generationPreferences.planApproved = true;
+  e.generationPreferences.approvedAt = new Date().toISOString();
+  e.generationPreferences.approvedSignature = generatePreviewSignature(e);
+  saveAll();
+  document.getElementById('essayPlanReviewModal')?.classList.remove('show');
+  aiWriteFullEssay({ essay: e, confirmedSetup: true });
+}
+
 function detectUnsupportedClaims(text, question, sourceText, plan) {
   const essayLower = text.toLowerCase();
   const qLower = (question || '').toLowerCase();
   const sLower = (sourceText || '').toLowerCase();
   
   const allowedTokens = new Set();
+  const allowedTexts = [];
   
   const addAllowedText = (txt) => {
     if (!txt) return;
+    allowedTexts.push(String(txt).toLowerCase());
     const words = txt.toLowerCase().split(/[\s,.:;?!"'()]+/);
     words.forEach(w => {
       if (w.length > 2 || /^\d+$/.test(w)) allowedTokens.add(w);
@@ -3154,6 +3536,9 @@ function detectUnsupportedClaims(text, question, sourceText, plan) {
   if (plan) {
     if (plan.manual_ideas) {
       plan.manual_ideas.forEach(i => addAllowedText(i));
+    }
+    if (plan.student_ideas) {
+      plan.student_ideas.forEach(i => addAllowedText(i));
     }
     if (plan.selected_ideas) {
       Object.values(plan.selected_ideas).forEach(arr => {
@@ -3237,13 +3622,17 @@ function validateEssayStateBeforeGeneration(e) {
     errors.push("A stance/opinion selection is required for this question type.");
   }
 
-  // Ideas check (check manual path first)
-  if (e.seedIdeas && e.seedIdeas.trim().length > 0) {
-    const manualIdeas = parseManualIdeas(e.seedIdeas);
+  // Ideas check follows the explicit setup choice. Do not infer a manual
+  // generation path merely because the synced AI plan is stored in seedIdeas.
+  const prefs = getEssayGenerationPreferences(e);
+  const manualIdeas = prefs.manualIdeas || [];
+  if (prefs.ideaSource === 'manual' || prefs.ideaSource === 'mixed') {
     if (manualIdeas.length === 0) {
       errors.push("Your manual idea is too short. Please write at least one clear idea, such as 'traffic congestion slows down public transport.'");
     }
-  } else {
+  }
+
+  if (prefs.ideaSource !== 'manual') {
     // Validate selected AI ideas
     const pickedReasonsCount = (e.selectedReasonIds || []).length;
     const pickedExamplesCount = (e.selectedExampleIds || []).length;
@@ -3728,6 +4117,7 @@ function changeChosenStance(opt) {
   const e = getCurrent();
   if (!e) return;
   e.chosenStance = opt;
+  if (e.generationPreferences) e.generationPreferences.stance = opt;
   saveAll();
   revalidateSelectedIdeas(e);
   renderIdeasPicker();
@@ -3882,29 +4272,21 @@ function toggleIdeaText(category, text) {
 function usePickerSelectedIdeas() {
   const e = getCurrent();
   if (!e) return;
-  syncSelectedIdeasToSeed(e);
+  const prefs = getEssayGenerationPreferences(e);
+  if (prefs.ideaSource === 'manual') {
+    e.seedIdeas = e.userManualIdeasRaw || prefs.manualIdeas.join('\n');
+    const seedEl = document.getElementById('f_seedIdeas');
+    if (seedEl) seedEl.value = e.seedIdeas;
+  } else {
+    syncSelectedIdeasToSeed(e);
+  }
+  if (e.generationPreferences) {
+    e.generationPreferences.planApproved = false;
+    e.generationPreferences.stance = e.chosenStance || '';
+  }
   saveAll();
   document.getElementById('ideasPicker').classList.remove('show');
-  aiWriteFullEssay();
-}
-
-let debouncedRegenTimer = null;
-function triggerDebouncedRegeneration(e) {
-  if (debouncedRegenTimer) clearTimeout(debouncedRegenTimer);
-  debouncedRegenTimer = setTimeout(async () => {
-    const attempts = window.regenerationAttempts || (window.regenerationAttempts = {});
-    const count = attempts[e.id] || 0;
-    if (count >= 2) {
-      console.warn("Max regeneration attempts reached for essay", e.id);
-      return;
-    }
-    attempts[e.id] = count + 1;
-    console.log(`Silent regeneration attempt ${count + 1} for essay`, e.id);
-    const success = await aiWriteFullEssay({ essay: e, silent: true, skipConfirm: true });
-    if (success) {
-      renderPreview();
-    }
-  }, 1000);
+  openEssayPlanReview(e);
 }
 
 // State for the type-aware picker (replaces the old pickedPros / pickedCons)
@@ -6127,12 +6509,35 @@ function loadCurrent() {
 function saveCurrent() {
   const e = getCurrent();
   if (!e) return;
+  const previousQuestion = e.question;
+  const seedInput = document.getElementById('f_seedIdeas');
+  const seedEdited = libraryRenderedId !== e.id || seedInput.value !== libraryRenderedValues.seedIdeas;
   [...FIELDS, 'seedIdeas'].forEach(f => {
     const input = document.getElementById('f_' + f);
     if (libraryRenderedId !== e.id || input.value !== libraryRenderedValues[f]) e[f] = input.value;
     else if (document.activeElement !== input) input.value = e[f] || '';
     libraryRenderedValues[f] = input.value;
   });
+  if (seedEdited && !/(?:QUESTION TYPE|MAIN REASONS|EXAMPLES|SOLUTIONS|OPTIONAL CONTRAST):/i.test(e.seedIdeas || '')) {
+    const prefs = getEssayGenerationPreferences(e);
+    e.userManualIdeas = parseManualIdeas(e.seedIdeas || '');
+    e.userManualIdeasRaw = e.seedIdeas || '';
+    e.generationPreferences = { ...prefs, manualIdeas: e.userManualIdeas,
+      ideaSource: prefs.ideaSource === 'ai' && e.userManualIdeas.length ? 'mixed' : prefs.ideaSource,
+      planApproved: false };
+  }
+  if (previousQuestion !== e.question) {
+    e.suggestedIdeas = [];
+    e.suggestedIdeasQuestion = '';
+    e.selectedReasonIds = []; e.selectedExampleIds = [];
+    e.selectedSolutionIds = []; e.optionalContrastIds = [];
+    e.detectedOptions = []; e.secondaryFeatures = [];
+    if (!e.manualQuestionTypeOverride) {
+      e.questionType = staticClassifyQuestion(e.question);
+      e.detectedQuestionType = e.questionType;
+    }
+    if (e.generationPreferences) e.generationPreferences.planApproved = false;
+  }
   saveAll();
   // Update breadcrumb status live
   const s = essayStatus(e);
@@ -6167,6 +6572,7 @@ function setVocab(v, suppressSave) {
   const e = getCurrent();
   if (e && !suppressSave) {
     e.vocab = v;
+    if (e.generationPreferences) e.generationPreferences.vocabularyLevel = v;
     e.previewSignature = '';
     saveAll();
     renderPreview();
@@ -6339,26 +6745,16 @@ function renderPreview() {
   const validation = validateEssayConsistency(e);
   
   let validationAlertHtml = '';
-  if (validation.shouldRegenerate) {
-    validationAlertHtml = `
-      <div class="validation-alerts-box" style="background: #e2f0fe; border: 1px solid #b8daff; border-radius: 8px; padding: 12px 16px; margin: 16px auto; max-width: 800px; color: #004085; font-size: 12px; font-family: var(--sans); display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <div class="spinner-dark" style="width: 14px; height: 14px; border-width: 2px;"></div>
-        <div>
-          <strong>Updating Preview...</strong> Generating a new Band 9 model essay aligning with your selected stance and ideas.
-        </div>
-      </div>
-    `;
-    triggerDebouncedRegeneration(e);
-  } else if (validation.warnings.length > 0) {
+  if (validation.errors.length > 0 || validation.warnings.length > 0) {
     const alerts = validation.errors.concat(validation.warnings);
     validationAlertHtml = `
       <div class="validation-alerts-box" style="background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 12px 16px; margin: 16px auto; max-width: 800px; color: #856404; font-size: 12px; font-family: var(--sans); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <strong style="display: block; margin-bottom: 6px; font-size: 13px; color: #664d03;">⚠️ Essay Preview Warnings</strong>
+        <strong style="display: block; margin-bottom: 6px; font-size: 13px; color: #664d03;">⚠️ Review before generating</strong>
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           ${alerts.map(a => `<li>${escapeHtml(a)}</li>`).join('')}
         </ul>
         <div style="margin-top: 8px; font-size: 11.5px; font-style: italic; color: #664d03;">
-          If the essay does not match your chosen options, click <strong>Write the full essay</strong> to manually regenerate.
+          Open <strong>Review preferences &amp; plan</strong> when you are ready to generate or regenerate the essay.
         </div>
       </div>
     `;
@@ -7081,7 +7477,7 @@ function selectBand6Mode(mode) {
   if (!e) return;
   e.band6Mode = mode;
   saveAll();
-  aiWriteFullEssay({ band6Mode: mode, skipConfirm: true });
+  aiWriteFullEssay({ band6Mode: mode, skipConfirm: true, confirmedSetup: true });
 }
 
 function switchTemplateTab(tab) {
@@ -7188,6 +7584,7 @@ async function setEssayTemplate(choice) {
   const e = getCurrent();
   if (!e) return;
   e.templateChoice = choice;
+  if (e.generationPreferences) e.generationPreferences.templateChoice = choice;
   e.previewSignature = '';
   saveAll();
   updateEssayTplPills();
@@ -7220,6 +7617,7 @@ function setGenerationMode(mode) {
   const e = getCurrent();
   if (!e) return;
   e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  if (e.generationPreferences) e.generationPreferences.writingStyle = e.generationMode;
   saveAll();
   updateGenerationModeUI();
   renderPreview();
@@ -7229,6 +7627,7 @@ function setGenerationModeFromFs(mode) {
   const e = getCurrent();
   if (!e) return;
   e.generationMode = mode === 'natural' ? 'natural' : 'template';
+  if (e.generationPreferences) e.generationPreferences.writingStyle = e.generationMode;
   saveAll();
   updateGenerationModeUI();
 }
@@ -7265,6 +7664,12 @@ async function aiSuggestIdeas() {
   const e = getCurrent();
   if (!e) { toast('No essay selected', true); return; }
   if (!e.title || !e.question) { toast('Need essay title and question first', true); return; }
+
+  const preservedStance = e.chosenStance || (e.generationPreferences && e.generationPreferences.stance) || '';
+  const generationPrefs = getEssayGenerationPreferences(e);
+  const studentIdeaContext = generationPrefs.ideaSource === 'mixed' && generationPrefs.manualIdeas.length
+    ? `\nSTUDENT IDEAS TO RESPECT (MIXED MODE):\n${generationPrefs.manualIdeas.map(idea => `- ${idea}`).join('\n')}\nUse these as the central starting points. Add distinct topic-specific options around them; do not replace them with generic ideas.\n`
+    : '';
 
   if (!await consumeQuota('idea')) return;
 
@@ -7403,6 +7808,7 @@ ESSAY DETAILS:
 TITLE: ${e.title}
 QUESTION: ${e.question}
 ${e.explanation ? `TOPIC EXPLANATION: ${e.explanation}` : ''}
+${studentIdeaContext}
 TEMPLATE BAND: ${isBand6 ? 'Band 6 — plain English only' : 'Band 9 — sophisticated but student-friendly'}
 VOCABULARY LEVEL: ${vocabSpec.label}
 
@@ -7515,6 +7921,7 @@ Format:
     e.questionType = activeType;
     e.detectedOptions = result.detectedOptions || [];
     e.suggestedIdeas = result.ideas;
+    e.suggestedIdeasQuestion = e.question;
     // Locked classifications carry their own verified features; the AI's
     // guesses are discarded so curated seeds stay exactly as curated.
     e.secondaryFeatures = lockedType ? lockedFeatures.slice() : (result.secondaryFeatures || []);
@@ -7539,7 +7946,8 @@ Format:
       });
     }
     
-    e.chosenStance = '';
+    e.chosenStance = preservedStance;
+    if (e.generationPreferences) e.generationPreferences.stance = preservedStance;
     e.selectedReasonIds = [];
     e.selectedExampleIds = [];
     e.selectedSolutionIds = [];
@@ -7574,10 +7982,12 @@ Format:
     
     saveAll();
     renderIdeasPicker();
+    return true;
   } catch (err) {
     console.error(err);
     body.innerHTML = `<div style="text-align:center; padding:16px; color:var(--accent); font-size:12px;">${escapeHtml(err.message)}</div>`;
     toast('Failed to get ideas: ' + err.message, true);
+    return false;
   } finally {
     btn.disabled = false;
     btn.innerHTML = '💡 Let AI suggest ideas for me';
@@ -7592,28 +8002,8 @@ function renderStanceController(e) {
     return '';
   }
   
-  const vocabIdx = (e.vocab || 3) - 1;
-  const bag = getTemplatesBag();
-  const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
-  const isBand6 = (effectiveTplKey === 'band6' || e.vocab === 1);
-  const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
-
-  if (isBand6 && isAgreementType) {
-    if (e.chosenStance !== 'partially disagree') {
-      e.chosenStance = 'partially disagree';
-      setTimeout(() => {
-        saveAll();
-        revalidateSelectedIdeas(e);
-        renderIdeasPicker();
-        renderPreview();
-      }, 0);
-    }
-  }
-
   let options = [];
-  if (isBand6 && isAgreementType) {
-    options = ["partially disagree"];
-  } else if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
+  if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
     options = [
       `${e.detectedOptions[0]} is better`,
       `${e.detectedOptions[1]} is better`
@@ -8244,7 +8634,7 @@ function renderIdeasPicker() {
       <div class="ideas-counter" style="font-size:11.5px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
       <div style="display:flex; gap:8px;">
         <button class="ideas-refresh-btn" onclick="aiSuggestIdeas()" style="background:var(--bg); border:1px solid var(--line); color:var(--ink-soft); font-size:12px; cursor:pointer; padding:6px 12px; border-radius:6px; font-weight:600; font-family:var(--sans);">↻ Refresh</button>
-        <button class="ideas-use-btn" id="ideasUseBtn" onclick="usePickerSelectedIdeas()" ${isReady ? '' : 'disabled'} style="background:${isReady ? 'var(--accent)' : 'var(--line-soft)'}; color:${isReady ? 'white' : 'var(--ink-mute)'}; border:none; font-size:12px; cursor:${isReady ? 'pointer' : 'default'}; padding:6px 14px; border-radius:6px; font-weight:600; font-family:var(--sans);">Use these &amp; write essay →</button>
+        <button class="ideas-use-btn" id="ideasUseBtn" onclick="usePickerSelectedIdeas()" ${isReady ? '' : 'disabled'} style="background:${isReady ? 'var(--accent)' : 'var(--line-soft)'}; color:${isReady ? 'white' : 'var(--ink-mute)'}; border:none; font-size:12px; cursor:${isReady ? 'pointer' : 'default'}; padding:6px 14px; border-radius:6px; font-weight:600; font-family:var(--sans);">Review plan &amp; generate →</button>
       </div>
     </div>
   `;
@@ -8253,129 +8643,27 @@ function renderIdeasPicker() {
 // ============================================================
 //  AI: WRITE FULL ESSAY
 // ============================================================
-function autoSelectIdeas(e) {
-  const activeType = getActiveQuestionType(e);
-  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
-  
-  const leftIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'problem' || i.category === 'cause' || i.category === 'challenge' || (i.supports && i.supports.includes('left'))) : [];
-  const rightIdeas = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'example' || i.category === 'disadvantage' || i.category === 'solution' || i.category === 'effect' || (i.supports && i.supports.includes('right'))) : [];
-  
-  e.selectedReasonIds = [];
-  e.selectedExampleIds = [];
-  e.selectedSolutionIds = [];
-  e.optionalContrastIds = [];
-  
-  const isSolution = ['problem_solution', 'cause_solution', 'causes_solutions'].includes(activeType);
-  const isEffect = ['cause_effect', 'problem_effect', 'causes_effects', 'problems_effects'].includes(activeType);
-  const isStanceAgreement = ['opinion', 'agree_disagree', 'two_option_preference', 'opinion_alternatives'].includes(activeType);
-  
-  if (isSolution) {
-    const leftToPick = leftIdeas.slice(0, 2);
-    leftToPick.forEach(i => {
-      e.selectedReasonIds.push(i.text);
-      if (i.pairedText) {
-        e.selectedSolutionIds.push(i.pairedText);
-      }
-    });
-  } else if (isEffect) {
-    const leftToPick = leftIdeas.slice(0, 2);
-    leftToPick.forEach(i => {
-      e.selectedReasonIds.push(i.text);
-      if (i.pairedText) {
-        e.selectedExampleIds.push(i.pairedText);
-      }
-    });
-  } else if (activeType === 'single_best_option') {
-    const leftToPick = leftIdeas.slice(0, 2);
-    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
-  } else if (activeType === 'opinion_alternatives') {
-    let aligned = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage') : [];
-    if (e.chosenStance) {
-      const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
-      aligned = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'advantage' || i.category === 'disadvantage');
-    }
-    const reasonsToPick = aligned.slice(0, 2);
-    reasonsToPick.forEach(i => e.selectedReasonIds.push(i.text));
-
-    const alts = e.suggestedIdeas ? e.suggestedIdeas.filter(i => i.category === 'solution') : [];
-    const altsToPick = alts.slice(0, 2);
-    altsToPick.forEach(i => e.selectedSolutionIds.push(i.text));
-  } else if (isStanceAgreement) {
-    let aligned = leftIdeas;
-    if (e.chosenStance) {
-      const stanceLower = e.chosenStance.toLowerCase();
-      aligned = leftIdeas.filter(i => i.supports && i.supports.some(s => s.toLowerCase() === stanceLower));
-      if (aligned.length < 2) {
-        aligned = leftIdeas;
-      }
-    }
-    const toPick = aligned.slice(0, 2);
-    toPick.forEach(i => e.selectedReasonIds.push(i.text));
-  } else {
-    const leftToPick = leftIdeas.slice(0, 2);
-    const rightToPick = rightIdeas.slice(0, 2);
-    leftToPick.forEach(i => e.selectedReasonIds.push(i.text));
-    rightToPick.forEach(i => e.selectedExampleIds.push(i.text));
-  }
-  
-  pickedLeftIdeas = new Set(e.selectedReasonIds);
-  if (isSolution || activeType === 'opinion_alternatives') {
-    pickedRightIdeas = new Set(e.selectedSolutionIds);
-  } else {
-    pickedRightIdeas = new Set(e.selectedExampleIds);
-  }
-  
-  saveAll();
-  renderIdeasPicker();
-}
-
 async function aiWriteFullEssay(opts = {}) {
   const e = opts.essay || getCurrent();
   if (!e) { if (!opts.silent) toast('No essay selected', true); return false; }
+  if (!opts.silent && !opts.confirmedSetup) {
+    openEssayGenerationSetup(e);
+    return false;
+  }
+  if (!hasApprovedEssayPlan(e)) {
+    if (!opts.silent) openEssayGenerationSetup(e);
+    return false;
+  }
+  return generateEssayFromApprovedPlan(opts);
+}
+
+async function generateEssayFromApprovedPlan(opts = {}) {
+  const e = opts.essay || getCurrent();
+  if (!e) { if (!opts.silent) toast('No essay selected', true); return false; }
+  if (!hasApprovedEssayPlan(e)) return false;
   if (!e.title || !e.question) { if (!opts.silent) toast('Need essay title and question first', true); return false; }
 
   const activeType = getActiveQuestionType(e);
-  const typeCfg = QUESTION_TYPES[activeType] || QUESTION_TYPES.advantages_disadvantages;
-
-  // Auto-select stance if required but missing
-  if (typeCfg.stanceRequired && !e.chosenStance) {
-    let options = [];
-    if (activeType === 'two_option_preference' && e.detectedOptions && e.detectedOptions.length === 2) {
-      options = [`${e.detectedOptions[0]} is better`, `${e.detectedOptions[1]} is better`];
-    } else if (activeType === 'discuss_both_views' && e.detectedOptions && e.detectedOptions.length === 2) {
-      options = [`strongly support ${e.detectedOptions[0]}`, `strongly support ${e.detectedOptions[1]}`, `balanced perspective/neutral`];
-    } else if (activeType === 'single_best_option') {
-      const opts = (e.detectedOptions && e.detectedOptions.length > 0) ? e.detectedOptions : (typeCfg.stanceOptions || []);
-      options = opts.map(opt => opt.toLowerCase().includes('pressing problem') || opt.toLowerCase().includes('is best') ? opt : `${opt} is the most pressing problem`);
-    } else {
-      options = typeCfg.stanceOptions || [];
-    }
-    const bag = getTemplatesBag();
-    const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
-    const isBand6 = (effectiveTplKey === 'band6');
-    const isAgreementType = (activeType === 'opinion' || activeType === 'agree_disagree');
-
-    if (isBand6 && isAgreementType) {
-      e.chosenStance = 'partially disagree';
-    } else if (options.length > 0) {
-      e.chosenStance = options[0];
-    }
-    if (e.chosenStance) {
-      saveAll();
-      if (!opts.silent) toast(`Auto-selected stance: "${e.chosenStance}"`);
-    }
-  }
-
-  // Auto-suggest and auto-select ideas if missing
-  const hasIdeas = (e.seedIdeas && e.seedIdeas.trim().length > 0) || 
-                    (e.selectedReasonIds && e.selectedReasonIds.length > 0);
-  if (!hasIdeas) {
-    if (!opts.silent) toast('Auto-suggesting and selecting ideas...');
-    if (!e.suggestedIdeas || e.suggestedIdeas.length === 0) {
-      await aiSuggestIdeas();
-    }
-    autoSelectIdeas(e);
-  }
 
   const stateValidation = validateEssayStateBeforeGeneration(e);
   if (!stateValidation.valid) {
@@ -8485,6 +8773,10 @@ async function aiWriteFullEssay(opts = {}) {
     e.questionTypeUsed = getActiveQuestionType(e);
     e.ideasUsed = (e.selectedReasonIds || []).concat(e.selectedExampleIds || []).concat(e.selectedSolutionIds || []).concat(e.optionalContrastIds || []);
     e.generatedAt = new Date().toISOString();
+    if (e.generationPreferences) {
+      e.generationPreferences.lastGeneratedAt = e.generatedAt;
+      e.generationPreferences.planApproved = true;
+    }
     saveAll();
     if (!opts.silent) {
       loadCurrent(); renderPreview(); renderList();
@@ -8505,7 +8797,7 @@ async function aiWriteFullEssay(opts = {}) {
     if (btn) {
       stopWriteButtonMessages();
       btn.disabled = false;
-      btn.innerHTML = 'Write the full essay';
+      btn.innerHTML = 'Review preferences &amp; plan →';
     }
   }
 }
@@ -9306,8 +9598,11 @@ let bulkWriteAborted = false;
 let bulkWriteRunning = false;
 
 function openBulkWrite() {
-  // Default: pre-select empty essays so the most common path is one click
-  bulkWritePicked = new Set(essays.filter(e => essayStatus(e) === 'empty' && e.title && e.question).map(e => e.id));
+  // Bulk generation only uses essays whose preferences and plans were already
+  // approved individually; it must never bypass the setup flow.
+  bulkWritePicked = new Set(essays.filter(e => {
+    return essayStatus(e) === 'empty' && e.title && e.question && hasApprovedEssayPlan(e);
+  }).map(e => e.id));
   bulkWriteAborted = false;
   document.getElementById('bulkWriteProgress').style.display = 'none';
   document.getElementById('bulkWriteAbortBtn').style.display = 'none';
@@ -9334,13 +9629,17 @@ function renderBulkWritePicker() {
     const statusClass = 'status-' + s;
     const checked = bulkWritePicked.has(e.id) ? 'checked' : '';
     const missingFields = !e.title || !e.question;
-    const disabled = missingFields ? 'disabled title="No title or question — fill these in first"' : '';
+    const missingSetup = !hasApprovedEssayPlan(e);
+    const disabled = missingFields
+      ? 'disabled title="No title or question — fill these in first"'
+      : (missingSetup ? 'disabled title="Open this essay and approve its preferences and plan first"' : '');
+    const disabledRow = missingFields || missingSetup;
     return `
-      <label class="export-pick-row${missingFields ? ' export-pick-row-disabled' : ''}" style="${missingFields ? 'opacity:0.4;' : ''}">
+      <label class="export-pick-row${disabledRow ? ' export-pick-row-disabled' : ''}" style="${disabledRow ? 'opacity:0.48;' : ''}">
         <input type="checkbox" ${checked} ${disabled} onchange="toggleBulkWritePick('${e.id}', this.checked)">
         <span class="export-pick-num">ESSAY ${String(i+1).padStart(2,'0')}</span>
         <span class="export-pick-title">${escapeHtml(e.title || '(no title)')}</span>
-        <span class="export-pick-status ${statusClass}">${statusLabel}</span>
+        <span class="export-pick-status ${statusClass}">${missingSetup && !missingFields ? 'SETUP NEEDED' : statusLabel}</span>
       </label>
     `;
   }).join('');
@@ -9358,6 +9657,7 @@ function updateBulkWritePickedCount() {
   document.getElementById('bulkWritePickedCount').textContent = n;
   document.getElementById('bulkWriteStartBtn').disabled = (n === 0);
   const est = document.getElementById('bulkWriteEstimate');
+  if (!est) return;
   if (n === 0) {
     est.textContent = 'Pick essays below to see total time and quota usage.';
   } else {
@@ -9371,13 +9671,19 @@ function updateBulkWritePickedCount() {
 
 function selectAllForBulkWrite(mode) {
   if (mode === 'all') {
-    bulkWritePicked = new Set(essays.filter(e => e.title && e.question).map(e => e.id));
+    bulkWritePicked = new Set(essays.filter(e => {
+      return e.title && e.question && hasApprovedEssayPlan(e);
+    }).map(e => e.id));
   } else if (mode === 'none') {
     bulkWritePicked = new Set();
   } else if (mode === 'empty') {
-    bulkWritePicked = new Set(essays.filter(e => essayStatus(e) === 'empty' && e.title && e.question).map(e => e.id));
+    bulkWritePicked = new Set(essays.filter(e => {
+      return essayStatus(e) === 'empty' && e.title && e.question && hasApprovedEssayPlan(e);
+    }).map(e => e.id));
   } else if (mode === 'draft') {
-    bulkWritePicked = new Set(essays.filter(e => (essayStatus(e) === 'empty' || essayStatus(e) === 'draft') && e.title && e.question).map(e => e.id));
+    bulkWritePicked = new Set(essays.filter(e => {
+      return (essayStatus(e) === 'empty' || essayStatus(e) === 'draft') && e.title && e.question && hasApprovedEssayPlan(e);
+    }).map(e => e.id));
   }
   renderBulkWritePicker();
 }
@@ -9447,12 +9753,13 @@ async function doBulkWrite() {
     (skipped > 0 ? `, ${skipped} skipped` : '') +
     (bulkWriteAborted ? ' (stopped by user)' : '');
   updateBulkWriteProgress(done + failed + skipped, targets.length, summary);
+  const progressNote = document.getElementById('bulkWriteProgressNote');
   if (errors.length > 0) {
     console.warn('Bulk write errors:', errors);
-    document.getElementById('bulkWriteProgressNote').innerHTML =
+    if (progressNote) progressNote.innerHTML =
       `<span style="color:var(--accent);">Some essays had issues — check browser console for details.</span>`;
   } else {
-    document.getElementById('bulkWriteProgressNote').textContent = 'All done! Close this window to see the results.';
+    if (progressNote) progressNote.textContent = 'All done! Close this window to see the results.';
   }
 
   // Refresh the main UI
