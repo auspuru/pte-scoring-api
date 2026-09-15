@@ -1,0 +1,39 @@
+/* Assignment-board layout for the prediction mock catalogue. */
+.assignment-shell{background:#fff;border:1px solid #e3e7ec;border-radius:4px;padding:10px 14px 24px;box-shadow:0 2px 12px rgba(30,45,60,.04)}
+.assignment-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;border-bottom:1px solid #edf0f3;padding-bottom:10px}
+.assignment-heading h1{color:#1aab4b;font-size:25px;letter-spacing:-.4px;margin:0 2px 2px 0;white-space:nowrap}
+.assignment-pills{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.assignment-pill{background:#fff;border:1px solid #e2e5e9;color:#263746;border-radius:5px;padding:7px 19px;font-size:12px;font-weight:600}
+.assignment-pill.selected{background:#51419b;color:#fff;border-color:#51419b}
+.assignment-subtitle{font-size:12px;color:#6c7884;margin:0}
+.assignment-toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 0 7px;flex-wrap:wrap}
+.assignment-filter-group,.assignment-view-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap;color:#7d8790;font-size:11px}
+.assignment-toolbar input,.assignment-toolbar select{height:31px;border:1px solid #dfe4e8;border-radius:3px;background:#fff;color:#65727d;padding:0 9px;font-size:11px}
+.assignment-toolbar input{width:175px}
+.assignment-filter{height:31px;background:#fff;border:1px solid #e2e6ea;color:#a5adb4;border-radius:3px;padding:0 13px;font-size:11px}
+.assignment-count{font-size:12px;color:#1f2f3d;margin:0 0 6px}
+.layout-label{margin-left:3px}
+.layout-button{height:31px;width:32px;padding:0;background:#fff;border:1px solid #dfe4e8;color:#707b84;border-radius:3px;font-size:15px}
+.layout-button.selected{background:#f1effb;color:#51419b;border-color:#b8b0e7}
+.mock-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.assignment-card{min-height:168px;background:#fff;border:1px solid #dce2e7;border-top:2px solid #6551bb;border-radius:4px;padding:12px 10px 10px;display:flex;flex-direction:column;align-items:stretch;box-shadow:0 1px 2px rgba(30,45,60,.03)}
+.assignment-card-top{display:flex;align-items:center;gap:7px;margin-bottom:17px;min-height:18px}
+.assignment-code{font-size:14px;color:#5c4bab;white-space:nowrap}
+.assignment-section{font-size:11px;color:#c40084;white-space:nowrap}
+.assignment-card h2{font-size:15px;line-height:1.28;color:#334454;margin:0 0 6px;letter-spacing:0}
+.assignment-card p{font-size:12px;line-height:1.4;color:#77828c;margin:0 0 11px;min-height:33px}
+.assignment-card-meta{display:flex;gap:9px;color:#667681;font-size:10px;margin-bottom:5px}
+.assignment-card-tasks{font-size:10px;line-height:1.35;color:#89939b;min-height:27px}
+.assignment-card .card-footer{margin-top:auto;padding-top:9px;align-items:flex-end}
+.assignment-card .meta{font-size:10px}
+.assignment-card .primary{background:#fff;color:#5b49ad;border-color:#9b8dd8;border-radius:3px;font-size:11px;padding:5px 9px;font-weight:500}
+.assignment-card .primary:hover{background:#f4f1ff;color:#43318e}
+.mock-board.list-layout{display:grid;grid-template-columns:1fr;gap:8px}
+.mock-board.list-layout .assignment-card{min-height:0;display:grid;grid-template-columns:190px 1fr auto;align-items:center;gap:14px;padding:10px}
+.mock-board.list-layout .assignment-card-top{margin:0}
+.mock-board.list-layout .assignment-card p,.mock-board.list-layout .assignment-card-tasks{min-height:0;margin:0}
+.mock-board.list-layout .assignment-card .card-footer{padding:0;margin:0;min-width:200px}
+.assignment-rules{border-top:1px solid #edf0f3;padding-top:11px;font-size:11px}
+@media(max-width:1050px){.mock-board{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.assignment-shell{padding:8px}.assignment-heading{align-items:flex-start;flex-direction:column-reverse;gap:11px}.assignment-heading h1{font-size:23px}.assignment-toolbar{align-items:flex-start;flex-direction:column}.assignment-view-group{width:100%}.mock-board{grid-template-columns:repeat(2,minmax(0,1fr))}.mock-board.list-layout .assignment-card{grid-template-columns:1fr;gap:6px}.mock-board.list-layout .assignment-card .card-footer{min-width:0;padding-top:6px}.assignment-card{min-height:180px}}
+@media(max-width:480px){.mock-board{grid-template-columns:1fr}.assignment-card{min-height:0}.assignment-pills{gap:4px}.assignment-pill{padding:7px 13px}.assignment-toolbar input{width:100%}.assignment-filter-group{width:100%}.assignment-toolbar select{max-width:100%}}
