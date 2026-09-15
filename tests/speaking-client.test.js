@@ -82,3 +82,12 @@ test('Hidden tabs and account resets release capture, and a new account never in
   h.controller.reset();h.user('bob');await h.controller.open('ra');assert.doesNotMatch(h.host.innerHTML,/Private first-user draft/);assert(h.storage.size>0);
 });
 test('Countdown labels round up consistently at minute boundaries',()=>{assert.equal(time(59.9),'1:00');assert.equal(time(120),'2:00');assert.equal(time(-1),'0:00');});
+test('Back and Next save transcripts and resume the same attempts without duplicates',async()=>{
+  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
+  h.nodes.get('speaking-transcript').value='A saved first response.';
+  await h.click({speakingMove:'1'});assert.equal(h.attempts.size,2);assert.match(h.host.innerHTML,/Question 2 of 5/);
+  await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,2);assert.equal(h.nodes.get('speaking-transcript').value,'A saved first response.');
+  await h.click({speakingAction:'record'});await h.click({speakingAction:'skip'});
+  await h.click({speakingMove:'1'});assert.equal(h.recorders[0].state,'recording');assert.match(h.host.innerHTML,/Question 1 of 5/);
+  assert.match(h.nodes.get('speaking-notice').textContent,/Finish and save/);
+});

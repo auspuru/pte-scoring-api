@@ -12947,12 +12947,29 @@ function viewPracticeAttempt(id) {
 
 // ---------- Main view rendering (welcome / write / loading / results) ----------
 
+function essayQuestionNavigation() {
+  if(!['write','results'].includes(practiceState.view)||(practiceState.view==='write'&&practiceState.questionSource!=='library'))return '';
+  const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
+  return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
+}
+function moveEssayQuestion(direction) {
+  if(practiceSubmissionPending)return;
+  const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
+  if(!target)return;
+  const key=getPteStorageKey('essay-question-drafts'),drafts=LocalStore.get(key)||{};
+  if(practiceState.view==='write'&&practiceState.selectedQuestionId){drafts[practiceState.selectedQuestionId]={...practiceState};if(!safeLSSet(key,JSON.stringify(drafts))){toast('Could not save your draft. Please keep this question open.',true);return;}}
+  stopPracticeTimer();
+  const saved=drafts[target.id];
+  Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
+  practiceState.view='write';practiceState.timerIntervalId=null;renderPracticeMain();
+}
 function renderPracticeMain() {
   const c = document.getElementById('practiceContent');
   if (practiceState.view === 'welcome') c.innerHTML = welcomeView();
   else if (practiceState.view === 'write') c.innerHTML = writeView();
   else if (practiceState.view === 'loading') c.innerHTML = loadingView();
   else if (practiceState.view === 'results') c.innerHTML = resultsView();
+  c.insertAdjacentHTML('beforeend','<div id="essayQuestionNav">'+essayQuestionNavigation()+'</div>');
   c.dataset.view = practiceState.view;
   c.setAttribute('aria-busy', String(practiceState.view === 'loading'));
 
@@ -13180,6 +13197,7 @@ function writeView() {
 
 function setQuestionSource(src) {
   practiceState.questionSource = src;
+  const navigation=document.getElementById('essayQuestionNav');if(navigation)navigation.innerHTML=essayQuestionNavigation();
   if (src === 'custom') {
     // Don't auto-clear; let user keep what they had
   }
@@ -13240,6 +13258,7 @@ function pickLibraryQuestion(id) {
     sel.classList.add('show');
     sel.innerHTML = `<strong>Selected question</strong>${escapeHtml(practiceState.questionText)}`;
   }
+  const navigation=document.getElementById('essayQuestionNav');if(navigation)navigation.innerHTML=essayQuestionNavigation();
   // Live-update the topic banner inside the write step
   refreshPracticeTopicBanner();
   updateSubmitBtnState();

@@ -81,6 +81,20 @@
       const node=doc.getElementById('speaking-playback');if(!node)return;
       node.innerHTML=playbackUrl?'<audio controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
     }
+    function questionNavigation() {
+      const questions=catalog.questions.filter(q=>q.type===attempt.question.type),index=questions.findIndex(q=>q.id===attempt.questionId);
+      return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="portal-button" data-speaking-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next →</button></nav>';
+    }
+    async function moveQuestion(direction) {
+      if(busy||uploadBlob||!['idle','error'].includes(phase)){message('Finish and save your recording before changing questions.');return;}
+      const questions=catalog.questions.filter(q=>q.type===attempt.question.type),index=questions.findIndex(q=>q.id===attempt.questionId),target=questions[index+direction];
+      if(!target)return;
+      busy=true;const ticket=serial,user=owner;
+      try {await saveTranscript();const history=await api('/attempts');if(!valid(ticket,user))return;
+        const saved=history.filter(a=>a.questionId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
+        busy=false;if(saved)await resume(saved.id);else await start(target.id);
+      }catch(e){message(e.message);}finally{busy=false;refreshControls();}
+    }
     function render() {
       if(!attempt)return;const q=attempt.question,r=attempt.result,submitted=attempt.status==='submitted';
       chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>'+esc(q.title)+'</h2></div><button class="portal-button" data-speaking-action="list">My questions</button></div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
@@ -89,7 +103,7 @@
         +'<div class="speaking-card"><h3>Your recording</h3><div id="speaking-playback"></div><p class="speaking-footnote">Pronunciation: teacher review · Oral fluency: teacher review. No AI delivery score is generated.</p></div>'
         +(!submitted?'<section class="speaking-card"><div class="speaking-heading"><h3>Confirm what you said</h3><button class="portal-button" data-speaking-action="transcribe" id="speaking-transcribe">Transcribe recording</button></div><p class="speaking-footnote">Transcription sends this recording to OpenAI. Check recognition errors against your audio; keep the words you actually said. You can also type the exact spoken response. Typed or edited text receives content feedback only.</p><label for="speaking-transcript">Your spoken words</label><textarea id="speaking-transcript" maxlength="6000" rows="6" placeholder="Review the automatic transcript, or enter the exact words you said.">'+esc(draftText(attempt))+'</textarea>'+(!catalog.transcriptionAvailable?'<p class="speaking-footnote">Automatic transcription is not enabled. Listen back and enter your spoken words manually; content assessment is still available.</p>':'')+'<div class="speaking-actions"><button class="portal-button" data-speaking-action="save">Save transcript</button><button class="portal-button primary" data-speaking-action="submit">Check content</button></div></section>':'<section class="speaking-card"><h3>Your confirmed transcript</h3><p>'+esc(attempt.transcript||'No response supplied.')+'</p></section>'
           +'<section class="speaking-card">'+(r?feedback(r):'<h3>Content feedback is pending</h3><p>Your response is saved. You can retry the assessment.</p><button class="portal-button primary" data-speaking-action="submit">Retry content assessment</button>')+'</section><section class="speaking-card speaking-sample"><h3>Sample response for this question</h3><p>'+esc(q.sample)+'</p><p class="speaking-footnote">'+(['ra','rs'].includes(q.type)?'For this task, the correct content is the exact original wording.':'This is one suitable response, not a required script. Other accurate, well-developed answers are accepted.')+'</p>'+(q.reference&&!['ra','rts'].includes(q.type)?'<details><summary>Prompt transcript</summary><p>'+esc(q.reference).replace(/\n/g,'<br>')+'</p></details>':'')+'</section><button class="portal-button primary" data-speaking-question="'+q.id+'">Reattempt this question</button>')
-        +'<p class="speaking-footnote">Content-only practice assessment, not an official Pearson score or an overall Speaking score. <a href="'+catalog.source+'" target="_blank" rel="noopener">Scoring reference</a>.</p>');
+        +questionNavigation()+'<p class="speaking-footnote">Content-only practice assessment, not an official Pearson score or an overall Speaking score. <a href="'+catalog.source+'" target="_blank" rel="noopener">Scoring reference</a>.</p>');
       mountPlayback();refreshControls();
     }
     function feedback(r) {
@@ -153,6 +167,7 @@
     }
     async function click(e) {
       const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
+      if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
       if(d.speakingQuestion)return start(d.speakingQuestion);if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}

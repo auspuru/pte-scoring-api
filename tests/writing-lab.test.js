@@ -43,7 +43,7 @@ test('Elapsed clocks do not reset on refresh, and future prompts/samples stay hi
   reconcile(a,2400001);assert.equal(a.status,'submitted');assert.equal(a.completed.filter(Boolean).length,3);
 });
 test('Original content has correct task counts, lengths and usable reference answers',()=>{
-  assert.equal(bank.spoken.length,5);assert.equal(bank.mocks.length,2);
+  assert.equal(bank.spoken.length,15);assert.equal(bank.mocks.length,2);
   for(const q of bank.spoken) {assert(policy.wordCount(q.text)>=175);assert.equal(policy.formFor('sst',q.sample).score,2);}
   for(const mock of bank.mocks) {
     assert.deepEqual(mock.questions.map(q=>q.type),['swt','swt','essay','sst','wfd','wfd','wfd']);

@@ -42,7 +42,8 @@ async def main():
             continue
         tmp = file.with_suffix('.tmp.mp3')
         voice = VOICES[q['voice']]
-        await asyncio.wait_for(edge_tts.Communicate(q['text'], voice, rate='-5%').save(str(tmp)), timeout=55)
+        rate = q.get('audioRate', '-5%')
+        await asyncio.wait_for(edge_tts.Communicate(q['text'], voice, rate=rate).save(str(tmp)), timeout=55)
         duration = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(tmp)]))
         low, high = (60, 90) if q['type'] == 'sst' else (3, 8)
         if not low <= duration <= high:
@@ -50,7 +51,7 @@ async def main():
         subprocess.run(['ffmpeg', '-v', 'error', '-i', str(tmp), '-f', 'null', '-'], check=True)
         data = tmp.read_bytes()
         tmp.replace(file)
-        manifest[q['id']] = {'textSha256': text_hash, 'audioSha256': digest(data), 'bytes': len(data), 'seconds': round(duration, 3), 'voice': voice, 'rate': '-5%'}
+        manifest[q['id']] = {'textSha256': text_hash, 'audioSha256': digest(data), 'bytes': len(data), 'seconds': round(duration, 3), 'voice': voice, 'rate': rate}
         manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
         print(q['id'], f'{duration:.2f}s', len(data), 'bytes', flush=True)
 

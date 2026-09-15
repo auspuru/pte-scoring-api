@@ -599,9 +599,9 @@
           </header>
           <div class="passage-nav" aria-label="Choose a passage">
             <div class="swt-pager">
-              <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">←</button>
+              <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">← Back</button>
               <span>Passage <strong class="nav-label" id="navCurrent">01</strong> <span class="swt-muted">of <span id="navTotal">10</span></span></span>
-              <button type="button" class="nav-arrow" id="navNext" onclick="nextPassage()" aria-label="Next passage">→</button>
+              <button type="button" class="nav-arrow" id="navNext" onclick="nextPassage()" aria-label="Next passage">Next →</button>
             </div>
             <label class="swt-select-label">Show<select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
               <option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option>
@@ -652,7 +652,7 @@
         <div id="swtResultsScreen" class="swt-sub-screen">
           <header class="swt-heading"><div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Your summary, reviewed</h1><p id="resultsBreadcrumb">Review your result, then make one useful improvement.</p></div><button type="button" class="btn" onclick="backToPractice()">← Back to writing</button></header>
           <div class="passage-nav" aria-label="Browse your results">
-            <div class="swt-pager"><button type="button" class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)" aria-label="Previous passage result">←</button><span>Passage <strong class="nav-label" id="resNavCurrent">01</strong> of <span id="resNavTotal">10</span></span><button type="button" class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)" aria-label="Next passage result">→</button></div>
+            <div class="swt-pager"><button type="button" class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)" aria-label="Previous passage result">← Back</button><span>Passage <strong class="nav-label" id="resNavCurrent">01</strong> of <span id="resNavTotal">10</span></span><button type="button" class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)" aria-label="Next passage result">Next →</button></div>
             <label class="swt-select-label">Show<select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)"><option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option></select></label>
             <label class="swt-select-label swt-passage-picker">Choose passage<select id="resPassageSelect" class="passage-select-dropdown" onchange="jumpToResultsPassage(parseInt(this.value))"></select></label>
           </div>

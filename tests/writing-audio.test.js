@@ -12,7 +12,7 @@ const directory = path.join(__dirname, '..', 'content', 'writing-audio');
 const questions = [...bank.spoken, ...bank.mocks.flatMap(m => m.questions)].filter(q => ['sst', 'wfd'].includes(q.type));
 
 test('Every current lecture and dictation has a verified recording with the correct content and duration', () => {
-  assert.equal(validateWritingAudio(), 13);
+  assert.equal(validateWritingAudio(), 23);
 });
 
 test('A cold cache and failed narration provider cannot prevent bundled audio playback', async t => {

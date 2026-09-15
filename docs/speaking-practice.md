@@ -94,3 +94,15 @@ Recording, private replay, revision conflicts, account isolation, reattempts and
 failed-assessment retries were verified through isolated API and client tests.
 The cloud browser could not reach the local preview, so no local visual or physical
 microphone verification is claimed.
+
+## Additional practice release
+
+Added ten original SST lectures (15 standalone SST questions total), each with
+a verified 60–90-second MP3, three content points and an individual 50–70-word
+sample. Existing lectures, mocks and their recordings remain intact.
+
+Back/Next navigation traverses each task's practice catalogue. Speaking and
+listening resume saved attempts; reading restores saved question sessions; essay
+practice keeps per-question device drafts scoped to the account. Active speaking
+capture must finish and save before navigation. Listening timers continue while
+away, as before. Mock submission rules are unchanged.

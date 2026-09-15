@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-15.6",
+  "version": "2026-09-15.7",
   "spoken": [
     {
       "id": "sst-urban-trees",
@@ -75,6 +75,166 @@
         "Accessible preservation and continuing community relationships support responsible interpretation."
       ],
       "sample": "The lecture describes how community stories give museum objects context and represent experiences overlooked by formal records. Museums must obtain informed participation, distinguish memories from verified facts and present differing accounts carefully. Digital access also requires preservation and accessibility. Combining professional interpretation with respect for contributors makes community involvement an ongoing relationship rather than a single collection activity."
+    },
+    {
+      "id": "sst-citizen-science",
+      "type": "sst",
+      "title": "Citizens collecting scientific data",
+      "topic": "Science",
+      "minutes": 10,
+      "voice": "nova",
+      "text": "Scientific research sometimes requires observations from more places than a small professional team can visit. Volunteers can help by recording birds, measuring rainfall or photographing changes along a coastline. Their contribution can reveal patterns across wide areas and long periods. However, collecting more observations does not automatically produce reliable evidence. Participants need clear instructions about what to record and how to report uncertainty. For example, a volunteer who cannot identify a bird should be able to mark the observation as uncertain instead of guessing. Researchers also need to consider where observations come from. Easily accessible parks may receive many visits, while remote locations remain poorly represented. Training, checks by experienced observers and careful analysis can reduce these problems, although they cannot remove every source of error. There is also an educational benefit: participants learn how scientific questions are investigated and why conclusions sometimes change. This benefit is stronger when researchers share results and explain how the observations were used. Citizen science therefore works best as a partnership, combining public participation with professional guidance, transparent methods and continuing communication.",
+      "keyPoints": [
+        "Volunteers extend the geographic and time coverage of scientific observations.",
+        "Clear instructions, uncertainty reporting and checks are needed to manage unreliable or uneven data.",
+        "Sharing results supports learning and a continuing research partnership."
+      ],
+      "sample": "Citizen science allows volunteers to collect observations across areas and periods that professional teams cannot cover alone. Reliable findings nevertheless require clear instructions, uncertainty reporting and checks for errors or uneven coverage. By sharing results and explaining methods, researchers also support public learning. Successful projects combine broad participation with professional guidance and ongoing communication.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-sleep-memory",
+      "type": "sst",
+      "title": "Sleep and learning",
+      "topic": "Psychology",
+      "minutes": 10,
+      "voice": "onyx",
+      "text": "Students often think about learning only in terms of the hours spent studying. Yet what happens after a study session also deserves attention. Sleep provides an opportunity for the brain to process and organise recently acquired information. This does not mean that sleeping can replace learning in the first place. Rather, study and rest play complementary roles. A student who stays awake all night may gain extra reading time but struggle to concentrate or retrieve information the following morning. Regular routines can help because the demands of studying are easier to manage when rest is planned instead of treated as leftover time. The quality of the learning session matters too. Trying to recall a concept and correcting mistakes gives the learner useful material to revisit later. Researchers study these relationships using different tasks, so findings from one experiment should not be assumed to apply equally to every person or subject. The practical message is to consider learning as a sequence of preparation, active study and recovery. A timetable that includes sufficient rest can support this sequence more effectively than one that rewards uninterrupted effort alone.",
+      "keyPoints": [
+        "Sleep helps process recently learned information but does not replace study.",
+        "All-night study may undermine attention and recall the next day.",
+        "Active learning and planned rest should be combined rather than valuing continuous effort."
+      ],
+      "sample": "The lecture presents sleep and study as complementary parts of learning. Rest helps the brain process new information, while staying awake to study can weaken subsequent concentration and recall. Effective timetables should combine active recall and correction with regular opportunities for recovery. However, individual differences and variations between research tasks mean that findings should be interpreted carefully.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-water-reuse",
+      "type": "sst",
+      "title": "Reusing water locally",
+      "topic": "Environment",
+      "minutes": 10,
+      "voice": "fable",
+      "text": "Cities usually obtain water, use it once and then send it away for treatment. As demand grows, planners are considering whether some water can be used again for suitable purposes. For instance, treated water might irrigate public gardens or serve certain industrial processes, reducing demand for high-quality drinking water. The important distinction is between different uses. Water appropriate for a garden is not automatically suitable for drinking, and treatment must match the intended purpose. Separate pipes, clear labels and routine monitoring can help maintain this distinction. Cost also matters. A recycling system requires energy, equipment and maintenance, so it should be compared with other ways of reducing demand, such as repairing leaks. Public understanding is another part of the decision. People need clear explanations of where reused water goes, how it is treated and who checks the system. Simply announcing that a technology is safe may not answer their practical questions. Water reuse is therefore one option within a wider strategy. Its value depends on local needs, appropriate treatment and dependable management rather than on the assumption that every available technology should be installed.",
+      "keyPoints": [
+        "Reusing treated water for suitable purposes can reduce drinking-water demand.",
+        "Treatment, separate infrastructure and monitoring must match the intended use.",
+        "Costs, alternatives and public understanding determine whether reuse suits local needs."
+      ],
+      "sample": "The speaker explains that treated water can serve gardens or industry and reduce demand for drinking water. However, treatment and monitoring must suit each purpose, supported by separate infrastructure and clear information. Planners should compare costs with alternatives such as repairing leaks. Water reuse succeeds when it responds to local needs and is managed reliably.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-public-transport",
+      "type": "sst",
+      "title": "Making buses dependable",
+      "topic": "Transport",
+      "minutes": 10,
+      "voice": "shimmer",
+      "text": "When a city wants more people to use buses, reducing the ticket price may seem the obvious first step. Fares matter, but passengers also consider whether a service is dependable. If a bus arrives unpredictably, someone travelling to work may need to leave much earlier than the journey itself requires. Frequent, reliable services reduce this uncertainty. Dedicated lanes can help buses avoid traffic, while well-designed stops can make boarding quicker and easier. Connections deserve attention too. A short journey on one route may still be inconvenient if a passenger faces a long wait for the next bus. Timetables and information should therefore describe the whole journey rather than isolated routes. Improvements also need to reach neighbourhoods where people depend on public transport most. Counting total passenger numbers alone could overlook these areas if they have smaller populations. Planners should listen to existing users and people who currently find the network difficult to use. A successful bus system combines reasonable fares, consistent journey times and accessible connections. The goal is to make public transport a practical everyday choice, not merely to advertise an inexpensive ticket.",
+      "keyPoints": [
+        "Bus users value predictable journeys as well as affordable fares.",
+        "Dedicated lanes, accessible stops and coordinated connections improve reliability.",
+        "Planning should consider underserved neighbourhoods and complete passenger journeys."
+      ],
+      "sample": "The lecture argues that affordable fares alone will not attract bus passengers if journeys remain unpredictable. Dedicated lanes, efficient stops and coordinated connections can improve reliability and reduce waiting. Planners should consider entire journeys and consult underserved communities as well as current users. Successful networks make public transport a dependable and accessible choice for everyday travel.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-digital-archives",
+      "type": "sst",
+      "title": "Preserving digital records",
+      "topic": "Technology",
+      "minutes": 10,
+      "voice": "echo",
+      "text": "A box of old letters can remain readable for many years if the paper survives. A digital collection presents a different challenge. Even when a file is undamaged, the software or equipment needed to open it may no longer be available. Digital preservation therefore means more than keeping a backup copy. Organisations need to know what their files contain, which formats they use and who is permitted to access them. Descriptive information makes records easier to find and interpret, especially when the people who created them have left. Copies stored in different locations protect against a single equipment failure, but these copies should also be checked regularly. Moving information into a newer format can preserve access, although staff must verify that important features have not been lost in the process. There are choices about priorities because storing everything indefinitely can be expensive and difficult to manage. Records should be selected according to their lasting value and the organisation's responsibilities. The central lesson is that digital preservation is an ongoing activity requiring planning, documentation and review, rather than a task completed by purchasing additional storage.",
+      "keyPoints": [
+        "Digital files may become unreadable when software or equipment becomes obsolete.",
+        "Preservation requires metadata, checked backups and careful format migration.",
+        "Organisations must prioritise valuable records and maintain an ongoing preservation process."
+      ],
+      "sample": "The speaker explains that digital preservation involves maintaining usable records, not simply storing copies. Obsolete software can prevent access even when files survive. Organisations need descriptive information, regularly checked backups and careful migration to newer formats. Because resources are limited, they should prioritise records of lasting value and treat preservation as a continuing responsibility.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-urban-pollinators",
+      "type": "sst",
+      "title": "Habitats for urban pollinators",
+      "topic": "Ecology",
+      "minutes": 10,
+      "voice": "nova",
+      "text": "Gardens, balconies and roadside planting can provide food for pollinating insects in cities. However, a patch of colourful flowers is only one part of a useful habitat. Different insects are active at different times, so a range of plants that flower across the seasons can provide a more continuous food supply. Suitable nesting places matter as well. Some insects use bare ground, while others shelter in hollow stems or small cavities. Tidying every corner of a garden may therefore remove useful habitat. The location of planting also influences its value. Small spaces can act as connections between larger green areas, helping insects move through neighbourhoods. Yet planting plans should reflect local conditions rather than copying a single list of fashionable flowers. Gardeners need to consider climate, water availability and the needs of local species. Monitoring visits can show which plants are being used, although one afternoon of observation is unlikely to reveal the complete picture. Supporting urban pollinators involves a network of food, shelter and connected spaces. Long-term care and seasonal variety are more useful measures of success than the immediate appearance of a flower bed.",
+      "keyPoints": [
+        "Pollinators require seasonally varied food and suitable nesting spaces.",
+        "Connected small habitats help insects move through cities.",
+        "Locally appropriate planting, monitoring and long-term care matter more than appearance."
+      ],
+      "sample": "The lecture describes urban pollinator habitats as connected sources of food and shelter. Plants flowering in different seasons and suitable nesting spaces support varied insects, while small gardens can link larger green areas. Planting should suit local conditions and be monitored over time. Success depends on seasonal variety and continuing care rather than colourful displays alone.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-peer-feedback",
+      "type": "sst",
+      "title": "Learning through peer feedback",
+      "topic": "Education",
+      "minutes": 10,
+      "voice": "onyx",
+      "text": "Asking students to comment on one another's work can create valuable learning opportunities, but the quality of the activity depends on its design. Without guidance, comments may remain vague, such as saying that an essay is good or needs improvement. Clear criteria help students identify specific features and explain why they matter. Looking at an example together before reviewing classmates' work can establish a shared understanding of those criteria. The student giving feedback benefits too, because evaluating someone else's choices can reveal possibilities for their own writing. However, a reviewer should not be expected to act as a substitute teacher or to assign a definitive grade. Comments are suggestions that the writer must consider alongside the task requirements. Time for revision is essential. If feedback arrives after an assignment is finished, students may have little reason to use it. A respectful classroom environment also makes it easier to ask questions and acknowledge uncertainty. Effective peer feedback is therefore a cycle of observation, explanation and revision. Its purpose is to develop judgement and improve work, rather than simply to distribute marking among students.",
+      "keyPoints": [
+        "Clear criteria and shared examples make peer comments specific and useful.",
+        "Both writers and reviewers develop judgement; peer comments are not definitive grades.",
+        "Respectful discussion and time to revise are essential to learning from feedback."
+      ],
+      "sample": "The speaker argues that peer feedback works best with clear criteria and shared examples that encourage specific comments. Reviewing others also develops students’ judgement about their own work. Suggestions should inform revision rather than replace a teacher’s assessment. Respectful discussion and sufficient revision time make feedback a learning cycle instead of merely distributing marking responsibilities.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-repair-cafes",
+      "type": "sst",
+      "title": "Community repair workshops",
+      "topic": "Community",
+      "minutes": 10,
+      "voice": "fable",
+      "text": "At a community repair workshop, residents bring damaged household items and work with volunteers to investigate possible repairs. The immediate benefit may be a functioning lamp or a repaired piece of clothing, but these meetings can also help people understand how products are made. Watching a repair can make an unfamiliar mechanism less intimidating and encourage more careful maintenance. Nevertheless, volunteers need clear limits. Some repairs require specialist equipment or qualifications, and an item should not be returned to use simply because it appears to work briefly. Organisers need procedures for assessing risks and explaining when professional help is required. Spare parts and instructions can also determine whether a repair is practical. A workshop cannot solve design problems that make components inaccessible or impossible to replace. Its social role should not be overlooked either: people share skills, meet neighbours and gain confidence by learning together. The success of these events should therefore be judged through both useful repairs and learning outcomes. They can support a culture of maintenance, while also revealing why manufacturers and professional services remain important to extending product life.",
+      "keyPoints": [
+        "Repair workshops extend product use and teach practical maintenance skills.",
+        "Safety limits, specialist referrals and accessible spare parts are necessary.",
+        "Social learning matters alongside repair counts, with manufacturers and professionals retaining key roles."
+      ],
+      "sample": "The lecture explains that community repair workshops help residents restore products, learn maintenance skills and connect with neighbours. Volunteers nevertheless need safety procedures and must refer specialist work to professionals. Product design and spare-part access also limit possible repairs. Success should include learning and community benefits as well as repaired items, while recognising manufacturers’ continuing responsibilities.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-forecast-uncertainty",
+      "type": "sst",
+      "title": "Understanding weather forecasts",
+      "topic": "Communication",
+      "minutes": 10,
+      "voice": "shimmer",
+      "text": "A weather forecast is sometimes criticised when the conditions differ from what a listener expected. Yet a forecast describes an uncertain future using the evidence available at a particular time. Communicating that uncertainty clearly can make the information more useful. For example, the chance of rain and the amount of rain are different questions. A brief shower may be quite likely without producing much water, while a less likely storm could have serious consequences. Users also have different needs. Someone deciding whether to carry an umbrella may act differently from an organiser responsible for an outdoor event. Presenting a range of possible outcomes can help both users make decisions appropriate to their circumstances. Forecasts are updated as new observations become available, so a changed prediction does not necessarily mean that the earlier one was careless. However, technical detail alone is insufficient. Explanations should use consistent language and show what the uncertainty means for practical choices. Effective forecasting combines scientific modelling with clear communication. Its value lies in helping people prepare for plausible conditions rather than promising perfect certainty about every place and hour.",
+      "keyPoints": [
+        "Forecasts describe uncertain outcomes and change as new observations arrive.",
+        "Rain probability, amount and consequences are distinct and matter differently to users.",
+        "Clear, consistent explanations support practical decisions without promising certainty."
+      ],
+      "sample": "The speaker presents weather forecasts as evidence-based descriptions of uncertain future conditions. Rain probability, expected amount and potential consequences are different considerations, and users have different decision needs. Updated observations can legitimately change predictions. Forecasting is most useful when scientific modelling is accompanied by clear explanations that help people prepare for a range of plausible outcomes.",
+      "audioRate": "+5%"
+    },
+    {
+      "id": "sst-shared-workspaces",
+      "type": "sst",
+      "title": "Designing shared workspaces",
+      "topic": "Work",
+      "minutes": 10,
+      "voice": "echo",
+      "text": "An open office is often intended to encourage cooperation by making colleagues easier to reach. However, removing walls does not ensure that useful collaboration will follow. Employees also need opportunities to concentrate without interruption. A conversation that solves one person's problem can distract several people nearby. A more flexible approach provides different spaces for different activities, including quiet work areas and places for discussion. The arrangement only works if staff understand how the spaces should be used. For example, a quiet area loses its purpose when meetings regularly take place there. Access must also be fair; reserving every enclosed room for senior employees may leave others with nowhere to handle sensitive conversations. Evaluating a redesign requires more than asking whether the room looks attractive. Organisations can examine how easily people find suitable spaces, whether interruptions decrease and whether teams can still communicate effectively. Staff feedback should be gathered over time because needs may change as projects develop. The aim is to support both individual focus and cooperation. Successful workspace design combines physical choices with shared expectations and continuing adjustment.",
+      "keyPoints": [
+        "Open offices can support contact but also interrupt focused work.",
+        "Varied spaces and fair access need clear shared rules.",
+        "Evaluation and ongoing staff feedback should guide adjustments supporting concentration and collaboration."
+      ],
+      "sample": "The lecture argues that open offices do not automatically improve collaboration because conversations can disrupt concentrated work. Organisations should provide varied spaces with clear rules and fair access. Evaluation should consider interruptions, suitable space availability and communication rather than appearance alone. Continuing staff feedback helps adapt the workplace to changing needs and balance individual focus with cooperation.",
+      "audioRate": "+5%"
     }
   ],
   "mocks": [
@@ -379,175 +539,300 @@
       "predictionNumber": 9,
       "title": "Compulsory Foreign Language Learning",
       "text": "Some people think learning a foreign language at school should be compulsory. To what extent do you agree with it? Use your experience or examples to support your viewpoint.",
-      "keyPoints": ["State whether foreign-language learning should be compulsory at school and explain the extent of agreement.","Explain benefits such as communication, cultural understanding and future study or work opportunities.","Acknowledge practical concerns including timetable pressure, resources and different student abilities.","Support the position with a relevant example or personal experience."],
+      "keyPoints": [
+        "State whether foreign-language learning should be compulsory at school and explain the extent of agreement.",
+        "Explain benefits such as communication, cultural understanding and future study or work opportunities.",
+        "Acknowledge practical concerns including timetable pressure, resources and different student abilities.",
+        "Support the position with a relevant example or personal experience."
+      ],
       "sample": "Learning a foreign language should be compulsory at school because it develops communication skills, cultural awareness and future opportunities. However, compulsory study should be flexible enough to support students who learn at different speeds or have particular educational needs. A second language gives young people a practical way to communicate with visitors, international classmates and future colleagues. It also introduces them to different traditions and ways of thinking, which can reduce prejudice and improve cooperation. In an increasingly connected economy, employers may value workers who can deal with customers or partners from other countries. Early language education is especially useful because children are generally able to develop pronunciation and confidence before fear of making mistakes becomes a major barrier. There are nevertheless challenges. Some schools do not have enough qualified teachers, and students may already face heavy academic demands. If every learner is judged by an identical target, those who need additional support could become discouraged. Language lessons should therefore emphasise steady progress and everyday communication instead of relying only on difficult examinations. When I studied another language, regular conversations and simple cultural projects were more motivating than memorising long vocabulary lists. The subject helped me communicate with international students and made travel less intimidating. Foreign-language learning should consequently be compulsory, with appropriate support and assessment that recognises gradual improvement rather than demanding identical results from everyone."
     },
     {
       "predictionNumber": 10,
       "title": "The Most Pressing Global Problem",
       "text": "In today's world, different government and international organisations are confronting many global problems. What is the most pressing problem among them and give solutions?",
-      "keyPoints": ["Choose one global problem and clearly explain why it is the most urgent.","Describe the scale and consequences of the selected problem for people, economies or the environment.","Offer practical solutions involving governments, international organisations and communities.","Explain how cooperation and implementation could reduce the problem."],
+      "keyPoints": [
+        "Choose one global problem and clearly explain why it is the most urgent.",
+        "Describe the scale and consequences of the selected problem for people, economies or the environment.",
+        "Offer practical solutions involving governments, international organisations and communities.",
+        "Explain how cooperation and implementation could reduce the problem."
+      ],
       "sample": "Among the many challenges facing governments and international organisations, climate change is the most pressing because it threatens health, food production, homes and economic stability at the same time. Its effects also cross national borders, so no country can solve it through isolated action. Rising temperatures are increasing heatwaves, bushfires, floods and the loss of reliable water supplies. These events can destroy infrastructure and force people to leave their communities. Changes in rainfall also make farming less predictable, which may raise food prices and intensify competition for resources. Poorer countries are particularly vulnerable because they often have fewer funds to protect cities or recover from disasters, even though their historical emissions may be relatively small. The first solution is a rapid reduction in greenhouse-gas emissions. Governments should expand renewable energy, improve electricity networks, set realistic efficiency standards and provide reliable public transport. Companies must measure their emissions and redesign production rather than treating environmental action as a marketing exercise. International organisations can help by directing finance and technical knowledge to developing countries, while wealthier nations should support adaptation in vulnerable regions. Individuals also have a role through efficient energy use, lower-waste consumption and informed political choices, but personal action cannot replace structural reform. Coordinated government policy is the essential starting point because it changes the incentives facing millions of households and businesses."
     },
     {
       "predictionNumber": 11,
       "title": "Medical Technology and Life Expectancy",
       "text": "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?",
-      "keyPoints": ["Clearly decide whether longer life through medical technology is mainly a blessing or a curse.","Explain benefits such as disease prevention, recovery, independence and family wellbeing.","Acknowledge concerns including unequal access, ageing populations and longer periods of illness.","Support the judgement with a balanced explanation and an example."],
+      "keyPoints": [
+        "Clearly decide whether longer life through medical technology is mainly a blessing or a curse.",
+        "Explain benefits such as disease prevention, recovery, independence and family wellbeing.",
+        "Acknowledge concerns including unequal access, ageing populations and longer periods of illness.",
+        "Support the judgement with a balanced explanation and an example."
+      ],
       "sample": "Medical technology that increases average life expectancy is mainly a blessing, provided that longer lives are supported by good health services and social planning. New treatments can prevent suffering and give people more years with their families, although the benefits are not automatically shared equally. Advances in screening, surgery, medicines and assistive devices allow doctors to identify illnesses earlier and manage conditions that were once fatal. A person with a serious disease may now recover, remain independent or continue working and contributing to the community. Longer lifespans also allow grandparents to support younger relatives and give individuals more time to pursue education, relationships and meaningful interests. There are genuine difficulties. If people live longer without adequate prevention or aged-care services, they may spend many years with chronic illness. An ageing population can place pressure on pensions, hospitals and younger workers. Expensive treatments may also be available mainly to wealthy patients or countries, widening health inequalities. These problems show the need for planning rather than proving that longer life is harmful in itself. Routine tests and improved treatments have helped people I know manage conditions that previously would have shortened their lives. Governments should therefore invest in prevention, affordable primary care, healthy ageing and ethical access to innovation. Medical technology is a blessing when it extends healthy, dignified life instead of simply prolonging dependence without support."
     },
     {
       "predictionNumber": 12,
       "title": "Parental Legal Responsibility",
       "text": "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.",
-      "keyPoints": ["State when parents should or should not be legally responsible for a child's actions.","Explain how supervision, guidance and reasonable prevention can influence responsibility.","Distinguish deliberate neglect from behaviour that parents could not reasonably control.","Use an observation, study or experience to support the position."],
+      "keyPoints": [
+        "State when parents should or should not be legally responsible for a child's actions.",
+        "Explain how supervision, guidance and reasonable prevention can influence responsibility.",
+        "Distinguish deliberate neglect from behaviour that parents could not reasonably control.",
+        "Use an observation, study or experience to support the position."
+      ],
       "sample": "Parents should be held legally responsible for a child's actions only when their serious neglect or deliberate encouragement contributed to the harm. Making parents automatically liable for every mistake would be unfair because children gradually develop independence and cannot always be controlled. Adults have a duty to provide reasonable supervision, teach safe behaviour and respond when they know that a child is repeatedly causing danger. For instance, a parent who allows an unsupervised child to drive, stores a dangerous weapon carelessly or ignores clear warnings about repeated vandalism may have failed to prevent foreseeable harm. In such situations, legal responsibility can encourage families to take supervision and education seriously. However, children are not simply extensions of their parents. As they grow older, they make independent decisions at school, online and with friends. Even attentive parents cannot observe every conversation or predict every impulsive act. Automatic penalties could also punish families who are already dealing with poverty, disability or limited access to support, without addressing the child's actual needs. The young person should be accountable in an age-appropriate way, while parents should be assessed according to what they reasonably knew and could have done. In my observation, parents who set consistent boundaries and discuss consequences often help children correct harmful behaviour, but they cannot prevent every poor choice. The law should therefore focus on evidence of negligence, encouragement or failure to act after a known risk."
     },
     {
       "predictionNumber": 13,
       "title": "Building Design and Daily Life",
       "text": "Do you think the design of buildings affects, positively or negatively, where people live and work?",
-      "keyPoints": ["Explain whether building design has positive, negative or mixed effects on living and working places.","Discuss factors such as natural light, accessibility, ventilation, layout and energy efficiency.","Acknowledge that poor design can create stress, isolation, safety risks or higher costs.","Give a concrete example from a home, school, workplace or public building."],
+      "keyPoints": [
+        "Explain whether building design has positive, negative or mixed effects on living and working places.",
+        "Discuss factors such as natural light, accessibility, ventilation, layout and energy efficiency.",
+        "Acknowledge that poor design can create stress, isolation, safety risks or higher costs.",
+        "Give a concrete example from a home, school, workplace or public building."
+      ],
       "sample": "The design of buildings has a major effect on where people live and work because it influences health, comfort, productivity and social interaction. Good design can support daily life, whereas poorly planned buildings may create stress and unnecessary costs. Natural light, ventilation and sensible room layouts make homes and workplaces more comfortable. Windows and shaded outdoor areas can reduce reliance on artificial lighting and air-conditioning, lowering energy use. Accessible entrances, lifts and clear pathways allow older people and people with disabilities to participate more independently. In offices, quiet rooms, shared collaboration areas and ergonomic furniture can support both concentration and teamwork. In contrast, small rooms, inadequate ventilation and constant artificial light may affect physical and mental wellbeing. A workplace with an open plan but no quiet area can make concentration difficult. Buildings located far from public transport can increase commuting time and car dependence, even if the structure itself is attractive. During my studies, a classroom with large windows, adjustable seating and a clear layout was easier to use than an older room that was crowded and poorly ventilated. Students remained more attentive and could move around without disturbing one another. Architects and developers should therefore evaluate buildings through the experience of their users, not just their visual style. Thoughtful design can make everyday environments healthier, more inclusive and more efficient."
     },
     {
       "predictionNumber": 14,
       "title": "Mass Media Influence on Young People",
       "text": "The mass media, such as TV, radio and newspapers, have an influence on people, particularly on younger generations. It plays a pivotal role in shaping the opinions of people, especially teenagers and young people. To what extent do you agree with this? Please give examples.",
-      "keyPoints": ["State the extent to which mass media shapes the opinions of teenagers and young people.","Explain how repeated messages, role models, news framing and advertising influence attitudes.","Acknowledge that family, school, peers and media literacy can moderate this influence.","Use a relevant example while avoiding the claim that all young people respond identically."],
+      "keyPoints": [
+        "State the extent to which mass media shapes the opinions of teenagers and young people.",
+        "Explain how repeated messages, role models, news framing and advertising influence attitudes.",
+        "Acknowledge that family, school, peers and media literacy can moderate this influence.",
+        "Use a relevant example while avoiding the claim that all young people respond identically."
+      ],
       "sample": "Mass media has a substantial influence on young people's opinions, although it is only one factor among family, school, friends and personal experience. Television, radio, newspapers and their online extensions repeatedly present particular ideas about success, beauty, politics and acceptable behaviour, which can gradually shape attitudes. Young people are especially exposed to media because entertainment and news are available throughout the day. Advertising associates products with attractive lifestyles, while television programmes and social-media personalities can make certain clothes, careers or behaviours appear normal and desirable. News organisations also influence interpretation through the stories they select, the language they use and the voices they include. When teenagers encounter the same message from several sources, they may accept it without recognising that it reflects a particular commercial or political viewpoint. Media influence is not unlimited. Students who learn to check sources and compare different perspectives are less likely to accept a dramatic claim immediately. Parents and teachers can encourage discussion, while diverse friendships expose young people to experiences that may challenge stereotypes. A school discussion about misleading health advertising, for example, helped students recognise how emotional images could influence their choices. I therefore agree to a large extent that mass media shapes young opinions, but education and critical thinking can reduce manipulation and help teenagers form independent judgements."
     },
     {
       "predictionNumber": 15,
       "title": "Modern Inventions and Their Impact",
       "text": "In our technological world, the number of new inventions has been evolving on a daily basis. Please describe a new invention and determine whether it brings beneficial or detrimental impact to society.",
-      "keyPoints": ["Describe a specific recent invention clearly enough for the reader to understand its purpose.","Explain its main benefits for individuals, communities or a particular industry.","Discuss possible risks such as privacy, inequality, dependence or misuse.","Reach a clear judgement about whether its overall impact is beneficial or detrimental."],
+      "keyPoints": [
+        "Describe a specific recent invention clearly enough for the reader to understand its purpose.",
+        "Explain its main benefits for individuals, communities or a particular industry.",
+        "Discuss possible risks such as privacy, inequality, dependence or misuse.",
+        "Reach a clear judgement about whether its overall impact is beneficial or detrimental."
+      ],
       "sample": "One important modern invention is the portable artificial-intelligence medical assistant, which can analyse symptoms, images and health records to help clinicians identify disease earlier. Although it must not replace professional judgement, its overall impact can be beneficial if it is regulated and made accessible. The system can compare a patient's information with a large medical database in seconds. In remote clinics, it may help a small team recognise warning signs and decide whether urgent specialist care is needed. It can also reduce routine paperwork, allowing doctors and nurses to spend more time speaking with patients. Earlier detection of serious illness could improve treatment outcomes and reduce long-term costs. There are significant risks. An inaccurate or biased system could recommend unsuitable treatment, and staff might trust its output without checking the evidence. Health records are extremely sensitive, so weak security could expose private information. Wealthy hospitals may obtain advanced tools while poorer communities remain excluded, increasing inequality. These concerns require strong privacy rules, independent testing, human oversight and transparent information about limitations. The invention should therefore support, rather than replace, trained medical professionals. If hospitals validate its recommendations and governments ensure fair access, it can extend expert knowledge to underserved areas and improve early treatment. Its impact is ultimately beneficial because the dangers arise from careless implementation, not from the idea of using technology to assist diagnosis."
     },
     {
       "predictionNumber": 16,
       "title": "Workers in Decision-Making",
       "text": "In some companies, employers involve workers in decision-making process about products and services. What are the advantages and disadvantages of such a policy?",
-      "keyPoints": ["Discuss both advantages and disadvantages of involving employees in product and service decisions.","Explain benefits such as practical knowledge, motivation, innovation and customer insight.","Explain drawbacks including slower decisions, disagreement, confidentiality and unclear accountability.","Give a balanced conclusion about when the policy is most effective."],
+      "keyPoints": [
+        "Discuss both advantages and disadvantages of involving employees in product and service decisions.",
+        "Explain benefits such as practical knowledge, motivation, innovation and customer insight.",
+        "Explain drawbacks including slower decisions, disagreement, confidentiality and unclear accountability.",
+        "Give a balanced conclusion about when the policy is most effective."
+      ],
       "sample": "Involving workers in decisions about products and services can improve a company's performance, but it also creates risks if roles and authority are unclear. The policy is most effective when employees contribute relevant knowledge within a structured decision-making process. Front-line workers often understand customer complaints, technical difficulties and practical operating costs better than senior managers do. Their suggestions may reveal a problem before it becomes expensive or identify a feature that customers genuinely need. Participation can also increase motivation because employees see that their experience is respected. However, consultation can slow a company down, particularly when many departments have competing priorities. Employees may focus on the needs of their own team rather than the organisation's long-term strategy. Sensitive information about a planned product could also be disclosed accidentally, and disagreement may create tension if workers believe their ideas were requested but ignored. Managers remain accountable for legal, financial and strategic outcomes, so involving staff should not make responsibility impossible to identify. A practical solution is to create representative working groups, provide the necessary evidence and set a clear deadline for recommendations. Management can then explain which suggestions were adopted and why other proposals were rejected. In my experience, group decisions are strongest when people who use a process daily are consulted, while one person remains responsible for coordinating the final choice. Employee participation should therefore be encouraged, especially for customer-facing improvements, but it needs clear boundaries, confidentiality and accountable leadership."
     },
     {
       "predictionNumber": 17,
       "title": "Responsibility for Tackling Climate Change",
       "text": "Climate change is a concerning global issue. Who should take the responsibilities, governments, big companies or individuals?",
-      "keyPoints": ["Assess the responsibilities of governments, companies and individuals for addressing climate change.","Explain why governments should set policy, standards and infrastructure priorities.","Discuss how companies and individuals can reduce emissions and support sustainable choices.","Reach a clear judgement about how responsibility should be shared."],
+      "keyPoints": [
+        "Assess the responsibilities of governments, companies and individuals for addressing climate change.",
+        "Explain why governments should set policy, standards and infrastructure priorities.",
+        "Discuss how companies and individuals can reduce emissions and support sustainable choices.",
+        "Reach a clear judgement about how responsibility should be shared."
+      ],
       "sample": "Climate change is a global problem, so responsibility should be shared by governments, large companies and individuals. However, governments and major businesses must carry the greatest responsibility because they control the policies, infrastructure and production systems that determine emissions at a large scale. Governments should set enforceable emissions standards, invest in renewable energy and public transport, and protect communities from floods, heat and other unavoidable effects. They can also use taxes or incentives to make clean energy affordable rather than expecting people to change their behaviour without practical alternatives. Large companies have a duty to measure their full environmental impact, reduce waste and redesign supply chains. They should not promote small lifestyle changes while continuing to produce excessive pollution or hiding information from consumers. Individuals still matter because household energy use, food choices, travel and voting decisions influence demand and political pressure. People can reduce waste, use energy carefully and support responsible businesses, but personal action is limited when clean options are expensive or unavailable. For example, a commuter cannot choose a low-emission train if a city has not built a reliable network. Effective climate action therefore requires cooperation, with governments creating the rules, companies changing production and citizens supporting sustainable choices. The strongest responsibility rests with institutions that have the greatest power to prevent harm, while individuals should contribute within their realistic capacity."
     },
     {
       "predictionNumber": 18,
       "title": "Laws and Human Behaviour",
       "text": "Some people think human behaviours can be limited by laws, and others think laws have little effect. What is your opinion?",
-      "keyPoints": ["Give a clear opinion about whether laws can limit human behaviour.","Explain how penalties, social norms and enforcement discourage harmful conduct.","Acknowledge that laws cannot change every private belief or guarantee compliance.","Support the opinion with a practical example and a balanced conclusion."],
+      "keyPoints": [
+        "Give a clear opinion about whether laws can limit human behaviour.",
+        "Explain how penalties, social norms and enforcement discourage harmful conduct.",
+        "Acknowledge that laws cannot change every private belief or guarantee compliance.",
+        "Support the opinion with a practical example and a balanced conclusion."
+      ],
       "sample": "Laws can limit human behaviour to a significant extent, particularly when they are clear, fairly enforced and supported by public education. They cannot control every private belief or decision, but they establish boundaries that protect other people and influence what most citizens consider acceptable. Traffic laws provide a simple example. Speed limits, drink-driving penalties and compulsory seat belts do not eliminate dangerous behaviour, but they reduce it by creating a predictable consequence and reminding drivers of their responsibility. Similar rules against violence, fraud and discrimination protect people who could not defend themselves through individual choice alone. Laws also shape social attitudes over time. Once workplaces are required to provide a safe and respectful environment, behaviour that was previously ignored may become recognised as unacceptable. Nevertheless, legislation has limits. A law that is impossible to enforce, widely viewed as unfair or unsupported by social services may encourage people to hide their actions rather than change them. Governments cannot legislate genuine kindness, and excessive restrictions may produce resistance. Education, community expectations and access to support are therefore important partners to legal penalties. For example, public smoking declined not only because of fines but also because health information and social attitudes changed. In my view, laws are effective tools for limiting harmful conduct, but they work best when people understand their purpose and have realistic ways to comply."
     },
     {
       "predictionNumber": 19,
       "title": "Shopping Malls Replacing Small Shops",
       "text": "Large shopping malls are replacing small shops. What is your opinion on this? Do you think this is a good or bad change?",
-      "keyPoints": ["State whether replacing small shops with large shopping malls is mainly positive or negative.","Explain benefits such as convenience, variety, employment and shared services.","Discuss disadvantages including pressure on local businesses, traffic and loss of community character.","Give a clear judgement supported by an example or practical condition."],
+      "keyPoints": [
+        "State whether replacing small shops with large shopping malls is mainly positive or negative.",
+        "Explain benefits such as convenience, variety, employment and shared services.",
+        "Discuss disadvantages including pressure on local businesses, traffic and loss of community character.",
+        "Give a clear judgement supported by an example or practical condition."
+      ],
       "sample": "The replacement of small shops by large shopping malls is a mixed development, but it is negative when it removes local businesses and leaves communities dependent on a single commercial centre. Malls offer genuine conveniences. Customers can compare many products in one location, use extended opening hours and access services such as food courts, pharmacies and entertainment. Large centres may create employment and provide sheltered spaces that are useful in extreme weather. They can also attract investment and improve public transport links in growing suburbs. However, these benefits come at a cost. Independent shop owners may be unable to match the rent, advertising budgets and purchasing power of national chains. When small businesses close, local families lose income and neighbourhoods may lose personal service and distinctive products. A mall can also increase traffic, energy use and waste, while profits may be transferred away from the community. In my experience, local shops often know their customers and provide specialised advice that a large chain cannot easily reproduce. A balanced retail policy should therefore allow modern centres to operate while protecting affordable premises for independent businesses and maintaining traditional shopping streets. Councils can encourage mixed-use development, improve pedestrian access and support local markets rather than treating every small shop as inefficient. Shopping malls are useful for choice and convenience, but their expansion should not be allowed to destroy the social and economic variety that makes a neighbourhood liveable."
     },
     {
       "predictionNumber": 20,
       "title": "Youth Unemployment and Shorter Working Week",
       "text": "Unemployment among young people is a serious problem. One solution has been suggested is to shorten the working week. What do you think are the advantages and disadvantages? Do you think this policy should apply to just young workers or the whole workforce?",
-      "keyPoints": ["Discuss advantages and disadvantages of shortening the working week to address youth unemployment.","Explain how sharing available hours could create entry-level opportunities and improve wellbeing.","Acknowledge risks including lower income, higher costs and reduced productivity.","Decide whether the policy should apply only to young workers or to the whole workforce."],
+      "keyPoints": [
+        "Discuss advantages and disadvantages of shortening the working week to address youth unemployment.",
+        "Explain how sharing available hours could create entry-level opportunities and improve wellbeing.",
+        "Acknowledge risks including lower income, higher costs and reduced productivity.",
+        "Decide whether the policy should apply only to young workers or to the whole workforce."
+      ],
       "sample": "Shortening the working week could create more opportunities for young people, but it would not solve unemployment by itself. In my view, a carefully designed reduction should apply across the workforce rather than only to young employees, because an age-specific rule could be unfair and employers might avoid hiring inexperienced applicants. If full-time staff worked slightly fewer hours, some organisations might need additional employees to cover the remaining shifts. Young workers could then gain entry-level experience, training and professional contacts. A shorter week might also reduce exhaustion and improve productivity if employees used their time more effectively. Businesses could benefit from lower absenteeism and a wider pool of applicants. There are substantial disadvantages. If wages fell in proportion to hours, workers could struggle to meet living costs. If salaries were protected, companies might face higher labour costs and increase prices, automate tasks or move operations elsewhere. Some industries, such as health care and transport, cannot simply reduce operating hours, and a poorly planned scheme could create staffing shortages. Applying the rule only to young people might also make them appear less reliable or limit their access to experienced mentors. A broader, voluntary transition supported by training subsidies would be more practical. Governments could encourage shorter standard hours in suitable sectors while protecting essential services and monitoring wages and employment. The policy should therefore be available to the whole workforce, with targeted support for young people entering the labour market."
     },
     {
       "predictionNumber": 21,
       "title": "Fewer Working Hours in the Future",
       "text": "In the future, people will work fewer hours at their jobs than they do now. Do you agree with the statement? Please support your opinion with your own experience.",
-      "keyPoints": ["State whether people are likely to work fewer hours in the future.","Explain how automation, flexible work and productivity could reduce required working time.","Acknowledge pressures that could maintain or increase working hours, such as competition and rising costs.","Use a relevant personal or observed experience to support the opinion."],
+      "keyPoints": [
+        "State whether people are likely to work fewer hours in the future.",
+        "Explain how automation, flexible work and productivity could reduce required working time.",
+        "Acknowledge pressures that could maintain or increase working hours, such as competition and rising costs.",
+        "Use a relevant personal or observed experience to support the opinion."
+      ],
       "sample": "I partly agree that people will work fewer hours in the future, but this outcome will depend on how productivity gains are distributed. Automation and digital tools can complete routine tasks quickly, making it possible for employees to produce the same results in less time. Remote work and flexible schedules may also reduce commuting and allow organisations to focus on outcomes rather than attendance. If governments and employers value wellbeing, these changes could support shorter working weeks and more time for family, education and community activities. However, technology does not automatically reduce working hours. Companies may use the time saved by software to set higher targets, and workers may remain connected to messages throughout the day. Rising housing costs and economic competition can encourage people to accept overtime or hold more than one job. Some occupations also require a physical presence, so their hours will not fall as quickly as those in office-based work. In my experience, online systems have made administrative tasks faster, but they have also increased the number of requests that can be handled in a day. The result was greater output rather than an immediate reduction in hours. Therefore, fewer working hours are possible, but they will require deliberate agreements about workload, fair pay and the right to disconnect. Productivity improvements should benefit employees as well as shareholders. I expect average hours to decline gradually in some industries, while other workers may continue to work long schedules unless labour policy and workplace culture change."
     },
     {
       "predictionNumber": 22,
       "title": "Maximum Wage for High-Paying Jobs",
       "text": "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?",
-      "keyPoints": ["State whether a maximum wage should be imposed on highly paid jobs.","Explain possible benefits such as reducing extreme inequality and directing funds to public purposes.","Acknowledge risks including talent moving overseas, weaker incentives and difficult enforcement.","Support the view with a realistic example or personal observation."],
+      "keyPoints": [
+        "State whether a maximum wage should be imposed on highly paid jobs.",
+        "Explain possible benefits such as reducing extreme inequality and directing funds to public purposes.",
+        "Acknowledge risks including talent moving overseas, weaker incentives and difficult enforcement.",
+        "Support the view with a realistic example or personal observation."
+      ],
       "sample": "A maximum wage for high-paying jobs could reduce extreme inequality, but I do not support a rigid legal ceiling applied to every occupation. A better approach is progressive taxation, transparent executive pay and rules requiring companies to justify unusually large rewards. Very high salaries can be appropriate when a person creates exceptional value or accepts significant responsibility. Limiting them too severely might encourage talented professionals to move to another country or company, and it could make firms less willing to take risks. A salary ceiling would also be difficult to define. Should it include bonuses, shares, benefits and income from private businesses? Wealthy individuals might simply receive rewards in a different form, while ordinary employees would gain little. Nevertheless, unlimited pay can damage social trust when executives receive huge packages despite poor performance or when workers cannot afford basic necessities. Excessive inequality may reduce motivation, weaken communities and allow a small group to influence public decisions. Progressive taxation can address these concerns while retaining incentives. Companies should disclose the ratio between executive compensation and median employee pay, link bonuses to long-term results and provide fair wages throughout the workforce. In my observation, employees are more willing to accept a highly paid manager when the organisation is transparent and ordinary staff can also benefit from its success. I therefore favour strong limits on unjustified rewards rather than one universal maximum wage. This approach can reduce inequality without removing legitimate recognition for skill, responsibility and innovation."
     },
     {
       "predictionNumber": 23,
       "title": "Famous People and the Right to Privacy",
       "text": "People who are famous entertainers or sportspeople should give up the right to privacy, because this is the price of fame. To what extent do you agree or disagree with this point of view? Give your opinion with your experiences.",
-      "keyPoints": ["State the extent to which famous people should retain a right to privacy.","Explain why public interest may justify reporting professional conduct but not private details.","Discuss harms caused by intrusive media, harassment and publication of family information.","Support the view with a relevant example or personal observation."],
+      "keyPoints": [
+        "State the extent to which famous people should retain a right to privacy.",
+        "Explain why public interest may justify reporting professional conduct but not private details.",
+        "Discuss harms caused by intrusive media, harassment and publication of family information.",
+        "Support the view with a relevant example or personal observation."
+      ],
       "sample": "I strongly disagree that famous entertainers and sportspeople should surrender their right to privacy. Fame may create a legitimate public interest in a person's professional conduct, but it does not make every private conversation, relationship or family event public property. Public figures accept attention as part of their career, yet they remain entitled to safety and personal dignity. Responsible reporting can examine an athlete's performance, a celebrity's public statements or a professional's behaviour when it affects fans and consumers. This scrutiny can expose misconduct and encourage famous people to act responsibly. It is different from photographing children without permission, publishing a private address or inventing stories about relationships. Intrusive coverage can cause anxiety, damage reputations and encourage harassment. It may also affect family members who never chose a public career. If every private moment becomes content, public figures may avoid ordinary activities and society may normalise the idea that attention is more valuable than consent. In my experience, people often discuss performers' work enthusiastically while respecting their personal boundaries when clear information is provided about what is public and what is private. Media organisations should verify claims, avoid unnecessary personal details and give individuals a chance to respond. Courts and regulators should also act when reporting becomes harassment or exposes a serious safety risk. Fame can justify reasonable public scrutiny, especially where public money or professional responsibilities are involved, but it cannot erase basic privacy rights."
     },
     {
       "predictionNumber": 24,
       "title": "Studying Climate Change",
       "text": "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.",
-      "keyPoints": ["Choose one specific area of climate change to study and explain why it is important.","Describe the research question, affected communities or environmental system.","Explain how the findings could support practical adaptation or emissions reduction.","Use concrete examples rather than discussing climate change only in general terms."],
+      "keyPoints": [
+        "Choose one specific area of climate change to study and explain why it is important.",
+        "Describe the research question, affected communities or environmental system.",
+        "Explain how the findings could support practical adaptation or emissions reduction.",
+        "Use concrete examples rather than discussing climate change only in general terms."
+      ],
       "sample": "If I were assigned to study climate change, I would focus on how extreme heat affects people living in cities. This area is important because urban surfaces absorb heat, buildings can restrict airflow and many residents do not have access to cooling. Heatwaves are becoming more frequent and can cause dehydration, heart problems and dangerous working conditions, particularly for older people, outdoor workers and low-income households. My research would compare temperatures in different neighbourhoods and examine the effects of tree cover, building materials, public shade and access to cool community spaces. I would also study whether heat warnings reach vulnerable residents and whether electricity costs prevent families from using air-conditioning safely. This research could lead to practical solutions. Councils might plant trees in areas with little shade, replace dark surfaces with reflective materials and require new buildings to include ventilation and energy-efficient insulation. Employers could adjust working hours during severe heat, while health services could create local check-in programmes for isolated residents. For example, two suburbs with similar populations may experience different health outcomes if one has parks and shaded footpaths while the other is dominated by roads and concrete. I would choose this topic because it connects environmental change with immediate human wellbeing and produces evidence that local authorities can use. Studying global temperature trends is valuable, but understanding the local causes of heat exposure can help communities adapt more quickly and fairly."
     },
     {
       "predictionNumber": 25,
       "title": "Work-Life Balance",
       "text": "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?",
-      "keyPoints": ["Explain why a balance between work, family and leisure is important.","Discuss reasons including long hours, technology, financial pressure and insecure employment.","Explain how employers, governments and individuals can make balance more achievable.","Support the discussion with a relevant example or experience."],
+      "keyPoints": [
+        "Explain why a balance between work, family and leisure is important.",
+        "Discuss reasons including long hours, technology, financial pressure and insecure employment.",
+        "Explain how employers, governments and individuals can make balance more achievable.",
+        "Support the discussion with a relevant example or experience."
+      ],
       "sample": "Maintaining a balance between employment, family and leisure is extremely important because it protects health, relationships and long-term productivity. However, many people find this balance difficult because work has become more demanding and technology allows employers to contact staff at almost any time. Adequate leisure and family time help people recover from pressure and maintain supportive relationships. Employees who can rest properly are less likely to experience burnout, illness or resentment. Family activities also provide emotional support that cannot be replaced by financial success. In the long term, a balanced worker may be more focused and creative than someone who is permanently exhausted. Several forces make balance difficult. Housing and living costs encourage people to accept overtime or multiple jobs, while insecure employment makes them afraid to refuse additional work. Digital devices blur the boundary between an office and a home, and competitive workplaces may reward constant availability. Care responsibilities can create another challenge, particularly when services are expensive or working hours are inflexible. Employers can help through realistic workloads, predictable schedules, remote options and a genuine right to disconnect. Governments can support affordable childcare and fair leave arrangements. Individuals should also set boundaries and plan important personal activities rather than assuming free time will appear automatically. In my experience, separating study or work messages from family time made evenings more satisfying and improved concentration the following day. Work-life balance is therefore essential, but it requires cooperation rather than responsibility being placed only on individuals."
     },
     {
       "predictionNumber": 26,
       "title": "Experience is the Best Teacher",
       "text": "Some people argue that experience is the best teacher. Life experiences can teach more effectively than books or formal school education. How far do you agree with this idea? Support your opinion with reasons and/or your personal experience.",
-      "keyPoints": ["State how far life experience is more effective than books or formal education.","Explain what practical experience teaches about judgement, consequences and problem-solving.","Acknowledge the value of teachers, research and structured knowledge.","Use a personal or observed example to reach a balanced judgement."],
+      "keyPoints": [
+        "State how far life experience is more effective than books or formal education.",
+        "Explain what practical experience teaches about judgement, consequences and problem-solving.",
+        "Acknowledge the value of teachers, research and structured knowledge.",
+        "Use a personal or observed example to reach a balanced judgement."
+      ],
       "sample": "Life experience is a powerful teacher, but I do not agree that it is always more effective than books or formal education. The strongest learning usually combines practical experience with reliable knowledge and guidance. Experience teaches lessons that are difficult to understand in theory. A person who manages a budget, resolves a disagreement or works in a team learns how decisions affect real people and consequences. Practical mistakes can also develop resilience and judgement because the learner must reflect and adjust. For example, a student who organises an event may understand planning and communication more deeply than someone who only reads about them. Nevertheless, experience alone can be limited. A person may repeat an ineffective method, draw the wrong conclusion from one event or lack knowledge of risks that have already been studied by experts. Books and teachers provide organised information, historical evidence and explanations that can save learners from costly mistakes. Medical students, for instance, need supervised theory before treating patients; personal experience cannot replace scientific training. During my studies, reading about project management helped me understand basic principles, while participating in a group assignment showed me how difficult it was to apply them when people had different priorities. Each form of learning corrected the weaknesses of the other. Experience is therefore essential because it turns knowledge into judgement, but formal education gives experience a reliable framework. Learners should study established ideas, practise them safely and reflect on what actually happens."
     },
     {
       "predictionNumber": 27,
       "title": "AI and Foreign Language Learning",
       "text": "While artificial intelligence becomes so advanced, people can use computers to translate foreign languages that makes learning a foreign language unnecessary. To what extent do you agree with it?",
-      "keyPoints": ["State whether AI translation makes learning foreign languages unnecessary.","Explain the convenience and accuracy improvements offered by translation tools.","Discuss limits involving context, culture, privacy, trust and direct human communication.","Give a clear conclusion about why language learning remains valuable or not."],
+      "keyPoints": [
+        "State whether AI translation makes learning foreign languages unnecessary.",
+        "Explain the convenience and accuracy improvements offered by translation tools.",
+        "Discuss limits involving context, culture, privacy, trust and direct human communication.",
+        "Give a clear conclusion about why language learning remains valuable or not."
+      ],
       "sample": "Artificial-intelligence translation makes communication more convenient, but it does not make learning a foreign language unnecessary. Translation tools are useful for checking a menu, understanding a public notice or communicating the basic meaning of an urgent message. They can also help businesses work across borders and give learners quick explanations of unfamiliar words. As the technology improves, many people will reasonably use it for routine transactions. However, automated translation can misunderstand humour, cultural references, tone and words with several meanings. A sentence that is technically accurate may sound rude or fail to communicate the speaker's real intention. Sensitive information may also be exposed when private conversations are entered into an online service. Most importantly, direct language ability builds relationships in a way that a device cannot fully reproduce. Speaking another language shows respect, allows a person to participate without an intermediary and provides access to literature, history and social customs. It also develops listening skills and cultural understanding rather than merely transferring words. In my experience, translation applications were helpful when travelling, but learning basic greetings and questions made interactions warmer and encouraged people to explain their culture. Students should therefore learn at least one additional language while using AI as a supporting tool. Schools can teach communication and cultural awareness, and technology can provide pronunciation practice or occasional assistance. AI will reduce the need to memorise every word, but it will not remove the human value of understanding another language."
     },
     {
       "predictionNumber": 28,
       "title": "Travel and Quality of Education",
       "text": "Some believe the value of travel is overrated. One brilliant scholar never leaves the home bases. People argue whether travel is a necessary component of quality education or not. To what extent do you agree with it?",
-      "keyPoints": ["Assess whether travel is necessary for a high-quality education.","Explain how travel can provide cultural experience, observation and practical learning.","Acknowledge that excellent learning can occur through books, technology and local study.","Reach a nuanced conclusion supported by examples."],
+      "keyPoints": [
+        "Assess whether travel is necessary for a high-quality education.",
+        "Explain how travel can provide cultural experience, observation and practical learning.",
+        "Acknowledge that excellent learning can occur through books, technology and local study.",
+        "Reach a nuanced conclusion supported by examples."
+      ],
       "sample": "Travel is valuable for education, but it is not a necessary condition for becoming an excellent student or scholar. Visiting different places can turn abstract information into direct experience, while travel itself should not be treated as a substitute for study. Travelling exposes learners to languages, cultures, architecture and environments that may be difficult to understand from a textbook. A student studying history can gain a stronger sense of context by visiting a museum or historic site, and a geography student can observe how communities use land and water. Meeting people with different habits may also challenge assumptions and develop independence. These experiences can make learning memorable and encourage curiosity. Nevertheless, access to travel is unequal. International trips are expensive, and a student who cannot travel should not be considered less educated. Books, documentaries, virtual tours, interviews and local fieldwork can provide rich evidence. A brilliant researcher may produce valuable work from a library or laboratory, while an unprepared tourist may learn very little from visiting a famous location. In my experience, travel helped me remember cultural details, but the learning became meaningful only after I read about the place and reflected on what I had seen. Education depends more on thoughtful questions, good sources and sustained practice than on distance travelled. Travel should therefore be encouraged when it supports a clear learning purpose, but schools should provide accessible alternatives. It is a valuable component of education, not an essential requirement for quality."
     },
     {
       "predictionNumber": 29,
       "title": "City vs Countryside Living",
       "text": "Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.",
-      "keyPoints": ["Choose whether city or countryside living is better for you.","Compare access to employment, education, services, transport and social activities.","Acknowledge benefits and disadvantages of the alternative location.","Support the preference with personal reasons or experience."],
+      "keyPoints": [
+        "Choose whether city or countryside living is better for you.",
+        "Compare access to employment, education, services, transport and social activities.",
+        "Acknowledge benefits and disadvantages of the alternative location.",
+        "Support the preference with personal reasons or experience."
+      ],
       "sample": "For me, living in a city is better than living in the countryside because it provides easier access to employment, education, public transport and cultural activities. This preference does not mean that rural areas lack value; rather, my priorities are better served by an urban environment. Cities usually offer a wider choice of jobs and educational institutions. Hospitals, libraries, shops and government services are often closer, and frequent public transport allows residents to travel without owning a car. Cities also bring people from different cultures together and provide opportunities to attend exhibitions, classes, performances and community events. These advantages are particularly useful for someone who is studying or developing a career. Countryside living has important benefits. It can offer quieter surroundings, cleaner air, more space and a closer connection with nature. Housing may be less crowded, and neighbours may develop strong local relationships. However, rural residents can face longer journeys, fewer specialist services and limited employment choices. Young people may need to move away for university or work, while older residents may find transport difficult. I have found that being near a train network and educational facilities saves significant time each week and makes it easier to maintain friendships. Although city traffic and higher costs can be tiring, I can manage these disadvantages by choosing a walkable suburb and using parks. City life is therefore the better option for my current needs, while the countryside may become more attractive if my priorities later shift towards space and quiet."
     },
     {
       "predictionNumber": 30,
       "title": "Growing Up in the 21st Century",
       "text": "It is harder for children to grow up in the 21st century than it was in the past. How far do you agree with this statement? Give your opinions.",
-      "keyPoints": ["State how far you agree that growing up today is harder than in the past.","Discuss modern pressures such as digital exposure, academic competition and global uncertainty.","Acknowledge improvements including healthcare, safety, information and educational access.","Reach a balanced judgement without assuming every child has the same experience."],
+      "keyPoints": [
+        "State how far you agree that growing up today is harder than in the past.",
+        "Discuss modern pressures such as digital exposure, academic competition and global uncertainty.",
+        "Acknowledge improvements including healthcare, safety, information and educational access.",
+        "Reach a balanced judgement without assuming every child has the same experience."
+      ],
       "sample": "Growing up in the twenty-first century is harder in some ways, but it is also safer and more connected than it was in the past. The difficulty depends on a child's family, community and access to support, so the statement should not be accepted without qualification. Modern children face pressures that earlier generations did not experience at the same scale. Online platforms expose them to constant comparison, advertising and information about frightening events. Digital communication can support friendships, but it can also create cyberbullying and reduce opportunities to be free from social judgement. Academic competition, high living costs and uncertainty about future employment may place pressure on families and young people. On the other hand, children today benefit from better medical treatment, wider educational resources and faster access to information. Technology can help a student with a disability communicate or enable a child in a remote area to attend lessons online. Public awareness of child safety and mental health has also improved, even though serious problems remain. In my observation, young people are often skilled at finding information and communicating across cultures, but they need adults to teach them how to manage screens and evaluate unreliable content. The past should not be romanticised because many children previously lacked healthcare, protection or educational opportunity. I therefore partly agree that childhood is harder today: digital and economic pressures are real, but modern support and knowledge can improve children's lives when families, schools and governments use them responsibly."
     },
     {
       "predictionNumber": 31,
       "title": "Historic Buildings vs Modern Housing",
       "text": "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.",
-      "keyPoints": ["Discuss the advantages and disadvantages of restoring historic buildings instead of building modern housing.","Explain cultural, educational and tourism benefits of preserving heritage.","Explain the social cost when scarce public funds do not address housing shortages.","Give a clear view about how governments should balance preservation and housing needs."],
+      "keyPoints": [
+        "Discuss the advantages and disadvantages of restoring historic buildings instead of building modern housing.",
+        "Explain cultural, educational and tourism benefits of preserving heritage.",
+        "Explain the social cost when scarce public funds do not address housing shortages.",
+        "Give a clear view about how governments should balance preservation and housing needs."
+      ],
       "sample": "Restoring historic buildings has cultural and economic value, but governments should not allow preservation projects to take priority over essential modern housing. A balanced policy can protect important heritage while ensuring that public money meets urgent social needs. Historic buildings connect communities with their past and provide evidence of earlier architecture, work and social life. Well-maintained sites can support education, tourism and local businesses, while adaptation may give an old structure a useful new purpose. Demolishing every historic building would make towns look similar and remove places that future generations could study. However, restoration can be extremely expensive, especially when structures require specialist materials or cannot meet modern safety and accessibility standards. If a city has families living in overcrowded or unsafe homes, spending a large sum on an attractive but rarely used building may be difficult to justify. New housing can provide shelter, improve public health and reduce pressure on rents. Construction may also allow energy-efficient designs that are cheaper to run than old buildings. In my view, governments should protect historic sites that have genuine cultural significance and seek private or tourism funding where possible. Other buildings should be adapted for apartments, community services or education rather than preserved as empty monuments. Public housing and heritage plans can also be combined when restoration includes affordable homes. Historic buildings deserve thoughtful protection, but meeting basic housing needs should remain the higher priority when resources are limited."
     },
     {
       "predictionNumber": 32,
       "title": "Communication Methods in Modern Society",
       "text": "The means of communicating in society today has changed markedly over the last ten years. In your opinion, what are the positive and negative impacts of this change?",
-      "keyPoints": ["Discuss positive and negative impacts of changes in communication over the last decade.","Explain benefits such as speed, access, collaboration and maintaining distant relationships.","Discuss risks including distraction, misinformation, privacy loss and weaker face-to-face interaction.","Reach a balanced opinion about how modern communication should be used."],
+      "keyPoints": [
+        "Discuss positive and negative impacts of changes in communication over the last decade.",
+        "Explain benefits such as speed, access, collaboration and maintaining distant relationships.",
+        "Discuss risks including distraction, misinformation, privacy loss and weaker face-to-face interaction.",
+        "Reach a balanced opinion about how modern communication should be used."
+      ],
       "sample": "Communication has changed markedly over the last decade through smartphones, video calls, instant messaging and social platforms. These developments have produced major benefits, but they have also created risks that require responsible use. People can now exchange information almost immediately, even when they are in different countries. Video meetings allow families to maintain relationships across distance and help organisations collaborate without requiring every employee to travel. Students can contact teachers, access educational material and work with classmates outside normal classroom hours. Emergency information can also reach large communities quickly. The negative effects are equally important. Constant notifications interrupt concentration and make it difficult to separate work from personal life. Short messages may remove tone and context, causing misunderstandings, while online platforms allow misinformation and manipulated images to spread rapidly. Personal data can be collected without users fully understanding how it will be used. Heavy digital communication may also reduce face-to-face practice and increase loneliness if online contact replaces deeper relationships. In my experience, group messaging made collaboration faster because everyone could see updates, but a short meeting was sometimes necessary to resolve disagreements that became confusing in text. People should therefore use the appropriate method for each purpose. Schools can teach digital literacy and privacy, while employers can protect quiet time and limit unnecessary messages. Modern communication is a powerful improvement when it connects people and shares knowledge, but its value depends on boundaries, accuracy and human judgement."
     },
     {
       "predictionNumber": 33,
       "title": "The Value of Humanities",
       "text": "Some say that in today's world the value of humanities has been eclipsed by the necessity of preparing for specific wealth-producing careers, such as medicine. Discuss whether you think there is a role in today's changing world for study of the humanities.",
-      "keyPoints": ["Discuss whether humanities still have a role in a world focused on specialised wealth-producing careers.","Explain how history, languages, philosophy and culture develop judgement, communication and ethical understanding.","Acknowledge the importance of professional and technical education for employment and innovation.","Reach a clear conclusion about how humanities and specialist study should coexist."],
+      "keyPoints": [
+        "Discuss whether humanities still have a role in a world focused on specialised wealth-producing careers.",
+        "Explain how history, languages, philosophy and culture develop judgement, communication and ethical understanding.",
+        "Acknowledge the importance of professional and technical education for employment and innovation.",
+        "Reach a clear conclusion about how humanities and specialist study should coexist."
+      ],
       "sample": "The humanities continue to have an important role in the modern world, even though specialised careers in medicine, engineering and technology are essential. Technical education creates practical skills, while humanities help people understand the social, ethical and cultural consequences of using those skills. Subjects such as history, languages, philosophy and literature develop the ability to interpret evidence, communicate clearly and consider perspectives different from one's own. These abilities are useful in almost every profession. A doctor needs to understand a patient's fears and cultural background, and a technology manager must consider whether a new system treats people fairly. Studying history can also help societies recognise the causes of conflict and avoid repeating harmful decisions. It is reasonable to argue that students need employment opportunities and that universities cannot ignore shortages in wealth-producing fields. Humanities graduates may face a less direct route into a specific profession, and public funding must be used responsibly. However, reducing education to immediate salary can produce narrow decision-making and weaken democratic discussion. Businesses also value employees who can write, question assumptions and explain complex ideas to different audiences. In my experience, learning about culture and communication improved my ability to work with people whose expectations differed from mine, while technical study provided the specialised knowledge to complete tasks. These areas were complementary rather than competing. Education should therefore maintain strong professional training while protecting humanities subjects through combined courses, research and public funding. A changing world needs capable specialists, but it also needs citizens and leaders who can ask what should be done, not only what can be done."
     }
   ]

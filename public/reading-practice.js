@@ -313,6 +313,8 @@
       updateAutoplay();
       return;
     }
+    const libraryQuestions=s.practiceUid?practiceLibraries().find(l=>l.id===q.type)?.questions||[]:s.questions;
+    const navigationIndex=s.practiceUid?libraryQuestions.findIndex(item=>item.uid===s.practiceUid):s.index;
     const review=s.done || s.checked.includes(q.uid);
     host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
@@ -321,7 +323,7 @@
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions"><button class="portal-button" data-move="-1" ${s.index===0?'disabled':''}>Previous</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${s.index===s.questions.length-1?'disabled':''}>Next question <span aria-hidden="true">→</span></button></div></article></div>`;
+      <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
   }
   function playback(q) { return mock.audioPlayback(q); }
   function audioHTML(q) {
@@ -680,6 +682,13 @@
     if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
     if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText,playback(q));}
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
+    if(d.move!==undefined&&s.practiceUid){
+      const items=practiceLibraries().find(l=>l.id===q.type)?.questions||[],index=items.findIndex(item=>item.uid===s.practiceUid),target=items[index+Number(d.move)];
+      if(!target)return;cancelAudio();persist();
+      const saved=[...(state.drafts||[]),...state.history].filter(item=>item.practiceUid===target.uid).sort((a,b)=>b.startedAt-a.startedAt)[0];
+      if(saved){if(!s.done)state.drafts=[s,...(state.drafts||[]).filter(item=>item.id!==s.id)];state.drafts=state.drafts.filter(item=>item.id!==saved.id);state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);selectedWord='';activeSince=Date.now();persist();renderSession();resumeSwtAssessments();return;}
+      return start('practice',target.uid);
+    }
     if(d.question!==undefined||d.move!==undefined){cancelAudio();s.index=Math.max(0,Math.min(s.questions.length-1,d.question!==undefined?Number(d.question):s.index+Number(d.move)));selectedWord='';persist();return renderSession();}
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
     if(d.action==='submit'){

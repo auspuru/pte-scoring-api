@@ -102,5 +102,85 @@
     "seconds": 5.28,
     "voice": "en-GB-RyanNeural",
     "rate": "-5%"
+  },
+  "sst-citizen-science": {
+    "textSha256": "62c638025efee71c8566d9837415fab91cdbe5a94cf06ad9fe97347db7090cbb",
+    "audioSha256": "9cc228f95041742a3ed60403254f90200b46f1fe1dd11be7e73019073ebd4b6e",
+    "bytes": 500400,
+    "seconds": 83.4,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "+5%"
+  },
+  "sst-sleep-memory": {
+    "textSha256": "50b90becd315a17f2feac3f61a96d38e00c99f217152c2ccac1b631cecd63444",
+    "audioSha256": "98d404e4de8abd30fdab815841df34b567fe545007b01a780c5aa6b7cfffdb89",
+    "bytes": 371376,
+    "seconds": 61.896,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "+5%"
+  },
+  "sst-water-reuse": {
+    "textSha256": "b4afa25430389e7d74cf470b4c2a9ee1d2e18f4a65cb97c3a0f597b6c140923f",
+    "audioSha256": "f12c2f0fcb9927e226d9913f9c7800bbcdaa9fc24f5abec7724471f1f7dbf7ca",
+    "bytes": 435312,
+    "seconds": 72.552,
+    "voice": "en-GB-RyanNeural",
+    "rate": "+5%"
+  },
+  "sst-public-transport": {
+    "textSha256": "72657bed3a8d510dfc6734ea4e16cab89ed7c3b131237b859f92bd207ae7a192",
+    "audioSha256": "77a656217766af50df67738f572cba06352ec3cd5338c764f5a72a0a07441f57",
+    "bytes": 433008,
+    "seconds": 72.168,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "+5%"
+  },
+  "sst-digital-archives": {
+    "textSha256": "2b5285c030fbb8208f40602448a5577f0f33c63ebf244e8958d20b544ffc0c64",
+    "audioSha256": "33d9d1e7581f78eaf52ffb4c5477f25cddbc3af6cf3b09d6a75b783bbac54c81",
+    "bytes": 407088,
+    "seconds": 67.848,
+    "voice": "en-US-GuyNeural",
+    "rate": "+5%"
+  },
+  "sst-urban-pollinators": {
+    "textSha256": "d292578a762e5b89e87c91bcf4dff81fe16514021da0e3e2039958542a54fc6a",
+    "audioSha256": "10d6901a0878a97d2d88498d10bbec399dfd11fa7d3a2502d2b1300940784e1b",
+    "bytes": 470448,
+    "seconds": 78.408,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "+5%"
+  },
+  "sst-peer-feedback": {
+    "textSha256": "96ee413bab6d2d2a5403c9c3108e3e8b4da08d9c6847d86d403cc8c1a5a89ac2",
+    "audioSha256": "20ce0e272ba92edf74ed34747259f2cb76e39dfdf857cefc0a0c985ada7419a2",
+    "bytes": 385632,
+    "seconds": 64.272,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "+5%"
+  },
+  "sst-repair-cafes": {
+    "textSha256": "745824eeb539fcae8c21ffbb8b7cf4a811036202e1f0ccccfe799c32a08a5896",
+    "audioSha256": "91f564ba0e57d834e5ef3ad7e2eec97ccbb7835feae16d4b7dbec2e4c78f4a65",
+    "bytes": 420048,
+    "seconds": 70.008,
+    "voice": "en-GB-RyanNeural",
+    "rate": "+5%"
+  },
+  "sst-forecast-uncertainty": {
+    "textSha256": "e5c282d1d649f88a4e44c7a93214e6ab859b29b0401725684a17201097ae7cc9",
+    "audioSha256": "488338a87011274ad8bd6fb4bdd16d97ffc1f3c93f732003c7fefef32f4f9407",
+    "bytes": 438768,
+    "seconds": 73.128,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "+5%"
+  },
+  "sst-shared-workspaces": {
+    "textSha256": "db255362558583905f1d04efa96b0480d82e65cf227bc43576300f806674b9b7",
+    "audioSha256": "d2a4fecc18ec34599ffedf00bc0fe696c230ed36e384e362dba39a692f157d25",
+    "bytes": 437184,
+    "seconds": 72.864,
+    "voice": "en-US-GuyNeural",
+    "rate": "+5%"
   }
 }

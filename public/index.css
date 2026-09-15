@@ -4612,7 +4612,7 @@ body.dark .diff-del {
   font-size: 13px; color: var(--ink-mute);
 }
 .passage-nav .nav-arrow {
-  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  min-width: 68px; padding: 0 8px; height: 32px; border-radius: var(--radius-sm);
   border: 1px solid var(--line); background: var(--card-raised);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--ink-soft); font-size: 14px;

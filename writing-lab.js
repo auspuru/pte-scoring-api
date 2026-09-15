@@ -88,7 +88,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     for (const a of all) {
       const current = await store.update(req.labUser,a.id, value => reconcile(value));
       const summary = report.summarize(current.questions, current.results);
-      entries.push({ id:current.id,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
+      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
         completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90 });
     }

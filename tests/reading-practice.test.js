@@ -774,3 +774,13 @@ test('New HIW practice autoplays and saves its highlights with full feedback',as
  assert(audio.utterances.length>=2);assert.equal(audio.utterances.map(u=>u.text).join(' '),q.audioText);h.click({action:'submit'});
  assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
 });
+test('Practice Back and Next traverse the task library and restore an answered draft',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ const questions=require('../public/practice-catalogue').readingLibraries(bank).find(l=>l.id==='dropdown').questions;
+ await h.click({practiceUid:questions[0].uid});const first=snapshot(h).session.id;
+ h.host.onchange({target:{dataset:{answer:'0'},value:questions[0].answers[0]}});
+ await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,questions[1].uid);
+ await h.click({move:'-1'});assert.equal(snapshot(h).session.id,first);
+ assert.equal(snapshot(h).session.answers[questions[0].uid][0],questions[0].answers[0]);
+ assert.match(h.host.innerHTML,/data-move="-1" disabled/);
+});

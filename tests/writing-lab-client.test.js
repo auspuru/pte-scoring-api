@@ -51,7 +51,7 @@ function harness({ audioReadyState = 4 } = {}) {
   };
   context.window={WritingLabReport:report,parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt}; return;\n  (async()=>{\n    try { const values=`);
+  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt,movePractice}; return;\n  (async()=>{\n    try { const values=`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -260,4 +260,21 @@ test('Results render pending and completed task estimates out of 90 with safe di
   assert.match(html,/90<small> \/ 90/);assert.match(html,/Write from Dictation/);
   assert.match(html,/View correct sentence/);assert.match(html,/&lt;script&gt;bad&lt;\/script&gt;/);
   assert.doesNotMatch(html,/<script>bad/);
+});
+
+test('SST Back and Next preserve drafts and resume existing neighbouring attempts',async()=>{
+  const h=harness();h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});
+  const first=attempt(0);Object.assign(first,{id:'first',kind:'sst',testId:bank.spoken[0].id,questions:[bank.spoken[0]],answers:[''],revisions:[0],completed:[null],results:[null],playback:[null]});
+  const second=structuredClone(first);Object.assign(second,{id:'second',testId:bank.spoken[1].id,questions:[bank.spoken[1]],answers:['Saved second response']});
+  h.context.fetch=async(url,opts={})=>{h.requests.push({url,opts});let value;
+    if(url.endsWith('/answer')){const body=JSON.parse(opts.body),current=url.includes('/first/')?first:second;current.answers[0]=body.text;current.revisions[0]=body.revision;value=current;}
+    else if(url.endsWith('/attempts'))value=[{id:'second',testId:second.testId,startedAt:1}];
+    else value=second;
+    return {ok:true,json:async()=>structuredClone(value)};
+  };
+  open(h,first);h.nodes.get('answer').value='Keep my first response';
+  await h.hooks.movePractice(1,{disabled:false,isConnected:false});
+  assert.equal(first.answers[0],'Keep my first response');assert.equal(h.hooks.current().id,'second');
+  assert.equal(h.nodes.get('answer').value,'Saved second response');
+  assert(!h.requests.some(r=>r.url.endsWith('/attempts')&&r.opts.method==='POST'));
 });
