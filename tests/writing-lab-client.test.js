@@ -7,6 +7,9 @@ const path = require('node:path');
 const report = require('../public/writing-lab-report');
 const bank = require('../content/writing-lab.json');
 const { present } = require('../writing-lab');
+const { installWritingLab } = require('../writing-lab');
+const express = require('express');
+const os = require('node:os');
 const client = fs.readFileSync(path.join(__dirname, '../public/writing-lab-client.js'), 'utf8');
 function harness({ audioReadyState = 4 } = {}) {
   const nodes = new Map(), intervals = new Map(), recordings = [], requests = [], memory = new Map();
@@ -61,6 +64,71 @@ function attempt(index=3) {
 }
 function open(h,a) { a.serverNow=100000;h.hooks.set(a);h.hooks.showAttempt(); }
 async function flush() { for(let i=0;i<5;i++) await new Promise(resolve=>setImmediate(resolve)); }
+
+test('The standalone SST Play button starts through the real API, saves playback, and resumes the same timer',async t=>{
+  const directory=await fs.promises.mkdtemp(path.join(os.tmpdir(),'sst-start-flow-'));
+  const app=express();app.use(express.json());
+  installWritingLab(app,{directory,verifyToken:t=>t==='tester'?'tester':null,getAccount:async()=>({}),callModel:()=>{throw Error('Not scoring');}});
+  // Match the main app's page fallback: a wrong GET previously returned HTML 200.
+  app.get('*',(_,res)=>res.type('html').send('<!doctype html><title>Practice workspace</title>'));
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.promises.rm(directory,{recursive:true,force:true});});
+  const base='http://127.0.0.1:'+server.address().port;
+  const h=harness();h.memory.set('pte_session_token','tester');
+  h.context.fetch=async(url,options)=>{
+    h.requests.push({url,method:options.method,body:options.body?JSON.parse(options.body):null});
+    return fetch(base+url,options);
+  };
+  const id=require('node:crypto').randomUUID();
+  const response=await fetch(base+'/api/writing-lab/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:JSON.stringify({id,testId:bank.spoken[0].id})});
+  const a=await response.json();assert.equal(a.status,'ready');
+  h.hooks.set(a);h.hooks.showAttempt();
+  const button=h.nodes.get('audio-start'), player=h.recordings[0];
+  const clicked=button.onclick();
+  assert.equal(player.plays,1,'Playback is requested during the click, before any network await');
+  await clicked;
+  assert.deepEqual(h.requests.filter(r=>r.url.endsWith('/begin')).map(r=>r.method),['POST']);
+  assert.equal(h.hooks.current().status,'active');
+  assert.equal(player.plays,1);
+  assert.equal(h.nodes.get('answer').disabled,false);
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+  const deadline=h.hooks.current().deadline;
+  player.currentTime=5;await h.hooks.saveAnswer(false);
+  player.pause();await button.onclick();await h.hooks.saveAnswer(false);
+  assert.equal(player.plays,2);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/begin')).length,1);
+  const saved=await (await fetch(base+'/api/writing-lab/attempts/'+id,{headers:{'x-session-token':'tester'}})).json();
+  assert.equal(saved.deadline,deadline);assert.equal(saved.playback[0].position,5);
+});
+
+test('A rejected browser play leaves SST ready and does not consume its timer',async()=>{
+  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  open(h,a);
+  const player=h.recordings[0];
+  player.play=async()=>{throw Object.assign(Error('A user gesture is required'),{name:'NotAllowedError'});};
+  await h.nodes.get('audio-start').onclick();
+  assert.equal(h.hooks.current().status,'ready');
+  assert.equal(h.hooks.current().deadline,null);
+  assert.equal(h.requests.length,0);
+  assert.equal(h.nodes.get('audio-start').disabled,false);
+  assert.match(h.nodes.get('audio-status').textContent,/allow audio/);
+});
+
+test('A start API failure pauses playback and permits a fresh click to retry',async()=>{
+  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  open(h,a);
+  const fetchNormally=h.context.fetch;
+  h.context.fetch=async()=>({ok:false,json:async()=>({error:'Your attempt could not be started.'})});
+  await h.nodes.get('audio-start').onclick();
+  assert(h.recordings[0].paused);
+  assert.equal(h.hooks.current().status,'ready');
+  assert.equal(h.nodes.get('audio-start').disabled,false);
+  assert.match(h.nodes.get('audio-status').textContent,/attempt could not be started/);
+  h.context.fetch=fetchNormally;h.context.reply={...a,status:'active',deadline:700000};h.context.replyOnce=true;
+  await h.nodes.get('audio-start').onclick();await flush();
+  assert.equal(h.hooks.current().status,'active');
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+});
 
 test('Integrated audio advances to each new recording and ignores late events from the previous question',async()=>{
   const h=harness();open(h,attempt(3));

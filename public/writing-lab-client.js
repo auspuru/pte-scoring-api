@@ -207,7 +207,7 @@
     const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
     const current=()=>attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
     const completeText=q.type==='wfd'?'Recording complete. Check your sentence.':'Recording complete. Write your summary.';
-    let prepared=false, resumePosition=Math.max(local?.audioTime||0,saved?.position||0);
+    let prepared=false, starting=false, resumePosition=Math.max(local?.audioTime||0,saved?.position||0);
     const update=()=>{
       if(!current()) return;
       document.getElementById('audio-progress').value=player.duration?player.currentTime/player.duration*100:0;
@@ -215,24 +215,34 @@
     };
     const play=async()=>{
       clearInterval(audioCountdown);
-      if(!current() || audioFinished || document.hidden) return;
+      if(!current() || audioFinished || document.hidden || starting) return;
       if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); status.textContent='Loading audio…'; startButton.disabled=true; return; }
+      if(attempt.status==='active' && attempt.deadline<=Date.now()+offset) { tick(); return; }
+      starting=true;
       startButton.disabled=true;
+      let phase='playback';
       try {
-        if(attempt.status==='ready') {
-          const value=await api('/attempts/'+id+'/begin');
-          if(!current()) return;
-          setAttempt(value); document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
-        }
-        if(!current() || attempt.deadline<=Date.now()+offset || document.hidden) { if(current()) tick(); return; }
+        // Call play directly in the click handler, before a network await loses
+        // Safari's user gesture. A blocked play must not start the SST timer.
         await player.play();
         if(!current() || document.hidden) { player.pause(); return; }
+        if(attempt.status==='ready') {
+          phase='attempt';
+          status.textContent='Starting your attempt…';
+          const value=await api('/attempts/'+id+'/begin',{});
+          if(!current()) { player.pause(); return; }
+          setAttempt(value);
+          if(attempt.status!=='active') { player.pause(); showAttempt(); return; }
+          document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
+        }
+        if(!current() || attempt.deadline<=Date.now()+offset || document.hidden) { player.pause(); if(current()) tick(); return; }
         status.textContent='Playing…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
       } catch(e) {
+        player.pause();
         if(!current()) return;
         startButton.disabled=false; startButton.classList.remove('hidden'); startButton.textContent='Play recording';
-        status.textContent='Press Play recording to continue.';
-      }
+        status.textContent=phase==='attempt' ? e.message+' Press Play recording to retry.' : 'Press Play recording to allow audio and continue.';
+      } finally { starting=false; }
     };
     player.ontimeupdate=()=>{
       if(!current()) return;
@@ -244,7 +254,7 @@
       const position=resumePosition;
       if(position && player.currentTime<position) player.currentTime=Math.min(position,player.duration||position);
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
-      startButton.disabled=false; status.textContent=player.paused?'Ready to play':'Playing…';
+      startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
       startButton.textContent=attempt.status==='ready'?'Start recording & timer':player.currentTime>0?'Continue recording':'Play recording';
       if(!player.paused) startButton.classList.add('hidden');
       update();
