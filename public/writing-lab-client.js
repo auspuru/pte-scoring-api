@@ -10,10 +10,10 @@
   let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
   const grading = new Set();
-  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0, speechFallback = false, speechUtterance = null;
+  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd'].includes(q.type);
-  function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); if(window.speechSynthesis) window.speechSynthesis.cancel(); speechUtterance=null; }
+  function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
@@ -202,12 +202,12 @@
     if(audioAttempt!==key) {
       stopAudio();
       audio=new Audio(q.audioUrl); audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
-      audioFinished=!!saved?.finished || !!local?.audioFinished;
+      audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0);
     }
-    const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status'); speechFallback=false; speechUtterance=null;
+    const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
     const current=()=>attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
     const completeText=q.type==='wfd'?'Recording complete. Check your sentence.':'Recording complete. Write your summary.';
-    let prepared=false;
+    let prepared=false, resumePosition=Math.max(local?.audioTime||0,saved?.position||0);
     const update=()=>{
       if(!current()) return;
       document.getElementById('audio-progress').value=player.duration?player.currentTime/player.duration*100:0;
@@ -216,23 +216,7 @@
     const play=async()=>{
       clearInterval(audioCountdown);
       if(!current() || audioFinished || document.hidden) return;
-      if(speechFallback) {
-        startButton.disabled=true;
-        try {
-          if(attempt.status==='ready') {
-            const value=await api('/attempts/'+id+'/begin');
-            if(!current()) return;
-            setAttempt(value); document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
-          }
-          speechUtterance=new SpeechSynthesisUtterance(q.text); speechUtterance.rate=0.95;
-          speechUtterance.onend=()=>{ if(current()) { audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false); } };
-          speechUtterance.onerror=()=>{ if(current()) { startButton.disabled=false; status.textContent='Press Play recording to retry.'; } };
-          window.speechSynthesis.cancel(); window.speechSynthesis.speak(speechUtterance);
-          status.textContent='Playing with browser speech audio…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
-        } catch(e) { if(current()) { startButton.disabled=false; status.textContent='Press Play recording to continue.'; } }
-        return;
-      }
-      if(player.error) { player.load(); status.textContent='Loading audio…'; startButton.disabled=true; return; }
+      if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); status.textContent='Loading audio…'; startButton.disabled=true; return; }
       startButton.disabled=true;
       try {
         if(attempt.status==='ready') {
@@ -257,7 +241,7 @@
     };
     const ready=()=>{
       if(!current()) return;
-      const position=Math.max(local?.audioTime||0,saved?.position||0);
+      const position=resumePosition;
       if(position && player.currentTime<position) player.currentTime=Math.min(position,player.duration||position);
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
       startButton.disabled=false; status.textContent=player.paused?'Ready to play':'Playing…';
@@ -276,7 +260,8 @@
       }
       prepared=true;
     };
-    player.onloadedmetadata=ready; if(player.readyState>=1) ready();
+    player.onloadedmetadata=update;
+    player.oncanplay=ready; if(player.readyState>=3) ready();
     player.onended=()=>{
       if(!current()) return;
       audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
@@ -288,9 +273,11 @@
     };
     player.onerror=()=>{
       if(!current()) return;
-      clearInterval(audioCountdown); speechFallback=true;
-      status.textContent='Server audio is busy. Browser speech audio is ready.';
-      startButton.textContent='Play browser speech audio'; startButton.disabled=false; startButton.classList.remove('hidden');
+      clearInterval(audioCountdown);
+      if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); return; }
+      resumePosition=Math.max(resumePosition,player.currentTime||0);
+      status.textContent='Audio could not load. Check your connection and retry.';
+      startButton.textContent='Retry audio'; startButton.disabled=false; startButton.classList.remove('hidden');
     };
     document.getElementById('audio-volume').oninput=e=>player.volume=Number(e.target.value);
     startButton.onclick=play;

@@ -8,7 +8,7 @@ const report = require('../public/writing-lab-report');
 const bank = require('../content/writing-lab.json');
 const { present } = require('../writing-lab');
 const client = fs.readFileSync(path.join(__dirname, '../public/writing-lab-client.js'), 'utf8');
-function harness() {
+function harness({ audioReadyState = 4 } = {}) {
   const nodes = new Map(), intervals = new Map(), recordings = [], requests = [], memory = new Map();
   let now = 100000, seq = 0;
   class Element {
@@ -21,16 +21,17 @@ function harness() {
       if(this.id!=='lab') return;
       for(const [id,node] of nodes) if(!['lab','notice','confirm-dialog'].includes(id)) { node.isConnected=false; nodes.delete(id); }
       for(const match of html.matchAll(/id="([^"]+)"/g)) nodes.set(match[1],new Element(match[1]));
+      for(const match of html.matchAll(/<[^>]+id="([^"]+)"[^>]*>/g)) if(/\bdisabled\b/.test(match[0])) nodes.get(match[1]).disabled=true;
       for(const match of html.matchAll(/<textarea[^>]*id="([^"]+)"[^>]*>([^]*?)<\/textarea>/g)) nodes.get(match[1]).value=match[2];
     }
     get innerHTML() { return this.html||''; }
   }
   for(const id of ['lab','notice','confirm-dialog']) nodes.set(id,new Element(id));
   class Audio {
-    constructor(url) { this.src=url; this.readyState=1; this.currentTime=0; this.duration=80; this.paused=true; this.ended=false; this.plays=0; recordings.push(this); }
+    constructor(url) { this.src=url; this.readyState=audioReadyState; this.currentTime=0; this.duration=80; this.paused=true; this.ended=false; this.plays=0; this.loads=0; recordings.push(this); }
     async play() { this.paused=false; this.plays++; }
     pause() { const changed=!this.paused; this.paused=true; if(changed) this.onpause?.(); }
-    load() {}
+    load() { this.loads++; this.error=null; this.readyState=0; }
   }
   class Clock extends Date { static now() { return now; } }
   const document={getElementById:id=>nodes.get(id)||null,body:new Element('body'),hidden:false,events:{},addEventListener(name,fn){this.events[name]=fn;}};
@@ -41,7 +42,9 @@ function harness() {
     setInterval:(fn,ms)=>{const id=++seq;intervals.set(id,{fn,ms});return id;},clearInterval:id=>intervals.delete(id),
     setTimeout:()=>++seq,clearTimeout:()=>{},
     fetch:async(url,options)=>{ requests.push({url,body:options.body?JSON.parse(options.body):null});
-      return {ok:true,json:async()=>structuredClone(context.reply || context.window.testApi.current())}; }
+      const value=structuredClone(context.reply || context.window.testApi.current());
+      if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
+      return {ok:true,json:async()=>value}; }
   };
   context.window={WritingLabReport:report,addEventListener(){},scrollTo(){}};
   vm.createContext(context);
@@ -84,6 +87,43 @@ test('Refresh resumes the current question from server progress without inheriti
   const finished=harness(), b=attempt(6);b.playback[6]={position:7,finished:true};open(finished,b);
   assert(finished.nodes.get('audio-start').classes.has('hidden'));
   assert.equal(finished.recordings[0].plays,0);
+});
+
+test('SST waits for playable audio, retries a failed load, and starts its timer only when the student can play',async()=>{
+  const h=harness({audioReadyState:1}), a=attempt(3);
+  Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  open(h,a);
+  const player=h.recordings[0], button=h.nodes.get('audio-start');
+  player.onloadedmetadata();
+  assert.equal(button.disabled,true);
+  assert.equal(h.requests.length,0);
+  player.error={code:2};player.onerror();
+  assert.equal(button.textContent,'Retry audio');
+  assert.equal(h.hooks.current().status,'ready');
+  assert.equal(h.requests.length,0);
+  await button.onclick();assert.equal(player.loads,1);
+  player.readyState=4;player.oncanplay();
+  assert.equal(button.disabled,false);
+  assert.equal(h.requests.length,0);
+  h.context.reply={...a,status:'active',deadline:700000};
+  h.context.replyOnce=true;
+  await button.onclick();await flush();
+  assert.equal(player.plays,1);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/begin')).length,1);
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+  player.currentTime=80;player.ended=true;player.onended();await flush();
+  assert(button.classes.has('hidden'));
+  assert(h.requests.some(r=>r.body?.playback?.finished && r.body.playback.position===80));
+});
+
+test('A zero-second completion from the old silent fallback does not lock a recording',async()=>{
+  const h=harness(), a=attempt(3);
+  a.playback[3]={position:0,finished:true};
+  h.memory.set('ipt-writing-lab:tester:test-id',JSON.stringify({index:3,audioTime:0,audioFinished:true}));
+  open(h,a);await h.countdown();await flush();
+  assert.equal(h.recordings[0].plays,1);
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+  assert(h.requests.some(r=>r.body?.playback?.finished===false));
 });
 
 test('Backgrounding or expiry cancels a queued recording without resetting the shared timer',async()=>{

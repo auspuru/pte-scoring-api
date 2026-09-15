@@ -1,0 +1,106 @@
+{
+  "sst-urban-trees": {
+    "textSha256": "b3248f3cf840c145643b7b99284632ed0f460706ade8975eab8f7ec3b474f613",
+    "audioSha256": "3b80417eba7ad1e34c8c1cd714a743c89d6d3aff877432b70de71bd508531fc4",
+    "bytes": 492768,
+    "seconds": 82.128,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "sst-active-learning": {
+    "textSha256": "8748dca6643fa239cd37c85c9ae5d3aa70ea18401db5e807fbb7ae8c05054782",
+    "audioSha256": "507eb102bb3571448c3d6dc9349dd38b6f6450b79e11e0068af96bd56aca9484",
+    "bytes": 416016,
+    "seconds": 69.336,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "sst-food-waste": {
+    "textSha256": "9a495b34e4ddc4ce7ea3751aaec2a06b48397d55aebf1751b17605fc20285810",
+    "audioSha256": "4dc823db0bc665a0d07a5d48a8e41b6e6d076e5b1c5170bf576dd73d63bf1241",
+    "bytes": 445248,
+    "seconds": 74.208,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "sst-hybrid-work": {
+    "textSha256": "9822e01fd0bf20de9ce6c13db9bd017c89810b30b98b91772a9589ca9cd517e3",
+    "audioSha256": "eccfe030ef511ab8d88da68631bdfbde44ba9490c61047b46c222efc78dd8c32",
+    "bytes": 472176,
+    "seconds": 78.696,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "sst-community-museums": {
+    "textSha256": "f7f1e0a1d78cfc2f6247eec5fbb39440956fb7796d1f28f941ebcf2cdc8b5c01",
+    "audioSha256": "31b2aeccab5c8c31e9e68ca9faa98579f5ee15f644a3e8f5df76a27587ea9794",
+    "bytes": 486000,
+    "seconds": 81.0,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wm1-sst": {
+    "textSha256": "0fecdacc5467dfd4d725538aad8107dce261b108e0e525916fa365d637cfffd7",
+    "audioSha256": "a9851b676b5110353622497ef2f76932844c80ddfbe8cafd19cc0769feaa14b0",
+    "bytes": 522864,
+    "seconds": 87.144,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wm1-wfd1": {
+    "textSha256": "9d8322deba45c2eb783a62c05484b75fe854c040441e7869421f17813dbc77ec",
+    "audioSha256": "642b3d909363c35f1d4c97770d713dd38aac1476d31ee026b3bb1887a7668628",
+    "bytes": 33264,
+    "seconds": 5.544,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wm1-wfd2": {
+    "textSha256": "40b5d7b1296fbe0cd2c195df27e35cea6ad632ea6ebba2683e1ac549ce383fe5",
+    "audioSha256": "ce934cbae6b90aa0f027cade2444270fdff2db6d808f8c23b67a52d7da698385",
+    "bytes": 29376,
+    "seconds": 4.896,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wm1-wfd3": {
+    "textSha256": "80119ca2faa19cb9bd2d86082ed44d64db5399a7e63bd1ee96392ac930dc29c3",
+    "audioSha256": "a87a6b78d3c3ec9ff57401cbf88f1d342c353deb2dde18dcbb11db7d130af0e7",
+    "bytes": 34128,
+    "seconds": 5.688,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wm2-sst": {
+    "textSha256": "035187aa612e88607dc91161f14e190d85b5143b5958aaa8149b8652aaa5cc9b",
+    "audioSha256": "dbe74f54619108a755b2a12b45f4f5158d8eb08b567d2750a9354d7548b10370",
+    "bytes": 448560,
+    "seconds": 74.76,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wm2-wfd1": {
+    "textSha256": "165694004cc53812817213f6d5797f69d1108e8fbdb5d8a4c0a15022aaf05e83",
+    "audioSha256": "dcd6121efe3cba8d7354d4be894f3537c943f5ffb2e1eed7a6079a23f023373a",
+    "bytes": 28656,
+    "seconds": 4.776,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wm2-wfd2": {
+    "textSha256": "858082fb03efa95cf80f1082377b06aa665665751ff5a1d864b3500db4427bde",
+    "audioSha256": "2de23766a0d18125dfd948195a43da62763777d6dd9a9b6064fe616a23f03116",
+    "bytes": 29088,
+    "seconds": 4.848,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wm2-wfd3": {
+    "textSha256": "6fa94f441fd2715f0731135a5716a977df7aa96239f4c1bc09425114983db0ca",
+    "audioSha256": "2185b920f314a8086d13de73f3648d9b65815bb78910565fca6d8b3174582fb7",
+    "bytes": 31680,
+    "seconds": 5.28,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  }
+}

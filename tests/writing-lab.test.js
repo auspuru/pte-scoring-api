@@ -164,8 +164,11 @@ test('Seven-question API saves separate playback and returns scores and history 
   const id=randomUUID();
   const started=await request('/attempts',{id,testId:'writing-mock-1'});assert.equal(started.questions.length,7);
   for(let index=0;index<3;index++) await request('/attempts/'+id+'/answer',{index,text:'',revision:1,next:true});
-  let a=await request('/attempts/'+id+'/answer',{index:3,text:'',revision:1,playback:{position:70,finished:true}});
-  a=await request('/attempts/'+id+'/answer',{index:3,text:'',revision:2,next:true,playback:{position:0,finished:false}});
+  await store.update('tester',id,a=>{a.playback[3]={position:0,finished:true};return a;});
+  let a=await request('/attempts/'+id+'/answer',{index:3,text:'',revision:1,playback:{position:0,finished:false}});
+  assert.deepEqual(a.playback[3],{position:0,finished:false});
+  a=await request('/attempts/'+id+'/answer',{index:3,text:'',revision:2,playback:{position:70,finished:true}});
+  a=await request('/attempts/'+id+'/answer',{index:3,text:'',revision:3,next:true,playback:{position:0,finished:false}});
   assert.deepEqual(a.playback[3],{position:70,finished:true});assert.equal(a.playback[4],null);
   const deadline=a.deadline;
   for(let index=4;index<7;index++) {

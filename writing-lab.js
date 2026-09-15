@@ -23,7 +23,7 @@ function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3' } : {}),
+    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + bank.version } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
   return result;
 }
@@ -40,7 +40,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return account && !account.blocked ? uid : null;
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
-    spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3' })),
+    spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
     mocks:bank.mocks.map(m => ({ id:m.id,title:m.title,description:m.description,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
@@ -111,7 +111,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if (playback && ['sst','wfd'].includes(value.questions[index].type)) {
         value.playback ||= value.questions.map(()=>null);
         const old = value.playback[index];
-        value.playback[index] = {position:Math.max(old?.position || 0, playback.position),finished:!!old?.finished || playback.finished};
+        // Earlier browser-speech failures could save a finished flag at zero seconds.
+        // A recording that never played must remain available to the student.
+        value.playback[index] = {position:Math.max(old?.position || 0, playback.position),
+          finished:(!!old?.finished && old.position > 0) || (playback.finished && playback.position > 0)};
       }
       if(next === true) advance(value,Date.now(),'Submitted');
       return value;
