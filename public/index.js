@@ -815,6 +815,7 @@ window.exitImpersonation = exitImpersonation;
 function signOut() {
   savePortalEssayDraft();
   resetWritingLabFrame();
+  window.SpeakingPractice?.reset();
   window.ReadingPractice?.leave();
   captureAccountProgress();
   flushPendingSyncOnExit();

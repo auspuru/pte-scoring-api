@@ -14,7 +14,7 @@
   };
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
-    'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: 'Writing, Reading and Listening — one home for each task.' },
+    'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: 'Speaking, Writing, Reading and Listening — one home for each task.' },
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: 'Full mocks, practice mocks and sectional mocks.' },
     swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
@@ -26,6 +26,7 @@
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
     reading: { pane: 'readingPane', nav: 'nav-mock-tests', title: 'Reading mock attempts', path: 'reading', eyebrow: 'Mock Tests · Reading', context: 'Continue your mock or review a saved result.' },
     ...Object.fromEntries(Object.entries(taskRoutes).map(([key,[title,type]]) => [key, { pane: 'readingPane', nav: 'nav-practice-hub', title, path: key, readingLibrary: type, eyebrow: (key.startsWith('reading-') ? 'Reading' : 'Listening') + ' Practice', context: 'Practise individual questions and review your answers.' }])),
+    ...Object.fromEntries(Object.entries({ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'}).map(([type,title])=>['speaking-'+type,{pane:'speakingPane',nav:'nav-practice-hub',speakingType:type,title,path:'speaking-'+type,eyebrow:'Speaking Practice',context:'Five questions, individual samples and content-only feedback.'}])),
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
   });
 
@@ -58,6 +59,7 @@
     function activate(section, options = {}) {
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
+      if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
       if (changed && routes[current]?.pane === 'readingPane') win.ReadingPractice?.leave();
       if (changed && routes[current]?.pane === 'writingLabScreen' && routes[section]?.pane !== 'writingLabScreen') {
         doc.getElementById('writingLabFrame')?.contentWindow?.postMessage({ type: 'writing-lab-suspend' }, win.location.origin);
@@ -97,6 +99,7 @@
         if (button) button.style.display = section === 'library' ? '' : 'none';
       });
       if (activePaneId === 'readingPane') win.ReadingPractice?.open({ mockOnly: section === 'reading', ...options.readingRequest, ...(route.readingLibrary ? { libraryId: route.readingLibrary } : {}) });
+      if (route.speakingType) win.SpeakingPractice?.open(route.speakingType);
       closeMenu();
       if (ready && options.history !== 'none') {
         const hash = '#/' + routes[section].path;
@@ -142,7 +145,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { history: 'replace', focus: false });
       },
-      reset() { win.ReadingPractice?.reset(); ready = false; current = null; closeMenu(); },
+      reset() { win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }

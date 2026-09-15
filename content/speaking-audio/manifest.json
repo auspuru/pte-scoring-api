@@ -1,0 +1,192 @@
+{
+  "rs-2": {
+    "textSha256": "43ed26dd7a734780d842c64dbe93273962fb3a41ecae3cf258a4e1a64f1ccb0f",
+    "audioSha256": "5744f8c5984bc7cb0476d556878250aadab4fcb29bf95eccd45c69e225dd2f06",
+    "bytes": 32205,
+    "seconds": 5.328,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rs-3": {
+    "textSha256": "21d3834a827f05561df3aa699abb053158dd5931f25d74cce8e581af29f8997e",
+    "audioSha256": "fde9706b1a9622a3c671576ba58d71e130926e1a94af8ef73ebfe46ddb83e833",
+    "bytes": 37533,
+    "seconds": 6.216,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rs-1": {
+    "textSha256": "7a87aa448246f73a21170d46e9fe82f9a258c746af283dac9b0301d7d25e4d31",
+    "audioSha256": "21d066e0fd79455f0f711314c9db589dd58ffa6e6162dbd571b30122a1f2a703",
+    "bytes": 40125,
+    "seconds": 6.648,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rs-4": {
+    "textSha256": "391b554b29e3053df05aa3c599b969460b7a3f8712206c3b79054f9999cd8643",
+    "audioSha256": "3aa468357259edcfa90ce9336ea4e33e58b7f00d78c5115ea76e95227b569bed",
+    "bytes": 34365,
+    "seconds": 5.688,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rs-5": {
+    "textSha256": "521853c535cc4a707f71edd9e36aae7e079936594a69b3f7617db4d42fafbf42",
+    "audioSha256": "d9fbdd792a769abd079156bbbd621e417aa73bee46bd85cba36afead6ff33838",
+    "bytes": 33069,
+    "seconds": 5.472,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rl-1": {
+    "textSha256": "6a0f88d8531ff2d2bde4741f597c7e12da274dcd4e5299fa7f2096323e9d3f2b",
+    "audioSha256": "09a4e04e22b1228b8309602a7aea8734488253ed0921a56bee5a25ea6e6dcdf5",
+    "bytes": 407469,
+    "seconds": 67.872,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rl-3": {
+    "textSha256": "31a83541047d9efda759271fbb1cb708630a4fffcee53cd67fc4084106d46387",
+    "audioSha256": "0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e",
+    "bytes": 470397,
+    "seconds": 78.36,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rl-4": {
+    "textSha256": "7ecccf87e235d2da88edc7f5fd5cd8a700aa134a4cd92cbaa32525c767b7b215",
+    "audioSha256": "bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23",
+    "bytes": 444477,
+    "seconds": 74.04,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rl-2": {
+    "textSha256": "9721a3dafb6735898d5f5b88b603f53a645a730514031bb05564fabd64a755aa",
+    "audioSha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+    "bytes": 475437,
+    "seconds": 79.2,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rl-5": {
+    "textSha256": "2296790d490f0346fdc85ee647141ea2bb9d0cb49b335c791567299eecb82173",
+    "audioSha256": "4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7",
+    "bytes": 442029,
+    "seconds": 73.632,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "sgd-1": {
+    "textSha256": "166f70b591f87aeeeb5f4d29a97f2a13457f3410100119f6b07e2af2c5dc6108",
+    "audioSha256": "70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff",
+    "bytes": 653565,
+    "seconds": 108.888,
+    "voices": [
+      "en-AU-NatashaNeural",
+      "en-US-GuyNeural",
+      "en-GB-SoniaNeural"
+    ]
+  },
+  "sgd-2": {
+    "textSha256": "5b5edd9409373ddbfdd56501470aad0d19ac41f6a1c89e235d1bd59ae0fc3f7c",
+    "audioSha256": "7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18",
+    "bytes": 675885,
+    "seconds": 112.608,
+    "voices": [
+      "en-AU-NatashaNeural",
+      "en-US-GuyNeural",
+      "en-GB-SoniaNeural"
+    ]
+  },
+  "sgd-3": {
+    "textSha256": "b3752788e5f9b96336fe57430254962c04983fc09dc78d0b19d1b5e8672dcfbf",
+    "audioSha256": "efbf3a3cb26883449a9403c3063ff51f8bb62577677734f5840550fd302c276b",
+    "bytes": 635421,
+    "seconds": 105.864,
+    "voices": [
+      "en-AU-NatashaNeural",
+      "en-US-GuyNeural",
+      "en-GB-SoniaNeural"
+    ]
+  },
+  "rts-1": {
+    "textSha256": "8abc09d82afa949a16e5ccf0fe878f61b508ab5eb6ea95c38000db0e478142b3",
+    "audioSha256": "3be726408913dd70d960f5d37c5d045562fc3c68def4542922f4589378092c27",
+    "bytes": 103917,
+    "seconds": 17.28,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rts-2": {
+    "textSha256": "695680a8a1f96b8c52bd189d44fc9d4d2581d76fda853a1c8e38bfad2cd62ad5",
+    "audioSha256": "6621f912fd7edbc776fbe37f6aa22da0fe61d86253b7ee7a05d669ad71134133",
+    "bytes": 96285,
+    "seconds": 16.008,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rts-3": {
+    "textSha256": "3df86d7e376b5a74995e9dab9ba01f63953e2f660f3549f54bcffdf607c15081",
+    "audioSha256": "a1bb7306cb1d3b7191b6812d8119c4f2590983c659e6a340d074606cffd3b7f0",
+    "bytes": 99021,
+    "seconds": 16.464,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rts-4": {
+    "textSha256": "a53655241d89df5d08f562715a80b43ed1d8da631ac524cdf16500b1f6d99de3",
+    "audioSha256": "db439bbed77472c43ac6d27792575141588cafc97b2bd8a694703d576d8c30c2",
+    "bytes": 98157,
+    "seconds": 16.32,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "rts-5": {
+    "textSha256": "5a3b8924e1d554d7ef0c34e652107c992807c32cbfaaff148edaa3e745b71b6e",
+    "audioSha256": "9eb1f82542a7f3229c08e2bdea2528b5ca756213715d0206a399c577cc4ea25c",
+    "bytes": 101325,
+    "seconds": 16.848,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ]
+  },
+  "sgd-4": {
+    "textSha256": "458c1d366a78823868f9acf4fc04f10df8f7113cb3bce9649a4ad0607cb911a2",
+    "audioSha256": "a152649eb38fd6e1a28c2cc34958c1551bffb6a94f73e9c885f8e22e98ff4c96",
+    "bytes": 677613,
+    "seconds": 112.896,
+    "voices": [
+      "en-AU-NatashaNeural",
+      "en-US-GuyNeural",
+      "en-GB-SoniaNeural"
+    ]
+  },
+  "sgd-5": {
+    "textSha256": "ccf707996cf47523d775e453e360eda38f381f7c4309c2f5780b753928846f79",
+    "audioSha256": "f8725c35aed83e4221f7fcf5b33dbcedb11448d35fc578cd8cff8d5d523a73a6",
+    "bytes": 645213,
+    "seconds": 107.496,
+    "voices": [
+      "en-AU-NatashaNeural",
+      "en-US-GuyNeural",
+      "en-GB-SoniaNeural"
+    ]
+  }
+}

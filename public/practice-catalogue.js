@@ -5,6 +5,14 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   const groups = [
+    { id: 'speaking', title: 'Speaking Practice', tasks: [
+      { route: 'speaking-ra', label: 'Read Aloud' },
+      { route: 'speaking-rs', label: 'Repeat Sentence' },
+      { route: 'speaking-di', label: 'Describe Image' },
+      { route: 'speaking-rl', label: 'Retell Lecture' },
+      { route: 'speaking-sgd', label: 'Summarise Group Discussion' },
+      { route: 'speaking-rts', label: 'Respond to a Situation' }
+    ] },
     { id: 'writing', title: 'Writing Practice', tasks: [
       { route: 'swt', label: 'Summarise Written Text' }, { route: 'practice', label: 'Write Essay' }
     ] },

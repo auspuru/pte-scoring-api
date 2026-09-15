@@ -2,15 +2,18 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
-function createStore(pool, directory) {
+function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
+  if (!['writing_lab_attempts','speaking_lab_attempts'].includes(table)) throw Error('Invalid attempt table.');
+  const namespace = table === 'writing_lab_attempts' ? 'writing-lab' : 'speaking-lab';
+  const indexName = table === 'writing_lab_attempts' ? 'writing_lab_user_idx' : 'speaking_lab_user_idx';
   let ready;
   const locks = new Map();
   async function initialise() {
     if (!ready) ready = (async () => {
-      if (pool) await pool.query(`CREATE TABLE IF NOT EXISTS writing_lab_attempts (
+      if (pool) await pool.query(`CREATE TABLE IF NOT EXISTS ${table} (
         id UUID PRIMARY KEY, username TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
         data JSONB NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW());
-        CREATE INDEX IF NOT EXISTS writing_lab_user_idx ON writing_lab_attempts(username, updated_at DESC)`);
+        CREATE INDEX IF NOT EXISTS ${indexName} ON ${table}(username, updated_at DESC)`);
       else await fs.mkdir(directory, { recursive: true });
     })().catch(e => { ready = null; throw e; });
     return ready;
@@ -23,11 +26,11 @@ function createStore(pool, directory) {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', ['writing-lab:' + id]);
-        const { rows } = await client.query('SELECT username, data FROM writing_lab_attempts WHERE id=$1 FOR UPDATE', [id]);
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [namespace + ':' + id]);
+        const { rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
         if (rows.length && rows[0].username !== uid) throw Object.assign(Error('Attempt not found.'), { status: 404 });
         const value = await fn(rows[0]?.data || null);
-        if (value) await client.query(`INSERT INTO writing_lab_attempts(id,username,data) VALUES($1,$2,$3)
+        if (value) await client.query(`INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
           ON CONFLICT(id) DO UPDATE SET data=EXCLUDED.data, updated_at=NOW()`, [id,uid,JSON.stringify(value)]);
         await client.query('COMMIT');
         return value;
@@ -53,7 +56,7 @@ function createStore(pool, directory) {
   }
   async function list(uid) {
     await initialise();
-    if (pool) return (await pool.query('SELECT data FROM writing_lab_attempts WHERE username=$1 ORDER BY updated_at DESC LIMIT 50', [uid])).rows.map(r => r.data);
+    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : 'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT 50`, [uid])).rows.map(r => r.data);
     let files;
     try { files = await fs.readdir(folder(uid)); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
     const entries = await Promise.all(files.filter(f => f.endsWith('.json')).map(f => fs.readFile(path.join(folder(uid),f),'utf8').then(JSON.parse)));

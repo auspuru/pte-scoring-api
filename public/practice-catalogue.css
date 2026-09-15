@@ -2,10 +2,11 @@
 .catalogue-heading { margin: 0 0 26px; }
 .catalogue-heading h2 { font-size: clamp(24px, 3vw, 34px); letter-spacing: -.04em; margin: 0 0 8px; }
 .catalogue-heading p, .catalogue-description { color: var(--ink-soft); max-width: 70ch; }
-.practice-banners { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--bg-card); border: 1px solid var(--line-soft); border-radius: 20px; padding: 22px 10px; box-shadow: var(--shadow-lg); }
+.practice-banners { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--bg-card); border: 1px solid var(--line-soft); border-radius: 20px; padding: 22px 10px; box-shadow: var(--shadow-lg); }
 .practice-banner { padding: 0 20px 18px; min-width: 0; }
 .practice-banner + .practice-banner { border-left: 1px solid var(--line-soft); }
 .practice-banner h3 { margin: 0 0 14px; border-radius: 9px; padding: 9px 14px; font-size: 16px; }
+.practice-banner.speaking h3 { color: #245ba5; background: #e6eef9; }
 .practice-banner.writing h3 { color: #a0077a; background: #f5e6f1; }
 .practice-banner.reading h3 { color: #ac4700; background: #fff0e5; }
 .practice-banner.listening h3 { color: #08713a; background: #e8f1eb; }
@@ -36,5 +37,6 @@
 body.dark .mock-module { color: #f8a4df; }
 body.dark .reading .mock-module { color: #ffbc7c; }
 @media (max-width: 1200px) { .mock-catalogue-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (min-width: 901px) and (max-width: 1150px) { .practice-banners { grid-template-columns: repeat(2,minmax(0,1fr)); row-gap: 24px; } .practice-banner:nth-child(3) { border-left: 0; } }
 @media (max-width: 900px) { .practice-banners { grid-template-columns: 1fr; } .practice-banner + .practice-banner { border-left: 0; border-top: 1px solid var(--line-soft); padding-top: 20px; } .mock-catalogue-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 560px) { .mock-catalogue-grid { grid-template-columns: 1fr; } .catalogue-modes button { flex: 1 1 auto; padding: 9px 12px; } .practice-banner { padding: 0 8px 12px; } }

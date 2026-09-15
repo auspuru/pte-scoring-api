@@ -5680,6 +5680,17 @@ function escapeHtmlServer(s) {
   return String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
+require('./speaking-lab').installSpeakingLab(app, {
+  pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
+  verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
+  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  callModel: async prompt => {
+    if (!anthropic) throw new Error('Speaking content assessment is not configured.');
+    const response = await anthropic.messages.create({model:CLAUDE_MODEL,temperature:0,max_tokens:3200,messages:[{role:'user',content:prompt}]},{timeout:60000,maxRetries:0});
+    if (response.stop_reason === 'max_tokens') throw new Error('Incomplete content assessment.');
+    return JSON.parse(response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').match(/\{[\s\S]*\}/)?.[0] || 'null');
+  }
+});
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
 require('./writing-lab').installWritingLab(app, {
   pool: pgPool,
