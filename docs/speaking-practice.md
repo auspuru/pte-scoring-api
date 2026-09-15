@@ -106,3 +106,17 @@ listening resume saved attempts; reading restores saved question sessions; essay
 practice keeps per-question device drafts scoped to the account. Active speaking
 capture must finish and save before navigation. Listening timers continue while
 away, as before. Mock submission rules are unchanged.
+
+## Recorder recovery
+
+Recorder startup tries supported WebM/MP4 encoders and the browser default,
+including recovery when construction or start fails. Permission requests time out
+without allowing a late response to replace a newer capture. Blocked prompt
+playback can be retried from a fresh user gesture without requesting the microphone
+again. A live input meter and explicit recording state show when to speak. Captured
+audio has local replay/download before upload completes, including upload failures.
+
+Regression tests cover format fallback, startup exceptions, permission timeout,
+late grants, mobile autoplay rejection and replay during failed uploads. These
+verify browser failure paths; they do not establish the specific cause on the
+reporting user's physical microphone or browser.

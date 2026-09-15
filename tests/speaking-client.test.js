@@ -91,3 +91,41 @@ test('Back and Next save transcripts and resume the same attempts without duplic
   await h.click({speakingMove:'1'});assert.equal(h.recorders[0].state,'recording');assert.match(h.host.innerHTML,/Question 1 of 5/);
   assert.match(h.nodes.get('speaking-notice').textContent,/Finish and save/);
 });
+test('Recorder retries a supported MP4 format when the advertised WebM encoder fails',async()=>{
+ const h=harness(),Base=h.env.MediaRecorder,formats=[];
+ h.env.MediaRecorder=class extends Base {static isTypeSupported(){return true;}constructor(stream,options){formats.push(options?.mimeType);if(options?.mimeType?.startsWith('audio/webm'))throw Error('Encoder unavailable');super(stream,options);}};
+ await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'record'});await h.click({speakingAction:'skip'});
+ assert.equal(h.recorders[0].mimeType,'audio/mp4');assert.equal(h.recorders[0].state,'recording');assert.deepEqual(formats,['audio/webm;codecs=opus','audio/mp4']);
+ await h.click({speakingAction:'stop'});await flush();
+ const upload=h.requests.find(r=>r.url.endsWith('/recording')&&r.body);assert.equal(upload.body.type,'audio/mp4');assert([...h.attempts.values()][0].recording);
+});
+test('A recorder start failure becomes a retryable error rather than a stuck preparation screen',async()=>{
+ const h=harness(),Base=h.env.MediaRecorder;
+ h.env.MediaRecorder=class extends Base {start(){throw Error('Cannot start encoder');}};
+ await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'record'});await h.click({speakingAction:'skip'});
+ assert.equal(h.nodes.get('speaking-record').disabled,false);assert.equal(h.nodes.get('speaking-file').disabled,false);assert.match(h.nodes.get('speaking-notice').textContent,/could not start recording/);assert(h.stops()>0);
+});
+test('An unanswered microphone permission prompt times out and a late grant cannot hijack a new recording',async()=>{
+ const h=harness();let resolve,oldStops=0;
+ h.env.navigator.mediaDevices.getUserMedia=()=>new Promise(r=>resolve=r);
+ await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});const pending=h.click({speakingAction:'record'});
+ h.tick(21000);assert.equal(h.nodes.get('speaking-record').disabled,false);assert.match(h.nodes.get('speaking-notice').textContent,/still waiting/);
+ h.env.navigator.mediaDevices.getUserMedia=async()=>({getTracks:()=>[{stop(){}}]});
+ await h.click({speakingAction:'record'});await h.click({speakingAction:'skip'});
+ resolve({getTracks:()=>[{stop(){oldStops++;}}]});await pending;
+ assert.equal(oldStops,1);assert.equal(h.recorders[0].state,'recording');
+ await h.click({speakingAction:'stop'});await flush();
+});
+test('Captured audio remains playable and downloadable when its upload fails',async()=>{
+ const h=harness();h.env.rejectUpload=true;await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'record'});await h.click({speakingAction:'skip'});await h.click({speakingAction:'stop'});await flush();
+ assert.match(h.nodes.get('speaking-playback').innerHTML,/<audio controls/);assert.match(h.nodes.get('speaking-playback').innerHTML,/Download for teacher review/);assert.equal(h.nodes.get('speaking-upload-retry').hidden,false);
+});
+test('A mobile autoplay denial keeps the microphone ready and retries playback on the next tap',async()=>{
+ const h=harness(),Base=h.env.Audio;let grants=0;const acquire=h.env.navigator.mediaDevices.getUserMedia;
+ h.env.navigator.mediaDevices.getUserMedia=()=>{grants++;return acquire();};
+ h.env.Audio=class extends Base {async play(){if(h.audio.length===1)throw Object.assign(Error('Gesture required'),{name:'NotAllowedError'});return super.play();}};
+ await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});await h.click({speakingAction:'record'});
+ assert.match(h.nodes.get('speaking-notice').textContent,/Microphone ready/);assert.equal(h.nodes.get('speaking-record').disabled,false);
+ await h.click({speakingAction:'record'});assert.equal(grants,1);h.audio[1].onended();assert.equal(h.recorders[0].state,'recording');
+ await h.click({speakingAction:'stop'});await flush();assert([...h.attempts.values()][0].recording);
+});
