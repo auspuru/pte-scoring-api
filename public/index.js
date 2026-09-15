@@ -2872,6 +2872,10 @@ function setGenerationSeedIdeas(e, value) {
   if (libraryRenderedId === e.id) libraryRenderedValues.seedIdeas = value;
 }
 
+function getEssayOutputMode(e) {
+  return EssayGenerationPolicy.outputMode({ target_band_level: getTemplateKeyForEssay(e), band6Mode: e.band6Mode });
+}
+
 function buildStructuredEssayPlan(e) {
   const qType = getActiveQuestionType(e);
   const typeCfg = QUESTION_TYPES[qType] || QUESTION_TYPES.advantages_disadvantages;
@@ -2925,10 +2929,11 @@ function buildStructuredEssayPlan(e) {
   return {
     id: e.id || '',
     topic: e.title || '',
-    band6Mode: e.band6Mode || '',
+    band6Mode: getEssayOutputMode(e) === 'idea_guide' ? 'just_phrases' : 'full_essay',
+    output_mode: getEssayOutputMode(e),
     question: e.question || '',
     question_type: qType,
-    stance: e.chosenStance || '',
+    stance: typeCfg.stanceRequired ? (e.chosenStance || '') : '',
     selected_ideas: {
       reasons: e.selectedReasonIds || [],
       examples: e.selectedExampleIds || [],
@@ -2982,6 +2987,7 @@ function generatePreviewSignature(e) {
     e.templateChoice || '',
     e.vocab || '',
     e.generationMode || '',
+    getEssayOutputMode(e),
     prefs.targetExam || '',
     prefs.ideaSource || '',
     prefs.examplePreference || '',
@@ -3020,7 +3026,7 @@ function validateEssayConsistency(e) {
     results.errors.push("Essay has not been generated yet. Review the plan to generate it.");
     return results;
   }
-  if (e.band6Mode === 'just_phrases') {
+  if (getEssayOutputMode(e) === 'idea_guide') {
     return results;
   }
   const introLower = (e.intro || '').toLowerCase();
@@ -3341,6 +3347,9 @@ function openEssayGenerationSetup(e = getCurrent()) {
   if (vocab) vocab.value = String(prefs.vocabularyLevel);
   if (style) style.value = prefs.writingStyle === 'natural' ? 'natural' : 'template';
   if (example) example.value = prefs.examplePreference;
+  const output = document.getElementById('genSetupOutputMode');
+  if (output) output.value = getEssayOutputMode(e);
+  updateGenerationOutputModeUI();
   const manual = document.getElementById('genSetupManualIdeas');
   if (manual) manual.value = prefs.manualIdeas.join('\n');
   document.querySelectorAll('input[name="genIdeaSource"]').forEach(input => {
@@ -3355,6 +3364,15 @@ function closeEssayGenerationSetup() {
   document.getElementById('essayGenerationSetupModal')?.classList.remove('show');
   essayGenerationSetupId = null;
   essayGenerationSetupStance = '';
+}
+
+function updateGenerationOutputModeUI() {
+  const choice = document.getElementById('genSetupBand')?.value || 'default';
+  const key = choice === 'default' ? (getTemplatesBag().default || 'band9') : choice;
+  const field = document.getElementById('genSetupOutputField');
+  const input = document.getElementById('genSetupOutputMode');
+  if (field) field.style.display = key === 'band6' ? '' : 'none';
+  if (input && key !== 'band6') input.value = 'full_essay';
 }
 
 async function continueEssayGenerationSetup() {
@@ -3387,10 +3405,12 @@ async function continueEssayGenerationSetup() {
   const examplePreference = document.getElementById('genSetupExamplePreference')?.value || 'topic_everyday';
 
   e.templateChoice = templateChoice;
+  const resolvedBand = templateChoice === 'default' ? (getTemplatesBag().default || 'band9') : templateChoice;
+  e.band6Mode = resolvedBand === 'band6' && document.getElementById('genSetupOutputMode')?.value === 'idea_guide'
+    ? 'just_phrases' : 'full_essay';
   e.vocab = vocabularyLevel;
   e.generationMode = writingStyle;
-  if (typeCfg.stanceRequired) e.chosenStance = selectedStance;
-  else if (selectedStance) e.chosenStance = selectedStance;
+  e.chosenStance = typeCfg.stanceRequired ? selectedStance : '';
   e.userManualIdeas = source === 'ai' ? [] : manualIdeas.slice();
   e.userManualIdeasRaw = source === 'ai' ? '' : manualRaw;
   if (source === 'ai') {
@@ -3462,6 +3482,7 @@ function openEssayPlanReview(e = getCurrent()) {
     ['Exam', examLabels[prefs.targetExam] || prefs.targetExam],
     ['Question type', typeCfg.displayName],
     ['Template', tplLabel(templateKey)],
+    ['Output', getEssayOutputMode(e) === 'idea_guide' ? 'Idea explanations and example phrases' : 'Complete essay'],
     ['Vocabulary', (VOCAB_LEVELS[prefs.vocabularyLevel - 1] || VOCAB_LEVELS[2]).label],
     ['Style', prefs.writingStyle === 'natural' ? 'Natural mode' : 'Exam template mode'],
     ['Examples', exampleLabels[prefs.examplePreference] || prefs.examplePreference]
@@ -3490,6 +3511,9 @@ function openEssayPlanReview(e = getCurrent()) {
   const note = document.getElementById('generationPlanNote');
   const wordRange = prefs.targetExam === 'ielts' ? '250–330' : '240–285';
   if (note) note.innerHTML = `The writer will develop these arguments across two body paragraphs, use concrete examples tied to <strong>${escapeHtml((plan.topic || e.title || 'this topic'))}</strong>, aim for ${wordRange} words, and avoid unsupported statistics, studies or named authorities.`;
+  if (note && plan.output_mode === 'idea_guide') note.textContent = 'The writer will explain these ideas and suggest topic-specific example phrases. This is a learning guide to help you write your own essay.';
+  const generateButton = document.getElementById('genPlanGenerateBtn');
+  if (generateButton) generateButton.textContent = plan.output_mode === 'idea_guide' ? 'Generate idea guide →' : 'Generate essay →';
   document.getElementById('essayPlanReviewModal')?.classList.add('show');
 }
 
@@ -3935,7 +3959,7 @@ function validateGeneratedEssayText(plan, text) {
     errors.push("One or more of the required paragraph sections are empty or too short.");
   }
 
-  if (plan && plan.band6Mode === 'just_phrases') {
+  if (plan && EssayGenerationPolicy.outputMode(plan) === 'idea_guide') {
     return {
       ok: errors.length === 0,
       errors,
@@ -6766,14 +6790,16 @@ function renderPreview() {
 function renderEssayPageHTML(e, num) {
   const prosList = (e.pros || '').split('\n').map(s => s.trim()).filter(Boolean);
   const consList = (e.cons || '').split('\n').map(s => s.trim()).filter(Boolean);
-  const templateKey = getTemplateKeyForEssay(e);
+  const templateKey = e.generatedTemplateKey || getTemplateKeyForEssay(e);
   const bandLabel = templateTierLabel(templateKey);
+  const isIdeaGuide = EssayGenerationPolicy.containsPlanningNotes([e.intro, e.bp1, e.bp2, e.concl].filter(Boolean).join('\n')) ||
+    e.generatedOutputMode === 'idea_guide';
   // Diagnostic: log once per render so we can verify the right band is being used
   console.log('[render] essay#' + num, 'templateChoice=', e.templateChoice, 'resolvedKey=', templateKey, 'bandLabel=', bandLabel);
   return `
     <div class="essay-page">
       <div class="essay-page-header">
-        <span class="essay-page-header-brand">IPT Brisbane — ${bandLabel} Essay Template Guide</span>
+        <span class="essay-page-header-brand">IPT Brisbane — ${isIdeaGuide ? 'Essay Planning Guide' : bandLabel + ' Target · Essay Practice'}</span>
         <span class="essay-page-header-tag">2026 Edition</span>
       </div>
       <div class="essay-num-label">ESSAY ${String(num).padStart(2, '0')}</div>
@@ -6789,7 +6815,7 @@ function renderEssayPageHTML(e, num) {
           </tr>
         </table>` : ''}
       ${e.approach ? `<div class="approach-tip"><strong>APPROACH TIP:</strong> ${escapeHtml(e.approach)}</div>` : ''}
-      <div class="model-essay-label">COMPLETE MODEL ESSAY</div>
+      <div class="model-essay-label">${isIdeaGuide ? 'IDEA EXPLANATIONS &amp; EXAMPLE PHRASES' : 'COMPLETE MODEL ESSAY'}</div>
       ${e.intro ? `<div class="essay-body-section-title">INTRODUCTION</div>${highlightParagraph(e.intro, { section: 'intro' })}` : ''}
       ${e.bp1 ? `<div class="essay-body-section-title">BODY PARAGRAPH 1</div>${highlightParagraph(e.bp1, { section: 'bp1' })}` : ''}
       ${e.bp2 ? `<div class="essay-body-section-title">BODY PARAGRAPH 2</div>${highlightParagraph(e.bp2, { section: 'bp2' })}` : ''}
@@ -7477,7 +7503,7 @@ function selectBand6Mode(mode) {
   if (!e) return;
   e.band6Mode = mode;
   saveAll();
-  aiWriteFullEssay({ band6Mode: mode, skipConfirm: true, confirmedSetup: true });
+  openEssayGenerationSetup(e);
 }
 
 function switchTemplateTab(tab) {
@@ -7584,6 +7610,7 @@ async function setEssayTemplate(choice) {
   const e = getCurrent();
   if (!e) return;
   e.templateChoice = choice;
+  if (getTemplateKeyForEssay(e) !== 'band6') e.band6Mode = 'full_essay';
   if (e.generationPreferences) e.generationPreferences.templateChoice = choice;
   e.previewSignature = '';
   saveAll();
@@ -8677,14 +8704,8 @@ async function generateEssayFromApprovedPlan(opts = {}) {
   const effectiveTplKey = (e.templateChoice && e.templateChoice !== 'default') ? e.templateChoice : (bag.default || 'band9');
   const isBand6 = (effectiveTplKey === 'band6');
 
-  const mode = opts.band6Mode || (opts.silent ? (e.band6Mode || 'full_essay') : null);
-  if (isBand6 && !mode && !opts.silent) {
-    document.getElementById('band6ModeModal').classList.add('show');
-    return false;
-  }
-  if (isBand6 && mode) {
-    e.band6Mode = mode;
-  }
+  const mode = getEssayOutputMode(e) === 'idea_guide' ? 'just_phrases' : 'full_essay';
+  e.band6Mode = mode;
 
   const hasContent = (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0;
   if (hasContent && !opts.skipConfirm) {
@@ -8730,6 +8751,7 @@ async function generateEssayFromApprovedPlan(opts = {}) {
 
   const templateCopy = { ...template, bp2: bp2Template };
   const plan = buildStructuredEssayPlan(e);
+  const generationSignature = generatePreviewSignature(e);
 
   try {
     const res = await fetch(API_URL + '/api/generate-essay', {
@@ -8742,6 +8764,11 @@ async function generateEssayFromApprovedPlan(opts = {}) {
       let errDetail = '';
       try {
         const parsed = JSON.parse(t);
+        if (parsed.code === 'PLAN_STANCE_CONFLICT') {
+          if (e.generationPreferences) e.generationPreferences.planApproved = false;
+          saveAll();
+          if (!opts.silent) openEssayGenerationSetup(e);
+        }
         if (parsed.details) errDetail = '\nDetails: ' + parsed.details.join(' | ');
         else if (parsed.error) errDetail = '\n' + parsed.error;
       } catch (e) {
@@ -8754,6 +8781,11 @@ async function generateEssayFromApprovedPlan(opts = {}) {
       throw new Error(data.error || 'Server returned empty generation');
     }
     const text = data.text;
+    if (generationSignature !== generatePreviewSignature(e)) {
+      throw new Error('The essay preferences changed while writing. Review the updated plan before generating again.');
+    }
+    const format = EssayGenerationPolicy.validateFormat(plan, text);
+    if (!format.ok) throw new Error(format.errors.join(' '));
 
     if (data.warnings && data.warnings.length > 0 && !opts.silent) {
       console.warn("Generated essay warnings:", data.warnings);
@@ -8773,6 +8805,8 @@ async function generateEssayFromApprovedPlan(opts = {}) {
     e.questionTypeUsed = getActiveQuestionType(e);
     e.ideasUsed = (e.selectedReasonIds || []).concat(e.selectedExampleIds || []).concat(e.selectedSolutionIds || []).concat(e.optionalContrastIds || []);
     e.generatedAt = new Date().toISOString();
+    e.generatedOutputMode = plan.output_mode;
+    e.generatedTemplateKey = plan.target_band_level;
     if (e.generationPreferences) {
       e.generationPreferences.lastGeneratedAt = e.generatedAt;
       e.generationPreferences.planApproved = true;

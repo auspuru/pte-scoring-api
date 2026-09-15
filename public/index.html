@@ -157,6 +157,7 @@
 <script src="essay-attempt-sync.js?v=20.3.6" defer></script>
 <script src="account-progress.js?v=1" defer></script>
 <script src="essay-scoring.js?v=20.4.7" defer></script>
+<script src="essay-generation-policy.js?v=1" defer></script>
 <script src="reading-mock-tools.js?v=13" defer></script>
 <script src="reading-exam-player.js?v=4" defer></script>
 <script src="reading-session-timing.js?v=1" defer></script>
@@ -164,7 +165,7 @@
 <script src="practice-catalogue.js?v=1" defer></script>
 <script src="reading-practice.js?v=21" defer></script>
 <script src="portal-workspace.js?v=20.4.18" defer></script>
-<script src="index.js?v=20.4.16" defer></script>
+<script src="index.js?v=20.4.17" defer></script>
 </head>
 <body>
 
@@ -1055,7 +1056,7 @@
         </label>
         <label class="generation-pref-field">
           <span>Target template</span>
-          <select class="field-input" id="genSetupBand">
+          <select class="field-input" id="genSetupBand" onchange="updateGenerationOutputModeUI()">
             <option value="default">Use my default</option>
             <option value="band6">Band 6 structure</option>
             <option value="band9">Band 9 structure</option>
@@ -1080,6 +1081,17 @@
           </select>
         </label>
       </div>
+    </div>
+
+    <div class="generation-setup-section" id="genSetupOutputField">
+      <label class="generation-pref-field">
+        <span>Output format</span>
+        <select class="field-input" id="genSetupOutputMode">
+          <option value="full_essay">Complete essay</option>
+          <option value="idea_guide">Idea explanations and example phrases</option>
+        </select>
+      </label>
+      <div class="generation-setup-help">The idea guide is a Band 6 learning aid. It is not a finished essay.</div>
     </div>
 
     <div class="generation-setup-section">

@@ -21,6 +21,7 @@ function harness() {
     return nodes.get(id);
   };
   const ctx = { ESSAY_GENERATION_PREFERENCES_VERSION: 1, essayGenerationSetupId: essay.id,
+    EssayGenerationPolicy: require('../public/essay-generation-policy'),
     essayGenerationSetupStance: '', essays: [essay], getCurrent: () => essay,
     QUESTION_TYPES: { advantages_disadvantages: { stanceRequired: false } },
     getActiveQuestionType: e => e.questionType, getTemplateKeyForEssay: () => 'band9', getTemplatesBag: () => ({}),
@@ -39,7 +40,7 @@ function harness() {
   node('genSetupExamplePreference').value = 'topic_everyday';
   vm.createContext(ctx);
   vm.runInContext(['parseManualIdeas', 'normalizeGenerationIdeaSource', 'getStudentManualIdeas',
-    'getEssayGenerationPreferences', 'generatePreviewSignature', 'hasApprovedEssayPlan', 'aiWriteFullEssay',
+    'getEssayGenerationPreferences', 'getEssayOutputMode', 'generatePreviewSignature', 'hasApprovedEssayPlan', 'aiWriteFullEssay',
     'continueEssayGenerationSetup', 'confirmEssayPlanAndGenerate', 'validateEssayStateBeforeGeneration',
     'setGenerationSeedIdeas', 'syncSelectedIdeasToSeed', 'saveCurrent'].map(name => fn(client, name)).join('\n'), ctx);
   return { ctx, essay, node, calls, notices };
