@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-15.2",
+  "version": "2026-09-15.3",
   "spoken": [
     {
       "id": "sst-urban-trees",
@@ -276,6 +276,104 @@
           ]
         }
       ]
+    }
+  ],
+  "predictionEssays": [
+    {
+      "predictionNumber": 1,
+      "title": "Television as a Relaxation Tool and Companion",
+      "text": "Television serves many useful functions. It helps people to relax. Besides, it can also be seen as a companion for the lonely. To what extent do you agree with this? Explain why with your own experience.",
+      "keyPoints": [
+        "Give a clear view about television as a relaxation tool and companion.",
+        "Explain how suitable programmes can reduce stress or provide entertainment.",
+        "Discuss the limits of television as a substitute for genuine relationships.",
+        "Use relevant personal experience or an example to support the position."
+      ],
+      "sample": "Television can help people relax and can provide a sense of companionship, but I only partly agree that these are always useful functions. Its value depends on the programme, the amount of time spent watching and whether it supplements rather than replaces real relationships.\n\nAfter a demanding day, a comedy, documentary or familiar series can give viewers a simple mental break. This kind of entertainment may reduce stress and help people shift their attention away from work or study. Television can also make a quiet home feel less empty. For example, an older person living alone may enjoy hearing presenters discuss everyday issues and may feel connected to a wider community.\n\nHowever, television is not a true substitute for friendship. A viewer cannot receive personal advice, share responsibilities or develop mutual understanding with a programme. Excessive viewing may also reduce exercise, sleep and face-to-face conversation. Someone who watches television whenever they feel lonely might temporarily feel better while becoming even more isolated in the long term.\n\nIn my own experience, watching a short programme with my family helps us relax together because it creates a topic for conversation. By contrast, watching alone late at night often leaves me tired rather than refreshed. Therefore, television is a useful relaxation tool and limited companion, but people should combine it with active hobbies and genuine social contact."
+    },
+    {
+      "predictionNumber": 2,
+      "title": "Studying Old Plays and Theatre Works",
+      "text": "What are the problems and the benefits for high school students of studying plays and other works for theatre that were written centuries ago? Do you agree with it? Use your own experience to discuss it.",
+      "keyPoints": [
+        "Address both the benefits and the problems of studying historical theatre.",
+        "Explain how old plays can develop language, cultural understanding or critical thinking.",
+        "Explain difficulties such as unfamiliar language or distant social values.",
+        "State whether high school students should study these works and support the view with experience."
+      ],
+      "sample": "High school students can benefit from studying plays written centuries ago, although the material should be introduced with suitable guidance. I agree with including historical theatre because it develops more than literary knowledge, but it should not replace exposure to contemporary works.\n\nOld plays give students an opportunity to examine how people in another period understood family, power, justice and social responsibility. Their language and dramatic structure can also improve reading skills, interpretation and confidence in discussing different viewpoints. When students perform a scene, they must understand the characters' motives and communicate meaning through voice and movement. This makes literature more active than simply memorising information.\n\nThe main difficulty is that historical works may contain unfamiliar vocabulary, cultural references and attitudes that modern students find confusing or unacceptable. Without explanation, a class may focus on translating difficult sentences instead of considering the ideas. Some learners may also believe that old stories have no connection with their lives. Teachers can address these problems by providing context, comparing the original work with a modern adaptation and inviting students to question outdated assumptions.\n\nIn my own experience, discussing an older play became interesting when my class performed selected scenes and compared the characters' choices with situations today. I realised that the setting was distant, but the conflict about responsibility was still understandable. Therefore, historical theatre deserves a place in high school education when it is taught alongside modern voices and connected to students' experiences."
+    },
+    {
+      "predictionNumber": 3,
+      "title": "Combining Study and Employment",
+      "text": "Effective study requires time, comfort and peace. It is impossible to study with employment because one may distract the other. To what extent do you think the statements are realistic? Give your opinion with examples.",
+      "keyPoints": [
+        "Give a clear opinion about whether employment and effective study can coexist.",
+        "Discuss how employment can create time pressure, tiredness or distraction.",
+        "Explain possible benefits such as discipline, income and practical skills.",
+        "Support the view with realistic examples and conditions for success."
+      ],
+      "sample": "The claim that employment makes effective study impossible is too absolute. Working while studying can create serious pressure, but many students can manage both when their hours are limited and their schedules are organised carefully.\n\nEmployment may reduce the time and energy available for academic work. A student who finishes a late shift may struggle to concentrate during an early lecture or may postpone important assignments. Unpredictable rosters can be especially damaging because the learner cannot plan regular revision. Financial concerns may also distract students from their studies. These problems show why full-time employment is often unsuitable during demanding courses.\n\nNevertheless, part-time work can provide useful advantages. Earning an income may reduce dependence on family members and allow a student to pay for transport, books or accommodation. A job can also develop punctuality, communication and problem-solving skills. For instance, a student working several fixed hours in a shop may learn to plan study periods efficiently and become more disciplined about deadlines.\n\nIn my experience, combining study with a small weekend job was manageable because my shifts were predictable. I reserved weekday evenings for reading and began assignments before they became urgent. The arrangement became difficult only when I accepted extra shifts during examination periods. This taught me that the number and timing of hours matter more than employment itself. Therefore, study and employment can coexist, provided students have realistic workloads, protected study time and an employer willing to respect their academic commitments."
+    },
+    {
+      "predictionNumber": 4,
+      "title": "Experiential Learning in Education",
+      "text": "Some people point that experiential learning (i.e. learning by doing it) can work well in formal education. However, others think a traditional form of teaching is the best. Do you think experiential learning can work well in high schools or colleges?",
+      "keyPoints": [
+        "State whether experiential learning works effectively in formal education.",
+        "Explain how practical activities can deepen understanding and build transferable skills.",
+        "Acknowledge the value of direct instruction for foundations and difficult concepts.",
+        "Give a relevant school or college example."
+      ],
+      "sample": "Experiential learning can work very well in high schools and colleges, but it should complement rather than completely replace traditional teaching. Students need explanations and background knowledge before they can benefit fully from practical activities.\n\nLearning by doing makes abstract information easier to understand. A biology student who grows plants can observe how light, water and soil affect development instead of only reading about these factors. Similarly, a business student who runs a small project must communicate with others, manage resources and respond to unexpected problems. Such activities develop judgement, cooperation and the ability to apply knowledge in unfamiliar situations. They can also make lessons more memorable and motivate students who struggle with passive note-taking.\n\nTraditional instruction remains important because teachers can introduce accurate concepts efficiently and correct misunderstandings before they become habits. A practical experiment without clear guidance may produce a confusing result, and some subjects require substantial theoretical preparation. Experiential tasks can also be expensive or difficult to organise if schools lack equipment and safe facilities.\n\nIn my own education, a group project on reducing classroom waste helped me understand environmental principles more clearly than a textbook chapter alone. We collected observations, proposed changes and evaluated what happened, while our teacher explained the relevant concepts. The theory gave direction to the activity, and the activity gave meaning to the theory. Therefore, formal education should combine clear instruction with carefully designed experiences that allow students to apply, test and reflect on what they learn."
+    },
+    {
+      "predictionNumber": 5,
+      "title": "Digital Materials and Libraries",
+      "text": "With the increase of new digital media available online, the role of the library has become obsolete. Therefore universities should only procure digital materials rather than constantly update textbooks. Discuss both the advantages and disadvantages of this position and give your own point of view.",
+      "keyPoints": [
+        "Discuss advantages and disadvantages of replacing physical materials with digital resources.",
+        "Explain benefits such as convenient access, searchability and lower distribution costs.",
+        "Explain limits including unequal access, screen fatigue, unreliable information and loss of shared space.",
+        "Give a clear view about whether universities should use digital-only procurement."
+      ],
+      "sample": "Digital materials have transformed university study, but they have not made libraries or updated textbooks obsolete. In my view, universities should expand digital collections while maintaining carefully selected physical resources and welcoming library spaces.\n\nOnline books and journals are convenient because students can search them quickly and access them from home at any time. Digital copies also occupy little physical space and can be updated more easily when research changes. A university may serve learners on different campuses without transporting large numbers of books. Search tools, adjustable text and audio features can further support students with different learning needs.\n\nHowever, digital-only procurement has important disadvantages. Not every student has a reliable internet connection, a suitable device or a quiet place to study. Long periods of screen use may cause fatigue, and some learners understand complex arguments better when they can annotate a printed page. Online information also varies in quality, so students still need librarians and teachers to evaluate sources. If libraries lose their physical collections and study areas, students may lose an accessible place for concentration and academic discussion.\n\nDuring my own studies, electronic articles were useful for quick research, but I preferred printed chapters when preparing for an examination because I could concentrate and remember the structure more easily. This experience showed me that the two formats serve different purposes. Universities should therefore invest in both systems, using digital access for flexibility and libraries for reliable guidance, focused study and equal educational opportunity."
+    },
+    {
+      "predictionNumber": 6,
+      "title": "Public Transport and Road Building",
+      "text": "As cities expand, governments should look forward to creating better networks of public transport available for everyone rather than building more roads for vehicle owning population. To what extent do you agree or disagree?",
+      "keyPoints": [
+        "State the extent to which governments should prioritise public transport over additional roads.",
+        "Explain how accessible transport can reduce congestion, pollution and dependence on private cars.",
+        "Acknowledge situations where road investment remains necessary.",
+        "Support the position with practical urban examples."
+      ],
+      "sample": "As cities grow, governments should give priority to reliable and affordable public transport rather than continually adding roads for private vehicles. Roads will still be necessary for deliveries, emergency services and areas that cannot be served efficiently by rail or buses, but transport policy should focus on moving people efficiently.\n\nA strong public transport network allows many residents to travel without owning a car. Frequent buses, trains and safe connections can reduce the number of vehicles on congested streets and lower pollution caused by traffic. They also improve access to employment and education for people who cannot afford a private vehicle, including young people, older residents and low-income workers. If services are frequent and dependable, commuters may choose them voluntarily instead of seeing them as a second-rate option.\n\nBuilding more roads can provide short-term relief, but it often encourages more people to drive. New lanes may become crowded again as residents change their travel habits and housing expands around car access. Road construction also consumes valuable land that could be used for homes, parks or community facilities. Nevertheless, some road maintenance and targeted improvements are essential, particularly in outer suburbs where public transport is not yet practical.\n\nIn my experience, I am more willing to leave a car at home when a bus arrives regularly and connects smoothly with another service. This shows that convenience is central to behaviour. Therefore, governments should invest mainly in integrated public transport while making selective road improvements where they serve essential local needs."
+    },
+    {
+      "predictionNumber": 7,
+      "title": "Tourism in Less Developed Countries",
+      "text": "For a less developed country, the disadvantages of tourism are as great as the advantages. Please discuss this statement, and give and explain your opinion.",
+      "keyPoints": [
+        "Discuss both the benefits and disadvantages of tourism for less developed countries.",
+        "Explain benefits such as employment, income, infrastructure and cultural exchange.",
+        "Explain risks such as environmental damage, inequality, cultural pressure and dependence.",
+        "Give a reasoned opinion about whether the disadvantages are equally great."
+      ],
+      "sample": "Tourism can bring major benefits to a less developed country, but it can also create serious economic, social and environmental problems. I do not believe the disadvantages are automatically as great as the advantages; their balance depends on how tourism is planned and who controls its benefits.\n\nVisitors create demand for accommodation, food, transport, guides and cultural activities. This can provide employment and income for local families, while taxes may help governments improve roads, airports and public services. Tourism can also encourage residents to protect historic places and natural landscapes because these attractions have continuing value. Contact with visitors may promote cultural exchange and help a country become better known internationally.\n\nUncontrolled tourism, however, can damage the very resources that attract visitors. Large resorts may consume water, produce waste and restrict local access to beaches or forests. Profits may leave the country if hotels and tour companies are owned by foreign corporations. Popular destinations can also experience higher prices, seasonal employment and pressure to present simplified versions of their culture. If a country depends too heavily on visitors, an economic crisis or natural disaster can quickly reduce national income.\n\nIn my opinion, responsible tourism offers greater benefits when communities participate in decisions and receive a fair share of revenue. Governments should limit development in sensitive areas, enforce environmental standards and support locally owned businesses. Tourism is therefore neither wholly beneficial nor equally harmful; with careful regulation, it can support development without sacrificing local wellbeing or cultural independence."
+    },
+    {
+      "predictionNumber": 8,
+      "title": "Formal Written Examinations",
+      "text": "Many education systems assess students' learning using formal written examinations. Those kinds of exams are a valid method. To what extent do you agree or disagree? Give examples with your own experience.",
+      "keyPoints": [
+        "State the extent to which formal written examinations are a valid assessment method.",
+        "Explain benefits such as common conditions, individual accountability and coverage of knowledge.",
+        "Explain limitations including anxiety, narrow skills and one-day performance.",
+        "Use a relevant example or personal experience to support the view."
+      ],
+      "sample": "Formal written examinations are a valid way to assess some aspects of learning, but they should not be the only method used by education systems. A balanced approach can measure academic knowledge while also recognising practical and collaborative abilities.\n\nExaminations provide a common structure for comparing students. When learners answer questions independently under the same conditions, teachers can see whether they understand key concepts without relying entirely on group contributions. A well-designed paper can cover a broad part of a course and encourage students to revise regularly. Written answers may also reveal how clearly a learner can organise an argument and apply information to a new problem.\n\nNevertheless, examinations have significant weaknesses. Some capable students perform poorly because of severe anxiety, illness or unfamiliar testing conditions. A timed paper may reward memorisation more than creativity, communication or practical skill. It also represents performance on one particular day, so it may not reflect a student's usual effort or understanding. For subjects such as science, design and language, projects, presentations and observed tasks can provide evidence that a written paper cannot capture.\n\nIn my own experience, examinations helped me identify which theories I needed to review, but a research project showed my ability to find sources, solve problems and work consistently over several weeks. Neither assessment alone gave a complete picture. Therefore, formal written examinations are useful when they are fair and carefully designed, but schools and universities should combine them with coursework and practical assessment to evaluate learning more accurately."
     }
   ]
 }
