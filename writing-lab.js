@@ -4,6 +4,27 @@ const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
+// Prediction mocks reuse the validated shared SWT, SST and WFD questions from
+// the first sectional paper. Only the essay prompt changes, so every paper
+// keeps the same seven-question structure, timing and /90 scoring.
+const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
+  const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
+  const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
+  const shared = (bank.mocks[0]?.questions || []).filter(q => q.type !== 'essay');
+  return {
+    id,
+    title: 'Writing Prediction Mock ' + String(number).padStart(2, '0'),
+    description: essay.title,
+    category: 'prediction',
+    predictionNumber: number,
+    questions: [
+      ...structuredClone(shared.slice(0, 2)),
+      structuredClone({ ...essay, id: id + '-essay', type: 'essay', minutes: 20 }),
+      ...structuredClone(shared.slice(2))
+    ]
+  };
+});
+const allMocks = [...bank.mocks, ...predictionMocks];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -41,7 +62,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
     spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
-    mocks:bank.mocks.map(m => ({ id:m.id,title:m.title,description:m.description,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
+    mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
         return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];
@@ -73,7 +94,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   }));
   router.post('/attempts', route(async(req,res) => {
     const { id, testId } = req.body || {};
-    const mock = bank.mocks.find(m => m.id === testId), spoken = bank.spoken.find(q => q.id === testId);
+    const mock = allMocks.find(m => m.id === testId), spoken = bank.spoken.find(q => q.id === testId);
     if (!mock && !spoken) throw bad('Question set not found.',404);
     const q = structuredClone(mock ? mock.questions : [spoken]);
     const a = await store.update(req.labUser, id, existing => {
