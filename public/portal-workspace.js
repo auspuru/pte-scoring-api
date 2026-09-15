@@ -7,6 +7,8 @@
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
     swt: { pane: 'swtPane', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
     practice: { pane: 'practiceScreen', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
+    'spoken-text': { pane: 'writingLabScreen', nav: 'nav-sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Practice · SST', context: 'Listen once, write a clear summary, and review your feedback.' },
+    'writing-mocks': { pane: 'writingLabScreen', nav: 'nav-writing-mocks', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Practice · Writing mocks', context: 'Complete SWT, essay, SST and dictation in one timed mock.' },
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
     reading: { pane: 'readingPane', title: 'Reading practice', path: 'reading', eyebrow: 'Practice · Reading', context: 'Practice mock test · Sectional mock test' },
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
@@ -23,7 +25,7 @@
     let current = null;
     let ready = false;
     const container = doc.querySelector('.panes-container');
-    ['practiceScreen', 'vocabScreen'].forEach(id => {
+    ['practiceScreen', 'vocabScreen', 'writingLabScreen'].forEach(id => {
       const pane = doc.getElementById(id);
       if (pane && container && pane.parentElement !== container) container.appendChild(pane);
       if (pane) pane.classList.add('pane');
@@ -42,14 +44,16 @@
       const changed = current !== section;
       if (changed && current === 'reading') win.ReadingPractice?.leave();
       current = section;
+      const activePaneId = routes[section].pane;
       Object.entries(routes).forEach(([key, route]) => {
         const pane = doc.getElementById(route.pane);
         if (pane) {
-          pane.classList.toggle('active', key === section);
-          pane.classList.toggle('show', key === section && (key === 'practice' || key === 'vocab'));
-          pane.hidden = key !== section;
+          const paneActive = route.pane === activePaneId;
+          pane.classList.toggle('active', paneActive);
+          pane.classList.toggle('show', paneActive && (key === 'practice' || key === 'vocab'));
+          pane.hidden = !paneActive;
         }
-        const nav = doc.getElementById('nav-' + key);
+        const nav = doc.getElementById(route.nav || 'nav-' + key);
         if (nav) {
           nav.classList.toggle('active', key === section);
           if (key === section) nav.setAttribute('aria-current', 'page');
@@ -57,6 +61,7 @@
         }
       });
       doc.body.classList.toggle('has-active-practice', section === 'practice');
+      doc.body.classList.toggle('has-active-writing-lab', activePaneId === 'writingLabScreen');
       doc.body.dataset.section = section;
       const heading = doc.getElementById('pageTitle');
       const route = routes[section];

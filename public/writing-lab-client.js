@@ -7,7 +7,7 @@
   const clock = seconds => Math.floor(Math.max(0,seconds)/60)+':'+String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0');
   const labels = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
   const source = 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf';
-  let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks';
+  let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view;
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
   const grading = new Set();
   let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
@@ -41,6 +41,7 @@
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
   function scoringNote() { return '<div class="note"><p><b>About your score.</b> Your Writing practice estimate is shown out of 90. Summaries and essays receive AI feedback using the task criteria in <a href="'+source+'" target="_blank" rel="noopener">Pearson’s score guide</a>; dictation is checked word by word.</p><details><summary>How the estimate is calculated</summary><p>We combine the marks earned across this attempt, then calculate 10 + 80 × (marks earned ÷ marks available), rounded to a whole number. The same method is used for each task breakdown. Missing assessments stay pending. This is an independent practice scale, not an official Pearson score or a calibrated prediction of your exam result.</p><p>Each new mock contains SWT, an essay, SST and dictation. The three dictation sentences share a four-minute practice allocation; the full exam uses the remaining Listening section time.</p></details></div>'; }
   async function hub(tab=view) {
+    requestedView=tab;
     clearInterval(timer); clearTimeout(saveTimer);
     stopAudio();
     document.body.classList.remove('exam-mode');
@@ -352,6 +353,16 @@
       editor.focus();
     } catch(_) {notify('Use your keyboard shortcut for '+command+' (Ctrl or Command + '+({cut:'X',copy:'C',paste:'V'}[command])+').');editor.focus();}
   }
+  window.addEventListener('message',e=>{
+    if(e.source!==window.parent || e.origin!==location.origin || !e.data || e.data.type!=='writing-lab-tab') return;
+    const tab=e.data.tab==='sst'?'sst':'mocks'; requestedView=tab;
+    if(!catalog) return;
+    if(attempt?.status==='active') {
+      if((attempt.kind==='sst'?'sst':'mocks')!==tab) notify('Your current attempt is still open. Its timer continues while you are away.');
+      return;
+    }
+    hub(tab);
+  });
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
     if(b.dataset.tab) return hub(b.dataset.tab);
@@ -369,7 +380,7 @@
   window.addEventListener('storage',event=>{if(event.key==='pte_session_token') location.reload();});
   setInterval(()=>{if(attempt?.status==='active' && !moving) saveAnswer(false);},15000);
   (async()=>{
-    try { const values=await Promise.all([api('/catalog'),api('/session')]); catalog=values[0];username=values[1].username;await hub(); }
+    try { const values=await Promise.all([api('/catalog'),api('/session')]); catalog=values[0];username=values[1].username;await hub(requestedView); }
     catch(e) {root.innerHTML='<div class="hub"><h1>Unable to load practice</h1><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';document.getElementById('reload-lab').onclick=()=>location.reload();}
   })();
 })();

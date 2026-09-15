@@ -30,7 +30,7 @@ function harness(hash = '') {
     addEventListener: (key, fn) => { docEvents[key] = fn; } };
   doc.body = node('body'); node('container');
   Object.entries(routes).forEach(([key, route]) => { node(route.pane); node('nav-' + key); });
-  ['pageTitle', 'pageEyebrow', 'pageContext', 'portalMenuToggle', 'portalMenuBackdrop', 'portalSidebar', 'essayTemplateBtn', 'exportBtn'].forEach(node);
+  ['pageTitle', 'pageEyebrow', 'pageContext', 'portalMenuToggle', 'portalMenuBackdrop', 'portalSidebar', 'essayTemplateBtn', 'exportBtn', 'nav-sst'].forEach(node);
   const win = { location: { hash }, addEventListener: (key, fn) => { events[key] = fn; }, setTimeout: fn => fn(),
     history: { pushState: (_, __, url) => { win.location.hash = url; visited.push(url); },
       replaceState: (_, __, url) => { win.location.hash = url; visited.splice(-1, 1, url); } } };
@@ -62,6 +62,19 @@ test('Each workspace route provides a clear section context for the current task
   h.controller.activate('library');
   assert.equal(h.nodes.get('pageEyebrow').textContent, 'Review · Saved writing');
   assert.equal(h.nodes.get('pageContext').textContent, 'Return to a draft, refine a response, or prepare an export.');
+});
+
+test('Writing mocks and spoken text stay in one shared in-page practice pane', () => {
+  const h = harness(); h.controller.start();
+  h.controller.activate('spoken-text');
+  assert.equal(h.nodes.get('writingLabScreen').hidden, false);
+  assert(h.nodes.get('nav-sst').classList.contains('active'));
+  assert.equal(h.nodes.get('pageTitle').textContent, 'Summarise spoken text');
+  h.controller.activate('writing-mocks');
+  assert.equal(h.nodes.get('writingLabScreen').hidden, false);
+  assert(h.nodes.get('nav-writing-mocks').classList.contains('active'));
+  assert(!h.nodes.get('nav-sst').classList.contains('active'));
+  assert.equal(h.nodes.get('pageTitle').textContent, 'Writing sectional mocks');
 });
 
 test('Switching sections preserves draft nodes, cursor position and scroll, with only one active pane', () => {

@@ -814,6 +814,7 @@ window.exitImpersonation = exitImpersonation;
 
 function signOut() {
   savePortalEssayDraft();
+  resetWritingLabFrame();
   window.ReadingPractice?.leave();
   captureAccountProgress();
   flushPendingSyncOnExit();
@@ -7781,84 +7782,7 @@ function renderIdeasPicker() {
         : (leftFellBack ? fallbackHint : '') + leftFiltered.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
-              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
-                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">âœ“</span>` : ''}
-                </div>
-                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
-              </div>
-            `;
-          }).join('');
-
-      const colB = rightFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available â€” try Refresh.'}</div>`
-        : (rightFellBack ? fallbackHint : '') + rightFiltered.map((idea) => {
-            const isSelected = pickedSolutions.includes(idea.text);
-            return `
-              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('solution', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
-                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">âœ“</span>` : ''}
-                </div>
-                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
-              </div>
-            `;
-          }).join('');
-
-      listsHtml = `
-        <div class="ideas-cols">
-          <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
-              Why this area matters
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
-            </div>
-            ${colA}
-          </div>
-          <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
-              Examples &amp; solutions
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
-            </div>
-            ${colB}
-          </div>
-        </div>
-      `;
-    } else {
-    const { alignedIdeas } = filterIdeasForStance(activeType, e.chosenStance, e.suggestedIdeas);
-    const leftIdeas = alignedIdeas.filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge');
-    const pickedReasons = e.selectedReasonIds || [];
-    
-    listsHtml = `
-      <div class="ideas-cols">
-        <!-- Left Column -->
-        <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
-            Causes / Challenges
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
-          </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
-            const isSelected = pickedReasons.includes(idea.text);
-            return `
-              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
-                <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">âœ“</span>` : ''}
-                </div>
-                <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-        
-        <!-- Right Column -->
-        <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
-            Solutions (Auto-paired)
-            <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
-              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+              <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelectó¿<o+^²‰¢¶×ize:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
                 ${window.ideasEditMode ? 'Done' : 'Edit'}
               </button>
             </span>
@@ -11806,10 +11730,44 @@ function initialisePortalWorkspace() {
   });
 }
 
+function openWritingLab(tab = 'mocks') {
+  const frame = document.getElementById('writingLabFrame');
+  if (!frame) return;
+  const nextTab = tab === 'sst' ? 'sst' : 'mocks';
+  frame.dataset.writingLabTab = nextTab;
+  const sendTab = () => frame.contentWindow?.postMessage({ type: 'writing-lab-tab', tab: nextTab }, window.location.origin);
+  if (frame.dataset.writingLabLoaded === 'true') {
+    sendTab();
+    return;
+  }
+  if (frame.dataset.writingLabLoading === 'true') return;
+  frame.dataset.writingLabLoading = 'true';
+  frame.addEventListener('load', () => {
+    frame.dataset.writingLabLoading = 'false';
+    frame.dataset.writingLabLoaded = 'true';
+    frame.contentWindow?.postMessage({ type: 'writing-lab-tab', tab: frame.dataset.writingLabTab || 'mocks' }, window.location.origin);
+  }, { once: true });
+  frame.src = '/' + (nextTab === 'sst' ? 'spoken-text' : 'writing-mocks') + '?embedded=1';
+}
+
+function resetWritingLabFrame() {
+  const frame = document.getElementById('writingLabFrame');
+  if (!frame) return;
+  frame.dataset.writingLabLoaded = 'false';
+  frame.dataset.writingLabLoading = 'false';
+  delete frame.dataset.writingLabTab;
+  frame.src = 'about:blank';
+}
+
 function switchSection(section, options = {}) {
   savePortalEssayDraft();
   if (section === 'practice') { openPractice(false, options); return; }
   if (section === 'vocab') { openVocab(options); return; }
+  if (section === 'spoken-text' || section === 'writing-mocks') {
+    portalWorkspace.activate(section, options);
+    openWritingLab(section === 'spoken-text' ? 'sst' : 'mocks');
+    return;
+  }
   const active = portalWorkspace.activate(section, options);
   if (active === 'dashboard') {
     updateDashboard();
@@ -16627,4 +16585,3 @@ document.addEventListener('click', function(event){
   applyVocabSwap(button.dataset.swtWord, button.dataset.swtReplacement);
   backToPractice();
 });
-

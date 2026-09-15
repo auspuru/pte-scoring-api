@@ -159,6 +159,12 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   z-index: auto !important; margin: 0; padding: 0; overflow: hidden !important; background: var(--bg) !important;
 }
 #practiceScreen.pane.active, #vocabScreen.pane.active { display: flex; flex-direction: column; }
+#writingLabScreen.pane {
+  position: relative; width: 100%; height: 100%; margin: 0; padding: 0;
+  overflow: hidden; background: var(--bg);
+}
+#writingLabScreen.pane.active { display: flex; flex-direction: column; }
+#writingLabFrame { display: block; width: 100%; height: 100%; min-height: 0; flex: 1; border: 0; background: var(--bg); }
 .portal-vocab-canvas { display: flex; flex-direction: column; min-height: 0; width: 100%; height: 100%; margin: 0; background: var(--bg); color: var(--ink); }
 .portal-task-toolbar { display: flex; align-items: center; flex: 0 0 auto; gap: 12px; flex-wrap: wrap; min-height: 64px; padding: 12px 24px; background: var(--bg-card); border-bottom: 1px solid var(--line-soft); box-shadow: none; }
 .portal-toolbar-actions { display: flex; align-items: center; gap: 8px; margin-right: auto; }

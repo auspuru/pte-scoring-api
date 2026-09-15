@@ -161,8 +161,8 @@
 <script src="reading-session-timing.js?v=1" defer></script>
 <script src="reading-review.js?v=6" defer></script>
 <script src="reading-practice.js?v=19" defer></script>
-<script src="portal-workspace.js?v=20.4.15" defer></script>
-<script src="index.js?v=20.4.13" defer></script>
+<script src="portal-workspace.js?v=20.4.16" defer></script>
+<script src="index.js?v=20.4.14" defer></script>
 </head>
 <body>
 
@@ -312,14 +312,14 @@
           <span class="nav-icon material-symbols-outlined text-[22px]">edit_note</span>
           <span>Essay practice</span>
         </button>
-        <a class="nav-item" id="nav-sst" href="/spoken-text" style="text-decoration:none">
+        <button class="nav-item" id="nav-sst" onclick="switchSection('spoken-text')">
           <span class="nav-icon material-symbols-outlined text-[22px]">headphones</span>
           <span>Summarise spoken text</span>
-        </a>
-        <a class="nav-item" id="nav-writing-mocks" href="/writing-mocks" style="text-decoration:none">
+        </button>
+        <button class="nav-item" id="nav-writing-mocks" onclick="switchSection('writing-mocks')">
           <span class="nav-icon material-symbols-outlined text-[22px]">timer</span>
           <span>Writing sectional mocks</span>
-        </a>
+        </button>
         <button class="nav-item" id="nav-reading" onclick="switchSection('reading')">
           <span class="nav-icon material-symbols-outlined text-[22px]">quiz</span>
           <span>Reading practice</span>
@@ -391,6 +391,9 @@
     <div class="panes-container" id="portalContent" role="main" tabindex="-1">
       
       <section id="readingPane" class="pane" hidden aria-label="Reading practice"></section>
+      <section id="writingLabScreen" class="pane" hidden aria-label="Writing sectional mocks and spoken text practice">
+        <iframe id="writingLabFrame" title="Writing practice" loading="lazy"></iframe>
+      </section>
       <!-- Combined Dashboard Pane -->
       <div id="dashboardPane" class="pane active">
         <div class="dashboard-welcome">
