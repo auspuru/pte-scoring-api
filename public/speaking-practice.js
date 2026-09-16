@@ -132,6 +132,7 @@
         +(r.changes?'<h4>Word-by-word comparison</h4><p class="speaking-footnote"></p><div class="speaking-word-diff">'+r.changes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):c.kind==='insertion'?'Extra: '+esc(c.actual):esc(c.actual))+'</span>').join('')+'</div>':'');
     }
     function refreshControls() {
+      const editor=doc.getElementById('speaking-transcript');if(editor)editor.readOnly=busy;
       const button=doc.getElementById('speaking-record');if(!button)return;
       if(attempt?.question.audioUrl&&!attempt.recording)button.textContent=stream?'Play prompt & start practice':'Enable microphone & start practice';
       button.disabled=busy||!!attempt?.recording||!!uploadBlob||!['idle','error'].includes(phase);
@@ -204,7 +205,13 @@
       if(owner!==user||identity()!==user)return;
       if(!blob||blob.size<100){phase='idle';uploadBlob=null;message('No usable recording was captured. Please try again.');refreshControls();return;}
       if(blob.size>3*1024*1024){message('Recording exceeds 3 MB. Download it for your teacher, then use a smaller upload.');phase='idle';refreshControls();return;}
-      pendingUploads.set(id,blob);busy=true;try{const a=await api('/attempts/'+id+'/recording',blob,true);if(owner!==user||identity()!==user)return;pendingUploads.delete(id);if(attempt?.id!==id)return;attempt=a;releasePlayback();playbackUrl=env.URL.createObjectURL(blob);uploadBlob=null;phase='idle';message(catalog.transcriptionAvailable?'Recording saved. Play it below to check your voice. Transcribe it or enter the exact words you said.':'Recording saved. Play it below to check your voice. Automatic transcription is unavailable; enter the exact words you said.');mountPlayback();}catch(e){phase='idle';message(e.message+' Keep this page open and select Retry saving recording.');}finally{busy=false;refreshControls();}
+      pendingUploads.set(id,blob);busy=true;try{const a=await api('/attempts/'+id+'/recording',blob,true);if(owner!==user||identity()!==user)return;pendingUploads.delete(id);if(attempt?.id!==id)return;attempt=a;releasePlayback();playbackUrl=env.URL.createObjectURL(blob);uploadBlob=null;phase='idle';message(catalog.transcriptionAvailable?'Recording saved. Play it below to check your voice. Transcribe it or enter the exact words you said.':'Recording saved. Play it below to check your voice. Automatic transcription is unavailable; enter the exact words you said.');mountPlayback();
+        if(catalog.transcriptionAvailable&&!attempt.transcript.trim()&&!doc.getElementById('speaking-transcript')?.value.trim()){
+          message('Recording saved. Transcribing your response…');
+          try{const transcribed=await api('/attempts/'+id+'/transcribe',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=transcribed;render();message(attempt.transcript.trim()?'Recording saved. Review your words below, then select Submit for feedback.':'No speech was recognised. Listen to your recording and enter the words you said, or reattempt.');}}
+          catch(e){message('Recording saved. '+e.message+' Select Transcribe recording to retry.');}
+        }
+      }catch(e){phase='idle';message(e.message+' Keep this page open and select Retry saving recording.');}finally{busy=false;refreshControls();}
     }
     function saveTranscript() {
       const a=attempt,editor=doc.getElementById('speaking-transcript'),user=owner,text=editor?.value;
@@ -213,7 +220,7 @@
     }
     async function submit() {
       if(busy||!attempt)return;if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('Finish recording and save your audio before checking content.');return;}
-      busy=true;refreshControls();const id=attempt.id,user=owner;message('Checking the content of your confirmed transcript…');
+      busy=true;refreshControls();const id=attempt.id,user=owner;message(attempt.transcript.trim()?'Checking your response…':'Transcribing your recording and checking your response…');
       try{await saveTranscript();const a=await api('/attempts/'+id+'/submit',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;notice='';render();}}
       catch(e){message(e.message);try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}}
       finally{busy=false;refreshControls();}

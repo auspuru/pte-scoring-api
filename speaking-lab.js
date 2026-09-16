@@ -57,7 +57,10 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     const a=await store.update(req.speakingUser,req.params.id,a=>{if(!a)throw fail('Attempt not found.',404);if(a.status==='submitted')throw fail('This response is already submitted.',409);if(revision!==a.revision)throw fail('A newer transcript is saved. Reopen this attempt before editing.',409);a.transcript=text;a.revision++;return a;});res.json(present(a));
   }));
   router.post('/attempts/:id/submit',limiter,wrap(async(req,res)=>{
-    let a=await store.update(req.speakingUser,req.params.id,a=>{if(!a)throw fail('Attempt not found.',404);a.status='submitted';return a;});
+    let a=await store.update(req.speakingUser,req.params.id,async a=>{if(!a)throw fail('Attempt not found.',404);if(!a.transcript?.trim()){
+      if(a.recording&&!a.transcription){a.transcription=await transcribe(a.recording);a.transcript=a.transcription;a.revision++;}
+      if(!a.transcript?.trim())throw fail('No spoken words were recognised. Review your recording and enter what you said, or record a new attempt.');
+    }a.status='submitted';return a;});
     a=await store.update(req.speakingUser,req.params.id,async a=>{if(!a.result)a.result=await scoring.grade(bank.questions.find(q=>q.id===a.questionId),a.transcript,callModel);return a;});res.json(present(a));
   }));
   router.use((error,req,res,next)=>{if(error.type==='entity.too.large')return res.status(413).json({error:'Recording is too large. Use a file under 3 MB.'});next(error);});

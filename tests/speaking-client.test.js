@@ -30,7 +30,7 @@ function harness() {
     const a=attempts.get(parts[1]);assert(a,route);
     if(parts[2]==='recording'&&body){if(env.rejectUpload)return reply({error:'Upload interrupted'},false);a.recording={mime:'audio/webm',data:Buffer.alloc(300).toString('base64')};}
     if(parts[2]==='transcript'){a.transcript=body.text;a.revision++;}
-    if(parts[2]==='transcribe'){a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
+    if(parts[2]==='transcribe'){if(env.rejectTranscription)return reply({error:'Transcription unavailable'},false);a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
     if(parts[2]==='submit'){a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',strengths:[],improvements:['Review with your teacher.']};}
     return reply(present(a));
   };
@@ -128,4 +128,20 @@ test('A mobile autoplay denial keeps the microphone ready and retries playback o
  assert.match(h.nodes.get('speaking-notice').textContent,/Microphone ready/);assert.equal(h.nodes.get('speaking-record').disabled,false);
  await h.click({speakingAction:'record'});assert.equal(grants,1);h.audio[1].onended();assert.equal(h.recorders[0].state,'recording');
  await h.click({speakingAction:'stop'});await flush();assert([...h.attempts.values()][0].recording);
+});
+
+test('Stopping a recording transcribes it automatically before content submission',async()=>{
+ const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});await h.click({speakingAction:'record'});h.audio[0].onended();
+ await h.click({speakingAction:'stop'});await flush();
+ assert([...h.attempts.values()][0].recording);assert(h.requests.some(r=>r.url.endsWith('/transcribe')));
+ assert.match(h.nodes.get('speaking-transcript').value,/university library/);
+ await h.click({speakingAction:'submit'});assert.match(h.host.innerHTML,/Content checked/);
+});
+test('Transcription failure preserves recording playback and offers transcription retry',async()=>{
+ const h=harness();h.env.rejectTranscription=true;await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});await h.click({speakingAction:'record'});h.audio[0].onended();
+ await h.click({speakingAction:'stop'});await flush();
+ assert([...h.attempts.values()][0].recording);assert.match(h.nodes.get('speaking-playback').innerHTML,/<audio controls/);
+ assert.equal(h.nodes.get('speaking-upload-retry').hidden,true);assert.equal(h.nodes.get('speaking-transcribe').disabled,false);
+ assert.match(h.nodes.get('speaking-notice').textContent,/Recording saved.*Transcribe recording/);
+ h.env.rejectTranscription=false;await h.click({speakingAction:'transcribe'});assert.match(h.nodes.get('speaking-transcript').value,/university library/);
 });

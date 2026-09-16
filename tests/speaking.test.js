@@ -89,6 +89,11 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   a=(await request('/attempts/'+id+'/submit',{})).body;assert.equal(a.result.total,a.result.maximum);assert.equal(a.question.sample,q.sample);
   assert.equal((await request('/attempts/'+id+'/transcript',{text:'changed',revision:a.revision})).status,409);
   const retry=(await request('/attempts',{id:crypto.randomUUID(),questionId:q.id})).body;assert.equal(retry.transcript,'');assert.equal(retry.recording,null);
+  assert.equal((await request('/attempts/'+retry.id+'/submit',{})).status,400);
+  assert.equal((await request('/attempts/'+retry.id)).body.status,'draft');
+  await request('/attempts/'+retry.id+'/recording',Buffer.alloc(200,5),'alice',true);
+  const fromAudio=await request('/attempts/'+retry.id+'/submit',{});
+  assert.equal(fromAudio.status,200);assert.equal(fromAudio.body.transcript,q.text);assert.equal(fromAudio.body.result.total,fromAudio.body.result.maximum);
   assert.equal((await request('/attempts')).body.length,2);assert.equal((await store.list('bob')).length,0);
   const di=bank.questions.find(q=>q.type==='di'),other=crypto.randomUUID();
   await request('/attempts',{id:other,questionId:di.id});await request('/attempts/'+other+'/transcript',{text:di.sample,revision:0});
