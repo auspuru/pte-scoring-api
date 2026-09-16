@@ -162,12 +162,12 @@
 <script src="reading-mock-tools.js?v=13" defer></script>
 <script src="reading-exam-player.js?v=4" defer></script>
 <script src="reading-session-timing.js?v=1" defer></script>
-<script src="reading-review.js?v=6" defer></script>
-<script src="practice-catalogue.js?v=2" defer></script>
-<script src="reading-practice.js?v=21" defer></script>
-<script src="speaking-practice.js?v=2" defer></script>
-<script src="portal-workspace.js?v=20.4.19" defer></script>
-<script src="index.js?v=20.4.18" defer></script>
+<script src="reading-review.js?v=7" defer></script>
+<script src="practice-catalogue.js?v=3" defer></script>
+<script src="reading-practice.js?v=22" defer></script>
+<script src="speaking-practice.js?v=3" defer></script>
+<script src="portal-workspace.js?v=20.4.20" defer></script>
+<script src="index.js?v=20.4.19" defer></script>
 </head>
 <body>
 
@@ -594,7 +594,7 @@
       <div id="swtPane" class="pane">
         <div id="swtPracticeScreen" class="swt-sub-screen active">
           <header class="swt-heading">
-            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p>Read the passage and bring its main message together in one sentence.</p></div>
+            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p>Write one sentence of 5–75 words.</p></div>
             <ul class="swt-requirements" aria-label="Task requirements"><li>1 sentence</li><li>5–75 words</li><li>10-minute timer available</li></ul>
           </header>
           <div class="passage-nav" aria-label="Choose a passage">
@@ -613,37 +613,37 @@
           </div>
           <div class="practice-grid">
             <section class="card passage-pane" aria-labelledby="swtReadHeading">
-              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">1</span><div><h2 id="swtReadHeading">Read the passage</h2><p>Find the main idea and how the supporting ideas connect.</p></div></div>
+              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">1</span><div><h2 id="swtReadHeading">Read the passage</h2></div></div>
               <div class="passage-meta"><span class="eyebrow">Passage <span id="pasNum">01</span></span><span class="meta-tag" id="pasWordCount">0 words</span><span class="meta-tag" id="pasCategory">~10 min</span></div>
               <div class="passage-body" id="passageBody">Loading passage…</div>
-              <p class="passage-fresh-note">You can explore the key ideas and a sample answer after submitting.</p>
+
             </section>
             <section class="card write-pane" aria-labelledby="swtWriteHeading">
-              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">2</span><div><h2 id="swtWriteHeading">Write your summary</h2><p>Connect the main idea, relevant support and the final message.</p></div></div>
+              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">2</span><div><h2 id="swtWriteHeading">Write your summary</h2></div></div>
               <div class="write-tabs" role="tablist" aria-label="Writing workspace">
                 <button type="button" class="write-tab active" id="tabWrite" role="tab" aria-selected="true" aria-controls="writeTabPane" onclick="switchWriteTab('write')">Your summary</button>
-                <button type="button" class="write-tab" id="tabPlan" role="tab" aria-selected="false" aria-controls="planTabPane" tabindex="-1" onclick="switchWriteTab('plan')">Planning notes <span class="tab-sub">Not scored</span></button>
+                <button type="button" class="write-tab" id="tabPlan" role="tab" aria-selected="false" aria-controls="planTabPane" tabindex="-1" onclick="switchWriteTab('plan')">Notes</button>
               </div>
               <div id="writeTabPane" role="tabpanel" aria-labelledby="tabWrite">
                 <label class="swt-editor-label" for="summaryInput">Your one-sentence summary</label>
-                <textarea class="summary-input" id="summaryInput" placeholder="Start with the main idea, then connect the details that explain it…" oninput="onSummaryInput()" aria-describedby="swtEditorHint swtWordStatus" spellcheck="true"></textarea>
+                <textarea class="summary-input" id="summaryInput" placeholder="Write your summary…" oninput="onSummaryInput()" aria-describedby="swtEditorHint swtWordStatus" spellcheck="true"></textarea>
                 <div class="word-meter">
                   <span>Word count</span><div class="meter-track" aria-hidden="true"><div class="meter-fill" id="wordMeterFill"></div></div><span class="meter-count"><span id="wordCount">0</span> / 75</span>
                 </div>
                 <div class="swt-editor-status"><span id="swtWordStatus" role="status">Write 5–75 words.</span></div>
-                <p class="swt-help" id="swtEditorHint">Keep one complete sentence. Include the cause or context needed to make each selected idea clear.</p>
+                <p class="swt-help" id="swtEditorHint">One sentence · 5–75 words</p>
                 <div class="health-grid" hidden aria-hidden="true"><div class="health-panel"><div class="health-row" id="hrWordBand"><span class="h-icon">○</span><span class="h-label">Word limit</span><span class="h-value" id="hrWordBandVal">0</span></div></div></div>
                 <div class="write-actions">
                   <button type="button" class="btn btn-ghost" onclick="resetSummary()">Clear</button>
                   <button type="button" class="btn btn-ghost" id="swtUndoClear" onclick="undoSwtClear()" hidden>Undo clear</button>
                   <button type="button" class="btn btn-ghost" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Previous result</button>
-                  <button type="button" class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">Get feedback <span aria-hidden="true">→</span></button>
+                  <button type="button" class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">Submit <span aria-hidden="true">→</span></button>
                 </div>
               </div>
               <div id="planTabPane" class="hidden" role="tabpanel" aria-labelledby="tabPlan">
-                <label class="swt-editor-label" for="scratchInput">Plan the connections</label>
+                <label class="swt-editor-label" for="scratchInput">Notes</label>
                 <textarea class="scratch-input" id="scratchInput" placeholder="Main idea:&#10;&#10;Relevant support and its cause or context:&#10;&#10;Conclusion or result:" aria-describedby="swtScratchHint"></textarea>
-                <p class="scratch-note" id="swtScratchHint">Notes sync to your account and are never sent for scoring.</p>
+                <p class="scratch-note" id="swtScratchHint">Notes saved automatically.</p>
                 <button type="button" class="btn" onclick="switchWriteTab('write'); document.getElementById('summaryInput').focus()">Return to your summary →</button>
               </div>
             </section>

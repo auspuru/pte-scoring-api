@@ -42,7 +42,7 @@ function harness() {
 async function flush(){for(let i=0;i<8;i++)await new Promise(resolve=>setImmediate(resolve));}
 test('Speaking question pages show five questions and enable recording after an attempt starts',async()=>{
   const h=harness();await h.controller.open('ra');assert.equal((h.host.innerHTML.match(/data-speaking-question=/g)||[]).length,5);
-  await h.click({speakingQuestion:'ra-1'});assert.equal(h.nodes.get('speaking-record').disabled,false);assert.doesNotMatch(h.host.innerHTML,/Sample response for this question/);
+  await h.click({speakingQuestion:'ra-1'});assert.equal(h.nodes.get('speaking-record').disabled,false);assert.doesNotMatch(h.host.innerHTML,/Sample response/);
   await h.click({speakingAction:'record'});assert.equal(h.nodes.get('speaking-phase').textContent,'Prepare your response');
   await h.click({speakingAction:'skip'});assert.equal(h.recorders[0].state,'recording');h.tick(40001);await flush();
   assert.equal(h.recorders[0].state,'inactive');assert(h.stops()>0);assert([...h.attempts.values()][0].recording);assert.match(h.nodes.get('speaking-playback').innerHTML,/Download for teacher review/);
@@ -53,7 +53,7 @@ test('Repeat Sentence hides the prompt text, then records immediately after its 
   assert.equal(h.audio.length,1);assert.equal(h.recorders.length,0);h.audio[0].onended();assert.equal(h.recorders[0].state,'recording');
   h.tick(15001);await flush();assert.equal(h.recorders[0].state,'inactive');
   await h.click({speakingAction:'transcribe'});assert.match(h.nodes.get('speaking-transcript').value,/university library/);
-  await h.click({speakingAction:'submit'});assert.match(h.host.innerHTML,/Sample response for this question/);assert.match(h.host.innerHTML,/Content only/);assert.doesNotMatch(h.host.innerHTML,/\/ 90/);
+  await h.click({speakingAction:'submit'});assert.match(h.host.innerHTML,/Sample response/);assert.match(h.host.innerHTML,/Content/);assert.doesNotMatch(h.host.innerHTML,/\/ 90/);
   await h.click({speakingQuestion:'rs-1'});assert.equal(h.attempts.size,2);assert.equal([...h.attempts.values()][0].status,'submitted');
 });
 test('Leaving during capture stops the microphone and saves the original attempt even after changing tasks',async()=>{

@@ -175,7 +175,7 @@ test('Submitted standalone SST results offer a fresh reattempt while retaining t
   assert.notEqual(request.body.id,'old-id');
   assert.equal(h.hooks.current().id,'new-id');
   assert.equal(h.hooks.current().status,'ready');
-  assert.equal(h.nodes.get('audio-start').textContent,'Start recording & timer');
+  assert.equal(h.nodes.get('audio-start').textContent,'Play');
 });
 
 test('Integrated audio advances to each new recording and ignores late events from the previous question',async()=>{
@@ -277,4 +277,11 @@ test('SST Back and Next preserve drafts and resume existing neighbouring attempt
   assert.equal(first.answers[0],'Keep my first response');assert.equal(h.hooks.current().id,'second');
   assert.equal(h.nodes.get('answer').value,'Saved second response');
   assert(!h.requests.some(r=>r.url.endsWith('/attempts')&&r.opts.method==='POST'));
+});
+test('Dictation catalogue pages stay compact and expose all 56 numbered questions',async()=>{
+ const h=harness(),dictation=[...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation];
+ h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation});await h.hooks.hub('wfd');
+ assert.equal((h.nodes.get('lab').innerHTML.match(/data-start=/g)||[]).length,12);assert.match(h.nodes.get('lab').innerHTML,/Question 1</);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/estimate|scoring|raw marks|How the/);
+ await h.nodes.get('lab').events.click({target:{closest:()=>({disabled:false,dataset:{libraryPage:'4'}})}});
+ assert.equal((h.nodes.get('lab').innerHTML.match(/data-start=/g)||[]).length,8);assert.match(h.nodes.get('lab').innerHTML,/Question 56</);assert.match(h.nodes.get('lab').innerHTML,/wfd-practice-50/);
 });

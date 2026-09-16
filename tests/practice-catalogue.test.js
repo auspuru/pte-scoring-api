@@ -82,6 +82,8 @@ test('Practice renders only task banners and routes clicks without loading or st
 test('Mock tabs, module filtering, pagination, topic search and launch keep one catalogue', async () => {
   const h = harness(); await h.controller.openMocks();
   const board = () => h.nodes.get('catalogue-board').innerHTML;
+  assert.doesNotMatch(board(),/SWT|HIW|HCS|Essay topic|raw marks/);
+  assert.equal(h.nodes.get('catalogue-description').hidden,true);
   assert.equal((board().match(/data-mock-id=/g) || []).length, 12);
   assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 39 tests');
   h.click({ cataloguePage: '1' }); assert.equal(h.nodes.get('catalogue-page').textContent, '2 / 4');
@@ -92,7 +94,7 @@ test('Mock tabs, module filtering, pagination, topic search and launch keep one 
   h.mocks.oninput({ target: { id: 'catalogue-search', value: 'essay topic 33' } });
   assert.match(board(), /writing-33/); assert.equal((board().match(/data-mock-id=/g) || []).length, 1);
   h.click({ mockId: 'writing-33' }); assert.deepEqual(h.starts[1], ['writing', 'writing-33']);
-  h.click({ catalogueMode: 'full' }); assert.equal(board(), ''); assert.match(h.nodes.get('catalogue-empty').textContent, /No complete four-module mock/);
+  h.click({ catalogueMode: 'full' }); assert.equal(board(), ''); assert.match(h.nodes.get('catalogue-empty').textContent, /No tests available yet/);
   assert.equal(h.starts.length, 2, 'Filtering never starts or replaces an attempt');
   await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
   assert.equal(h.nodes.get('catalogue-module').value, 'writing');

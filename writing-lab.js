@@ -25,7 +25,7 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   };
 });
 const allMocks = [...bank.mocks, ...predictionMocks];
-const dictation = [...new Map(bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')).map(q => [q.id, q])).values()];
+const dictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -78,7 +78,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     } catch (_) { res.status(503).json({error:'Your account could not be checked. Please retry.'}); }
   });
   const rateLimit = require('express-rate-limit');
-  router.post('/attempts', rateLimit({windowMs:600000,max:15,standardHeaders:true,legacyHeaders:false,
+  router.post('/attempts', rateLimit({windowMs:600000,max:120,keyGenerator:req=>req.labUser,standardHeaders:true,legacyHeaders:false,
     message:{error:'Please wait before starting another attempt.'}}));
   router.post('/attempts/:id/score/:index', rateLimit({windowMs:60000,max:20,standardHeaders:true,legacyHeaders:false,
     message:{error:'Please wait a minute before requesting more scores.'}}));
@@ -86,7 +86,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const all = await store.list(req.labUser);
     const entries = [];
     for (const a of all) {
-      const current = await store.update(req.labUser,a.id, value => reconcile(value));
+      const current = a.status==='active' && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
       const summary = report.summarize(current.questions, current.results);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
         completed:current.completed.filter(Boolean).length,questions:current.questions.length,

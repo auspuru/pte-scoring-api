@@ -93,7 +93,7 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
   async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
   const before=JSON.stringify(bank),catalog=await request('/catalog');
-  assert.equal(catalog.dictation.length,6);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,6);
+  assert.equal(catalog.dictation.length,56);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,56);
   for(const q of catalog.dictation) {assert(q.audioUrl.includes(q.id));assert.equal(q.text,undefined);assert.equal(q.sample,undefined);}
   const q=bank.mocks[0].questions.find(q=>q.type==='wfd'),id=randomUUID();
   const ready=await request('/attempts',{id,testId:q.id});
@@ -218,4 +218,19 @@ test('Seven-question API saves separate playback and returns scores and history 
   const oldId=randomUUID();
   await store.update('tester',oldId,()=>({...started,id:oldId,status:'active',questions:bank.mocks[0].questions.slice(0,3),completed:[null,null,null],results:[null,null,null],deadline:Date.now()+600000}));
   assert.equal((await request('/attempts/'+oldId)).questions.length,3);
+});
+test('Fifty additional dictations have distinct sentences and exact sample answers',async()=>{
+ assert.equal(bank.dictation.length,50);
+ const existing=bank.mocks.flatMap(m=>m.questions).filter(q=>q.type==='wfd');
+ assert.equal(new Set([...existing,...bank.dictation].map(q=>q.text)).size,56);
+ for(const q of bank.dictation){assert.equal(q.type,'wfd');assert.equal(q.sample,q.text);assert(q.text.split(/\s+/).length>=10);const result=await policy.grade(q,q.sample,()=>{throw Error('No model required');});assert.equal(result.total,result.maximum);}
+});
+test('Expanded dictation bank starts all 56 questions and retains the earliest attempt',async t=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dictation-expanded-')),app=express();app.use(express.json());
+ installWritingLab(app,{directory:dir,verifyToken:token=>token==='tester'?'tester':null,getAccount:async()=>({}),callModel:()=>{throw Error('No model required');}});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab',headers={'Content-Type':'application/json','x-session-token':'tester'};
+ const catalog=await (await fetch(base+'/catalog')).json();let first;
+ for(const q of catalog.dictation){const id=randomUUID();first ||= id;const response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:q.id})});assert.equal(response.status,200);const a=await response.json();assert.equal(a.questions[0].text,'');assert.equal(a.questions[0].sample,undefined);assert.equal(a.status,'ready');}
+ const history=await (await fetch(base+'/attempts',{headers})).json();assert.equal(history.length,56);assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='wfd-practice-50'));
 });

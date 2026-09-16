@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-15.7",
+  "version": "2026-09-15.8",
   "spoken": [
     {
       "id": "sst-urban-trees",
@@ -834,6 +834,608 @@
         "Reach a clear conclusion about how humanities and specialist study should coexist."
       ],
       "sample": "The humanities continue to have an important role in the modern world, even though specialised careers in medicine, engineering and technology are essential. Technical education creates practical skills, while humanities help people understand the social, ethical and cultural consequences of using those skills. Subjects such as history, languages, philosophy and literature develop the ability to interpret evidence, communicate clearly and consider perspectives different from one's own. These abilities are useful in almost every profession. A doctor needs to understand a patient's fears and cultural background, and a technology manager must consider whether a new system treats people fairly. Studying history can also help societies recognise the causes of conflict and avoid repeating harmful decisions. It is reasonable to argue that students need employment opportunities and that universities cannot ignore shortages in wealth-producing fields. Humanities graduates may face a less direct route into a specific profession, and public funding must be used responsibly. However, reducing education to immediate salary can produce narrow decision-making and weaken democratic discussion. Businesses also value employees who can write, question assumptions and explain complex ideas to different audiences. In my experience, learning about culture and communication improved my ability to work with people whose expectations differed from mine, while technical study provided the specialised knowledge to complete tasks. These areas were complementary rather than competing. Education should therefore maintain strong professional training while protecting humanities subjects through combined courses, research and public funding. A changing world needs capable specialists, but it also needs citizens and leaders who can ask what should be done, not only what can be done."
+    }
+  ],
+  "dictation": [
+    {
+      "id": "wfd-practice-01",
+      "type": "wfd",
+      "title": "Question 7",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "Students should submit their research proposals before the end of this semester.",
+      "sample": "Students should submit their research proposals before the end of this semester.",
+      "keyPoints": [
+        "Students should submit their research proposals before the end of this semester."
+      ]
+    },
+    {
+      "id": "wfd-practice-02",
+      "type": "wfd",
+      "title": "Question 8",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "The new laboratory equipment will be installed during the summer holiday period.",
+      "sample": "The new laboratory equipment will be installed during the summer holiday period.",
+      "keyPoints": [
+        "The new laboratory equipment will be installed during the summer holiday period."
+      ]
+    },
+    {
+      "id": "wfd-practice-03",
+      "type": "wfd",
+      "title": "Question 9",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "Several important documents are available through the university's online learning platform.",
+      "sample": "Several important documents are available through the university's online learning platform.",
+      "keyPoints": [
+        "Several important documents are available through the university's online learning platform."
+      ]
+    },
+    {
+      "id": "wfd-practice-04",
+      "type": "wfd",
+      "title": "Question 10",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "Our department offers practical workshops for students interested in environmental research.",
+      "sample": "Our department offers practical workshops for students interested in environmental research.",
+      "keyPoints": [
+        "Our department offers practical workshops for students interested in environmental research."
+      ]
+    },
+    {
+      "id": "wfd-practice-05",
+      "type": "wfd",
+      "title": "Question 11",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "The lecturer explained how economic policies can influence decisions within local communities.",
+      "sample": "The lecturer explained how economic policies can influence decisions within local communities.",
+      "keyPoints": [
+        "The lecturer explained how economic policies can influence decisions within local communities."
+      ]
+    },
+    {
+      "id": "wfd-practice-06",
+      "type": "wfd",
+      "title": "Question 12",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "All visitors must report to reception before entering the main research building.",
+      "sample": "All visitors must report to reception before entering the main research building.",
+      "keyPoints": [
+        "All visitors must report to reception before entering the main research building."
+      ]
+    },
+    {
+      "id": "wfd-practice-07",
+      "type": "wfd",
+      "title": "Question 13",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "The final examination will cover topics discussed throughout the entire academic year.",
+      "sample": "The final examination will cover topics discussed throughout the entire academic year.",
+      "keyPoints": [
+        "The final examination will cover topics discussed throughout the entire academic year."
+      ]
+    },
+    {
+      "id": "wfd-practice-08",
+      "type": "wfd",
+      "title": "Question 14",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "Researchers collected additional evidence to support their original interpretation of the results.",
+      "sample": "Researchers collected additional evidence to support their original interpretation of the results.",
+      "keyPoints": [
+        "Researchers collected additional evidence to support their original interpretation of the results."
+      ]
+    },
+    {
+      "id": "wfd-practice-09",
+      "type": "wfd",
+      "title": "Question 15",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "The library provides quiet study areas for both undergraduate and postgraduate students.",
+      "sample": "The library provides quiet study areas for both undergraduate and postgraduate students.",
+      "keyPoints": [
+        "The library provides quiet study areas for both undergraduate and postgraduate students."
+      ]
+    },
+    {
+      "id": "wfd-practice-10",
+      "type": "wfd",
+      "title": "Question 16",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "Please remember to include relevant references at the end of your assignment.",
+      "sample": "Please remember to include relevant references at the end of your assignment.",
+      "keyPoints": [
+        "Please remember to include relevant references at the end of your assignment."
+      ]
+    },
+    {
+      "id": "wfd-practice-11",
+      "type": "wfd",
+      "title": "Question 17",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "A detailed description of the project is included in the course handbook.",
+      "sample": "A detailed description of the project is included in the course handbook.",
+      "keyPoints": [
+        "A detailed description of the project is included in the course handbook."
+      ]
+    },
+    {
+      "id": "wfd-practice-12",
+      "type": "wfd",
+      "title": "Question 18",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "The university has introduced several initiatives to improve access to digital resources.",
+      "sample": "The university has introduced several initiatives to improve access to digital resources.",
+      "keyPoints": [
+        "The university has introduced several initiatives to improve access to digital resources."
+      ]
+    },
+    {
+      "id": "wfd-practice-13",
+      "type": "wfd",
+      "title": "Question 19",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "Students are encouraged to discuss their ideas with the course coordinator first.",
+      "sample": "Students are encouraged to discuss their ideas with the course coordinator first.",
+      "keyPoints": [
+        "Students are encouraged to discuss their ideas with the course coordinator first."
+      ]
+    },
+    {
+      "id": "wfd-practice-14",
+      "type": "wfd",
+      "title": "Question 20",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "The results of the experiment were presented at an international scientific conference.",
+      "sample": "The results of the experiment were presented at an international scientific conference.",
+      "keyPoints": [
+        "The results of the experiment were presented at an international scientific conference."
+      ]
+    },
+    {
+      "id": "wfd-practice-15",
+      "type": "wfd",
+      "title": "Question 21",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "Public transport services will operate more frequently during the annual cultural festival.",
+      "sample": "Public transport services will operate more frequently during the annual cultural festival.",
+      "keyPoints": [
+        "Public transport services will operate more frequently during the annual cultural festival."
+      ]
+    },
+    {
+      "id": "wfd-practice-16",
+      "type": "wfd",
+      "title": "Question 22",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "The committee will review all applications before making its final funding decisions.",
+      "sample": "The committee will review all applications before making its final funding decisions.",
+      "keyPoints": [
+        "The committee will review all applications before making its final funding decisions."
+      ]
+    },
+    {
+      "id": "wfd-practice-17",
+      "type": "wfd",
+      "title": "Question 23",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "A successful presentation requires careful preparation and a clear understanding of the audience.",
+      "sample": "A successful presentation requires careful preparation and a clear understanding of the audience.",
+      "keyPoints": [
+        "A successful presentation requires careful preparation and a clear understanding of the audience."
+      ]
+    },
+    {
+      "id": "wfd-practice-18",
+      "type": "wfd",
+      "title": "Question 24",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "The museum's collection includes historical objects from many different regions of the world.",
+      "sample": "The museum's collection includes historical objects from many different regions of the world.",
+      "keyPoints": [
+        "The museum's collection includes historical objects from many different regions of the world."
+      ]
+    },
+    {
+      "id": "wfd-practice-19",
+      "type": "wfd",
+      "title": "Question 25",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "Participants were asked to complete a short questionnaire before attending the workshop.",
+      "sample": "Participants were asked to complete a short questionnaire before attending the workshop.",
+      "keyPoints": [
+        "Participants were asked to complete a short questionnaire before attending the workshop."
+      ]
+    },
+    {
+      "id": "wfd-practice-20",
+      "type": "wfd",
+      "title": "Question 26",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "Changes in consumer behaviour can have significant effects on the wider economy.",
+      "sample": "Changes in consumer behaviour can have significant effects on the wider economy.",
+      "keyPoints": [
+        "Changes in consumer behaviour can have significant effects on the wider economy."
+      ]
+    },
+    {
+      "id": "wfd-practice-21",
+      "type": "wfd",
+      "title": "Question 27",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "The afternoon tutorial has been moved to a larger room upstairs today.",
+      "sample": "The afternoon tutorial has been moved to a larger room upstairs today.",
+      "keyPoints": [
+        "The afternoon tutorial has been moved to a larger room upstairs today."
+      ]
+    },
+    {
+      "id": "wfd-practice-22",
+      "type": "wfd",
+      "title": "Question 28",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "Regular feedback helps students identify weaknesses and improve the quality of their work.",
+      "sample": "Regular feedback helps students identify weaknesses and improve the quality of their work.",
+      "keyPoints": [
+        "Regular feedback helps students identify weaknesses and improve the quality of their work."
+      ]
+    },
+    {
+      "id": "wfd-practice-23",
+      "type": "wfd",
+      "title": "Question 29",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "The research team examined the relationship between urban development and water consumption.",
+      "sample": "The research team examined the relationship between urban development and water consumption.",
+      "keyPoints": [
+        "The research team examined the relationship between urban development and water consumption."
+      ]
+    },
+    {
+      "id": "wfd-practice-24",
+      "type": "wfd",
+      "title": "Question 30",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "You should check the official timetable for any changes to your classes.",
+      "sample": "You should check the official timetable for any changes to your classes.",
+      "keyPoints": [
+        "You should check the official timetable for any changes to your classes."
+      ]
+    },
+    {
+      "id": "wfd-practice-25",
+      "type": "wfd",
+      "title": "Question 31",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "The guest speaker will discuss recent developments in renewable energy storage systems.",
+      "sample": "The guest speaker will discuss recent developments in renewable energy storage systems.",
+      "keyPoints": [
+        "The guest speaker will discuss recent developments in renewable energy storage systems."
+      ]
+    },
+    {
+      "id": "wfd-practice-26",
+      "type": "wfd",
+      "title": "Question 32",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "Each group must prepare a brief report summarising the main research findings.",
+      "sample": "Each group must prepare a brief report summarising the main research findings.",
+      "keyPoints": [
+        "Each group must prepare a brief report summarising the main research findings."
+      ]
+    },
+    {
+      "id": "wfd-practice-27",
+      "type": "wfd",
+      "title": "Question 33",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "The university encourages collaboration between researchers working in different academic disciplines.",
+      "sample": "The university encourages collaboration between researchers working in different academic disciplines.",
+      "keyPoints": [
+        "The university encourages collaboration between researchers working in different academic disciplines."
+      ]
+    },
+    {
+      "id": "wfd-practice-28",
+      "type": "wfd",
+      "title": "Question 34",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "An accurate summary should reflect the main argument of the original passage.",
+      "sample": "An accurate summary should reflect the main argument of the original passage.",
+      "keyPoints": [
+        "An accurate summary should reflect the main argument of the original passage."
+      ]
+    },
+    {
+      "id": "wfd-practice-29",
+      "type": "wfd",
+      "title": "Question 35",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "The construction of the new sports centre is expected to finish soon.",
+      "sample": "The construction of the new sports centre is expected to finish soon.",
+      "keyPoints": [
+        "The construction of the new sports centre is expected to finish soon."
+      ]
+    },
+    {
+      "id": "wfd-practice-30",
+      "type": "wfd",
+      "title": "Question 36",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "Students can borrow recording equipment from the media centre during office hours.",
+      "sample": "Students can borrow recording equipment from the media centre during office hours.",
+      "keyPoints": [
+        "Students can borrow recording equipment from the media centre during office hours."
+      ]
+    },
+    {
+      "id": "wfd-practice-31",
+      "type": "wfd",
+      "title": "Question 37",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "The study compared the effectiveness of several different approaches to language teaching.",
+      "sample": "The study compared the effectiveness of several different approaches to language teaching.",
+      "keyPoints": [
+        "The study compared the effectiveness of several different approaches to language teaching."
+      ]
+    },
+    {
+      "id": "wfd-practice-32",
+      "type": "wfd",
+      "title": "Question 38",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "Applications for the scholarship must include evidence of previous academic achievement.",
+      "sample": "Applications for the scholarship must include evidence of previous academic achievement.",
+      "keyPoints": [
+        "Applications for the scholarship must include evidence of previous academic achievement."
+      ]
+    },
+    {
+      "id": "wfd-practice-33",
+      "type": "wfd",
+      "title": "Question 39",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "The conference organisers have arranged accommodation for speakers travelling from other countries.",
+      "sample": "The conference organisers have arranged accommodation for speakers travelling from other countries.",
+      "keyPoints": [
+        "The conference organisers have arranged accommodation for speakers travelling from other countries."
+      ]
+    },
+    {
+      "id": "wfd-practice-34",
+      "type": "wfd",
+      "title": "Question 40",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "Clear communication is essential when people are working together on complex projects.",
+      "sample": "Clear communication is essential when people are working together on complex projects.",
+      "keyPoints": [
+        "Clear communication is essential when people are working together on complex projects."
+      ]
+    },
+    {
+      "id": "wfd-practice-35",
+      "type": "wfd",
+      "title": "Question 41",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "The department will publish the assessment criteria before the first assignment deadline.",
+      "sample": "The department will publish the assessment criteria before the first assignment deadline.",
+      "keyPoints": [
+        "The department will publish the assessment criteria before the first assignment deadline."
+      ]
+    },
+    {
+      "id": "wfd-practice-36",
+      "type": "wfd",
+      "title": "Question 42",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "Local residents were invited to share their views on the proposed development.",
+      "sample": "Local residents were invited to share their views on the proposed development.",
+      "keyPoints": [
+        "Local residents were invited to share their views on the proposed development."
+      ]
+    },
+    {
+      "id": "wfd-practice-37",
+      "type": "wfd",
+      "title": "Question 43",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "The experiment demonstrated that temperature can affect the rate of chemical reactions.",
+      "sample": "The experiment demonstrated that temperature can affect the rate of chemical reactions.",
+      "keyPoints": [
+        "The experiment demonstrated that temperature can affect the rate of chemical reactions."
+      ]
+    },
+    {
+      "id": "wfd-practice-38",
+      "type": "wfd",
+      "title": "Question 44",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "Students who require additional support should contact the learning adviser this week.",
+      "sample": "Students who require additional support should contact the learning adviser this week.",
+      "keyPoints": [
+        "Students who require additional support should contact the learning adviser this week."
+      ]
+    },
+    {
+      "id": "wfd-practice-39",
+      "type": "wfd",
+      "title": "Question 45",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "The findings suggest that further investigation is necessary before drawing firm conclusions.",
+      "sample": "The findings suggest that further investigation is necessary before drawing firm conclusions.",
+      "keyPoints": [
+        "The findings suggest that further investigation is necessary before drawing firm conclusions."
+      ]
+    },
+    {
+      "id": "wfd-practice-40",
+      "type": "wfd",
+      "title": "Question 46",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "A reliable internet connection is required to access the online examination system.",
+      "sample": "A reliable internet connection is required to access the online examination system.",
+      "keyPoints": [
+        "A reliable internet connection is required to access the online examination system."
+      ]
+    },
+    {
+      "id": "wfd-practice-41",
+      "type": "wfd",
+      "title": "Question 47",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "The exhibition explores the influence of technology on contemporary forms of communication.",
+      "sample": "The exhibition explores the influence of technology on contemporary forms of communication.",
+      "keyPoints": [
+        "The exhibition explores the influence of technology on contemporary forms of communication."
+      ]
+    },
+    {
+      "id": "wfd-practice-42",
+      "type": "wfd",
+      "title": "Question 48",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "Please ensure that your student identification card remains valid throughout the semester.",
+      "sample": "Please ensure that your student identification card remains valid throughout the semester.",
+      "keyPoints": [
+        "Please ensure that your student identification card remains valid throughout the semester."
+      ]
+    },
+    {
+      "id": "wfd-practice-43",
+      "type": "wfd",
+      "title": "Question 49",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "The research proposal should explain how the data will be collected and analysed.",
+      "sample": "The research proposal should explain how the data will be collected and analysed.",
+      "keyPoints": [
+        "The research proposal should explain how the data will be collected and analysed."
+      ]
+    },
+    {
+      "id": "wfd-practice-44",
+      "type": "wfd",
+      "title": "Question 50",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "The number of available places depends on the capacity of each workshop.",
+      "sample": "The number of available places depends on the capacity of each workshop.",
+      "keyPoints": [
+        "The number of available places depends on the capacity of each workshop."
+      ]
+    },
+    {
+      "id": "wfd-practice-45",
+      "type": "wfd",
+      "title": "Question 51",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "Many organisations now recognise the importance of maintaining accurate and accessible records.",
+      "sample": "Many organisations now recognise the importance of maintaining accurate and accessible records.",
+      "keyPoints": [
+        "Many organisations now recognise the importance of maintaining accurate and accessible records."
+      ]
+    },
+    {
+      "id": "wfd-practice-46",
+      "type": "wfd",
+      "title": "Question 52",
+      "minutes": 2,
+      "voice": "nova",
+      "text": "The assignment requires students to evaluate evidence from a range of academic sources.",
+      "sample": "The assignment requires students to evaluate evidence from a range of academic sources.",
+      "keyPoints": [
+        "The assignment requires students to evaluate evidence from a range of academic sources."
+      ]
+    },
+    {
+      "id": "wfd-practice-47",
+      "type": "wfd",
+      "title": "Question 53",
+      "minutes": 2,
+      "voice": "onyx",
+      "text": "A revised version of the document will be circulated after the meeting.",
+      "sample": "A revised version of the document will be circulated after the meeting.",
+      "keyPoints": [
+        "A revised version of the document will be circulated after the meeting."
+      ]
+    },
+    {
+      "id": "wfd-practice-48",
+      "type": "wfd",
+      "title": "Question 54",
+      "minutes": 2,
+      "voice": "fable",
+      "text": "The university plans to expand its partnerships with local businesses and community groups.",
+      "sample": "The university plans to expand its partnerships with local businesses and community groups.",
+      "keyPoints": [
+        "The university plans to expand its partnerships with local businesses and community groups."
+      ]
+    },
+    {
+      "id": "wfd-practice-49",
+      "type": "wfd",
+      "title": "Question 55",
+      "minutes": 2,
+      "voice": "shimmer",
+      "text": "Successful conservation programmes depend on long-term planning and the participation of local communities.",
+      "sample": "Successful conservation programmes depend on long-term planning and the participation of local communities.",
+      "keyPoints": [
+        "Successful conservation programmes depend on long-term planning and the participation of local communities."
+      ]
+    },
+    {
+      "id": "wfd-practice-50",
+      "type": "wfd",
+      "title": "Question 56",
+      "minutes": 2,
+      "voice": "echo",
+      "text": "The supervisor recommended making the introduction shorter and the conclusion more specific.",
+      "sample": "The supervisor recommended making the introduction shorter and the conclusion more specific.",
+      "keyPoints": [
+        "The supervisor recommended making the introduction shorter and the conclusion more specific."
+      ]
     }
   ]
 }

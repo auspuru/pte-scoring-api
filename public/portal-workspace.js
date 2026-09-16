@@ -13,21 +13,21 @@
     'listening-hiw': ['Highlight Incorrect Words', 'hiw']
   };
   const routes = Object.freeze({
-    dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: 'Choose a task and build today’s score.' },
-    'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: 'Speaking, Writing, Reading and Listening — one home for each task.' },
-    'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: 'Full mocks, practice mocks and sectional mocks.' },
-    swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: 'Read, connect the ideas, and review one useful improvement.' },
-    practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: 'Choose a question, develop your ideas, and write with purpose.' },
-    'spoken-text': { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Listening Practice · SST', context: 'Listen once, write a clear summary, and review your feedback.' },
-    dictation: { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'wfd', title: 'Write From Dictation', path: 'dictation', eyebrow: 'Listening Practice · Dictation', context: 'Listen to a sentence, then type exactly what you hear.' },
-    'writing-mocks': { pane: 'mockTestsPane', nav: 'nav-mock-tests', catalogueModule: 'writing', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Mock Tests · Writing', context: 'Find every Writing sectional in the shared mock catalogue.' },
-    'writing-run': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'mocks', title: 'Writing sectional mock', path: 'writing-attempt', eyebrow: 'Mock Tests · Writing', context: 'SWT, Essay, SST and WFD in one timed attempt.' },
-    'writing-history': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'history', title: 'Writing mock attempts', path: 'writing-mock-attempts', eyebrow: 'Mock Tests · Saved attempts', context: 'Resume a Writing mock or review its feedback.' },
-    library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: 'Return to a draft, refine a response, or prepare an export.' },
-    reading: { pane: 'readingPane', nav: 'nav-mock-tests', title: 'Reading mock attempts', path: 'reading', eyebrow: 'Mock Tests · Reading', context: 'Continue your mock or review a saved result.' },
-    ...Object.fromEntries(Object.entries(taskRoutes).map(([key,[title,type]]) => [key, { pane: 'readingPane', nav: 'nav-practice-hub', title, path: key, readingLibrary: type, eyebrow: (key.startsWith('reading-') ? 'Reading' : 'Listening') + ' Practice', context: 'Practise individual questions and review your answers.' }])),
-    ...Object.fromEntries(Object.entries({ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'}).map(([type,title])=>['speaking-'+type,{pane:'speakingPane',nav:'nav-practice-hub',speakingType:type,title,path:'speaking-'+type,eyebrow:'Speaking Practice',context:'Five questions, individual samples and content-only feedback.'}])),
-    vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: 'Learn useful words at a steady pace and revisit what you know.' }
+    dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
+    'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
+    'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },
+    swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: '' },
+    practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: '' },
+    'spoken-text': { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Listening Practice · SST', context: '' },
+    dictation: { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'wfd', title: 'Write From Dictation', path: 'dictation', eyebrow: 'Listening Practice · Dictation', context: '' },
+    'writing-mocks': { pane: 'mockTestsPane', nav: 'nav-mock-tests', catalogueModule: 'writing', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Mock Tests · Writing', context: '' },
+    'writing-run': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'mocks', title: 'Writing sectional mock', path: 'writing-attempt', eyebrow: 'Mock Tests · Writing', context: '' },
+    'writing-history': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'history', title: 'Writing mock attempts', path: 'writing-mock-attempts', eyebrow: 'Mock Tests · Saved attempts', context: '' },
+    library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: '' },
+    reading: { pane: 'readingPane', nav: 'nav-mock-tests', title: 'Reading mock attempts', path: 'reading', eyebrow: 'Mock Tests · Reading', context: '' },
+    ...Object.fromEntries(Object.entries(taskRoutes).map(([key,[title,type]]) => [key, { pane: 'readingPane', nav: 'nav-practice-hub', title, path: key, readingLibrary: type, eyebrow: (key.startsWith('reading-') ? 'Reading' : 'Listening') + ' Practice', context: '' }])),
+    ...Object.fromEntries(Object.entries({ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'}).map(([type,title])=>['speaking-'+type,{pane:'speakingPane',nav:'nav-practice-hub',speakingType:type,title,path:'speaking-'+type,eyebrow:'Speaking Practice',context: ''}])),
+    vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: '' }
   });
 
   function routeFromHash(hash) {
@@ -92,7 +92,7 @@
       const eyebrow = doc.getElementById('pageEyebrow');
       if (eyebrow) eyebrow.textContent = route.eyebrow;
       const context = doc.getElementById('pageContext');
-      if (context) context.textContent = route.context;
+      if (context) { context.textContent = route.context; context.hidden = !route.context; }
       doc.title = routes[section].title + ' · IPT Brisbane';
       ['essayTemplateBtn', 'exportBtn'].forEach(id => {
         const button = doc.getElementById(id);

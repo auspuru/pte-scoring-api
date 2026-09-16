@@ -182,5 +182,405 @@
     "seconds": 72.864,
     "voice": "en-US-GuyNeural",
     "rate": "+5%"
+  },
+  "wfd-practice-01": {
+    "textSha256": "1764bc85afe9442983ded418920d7775439f66d90f7602201d023066d94e4545",
+    "audioSha256": "40eea0f497506727eba3fdc742a2cecf3008b9a7f3ac6972586b0ad7f1e98954",
+    "bytes": 32688,
+    "seconds": 5.448,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-03": {
+    "textSha256": "5c76c4706ff351767648e636868ebb93650420ed738abd5bdf02beafed596171",
+    "audioSha256": "5fe731ebf6ed9ab805f134954136bd2106ab0ef52760d2b2e26241bb6788d92c",
+    "bytes": 36576,
+    "seconds": 6.096,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-02": {
+    "textSha256": "ebb3f7c3d2b95c7d1f7e4a4ae922c4a4f5b7dd72ffa64dcaa8f27ad27a6c06b0",
+    "audioSha256": "572021e44c927e4c327504c335a889f75452ea3045e3e3801e300a7ac23fb15a",
+    "bytes": 26640,
+    "seconds": 4.44,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-04": {
+    "textSha256": "ef7130208ad130fc03fa1bdbd905019beb6a020aa28faca3483dfeab0e90de86",
+    "audioSha256": "9cdf12d6e84fa6b6d0c7428be0a85a4da56f15e2d974267dea12d40c89b1900c",
+    "bytes": 37152,
+    "seconds": 6.192,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-08": {
+    "textSha256": "0401b2ee1e40b68ae2620b2dca640f8c1ba95c210b0c2ba562a4ce4f318ab9a0",
+    "audioSha256": "47c9a35426eb5c197fecc784d6f164cc1ce7937e8b0ee0530e8186673206b941",
+    "bytes": 35568,
+    "seconds": 5.928,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-06": {
+    "textSha256": "8c0ed7ddc369b17de2b9be022fcba4228f0399317e2427075801a24c819d8172",
+    "audioSha256": "75cbfa945dcf76f574630d81c73785ceb0699b2147f5731cdb74f913035c35de",
+    "bytes": 34560,
+    "seconds": 5.76,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-05": {
+    "textSha256": "f97169c62bdb236e1ca06bc8ea36e3bfb577988c082931d33e40b43c354d3a54",
+    "audioSha256": "0476ce63fa9241b6686b0d79f27c6c29658f8f6396a88f3aea5201b01a4e70df",
+    "bytes": 37584,
+    "seconds": 6.264,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-07": {
+    "textSha256": "0a1278d216f8de788fb65c12adbabca8f3086886448947e431974abbe6d57ad8",
+    "audioSha256": "e0a9f411df6565666cbf5028dd8d024f7e460d6a13988c2f469ce9932c970372",
+    "bytes": 30960,
+    "seconds": 5.16,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-10": {
+    "textSha256": "493b98e5d96227bc2d0496cc9afcdb8e4eab53ba4e9a7a8bf9275e5271889bd6",
+    "audioSha256": "0063a6b55847754785ddbf37965774ae899d412557d9fca71fdf1007c19162d4",
+    "bytes": 30096,
+    "seconds": 5.016,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-11": {
+    "textSha256": "0d9ac977ba6816b588032ae07a5e48dc99bfb5efb77d522e7960fc72cbeae8f9",
+    "audioSha256": "878bd6ded6953abf4674b840e7e156b8882f37be7b91a295eb9e4acf1026e6af",
+    "bytes": 30384,
+    "seconds": 5.064,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-12": {
+    "textSha256": "a826576e168a722cfa887e31bc9ee65143cf24a9f1519e7fb8c7cedb2c45b76b",
+    "audioSha256": "9930a3bb4777b219346c4644676beee25f8f6f629ce2525c385054a332bd5cb1",
+    "bytes": 32832,
+    "seconds": 5.472,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-09": {
+    "textSha256": "f6e9358b1e30c2e82aaba54f6c14fc9dc0085ea3dc9ef5abc21131c7a323ef5d",
+    "audioSha256": "cb9fae6a9c0aec053dad71dc70f2a9d8d62ca7f52edcd2de07c528f0d8d53631",
+    "bytes": 36144,
+    "seconds": 6.024,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-13": {
+    "textSha256": "61e9391699a05acd43b2230d7aa6327ecb70f37e4c3760fb73d461260b88507b",
+    "audioSha256": "11202c36900c49bf0dc3b5e2c874c19b9cc973ea65d927d03c9ed311344550b5",
+    "bytes": 30960,
+    "seconds": 5.16,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-16": {
+    "textSha256": "11f14b99bd7caf3c2e5118701941c5cc661c3744581bbc58c30c88ae95aec010",
+    "audioSha256": "2808730c79097dfb42623f7e9cb675ba2f7fe976ae8625f31640e9c18fc18a91",
+    "bytes": 35424,
+    "seconds": 5.904,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-15": {
+    "textSha256": "e0195738ab00ec7155bc295dbbc6db9f125b0c005ba1ecea53f529023eea5482",
+    "audioSha256": "dd7a7441ebffcba77958c0671c6cfc3c274841c8e4193a1aed60760ea6444e56",
+    "bytes": 36864,
+    "seconds": 6.144,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-14": {
+    "textSha256": "fa2408f593bb69f5517e96251b413aa24a1abc83e2331621310b85ed0319ed55",
+    "audioSha256": "59e888f4784ef4ff367fde3b0b9a92b3aa1731435a8b042082815aad3787c0dc",
+    "bytes": 34272,
+    "seconds": 5.712,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-20": {
+    "textSha256": "e42d66c167160ef5cd3b3ac8a3f7258e508e2c11ef305974eda2d1511afb6c1b",
+    "audioSha256": "ac0cc51a0af957ffecd5c6af300f974696f532ce89bb457dd88698f41f91b327",
+    "bytes": 34416,
+    "seconds": 5.736,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-18": {
+    "textSha256": "9db969b0ecef16f9547a1c62bd790cd6cade17c07b785fbb49181fd658390211",
+    "audioSha256": "30d41790fb91905c2f32f294e0ec9b8c3f5538d633910ea3159f4e7399dc2e2b",
+    "bytes": 35568,
+    "seconds": 5.928,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-17": {
+    "textSha256": "6f7a61d8d0318fe728db6c387171aa22293f5807acbce3e712b5fa4789ae9ff8",
+    "audioSha256": "94e111e0c0a7725fc5d9bc2e018f068ab5e88c0af2d7c9fbdbd82e60dd0e726a",
+    "bytes": 34128,
+    "seconds": 5.688,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-19": {
+    "textSha256": "708528d5b2fa790b6b6280c1f492ef88db54f7bbf37535bdf6610bac1e117e8e",
+    "audioSha256": "3adb1a33c589af859a8ee881b4968c9f77421ec45f7fbceaa40d4599cbaa010f",
+    "bytes": 32400,
+    "seconds": 5.4,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-23": {
+    "textSha256": "d9eeb098ac36d012a1eeb6d0ca54292af4d6ee3aaed6db01bed3ea91f30b29c2",
+    "audioSha256": "315da71c29c49488c686d6d8ed71198567ea09c98f83be18a2004ce3534d5c40",
+    "bytes": 35424,
+    "seconds": 5.904,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-22": {
+    "textSha256": "a8ee3dcc5fa6154790e247d3ba6d3eb7b5b8c54d9e089d655431ecbc5db4a5b2",
+    "audioSha256": "88a6142e8282d1f3d1e88876ea0348c3dba51f3ce06175158bec3d1341532365",
+    "bytes": 31536,
+    "seconds": 5.256,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-21": {
+    "textSha256": "87f6e54be5ddee6b24b2bb86b34b43e6159def7ee0a538320041162a480b39eb",
+    "audioSha256": "b4f95011e65dd9bd894a66d55853ae9c4e2a5f64d0acf745e568d5c56837188e",
+    "bytes": 34128,
+    "seconds": 5.688,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-24": {
+    "textSha256": "6565fee3de1d5c77c6ca272897c4cdb10b89a704c94c438b1f0d238b3b0ca521",
+    "audioSha256": "ea30ae4736c2bb72cf19266668cc114b43e83c2eb7077c3937dbf619474fb3c7",
+    "bytes": 27792,
+    "seconds": 4.632,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-28": {
+    "textSha256": "925a5404e5c392765f8465b72fd57822be16e817a99cd334be9ed642718982a5",
+    "audioSha256": "794ea627ac7dec84be57e215803f1978100fb915828bd5a7fbb9a7cb0362563a",
+    "bytes": 29664,
+    "seconds": 4.944,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-26": {
+    "textSha256": "a64fc5691feb8a4aba6509ed30f94abc6f325ac4640f98ae256eb5908d34b8f2",
+    "audioSha256": "6b611fbf216e4027634d617c4674f689d447bd8cac96726f21b1974388b775b2",
+    "bytes": 35568,
+    "seconds": 5.928,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-25": {
+    "textSha256": "105d4cf1d1c9f6aca74dadb65b8967b0e80c956b3a4183e0c3099de57d7132a7",
+    "audioSha256": "edde1c11cf018c9127e4f36dfc6da67ca25c27d94a70671db4540856e38caa32",
+    "bytes": 34560,
+    "seconds": 5.76,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-27": {
+    "textSha256": "51deac5c3ff4b6abc39e386b1b4a70400f735975b9c0e142d97f5632f92ccccb",
+    "audioSha256": "2d36b55ffe1dc1e925488e81df4520633fe64b923903234356775d83fb5dd7ac",
+    "bytes": 36576,
+    "seconds": 6.096,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-31": {
+    "textSha256": "a291f17385d9d26cc2025ce71c310020d53a31b82db36aff0eb7d13c3daf9a7f",
+    "audioSha256": "8f63645705a4cfeee9415f338d71dfc3f2bf909664e18456292bc826cc7e828a",
+    "bytes": 34560,
+    "seconds": 5.76,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-30": {
+    "textSha256": "0526ae5b93757d78fe60a24c681a497429817c653552ee7202eb261ebd8ddafc",
+    "audioSha256": "1918b25941c9df05de262bd461c4da4d69e44b80eb690b9bb8ba8703f1d8d067",
+    "bytes": 32544,
+    "seconds": 5.424,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-32": {
+    "textSha256": "514cabb871083494879fead4d866021572d64d5df1c7eba91b16925c35830876",
+    "audioSha256": "488631d1b95254ad89d99a81dd9c34f45ab8c3fd5000a3ec804df9a61a582b75",
+    "bytes": 30816,
+    "seconds": 5.136,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-29": {
+    "textSha256": "2638f69a943c5a00fb5715f9d34c2d6c60fbee32bcc821e1c425170640a58121",
+    "audioSha256": "97df8d82383b40486199c0c658ff5067781ec59ed6b5017988046cc5339c5983",
+    "bytes": 27648,
+    "seconds": 4.608,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-36": {
+    "textSha256": "9a479524e79029b094d2b057d4506d801a63ae78a4fa7a1d8f913b3ee272a451",
+    "audioSha256": "10631eca8dd16aa7483da95bcfe7214af44b74e1266e14dd5cfb716e8995a846",
+    "bytes": 31824,
+    "seconds": 5.304,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-33": {
+    "textSha256": "7333216cafd8f475dd4b526e0fa6aa21a8a5743ce5a769fc7bbb8c0a15886f5c",
+    "audioSha256": "978234438281319da3184140a680919d81df76fc80689f54c1db873f64de0ab8",
+    "bytes": 34128,
+    "seconds": 5.688,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-35": {
+    "textSha256": "a0b50b93e016f958e3c29a45adba427d0f51a26731408d8fd3ed99a19121cab6",
+    "audioSha256": "5aaf91e1fc3a9e022aa999a01dbdb853a6fb041ada6477b58fc2d9b35ab61c38",
+    "bytes": 33552,
+    "seconds": 5.592,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-34": {
+    "textSha256": "bb8c7ed5ef88176b5950ee95872a09ea5d5d865be02708a3584a6ee5ebfdd0ec",
+    "audioSha256": "70ec9da2039bc85ba548ddfea9770c465ea080617b0a730dabd20d0d3e76a3ad",
+    "bytes": 34272,
+    "seconds": 5.712,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-38": {
+    "textSha256": "e001b8671dd34f1d71517901afdf0da44b8c08808b9e07af827011f2e47326be",
+    "audioSha256": "cd7f14979cea95f4d28be85c0b1af59825285663803cc93a7da8b1af9f646b49",
+    "bytes": 32112,
+    "seconds": 5.352,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-40": {
+    "textSha256": "6fa8a538113c7013f07d1f27ec7bfd4993c41e76c7e18147a9b1198503fdd70b",
+    "audioSha256": "80a0f844b36bdffde21e17bb91750e4a59a7b90721d07fc1703b3e1c11e62ee8",
+    "bytes": 34848,
+    "seconds": 5.808,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-37": {
+    "textSha256": "d69068231655a76db54b4edca0688fadecfc366b76e4f0e9438f7dccff3ed13d",
+    "audioSha256": "9e91b0521be102a8562a72fba0dc8cff62a258d31d6a49471f1d43179bc463ac",
+    "bytes": 29088,
+    "seconds": 4.848,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-39": {
+    "textSha256": "fb8d2e671ad5a59ee2cbd73542160ef2b24d7b4a939ba23fcd230998f9c6ad1b",
+    "audioSha256": "d0614d9c6625aa6620b8be6d7dd6dc698ece7f997a7c85fdbb8ec078ed038eac",
+    "bytes": 37296,
+    "seconds": 6.216,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-43": {
+    "textSha256": "ca85e51ae7565af1fbac27b9868e0f17817397dcfc00449a8e2c98ffb4f550ec",
+    "audioSha256": "6c6bd2c8777160aeecf0ce69d49761d23e3849b2b96684ec59ccc264658cd2f8",
+    "bytes": 31536,
+    "seconds": 5.256,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-41": {
+    "textSha256": "4805757d55b430f3507709efd062c7a2db317cf81228f0ba76bf47890c637cf3",
+    "audioSha256": "b13b753a00e33d14f2fa6845fa036288acb5590a13404e7350a5bf68da822ad4",
+    "bytes": 40032,
+    "seconds": 6.672,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-44": {
+    "textSha256": "166e9212abd2a9b9760aa2484394375cd3daafaa52e82d5c01bddd05335063fc",
+    "audioSha256": "b060ab5054f5e5e890b774880e15de6f33872e861a3fb66f216af8a483cc9a54",
+    "bytes": 30096,
+    "seconds": 5.016,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-42": {
+    "textSha256": "d8e047c137a038817b7600b3e949a0b6b83f44c6b0a04fff0f57ac5cc9d7866b",
+    "audioSha256": "135db49c01c695a18a3b7d64be6218cfe71aa0d19837157b60e203ffce75f3bd",
+    "bytes": 30960,
+    "seconds": 5.16,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-45": {
+    "textSha256": "244d3138b10fed26bbde704ff399d3dc662dc59989b984de64293232fe51313c",
+    "audioSha256": "99410b67535ad737b15eea7b81f53157bf4c5e016b541c84ea46cfe213b08944",
+    "bytes": 38160,
+    "seconds": 6.36,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-46": {
+    "textSha256": "ef387cfffeea5a5ebe08c2eb93df24e24279e9330e28e9c61d22c0138fb81f57",
+    "audioSha256": "5351d890f2453049f618c8c86608d2cea5a070def6240714055b68072101ec1e",
+    "bytes": 38880,
+    "seconds": 6.48,
+    "voice": "en-AU-NatashaNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-48": {
+    "textSha256": "b75f5c1c14114f26c76c80c637bdacd502f989528146785188c8ed66fd51b28a",
+    "audioSha256": "57f935246c36ea9677b355a342c8b3d6e9b2dc0a5ae6ca5c5407d2b85afcd7a6",
+    "bytes": 36432,
+    "seconds": 6.072,
+    "voice": "en-GB-RyanNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-47": {
+    "textSha256": "8b3eb33e3499578bc97a7251a1316a849fe2f14db59057bc44710affa2ad7052",
+    "audioSha256": "97b20a5ef8e4bb691b3e2584591922f38f4cd8a5d462168883aceacfab3febcc",
+    "bytes": 24768,
+    "seconds": 4.128,
+    "voice": "en-AU-WilliamNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-50": {
+    "textSha256": "30d38dbed2d84e255e6198e8ce93880cff5e841b79a59c0ef1858a3149c6b817",
+    "audioSha256": "a3ed054ddba73735c94435b99d8bc7a4bf5a7dd8af2df791480521a78bd9b6b9",
+    "bytes": 35856,
+    "seconds": 5.976,
+    "voice": "en-US-GuyNeural",
+    "rate": "-5%"
+  },
+  "wfd-practice-49": {
+    "textSha256": "f2f2f841ac457337c3259cffac86846de8cda290f8f152b9abce5c0e0a4cff4a",
+    "audioSha256": "fff97dc638c56f60780e739a76521c08f2ea7d73a51794461cc86dbfce6d8d7a",
+    "bytes": 41904,
+    "seconds": 6.984,
+    "voice": "en-GB-SoniaNeural",
+    "rate": "-5%"
   }
 }

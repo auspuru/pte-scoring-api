@@ -56,11 +56,11 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
   }
   async function list(uid) {
     await initialise();
-    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : 'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT 50`, [uid])).rows.map(r => r.data);
+    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : 'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table === 'speaking_lab_attempts' ? 50 : 250}`, [uid])).rows.map(r => r.data);
     let files;
     try { files = await fs.readdir(folder(uid)); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
     const entries = await Promise.all(files.filter(f => f.endsWith('.json')).map(f => fs.readFile(path.join(folder(uid),f),'utf8').then(JSON.parse)));
-    return entries.sort((a,b) => b.startedAt-a.startedAt).slice(0,50);
+    return entries.sort((a,b) => b.startedAt-a.startedAt).slice(0,table === 'speaking_lab_attempts' ? 50 : 250);
   }
   return { update, list };
 }

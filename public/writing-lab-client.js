@@ -6,7 +6,7 @@
   const count = text => text.trim().split(/\s+/).filter(Boolean).length;
   const clock = seconds => Math.floor(Math.max(0,seconds)/60)+':'+String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0');
   const labels = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
-  const source = 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf';
+  let libraryPage=0;
   let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view;
   let workspaceVisible = true, navigationSerial = 0, pendingRequest = null, handledRequest = null, historyKind = 'mock';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
@@ -40,12 +40,12 @@
     if(status && !saveConflict) status.textContent=saved?'Saved on this device · syncing…':'Device saving unavailable · syncing to your account…';
   }
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
-  function scoringNote() { return '<div class="note"><p><b>About your score.</b> Your Writing practice estimate is shown out of 90. Summaries and essays receive AI feedback using the task criteria in <a href="'+source+'" target="_blank" rel="noopener">Pearson’s score guide</a>; dictation is checked word by word.</p><details><summary>How the estimate is calculated</summary><p>We combine the marks earned across this attempt, then calculate 10 + 80 × (marks earned ÷ marks available), rounded to a whole number. The same method is used for each task breakdown. Missing assessments stay pending. This is an independent practice scale, not an official Pearson score or a calibrated prediction of your exam result.</p><p>Each new mock contains SWT, an essay, SST and dictation. The three dictation sentences share a four-minute practice allocation; the full exam uses the remaining Listening section time.</p></details></div>'; }
   function returnToPortal(section) {
     if (window.parent !== window) window.parent.postMessage({ type: 'writing-lab-navigate', section }, location.origin);
     else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : 'mock-tests');
   }
   async function hub(tab=view) {
+    if(tab!==view)libraryPage=0;
     requestedView=tab;
     if(tab !== 'history') historyKind=tab === 'mocks' ? 'mock' : tab;
     clearInterval(timer); clearTimeout(saveTimer); stopAudio();
@@ -61,8 +61,9 @@
       content='<h1>Writing sectional mock</h1><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
     } else {
       const dictation=tab==='wfd', questions=dictation?(catalog.dictation||[]):catalog.spoken;
+      libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(questions.length/12)-1));
       content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h1>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h1><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
-        +'<div class="cards">'+questions.map((q,i)=>'<article class="card"><span class="tag">'+String(i+1).padStart(2,'0')+'</span><h2>'+esc(q.title)+'</h2><p>'+(dictation?'Check your listening, spelling and word order.':'Capture the central idea and relevant supporting points.')+'</p><div class="card-footer"><span class="meta">'+q.minutes+' minutes · estimate /90</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><div class="note">Audio plays once per attempt. Answers and feedback are available after submission. Use <b>Reattempt this question</b> to try again without losing earlier results.</div>';
+        +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card"><h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+q.minutes+' minutes</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
     }
     root.innerHTML='<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>';
     if(tab==='history') {
@@ -92,7 +93,7 @@
   async function start(testId, button, serial=navigationSerial) {
     if(!username) { notify('Sign in from your workspace first. Your existing account works here.'); return; }
     const mock=catalog.mocks.find(m=>m.id===testId);
-    if(mock && !await confirmAction('Ready to begin?','This mock includes 2 written summaries, 1 essay, 1 spoken summary and 3 dictation sentences. Allow '+mock.minutes+' minutes and check your audio volume. Dictation shares one four-minute timer. You cannot return to submitted questions; the timer continues if you leave.','Begin '+mock.minutes+'-minute mock')) return;
+    if(mock && !await confirmAction('Ready to begin?','Allow '+mock.minutes+' minutes. The timer continues if you leave.','Begin '+mock.minutes+'-minute mock')) return;
     if (serial!==navigationSerial || !workspaceVisible) return;
     button.disabled=true;
     try {
@@ -124,15 +125,20 @@
       showAttempt();
     } catch(e) { notify(e.message); button.disabled=false; }
   }
+  function questionPosition() {
+    const questions=catalog&&(attempt.kind==='sst'?catalog.spoken:attempt.kind==='wfd'?catalog.dictation:null);
+    const index=questions?questions.findIndex(q=>q.id===attempt.testId):attempt.index;
+    return 'Question '+(index+1)+' of '+(questions?questions.length:attempt.questions.length);
+  }
   function showAttempt() {
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
     document.body.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
-    const instruction=q.type==='wfd'?'Listen to the sentence once and type exactly what you hear. Check your spelling and word order. '+(attempt.kind==='mock'?'The dictation questions share the remaining time shown above.':'You have '+q.minutes+' minutes, including listening time.') :sst?'Listen to the recording and write a summary of 50–70 words. You have 10 minutes in total, including listening time.':q.type==='swt'?'Read the passage and summarise it in one complete sentence. Write 5–75 words. You have 10 minutes.':'Write an essay of 200–300 words in response to the question below. Support your ideas with reasons and examples. You have 20 minutes.';
-    root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+' · '+esc(attempt.title)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>Question '+(attempt.index+1)+' of '+attempt.questions.length+'</span></div><div class="exam-main"><p class="instruction">'+instruction+'</p>'+
-      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><p class="muted">AI-generated narration · one play per question</p><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Start recording & timer':'Play recording')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><label class="answer-label" for="notes">My notes (not scored)</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea>':'<div class="passage">'+esc(q.text)+'</div>')+
-      '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Total Word Count: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'The timer starts when you start the recording.':'Your answers are saved to your account as you write.')+'</p></div><footer class="exam-footer"><button class="secondary" data-leave="1">Exit</button><p>Check your response before continuing.</p><button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Finish & submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
+    const instruction=q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.';
+    root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main"><p class="instruction">'+instruction+'</p>'+
+      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><details><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
+      '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready':'Saved automatically')+'</p></div><footer class="exam-footer"><button class="secondary" data-leave="1">Exit</button><button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
     document.getElementById('answer').addEventListener('input',onInput);
     document.getElementById('notes')?.addEventListener('input',onInput);
     document.getElementById('next').onclick=nextQuestion;
@@ -189,7 +195,7 @@
     const originalId=attempt.id, originalIndex=attempt.index;
     const text=document.getElementById('answer').value;
     const final=attempt.index===attempt.questions.length-1;
-    if(!await confirmAction(final?'Finish this attempt?':'Submit this answer?',(text.trim()?'Your answer will be locked. ':'This answer is blank and will receive zero marks. ')+(final?'You can review scores and feedback after submission.':'You cannot return to this question.'),final?'Finish & submit':'Submit and continue')) return;
+    if(attempt.kind==='mock'&&!await confirmAction(final?'Finish this attempt?':'Submit this answer?',(text.trim()?'Your answer will be locked. ':'This answer is blank and will receive zero marks. ')+(final?'You can review scores and feedback after submission.':'You cannot return to this question.'),final?'Finish & submit':'Submit and continue')) return;
     // The timer may have advanced the question while the dialog was open.
     if(!attempt || attempt.status!=='active' || attempt.id!==originalId || attempt.index!==originalIndex) return;
     moving=true; clearTimeout(saveTimer);
@@ -262,7 +268,7 @@
       } catch(e) {
         player.pause();
         if(!current()) return;
-        startButton.disabled=false; startButton.classList.remove('hidden'); startButton.textContent='Play recording';
+        startButton.disabled=false; startButton.classList.remove('hidden'); startButton.textContent='Play';
         status.textContent=phase==='attempt' ? e.message+' Press Play recording to retry.' : 'Press Play recording to allow audio and continue.';
       } finally { starting=false; }
     };
@@ -277,7 +283,7 @@
       if(position && player.currentTime<position) player.currentTime=Math.min(position,player.duration||position);
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
       startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
-      startButton.textContent=attempt.status==='ready'?'Start recording & timer':player.currentTime>0?'Continue recording':'Play recording';
+      startButton.textContent=attempt.status==='ready'?'Play':player.currentTime>0?'Continue recording':'Play';
       if(!player.paused) startButton.classList.add('hidden');
       update();
       if(!prepared && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden && workspaceVisible) {
@@ -334,20 +340,20 @@
     document.body.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>'+(attempt.kind==='mock'?'Writing practice estimate':'Task practice estimate')+'</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p><p>Independent practice estimate · not an official Pearson score</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+' · '+(g.score90==null?'Feedback pending':g.total+'/'+g.maximum+' raw marks')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+scoringNote()+'</section>';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>'+'Result'+'</h2><p>'+(scored?'Your score and detailed feedback are ready.':'Your answers are submitted. Preparing your assessment…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> /90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Feedback pending':'')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
   function reviewCard(q,i) {
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
-    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?report.score90(r.total,r.maximum)+'/90':'Awaiting score')+'</strong></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+(r?' · '+r.total+'/'+r.maximum+' raw marks':'')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
+    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?report.score90(r.total,r.maximum)+'/90':'Awaiting score')+'</strong></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
       (r? (r.gated?'<div class="gate"><b>No marks awarded for this response.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+r.wordFeedback.map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
       '<table class="trait-table"><thead><tr><th>Criterion</th><th>Marks</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+'</td><td>'+r.scores[k]+'/'+r.maxima[k]+'</td><td>'+esc(r.feedback[k]||(r.gated?'No further marks when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>'+
       (r.strengths.length?'<h3>What worked well</h3><ul>'+r.strengths.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
       (r.improvements.length?'<h3>What to improve</h3><ul>'+r.improvements.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
       (r.errors.length?'<h3>Language corrections</h3><ul>'+r.errors.map(e=>'<li><b>'+esc(e.phrase)+'</b> → '+esc(e.correction)+'<br>'+esc(e.explanation)+'</li>').join('')+'</ul>':''):'')+
-      '<details><summary>Review '+(listening?'recording, transcript and key points':'question and key points')+'</summary>'+(listening?'<p class="muted">AI-generated narration · replay available for review</p><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio>':'')+'<div class="response">'+esc(q.text)+'</div><ul>'+q.keyPoints.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></details><details><summary>'+(dictation?'View correct sentence':'View sample '+(q.type==='essay'?'essay':'summary'))+'</summary>'+(dictation?'':'<p class="muted">One possible strong response. Other accurate answers can also earn high marks.</p>')+'<div class="response sample">'+esc(q.sample)+'</div><p class="muted">'+count(q.sample)+' words</p></details></article>';
+      '<details><summary>Review '+(listening?'recording, transcript and key points':'question and key points')+'</summary>'+(listening?'<audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio>':'')+'<div class="response">'+esc(q.text)+'</div><ul>'+q.keyPoints.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></details><details><summary>'+(dictation?'View correct sentence':'View sample '+(q.type==='essay'?'essay':'summary'))+'</summary>'+(dictation?'':'')+'<div class="response sample">'+esc(q.sample)+'</div><p class="muted">'+count(q.sample)+' words</p></details></article>';
   }
   async function scoreRemaining() {
     if(!attempt || grading.has(attempt.id)) return;
@@ -413,6 +419,7 @@
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
     if(b.disabled)return;
+    if(b.dataset.libraryPage!==undefined){libraryPage=Math.max(0,Number(b.dataset.libraryPage));return hub(view);}
     if(b.dataset.practiceMove!==undefined)return movePractice(Number(b.dataset.practiceMove),b);
     if(b.dataset.portal) { writeDraft(); await saveAnswer(false); stopAudio(); return returnToPortal(b.dataset.portal); }
     if(b.dataset.tab) return hub(b.dataset.tab);

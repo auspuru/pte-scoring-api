@@ -120,3 +120,13 @@ Regression tests cover format fallback, startup exceptions, permission timeout,
 late grants, mobile autoplay rejection and replay during failed uploads. These
 verify browser failure paths; they do not establish the specific cause on the
 reporting user's physical microphone or browser.
+
+## Minimal practice interface and dictation expansion
+
+Added 50 original standalone dictation questions and bundled MP3s (56 total).
+Mock question sets remain unchanged. Student catalogues use question numbers,
+short instructions and primary controls; scoring-method explanations and mock
+composition previews are removed. Dictation/SST catalogues show 12 items per page.
+Individual submissions proceed directly; saved answers and Back/Next remain.
+Writing history retains up to 250 attempts and only reconciles expired timers,
+avoiding writes for each saved result when navigating.

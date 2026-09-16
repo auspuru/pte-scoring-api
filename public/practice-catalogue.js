@@ -91,7 +91,7 @@
     function openPractice() {
       const host = doc.getElementById('practiceHubPane');
       if (host.dataset.ready) return;
-      host.innerHTML = '<div class="catalogue-heading"><p class="portal-eyebrow">One question type at a time</p><h2>What would you like to practise?</h2><p>Choose a task below. Each question type has one home, organised by its exam module.</p></div>'
+      host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2></div>'
         + '<div class="practice-banners">' + groups.map(g => '<section class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><h3 id="practice-' + g.id + '">' + g.title + '</h3><div>'
           + g.tasks.map(t => '<button type="button" data-practice-route="' + t.route + '"><span>' + esc(t.label) + '</span><span aria-hidden="true">→</span></button>').join('') + '</div></section>').join('') + '</div>';
       host.onclick = e => { const b = e.target.closest('[data-practice-route]'); if (b) navigate(b.dataset.practiceRoute); };
@@ -103,22 +103,18 @@
       const items = filterMocks(data.mocks, filters), pages = Math.max(1, Math.ceil(items.length / pageSize));
       page = Math.min(page, pages - 1);
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
-      board.innerHTML = shown.map(m => '<article class="mock-catalogue-card ' + m.module + '"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><h3>' + esc(m.title) + '</h3><p>' + esc(m.description) + '</p>'
-        + (m.scope ? '<small>' + esc(m.scope) + '</small>' : '')
+      board.innerHTML = shown.map(m => '<article class="mock-catalogue-card ' + m.module + '"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><h3>' + esc(m.title) + '</h3>'
+        + ''
         + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">Start Exam <span aria-hidden="true">→</span></button></footer></article>').join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
       const empty = doc.getElementById('catalogue-empty'); empty.hidden = !!items.length;
-      empty.textContent = filters.mode === 'full' ? 'Full mocks combine Speaking, Writing, Reading and Listening. No complete four-module mock has been published yet.' : 'No mocks match these filters.';
+      empty.textContent = filters.mode === 'full' ? 'No tests available yet.' : 'No mocks match these filters.';
       doc.getElementById('catalogue-page').textContent = (page + 1) + ' / ' + pages;
       doc.getElementById('catalogue-prev').disabled = page === 0;
       doc.getElementById('catalogue-next').disabled = page >= pages - 1;
       doc.getElementById('catalogue-pagination').hidden = pages <= 1;
       doc.querySelectorAll('[data-catalogue-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.catalogueMode === filters.mode)));
-      doc.getElementById('catalogue-description').textContent = {
-        full: 'All four modules in one complete exam.',
-        practice: 'Focused mocks using questions from one exam module only.',
-        sectional: 'Every task type contributing to the selected score module, including integrated tasks.'
-      }[filters.mode];
+      doc.getElementById('catalogue-description').hidden = true;
     }
     async function openMocks(options = {}) {
       const host = doc.getElementById('mockTestsPane');
@@ -128,9 +124,9 @@
         host.innerHTML = '<p role="alert">' + esc(error.message) + '</p><button type="button" class="portal-button" data-retry-catalogue>Retry</button>';
         host.onclick = e => { if (e.target.closest('[data-retry-catalogue]')) openMocks(options); }; return;
       }
-      host.innerHTML = '<div class="catalogue-heading"><p class="portal-eyebrow">All your timed tests, in one place</p><h2>Mock Tests</h2></div>'
+      host.innerHTML = '<div class="catalogue-heading"><h2>Mock Tests</h2></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['full','Full Mock'],['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '</div>'
-        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search test or essay topic" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label><label>Tests per page<select id="catalogue-size"><option value="12">12</option><option value="24">24</option><option value="1000">All</option></select></label></div>'
+        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label><label>Tests per page<select id="catalogue-size"><option value="12">12</option><option value="24">24</option><option value="1000">All</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
       doc.getElementById('catalogue-module').value = filters.module;

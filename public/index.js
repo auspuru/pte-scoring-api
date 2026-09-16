@@ -6165,7 +6165,7 @@ function showLoading(on, context = 'workspace'){
   if (on) {
     const label = el.querySelector('span');
     if (scoring) {
-      if (label) label.textContent = 'IPT Brisbane’s AI scoring engine is analysing your response…';
+      if (label) label.textContent = 'Checking your response…';
       return;
     }
     if (label) label.textContent = workspaceLoadingMessages[workspaceLoadingIndex];
@@ -12997,22 +12997,7 @@ function renderPracticeMain() {
 }
 
 function welcomeView() {
-  return `
-    <div class="practice-welcome">
-      <p class="portal-eyebrow">Essay practice · 200–300 words</p>
-      <h2>Turn your ideas into a clear essay.</h2>
-      <p>Choose a question, write at your own pace or use the 20-minute timer, then get feedback on what to improve.</p>
-      <ol class="portal-practice-steps">
-        <li><strong>Choose a topic</strong>Use your library or your own question.</li>
-        <li><strong>Write your response</strong>Your draft saves on this device.</li>
-        <li><strong>Review and revise</strong>Your assessed attempts sync to your account.</li>
-      </ol>
-      <p style="font-size:14px; color:var(--ink-soft);">Scoring uses 1 essay credit.</p>
-      <button class="practice-welcome-cta" onclick="startNewPractice()">
-        Choose an essay question →
-      </button>
-    </div>
-  `;
+  return `<div class="practice-welcome"><h2>Write Essay</h2><p>200–300 words</p><button class="practice-welcome-cta" onclick="startNewPractice()">Choose a question</button></div>`;
 }
 
 function startNewPractice() {
@@ -13472,7 +13457,7 @@ function loadingView() {
     <div class="practice-loading ipt-assessment">
       <img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109">
       <div class="practice-loading-icon" aria-hidden="true"></div>
-      <div class="practice-loading-text" role="status" aria-live="polite">IPT Brisbane’s AI scoring engine is analysing your response…</div>
+      <div class="practice-loading-text" role="status" aria-live="polite">Checking your response…</div>
       <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback and a Band 9 sample using your own ideas will appear here.</div>
     </div>
   `;
@@ -13644,7 +13629,7 @@ function renderPracticeSample(a) {
           <div class="practice-grammar-title">${fullEssay ? 'Band 9 sample · Your ideas' : 'Example revision'}</div>
           <div style="font-size:12px; color:var(--ink-soft); line-height:1.5; font-weight:normal;">
             ${fullEssay
-              ? 'A complete essay using your ideas and viewpoint, with stronger language and structure. ' + EssayScoring.words(a.sampleResponse) + ' words. Your practice score is based on your original essay.'
+              ? 'A complete essay using your ideas and viewpoint, with stronger language and structure. ' + EssayScoring.words(a.sampleResponse) + ' words. '
               : 'A saved excerpt showing suggested changes. Keep the rest of your essay and your own viewpoint.'}
           </div>
         </div>
@@ -13684,7 +13669,7 @@ function resultsView() {
   } else {
     formBanner = `<div class="practice-form-banner bad">
       <span class="practice-form-banner-icon">✗</span>
-      <span class="practice-form-banner-text"><strong>Length problem:</strong> ${wc} words is well outside the 200–300 target. This costs you Form marks.</span>
+      <span class="practice-form-banner-text"><strong>Length problem:</strong> ${wc} words is well outside the 200–300 target. Write 200–300 words.</span>
     </div>`;
   }
 
@@ -13798,9 +13783,9 @@ function resultsView() {
     : 'Your answer covers the question. Review the language and structure below.';
   const optionalItems = (a.optionalRefinements || []).map(item => '<li><p>“' + escapeHtml(item.phrase) +
     '” → “' + escapeHtml(item.correction) + '”</p><p>' + escapeHtml(item.explanation || '') + '</p></li>').join('');
-  const optionalSection = optionalItems ? '<details class="essay-feedback-details essay-optional"><summary>Optional wording refinements · no marks deducted</summary><ul>' + optionalItems + '</ul></details>' : '';
+  const optionalSection = optionalItems ? '<details class="essay-feedback-details essay-optional"><summary>Optional refinements</summary><ul>' + optionalItems + '</ul></details>' : '';
   const previousVersion = a.scoring_version !== EssayScoring.VERSION
-    ? '<p class="essay-saved-note">This is saved feedback from an earlier scoring version. Use “Revise this essay” to submit it under the updated rules.</p>' : '';
+    ? '' : '';
 
   // Grammar & Spelling inline-error section
   const grammarSection = renderGrammarSpellingSection(a);
@@ -14545,7 +14530,7 @@ async function scoreSummary(submission = null){
   swtGradingPending = true;
   showLoading(true, 'scoring');
   const scoreBtn = document.getElementById('scoreBtn');
-  if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'IPT Brisbane AI is analysing…'; }
+  if (scoreBtn) { scoreBtn.disabled = true; scoreBtn.textContent = 'Checking…'; }
   const workspace = document.getElementById('writeTabPane');
   if (workspace) workspace.setAttribute('aria-busy', 'true');
 
@@ -14584,7 +14569,7 @@ async function scoreSummary(submission = null){
   } finally {
     swtGradingPending = false;
     showLoading(false);
-    if (scoreBtn) { scoreBtn.disabled = false; scoreBtn.textContent = 'Get feedback →'; }
+    if (scoreBtn) { scoreBtn.disabled = false; scoreBtn.textContent = 'Submit →'; }
     if (workspace) workspace.removeAttribute('aria-busy');
   }
 }
@@ -14698,7 +14683,7 @@ function showResults(data, passage, spellData, submittedText){
   const rubricNotice = document.getElementById('swtRubricNotice');
   if (rubricNotice) {
     rubricNotice.hidden = !previousRubric;
-    rubricNotice.textContent = previousRubric ? 'Saved result from an earlier scoring version. Submit this summary again to use the updated rules.' : '';
+    rubricNotice.textContent = previousRubric ? '' : '';
   }
   document.querySelectorAll('#swtResultsScreen details').forEach(detail => { detail.open = false; });
 
@@ -14775,7 +14760,7 @@ function renderSwtGuidance(data){
     '<li><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.detail) + '</p>' +
     (item.repair ? '<p class="swt-repair"><strong>Try:</strong> ' + escapeHtml(item.repair) + '</p>' : '') + '</li>'
   ).join('') + '</ul>' + (feedback.optional.length
-    ? '<details class="swt-refinements"><summary>Optional refinements · no marks deducted (' + feedback.optional.length + ')</summary><ul>' +
+    ? '<details class="swt-refinements"><summary>Optional refinements (' + feedback.optional.length + ')</summary><ul>' +
       feedback.optional.map(item => '<li><span>“' + escapeHtml(item.phrase) + '” → “' + escapeHtml(item.fix) + '”</span>' +
       (item.reason ? '<p>' + escapeHtml(item.reason) + '</p>' : '') + '</li>').join('') + '</ul></details>' : '');
 }
@@ -14910,7 +14895,7 @@ async function checkSwtSample(passage){
 async function refreshSwtSample(passage){
   const note = document.getElementById('sampleAnswerNotes');
   if (!note) return;
-  note.textContent = 'Checking this sample against the current scoring rubric…';
+  note.textContent = 'Checking sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
   const result = await checkSwtSample(passage);

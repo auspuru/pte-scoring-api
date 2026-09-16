@@ -51,17 +51,17 @@ test('A section URL opens the requested task after authentication, including on 
   assert.equal(h.nodes.get('nav-practice-hub').attrs['aria-current'], 'page');
   assert.equal(h.nodes.get('pageTitle').textContent, 'Essay practice');
   assert.equal(h.nodes.get('pageEyebrow').textContent, 'Practice · Essays');
-  assert.equal(h.nodes.get('pageContext').textContent, 'Choose a question, develop your ideas, and write with purpose.');
+  assert.equal(h.nodes.get('pageContext').textContent, '');
 });
 
-test('Each workspace route provides a clear section context for the current task', () => {
+test('Workspace titles identify the task without explanatory subtitles', () => {
   const h = harness(); h.controller.start();
   h.controller.activate('swt');
   assert.equal(h.nodes.get('pageEyebrow').textContent, 'Practice · SWT');
-  assert.equal(h.nodes.get('pageContext').textContent, 'Read, connect the ideas, and review one useful improvement.');
+  assert.equal(h.nodes.get('pageContext').textContent, '');
   h.controller.activate('library');
   assert.equal(h.nodes.get('pageEyebrow').textContent, 'Review · Saved writing');
-  assert.equal(h.nodes.get('pageContext').textContent, 'Return to a draft, refine a response, or prepare an export.');
+  assert.equal(h.nodes.get('pageContext').textContent, '');
 });
 
 test('Individual audio practice and mock runners share a persistent pane with distinct parent navigation', () => {

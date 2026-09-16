@@ -266,7 +266,7 @@
     host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
       ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
       <p data-start-status role="status" aria-live="polite"></p>
-      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Next saves your answer and moves on immediately. The timer keeps running if you leave; expiry submits your saved responses. Check your sound before starting. Answers and feedback appear together after you finish.</p><p>Progress syncs across devices when you sign in to the same account. Offline changes are saved on this device and sync when you reconnect. Completed answers and feedback remain in Recent results.</p></details>
+      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>The timer continues if you leave.</p></details>
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
       <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
   }
@@ -276,9 +276,9 @@
   }
   function libraryList() {
     const questions=libraryQuestions(),page=libraryView.page,pages=Math.max(1,Math.ceil(questions.length/10));
-    return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map(q=>{
+    return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map((q,i)=>{
       const result=state.practiceResults[q.uid];
-      return `<li><div><strong>${escape(q.title)}</strong>${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise ${escape(q.title)}">Practise <span aria-hidden="true">→</span></button></li>`;
+      return `<li><div><strong>Question ${page*10+i+1}</strong>${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${page*10+i+1}">Practise <span aria-hidden="true">→</span></button></li>`;
     }).join('')}</ul>${questions.length?'':'<p>No questions match your search.</p>'}${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-library-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span>${page+1} / ${pages}</span><button class="portal-button" data-library-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}`;
   }
   function browseLibrary(id, query='', page=0) {
@@ -319,7 +319,7 @@
     host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
       <div class="reading-layout"><aside class="reading-card reading-nav" aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
-      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${s.index+1} of ${s.questions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2><p>${escape(q.instructions)}</p>
+      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${navigationIndex+1} of ${libraryQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2><p>${escape(q.instructions)}</p>
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
@@ -406,7 +406,7 @@
     const assessment=state.session.assessments?.[q.uid], p=score(q,a,assessment), info=q.reasoning||{};
     if (q.type === 'swt') {
       const traits = assessment?.result?.trait_scores;
-      return `<section class="reading-explanation"><h3>${p.pending?'SWT grade pending':p.earned+'/'+p.possible+' SWT points'}</h3>${p.pending?`<p>${escape(assessment?.message || 'Your response is saved for assessment by IPT Brisbane’s AI scoring engine.')}</p><button class="portal-button" data-action="retry-swt" ${assessment?.status==='working'?'disabled':''}>${assessment?.status==='working'?'IPT Brisbane AI is analysing…':'Retry SWT grading'}</button>`:traits?`<p>Content ${traits.content} · Form ${traits.form} · Grammar ${traits.grammar} · Vocabulary ${traits.vocabulary}</p>`:'<p>No summary was submitted.</p>'}${q.sampleResponse?`<details><summary>Example summary</summary><p>${escape(q.sampleResponse)}</p></details>`:''}</section>`;
+      return `<section class="reading-explanation"><h3>${p.pending?'SWT grade pending':p.earned+'/'+p.possible+' SWT points'}</h3>${p.pending?`<p>${escape(assessment?.message || 'Your response is saved.')}</p><button class="portal-button" data-action="retry-swt" ${assessment?.status==='working'?'disabled':''}>${assessment?.status==='working'?'IPT Brisbane AI is analysing…':'Retry SWT grading'}</button>`:traits?`<p>Content ${traits.content} · Form ${traits.form} · Grammar ${traits.grammar} · Vocabulary ${traits.vocabulary}</p>`:'<p>No summary was submitted.</p>'}${q.sampleResponse?`<details><summary>Example summary</summary><p>${escape(q.sampleResponse)}</p></details>`:''}</section>`;
     }
     const excluded=mock.isAudio(q) && state.session.audioStates?.[q.uid]?.status!=='complete';
     const actual=['mcsa','hcs'].includes(q.type)?[q.answer]:q.answers;
@@ -509,14 +509,14 @@
     if (!submitted || pendingGrades.has(jobKey) || !String(s.answers[q.uid]?.[0]||'').trim() || !mock.scoreExtra(q,s.answers[q.uid],s.assessments[q.uid]).pending) return;
     const ticket=generation, gradingOwner=owner, token=authToken();
     const job={}; pendingGrades.set(jobKey,job);
-    s.assessments[q.uid]={status:'working',message:'IPT Brisbane’s AI scoring engine is analysing your response…'};
+    s.assessments[q.uid]={status:'working',message:'Checking your response…'};
     syncHistory(s); persist(); if(s.done&&viewingQuestion)renderSession();
     try {
       if (typeof requestSwtGrade !== 'function') throw Error('SWT grading is unavailable. Your response is saved; please retry.');
       const result=await requestSwtGrade({type:'swt',passageId:q.passageId,prompt:q.passage,keyPoints:q.keyPoints,text:s.answers[q.uid][0],userId:gradingOwner});
       if (ticket!==generation || gradingOwner!==identity() || token!==authToken()) return;
       const pending=mock.scoreExtra(q,s.answers[q.uid],{result}).pending;
-      s.assessments[q.uid]={status:pending?'error':'complete',result,message:pending?'Your summary is saved. A complete assessment is not available yet; the other answers are ready to review.':'Assessment by IPT Brisbane’s AI scoring engine is complete.'};
+      s.assessments[q.uid]={status:pending?'error':'complete',result,message:pending?'Your summary is saved. A complete assessment is not available yet; the other answers are ready to review.':'Feedback ready.'};
     } catch (error) {
       if (ticket!==generation || gradingOwner!==identity() || token!==authToken()) return;
       s.assessments[q.uid]={status:'error',message:error.message||'SWT grading could not finish. Your response is saved; please retry.'};
