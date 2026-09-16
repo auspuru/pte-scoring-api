@@ -62,7 +62,7 @@ test('Transcription uploads audio only, never the reference text, and fails clea
   await assert.rejects(transcribeRecording(recording,{apiKey:''}),/not configured/);
   const text=await transcribeRecording(recording,{apiKey:'test-only',fetch:async(url,args)=>{assert(url.endsWith('/audio/transcriptions'));assert.equal(args.body.get('prompt'),null);assert.equal(args.body.get('language'),'en');assert.equal(args.body.get('file').type,'audio/webm');return {ok:true,json:async()=>({text:'The words actually spoken.'})};}});
   assert.equal(text,'The words actually spoken.');
-  await assert.rejects(transcribeRecording(recording,{apiKey:'test-only',fetch:async()=>({ok:false})}),/recording is saved/);
+  await assert.rejects(transcribeRecording(recording,{apiKey:'test-only',fetch:async()=>({ok:false,json:async()=>({})})}),/recording is saved/);
 });
 test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifier',()=>{
   assert.throws(()=>createStore(null,'/unused',{table:'accounts'}),/Invalid attempt table/);
@@ -103,4 +103,13 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const prompt=await fetch(base+'/speaking-audio/rs-1.mp3',{headers:{Range:'bytes=0-1023'}});assert.equal(prompt.status,206);assert.equal((await prompt.arrayBuffer()).byteLength,1024);
   assert.equal((await fetch(base+'/speaking-image/di-1.svg')).headers.get('content-type').split(';')[0],'image/svg+xml');
   assert.equal((await fetch(base+'/speaking-audio/not-a-question.mp3')).status,404);
+});
+
+test('Transcription failures identify provider access and quota without exposing raw messages',async()=>{
+ const recording={mime:'audio/webm',data:Buffer.alloc(200).toString('base64')};
+ for(const [status,code,expected] of [[401,'invalid_api_key',/key is invalid/],[429,'insufficient_quota',/API credit/],[400,'invalid_value',/could not read this audio/]]){
+  await assert.rejects(transcribeRecording(recording,{apiKey:'test-only',fetch:async()=>({ok:false,status,json:async()=>({error:{code,message:'SECRET SHOULD NEVER BE SHOWN'}})})}),e=>{
+   assert.match(e.message,expected);assert.match(e.message,/recording is saved/);assert(!e.message.includes('SECRET'));return true;
+  });
+ }
 });

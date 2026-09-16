@@ -25,7 +25,20 @@ async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,
   form.append('language','en');
   // Never supply the reference answer: it could bias the transcript toward words not spoken.
   const response=await request('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+apiKey},body:form,signal:AbortSignal.timeout(60000)});
-  if(!response.ok)throw fail('Automatic transcription is temporarily unavailable. Your recording is saved; retry or enter your spoken words manually.',503);
+  if(!response.ok){
+    const body=await response.json().catch(()=>({}));
+    // Log only provider status/codes, never keys, audio, transcripts or raw error messages.
+    const code=String(body.error?.code||body.error?.type||'unknown').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80);
+    console.warn('[speaking-transcription]',JSON.stringify({status:response.status,code}));
+    const reason=response.status===401?'The transcription API key is invalid or expired. The administrator needs to update it.'
+      :response.status===403?'The transcription API key does not have access. The administrator needs to check its permissions.'
+      :code==='insufficient_quota'?'The transcription account has no available API credit. The administrator needs to check API billing and usage limits.'
+      :response.status===429?'The transcription service is busy. Please wait a moment and retry.'
+      :response.status===400||response.status===422?'The transcription service could not read this audio. Try a new recording or upload a WAV or MP3 file.'
+      :response.status===404?'The configured transcription model is unavailable. The administrator needs to check the model setting.'
+      :'Automatic transcription is temporarily unavailable. Please retry.';
+    throw fail(reason+' Your recording is saved; you can enter your spoken words manually to get content feedback. [Transcription '+(response.status||503)+': '+code+']',503);
+  }
   const data=await response.json();if(typeof data.text!=='string'||data.text.length>6000)throw fail('The transcript could not be read. Enter your spoken words manually.',503);
   return data.text;
 }
