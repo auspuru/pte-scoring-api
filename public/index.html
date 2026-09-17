@@ -168,6 +168,7 @@
 <script src="speaking-practice.js?v=4" defer></script>
 <script src="portal-workspace.js?v=20.4.20" defer></script>
 <script src="index.js?v=20.4.19" defer></script>
+<link rel="stylesheet" href="portal-polish.css?v=1">
 </head>
 <body>
 
@@ -189,7 +190,7 @@
     <div id="loginForm">
       <h1 class="login-title">Welcome back</h1>
       <p class="login-sub">Sign in to practice SWT and essays</p>
-      <div class="login-error" id="loginError"></div>
+      <div class="login-error" id="loginError" role="alert"></div>
       <form onsubmit="event.preventDefault(); if (typeof handleLoginSubmit === 'function') { handleLoginSubmit(event); } else { const error = document.getElementById('loginError'); error.textContent = 'Sign-in has not finished loading. Please refresh this page and try again.'; error.style.display = 'block'; }">
         <div class="login-field">
           <label for="loginUsername">Username</label>
@@ -198,14 +199,14 @@
         <div class="login-field">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <label for="loginPassword" style="margin-bottom: 0;">Password</label>
-            <a onclick="toggleForgotPasswordMode(true)" style="font-size: 11px; font-weight: 700; color: var(--accent); cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none;">Forgot?</a>
+            <button type="button" class="login-text-link" onclick="toggleForgotPasswordMode(true)">Forgot?</button>
           </div>
           <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
         </div>
         <button type="submit" class="login-submit" id="loginSubmitBtn">Sign in</button>
       </form>
       <div class="login-toggle">
-        New here? <a onclick="toggleSignupMode(true)">Create an account</a>
+        New here? <button type="button" class="login-text-link" onclick="toggleSignupMode(true)">Create an account</button>
       </div>
     </div>
 
@@ -213,7 +214,7 @@
     <div id="registerForm" style="display:none;">
       <h1 class="login-title">Create account</h1>
       <p class="login-sub">Track your summary and essay scores</p>
-      <div class="login-error" id="registerError"></div>
+      <div class="login-error" id="registerError" role="alert"></div>
       <form onsubmit="handleRegisterSubmit(event)">
         <div class="login-field">
           <label for="regUsername">Username</label>
@@ -245,7 +246,7 @@
         <button type="submit" class="login-submit" id="regSubmitBtn">Create account</button>
       </form>
       <div class="login-toggle">
-        Already have an account? <a onclick="toggleSignupMode(false)">Sign in</a>
+        Already have an account? <button type="button" class="login-text-link" onclick="toggleSignupMode(false)">Sign in</button>
       </div>
     </div>
 
@@ -253,7 +254,7 @@
     <div id="forgotPasswordForm" style="display:none;">
       <h1 class="login-title">Reset password</h1>
       <p class="login-sub">Recover your account credentials</p>
-      <div class="login-error" id="forgotPasswordError"></div>
+      <div class="login-error" id="forgotPasswordError" role="alert"></div>
       
       <!-- Step 1: Find Username -->
       <form id="forgotPassFormStep1" onsubmit="handleRequestSecretQuestion(event)">
@@ -282,7 +283,7 @@
       </form>
       
       <div class="login-toggle">
-        Remembered your password? <a onclick="toggleForgotPasswordMode(false)">Sign in</a>
+        Remembered your password? <button type="button" class="login-text-link" onclick="toggleForgotPasswordMode(false)">Sign in</button>
       </div>
     </div>
   </div>

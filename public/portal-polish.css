@@ -1,0 +1,105 @@
+/* Final presentation layer: retain the portal's content, routes and study tools. */
+:root { --ui-radius: 10px; --panel-radius: 12px; --ui-ease: cubic-bezier(.2,.8,.2,1); }
+body { -webkit-font-smoothing: antialiased; }
+button, a, summary { touch-action: manipulation; }
+button { transition: background-color 150ms var(--ui-ease), border-color 150ms var(--ui-ease), color 150ms var(--ui-ease); }
+button:disabled { transform: none; }
+.portal-button, .catalogue-modes button { min-height: 44px; line-height: 1.4; }
+.portal-button.primary, .catalogue-modes button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg-card); }
+body.dark .portal-button.primary, body.dark .catalogue-modes button[aria-pressed="true"] { color: #111827; }
+.portal-button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+#portalSidebar .nav-group-label { font-size: 11px; letter-spacing: .08em; }
+#portalSidebar .nav-item { border-radius: 8px; }
+.topbar-right .tb-text-btn { min-height: 44px; }
+.dashboard-welcome h2, .catalogue-heading h2 { font-size: clamp(26px,2.4vw,32px); line-height: 1.2; letter-spacing: -.035em; text-wrap: balance; }
+.catalogue-heading { margin-bottom: 24px; }
+.portal-task, .dash-card, .portal-resume { border-radius: var(--panel-radius); box-shadow: none; }
+.portal-task p { max-width: 46ch; }
+.portal-task-top { margin-bottom: 16px; }
+.portal-resume { padding: 20px 24px; }
+.portal-task:hover { box-shadow: none; }
+/* Keep the four familiar subject colours; remove the oversized enclosing card. */
+.practice-banners { background: transparent; border: 0; border-radius: 0; padding: 0; box-shadow: none; gap: 24px; align-items: start; }
+.practice-banner { padding: 0; }
+.practice-banner + .practice-banner { border: 0; padding-top: 0; }
+.practice-banner h3 { margin-bottom: 8px; padding: 12px 14px; border-radius: 8px; font-size: 15px; line-height: 1.4; }
+.practice-banner button { min-height: 60px; padding: 14px; line-height: 1.5; border-radius: 8px; gap: 12px; border-bottom: 1px solid var(--line-soft); }
+.practice-banner button > span:first-child { min-width: 0; }
+.practice-banner button > span:last-child { flex-shrink: 0; }
+body.dark .practice-banner.speaking h3 { color: #bed7fc; background: #243a56; }
+body.dark .practice-banner.writing h3 { color: #efb9df; background: #442d42; }
+body.dark .practice-banner.reading h3 { color: #ffd0a8; background: #443425; }
+body.dark .practice-banner.listening h3 { color: #aae0bf; background: #243f35; }
+.catalogue-toolbar { gap: 16px; margin-top: 24px; }
+.catalogue-toolbar label { font-size: 13px; gap: 8px; }
+.catalogue-toolbar input, .catalogue-toolbar select { min-height: 44px; font-size: 16px; }
+.catalogue-saved button { min-height: 44px; padding: 8px 4px; }
+#catalogue-count { font-size: 13px; }
+.mock-catalogue-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.mock-catalogue-card { border: 1px solid var(--line-soft); border-radius: var(--panel-radius); padding: 22px; }
+.mock-catalogue-card h3 { font-size: 18px; line-height: 1.35; letter-spacing: -.02em; }
+.mock-catalogue-card p { line-height: 1.6; font-size: 14px; }
+.mock-catalogue-card small { font-size: 12px; }
+.mock-catalogue-card footer { border-top: 1px solid var(--line-soft); padding-top: 16px; }
+.mock-catalogue-card .portal-button { font-size: 14px; }
+.catalogue-pagination { gap: 16px; flex-wrap: wrap; }
+.speaking-workspace h2 { font-size: clamp(24px,2.4vw,30px); line-height: 1.25; margin-bottom: 16px; }
+.speaking-intro { max-width: 65ch; }
+#speaking-notice:empty { display: none; }
+#speaking-notice:not(:empty) { padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+.speaking-card, .speaking-question-list article { border-color: var(--line-soft); border-radius: var(--panel-radius); }
+.speaking-number { color: var(--accent); }
+.speaking-prompt { line-height: 1.75; max-width: 68ch; }
+.speaking-workspace summary { padding: 12px 0; min-height: 44px; }
+.speaking-history-row { flex-wrap: wrap; }
+.speaking-score span { border-radius: 6px; }
+.speaking-workspace textarea:read-only { background: var(--bg-hover); }
+body.dark .speaking-status { color: #efbb7d; }
+body.dark .speaking-status.covered { color: #84d7ac; }
+body.dark .speaking-status.inaccurate { color: #ffa5b0; }
+/* Native buttons make account-mode actions available to keyboards. */
+.login-card { border-radius: 16px; }
+.login-title { letter-spacing: -.035em; line-height: 1.2; }
+.login-sub { line-height: 1.6; }
+.login-field label { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; }
+.login-field input, .login-field select { min-height: 48px; font-size: 16px; border-radius: 8px; }
+.login-text-link { display: inline-flex; align-items: center; min-height: 44px; padding: 4px; border: 0; background: transparent; color: var(--accent); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.login-text-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.login-toggle { line-height: 1.6; }
+.login-submit { min-height: 48px; border-radius: 8px; }
+@media (hover: hover) and (pointer: fine) {
+  .practice-banner button:hover { color: var(--accent); background: var(--accent-soft); }
+  .portal-task:hover { border-color: var(--accent); background: var(--bg-card); }
+}
+@media (max-width: 1200px) {
+  .practice-banners { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px 24px; }
+  .mock-catalogue-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 760px) {
+  .portal-resume { padding: 18px; align-items: flex-start; }
+  .portal-task { padding: 20px; }
+  .portal-task-swt { padding-top: 18px; }
+  .speaking-card { padding: 20px; }
+  .speaking-heading { gap: 16px; }
+  .catalogue-heading { margin-bottom: 20px; }
+  .catalogue-toolbar label { flex: 1 1 160px; min-width: 0; }
+}
+@media (max-width: 560px) {
+  .practice-banners, .mock-catalogue-grid { grid-template-columns: minmax(0,1fr); }
+  .practice-banners { gap: 28px; }
+  .practice-banner button { min-height: 56px; }
+  .portal-resume { flex-direction: column; gap: 16px; }
+  .portal-resume > .portal-button { width: 100%; }
+  .speaking-question-list article { gap: 12px; padding: 16px; }
+  .speaking-question-list article > div { min-width: 0; }
+  .speaking-recorder { gap: 12px; }
+  .speaking-recorder .portal-button { flex: 1 1 auto; }
+  .speaking-actions .portal-button { flex: 1 1 auto; }
+  .mock-catalogue-card { padding: 20px; }
+  .login-screen { padding: 24px 16px; }
+  .login-card { padding: 28px 24px; max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
