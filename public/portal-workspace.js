@@ -32,6 +32,7 @@
 
   function routeFromHash(hash) {
     const path = String(hash || '').replace(/^#\/?/, '').split(/[?\/]/)[0];
+    if (path.startsWith('speaking-')) return 'practice-hub';
     if (path === 'test-centre') return 'mock-tests';
     return Object.keys(routes).find(key => routes[key].path === path) || (Object.hasOwn(routes, path) ? path : 'dashboard');
   }
@@ -57,6 +58,7 @@
     }
 
     function activate(section, options = {}) {
+      if (String(section).startsWith('speaking-')) section = 'practice-hub';
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
