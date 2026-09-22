@@ -14718,12 +14718,12 @@ function showResults(data, passage, spellData, submittedText){
   }
   if (readingEstimateEl) {
     const cMax = Number.isFinite(traits.content_max) && traits.content_max > 0 ? traits.content_max : 4;
-    const content = traits.content;
-    const estimate = Number.isFinite(content) && content >= 0 && content <= cMax
-      ? Math.round(10 + 80 * content / cMax) : null;
-    readingEstimateEl.innerHTML = estimate === null ? '' :
-      '<p><strong>Reading estimate: ' + estimate + '/90</strong></p>' +
-      '<p style="font-size:0.8rem;line-height:1.5">Practice estimate for this response, not an official Pearson score or overall Reading prediction.</p>';
+    const confirmed = !data.ai_feedback_degraded && !data.score_provisional;
+    const reading = confirmed && Number.isFinite(traits.content) && traits.content >= 0 && traits.content <= cMax
+      ? Math.round(10 + 80 * traits.content / cMax) : null;
+    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
+      ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
+    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);
   }
 
   renderOriginality(data, passage, submittedText);

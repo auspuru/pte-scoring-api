@@ -1051,6 +1051,42 @@ const PgPassageAPI = {
 
 const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 
+async function seedAdvancedSwtPassages() {
+  const additions = require('./content/swt-advanced.json');
+  if (!USE_POSTGRES) {
+    const existing = await PassageAPI.readAll();
+    for (const passage of additions) {
+      if (!existing.some(p => p.title === passage.title)) await PassageAPI.upsert(passage);
+    }
+    return;
+  }
+  const client = await pgPool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('CREATE TABLE IF NOT EXISTS portal_content_migrations (name TEXT PRIMARY KEY)');
+    await client.query('LOCK TABLE passages IN EXCLUSIVE MODE');
+    const applied = await client.query('SELECT name FROM portal_content_migrations WHERE name=$1', ['swt-advanced-20260922']);
+    if (!applied.rows.length) {
+      for (const passage of additions) {
+        const found = await client.query("SELECT id FROM passages WHERE payload->>'title'=$1", [passage.title]);
+        if (found.rows.length) continue;
+        const next = await client.query('SELECT COALESCE(MAX(id),0)+1 AS id FROM passages');
+        const payload = sanitizePassage({...passage,id:Number(next.rows[0].id)});
+        await client.query('INSERT INTO passages(id,payload,updated_at) VALUES($1,$2,NOW())',[payload.id,JSON.stringify(payload)]);
+      }
+      await client.query('INSERT INTO portal_content_migrations(name) VALUES($1)', ['swt-advanced-20260922']);
+    }
+    await client.query('COMMIT');
+    PgPassageAPI._cache = null;
+    PgPassageAPI._cacheLoaded = false;
+    console.log('Advanced SWT passages ready (10 passages).');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally { client.release(); }
+}
+
+
 const PgVocabExtrasAPI = {
   async read() {
     if (!pgPool) return {};
@@ -5777,6 +5813,8 @@ app.listen(PORT, '0.0.0.0', async () => {
       console.error('     The server will keep running but writes will fail until Postgres is healthy.');
     }
   }
+
+  try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
 
   // Boot diagnostic — relevant whether or not Postgres is active.
   await captureBootSnapshot();
