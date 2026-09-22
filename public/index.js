@@ -14710,6 +14710,21 @@ function showResults(data, passage, spellData, submittedText){
     ].map(t => `<span class="trait-chip">${t}</span>`).join('');
   }
 
+  let readingEstimateEl = document.getElementById('swtReadingEstimate');
+  if (!readingEstimateEl && heroTraitChipsEl) {
+    readingEstimateEl = document.createElement('div');
+    readingEstimateEl.id = 'swtReadingEstimate';
+    heroTraitChipsEl.after(readingEstimateEl);
+  }
+  if (readingEstimateEl) {
+    const content = traits.content;
+    const estimate = Number.isFinite(content) && content >= 0 && content <= cMax
+      ? Math.round(10 + 80 * content / cMax) : null;
+    readingEstimateEl.innerHTML = estimate === null ? '' :
+      '<p><strong>Reading estimate: ' + estimate + '/90</strong></p>' +
+      '<p style="font-size:0.8rem;line-height:1.5">Practice estimate for this response, not an official Pearson score or overall Reading prediction.</p>';
+  }
+
   renderOriginality(data, passage, submittedText);
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
   renderAnnotatedPassage(passage);
