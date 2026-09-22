@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "title": "Climate Change Economics",
+    "previousSample": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
+    "sampleResponse": "Climate change threatens substantial economic losses, with developing nations bearing disproportionate costs despite contributing relatively little to historical emissions, while falling renewable energy costs offer a way to limit the damage, provided sufficient annual investment enables the transition to expand quickly enough."
+  },
+  {
+    "id": 2,
+    "title": "Artificial Intelligence in Healthcare",
+    "previousSample": "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
+    "sampleResponse": "Although AI offers more accurate early cancer detection and potential healthcare savings by handling routine cases alongside human specialists, diagnostic errors, privacy concerns and uncertainty about who benefits require attention, even as patient trust in AI-assisted diagnoses continues to grow."
+  },
+  {
+    "id": 5,
+    "title": "Farm Cottage",
+    "previousSample": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
+    "sampleResponse": "Having grown up on a farm before moving to the city, the author chose to return to a farm cottage because he valued country living despite its practical disadvantages, and he sought to persuade his pregnant, city-raised wife that the benefits justified reduced comfort and income."
+  },
+  {
+    "id": 6,
+    "title": "London Financial Hub",
+    "previousSample": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
+    "sampleResponse": "Originating in seventeenth-century coffee-house exchanges, London's financial sector overcame historical setbacks to surpass rival centres and dominate international markets, retaining its position as a global financial hub despite high living costs and an overburdened transport system."
+  },
+  {
+    "id": 7,
+    "title": "Nobel Prize and Climate Science",
+    "previousSample": "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
+    "sampleResponse": "The passage contrasts the IPCC's carefully researched climate projections with Al Gore's more alarming claims about sea levels and Greenland's melting, and argues that fewer deaths from cold could outweigh additional heat-related deaths, supporting its conclusion that warming could produce a net reduction in mortality."
+  },
+  {
+    "id": 10,
+    "title": "Economic Forecasting Limitations",
+    "previousSample": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
+    "sampleResponse": "Corporate economists use statistical data to forecast economic conditions, but widely differing assumptions make their predictions imprecise, resulting in a poor record for volatile measures such as interest rates and greater reliability for stable measures such as government spending."
+  },
+  {
+    "id": 11,
+    "title": "Wright Brothers — From Bicycles to Flight",
+    "previousSample": "The Wright brothers opened a bicycle shop in 1892 and began building bicycles in 1896; however, profits from this business funded their aeronautical experiments from 1899 to 1905; moreover, news of Lilienthal's death in 1896 sparked their serious interest in flight; therefore, they corresponded with Octave Chanute, an aviation authority who supported them through the critical years from 1900 to 1905.",
+    "sampleResponse": "The Wright brothers' bicycle and printing businesses financed their aviation experiments, while building lightweight precision machines provided relevant engineering experience, and their growing interest in flight led them to pursue aeronautical knowledge through reading, the Smithsonian Institution and support from Octave Chanute."
+  },
+  {
+    "id": 12,
+    "title": "The New Woman",
+    "previousSample": "The concept of the New Woman emerged in Britain and North America, advanced by a writer named Sarah; however, her book emphasized the need to uplift women's status in a male-dominated society; moreover, although her ideas received mixed responses, her advocacy contributed to broader discussions about women's rights; therefore, the notion has been commemorated as a milestone that laid the groundwork for future feminist thought.",
+    "sampleResponse": "Emerging in Britain and North America, the New Woman concept challenged women's restricted financial, professional and marital roles through Sarah's writing, and although her proposals met resistance and were not fully realised, they influenced debate and laid foundations for later reforms and feminist thought."
+  },
+  {
+    "id": 13,
+    "title": "Volcanic Eruption Prediction",
+    "previousSample": "No single event can predict a volcanic eruption, so many events must be monitored together to forecast one; however, each volcano behaves differently and some eruptions occur with no precursors at all; moreover, after the 1980 Mount St. Helens eruption, dedicated monitoring of seismic energy, dome expansion, tilt, and SO2 emissions allowed scientists to predict eruptions with increasing accuracy; therefore, residents who recognise precursor phenomena can alert scientists and help prevent disasters.",
+    "sampleResponse": "Volcanic eruptions can often be predicted by continuously monitoring several signals together, although individual volcanoes behave differently and some erupt without warning, while the expense of monitoring makes residents' reports of unusual activity valuable for prompting scientific observation and helping prevent disasters."
+  },
+  {
+    "id": 14,
+    "title": "Product Life Cycle",
+    "previousSample": "The product life cycle has four stages; the Introduction Stage is expensive with low sales but high R&D and marketing costs; however, the Growth Stage delivers strong sales and profit growth through economies of scale; moreover, the Maturity Stage requires manufacturers to maintain market share through wise marketing and product improvements; therefore, the Decline Stage eventually shrinks the market, though companies may still profit by adopting cheaper production methods.",
+    "sampleResponse": "The product life cycle requires businesses to adapt their strategies as products move from costly introduction and low sales through profitable growth to competitive maturity and eventual decline, using appropriate promotion, product improvement and cheaper production methods to maintain market share or profitability."
+  },
+  {
+    "id": 15,
+    "title": "Handwriting Skills",
+    "previousSample": "Handwriting skills have been declining in recent years due to the rising use of technology; however, handwriting is a complex motor and cognitive skill that develops coordination, dexterity, and memory; moreover, good handwriting helps students learn more effectively by enabling them to take notes and express ideas clearly; therefore, schools that have eliminated handwriting instruction in favour of computers are making a mistake because the skill is essential for academic and professional success.",
+    "sampleResponse": "Although technology has contributed to declining handwriting instruction, handwriting develops motor and cognitive abilities and supports learning, clear expression and professional success, so schools should ensure that all students have opportunities to learn and practise it."
+  },
+  {
+    "id": 16,
+    "title": "Expensive Textbooks",
+    "previousSample": "Expensive textbooks are a major burden for students, with the average cost rising over 1,000% since the 1970s; however, the high cost is driven by industry consolidation and the frequent release of minor new editions; moreover, these costs force students to choose between textbooks and necessities like food and housing; therefore, affordability can be improved by increasing used and rental textbook availability and by using freely available open educational resources.",
+    "sampleResponse": "Publisher consolidation and frequent minor revisions have made textbooks increasingly expensive, forcing students to sacrifice necessities or study without essential materials, while greater access to used books, rentals and freely available educational resources could reduce this financial and academic burden."
+  },
+  {
+    "id": 17,
+    "title": "Self-Defense Classes",
+    "previousSample": "Self-defense classes offer many benefits for students, including increased safety, confidence, fitness, and self-discipline; however, they teach students how to protect themselves from attacks, which can reduce bullying in schools; moreover, classes involve physical activity that improves health and teach life skills like respect and conflict resolution; therefore, they can benefit students of all ages, from those being bullied to those feeling stressed or abused at home.",
+    "sampleResponse": "Self-defence classes can improve students' safety, confidence, fitness and self-discipline by teaching protection against attacks, conflict resolution and other life skills, potentially reducing bullying and strengthening academic performance and social relationships among students of varied ages and backgrounds."
+  },
+  {
+    "id": 18,
+    "title": "Living Off-Grid",
+    "previousSample": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, and greater freedom; however, off-grid homes produce their own energy and water, reducing reliance on fossil fuels and lowering carbon footprint; moreover, residents meet their own basic needs such as generating electricity, growing food, and maintaining the home, which builds valuable self-sufficiency skills; therefore, although off-grid living requires careful planning, the benefits can be significant.",
+    "sampleResponse": "Although living off-grid requires careful planning and preparation, producing essential resources and meeting one's own needs can reduce environmental impact and living costs, develop self-reliance, improve health and provide greater freedom from public infrastructure."
+  },
+  {
+    "id": 19,
+    "title": "Fake News",
+    "previousSample": "Fake news is false or misleading information presented as news, which can be spread intentionally or unintentionally; however, social media platforms are particularly vulnerable because they allow users to share information without verification; moreover, fake news can mislead people into bad decisions such as refusing COVID-19 vaccinations and can be used by foreign governments to spread propaganda; therefore, it also harms individuals and businesses by defaming people, damaging reputations, and promoting scams.",
+    "sampleResponse": "Fake news is false or misleading information presented as news that spreads especially easily through unverified social-media sharing, potentially distorting decisions and beliefs, damaging reputations and enabling propaganda, scams and fraudulent sales."
+  },
+  {
+    "id": 20,
+    "title": "Darwin and the Origin of Species",
+    "previousSample": "In 1837, at age 28, Darwin wrote Species Change in a notebook, the earliest record of his evolutionary ideas after sailing on HMS Beagle; however, he recognised the theory was a radical view with insufficient evidence to publish; moreover, over 20 years he accumulated data and presented his views to a small circle before publishing On the Origin of Species in 1859; therefore, the book remains one of the most important works in human history.",
+    "sampleResponse": "Darwin developed evolutionary ideas after his voyage on the Beagle but delayed publication because of their radical implications and insufficient evidence, spending two decades gathering support before publishing On the Origin of Species, whose lasting scientific significance opened the way for further research."
+  },
+  {
+    "id": 22,
+    "title": "Esports",
+    "previousSample": "Esports programs, now recognized as educational rather than entertainment, build student confidence and teamwork while fostering inclusion; research shows they improve academic outcomes and graduation rates by keeping students engaged and motivated toward long-term goals.",
+    "sampleResponse": "School esports programmes can foster confidence, teamwork and inclusion, particularly for students disengaged from traditional sports, while participation and eligibility requirements encourage attendance, academic effort and future planning, potentially improving educational outcomes and graduation rates."
+  },
+  {
+    "id": 23,
+    "title": "Electric Cars",
+    "previousSample": "Although electric cars were historically abandoned despite advantages like cleanliness and simplicity, renewed climate concerns have prompted reconsideration; however, they still face barriers including limited range, long charging time, high costs, and minimal emissions reduction, so hybrid electric vehicles are proposed as a solution balancing benefits with consumer demands.",
+    "sampleResponse": "The passage explains that electric cars lost favour despite their operational advantages and attracted renewed interest because of climate concerns, but limited range, slow charging, battery costs and fossil-fuel-generated electricity constrain their appeal, making hybrids a proposed compromise between environmental benefits and drivers' practical demands."
+  },
+  {
+    "id": 28,
+    "title": "First Child",
+    "previousSample": "Parents' birth order can replicate problematic family dynamics; however, it may also provide parenting strengths, though biases tied to any birth position can surface regardless.",
+    "sampleResponse": "Parents' birth order can reproduce familiar family conflicts and biases in their own parenting while also providing useful strengths, so recognising these influences is important for responding fairly to children's needs rather than repeating patterns from childhood."
+  },
+  {
+    "id": 32,
+    "title": "NSW Police",
+    "previousSample": "NSW schools have deployed armed School Liaison Police officers to reduce crime and strengthen police-student relations; however, parent groups raised concerns about armed officers in communities with strained police relations, prompting officers to clarify they are educators conducting crime prevention workshops, not security enforcers.",
+    "sampleResponse": "Armed School Liaison Police officers were introduced into NSW schools to prevent crime and improve relationships with students, but parent groups expressed concern about their presence in communities with strained police relations, while officers emphasised their educational and advisory role rather than security patrol duties."
+  },
+  {
+    "id": 33,
+    "title": "Twins",
+    "previousSample": "Researchers using HARDI scans of identical and fraternal twins found that myelin integrity in intelligence-critical brain regions is genetically determined, and water-diffusion patterns—rapid diffusion indicating fast neural connections and slower diffusion indicating lower intelligence—reveal this relationship.",
+    "sampleResponse": "By comparing identical and fraternal twins using HARDI scans, researchers found genetic influences on myelin integrity in brain regions associated with intelligence, with directional water diffusion indicating faster neural connections and more broadly dispersed diffusion indicating slower signalling."
+  }
+]

@@ -1051,6 +1051,42 @@ const PgPassageAPI = {
 
 const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 
+async function reviseSwtSamples() {
+  const patches = require('./content/swt-sample-revisions.json');
+  const note = 'Sample summary: connects the main idea, relevant support and conclusion.';
+  if (!USE_POSTGRES) {
+    for (const patch of patches) {
+      const current = await PassageAPI.getById(patch.id);
+      if (current && current.title === patch.title && current.sampleResponse === patch.previousSample)
+        await PassageAPI.upsert({...current,sampleResponse:patch.sampleResponse,sampleNotes:note});
+    }
+    return;
+  }
+  const client = await pgPool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('CREATE TABLE IF NOT EXISTS portal_content_migrations (name TEXT PRIMARY KEY)');
+    await client.query('LOCK TABLE portal_content_migrations IN EXCLUSIVE MODE');
+    const done = await client.query('SELECT name FROM portal_content_migrations WHERE name=$1',['swt-samples-20260922']);
+    let changed = 0;
+    if (!done.rows.length) {
+      for (const patch of patches) {
+        const updated = await client.query(
+          "UPDATE passages SET payload=payload || $1::jsonb, updated_at=NOW() WHERE id=$2 AND payload->>'title'=$3 AND payload->>'sampleResponse'=$4",
+          [JSON.stringify({sampleResponse:patch.sampleResponse,sampleNotes:note}),patch.id,patch.title,patch.previousSample]);
+        changed += updated.rowCount;
+      }
+      await client.query('INSERT INTO portal_content_migrations(name) VALUES($1)',['swt-samples-20260922']);
+    }
+    await client.query('COMMIT');
+    PgPassageAPI._cache = null;
+    PgPassageAPI._cacheLoaded = false;
+    console.log('SWT sample revisions applied:', changed);
+  } catch (error) { await client.query('ROLLBACK'); throw error; }
+  finally { client.release(); }
+}
+
+
 async function seedAdvancedSwtPassages() {
   const additions = require('./content/swt-advanced.json');
   if (!USE_POSTGRES) {
@@ -5815,6 +5851,8 @@ app.listen(PORT, '0.0.0.0', async () => {
   }
 
   try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
+
+  try { await reviseSwtSamples(); } catch (e) { console.error('SWT sample revisions failed:', e.message); }
 
   // Boot diagnostic — relevant whether or not Postgres is active.
   await captureBootSnapshot();
