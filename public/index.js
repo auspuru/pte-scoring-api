@@ -14717,6 +14717,7 @@ function showResults(data, passage, spellData, submittedText){
     heroTraitChipsEl.after(readingEstimateEl);
   }
   if (readingEstimateEl) {
+    const cMax = Number.isFinite(traits.content_max) && traits.content_max > 0 ? traits.content_max : 4;
     const content = traits.content;
     const estimate = Number.isFinite(content) && content >= 0 && content <= cMax
       ? Math.round(10 + 80 * content / cMax) : null;
