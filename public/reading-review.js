@@ -90,7 +90,11 @@
       response = '<h3>Your summary</h3>' + paragraph(a[0] || 'Not answered');
       feedback = swtFeedback(q, a, assessment, points);
     } else {
-      if (['dropdown','wordbank'].includes(q.type)) response = table(['Blank', 'Your answer', 'Correct answer', 'Result'], q.answers.map((correct,i) => [i+1, a[i] || 'Not answered', correct, a[i]===correct?'Correct':a[i]?'Incorrect':'Unanswered']));
+      if (['dropdown','wordbank'].includes(q.type)) response = '<div class="reading-blank-review">'+q.answers.map((correct,i)=>{
+        const matched=a[i]===correct, note=items(q.reasoning?.blanks)[i];
+        const why=note?[note.explanation,note.meaning].filter(Boolean).join(' '):'';
+        return '<section class="reading-blank-row" data-correct="'+matched+'"><div class="reading-blank-number">Blank '+(i+1)+'<span>'+ (matched?'Correct':a[i]?'Incorrect':'Unanswered')+'</span></div><div class="reading-blank-comparison"><div><span>Your answer</span><strong>'+escape(a[i]||'Not answered')+'</strong></div><div><span>Correct answer</span><strong>'+escape(correct)+'</strong></div></div>'+(why?'<details class="reading-review-detail"><summary>Why this answer fits</summary>'+paragraph(why)+'</details>':'')+'</section>';
+      }).join('')+'</div>';
       else if (q.type === 'reorder') {
         const text = key => q.items.find(item=>item.key===key)?.text || 'Not answered';
         context = '<h3>Original paragraphs</h3>' + list(q.items.map(item=>item.text));
@@ -108,9 +112,9 @@
         if (!a.length) response = '<p class="reading-unanswered">Not answered</p>' + response;
       }
       const info = q.reasoning || {};
-      feedback = '<h3>Feedback</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
-      feedback += blankFeedback(q);
-      if (info.options) feedback += '<h4>Other options explained</h4>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason));
+      feedback = '<h3>What to notice</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
+      if (!['dropdown','wordbank'].includes(q.type)) feedback += blankFeedback(q);
+      if (info.options) feedback += '<details class="reading-review-detail"><summary>Other options explained</summary>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason)) + '</details>';
     }
     if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
     const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
@@ -120,7 +124,7 @@
     return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
       + (excluded && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
-      + '<section class="reading-explanation">' + feedback + '</section>' + audio + '</article>';
+      + '<details class="reading-explanation reading-feedback-detail" '+(outcome==='correct'?'':'open')+'><summary>Explanation &amp; feedback</summary>' + feedback + '</details>' + audio + '</article>';
   }
   return { question, models, matches, controls, overview, filters, blankFeedback };
 });

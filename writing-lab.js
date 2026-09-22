@@ -43,6 +43,7 @@ function reconcile(a, now = Date.now()) {
 }
 function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
+  if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
     ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + bank.version } : {}),
@@ -51,6 +52,50 @@ function present(a) {
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
+  // A submitted answer is immutable. Assess outside the answer-save transaction,
+  // and share the same job with the results page to avoid duplicate model calls.
+  const queue = [], failedAt = new Map();
+  let running = 0;
+  function drain() {
+    while (running < 2 && queue.length) {
+      const run = queue.shift(); running++;
+      run().finally(() => { running--; drain(); });
+    }
+  }
+  function assess(uid, a, index) {
+    if (a.results[index]) return Promise.resolve(a.results[index]);
+    const key = uid + ':' + a.id + ':' + index;
+    if (pending.has(key)) return pending.get(key);
+    const task = new Promise((resolve, reject) => {
+      queue.push(async () => {
+        try {
+          // Reload after waiting in the queue: a review request may have saved it.
+          const current = await store.update(uid, a.id, value => {
+            if (!value) throw bad('Attempt not found.', 404);
+            return value;
+          });
+          if (!current.completed[index]) throw bad('Submit this answer first.', 409);
+          const result = current.results[index] || await scoring.grade(current.questions[index], current.answers[index], callModel);
+          const updated = await store.update(uid, a.id, value => {
+            if (!value) throw bad('Attempt not found.', 404);
+            value.results[index] ||= result;
+            return value;
+          });
+          failedAt.delete(key); resolve(updated.results[index]);
+        } catch (error) { failedAt.set(key, Date.now()); reject(error); }
+        finally { pending.delete(key); }
+      });
+    });
+    pending.set(key, task); drain();
+    return task;
+  }
+  function assessSubmitted(uid, a) {
+    a.questions.forEach((q, index) => {
+      const key = uid + ':' + a.id + ':' + index;
+      if (a.completed[index] && !a.results[index] && Date.now() - (failedAt.get(key) || 0) > 60000)
+        assess(uid, a, index).catch(error => console.warn('[writing-lab] background assessment', error.message));
+    });
+  }
   const route = fn => async (req,res) => { try { await fn(req,res); } catch(e) {
     console.warn('[writing-lab]', e.status || 503, e.message);
     res.status(e.status || 503).json({ error:e.status ? e.message : 'This action could not be completed. Your saved answers are safe. Please retry.' });
@@ -106,10 +151,12 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null) };
     });
+    assessSubmitted(req.labUser, a);
     res.json(present(a));
   }));
   router.get('/attempts/:id', route(async(req,res) => {
     const a = await store.update(req.labUser,req.params.id,value => { if (!value) throw bad('Attempt not found.',404); return reconcile(value); });
+    assessSubmitted(req.labUser, a);
     res.set('Cache-Control','no-store'); res.json(present(a));
   }));
   router.post('/attempts/:id/begin', route(async(req,res) => {
@@ -118,6 +165,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.startedAt+value.questions[0].minutes*60000; }
       return reconcile(value);
     });
+    assessSubmitted(req.labUser, a);
     res.json(present(a));
   }));
   router.post('/attempts/:id/answer', route(async(req,res) => {
@@ -143,6 +191,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(next === true) advance(value,Date.now(),'Submitted');
       return value;
     });
+    assessSubmitted(req.labUser, a);
     res.json(present(a));
   }));
   router.post('/attempts/:id/score/:index', route(async(req,res) => {
@@ -151,16 +200,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
     if(a.results[index]) return res.json(a.results[index]);
-    const key=req.labUser+':'+a.id+':'+index;
-    if(!pending.has(key)) {
-      const task=(async()=>{
-        const result=await scoring.grade(a.questions[index],a.answers[index],callModel);
-        const updated=await store.update(req.labUser,a.id,value=>{ if(!value) throw bad('Attempt not found.',404); value.results[index] ||= result; return value; });
-        return updated.results[index];
-      })();
-      pending.set(key,task); task.finally(()=>pending.delete(key)).catch(()=>{});
-    }
-    res.json(await pending.get(key));
+    res.json(await assess(req.labUser, a, index));
   }));
   app.use('/api/writing-lab', router);
   return { store };
