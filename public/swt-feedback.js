@@ -7,12 +7,7 @@
   'use strict';
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const list = value => Array.isArray(value) ? value : [];
-  const compact = (value, limit = 420) => {
-    const text = clean(value).replace(/\s+/g, ' ');
-    if (text.length <= limit) return text;
-    const sentence = text.slice(0, limit).replace(/\s+\S*$/, '').trim();
-    return (sentence || text.slice(0, limit).trim()) + '…';
-  };
+  const compact = value => clean(value).replace(/\s+/g, ' ');
   function build(data) {
     const traits = data.trait_scores || {};
     const content = data.content_details || {};

@@ -15134,12 +15134,7 @@ function renderTraitBreakdown(data, traits){
   if (!el) return;
   const cMax = traits.content_max || 4;
   const cd = data.content_details || {};
-  const concise = value => {
-    const text = String(value || '').replace(/\s+/g, ' ').trim();
-    if (text.length <= 260) return text;
-    const cut = text.slice(0, 245).replace(/\s+\S*$/, '').trim();
-    return (cut || text.slice(0, 245).trim()) + '… Read the next step for details.';
-  };
+  const concise = value => String(value || '').replace(/\s+/g, ' ').trim();
   const contentNote = concise(cd.feedback_note || cd.notes || 'Strengthen the main idea and its supporting connections.');
 
   const rows = [
