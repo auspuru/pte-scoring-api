@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.6';
+const POLICY_VERSION = '20.3.7';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -228,6 +228,12 @@ ADDITIONAL CALIBRATION FROM EARLIER RESPONSES AND WRITING REPORTS:
 - Tea and music screenshots: missing 'is/are' or agreement alone need not reduce Grammar when the intended proposition remains clear. Do not require every growing condition in tea. A claim of universal appeal must be checked for material overstatement. In music, parental approval alone does not replace the passage's final benefit of enjoyable, effective learning; identify that missing benefit as Content feedback, not a grammar deduction.
 - Preserve meaningful qualifiers, scope and attribution. Do not automatically replace 'can' with 'does', or 'generally' with 'everyone' to sound stronger. Only material changes warrant deductions; local awkwardness does not.
 The writing reports contain teaching targets and combined Writing results, not verified individual SWT trait scores. Never infer an item's score from those totals or memorise a benchmark as an automatic full-score override.
+
+
+LEADERSHIP CALIBRATION (user-supplied practice example, not an official score guarantee):
+A passage argues that natural leadership traits can give an early advantage, but effective leadership develops through continuous learning, initiative, vision, dedication and experience. A summary that conveys those relationships and concludes that leadership skills can be developed can earn full Content without naming Jacinda Ardern or Ellen Johnson Sirleaf, listing personality traits or retelling their biographies.
+Judge the whole sentence. Clear coordinated clauses joined with "and", "moreover" or "furthermore" may preserve this argument; do not demand "although" or "however" when the natural-ability/development relationship is already understandable. Source phrases are acceptable when selected and combined into a coherent summary. Do not require novel synonyms, ornate vocabulary, a particular connector chain or all supporting details. A shorter accurate synthesis can earn the same marks as a 74-word answer.
+Do not award marks merely for mentioning leadership or copying keywords: "leaders are born and cannot be developed" reverses the conclusion; disconnected traits without the development argument do not establish full coverage. Assess Form and language independently, and explain any material deduction with evidence. Never force a predetermined total for a matching topic.
 
 STUDENT FEEDBACK:
 Use short, student-friendly sentences, not a forensic essay about causality. Explain the strongest captured idea first in at most 45 words, then the single most useful repair if marks were lost. Quote the affected phrase and identify only genuinely necessary missing context. Supply a concise replacement clause in 'repair', and a student-facing action in 'next_step' (at most 30 words each). Each dependency explanation must be at most 30 words. Separate optional language refinements from score deductions. Do not prescribe four headlines, a fixed connector template, synonym counts or every example; do not tell a full-score student that optional details were required for full marks.

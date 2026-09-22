@@ -203,3 +203,18 @@ body.dark #swtPane {
   #swtPane { background: white; color: black; height: auto; overflow: visible; }
   #swtPane .passage-nav, #swtPane .results-hero-actions, #swtPane .swt-heading > button { display: none; }
 }
+
+/* Compact assessment summary: score, four traits, then detailed guidance. */
+#swtPane #swtResultsScreen { max-width: 1080px; }
+#swtPane .results-hero { gap: 20px; padding: 20px; }
+#swtPane .result-summary { max-width: 70ch; font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
+#swtPane .trait-chips { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin-top: 12px; max-width: 520px; }
+#swtPane .trait-chip { display: flex; justify-content: space-between; padding: 6px 10px; border-radius: 6px; }
+#swtPane .trait-breakdown { gap: 12px; margin-top: 14px; }
+#swtPane .trait-row { padding: 12px; }
+#swtPane .trait-bar { margin: 8px 0; }
+#swtPane .swt-details { padding: 16px 20px; }
+@media(max-width:600px) {
+  #swtPane .results-hero { padding: 16px; gap: 14px; }
+  #swtPane .trait-chips { width: 100%; max-width: none; }
+}
