@@ -108,12 +108,42 @@
       if (count < task.min || count > task.max) throw Error('This reading mock has an invalid number of ' + task.label.toLowerCase() + ' questions.');
     }
   }
+
+  // Reading-only practice: preserve source IDs/keys and use all five task types.
+  function composeReadingPractice(bank, preset, preferred) {
+    const index = Math.max(0, (bank.mockCatalogue || []).filter(m => m.family === 'practice' || m.kind === 'reading-blanks').findIndex(m => m.id === preset.id));
+    const sets = bank.sets || [];
+    const rotated = sets.map((_,i) => sets[(i + index) % sets.length]);
+    const sources = [preferred, ...rotated, ...(bank.importedSets || [])].filter(Boolean);
+    const selected = [], seen = new Set();
+    for (const [type, count] of [['dropdown',5],['mcma',2],['reorder',2],['wordbank',5],['mcsa',2]]) {
+      let added = 0;
+      const spec = readingFormat.tasks.find(task => task.type === type);
+      for (const source of sources) {
+        for (const q of source.questions || []) {
+          if (q.type !== type) continue;
+          const text = type === 'reorder' ? q.items.map(item => item.text).join(' ') : q.passage;
+          const identity = String(text || '').trim().replace(/\s+/g,' ').toLowerCase();
+          if (!identity || seen.has(identity) || identity.split(/\s+/).length > spec.words) continue;
+          selected.push({...q,uid:q.uid || source.id+':'+q.id,reasoning:q.reasoning || source.reasoning?.[q.id] || {}});
+          seen.add(identity);
+          if (++added === count) break;
+        }
+        if (added === count) break;
+      }
+      if (added !== count) throw Error('Not enough distinct '+spec.label.toLowerCase()+' questions for this mock.');
+    }
+    const minutes = preset.minutes || 25;
+    validateReading(selected, minutes);
+    return {name:'Reading Practice Mock '+(index+1),minutes,questions:selected};
+  }
+
   function compose(bank, mode, setId, swtPassages) {
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
     if (preset) {
       const set = [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
       if (!set) throw Error('This mock question set is unavailable.');
-      if(preset.kind==='reading-blanks')return {name:preset.name,minutes:preset.minutes,questions:set.questions.map(q=>({...q}))};
+      if(preset.family==='practice' || preset.kind==='reading-blanks') return composeReadingPractice(bank,preset,set);
       const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
       validateReading(reading, set.minutes);
       const audio = preset.audioQuestionIds.map(id => bank.audioQuestionBank.find(q => q.id === id));

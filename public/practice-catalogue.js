@@ -45,11 +45,11 @@
   function readingMocks(bank) {
     let sectional = 0, practice = 0;
     return (bank.mockCatalogue || []).map(m => {
-      const focused = m.kind === 'reading-blanks';
+      const focused = m.family === 'practice' || m.kind === 'reading-blanks';
       const number = focused ? ++practice : ++sectional;
       return { id: m.id, engine: 'reading', module: 'reading', mode: focused ? 'practice' : 'sectional',
         title: 'Reading ' + (focused ? 'Practice Mock ' : 'Sectional Mock ') + number,
-        description: focused ? 'Focused Reading blanks set' : 'SWT + all Reading tasks + HIW + HCS',
+        description: focused ? 'Reading practice mock' : 'SWT + all Reading tasks + HIW + HCS',
         minutes: m.minutes || 55, number };
     });
   }
