@@ -164,12 +164,14 @@
 <script src="reading-session-timing.js?v=1" defer></script>
 <script src="reading-review.js?v=7" defer></script>
 <script src="practice-catalogue.js?v=5" defer></script>
-<script src="reading-practice.js?v=23" defer></script>
+<script src="reading-practice.js?v=20260922-progress" defer></script>
 <script src="speaking-practice.js?v=4" defer></script>
-<script src="portal-workspace.js?v=20.4.21" defer></script>
+<script src="portal-workspace.js?v=20260922-progress" defer></script>
 <script src="/pte-estimate-display.js?v=1" defer></script>
-<script src="index.js?v=20260922-full" defer></script>
+<script src="/student-progress.js?v=1" defer></script>
+<script src="index.js?v=20260922-progress" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
+<link rel="stylesheet" href="/student-progress.css?v=1">
 </head>
 <body>
 
@@ -309,6 +311,7 @@
         <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')"><span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span><span>Home</span></button>
         <button class="nav-item" id="nav-practice-hub" onclick="switchSection('practice-hub')"><span class="nav-icon material-symbols-outlined text-[22px]">menu_book</span><span>Practice</span></button>
         <button class="nav-item" id="nav-mock-tests" onclick="switchSection('mock-tests')"><span class="nav-icon material-symbols-outlined text-[22px]">quiz</span><span>Mock Tests</span></button>
+        <button class="nav-item" id="nav-progress" onclick="switchSection('progress')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">monitoring</span><span>My Progress</span></button>
       </div>
       <div class="nav-group" aria-labelledby="navGroupReview">
         <p class="nav-group-label" id="navGroupReview">Resources</p>
@@ -373,6 +376,7 @@
     <div class="panes-container" id="portalContent" role="main" tabindex="-1">
 
       <section id="practiceHubPane" class="pane" hidden aria-label="Individual question practice"></section>
+      <section id="progressPane" class="pane" hidden aria-label="My Progress"></section>
       <section id="mockTestsPane" class="pane" hidden aria-label="Mock tests"></section>
 
       <section id="speakingPane" class="pane" hidden aria-label="Speaking practice"></section>

@@ -398,6 +398,7 @@
     requestedView=tab;
     if (attempt?.status==='active') await saveAnswer(false);
     if (serial!==navigationSerial || !workspaceVisible) return;
+    if (request.attemptId) return resume(request.attemptId,{disabled:false});
     if (request.testId) {
       historyKind='mock';
       if (attempt?.testId===request.testId && ['active','ready'].includes(attempt.status)) return showAttempt();

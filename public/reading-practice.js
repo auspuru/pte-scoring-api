@@ -132,6 +132,15 @@
   }
   function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function showRequested(request) {
+    if (request.attemptId) {
+      const saved = [state.session,...state.history,...state.drafts].find(a=>a?.id===request.attemptId);
+      if (!saved) { home(); const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This saved result is unavailable. Refresh My Progress and try again.';host.prepend(notice);return; }
+      if (state.session?.id===saved.id) return render();
+      if (state.session && !state.session.done && !confirm('Open this saved attempt? Your current answers remain saved and its timer continues.')) return render();
+      cancelAudio();
+      if (state.session && !state.session.done) state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)];
+      state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);persist();render();resumeSwtAssessments();return;
+    }
     if (request.libraryId) {
       if (state.session?.practiceUid && !state.session.done && state.session.questions[0].type === request.libraryId) return render();
       return browseLibrary(request.libraryId);

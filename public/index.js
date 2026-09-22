@@ -12199,6 +12199,7 @@ function switchSection(section, options = {}) {
     return;
   }
   const active = portalWorkspace.activate(section, options);
+  if (active === 'progress') openStudentProgress();
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if (PortalWorkspace.routes[active]?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
@@ -12206,6 +12207,37 @@ function switchSection(section, options = {}) {
     updatePortalResume();
   }
   // SWT's current passage, results tab and editor node stay intact.
+}
+
+
+let studentProgressController;
+function openStudentProgress() {
+  if (!studentProgressController) studentProgressController = StudentProgress.create({
+    document,
+    identity: () => ({uid:currentUserId,token:sessionToken}),
+    navigate: switchSection,
+    review: entry => entry.engine === 'reading'
+      ? switchSection('reading',{readingRequest:{attemptId:entry.id}})
+      : switchSection('writing-history',{labRequest:{attemptId:entry.id}}),
+    loadLocal: async () => {
+      const owner = currentUserId, token = sessionToken;
+      if (typeof resumeAccountSync === 'function') await resumeAccountSync();
+      if (owner !== currentUserId || token !== sessionToken) throw Error('Account changed.');
+      let reading = {};
+      try {
+        const packed = JSON.parse(localStorage.getItem(ReadingPractice.storageKey(owner)) || 'null');
+        reading = window.AccountProgress ? AccountProgress.unpackReading(packed) : packed;
+      } catch (_) {}
+      reading ||= {};
+      const enrich = a => {
+        if (!a || !a.done || !Array.isArray(a.questions)) return a;
+        return {...a,...ReadingPractice.totals(a)};
+      };
+      reading = {...reading,history:(reading.history||[]).map(enrich),session:enrich(reading.session)};
+      return {reading,swt:LocalStore.get(getPteStorageKey('history'))||{},essays:getPracticeHistory()};
+    }
+  });
+  return studentProgressController.open();
 }
 
 function togglePortalSecondary(section, button) {
