@@ -169,3 +169,12 @@ test('Reading FIB choices test grammar plus contextual vocabulary rather than sy
     tools.compose(bank,'mock',set.id).questions.filter(q=>['dropdown','wordbank'].includes(q.type)).forEach(check);
   }
 });
+
+
+test('FIB grammar classification is case-insensitive and context-aware for ambiguous words', () => {
+  assert.equal(fibQuality.classify('Gentle'),'adjective');
+  assert.equal(fibQuality.classify('gentle'),'adjective');
+  assert.equal(fibQuality.classifyFor({passage:'Experience can [[1]] original work.'},0,'support'),'verb');
+  assert.equal(fibQuality.classifyFor({passage:'Insurance provides financial [[1]] after accidents.'},0,'support'),'noun');
+  assert.equal(fibQuality.classifyFor({passage:'Learners receive [[1]] that matches their needs.'},0,'support'),'noun');
+});
