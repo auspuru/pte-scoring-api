@@ -184,3 +184,16 @@ test('practice-set progress completes automatically from qualifying SWT submissi
   assert.equal(item.status,'completed');
   assert.equal(item.completionSource,'attempt_sync');
 });
+
+test('Beta content suggestions stay task-specific for SST and Essay',async t=>{
+  const h=await harness();
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  let advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'sst',problem:'I struggle with content and key points'}});
+  assert.equal(advice.status,200);
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='SST-01'));
+  assert.equal(advice.data.suggestions.some(x=>x.moduleCode==='NT-01'),false);
+  advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'essay',problem:'I struggle with content and ideas'}});
+  assert.equal(advice.status,200);
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='ESSAY-01'));
+  assert.equal(advice.data.suggestions.some(x=>x.moduleCode==='CP-01'),false);
+});
