@@ -14,7 +14,8 @@
     const assessment = content.summary_assessment || {};
     const grammar = list((data.grammar_details || {}).grammar_annotations);
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
-    const provisional = data.score_provisional === true || data.ai_feedback_degraded === true;
+    const provisional = data.score_provisional === true;
+    const degraded = data.ai_feedback_degraded === true;
     const formValid = Number(traits.form) >= 1;
     const semanticFull = content.full_content_eligible === true
       || (content.full_content_eligible == null
@@ -57,9 +58,10 @@
     }
     const summary = !formValid ? 'The form requirements need attention before this response can receive a complete score.'
       : provisional ? 'This result is provisional. A complete assessment of meaning and connections is still needed.'
+      : degraded && data.mode === 'local' ? 'This score was produced by the local practice engine. Detailed AI semantic annotations are unavailable, but the local score remains usable.'
       : full ? 'Your summary captures the main message, relevant support and conclusion with clear connections. Minor slips that preserve meaning do not reduce your marks.'
       : compact(clean(content.feedback_note) || clean(content.notes) || 'Review the priorities below to see what held this response back and what to change next.', 300);
-    return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, formValid };
+    return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, degraded, formValid };
   }
   // Recompute presentation from traits, including previously saved attempts.
   // Never trust a historical band label or a raw total as proof of completeness.
@@ -80,12 +82,14 @@
     let headline = fullEligible ? 'Complete, well-connected summary' : 'Review the missing content or connection';
     if (!feedback.formValid) headline = 'Form requirements not met';
     else if (feedback.provisional) headline = 'Provisional result';
+    else if (feedback.degraded && data.mode === 'local') headline = 'Local practice result';
     else if (content <= 1) headline = 'Incomplete summary — limited content';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
     else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
     return { headline, score: feedback.provisional ? null : estimate, max: 90,
       label: 'PTE estimate', raw, estimate,
       secondary: feedback.provisional ? 'Assessment incomplete — submit again for a confirmed result.'
+        : feedback.degraded && data.mode === 'local' ? 'Local practice estimate; AI-only semantic annotations were unavailable.'
         : 'Practice estimate, not an official PTE score.' };
   }
   return { build, presentation };
