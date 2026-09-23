@@ -6,6 +6,25 @@ const { score } = require('../public/reading-practice');
 const tools = require('../public/reading-mock-tools');
 const bank = require('../public/reading-bank.json');
 
+test('Focused Reading mocks 4–9 are unique FIB-only papers within passage limits', () => {
+  const presets=bank.mockCatalogue.filter(m=>m.kind==='reading-blanks'),seen=new Set();
+  assert.equal(presets.length,6);
+  for(const preset of presets){
+    const plan=tools.compose(bank,preset.id,preset.setId);
+    assert.equal(plan.questions.length,10);
+    assert.equal(plan.questions.filter(q=>q.type==='dropdown').length,6);
+    assert.equal(plan.questions.filter(q=>q.type==='wordbank').length,4);
+    for(const q of plan.questions){
+      const words=String(q.passage||'').trim().split(/\s+/).filter(Boolean).length;
+      assert(words<=(q.type==='wordbank'?80:300),q.id);
+      assert(!seen.has(q.uid||q.id),'Question repeated across focused mocks: '+(q.uid||q.id));
+      seen.add(q.uid||q.id);
+      assert.match(q.reasoning.correct,/No specialist subject knowledge is required/);
+    }
+  }
+  assert.equal(seen.size,60);
+});
+
 test('Reading answer choices are shuffled for display while answer coordinates and scoring remain unchanged', () => {
   let checked = 0;
   for (const set of bank.sets) for (const raw of set.questions) {
