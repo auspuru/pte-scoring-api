@@ -14,7 +14,7 @@
   }
   async function loadModules(){
     if(modules.length)return modules;
-    const r=await fetch('/improvement-modules.json?v=2',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
+    const r=await fetch('/improvement-modules.json?v=3',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
   }
   function injectModal(){
     if(document.getElementById('improveModal'))return;

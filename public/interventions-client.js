@@ -6,7 +6,7 @@
   const statusLabel={not_started:'Not started',in_progress:'In progress',ready_for_review:'Ready for review',mastered:'Mastered',archived:'Archived'};
   const priorityLabel={high:'High priority',normal:'Current focus',low:'Lower priority'};
   function create({document:doc,identity,navigate,launch}){
-    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpResult=null,helpBusy=false;
+    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpResult=null,helpBusy=false,trainer=null;
     function auth(){
       const value=identity?.()||{};
       return {uid:String(value.uid||'').trim().toLowerCase(),token:value.token||''};
@@ -31,8 +31,12 @@
     const doneCount=p=>(p.items||[]).filter(i=>i.status==='completed').length;
     const requiredCount=p=>(p.items||[]).filter(i=>i.required!==false).length;
     const requiredDone=p=>(p.items||[]).filter(i=>i.required!==false&&i.status==='completed').length;
-    function itemIcon(item){return item.status==='completed'?'✓':item.kind==='video'?'▶':item.kind==='question'?'Q':'•';}
+    function itemIcon(item){return item.status==='completed'?'✓':item.kind==='video'?'▶':item.kind==='question'?'Q':item.kind==='swt_selection_trainer'?'✦':'•';}
     function itemAction(item){
+      if(item.kind==='swt_selection_trainer'){
+        const done=item.trainerProgress?.attemptedIds?.length||0,target=item.minimumToComplete||10,total=item.exerciseCount||15;
+        return '<button type="button" class="portal-button primary" data-swt-trainer>'+((done||item.status==='started')?'Continue trainer':'Start trainer')+'</button><span class="next-step-sync-note">'+done+'/'+target+' required · '+total+' available</span>';
+      }
       if(item.status==='completed')return '<span class="next-step-done">'+(item.completionSource==='attempt_sync'?'Completed automatically':'Completed')+'</span>';
       if(item.kind==='video')return '<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Watch</button><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
       if(item.kind==='question')return '<button type="button" class="portal-button primary" data-step-start="'+esc(item.id)+'">'+(item.status==='started'?'Open again':'Start question')+'</button><span class="next-step-sync-note">Completion syncs after you submit it</span>';
@@ -53,11 +57,12 @@
     }
     function helpPanel(){
       const score=helpResult?.latestScore;
-      const scoreHtml=score?'<div class="next-step-beta-score"><strong>Recent portal result used</strong><div>'+Object.entries(score.scores||{}).map(([k,v])=>'<span>'+esc(k.replaceAll('_',' '))+': '+esc(v)+'/'+esc(score.maxima?.[k]??'—')+'</span>').join('')+'</div></div>':'<p class="next-step-beta-muted">No recent scored attempt was found for this task, so the suggestions use your description and the task scoring method.</p>';
+      const traitLabels={content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'Linguistic range',coherence:'Structure & coherence'};
+      const scoreHtml=score?'<div class="next-step-beta-score"><strong>Recent portal result used</strong><div>'+Object.entries(score.scores||{}).filter(([k])=>!k.endsWith('_max')&&Number.isFinite(Number(score.maxima?.[k]))).map(([k,v])=>'<span>'+esc(traitLabels[k]||k.replaceAll('_',' '))+': '+esc(v)+'/'+esc(score.maxima[k])+'</span>').join('')+'</div></div>':'<p class="next-step-beta-muted">No recent scored attempt was found for this task, so the suggestions use your description and the task scoring method.</p>';
       const suggestions=helpResult?.suggestions||[];
       return '<section class="next-step-beta"><div class="next-step-beta-head"><div><p class="portal-eyebrow">Self-help · Beta</p><h3>Tell us what you are struggling with</h3><p>Choose a writing/listening task and describe the problem. Suggestions use your recent portal scores when available and the scoring traits used in this practice portal.</p></div><span>Beta</span></div>'
         +'<div class="next-step-beta-form"><label>Task<select data-beta-task><option value="swt" '+(helpTask==='swt'?'selected':'')+'>Summarize Written Text</option><option value="sst" '+(helpTask==='sst'?'selected':'')+'>Summarize Spoken Text</option><option value="essay" '+(helpTask==='essay'?'selected':'')+'>Essay Writing</option></select></label><label>What is difficult?<textarea data-beta-problem placeholder="e.g. I do not know how to pick content, how to structure it, or why my score is low.">'+esc(helpProblem)+'</textarea></label><button type="button" class="portal-button primary" data-beta-help '+(helpBusy?'disabled':'')+'>'+(helpBusy?'Checking…':'Get suggestions')+'</button></div>'
-        +(helpResult?'<div class="next-step-beta-results">'+scoreHtml+(suggestions.length?suggestions.map(s=>'<article><div><strong>'+esc(s.title)+'</strong><p>'+esc(s.reason)+'</p></div><button type="button" class="portal-button" data-beta-add="'+esc(s.moduleCode)+'">Add to My Next Steps</button></article>').join(''):'<p>No suggestion is available yet.</p>')+'</div>':'')
+        +(helpResult?'<div class="next-step-beta-results">'+scoreHtml+(suggestions.length?suggestions.map(s=>'<article><div><strong>'+esc(s.title)+'</strong><p>'+esc(s.reason)+'</p>'+(s.action?'<p class="next-step-beta-action"><b>What you will do:</b> '+esc(s.action)+'</p>':'')+'</div><button type="button" class="portal-button" data-beta-add="'+esc(s.moduleCode)+'">'+(s.moduleCode==='SWT-CONTENT-01'?'Add highlight practice':'Add to My Next Steps')+'</button></article>').join(''):'<p>No suggestion is available yet.</p>')+'</div>':'')
         +'<p class="next-step-beta-disclaimer">These are study suggestions, not an official Pearson diagnosis or score prediction.</p></section>';
     }
     async function requestHelp(){
@@ -71,6 +76,77 @@
         const data=await api('/self-plan',{moduleCode:code,problem:helpProblem});
         plans.unshift(data.plan);helpResult=null;render();renderDashboard();notify('Added to My Next Steps.');
       }catch(e){notify(e.message,true);}
+    }
+
+    function phraseMarkup(text,phrases){
+      const src=String(text||''),ranges=[];
+      (phrases||[]).forEach(p=>{const q=String(p||'').trim();if(!q)return;const i=src.toLowerCase().indexOf(q.toLowerCase());if(i>=0)ranges.push([i,i+q.length]);});
+      ranges.sort((a,b)=>a[0]-b[0]);const merged=[];
+      for(const r of ranges){const last=merged.at(-1);if(last&&r[0]<=last[1])last[1]=Math.max(last[1],r[1]);else merged.push([...r]);}
+      let out='',at=0;for(const [a,b] of merged){out+=esc(src.slice(at,a))+'<mark>'+esc(src.slice(a,b))+'</mark>';at=b;}return out+esc(src.slice(at));
+    }
+    function trainerProgressText(data){
+      const p=data?.progress||{};return (p.attempted||0)+'/'+(p.minimumToComplete||10)+' required exercises reviewed · '+(p.passed||0)+' met the target accuracy';
+    }
+    function trainerSentenceClass(index){
+      if(!trainer?.result)return trainer.selected?.has(index)?' selected':'';
+      const r=trainer.result,chosen=r.selected.includes(index),target=r.targetSentenceIndexes.includes(index);
+      return target?(chosen?' correct-selected':' central-missed'):(chosen?' extra-selected':'');
+    }
+    function trainerSentenceHtml(sentence){
+      const phrases=trainer?.result?.phraseBySentence?.[sentence.index]||[];
+      const label=trainer?.result?(trainer.result.targetSentenceIndexes.includes(sentence.index)?'Central sentence':trainer.result.selected.includes(sentence.index)?'Extra detail':''):(trainer.selected?.has(sentence.index)?'Selected':'');
+      return '<button type="button" class="swt-trainer-sentence'+trainerSentenceClass(sentence.index)+'" data-trainer-sentence="'+sentence.index+'" aria-pressed="'+(trainer?.selected?.has(sentence.index)?'true':'false')+'" '+(trainer?.result?'disabled':'')+'><span class="swt-trainer-number">'+(sentence.index+1)+'</span><span class="swt-trainer-text">'+phraseMarkup(sentence.text,phrases)+'</span>'+(label?'<span class="swt-trainer-label">'+esc(label)+'</span>':'')+'</button>';
+    }
+    function trainerFeedback(){
+      const r=trainer?.result;if(!r)return '';
+      const missed=(r.missedIdeas||[]).map(x=>'<article><strong>'+esc(x.label)+': '+esc(x.idea)+'</strong><p>'+esc(x.why)+'</p>'+(x.phrases?.length?'<div class="swt-trainer-phrases">'+x.phrases.map(p=>'<span>'+esc(p)+'</span>').join('')+'</div>':'')+'</article>').join('');
+      const captured=(r.capturedIdeas||[]).map(x=>'<span>'+esc(x.label)+'</span>').join('');
+      return '<section class="swt-trainer-feedback"><div class="swt-trainer-score"><strong>'+r.ideaRecall.captured+'/'+r.ideaRecall.total+' key ideas found</strong><span>'+r.selectionPrecision.percent+'% selection precision</span></div><p>'+esc(r.feedback)+'</p>'
+        +(captured?'<div class="swt-trainer-captured"><b>You captured:</b> '+captured+'</div>':'')
+        +(missed?'<h4>What you missed and why it matters</h4><div class="swt-trainer-missed">'+missed+'</div>':'')
+        +(r.extraSelections?.length?'<p class="swt-trainer-extra"><b>Extra detail selected:</b> sentence'+(r.extraSelections.length>1?'s ':' ')+r.extraSelections.map(i=>i+1).join(', ')+'. It may be useful context, but it is not load-bearing for the summary.</p>':'')
+        +'</section>';
+    }
+    function renderTrainer(){
+      let overlay=doc.getElementById('swtHighlightTrainer');
+      if(!trainer){overlay?.remove();return;}
+      if(!overlay){overlay=doc.createElement('div');overlay.id='swtHighlightTrainer';overlay.className='swt-trainer-backdrop';doc.body.appendChild(overlay);}
+      const ex=trainer.exercise,p=trainer.progress||{};
+      overlay.innerHTML='<div class="swt-trainer-modal" role="dialog" aria-modal="true" aria-labelledby="swtTrainerTitle"><header><div><p class="portal-eyebrow">SWT Content Selection</p><h2 id="swtTrainerTitle">'+esc(ex.title)+'</h2><p>'+esc(ex.instructions)+'</p></div><button type="button" class="portal-button" data-trainer-close>Close</button></header>'
+        +'<div class="swt-trainer-progress"><span>Exercise '+((p.attempted||0)+1)+' of '+(p.total||15)+'</span><strong>'+esc(trainerProgressText(trainer))+'</strong></div>'
+        +'<div class="swt-trainer-tip"><b>Your task:</b> Click the sentences you would keep for the summary. Do not write anything yet. Try to choose the fewest sentences that still preserve the central argument.</div>'
+        +'<div class="swt-trainer-passage">'+(ex.sentences||[]).map(trainerSentenceHtml).join('')+'</div>'
+        +trainerFeedback()
+        +'<footer>'+(trainer.result?'<button type="button" class="portal-button primary" data-trainer-next>Next exercise</button>':'<span>'+(trainer.selected?.size||0)+' sentence'+((trainer.selected?.size||0)===1?'':'s')+' selected</span><button type="button" class="portal-button primary" data-trainer-submit '+(!(trainer.selected?.size)?'disabled':'')+'>Check my selection</button>')+'</footer></div>';
+      overlay.onclick=trainerClick;
+    }
+    async function openTrainer(plan,item,passageId=''){
+      try{
+        const qs=passageId?'?passageId='+encodeURIComponent(passageId):'';
+        const data=await api('/'+encodeURIComponent(plan.id)+'/items/'+encodeURIComponent(item.id)+'/swt-selection'+qs);
+        trainer={planId:plan.id,itemId:item.id,exercise:data.exercise,catalog:data.catalog||[],progress:data.progress||{},selected:new Set(),result:null};
+        renderTrainer();
+      }catch(e){notify(e.message,true);}
+    }
+    async function trainerClick(e){
+      if(e.target.closest('[data-trainer-close]')||e.target===doc.getElementById('swtHighlightTrainer')){trainer=null;renderTrainer();return;}
+      const sentence=e.target.closest('[data-trainer-sentence]');
+      if(sentence&&!trainer.result){const i=Number(sentence.dataset.trainerSentence);trainer.selected.has(i)?trainer.selected.delete(i):trainer.selected.add(i);renderTrainer();return;}
+      if(e.target.closest('[data-trainer-submit]')){
+        try{
+          const data=await api('/'+encodeURIComponent(trainer.planId)+'/items/'+encodeURIComponent(trainer.itemId)+'/swt-selection/check',{passageId:trainer.exercise.id,selected:[...trainer.selected]});
+          trainer.result=data.result;trainer.progress={...trainer.progress,...data.progress};plans=plans.map(p=>p.id===data.plan.id?data.plan:p);render();renderDashboard();renderTrainer();
+        }catch(err){notify(err.message,true);}return;
+      }
+      if(e.target.closest('[data-trainer-next]')){
+        const catalog=trainer.catalog||[],attempted=new Set(trainer.progress?.attemptedIds||[]);
+        const currentIndex=catalog.findIndex(x=>x.id===trainer.exercise.id);
+        let next=catalog.find((x,i)=>i>currentIndex&&!attempted.has(x.id))||catalog.find(x=>!attempted.has(x.id));
+        if(!next){next=catalog[(currentIndex+1)%catalog.length];}
+        const plan=plans.find(p=>p.id===trainer.planId),item=plan?.items?.find(i=>i.id===trainer.itemId);
+        if(plan&&item)await openTrainer(plan,item,next?.id||'');
+      }
     }
 
     function render(){
@@ -104,6 +180,8 @@
       else alert(message);
     }
     async function handleClick(e){
+      const trainerButton=e.target.closest('[data-swt-trainer]');
+      if(trainerButton){const planEl=trainerButton.closest('[data-plan-id]'),itemEl=trainerButton.closest('[data-item-id]');const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);if(plan&&item)await openTrainer(plan,item);return;}
       const help=e.target.closest('[data-beta-help]');if(help){await requestHelp();return;}
       const add=e.target.closest('[data-beta-add]');if(add){await addSelfPlan(add.dataset.betaAdd);return;}
       const practice=e.target.closest('[data-next-practice]');if(practice){navigate('practice-hub');return;}
@@ -145,7 +223,7 @@
     async function open(){await load(true);render();renderDashboard();}
     const completionListener=()=>{if(!auth().uid)return;refresh({showPopup:false});globalThis.setTimeout?.(()=>refresh({showPopup:false}),1200);};
     globalThis.addEventListener?.('pte:attempt-completed',completionListener);
-    function reset(){plans=[];owner='';loading=null;helpResult=null;helpProblem='';const host=doc.getElementById('nextStepsPane');if(host)host.replaceChildren();const dash=doc.getElementById('nextStepsDashboardCard');if(dash){dash.hidden=true;dash.replaceChildren();}doc.getElementById('nextStepNotification')?.remove();}
+    function reset(){plans=[];owner='';loading=null;helpResult=null;helpProblem='';trainer=null;doc.getElementById('swtHighlightTrainer')?.remove();const host=doc.getElementById('nextStepsPane');if(host)host.replaceChildren();const dash=doc.getElementById('nextStepsDashboardCard');if(dash){dash.hidden=true;dash.replaceChildren();}doc.getElementById('nextStepNotification')?.remove();}
     return {open,refresh,reset,plans:()=>plans.slice()};
   }
   return {create};

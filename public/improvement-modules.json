@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "modules": [
     {
       "code": "PR-01",
@@ -417,12 +417,31 @@
       ]
     },
     {
+      "code": "SWT-CONTENT-01",
+      "area": "Writing",
+      "task": "Summarize Written Text",
+      "weakness": "Selecting the important information",
+      "title": "SWT Content Selection — Highlight Trainer",
+      "reason": "Practise deciding what belongs in the summary before worrying about sentence writing.",
+      "checkpoint": "Complete at least 10 existing-passage selection exercises and review every missed central idea.",
+      "items": [
+        {
+          "kind": "swt_selection_trainer",
+          "title": "Highlight the important lines — 15 exercises",
+          "description": "Use existing SWT passages. Highlight only the sentences that carry the central message or essential support. After each submission, the trainer shows what you missed, why it matters, and the central key phrases/sentences. No full summary writing.",
+          "exerciseCount": 15,
+          "minimumToComplete": 10,
+          "required": true
+        }
+      ]
+    },
+    {
       "code": "SWT-01",
       "area": "Writing",
       "task": "Summarize Written Text",
       "weakness": "Form and concision",
       "title": "SWT — How to Attempt & Form",
-      "reason": "Select the central message and relevant support, preserve the source meaning, then express it as one controlled sentence within the required form.",
+      "reason": "Learn the complete SWT method. If your difficulty is choosing important lines or ideas, use SWT Content Selection — Highlight Trainer first.",
       "checkpoint": "Complete 4 out of 5 SWT responses with relevant content, valid one-sentence form and controlled language.",
       "items": [
         {
@@ -434,7 +453,7 @@
         {
           "kind": "practice",
           "title": "Pick the central message first",
-          "description": "Identify the main idea, then add only one or two relevant supporting ideas or the conclusion where needed. Do not collect every example.",
+          "description": "If content selection is difficult, use the dedicated Highlight Trainer rather than manually ticking this step.",
           "required": true
         },
         {

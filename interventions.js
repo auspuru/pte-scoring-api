@@ -3,7 +3,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const PLAN_STATUSES = new Set(['not_started','in_progress','ready_for_review','mastered','archived']);
-const ITEM_KINDS = new Set(['video','question','practice','message']);
+const ITEM_KINDS = new Set(['video','question','practice','message','swt_selection_trainer']);
 const PRIORITIES = new Set(['high','normal','low']);
 
 function canonical(value) { return String(value || '').trim().toLowerCase(); }
@@ -41,7 +41,18 @@ function sanitizeItem(input = {}, existing = null) {
     startedAt: input.startedAt === null ? null : (iso(input.startedAt) || existing?.startedAt || null),
     completedAt: input.completedAt === null ? null : (iso(input.completedAt) || existing?.completedAt || null),
     completionSource: clean(input.completionSource ?? existing?.completionSource, 80),
-    completionEvidence: clean(input.completionEvidence ?? existing?.completionEvidence, 240)
+    completionEvidence: clean(input.completionEvidence ?? existing?.completionEvidence, 240),
+    exerciseCount: Math.max(0, Math.min(20, Number(input.exerciseCount ?? existing?.exerciseCount) || 0)),
+    minimumToComplete: Math.max(0, Math.min(20, Number(input.minimumToComplete ?? existing?.minimumToComplete) || 0)),
+    trainerProgress: (() => {
+      const raw = input.trainerProgress ?? existing?.trainerProgress;
+      if (!raw || typeof raw !== 'object') return null;
+      const attemptedIds = [...new Set((Array.isArray(raw.attemptedIds)?raw.attemptedIds:[]).map(x=>clean(x,80)).filter(Boolean))].slice(0,20);
+      const passedIds = [...new Set((Array.isArray(raw.passedIds)?raw.passedIds:[]).map(x=>clean(x,80)).filter(Boolean))].slice(0,20);
+      const scores = {};
+      for (const [k,v] of Object.entries(raw.scores||{}).slice(0,20)) scores[clean(k,80)] = Math.max(0,Math.min(100,Number(v)||0));
+      return { attemptedIds, passedIds, scores };
+    })()
   };
   if (item.status === 'completed' && !item.completedAt) item.completedAt = new Date().toISOString();
   return item;
@@ -160,7 +171,7 @@ function createStore(pool, directory) {
 }
 
 function installInterventions(app, options = {}) {
-  const { pool = null, directory, verifyToken, getAccount, getProgress, requireAdmin } = options;
+  const { pool = null, directory, verifyToken, getAccount, getProgress, getPassages, getPassage, requireAdmin } = options;
   if (!directory || typeof verifyToken !== 'function' || typeof getAccount !== 'function' || typeof requireAdmin !== 'function') {
     throw new Error('Interventions require directory, verifyToken, getAccount and requireAdmin.');
   }
@@ -223,11 +234,25 @@ function installInterventions(app, options = {}) {
     return null;
   }
   async function reconcile(username) {
-    const plans = await store.list(username);
+    let plans = await store.list(username);
+    const changed = new Map();
+    const contentIntent = /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important/i;
+    const catalogue = await modules();
+    const trainerModule = catalogue.find(m=>m.code==='SWT-CONTENT-01');
+    if (trainerModule) {
+      for (const plan of plans.filter(active)) {
+        if (plan.source!=='student' || plan.moduleCode!=='SWT-01' || (plan.items||[]).some(i=>i.kind==='swt_selection_trainer') || !contentIntent.test(plan.reason||'')) continue;
+        const next = await store.update(username, plan.id, current => sanitizePlan({
+          ...current,moduleCode:trainerModule.code,title:trainerModule.title,area:trainerModule.area,task:trainerModule.task,
+          weakness:trainerModule.weakness,items:trainerModule.items,status:'in_progress'
+        },current));
+        changed.set(plan.id,next);
+      }
+      if (changed.size) plans=plans.map(p=>changed.get(p.id)||p);
+    }
     const candidates = plans.filter(active).filter(p => (p.items || []).some(i => i.kind === 'question' && i.status !== 'completed'));
     if (!candidates.length) return plans;
     const all = await evidence(username);
-    const changed = new Map();
     for (const plan of candidates) {
       const nextItems = (plan.items || []).map(item => {
         if (item.kind !== 'question' || item.status === 'completed') return item;
@@ -281,16 +306,24 @@ function installInterventions(app, options = {}) {
     const text = clean(problem, 1000).toLowerCase();
     const score = latestScore(task, all);
     const suggestions = [];
-    const push = (moduleCode, title, reason) => {
+    const push = (moduleCode, title, reason, action='') => {
       if (!moduleCode || suggestions.some(s => s.moduleCode === moduleCode)) return;
-      suggestions.push({ moduleCode, title, reason });
+      suggestions.push({ moduleCode, title, reason, action });
     };
     const taskName = task === 'swt' ? 'Summarize Written Text' : task === 'sst' ? 'Summarize Spoken Text' : 'Essay Writing';
-    if (/how|attempt|approach|structure|format|template|start|begin/.test(text) || !text) {
-      push(TASK_MODULE[task], taskName + ' — How to attempt', 'Start with the task method and scoring requirements before doing more questions.');
+    const swtContentIntent = task === 'swt' && /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important/.test(text);
+    if (swtContentIntent) {
+      push('SWT-CONTENT-01','SWT Content Selection — Highlight Trainer',
+        'Your question is about deciding what belongs in the summary, so practising full summaries is not the best first step.',
+        'Complete 10–15 existing-passage drills. Highlight only the important sentences; after each submission you will see missed ideas, why they matter, and the central phrases/sentences.');
     }
-    if (/main idea|content|key point|idea|detail|note|listen|remember/.test(text)) {
-      push(task === 'sst' ? 'NT-01' : 'CP-01', 'Content selection', 'Your description points to selecting and organising the important information first.');
+    if ((/how|attempt|approach|structure|format|template|start|begin/.test(text) || !text) && !swtContentIntent) {
+      push(TASK_MODULE[task], taskName + ' — How to attempt', 'Start with the task method and scoring requirements before doing more questions.',
+        task==='swt'?'Review the SWT method before attempting full summaries.':'Review the task method, then apply it in targeted practice.');
+    }
+    if (/main idea|content|key point|idea|detail|note|listen|remember/.test(text) && !swtContentIntent) {
+      push(task === 'sst' ? 'NT-01' : 'CP-01', 'Content selection', 'Your description points to selecting and organising the important information first.',
+        task==='sst'?'Practise keyword notes and identify the topic plus strongest supporting points.':'Practise identifying the central message before adding supporting information.');
     }
     if (/grammar|sentence|connect|punct|run.?on/.test(text)) push('GR-01','Grammar and sentence building','Focus on accurate sentence construction and logical connections.');
     if (/vocab|word|collocation|phrase/.test(text)) push('VOC-02','Vocabulary and collocations','Build useful word combinations and context-appropriate vocabulary.');
@@ -301,7 +334,8 @@ function installInterventions(app, options = {}) {
         .map(([k,v]) => ({k,v:Number(v),max:Number(score.maxima[k]),ratio:Number(v)/Number(score.maxima[k])}))
         .filter(x=>x.ratio<0.8).sort((a,b)=>a.ratio-b.ratio);
       for (const t of weak.slice(0,3)) {
-        if (t.k === 'content') push(task === 'essay' ? 'ESSAY-01' : 'CP-01', TRAIT_LABEL[t.k], `Your most recent ${taskName} result was ${t.v}/${t.max} for ${TRAIT_LABEL[t.k]}. Work on this before adding harder practice.`);
+        if (t.k === 'content') push(task === 'essay' ? 'ESSAY-01' : task === 'swt' ? 'SWT-CONTENT-01' : 'CP-01', TRAIT_LABEL[t.k], `Your most recent ${taskName} result was ${t.v}/${t.max} for ${TRAIT_LABEL[t.k]}. Work on this before adding harder practice.`,
+          task==='swt'?'Use the highlight trainer to practise selecting central sentences without writing a full summary.':'Target content selection before harder practice.');
         else if (t.k === 'form') push(TASK_MODULE[task], TRAIT_LABEL[t.k], `Your most recent Form result was ${t.v}/${t.max}. Review the task format and word/sentence requirements.`);
         else if (t.k === 'grammar') push('GR-01', TRAIT_LABEL[t.k], `Your most recent Grammar result was ${t.v}/${t.max}. Prioritise sentence accuracy and control.`);
         else if (t.k === 'vocabulary') push('VOC-02', TRAIT_LABEL[t.k], `Your most recent Vocabulary result was ${t.v}/${t.max}. Practise precise wording and useful collocations.`);
@@ -325,6 +359,84 @@ function installInterventions(app, options = {}) {
     } catch (_) { moduleCache = []; }
     return moduleCache;
   }
+
+  const swtTrainer = require('./swt-selection-trainer');
+  async function trainerCatalog(limit=15) {
+    if (typeof getPassages !== 'function') return [];
+    const all = await getPassages();
+    return swtTrainer.makeCatalog(all,{limit});
+  }
+  async function trainerPassage(id) {
+    if (typeof getPassage !== 'function') return null;
+    return await getPassage(id);
+  }
+  async function trainerItem(username, planId, itemId) {
+    const plans = await store.list(username);
+    const plan = plans.find(p=>String(p.id)===String(planId));
+    if (!plan) { const e=new Error('Plan not found'); e.status=404; throw e; }
+    const item=(plan.items||[]).find(i=>String(i.id)===String(itemId));
+    if (!item || item.kind!=='swt_selection_trainer') { const e=new Error('SWT selection trainer not found'); e.status=404; throw e; }
+    return {plan,item};
+  }
+
+  app.get('/api/interventions/:id/items/:itemId/swt-selection', student, async (req,res) => {
+    try {
+      const {plan,item}=await trainerItem(req.interventionUser,req.params.id,req.params.itemId);
+      const limit=item.exerciseCount||15, catalog=await trainerCatalog(limit);
+      if (!catalog.length) return res.status(503).json({error:'SWT selection exercises are unavailable right now.'});
+      const progress=item.trainerProgress||{attemptedIds:[],passedIds:[],scores:{}};
+      const requested=clean(req.query?.passageId,80);
+      const nextMeta=(requested?catalog.find(x=>x.id===requested):null)
+        || catalog.find(x=>!progress.attemptedIds.includes(x.id))
+        || catalog[0];
+      const p=await trainerPassage(nextMeta.id);
+      if(!p)return res.status(404).json({error:'Passage not found.'});
+      res.set('Cache-Control','no-store');
+      res.json({
+        exercise:swtTrainer.exercise(p),catalog,
+        progress:{attemptedIds:progress.attemptedIds||[],passedIds:progress.passedIds||[],scores:progress.scores||{},
+          attempted:(progress.attemptedIds||[]).length,passed:(progress.passedIds||[]).length,
+          minimumToComplete:item.minimumToComplete||10,total:catalog.length},
+        planId:plan.id,itemId:item.id
+      });
+    } catch(e){sendError(res,e);}
+  });
+
+  app.post('/api/interventions/:id/items/:itemId/swt-selection/check', student, async (req,res) => {
+    try {
+      const {item}=await trainerItem(req.interventionUser,req.params.id,req.params.itemId);
+      const passageId=clean(req.body?.passageId,80);
+      const p=await trainerPassage(passageId);
+      if(!p)return res.status(404).json({error:'Passage not found.'});
+      const catalog=await trainerCatalog(item.exerciseCount||15);
+      if(!catalog.some(x=>x.id===String(passageId)))return res.status(400).json({error:'This passage is not part of the assigned exercise set.'});
+      const result=swtTrainer.grade(p,req.body?.selected||[]);
+      const plan=await store.update(req.interventionUser,req.params.id,current=>{
+        const items=(current.items||[]).map(x=>{
+          if(String(x.id)!==String(req.params.itemId))return x;
+          const progress=x.trainerProgress||{attemptedIds:[],passedIds:[],scores:{}};
+          const attemptedIds=[...new Set([...(progress.attemptedIds||[]),String(passageId)])].slice(0,20);
+          const passed=result.ideaRecall.percent>=75 && result.selectionPrecision.percent>=60;
+          const passedIds=passed?[...new Set([...(progress.passedIds||[]),String(passageId)])].slice(0,20):(progress.passedIds||[]).filter(id=>id!==String(passageId));
+          const scores={...(progress.scores||{}),[String(passageId)]:result.score};
+          const required=x.minimumToComplete||10;
+          const complete=attemptedIds.length>=required;
+          return sanitizeItem({...x,trainerProgress:{attemptedIds,passedIds,scores},
+            status:complete?'completed':'started',startedAt:x.startedAt||new Date().toISOString(),
+            completedAt:complete?(x.completedAt||new Date().toISOString()):null,
+            completionSource:complete?'trainer_sync':'',
+            completionEvidence:complete?('Completed '+attemptedIds.length+' SWT content-selection exercises; '+passedIds.length+' met the target accuracy.'):''
+          },x);
+        });
+        return sanitizePlan({...current,items,status:current.status==='not_started'?'in_progress':current.status},current);
+      });
+      const updated=(plan.items||[]).find(x=>String(x.id)===String(req.params.itemId));
+      res.json({success:true,result,plan,item:updated,
+        progress:{attemptedIds:updated.trainerProgress?.attemptedIds||[],passedIds:updated.trainerProgress?.passedIds||[],scores:updated.trainerProgress?.scores||{},
+          attempted:(updated.trainerProgress?.attemptedIds||[]).length,passed:(updated.trainerProgress?.passedIds||[]).length,
+          minimumToComplete:updated.minimumToComplete||10,total:catalog.length}});
+    } catch(e){sendError(res,e);}
+  });
 
   app.get('/api/interventions', student, async (req, res) => {
     try {
