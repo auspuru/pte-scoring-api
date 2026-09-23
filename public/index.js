@@ -12209,6 +12209,14 @@ function launchAssignedQuestion(item) {
     switchSection(item.route || 'spoken-text', { labRequest: { testId: item.testId || item.questionId } });
     return;
   }
+  if (item.engine === 'essay') {
+    const essay = essays.find(e => String(e.id) === String(item.questionId));
+    if (!essay) { toast('This assigned essay question is no longer available.', true); return; }
+    currentId = essay.id;
+    if (typeof saveAll === 'function') saveAll();
+    practiceCurrentEssay();
+    return;
+  }
   if (item.engine === 'swt') {
     switchSection('swt');
     const id = Number(item.passageId || item.questionId);
