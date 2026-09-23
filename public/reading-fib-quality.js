@@ -135,8 +135,13 @@
     if(!['dropdown','wordbank'].includes(q.type)||!Array.isArray(q.answers)||!q.answers.length)return q;
     const key=String(seed||q.uid||q.id||q.title||'fib');
     const blankTypes=q.answers.map((answer,i)=>classifyFor(q,i,answer));
-    if(q.type==='dropdown')q.options=q.answers.map((answer,i)=>dropdownOptions(answer,key+':'+i,blankTypes[i]));
-    else q.bank=wordbank(q.answers,key,blankTypes);
+    const preserveAuthored=q.patternBased===true;
+    if(q.type==='dropdown'){
+      if(!preserveAuthored||!Array.isArray(q.options)||q.options.length!==q.answers.length)
+        q.options=q.answers.map((answer,i)=>dropdownOptions(answer,key+':'+i,blankTypes[i]));
+    } else if(!preserveAuthored||!Array.isArray(q.bank)||!q.bank.length) {
+      q.bank=wordbank(q.answers,key,blankTypes);
+    }
     const previous=Array.isArray(q.reasoning?.blanks)?q.reasoning.blanks:[];
     q.reasoning={
       ...(q.reasoning||{}),
@@ -148,14 +153,16 @@
         explanation:explanation(q,answer,i,blankTypes[i])
       }))
     };
-    q.fibQuality={version:VERSION,focus:'grammar-vocabulary',sameFormVocabularyDistractors:true,grammarTrap:q.type==='dropdown',blankTypes};
+    q.fibQuality={version:VERSION,focus:'grammar-vocabulary',sameFormVocabularyDistractors:true,grammarTrap:q.type==='dropdown',blankTypes,authoredDistractors:preserveAuthored};
     return q;
   }
   function audit(question){
     const q=strengthen(question,'audit:'+(question?.uid||question?.id||'q'));
     if(q.type==='dropdown'){
       return q.options.every((row,i)=>{
-        const type=q.fibQuality.blankTypes[i];
+        const type=q.fibQuality.blankTypes[i], same=row.filter(x=>classify(x)===type).length;
+        if(q.fibQuality.authoredDistractors)
+          return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])&&same>=2&&same<4;
         return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])
           &&row.slice(1,3).every(x=>classify(x)===type)
           &&classify(row[3])!==type;
