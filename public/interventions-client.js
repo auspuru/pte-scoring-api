@@ -36,7 +36,7 @@
       if(item.status==='completed')return '<span class="next-step-done">'+(item.completionSource==='attempt_sync'?'Completed automatically':'Completed')+'</span>';
       if(item.kind==='video')return '<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Watch</button><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
       if(item.kind==='question')return '<button type="button" class="portal-button primary" data-step-start="'+esc(item.id)+'">'+(item.status==='started'?'Open again':'Start question')+'</button><span class="next-step-sync-note">Completion syncs after you submit it</span>';
-      return '<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
+      return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open link</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
     }
     function card(plan){
       const required=requiredCount(plan),complete=requiredDone(plan),percent=required?Math.round(complete/required*100):100;
@@ -121,7 +121,7 @@
       if(start){
         const updated=await action(plan.id,item.id,'start');if(!updated)return;
         const next=updated.items.find(i=>i.id===item.id)||item;
-        if(next.kind==='video'&&next.url){window.open(next.url,'_blank','noopener');return;}
+        if(next.url&&next.kind!=='question'){window.open(next.url,'_blank','noopener');return;}
         if(next.kind==='question'){launch?.(next,updated);return;}
       }
       if(complete)await action(plan.id,item.id,'complete');
@@ -143,7 +143,7 @@
       catch(e){renderDashboard();return [];}
     }
     async function open(){await load(true);render();renderDashboard();}
-    const completionListener=()=>{if(auth().uid)refresh({showPopup:false});};
+    const completionListener=()=>{if(!auth().uid)return;refresh({showPopup:false});globalThis.setTimeout?.(()=>refresh({showPopup:false}),1200);};
     globalThis.addEventListener?.('pte:attempt-completed',completionListener);
     function reset(){plans=[];owner='';loading=null;helpResult=null;helpProblem='';const host=doc.getElementById('nextStepsPane');if(host)host.replaceChildren();const dash=doc.getElementById('nextStepsDashboardCard');if(dash){dash.hidden=true;dash.replaceChildren();}doc.getElementById('nextStepNotification')?.remove();}
     return {open,refresh,reset,plans:()=>plans.slice()};
