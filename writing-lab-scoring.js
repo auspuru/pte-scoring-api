@@ -72,9 +72,11 @@ function normalize(q, text, raw) {
   scores.form = form.score;
   if (raw.formInvalid && !String(raw.formReason || '').trim()) throw Error('Missing form explanation');
   if (!Array.isArray(raw.errors) || !Array.isArray(raw.improvements) || !Array.isArray(raw.strengths)) throw Error('Missing feedback');
-  const errors = raw.errors.filter(e => e && typeof e.phrase === 'string' && e.phrase.trim() && text.includes(e.phrase) && typeof e.correction === 'string' && typeof e.explanation === 'string').map(e => {
-    return { phrase: e.phrase, correction: e.correction, explanation: e.explanation };
-  });
+  if (raw.errors.some(e => !e || typeof e.phrase !== 'string' || !e.phrase.trim() || !text.includes(e.phrase)
+    || typeof e.correction !== 'string' || typeof e.explanation !== 'string')) {
+    throw Error('Invalid scoring evidence');
+  }
+  const errors = raw.errors.map(e => ({ phrase: e.phrase, correction: e.correction, explanation: e.explanation }));
   const reasons = [...form.reasons];
   if (raw.formInvalid) reasons.push(raw.formReason);
   if (!scores.content) reasons.push('The response does not adequately address the source or prompt.');
