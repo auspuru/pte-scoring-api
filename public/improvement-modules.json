@@ -421,14 +421,26 @@
       "area": "Writing",
       "task": "Summarize Written Text",
       "weakness": "Form and concision",
-      "title": "SWT — Form & Concision",
-      "reason": "Turn selected key points into one controlled, concise sentence.",
-      "checkpoint": "Produce at least 4 out of 5 coherent one-sentence summaries.",
+      "title": "SWT — How to Attempt & Form",
+      "reason": "Select the central message and relevant support, preserve the source meaning, then express it as one controlled sentence within the required form.",
+      "checkpoint": "Complete 4 out of 5 SWT responses with relevant content, valid one-sentence form and controlled language.",
       "items": [
         {
           "kind": "practice",
-          "title": "One-sentence construction",
-          "description": "Convert key-point notes into one controlled sentence without adding unnecessary detail.",
+          "title": "Know what is scored",
+          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2).",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Pick the central message first",
+          "description": "Identify the main idea, then add only one or two relevant supporting ideas or the conclusion where needed. Do not collect every example.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Write one controlled sentence",
+          "description": "Connect the selected ideas logically in one sentence of 5–75 words without changing the original meaning.",
           "required": true
         }
       ]
