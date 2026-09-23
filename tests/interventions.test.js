@@ -5,6 +5,7 @@ const os=require('node:os');
 const path=require('node:path');
 const express=require('express');
 const {installInterventions}=require('../interventions');
+const passages=require('../passages.json').map(require('../swt-reference').studentPassage);
 
 async function harness(options={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'interventions-'));
@@ -15,6 +16,8 @@ async function harness(options={}){
     verifyToken:token=>users.has(token)?token:null,
     getAccount:async uid=>users.has(uid)?{username:uid,blocked:false}:null,
     getProgress:options.getProgress,
+    getPassages:options.getPassages,
+    getPassage:options.getPassage,
     requireAdmin:(req,res,next)=>req.headers['x-admin-key']==='teacher'?next():res.status(403).json({error:'Invalid admin key'})
   });
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
@@ -103,4 +106,36 @@ test('SWT Beta routes important-line questions to the highlight trainer first',a
   assert.equal(advice.data.suggestions[0].moduleCode,'SWT-CONTENT-01');
   assert.match(advice.data.suggestions[0].action,/Highlight only the important sentences/i);
   assert.equal(advice.data.latestScore.scores.content,4);
+});
+
+test('SWT highlight trainer serves existing passages and completes after the configured minimum',async t=>{
+  const h=await harness({
+    getPassages:async()=>passages,
+    getPassage:async id=>passages.find(p=>String(p.id)===String(id))||null
+  });
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const created=await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{
+    moduleCode:'SWT-CONTENT-01',area:'Writing',task:'Summarize Written Text',title:'Highlight trainer',
+    items:[{kind:'swt_selection_trainer',title:'Highlight practice',exerciseCount:15,minimumToComplete:2,required:true}]
+  }});
+  assert.equal(created.status,200);
+  const plan=created.data.plan,item=plan.items[0];
+  const first=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection',{token:'alice'});
+  assert.equal(first.status,200);
+  assert.equal(first.data.catalog.length,15);
+  assert.equal(Object.hasOwn(first.data.exercise,'targetSentenceIndexes'),false);
+  const firstId=first.data.exercise.id;
+  let checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:firstId,selected:[0]}});
+  assert.equal(checked.status,200);
+  assert.equal(checked.data.progress.attempted,1);
+  assert.equal(checked.data.item.status,'started');
+  assert(Array.isArray(checked.data.result.targetSentenceIndexes));
+  const next=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection',{token:'alice'});
+  const secondId=next.data.exercise.id;
+  assert.notEqual(secondId,firstId);
+  checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:secondId,selected:[0]}});
+  assert.equal(checked.status,200);
+  assert.equal(checked.data.progress.attempted,2);
+  assert.equal(checked.data.item.status,'completed');
+  assert.equal(checked.data.item.completionSource,'trainer_sync');
 });
