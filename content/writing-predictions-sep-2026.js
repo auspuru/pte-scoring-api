@@ -30,6 +30,14 @@ function makeSwt(item, index) {
   };
 }
 
+function sstSample(notes) {
+  const selected = notes.slice(0, 3);
+  let words = selected.join(' ').trim().split(/\s+/).filter(Boolean).length;
+  if (words < 50 && notes[3]) selected.push(notes[3]);
+  return sentence(selected[0]) + '; ' + sentence(selected[1]).replace(/^./, c => c.toLowerCase()) +
+    '; and ' + selected.slice(2).map(note => sentence(note).replace(/^./, c => c.toLowerCase())).join('; ') + '.';
+}
+
 function makeSst(item, index) {
   const text = item.notes.map(clean).join(' ');
   return {
@@ -41,7 +49,7 @@ function makeSst(item, index) {
     voice: ['nova', 'onyx', 'alloy', 'fable'][index % 4],
     text,
     keyPoints: item.notes.slice(0, 4).map(clean),
-    sample: sentence(item.notes[0]) + '; ' + sentence(item.notes[1]).replace(/^./, c => c.toLowerCase()) + '; and ' + sentence(item.notes[2]).replace(/^./, c => c.toLowerCase()) + '.',
+    sample: sstSample(item.notes),
     predictionSource: { ...source, task: 'sst', sourceId: item.sourceId, sourceTitle: item.title }
   };
 }
