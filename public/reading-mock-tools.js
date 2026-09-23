@@ -18,6 +18,11 @@
     wordbank: new Set(['RDWD_001','RDWD_002','RDWD_004','RDWD_005','RDWD_006','RDWD_007','RDWD_008','RDWD_010','RDWD_013','RDWD_016','RDWD_030','RDWD_037','RDWD_047'])
   });
   const TECHNICAL_FIB_TERMS = /\b(?:polygenic|deadweight|allele|genotype|phenotype|immunoglobulin|subduction|quantitative easing|bond yield|fiscal multiplier|mitochondri|pathogen resistance)\b/i;
+  function strengthenFib(q, seed) {
+    return fibQuality && ['dropdown','wordbank'].includes(q?.type)
+      ? fibQuality.strengthen(q, seed || q.uid || q.id || q.title)
+      : q;
+  }
   function languageFirstFib(q) {
     if (!q || !['dropdown','wordbank'].includes(q.type)) return false;
     if (LANGUAGE_FIRST_FIB_EXCLUDE[q.type]?.has(String(q.id))) return false;
@@ -27,7 +32,7 @@
     const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
     const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
       .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
-    const merged = library.filter(languageFirstFib).map(q => fibQuality ? fibQuality.strengthen(q, 'practice:'+q.id) : q);
+    const merged = library.filter(languageFirstFib).map(q => strengthenFib(q, 'practice:'+q.id));
     const seen = new Set(), unique = merged.filter(q => {
       const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
       if (!identity || seen.has(identity)) return false;
@@ -173,7 +178,7 @@
       return slice.map(q => {
         const words=String(q.passage || '').trim().split(/\s+/).filter(Boolean).length;
         if(words>maxWords) throw Error('A prediction passage exceeds the PTE word limit.');
-        const strengthened = fibQuality ? fibQuality.strengthen(q, 'prediction:'+q.uid) : q;
+        const strengthened = strengthenFib(q, 'prediction:'+q.uid);
         return { ...strengthened, reasoning: languageReasoning(strengthened) };
       });
     };
@@ -245,13 +250,13 @@
     const sectional = bank.sectionalMocks.find(item => item.id === mode);
     const set = bank.sets.find(item => item.id === (sectional?.setId || setId));
     if (!set) throw Error('This question set is unavailable.');
-    const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
+    const reading = set.questions.map(q => strengthenFib({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }, 'set:'+set.id+':'+q.id));
     if (sectional) {
       const questions = sectional.questionRefs ? sectional.questionRefs.map(ref => {
         const source = bank.sets.find(item => item.id === ref.setId);
         const q = source?.questions.find(item => item.id === ref.questionId);
         if (!q) throw Error('A sectional reading question is unavailable.');
-        return { ...q, uid: source.id + ':' + q.id, reasoning: source.reasoning[q.id] || {} };
+        return strengthenFib({ ...q, uid: source.id + ':' + q.id, reasoning: source.reasoning[q.id] || {} }, 'sectional:'+source.id+':'+q.id);
       }) : reading;
       validateReading(questions, sectional.minutes);
       return { name: sectional.name, minutes: sectional.minutes, questions };
@@ -519,5 +524,5 @@
     }
     return { play, cancel, unlock };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, strengthenFib, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });
