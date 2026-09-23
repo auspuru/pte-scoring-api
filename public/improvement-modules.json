@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "modules": [
     {
       "code": "PR-01",
@@ -25,9 +25,13 @@
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Record 3 clear speaking attempts",
-          "description": "Use Read Aloud or another assigned speaking question and focus on clarity.",
+          "kind": "practice_set",
+          "title": "Read Aloud clarity practice",
+          "description": "Complete 3 new Read Aloud attempts. Your progress updates automatically after each submitted response.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -42,15 +46,19 @@
       "checkpoint": "Produce the target endings clearly in at least 8 out of 10 items.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Target ending drill",
-          "description": "Practise 10 target words, then use them in 10 short sentences.",
+          "kind": "instruction",
+          "title": "Review final-sound routine",
+          "description": "Before practice, say the target plural, -ed and final-consonant endings slowly and clearly. Focus on making the final sound audible.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Apply endings in PTE speaking",
-          "description": "Complete the teacher-assigned speaking questions without dropping final sounds.",
+          "kind": "practice_set",
+          "title": "Apply endings in Read Aloud",
+          "description": "Complete 3 new Read Aloud attempts while protecting final consonants and grammatical endings.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -65,15 +73,19 @@
       "checkpoint": "Produce the target sound clearly in at least 8 out of 10 items.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Minimal-pair practice",
-          "description": "Practise the exact sound pair identified by your teacher.",
+          "kind": "instruction",
+          "title": "Review the target sound",
+          "description": "Use the exact sound pair identified by your teacher. Say each sound slowly, then use it in short words and sentences.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Sentence application",
-          "description": "Use the target sound in short sentences and record yourself.",
+          "kind": "practice_set",
+          "title": "Apply the target sound in speaking",
+          "description": "Complete 3 new Read Aloud attempts while monitoring the target sound.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -88,15 +100,19 @@
       "checkpoint": "Produce three smooth recordings with sensible chunking.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Chunk-marking drill",
-          "description": "Mark meaningful chunks in 5 short passages before speaking.",
+          "kind": "practice_set",
+          "title": "Chunking practice — Read Aloud",
+          "description": "Complete 5 new Read Aloud attempts. Before each attempt, mentally group the text into meaningful phrases rather than reading word-by-word.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 5,
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Shadow and record",
-          "description": "Shadow a model, then record the same material without the model.",
+          "kind": "instruction",
+          "title": "Review the shadowing routine",
+          "description": "After listening to a clear model outside the timed task, imitate its phrase groups and rhythm before repeating without the model.",
           "required": true
         }
       ]
@@ -111,9 +127,13 @@
       "checkpoint": "Complete three timed attempts without disruptive pauses.",
       "items": [
         {
-          "kind": "practice",
-          "title": "30–60 second response drills",
-          "description": "Practise continuing smoothly even when you make a small mistake.",
+          "kind": "practice_set",
+          "title": "Pause-and-recovery practice",
+          "description": "Complete 3 new Describe Image attempts. If you make a small mistake, continue instead of restarting the sentence.",
+          "engine": "speaking",
+          "route": "speaking-di",
+          "practiceType": "di",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -128,9 +148,13 @@
       "checkpoint": "Maintain a steady, understandable pace in three recordings.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Controlled pace recording",
-          "description": "Record the same response three times at a steady pace.",
+          "kind": "practice_set",
+          "title": "Controlled pace practice",
+          "description": "Complete 3 new Read Aloud attempts at a steady, understandable pace. Avoid rushing to finish early.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -145,9 +169,9 @@
       "checkpoint": "Identify the correct central idea in at least 4 out of 5 attempts.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Main idea drill",
-          "description": "For 5 passages or audios, identify only the central idea before writing or speaking.",
+          "kind": "instruction",
+          "title": "Main idea method",
+          "description": "First identify the topic, then ask what the writer or speaker is mainly saying about that topic. Use task-specific practice assigned by your teacher; for SWT content problems, use the Highlight Trainer.",
           "required": true
         }
       ]
@@ -162,9 +186,9 @@
       "checkpoint": "Select concise, relevant information in at least 4 out of 5 attempts.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Essential vs minor detail",
-          "description": "Reduce each source to 3–4 essential points and remove examples.",
+          "kind": "instruction",
+          "title": "Prioritisation method",
+          "description": "Separate essential ideas from examples, repetition and minor detail. For SWT, use the Highlight Trainer so the portal can check your selections.",
           "required": true
         }
       ]
@@ -179,9 +203,13 @@
       "checkpoint": "Produce at least 4 out of 5 summaries without changing the source meaning.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Source vs summary check",
-          "description": "Compare each sentence with the source and highlight any changed relationship or contradiction.",
+          "kind": "practice_set",
+          "title": "SWT context-accuracy practice",
+          "description": "Complete 5 new SWT attempts. After each response, compare whether cause, contrast, viewpoint and conclusion still match the source.",
+          "engine": "swt",
+          "route": "swt",
+          "practiceType": "swt",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -196,9 +224,13 @@
       "checkpoint": "Identify the topic and 3–4 important features in at least 4 out of 5 images within preparation time.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Content-only image drill",
-          "description": "Do not speak yet. Identify topic, overall pattern, biggest/smallest and meaningful comparisons.",
+          "kind": "practice_set",
+          "title": "Describe Image content practice",
+          "description": "Complete 5 new Describe Image attempts. Before speaking, identify the topic, overall pattern and only 3–4 reportable features.",
+          "engine": "speaking",
+          "route": "speaking-di",
+          "practiceType": "di",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -213,9 +245,13 @@
       "checkpoint": "Capture the main idea and important support without falling behind.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Keyword-only notes",
-          "description": "Use 5 short audios and write only content words and symbols.",
+          "kind": "practice_set",
+          "title": "Retell Lecture keyword-note practice",
+          "description": "Complete 5 new Retell Lecture attempts using keywords and symbols rather than full-sentence notes.",
+          "engine": "speaking",
+          "route": "speaking-rl",
+          "practiceType": "rl",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -230,9 +266,13 @@
       "checkpoint": "Track all speakers correctly in at least 4 out of 5 discussions.",
       "items": [
         {
-          "kind": "practice",
-          "title": "S1 / S2 / S3 note grid",
-          "description": "Record each speaker's key viewpoint in a separate column.",
+          "kind": "practice_set",
+          "title": "SGD speaker-tracking practice",
+          "description": "Complete 5 new Summarize Group Discussion attempts using separate S1 / S2 / S3 note areas.",
+          "engine": "speaking",
+          "route": "speaking-sgd",
+          "practiceType": "sgd",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -247,9 +287,13 @@
       "checkpoint": "Capture the main idea and support while keeping pace with the audio.",
       "items": [
         {
-          "kind": "practice",
-          "title": "30–60 second note-speed drills",
-          "description": "Use abbreviations, arrows and content words only.",
+          "kind": "practice_set",
+          "title": "Note-taking speed practice",
+          "description": "Complete 5 new Retell Lecture attempts using abbreviations, arrows and content words so you can keep pace with the audio.",
+          "engine": "speaking",
+          "route": "speaking-rl",
+          "practiceType": "rl",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -264,9 +308,9 @@
       "checkpoint": "Produce at least 4 out of 5 structurally accurate sentences.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Sentence-combining drill",
-          "description": "Combine 2–3 related ideas while preserving meaning.",
+          "kind": "instruction",
+          "title": "Sentence-building method",
+          "description": "Practise joining 2–3 related ideas while preserving their logical relationship. Your teacher can add exact SWT, SST or Essay questions to this plan for scored practice.",
           "required": true
         }
       ]
@@ -281,9 +325,9 @@
       "checkpoint": "Produce at least 4 out of 5 controlled sentences without run-ons.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Run-on repair",
-          "description": "Repair 10 long sentences, then apply the same control to your PTE response.",
+          "kind": "instruction",
+          "title": "Run-on repair method",
+          "description": "Before full PTE practice, check clause boundaries: each added idea needs a clear grammatical relationship and controlled punctuation.",
           "required": true
         }
       ]
@@ -298,15 +342,19 @@
       "checkpoint": "Reach at least 80% across three practice sets.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Collocation notebook",
-          "description": "Record the full phrase, meaning and one example sentence.",
+          "kind": "instruction",
+          "title": "Build a collocation notebook",
+          "description": "Record the full phrase, meaning and one example sentence instead of learning isolated words.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Context practice",
-          "description": "Complete the teacher-assigned Fill in the Blanks questions.",
+          "kind": "practice_set",
+          "title": "Reading Blanks collocation practice",
+          "description": "Complete 3 new Reading Blanks (Dropdown) questions and review which word combinations fit the surrounding context.",
+          "engine": "reading",
+          "route": "reading-dropdown",
+          "practiceType": "dropdown",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -321,9 +369,13 @@
       "checkpoint": "Answer at least 4 out of 5 questions correctly and explain the evidence.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Evidence drill",
-          "description": "For each option, identify why it is supported or why it should be rejected.",
+          "kind": "practice_set",
+          "title": "Reading distractor practice",
+          "description": "Complete 5 new Reading Single Answer questions. For each, identify the evidence for the correct option and why the distractors are weaker.",
+          "engine": "reading",
+          "route": "reading-mcsa",
+          "practiceType": "mcsa",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -338,15 +390,15 @@
       "checkpoint": "Reach at least 90% on your personal error list twice.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Build your error list",
-          "description": "Record every repeated spelling error with the corrected form.",
+          "kind": "instruction",
+          "title": "Build your spelling error log",
+          "description": "Record repeated spelling errors with the corrected form and one short example.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Retest",
-          "description": "Retest the same words after 2–3 days.",
+          "kind": "instruction",
+          "title": "Retest your error list",
+          "description": "After 2–3 days, cover the correct forms and retest the same words. Keep errors that still repeat.",
           "required": true
         }
       ]
@@ -361,9 +413,13 @@
       "checkpoint": "Substantially retain at least 4 out of 5 sentences.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Memory ladder",
-          "description": "Start with short chunks and gradually increase sentence length.",
+          "kind": "practice_set",
+          "title": "Repeat Sentence memory practice",
+          "description": "Complete 5 new Repeat Sentence attempts, listening for meaning and word groups rather than isolated words.",
+          "engine": "speaking",
+          "route": "speaking-rs",
+          "practiceType": "rs",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -378,9 +434,13 @@
       "checkpoint": "Retain order and key function words in at least 4 out of 5 sentences.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Reconstruction drill",
-          "description": "Rebuild short sentences from chunks, then progress to longer dictation.",
+          "kind": "practice_set",
+          "title": "Write From Dictation reconstruction practice",
+          "description": "Complete 5 new Write From Dictation attempts and check word order, articles, prepositions and endings.",
+          "engine": "writing-lab",
+          "route": "dictation",
+          "practiceType": "wfd",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -409,9 +469,13 @@
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Audience and purpose drill",
-          "description": "Identify who you are speaking to, why, and what outcome you need before responding.",
+          "kind": "practice_set",
+          "title": "Respond to a Situation practice",
+          "description": "Complete 5 new Respond to a Situation attempts. Identify audience, purpose and desired outcome before you speak.",
+          "engine": "speaking",
+          "route": "speaking-rts",
+          "practiceType": "rts",
+          "minimumAttempts": 5,
           "required": true
         }
       ]
@@ -445,21 +509,25 @@
       "checkpoint": "Complete 4 out of 5 SWT responses with relevant content, valid one-sentence form and controlled language.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Know what is scored",
-          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2).",
+          "kind": "instruction",
+          "title": "Review SWT scoring",
+          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2). SWT must remain one sentence and between 5–75 words.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Pick the central message first",
-          "description": "If content selection is difficult, use the dedicated Highlight Trainer rather than manually ticking this step.",
+          "kind": "instruction",
+          "title": "Use the Highlight Trainer for content selection",
+          "description": "If choosing important lines is difficult, complete the dedicated SWT Content Selection — Highlight Trainer before full SWT writing.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Write one controlled sentence",
-          "description": "Connect the selected ideas logically in one sentence of 5–75 words without changing the original meaning.",
+          "kind": "practice_set",
+          "title": "Full SWT application",
+          "description": "Complete 3 new SWT attempts after the method review. These submissions count automatically.",
+          "engine": "swt",
+          "route": "swt",
+          "practiceType": "swt",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -474,9 +542,9 @@
       "checkpoint": "Complete at least 4 out of 5 attempts within the required timing.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Three-stage timing",
-          "description": "Practise untimed, then with reduced preparation time, then under full test conditions.",
+          "kind": "instruction",
+          "title": "Three-stage timing routine",
+          "description": "Do the same task once untimed, once with reduced preparation time, and then under full test timing. Your teacher can attach exact questions for this routine.",
           "required": true
         }
       ]
@@ -498,15 +566,19 @@
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Topic + key-point notes",
-          "description": "Listen for the topic and the strongest supporting points; use keywords rather than full sentences in your notes.",
+          "kind": "instruction",
+          "title": "Review the SST note-taking method",
+          "description": "Listen for the topic and strongest supporting points; use keywords rather than full sentences in your notes.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Write a connected SST summary",
-          "description": "Turn the notes into a clear 50–70 word response, then check Content, Form, Grammar, Vocabulary and Spelling.",
+          "kind": "practice_set",
+          "title": "SST scored application",
+          "description": "Complete 3 new Summarize Spoken Text attempts. Progress updates automatically when each response is submitted.",
+          "engine": "writing-lab",
+          "route": "spoken-text",
+          "practiceType": "sst",
+          "minimumAttempts": 3,
           "required": true
         }
       ]
@@ -521,21 +593,25 @@
       "checkpoint": "Complete an essay that addresses the prompt, meets form requirements and shows clear development and organisation.",
       "items": [
         {
-          "kind": "practice",
-          "title": "Identify the question type and requirements",
-          "description": "Underline what the prompt asks you to discuss, compare, explain or give an opinion on. Give an opinion only when the prompt requires it.",
+          "kind": "instruction",
+          "title": "Analyse the essay prompt",
+          "description": "Identify exactly what the prompt asks you to discuss, compare, explain or evaluate. Give an explicit opinion only when the prompt asks for one.",
           "required": true
         },
         {
-          "kind": "practice",
+          "kind": "instruction",
           "title": "Plan before writing",
-          "description": "Prepare a clear position where needed, two body ideas and relevant supporting explanation/examples.",
+          "description": "Prepare two relevant body ideas and the supporting explanation/examples you will use.",
           "required": true
         },
         {
-          "kind": "practice",
-          "title": "Write and review against the score traits",
-          "description": "Check Content, Form, Grammar, Vocabulary, Spelling, General Linguistic Range, and Development/Structure/Coherence.",
+          "kind": "practice_set",
+          "title": "Essay scored application",
+          "description": "Complete 2 new Essay attempts after planning. Progress updates automatically after the essay review is saved.",
+          "engine": "essay",
+          "route": "practice",
+          "practiceType": "essay",
+          "minimumAttempts": 2,
           "required": true
         }
       ]

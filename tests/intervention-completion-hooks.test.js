@@ -34,7 +34,7 @@ test('student intervention UI treats exact questions as synchronised rather than
 test('learning resources and SWT highlight trainer are present in the module catalogue',()=>{
   const data=JSON.parse(source('public/improvement-modules.json'));
   const byCode=Object.fromEntries(data.modules.map(m=>[m.code,m]));
-  assert.equal(data.version,3);
+  assert.equal(data.version,4);
   assert(byCode['SST-01'].items.some(i=>String(i.url).includes('XUYKyqNpdrw')));
   assert(byCode['REG-01'].items.some(i=>String(i.url).includes('p-LV9crN3ZA')));
   assert(byCode['REG-01'].items.some(i=>String(i.url).includes('QZB_XvsBsTU')));
@@ -44,4 +44,18 @@ test('learning resources and SWT highlight trainer are present in the module cat
   assert.equal(byCode['SWT-CONTENT-01'].items[0].kind,'swt_selection_trainer');
   assert.equal(byCode['SWT-CONTENT-01'].items[0].exerciseCount,15);
   assert.equal(byCode['SWT-CONTENT-01'].items[0].minimumToComplete,10);
+  assert.equal(data.modules.flatMap(m=>m.items||[]).some(i=>i.kind==='practice'),false);
+  const practiceSets=data.modules.flatMap(m=>m.items||[]).filter(i=>i.kind==='practice_set');
+  assert(practiceSets.length>=10);
+  assert(practiceSets.every(i=>i.route&&i.engine&&i.practiceType&&i.minimumAttempts>0));
+});
+
+test('real practice sets never render a manual complete button',()=>{
+  const client=source('public/interventions-client.js');
+  assert.match(client,/item\.kind==='practice_set'/);
+  assert.match(client,/syncs automatically/);
+  assert.match(client,/item\.kind==='instruction'/);
+  assert.match(client,/Mark reviewed/);
+  assert.match(client,/Mark watched/);
+  assert.match(client,/older practice step needs a real activity/i);
 });

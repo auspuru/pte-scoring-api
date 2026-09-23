@@ -31,16 +31,25 @@
     const doneCount=p=>(p.items||[]).filter(i=>i.status==='completed').length;
     const requiredCount=p=>(p.items||[]).filter(i=>i.required!==false).length;
     const requiredDone=p=>(p.items||[]).filter(i=>i.required!==false&&i.status==='completed').length;
-    function itemIcon(item){return item.status==='completed'?'✓':item.kind==='video'?'▶':item.kind==='question'?'Q':item.kind==='swt_selection_trainer'?'✦':'•';}
+    function itemIcon(item){return item.status==='completed'?'✓':item.kind==='video'?'▶':item.kind==='question'?'Q':item.kind==='swt_selection_trainer'?'✦':item.kind==='practice_set'?'→':item.kind==='instruction'?'i':'•';}
     function itemAction(item){
       if(item.kind==='swt_selection_trainer'){
         const done=item.trainerProgress?.attemptedIds?.length||0,target=item.minimumToComplete||10,total=item.exerciseCount||15;
         return '<button type="button" class="portal-button primary" data-swt-trainer>'+((done||item.status==='started')?'Continue trainer':'Start trainer')+'</button><span class="next-step-sync-note">'+done+'/'+target+' required · '+total+' available</span>';
       }
-      if(item.status==='completed')return '<span class="next-step-done">'+(item.completionSource==='attempt_sync'?'Completed automatically':'Completed')+'</span>';
-      if(item.kind==='video')return '<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Watch</button><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
+      if(item.status==='completed'){
+        const label=item.completionSource==='attempt_sync'?'Completed automatically':item.kind==='video'?'Watched':item.kind==='instruction'?'Reviewed':'Completed';
+        return '<span class="next-step-done">'+label+'</span>';
+      }
+      if(item.kind==='video')return '<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Watch</button><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark watched</button>';
+      if(item.kind==='instruction')return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open resource</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
+      if(item.kind==='practice_set'){
+        const count=item.attemptProgress?.count||0,target=item.minimumAttempts||1;
+        return '<button type="button" class="portal-button primary" data-practice-set>'+((count||item.status==='started')?'Continue practice':'Start practice')+'</button><span class="next-step-sync-note">'+count+'/'+target+' submitted · syncs automatically</span>';
+      }
       if(item.kind==='question')return '<button type="button" class="portal-button primary" data-step-start="'+esc(item.id)+'">'+(item.status==='started'?'Open again':'Start question')+'</button><span class="next-step-sync-note">Completion syncs after you submit it</span>';
-      return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open link</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark complete</button>';
+      if(item.kind==='practice')return '<span class="next-step-sync-note">This older practice step needs a real activity. Refresh the plan or ask your teacher to update it.</span>';
+      return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open link</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
     }
     function card(plan){
       const required=requiredCount(plan),complete=requiredDone(plan),percent=required?Math.round(complete/required*100):100;
@@ -73,7 +82,7 @@
     }
     async function addSelfPlan(code){
       try{
-        const data=await api('/self-plan',{moduleCode:code,problem:helpProblem});
+        const data=await api('/self-plan',{moduleCode:code,problem:helpProblem,task:helpTask});
         plans.unshift(data.plan);helpResult=null;render();renderDashboard();notify('Added to My Next Steps.');
       }catch(e){notify(e.message,true);}
     }
@@ -182,6 +191,13 @@
     async function handleClick(e){
       const trainerButton=e.target.closest('[data-swt-trainer]');
       if(trainerButton){const planEl=trainerButton.closest('[data-plan-id]'),itemEl=trainerButton.closest('[data-item-id]');const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);if(plan&&item)await openTrainer(plan,item);return;}
+      const practiceSetButton=e.target.closest('[data-practice-set]');
+      if(practiceSetButton){
+        const planEl=practiceSetButton.closest('[data-plan-id]'),itemEl=practiceSetButton.closest('[data-item-id]');
+        const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);
+        if(plan&&item){await action(plan.id,item.id,'start');navigate(item.route||'practice-hub');}
+        return;
+      }
       const help=e.target.closest('[data-beta-help]');if(help){await requestHelp();return;}
       const add=e.target.closest('[data-beta-add]');if(add){await addSelfPlan(add.dataset.betaAdd);return;}
       const practice=e.target.closest('[data-next-practice]');if(practice){navigate('practice-hub');return;}
