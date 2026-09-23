@@ -6,6 +6,8 @@ const { score } = require('../public/reading-practice');
 const tools = require('../public/reading-mock-tools');
 const bank = require('../public/reading-bank.json');
 const predictions = require('../public/reading-predictions-sep-2026');
+const fibQuality = require('../public/reading-fib-quality');
+const catalogue = require('../public/practice-catalogue');
 
 test('Focused Reading mocks 4–9 are unique FIB-only papers within passage limits', () => {
   const presets=bank.mockCatalogue.filter(m=>m.kind==='reading-blanks'),seen=new Set();
@@ -128,4 +130,41 @@ test('Every playback path uses automatic HIW sound in practice, mocks and review
  const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') assert.equal(tools.audioPlayback(value).variant, 'mixed'); Object.values(value).forEach(walk); };
  walk(bank);
  assert.equal(tools.audioPlayback({type:'hcs'}).variant, 'single');
+});
+
+
+test('Reading FIB choices test grammar plus contextual vocabulary rather than synonym guessing', () => {
+  const check = q => {
+    assert.equal(q.fibQuality?.focus,'grammar-vocabulary',q.id);
+    assert.equal(q.reasoning?.blanks?.length,q.answers.length,q.id);
+    q.reasoning.blanks.forEach(blank => {
+      assert.match(blank.skill,/grammar \+ vocabulary\/collocation/,q.id);
+      assert.match(blank.explanation,/Grammar|grammar/,q.id);
+      assert.match(blank.explanation,/vocabulary|collocation/,q.id);
+    });
+    if(q.type==='dropdown'){
+      q.options.forEach((row,i)=>{
+        assert.equal(row.length,4,q.id+' blank '+i);
+        assert.equal(new Set(row).size,4,q.id+' blank '+i);
+        assert(row.includes(q.answers[i]),q.id+' blank '+i);
+        const correctType=fibQuality.classify(q.answers[i]);
+        assert(row.filter(option=>fibQuality.classify(option)===correctType).length>=3,q.id+' blank '+i+' lacks vocabulary distractors');
+        assert(row.some(option=>fibQuality.classify(option)!==correctType),q.id+' blank '+i+' lacks grammar trap');
+      });
+    } else {
+      assert.equal(q.bank.length,q.answers.length+3,q.id);
+      assert.equal(new Set(q.bank).size,q.bank.length,q.id);
+      q.answers.forEach(answer=>assert(q.bank.includes(answer),q.id));
+    }
+  };
+
+  for(const preset of bank.mockCatalogue.filter(m=>m.kind==='reading-blanks')){
+    tools.compose(bank,preset.id,preset.setId).questions.forEach(check);
+  }
+  for(const library of catalogue.readingLibraries(bank).filter(l=>['dropdown','wordbank'].includes(l.id))){
+    library.questions.forEach(check);
+  }
+  for(const set of bank.sets){
+    tools.compose(bank,'mock',set.id).questions.filter(q=>['dropdown','wordbank'].includes(q.type)).forEach(check);
+  }
 });
