@@ -6,6 +6,7 @@ const catalogue = require('../public/practice-catalogue');
 const { routes } = require('../public/portal-workspace');
 const bank = require('../public/reading-bank.json');
 const fibQuality = require('../public/reading-fib-quality');
+const patternBank = require('../public/reading-fib-pattern-bank');
 const writing = { mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 })) };
 
 test('Each available individual task has exactly one primary home and a working portal route', () => {
@@ -32,7 +33,8 @@ test('Reading and Listening individual libraries reuse complete keys and stable 
     const derived = libraries.find(l => l.id === original.id);
     assert(derived, original.id);
     for (const q of derived.questions) {
-      const source = original.questions.find(item => item.id === q.id);
+      const source = original.questions.find(item => item.id === q.id)
+        || (patternBank[original.id] || []).find(item => item.id === q.id);
       assert(source, q.id);
       assert.deepEqual(q.answers, source.answers);
       if (['dropdown','wordbank'].includes(original.id)) {
@@ -131,4 +133,20 @@ test('Portal markup removes redundant navigation and embedded catalogues', () =>
   assert(html.indexOf('practice-catalogue.js') < html.indexOf('reading-practice.js'));
   const lab = fs.readFileSync(require.resolve('../public/writing-lab-client.js'), 'utf8');
   assert.doesNotMatch(lab, /renderMockBoard|assignment-board|data-board-mode/);
+});
+
+
+test('Original prediction-pattern FIB questions are exposed without copying the external prediction bank', () => {
+  const libraries=catalogue.readingLibraries(bank);
+  for(const type of ['dropdown','wordbank']){
+    const questions=libraries.find(l=>l.id===type).questions;
+    const originals=questions.filter(q=>q.patternBased);
+    assert.equal(originals.length,12,type);
+    assert.equal(new Set(originals.map(q=>q.id)).size,12,type);
+    originals.forEach(q=>{
+      assert.equal(q.patternSource.kind,'original-pattern-derived');
+      assert.equal(fibQuality.audit(q),true,q.id);
+      assert.match(q.reasoning.correct,/grammar|collocation|vocabulary/i);
+    });
+  }
 });
