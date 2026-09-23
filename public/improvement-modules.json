@@ -491,8 +491,8 @@
       "items": [
         {
           "kind": "swt_selection_trainer",
-          "title": "Highlight the important lines — 15 exercises",
-          "description": "Use existing SWT passages. Highlight only the sentences that carry the central message or essential support. After each submission, the trainer shows what you missed, why it matters, and the central key phrases/sentences. No full summary writing.",
+          "title": "Highlight the important phrases — 15 exercises",
+          "description": "Use existing SWT passages. Drag over only the words and phrases that carry the central message or essential support. After each submission, the trainer shows what you missed, why it matters, and the central phrases. No full summary writing.",
           "exerciseCount": 15,
           "minimumToComplete": 10,
           "required": true
