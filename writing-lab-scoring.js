@@ -1,6 +1,7 @@
 'use strict';
 const VERSION = 'exam-practice-2026-09-23.3';
 const report = require('./public/writing-lab-report');
+const localEngine = require('./local-scoring-engine');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
   sst: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 },
@@ -87,27 +88,8 @@ function normalize(q, text, raw) {
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
 }
 function localContentScore(q, text) {
-  const response = String(text || '').toLowerCase();
-  const responseTokens = new Set((response.match(/[a-z0-9]+(?:['’-][a-z0-9]+)*/g) || []).filter(w => w.length > 2));
-  const ideas = (Array.isArray(q.keyPoints) ? q.keyPoints : Object.values(q.keyPoints || {})).filter(Boolean);
-  const scoreIdea = idea => {
-    const words = (String(idea).toLowerCase().match(/[a-z0-9]+(?:['’-][a-z0-9]+)*/g) || [])
-      .filter(w => w.length > 2 && !['the','and','that','with','from','this','into','have','has','were','was','are','for','but'].includes(w));
-    if (!words.length) return 0;
-    return words.filter(w => responseTokens.has(w)).length / words.length;
-  };
-  const ratios = ideas.map(scoreIdea);
-  const captured = ratios.filter(x => x >= 0.34).length;
-  const coverage = ratios.length ? ratios.reduce((a,b)=>a+b,0) / ratios.length : 0;
-  if (q.type === 'essay') {
-    const promptWords = scoreIdea(q.text);
-    return promptWords >= 0.45 ? 6 : promptWords >= 0.3 ? 5 : promptWords >= 0.2 ? 4 : promptWords >= 0.12 ? 3 : promptWords > 0 ? 2 : 1;
-  }
-  if (!ideas.length) return coverage >= 0.45 ? 3 : coverage >= 0.25 ? 2 : 1;
-  if (captured >= Math.min(3, ideas.length) && coverage >= 0.42) return 4;
-  if (captured >= Math.min(2, ideas.length) && coverage >= 0.3) return 3;
-  if (captured >= 1 || coverage >= 0.2) return 2;
-  return coverage >= 0.08 ? 1 : 0;
+  if (q.type === 'essay') return localEngine.essay(q.text, text, { formScore: formFor('essay', text).score }).scores.content;
+  return localEngine.summaryContent(q.keyPoints || [], text, 4).score;
 }
 function localLanguage(q, text) {
   const maxima=MAXIMA[q.type], form=formFor(q.type,text), lower=String(text||'').toLowerCase();
