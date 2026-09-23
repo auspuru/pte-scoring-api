@@ -114,11 +114,23 @@ test('All incomplete content levels remain distinct from complete summaries desp
   }
 });
 test('Provisional and invalid results never promise a complete summary', () => {
-  for (const extra of [{ score_provisional: true }, { ai_feedback_degraded: true }, { trait_scores: { content: 4, form: 0, grammar: 2, vocabulary: 2 } }]) {
+  for (const extra of [{ score_provisional: true }, { trait_scores: { content: 4, form: 0, grammar: 2, vocabulary: 2 } }]) {
     const result = require('../public/swt-feedback').presentation({ ...full(), ...extra });
     assert(!result.headline.includes('Complete, well-connected'));
     assert(!result.headline.includes('Band'));
   }
+});
+
+test('A local SWT result remains visible when only AI-specific feedback is unavailable', () => {
+  const data = { ...full(), ai_feedback_degraded: true, score_provisional: false, mode: 'local' };
+  const result = require('../public/swt-feedback').presentation(data);
+  assert.equal(result.headline, 'Local practice result');
+  assert.equal(result.score, 90);
+  assert.match(result.secondary, /Local practice estimate/);
+  const guidance = build(data);
+  assert.equal(guidance.provisional, false);
+  assert.equal(guidance.degraded, true);
+  assert.match(guidance.summary, /local practice engine/i);
 });
 
 test('A saved Content 4 without semantic eligibility is reviewed instead of labelled complete', () => {
