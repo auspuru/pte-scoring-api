@@ -27,10 +27,10 @@ V1 also supports assigning exact Essay prompts from the student's existing essay
 - Missing legacy JSON accounts are merged into Postgres once without overwriting existing accounts.
 
 ## SWT highlight trainer
-Students who struggle to identify important SWT content can practise on 15 existing passages by selecting central sentences only. Feedback explains missed ideas, why they matter, and the key phrases/sentences that carry the summary.
+Students who struggle to identify important SWT content can practise on 15 existing passages by highlighting exact words and phrases inside the original paragraph. Feedback explains missed ideas, why they matter, and the central phrases that carry the summary.
 
 ## Real practice sets
 Placeholder drill cards were removed. Practice items now launch real portal tasks and complete from submitted attempts; only videos and reading/instruction steps use manual acknowledgement.
 
 ## Inline SWT highlighting
-Content-selection practice keeps the original passage intact. Students highlight key lines directly inside the paragraph. SWT Practice asks students to choose Full Summary Mode or Highlight Key Lines Mode.
+Content-selection practice keeps the original passage intact. Students drag across key words and phrases directly inside the paragraph. SWT Practice asks students to choose Full Summary Mode or Highlight Key Phrases Mode.
