@@ -150,9 +150,13 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   assert.equal(calls, 2);
   let failures = 0;
   const broken = createEssayGrader(async () => { failures++; throw new Error('provider failed'); });
-  await assert.rejects(broken.grade(question, essay), /could not be completed/);
-  await assert.rejects(broken.grade(question, essay), /could not be completed/);
-  assert.equal(failures, 4);
+  const local = await broken.grade(question, essay);
+  assert.equal(local.scoringMode, 'local');
+  assert.equal(local.sampleKind, 'unavailable');
+  assert(Number.isInteger(local.scores.total));
+  const cachedLocal = await broken.grade(question, essay);
+  assert.deepEqual(cachedLocal, local);
+  assert.equal(failures, 2);
 });
 
 test('Full-score essays retain a complete sample and sample changes never alter original scores', () => {
@@ -225,13 +229,18 @@ test('A failed sample preserves the grade and a sample-only retry cannot rescore
   assert.equal(calls, 3, 'The completed sample should be cached');
 });
 
-test('Assessment validation retries explain the actual failure and never return a fabricated grade', async () => {
+test('Assessment validation failures fall back locally instead of fabricating AI feedback', async () => {
   let calls = 0;
   const grader = createEssayGrader(async prompt => {
     if (++calls > 1) assert.match(prompt, /VALIDATION RETRY: Return an integer score in range and feedback for content/);
     const raw = good(); delete raw.scores.content; return raw;
   });
-  await assert.rejects(grader.grade(question, essay), error => error.cause?.code === 'trait_content');
+  const result = await grader.grade(question, essay);
+  assert.equal(calls, 2);
+  assert.equal(result.scoringMode, 'local');
+  assert.equal(result.sampleKind, 'unavailable');
+  assert(Number.isInteger(result.scores.total));
+  assert.match(result.sampleNote, /local score is ready/i);
 });
 
 test('Missing ideas produce an honest next step and cannot suppress a full-score sample', () => {
