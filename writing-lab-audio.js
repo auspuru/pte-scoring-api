@@ -3,11 +3,12 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
 const bank = require('./content/writing-lab.json');
+const predictions = require('./content/writing-predictions-sep-2026');
 function createNarration(directory, generate, { bundledDirectory } = {}) {
   const pending = new Map();
   let manifest;
   async function get(id) {
-    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions)].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
+    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || [])].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
     if (bundledDirectory) {
       manifest ||= JSON.parse(await fs.readFile(path.join(bundledDirectory, 'manifest.json'), 'utf8'));
