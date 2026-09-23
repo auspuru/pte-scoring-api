@@ -31,13 +31,17 @@ test('student intervention UI treats exact questions as synchronised rather than
   assert.match(client,/pte:attempt-completed/);
 });
 
-test('new learning resources are present in the V2 module catalogue',()=>{
+test('learning resources and SWT highlight trainer are present in the module catalogue',()=>{
   const data=JSON.parse(source('public/improvement-modules.json'));
   const byCode=Object.fromEntries(data.modules.map(m=>[m.code,m]));
-  assert.equal(data.version,2);
+  assert.equal(data.version,3);
   assert(byCode['SST-01'].items.some(i=>String(i.url).includes('XUYKyqNpdrw')));
   assert(byCode['REG-01'].items.some(i=>String(i.url).includes('p-LV9crN3ZA')));
   assert(byCode['REG-01'].items.some(i=>String(i.url).includes('QZB_XvsBsTU')));
   assert(byCode['ESSAY-01']);
   assert.match(byCode['SWT-01'].items.map(i=>i.description).join(' '),/5.?75 words/i);
+  assert(byCode['SWT-CONTENT-01']);
+  assert.equal(byCode['SWT-CONTENT-01'].items[0].kind,'swt_selection_trainer');
+  assert.equal(byCode['SWT-CONTENT-01'].items[0].exerciseCount,15);
+  assert.equal(byCode['SWT-CONTENT-01'].items[0].minimumToComplete,10);
 });
