@@ -724,16 +724,19 @@ test('Twenty HIW recordings have exact word-position keys and meaning feedback',
  }
 });
 
-test('Imported mock navigation preserves its 25-minute timer and produces a single complete review',async()=>{
- const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();h.ctx.fetch=async()=>{throw Error('Imported mocks must not fetch SWT passages');};
- await h.click({start:'practice-mock-4'});const initial=snapshot(h).session;assert.equal(initial.questions.length,20);assert.equal(initial.deadline-clock.now,25*60000);assert.match(h.host.innerHTML,/data-exam-player/);
+test('Focused FIB mock preserves its 25-minute timer and produces one complete language review',async()=>{
+ const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();h.ctx.fetch=async()=>{throw Error('Focused FIB mocks must not fetch SWT passages');};
+ await h.click({start:'practice-mock-4'});const initial=snapshot(h).session;assert.equal(initial.questions.length,10);assert.equal(initial.deadline-clock.now,25*60000);assert.match(h.host.innerHTML,/data-exam-player/);
+ assert.equal(initial.questions.filter(q=>q.type==='dropdown').length,6);assert.equal(initial.questions.filter(q=>q.type==='wordbank').length,4);
+ const possible=initial.questions.reduce((n,q)=>n+q.answers.length,0);
  for(const q of initial.questions){
+  assert.match(q.reasoning.correct,/grammar, collocation and meaning/i);
   if(q.type==='dropdown')q.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));
   else q.answers.forEach((word,i)=>{h.click({word});h.click({blank:String(i)});});
   clock.add(15000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,initial.deadline);
  }
- const done=snapshot(h);assert.equal(done.history.length,1);assert.equal(done.history[0].earned,90);assert.equal(done.history[0].possible,90);assert.equal(done.history[0].pending,0);
- assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,20);assert.match(h.host.innerHTML,/Why each answer fits/);
+ const done=snapshot(h);assert.equal(done.history.length,1);assert.equal(done.history[0].earned,possible);assert.equal(done.history[0].possible,possible);assert.equal(done.history[0].pending,0);
+ assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,10);assert.match(h.host.innerHTML,/Why each answer fits/);
 });
 
 test('Practice draft and result links stay under their task, using original saved indices',async()=>{
