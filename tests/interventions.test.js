@@ -6,7 +6,7 @@ const path=require('node:path');
 const express=require('express');
 const {installInterventions}=require('../interventions');
 
-async function harness(){
+async function harness(options={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'interventions-'));
   const app=express();app.use(express.json());
   const users=new Set(['alice','bob']);
@@ -14,6 +14,7 @@ async function harness(){
     directory,
     verifyToken:token=>users.has(token)?token:null,
     getAccount:async uid=>users.has(uid)?{username:uid,blocked:false}:null,
+    getProgress:options.getProgress,
     requireAdmin:(req,res,next)=>req.headers['x-admin-key']==='teacher'?next():res.status(403).json({error:'Invalid admin key'})
   });
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
@@ -60,4 +61,34 @@ test('notification can be dismissed without completing the plan',async t=>{
   const created=(await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{title:'Focus',items:[{kind:'practice',title:'Step'}]}})).data.plan;
   const result=await call(h.base,'/api/interventions/'+created.id+'/notification-read',{method:'POST',token:'alice',body:{}});
   assert.equal(result.status,200);assert.equal(result.data.plan.notificationUnread,false);assert.equal(result.data.plan.status,'not_started');
+});
+
+test('assigned reading questions complete automatically from synced attempt evidence',async t=>{
+  const finishedAt=Date.now()+2000;
+  const h=await harness({getProgress:async()=>({readingProgress:{practiceResults:{'pte:q-1':{earned:3,possible:4,finishedAt}}}})});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const created=(await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{
+    title:'Reading practice',items:[{kind:'question',title:'FIB 1',engine:'reading',questionId:'pte:q-1',requireNewAttempt:true}]
+  }})).data.plan;
+  const listed=await call(h.base,'/api/interventions',{token:'alice'});
+  const item=listed.data.plans.find(p=>p.id===created.id).items[0];
+  assert.equal(item.status,'completed');
+  assert.equal(item.completionSource,'attempt_sync');
+  assert.match(item.completionEvidence,/Automatically matched/);
+});
+
+test('self-help Beta uses recent SWT trait scores and can create a student plan',async t=>{
+  const h=await harness({getProgress:async()=>({history:{1:[{
+    timestamp:new Date().toISOString(),trait_scores:{content:2,form:1,grammar:2,vocabulary:2}
+  }]}})});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'swt',problem:'I do not know how to pick the main idea'}});
+  assert.equal(advice.status,200);
+  assert.equal(advice.data.beta,true);
+  assert.equal(advice.data.latestScore.scores.content,2);
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='CP-01'));
+  const plan=await call(h.base,'/api/interventions/self-plan',{method:'POST',token:'alice',body:{moduleCode:'SWT-01',problem:'How should I attempt SWT?'}});
+  assert.equal(plan.status,200);
+  assert.equal(plan.data.plan.source,'student');
+  assert.match(plan.data.plan.title,/Self-help Beta/);
 });
