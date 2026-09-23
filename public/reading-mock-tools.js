@@ -97,7 +97,10 @@
     if (q.type !== 'swt') return null;
     if (!String(a[0] || '').trim()) return { earned: 0, possible: 9 };
     const data = assessment?.result;
-    const valid = data && !data.score_provisional && !data.ai_feedback_degraded &&
+    // Local SWT scoring is a valid practice estimate. Missing AI-only
+    // annotations must not exclude an otherwise complete local score from the
+    // mixed-mock total; only a genuinely provisional score stays pending.
+    const valid = data && !data.score_provisional &&
       Number.isFinite(data.raw_score) && data.raw_score >= 0 && data.raw_score <= 9 && data.max_raw_score === 9 &&
       ['content', 'form', 'grammar', 'vocabulary'].every(key => Number.isFinite(data.trait_scores?.[key]));
     return valid ? { earned: data.raw_score, possible: 9 } : { earned: 0, possible: 9, pending: true };
