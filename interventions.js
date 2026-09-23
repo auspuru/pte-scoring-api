@@ -3,7 +3,9 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const PLAN_STATUSES = new Set(['not_started','in_progress','ready_for_review','mastered','archived']);
-const ITEM_KINDS = new Set(['video','question','practice','message','swt_selection_trainer']);
+const ITEM_KINDS = new Set(['video','question','practice','instruction','practice_set','message','swt_selection_trainer']);
+const speakingBank = require('./content/speaking-bank');
+const readingBank = require('./public/reading-bank.json');
 const PRIORITIES = new Set(['high','normal','low']);
 
 function canonical(value) { return String(value || '').trim().toLowerCase(); }
@@ -35,6 +37,14 @@ function sanitizeItem(input = {}, existing = null) {
     questionId: clean(input.questionId ?? existing?.questionId, 160),
     testId: clean(input.testId ?? existing?.testId, 160),
     passageId: clean(input.passageId ?? existing?.passageId, 160),
+    practiceType: clean(input.practiceType ?? existing?.practiceType, 80),
+    minimumAttempts: Math.max(0, Math.min(20, Number(input.minimumAttempts ?? existing?.minimumAttempts) || 0)),
+    attemptProgress: (() => {
+      const raw=input.attemptProgress ?? existing?.attemptProgress;
+      if(!raw||typeof raw!=='object') return null;
+      return {count:Math.max(0,Math.min(50,Number(raw.count)||0)),target:Math.max(0,Math.min(20,Number(raw.target)||0)),
+        lastAt:iso(raw.lastAt)||null};
+    })(),
     required: input.required === undefined ? (existing?.required !== false) : input.required !== false,
     requireNewAttempt: input.requireNewAttempt === undefined ? !!existing?.requireNewAttempt : !!input.requireNewAttempt,
     status: input.status === 'completed' ? 'completed' : (input.status === 'started' ? 'started' : (existing?.status || 'not_started')),
@@ -196,6 +206,36 @@ function installInterventions(app, options = {}) {
     return Number.isFinite(t) ? t : 0;
   };
   const afterAssignment = (plan, at, required) => !required || (when(at) && when(at) >= when(plan.assignedAt));
+  const speakingTypeByQuestion = new Map((speakingBank.questions||[]).map(q=>[String(q.id),String(q.type)]));
+  const readingTypeByUid = (() => {
+    const map=new Map();
+    for(const lib of (readingBank.practiceLibraries||[])) for(const q of (lib.questions||[])) {
+      const uid=q.uid || ('pte:'+q.id); map.set(String(uid),String(lib.id||q.type||''));
+    }
+    for(const set of (readingBank.sets||[])) for(const q of (set.questions||[])) {
+      map.set(String(q.uid || (set.id+':'+q.id)),String(q.type||''));
+    }
+    for(const q of [...(readingBank.audioQuestionBank||[]),...(readingBank.mixedMock?.audioQuestions||[])]) {
+      map.set(String(q.uid || ('audio:'+q.id)),String(q.type||''));
+    }
+    return map;
+  })();
+  function practiceSetAttempts(plan,item,all) {
+    const newer=at=>afterAssignment(plan,at,true), type=item.practiceType;
+    if(item.engine==='speaking') return all.speaking.filter(a=>a.status==='submitted'
+      && speakingTypeByQuestion.get(String(a.questionId))===type && newer(a._updatedAt||a.startedAt));
+    if(item.engine==='writing-lab') return all.writing.filter(a=>a.status==='submitted'
+      && String(a.kind||a.questions?.[0]?.type||'')===type && newer(a.finishedAt||a._updatedAt||a.startedAt));
+    if(item.engine==='reading') {
+      return Object.entries(all.progress?.readingProgress?.practiceResults||{}).filter(([uid,result])=>
+        readingTypeByUid.get(String(uid))===type && newer(result?.finishedAt)).map(([uid,result])=>({id:uid,...result,_matchedAt:result.finishedAt}));
+    }
+    if(item.engine==='swt') return Object.entries(all.progress?.history||{}).flatMap(([passageId,attempts])=>
+      (attempts||[]).filter(a=>newer(a.timestamp)).map(a=>({id:passageId+':'+String(a.timestamp),...a})));
+    if(item.engine==='essay') return (Array.isArray(all.progress?.practiceHistory)?all.progress.practiceHistory:[])
+      .filter(a=>newer(a.date||a.updatedAt));
+    return [];
+  }
   async function evidence(username) {
     const progress = typeof getProgress === 'function' ? await getProgress(username).catch(() => ({})) : {};
     let speaking = [], writing = [];
@@ -236,34 +276,70 @@ function installInterventions(app, options = {}) {
   async function reconcile(username) {
     let plans = await store.list(username);
     const changed = new Map();
-    const contentIntent = /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important/i;
+    const contentIntent = /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important|improve content/i;
     const catalogue = await modules();
     const trainerModule = catalogue.find(m=>m.code==='SWT-CONTENT-01');
+
+    // Old self-help SWT content cards are upgraded to the interactive trainer.
     if (trainerModule) {
       for (const plan of plans.filter(active)) {
-        if (plan.source!=='student' || plan.moduleCode!=='SWT-01' || (plan.items||[]).some(i=>i.kind==='swt_selection_trainer') || !contentIntent.test(plan.reason||'')) continue;
+        if (plan.source!=='student' || !['SWT-01','CP-01','CP-02'].includes(plan.moduleCode)
+            || (plan.items||[]).some(i=>i.kind==='swt_selection_trainer') || !contentIntent.test(plan.reason||'')) continue;
         const next = await store.update(username, plan.id, current => sanitizePlan({
-          ...current,moduleCode:trainerModule.code,title:trainerModule.title,area:trainerModule.area,task:trainerModule.task,
+          ...current,moduleCode:trainerModule.code,title:trainerModule.title+' · Self-help Beta',area:trainerModule.area,task:trainerModule.task,
           weakness:trainerModule.weakness,items:trainerModule.items,status:'in_progress'
         },current));
         changed.set(plan.id,next);
       }
       if (changed.size) plans=plans.map(p=>changed.get(p.id)||p);
     }
-    const candidates = plans.filter(active).filter(p => (p.items || []).some(i => i.kind === 'question' && i.status !== 'completed'));
+
+    // Any older module that still contains placeholder "practice" items is refreshed
+    // from the current catalogue, where practice is either real portal practice or an instruction.
+    for (const plan of plans.filter(active)) {
+      if (!(plan.items||[]).some(i=>i.kind==='practice')) continue;
+      const module=catalogue.find(m=>m.code===plan.moduleCode);
+      if(!module || (module.items||[]).some(i=>i.kind==='practice')) continue;
+      const items=(module.items||[]).map(template=>{
+        const previous=(plan.items||[]).find(i=>(template.url&&i.url===template.url)||(i.title===template.title));
+        return previous ? {...template,id:previous.id,status:previous.status,startedAt:previous.startedAt,completedAt:previous.completedAt} : template;
+      });
+      const next=await store.update(username,plan.id,current=>sanitizePlan({...current,items,status:current.status==='ready_for_review'?'in_progress':current.status},current));
+      changed.set(plan.id,next);
+    }
+    if(changed.size) plans=plans.map(p=>changed.get(p.id)||p);
+
+    const candidates = plans.filter(active).filter(p => (p.items || []).some(i =>
+      (i.kind === 'question' || i.kind === 'practice_set') && i.status !== 'completed'));
     if (!candidates.length) return plans;
     const all = await evidence(username);
+
     for (const plan of candidates) {
       const nextItems = (plan.items || []).map(item => {
-        if (item.kind !== 'question' || item.status === 'completed') return item;
-        const hit = matchingAttempt(plan, item, all);
-        if (!hit) return item;
-        const at = hit.finishedAt || hit._matchedAt || hit.timestamp || hit.date || hit._updatedAt || Date.now();
-        return { ...item, status:'completed', startedAt:item.startedAt || iso(at) || new Date().toISOString(),
-          completedAt:iso(at) || new Date().toISOString(), completionSource:'attempt_sync',
-          completionEvidence:'Automatically matched to a submitted portal attempt.' };
+        if(item.status==='completed') return item;
+        if(item.kind==='question') {
+          const hit = matchingAttempt(plan, item, all);
+          if (!hit) return item;
+          const at = hit.finishedAt || hit._matchedAt || hit.timestamp || hit.date || hit._updatedAt || Date.now();
+          return { ...item, status:'completed', startedAt:item.startedAt || iso(at) || new Date().toISOString(),
+            completedAt:iso(at) || new Date().toISOString(), completionSource:'attempt_sync',
+            completionEvidence:'Automatically matched to a submitted portal attempt.' };
+        }
+        if(item.kind==='practice_set') {
+          const hits=practiceSetAttempts(plan,item,all);
+          const target=item.minimumAttempts||1;
+          const last=hits.map(a=>a.finishedAt||a._matchedAt||a.timestamp||a.date||a.updatedAt||a._updatedAt).sort((a,b)=>when(b)-when(a))[0]||null;
+          const status=hits.length>=target?'completed':hits.length?'started':item.status;
+          return {...item,status,startedAt:hits.length?(item.startedAt||plan.assignedAt):item.startedAt,
+            completedAt:hits.length>=target?(item.completedAt||iso(last)||new Date().toISOString()):null,
+            completionSource:hits.length>=target?'attempt_sync':'',
+            completionEvidence:hits.length>=target?('Completed '+hits.length+' qualifying portal attempt'+(hits.length===1?'':'s')+'.'):'',
+            attemptProgress:{count:hits.length,target,lastAt:iso(last)}};
+        }
+        return item;
       });
-      if (nextItems.some((item, i) => item.status !== plan.items[i]?.status || item.completedAt !== plan.items[i]?.completedAt)) {
+      if (nextItems.some((item, i) => item.status !== plan.items[i]?.status || item.completedAt !== plan.items[i]?.completedAt
+          || item.attemptProgress?.count !== plan.items[i]?.attemptProgress?.count)) {
         const next = await store.update(username, plan.id, current => sanitizePlan({
           ...current, items:nextItems, status:current.status === 'not_started' ? 'in_progress' : current.status
         }, current));
@@ -508,15 +584,18 @@ function installInterventions(app, options = {}) {
 
   app.post('/api/interventions/self-plan', student, async (req,res) => {
     try {
-      const code = clean(req.body?.moduleCode,60);
+      let code = clean(req.body?.moduleCode,60);
+      const selectedTask=['swt','sst','essay'].includes(req.body?.task)?req.body.task:'';
+      const problem = clean(req.body?.problem,1000);
+      const contentIntent=/important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important|improve content/i;
+      if(selectedTask==='swt' && ['CP-01','CP-02','SWT-01'].includes(code) && contentIntent.test(problem)) code='SWT-CONTENT-01';
       const catalogue = await modules();
       const module = catalogue.find(m => m.code === code);
       if (!module) return res.status(400).json({error:'That suggested plan is unavailable.'});
       const existing = await store.list(req.interventionUser);
       if (existing.filter(active).length >= 3) return res.status(409).json({error:'You already have 3 active focus areas. Finish one before adding another.'});
-      const problem = clean(req.body?.problem,1000);
       const plan = sanitizePlan({
-        moduleCode:module.code, source:'student', area:module.area, task:module.task, weakness:module.weakness,
+        moduleCode:module.code, source:'student', area:module.area, task:selectedTask==='swt'?'Summarize Written Text':selectedTask==='sst'?'Summarize Spoken Text':selectedTask==='essay'?'Essay Writing':module.task, weakness:module.weakness,
         title:module.title + ' · Self-help Beta',
         reason:problem ? 'You asked for help with: ' + problem : module.reason,
         priority:'normal', items:module.items || [], notificationUnread:false, status:'not_started'
