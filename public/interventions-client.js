@@ -75,7 +75,7 @@
       }catch(e){notify(e.message,true);return null;}
     }
     function notify(message,error=false){
-      if(typeof root.toast==='function')root.toast(message,error);
+      if(typeof globalThis.toast==='function')globalThis.toast(message,error);
       else alert(message);
     }
     async function handleClick(e){
