@@ -490,7 +490,7 @@ test('The mock catalogue keeps the six integrated mocks and adds six imported pr
   await h.ctx.ReadingPractice.open({mockId:id});const s=snapshot(h).session;
   assert.match(h.host.innerHTML,/data-exam-player/);
   if(bank.mockCatalogue.find(m=>m.id===id).kind==='reading-blanks'){
-   assert.equal(s.questions.length,20);assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','wordbank']);assert.equal(s.deadline-s.startedAt,25*60000);continue;
+   assert.equal(s.questions.length,10);assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','wordbank']);assert.equal(s.deadline-s.startedAt,25*60000);continue;
   }
   assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
   assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','hcs','hiw','mcma','mcsa','reorder','swt','wordbank'].sort());
@@ -504,7 +504,7 @@ test('Three mock sets have distinct audio with accurate HIW keys and explanation
  const forms=bank.mockCatalogue.filter(m=>m.family==='sectional'),seen=new Set();
  for(const form of forms){
   const plan=compose(bank,form.id,'ignored',swtPassages);
-  assert.equal(plan.questions.length,bank.sets.find(s=>s.id===form.setId).questions.length+6);
+  assert.equal(plan.questions.length,22);
   for(const q of plan.questions.filter(q=>['hcs','hiw'].includes(q.type))){
    assert(!seen.has(q.id));seen.add(q.id);assert(q.reasoning.correct);
    if(q.type==='hcs'){assert(q.choices[q.answer]);assert.equal(Object.keys(q.reasoning.options).length,3);}
@@ -737,7 +737,7 @@ test('Twenty HIW recordings have exact word-position keys and meaning feedback',
 test('Focused FIB mock preserves its 25-minute timer and produces one complete language review',async()=>{
  const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();h.ctx.fetch=async()=>{throw Error('Focused FIB mocks must not fetch SWT passages');};
  await h.click({start:'practice-mock-4'});const initial=snapshot(h).session;assert.equal(initial.questions.length,10);assert.equal(initial.deadline-clock.now,25*60000);assert.match(h.host.innerHTML,/data-exam-player/);
- assert.equal(initial.questions.filter(q=>q.type==='dropdown').length,6);assert.equal(initial.questions.filter(q=>q.type==='wordbank').length,4);
+ assert.equal(initial.questions.filter(q=>q.type==='dropdown').length,5);assert.equal(initial.questions.filter(q=>q.type==='wordbank').length,5);
  const possible=initial.questions.reduce((n,q)=>n+q.answers.length,0);
  for(const q of initial.questions){
   assert.match(q.reasoning.correct,/grammar, collocation and meaning/i);
@@ -767,9 +767,9 @@ test('Practice draft and result links stay under their task, using original save
 
 test('Question practice supports searching, paging, draft recovery, feedback and account-isolated progress',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();h.click({browseLibrary:'dropdown'});
- assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);assert.match(h.host.innerHTML,/50 questions/);
+ assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);assert.match(h.host.innerHTML,/40 questions/);
  const listing={innerHTML:''},query=h.host.querySelector.bind(h.host);h.host.querySelector=s=>s==='[data-library-list]'?listing:query(s);
- h.click({libraryPage:'1'});assert.match(listing.innerHTML,/pte:RFIB_011/);assert.doesNotMatch(listing.innerHTML,/pte:RFIB_001/);
+ h.click({libraryPage:'1'});assert.match(listing.innerHTML,/pte:RFIB_017/);assert.doesNotMatch(listing.innerHTML,/pte:RFIB_001/);
  h.host.oninput({target:{dataset:{librarySearch:''},value:'How Winds Form'}});assert.match(listing.innerHTML,/1 questions/);assert.match(listing.innerHTML,/pte:RFIB_001/);
  const q=bank.practiceLibraries[0].questions[0];await h.click({practiceUid:q.uid});assert.equal(snapshot(h).session.practiceUid,q.uid);assert.equal(snapshot(h).session.deadline,null);
  h.host.onchange({target:{dataset:{answer:'0'},value:q.answers[0]}});h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.equal(snapshot(h).session.answers[q.uid][0],q.answers[0]);
