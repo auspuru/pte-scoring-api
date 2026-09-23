@@ -3236,6 +3236,7 @@ function requireAdmin(req, res, next) {
 }
 
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   try { res.json(await AuthAPI.listUsers()); }
   catch (e) { res.status(500).json({ error: 'Failed to list users' }); }
 });
