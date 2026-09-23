@@ -17,6 +17,9 @@ test('highlight exercise hides the answer until grading',()=>{
   const ex=trainer.exercise(bank[2]);
   assert.equal(ex.id,'3');
   assert(ex.sentences.length>=4);
+  assert.equal(ex.text,bank[2].text);
+  assert(ex.paragraphs.length>=1);
+  assert.equal(ex.paragraphs.flatMap(p=>p.sentences).length,ex.sentences.length);
   assert.equal(Object.hasOwn(ex,'targetSentenceIndexes'),false);
   assert.equal(Object.hasOwn(ex,'studyGuide'),false);
 });
