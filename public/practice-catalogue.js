@@ -1,8 +1,9 @@
 (function (root, factory) {
-  const api = factory();
+  const fibQuality = root.ReadingFibQuality || (typeof require === 'function' ? require('./reading-fib-quality') : null);
+  const api = factory(fibQuality);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PracticeCatalogue = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (fibQuality) {
   'use strict';
   const groups = [
     { id: 'writing', title: 'Writing Practice', tasks: [
@@ -38,7 +39,9 @@
   function readingLibraries(bank) {
     const libraries = (bank.practiceLibraries || []).map(l => ({
       ...l,
-      questions: [...l.questions].filter(q => !['dropdown','wordbank'].includes(l.id) || languageFirstFib(q))
+      questions: [...l.questions]
+        .filter(q => !['dropdown','wordbank'].includes(l.id) || languageFirstFib(q))
+        .map(q => ['dropdown','wordbank'].includes(l.id) && fibQuality ? fibQuality.strengthen(q, 'library:'+q.id) : q)
     }));
     for (const task of groups.flatMap(g => g.tasks).filter(t => t.type)) {
       if (libraries.some(l => l.id === task.type)) continue;
