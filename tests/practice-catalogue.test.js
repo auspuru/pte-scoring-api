@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const catalogue = require('../public/practice-catalogue');
 const { routes } = require('../public/portal-workspace');
 const bank = require('../public/reading-bank.json');
+const fibQuality = require('../public/reading-fib-quality');
 const writing = { mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 })) };
 
 test('Each available individual task has exactly one primary home and a working portal route', () => {
@@ -27,8 +28,20 @@ test('Reading and Listening individual libraries reuse complete keys and stable 
       assert(q.answer !== undefined || q.answers?.length, q.uid);
     }
   }
-  for (const original of bank.practiceLibraries) assert.deepEqual(libraries.find(l => l.id === original.id), original);
-  assert.equal(JSON.stringify(bank), before);
+  for (const original of bank.practiceLibraries) {
+    const derived = libraries.find(l => l.id === original.id);
+    assert(derived, original.id);
+    for (const q of derived.questions) {
+      const source = original.questions.find(item => item.id === q.id);
+      assert(source, q.id);
+      assert.deepEqual(q.answers, source.answers);
+      if (['dropdown','wordbank'].includes(original.id)) {
+        assert.equal(q.fibQuality?.focus, 'grammar-vocabulary');
+        assert.equal(fibQuality.audit(q), true, q.id);
+      }
+    }
+  }
+  assert.equal(JSON.stringify(bank), before, 'The source bank stays immutable while the practice view receives stronger distractors.');
 });
 
 test('The single catalogue classifies integrated Reading sets as sectional and focused sets as practice', () => {
