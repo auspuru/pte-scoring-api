@@ -8,14 +8,14 @@
 
   const set=value=>new Set(value.split('|').map(x=>x.trim().toLowerCase()).filter(Boolean));
   const GROUPS={
-    noun:set('colleagues|development|dialogue|difference|features|industry|offerings|role|strain|trial|understanding|variation|acceptance|archipelago|arrangements|aspect|biases|composition|disadvantage|interests|journal|marketing|proposals|puzzle|screening|settlements|treatise|solutions|judgement|generations|interaction|memory|clarification|exposure|status|consumption|habitat|process|duties|seasons|novelty|confidence|experience|restrictions|safety|support|effects|bonding|causes|pattern|distances|aqueducts|flow|crops|interventions|responsibility|practice|skills|gardens|wellbeing|fields|needs|trails|scenery|environment|evidence|activity|processes|curriculum|leadership|form|ability|people|display|opportunity|control|stay|groups|standards|burnout|success|system|appointment|property|premium|concentration|lessons|review|problems|management'),
-    verb:set('absorb|apply|converge|depend|mitigate|paralyse|produce|reduce|struggle|acknowledges|indicates|adapt|determines|examine|interpret|magnify|retains|stand|prevent|follow|pay|support|strengthen|preserve|illuminate|acquire|occurs|give|vary|maintain|influence|change|create|expand|spread|enable|occur|adapt|apply|creates|turns|encourage|extend|subsidise|distort|understand|reject|provide|avoid|improve|organise|donate|expose|transform|communicate|combines|represent|rebuild|attract|automate|monitor|send|treat|increase|invite|state|decide|remove|disrupt|express|affect|estimate|receive|highlight|attach'),
-    adjective:set('Calm|Gentle|appalling|consistent|denser|difficult|emerging|heavier|hot|important|informed|irresistible|mistaken|narrow|obscure|open|recyclable|resilient|revised|tailored|warm|analogous|binding|distinct|fragmented|homogeneous|infallible|interconnected|negligible|regular|transparent|aground|clean|limited|common|hidden|formal|appealing|direct|practical|willing|cyclical|required|stable|efficient|tougher|essential|easy|unexpected|engaging'),
+    noun:set('colleagues|development|dialogue|difference|features|industry|offerings|role|strain|trial|understanding|variation|acceptance|archipelago|arrangements|aspect|biases|composition|disadvantage|interests|journal|marketing|proposals|puzzle|screening|settlements|treatise|solutions|judgement|generations|interaction|memory|clarification|exposure|status|consumption|habitat|process|duties|seasons|novelty|confidence|experience|restrictions|safety|support|effects|bonding|causes|pattern|distances|aqueducts|flow|crops|interventions|responsibility|practice|skills|gardens|wellbeing|fields|needs|trails|scenery|environment|evidence|activity|processes|curriculum|leadership|form|ability|people|display|opportunity|control|stay|groups|standards|burnout|success|system|appointment|property|premium|concentration|lessons|review|problems|management|component|consent|access'),
+    verb:set('absorb|apply|converge|depend|mitigate|paralyse|produce|reduce|struggle|acknowledges|indicates|adapt|determines|examine|interpret|magnify|retains|stand|prevent|follow|pay|support|strengthen|preserve|illuminate|acquire|occurs|give|vary|maintain|influence|change|create|expand|spread|enable|occur|adapt|apply|creates|turns|encourage|extend|subsidise|distort|understand|reject|provide|avoid|improve|organise|donate|expose|transform|communicate|combines|represent|rebuild|attract|automate|monitor|send|treat|increase|invite|state|decide|remove|disrupt|express|affect|estimate|receive|highlight|attach|infer|memorise|repeat|raise|record'),
+    adjective:set('Calm|Gentle|appalling|consistent|denser|difficult|emerging|heavier|hot|important|informed|irresistible|mistaken|narrow|obscure|open|recyclable|resilient|revised|tailored|warm|analogous|binding|distinct|fragmented|homogeneous|infallible|interconnected|negligible|regular|transparent|aground|clean|limited|common|hidden|formal|appealing|direct|practical|willing|cyclical|required|stable|efficient|tougher|essential|easy|unexpected|engaging|explicit'),
     adverb:set('gradually|necessarily|only|rather|thus far|Specifically|clearly|quickly|effectively|increasingly'),
     gerund:set('addressing|developing|eliminating|extrapolating|focussing|functioning|presenting|replacing|increasing|operating|preserving|waking|changing'),
     past:set('calibrated|came|attracted|brought|enabled|emerged|eroded|scurried|wasted|inherited|recognised|reinforced|understood|consumed|developed|grown|sorted|removed|combined|shared|needed'),
-    connector:set('In fact|yet'),
-    preposition:set('according to|by|to|with|beside'),
+    connector:set('In fact|yet|although|unless|provided|while|because'),
+    preposition:set('according to|by|to|with|beside|than'),
     infinitive:set('to help|to respond'),
     modal:set('can'),
     verbPhrase:set('are to|had to listen|is seen'),
@@ -161,8 +161,10 @@
     if(q.type==='dropdown'){
       return q.options.every((row,i)=>{
         const type=q.fibQuality.blankTypes[i], same=row.filter(x=>classify(x)===type).length;
-        if(q.fibQuality.authoredDistractors)
-          return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])&&same>=2&&same<4;
+        if(q.fibQuality.authoredDistractors){
+          const contextualSame=row.filter(x=>classifyFor(q,i,x)===type).length;
+          return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])&&contextualSame>=2&&contextualSame<4;
+        }
         return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])
           &&row.slice(1,3).every(x=>classify(x)===type)
           &&classify(row[3])!==type;
