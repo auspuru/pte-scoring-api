@@ -6,7 +6,7 @@
   'use strict';
   const VERSION='grammar-vocab-2026-09-24.1';
 
-  const set=value=>new Set(value.split('|').map(x=>x.trim()).filter(Boolean));
+  const set=value=>new Set(value.split('|').map(x=>x.trim().toLowerCase()).filter(Boolean));
   const GROUPS={
     noun:set('colleagues|development|dialogue|difference|features|industry|offerings|role|strain|trial|understanding|variation|acceptance|archipelago|arrangements|aspect|biases|composition|disadvantage|interests|journal|marketing|proposals|puzzle|screening|settlements|treatise|solutions|judgement|generations|interaction|memory|clarification|exposure|status|consumption|habitat|process|duties|seasons|novelty|confidence|experience|restrictions|safety|support|effects|bonding|causes|pattern|distances|aqueducts|flow|crops|interventions|responsibility|practice|skills|gardens|wellbeing|fields|needs|trails|scenery|environment|evidence|activity|processes|curriculum|leadership|form|ability|people|display|opportunity|control|stay|groups|standards|burnout|success|system|appointment|property|premium|concentration|lessons|review|problems|management'),
     verb:set('absorb|apply|converge|depend|mitigate|paralyse|produce|reduce|struggle|acknowledges|indicates|adapt|determines|examine|interpret|magnify|retains|stand|prevent|follow|pay|support|strengthen|preserve|illuminate|acquire|occurs|give|vary|maintain|influence|change|create|expand|spread|enable|occur|adapt|apply|creates|turns|encourage|extend|subsidise|distort|understand|reject|provide|avoid|improve|organise|donate|expose|transform|communicate|combines|represent|rebuild|attract|automate|monitor|send|treat|increase|invite|state|decide|remove|disrupt|express|affect|estimate|receive|highlight|attach'),
@@ -46,7 +46,7 @@
   // target answer; classification here is about grammatical role, not meaning.
   for(const [type,pool] of Object.entries(POOLS)){
     if(!GROUPS[type])GROUPS[type]=new Set();
-    for(const value of pool)GROUPS[type].add(value);
+    for(const value of pool)GROUPS[type].add(String(value).toLowerCase());
   }
 
   const GRAMMAR_TRAP={
@@ -62,9 +62,8 @@
   }
   function normal(value){return String(value||'').trim();}
   function classify(value){
-    const answer=normal(value);
-    for(const [type,values] of Object.entries(GROUPS))if(values.has(answer))return type;
-    const lower=answer.toLowerCase();
+    const answer=normal(value),lower=answer.toLowerCase();
+    for(const [type,values] of Object.entries(GROUPS))if(values.has(lower))return type;
     if(/^to\s+\w+/.test(lower))return 'infinitive';
     if(/\s/.test(answer))return 'phrase';
     if(/ly$/.test(lower))return 'adverb';
