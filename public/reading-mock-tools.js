@@ -226,8 +226,11 @@
     if (preset) {
       const set = [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
       if (!set) throw Error('This mock question set is unavailable.');
-      if(preset.family==='practice' || preset.kind==='reading-blanks') return composeReadingPractice(bank,preset,set);
-      const prepared = preset.family === 'sectional'
+      // Focused prediction FIB mocks 4–9 are Reading-only. The earlier
+      // practice mocks keep their existing integrated SWT + Reading + audio
+      // structure, using language-first Reading questions inside that shell.
+      if(preset.kind==='reading-blanks') return composeReadingBlanksPractice(bank,preset);
+      const prepared = ['sectional','practice'].includes(preset.family)
         ? composeReadingPractice(bank, { ...preset, minutes:set.minutes }, set)
         : null;
       const reading = prepared?.questions || set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
