@@ -5788,6 +5788,14 @@ function escapeHtmlServer(s) {
   return String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
+require('./interventions').installInterventions(app, {
+  pool: pgPool,
+  directory: path.join(DATA_DIR, 'interventions'),
+  verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
+  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  requireAdmin
+});
+
 require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),

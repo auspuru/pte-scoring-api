@@ -66,13 +66,19 @@
       host.innerHTML='<div class="speaking-workspace"><button class="portal-button" data-speaking-action="practice">← Speaking Practice</button><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
       host.onclick=click;host.oninput=()=>cacheDraft();host.onchange=change;
     }
-    async function open(type) {
+    async function open(type, questionId) {
       const user=identity();if(!user)return;
       if(owner&&owner!==user)reset();owner=user;activeType=type;visible=true;host=doc.getElementById('speakingPane');
       const ticket=++serial;
       try{
         catalog ||= await api('/catalog');if(!valid(ticket,user)||!visible)return;
         if(!catalog.types[type])return;
+        if(questionId){
+          const target=catalog.questions.find(q=>String(q.id)===String(questionId)&&q.type===type);
+          if(!target){chrome('<h2>'+esc(catalog.types[type].name)+'</h2><p>This assigned question is no longer available.</p><button class="portal-button" data-speaking-action="list">Open question list</button>');return;}
+          if(attempt?.questionId===target.id){render();return;}
+          attempt=null;releasePlayback();phase='idle';await start(target.id);return;
+        }
         if(attempt?.question.type===type){render();return;}
         attempt=null;releasePlayback();phase='idle';await library();
       }catch(e){if(valid(ticket,user)){chrome('<h2>Speaking practice</h2><p>'+esc(e.message)+'</p><button class="portal-button" data-speaking-action="reload">Retry</button>');}}

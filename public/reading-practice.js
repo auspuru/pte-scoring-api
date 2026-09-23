@@ -141,6 +141,14 @@
       if (state.session && !state.session.done) state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)];
       state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);persist();render();resumeSwtAssessments();return;
     }
+    if (request.practiceUid) {
+      const target=practiceLibraries().flatMap(l=>l.questions||[]).find(item=>String(item.uid)===String(request.practiceUid));
+      if(!target){home();const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This assigned practice question is unavailable.';host.prepend(notice);return;}
+      if(state.session?.practiceUid===target.uid&&!state.session.done)return render();
+      if(state.session&&!state.session.done&&!confirm('Start this assigned practice question? Your current answers remain saved. Any running mock timer will continue.'))return render();
+      speaker?.unlock();
+      return start('practice',target.uid);
+    }
     if (request.libraryId) {
       if (state.session?.practiceUid && !state.session.done && state.session.questions[0].type === request.libraryId) return render();
       return browseLibrary(request.libraryId);

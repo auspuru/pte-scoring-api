@@ -816,6 +816,7 @@ function signOut() {
   savePortalEssayDraft();
   resetWritingLabFrame();
   window.SpeakingPractice?.reset();
+  studentInterventionsController?.reset();
   window.ReadingPractice?.leave();
   captureAccountProgress();
   flushPendingSyncOnExit();
@@ -908,6 +909,7 @@ async function enterApp(uid) {
   updateDashboard();
   restorePortalEssayDraft(true);
   portalWorkspace.start();
+  studentInterventionsController?.refresh({ showPopup: true });
   checkAIStatus();
   removeAdminPortalEntry();
 
@@ -12147,6 +12149,12 @@ function initialisePortalWorkspace() {
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
     launchWriting: testId => switchSection('writing-run', { labRequest: { testId } })
   });
+  studentInterventionsController = window.StudentInterventions?.create({
+    document,
+    identity: () => ({ uid: currentUserId, token: sessionToken }),
+    navigate: switchSection,
+    launch: launchAssignedQuestion
+  }) || null;
   window.addEventListener('message', event => {
     const frame = document.getElementById('writingLabFrame');
     if (event.source !== frame?.contentWindow || event.origin !== location.origin || event.data?.type !== 'writing-lab-navigate') return;
@@ -12187,6 +12195,29 @@ function resetWritingLabFrame() {
   frame.src = 'about:blank';
 }
 
+function launchAssignedQuestion(item) {
+  if (!item) return;
+  if (item.engine === 'speaking') {
+    switchSection(item.route || 'practice-hub', { speakingRequest: { questionId: item.questionId } });
+    return;
+  }
+  if (item.engine === 'reading') {
+    switchSection(item.route || 'practice-hub', { readingRequest: { practiceUid: item.questionId } });
+    return;
+  }
+  if (item.engine === 'writing-lab') {
+    switchSection(item.route || 'spoken-text', { labRequest: { testId: item.testId || item.questionId } });
+    return;
+  }
+  if (item.engine === 'swt') {
+    switchSection('swt');
+    const id = Number(item.passageId || item.questionId);
+    if (Number.isFinite(id)) setTimeout(() => { if (typeof loadPassage === 'function') loadPassage(id); }, 0);
+    return;
+  }
+  if (item.route) switchSection(item.route);
+}
+
 function switchSection(section, options = {}) {
   savePortalEssayDraft();
   if (section === 'practice') { openPractice(false, options); return; }
@@ -12200,17 +12231,20 @@ function switchSection(section, options = {}) {
   }
   const active = portalWorkspace.activate(section, options);
   if (active === 'progress') openStudentProgress();
+  if (active === 'next-steps') studentInterventionsController?.open();
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if (PortalWorkspace.routes[active]?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();
     updatePortalResume();
+    studentInterventionsController?.refresh({ showPopup: false });
   }
   // SWT's current passage, results tab and editor node stay intact.
 }
 
 
 let studentProgressController;
+let studentInterventionsController = null;
 function openStudentProgress() {
   if (!studentProgressController) studentProgressController = StudentProgress.create({
     document,
