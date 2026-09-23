@@ -14621,7 +14621,10 @@ async function scoreSummary(submission = null){
     try { await saveAttempt(passageId, text, data, spellData); }
     catch { saved = false; }
     if (!sameOwner()) return;
-    if(saved&&typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'swt',passageId}}));
+    if(saved){
+      try{await flushSync();}catch(_){}
+      if(typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'swt',passageId}}));
+    }
     attempted.add(passageId);
     populatePassageDropdowns();
     if (currentPassageId !== passageId) {
