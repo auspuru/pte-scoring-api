@@ -25,3 +25,6 @@ V1 also supports assigning exact Essay prompts from the student's existing essay
 - Students can use Self-help Beta for SWT, SST and Essay suggestions based on recent score traits where available.
 - Teachers can build fully manual custom plans with instructions and links.
 - Missing legacy JSON accounts are merged into Postgres once without overwriting existing accounts.
+
+## SWT highlight trainer
+Students who struggle to identify important SWT content can practise on 15 existing passages by selecting central sentences only. Feedback explains missed ideas, why they matter, and the key phrases/sentences that carry the summary.
