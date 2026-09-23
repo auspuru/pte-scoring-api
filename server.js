@@ -409,6 +409,11 @@ async function pgInitSchema() {
       CONSTRAINT vocab_extras_singleton CHECK (id = 1)
     );
     INSERT INTO vocab_extras (id, payload) VALUES (1, '{}') ON CONFLICT (id) DO NOTHING;
+    CREATE TABLE IF NOT EXISTS migration_meta (
+      key            TEXT PRIMARY KEY,
+      completed_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      details        JSONB NOT NULL DEFAULT '{}'::jsonb
+    );
   `;
   await pgPool.query(ddl);
 }
@@ -517,6 +522,61 @@ async function pgMigrateFromJsonIfNeeded() {
     client.release();
   }
   return { migrated: true, accounts: importedAccounts, user_data: importedUserData };
+}
+
+
+async function pgMergeLegacyAccountsOnce() {
+  if (!pgPool) return { merged:false, reason:'no_pg_pool' };
+  const key = 'legacy_json_account_merge_v1';
+  const done = await pgPool.query('SELECT details FROM migration_meta WHERE key=$1', [key]);
+  if (done.rows.length) return { merged:false, reason:'already_completed', ...(done.rows[0].details || {}) };
+  let raw;
+  try { raw = await fs.readFile(STORAGE_FILE, 'utf8'); }
+  catch { return { merged:false, reason:'no_json_file' }; }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch { return { merged:false, reason:'json_parse_failed' }; }
+  const accounts = parsed.accounts || {};
+  const users = parsed.users || {};
+  const client = await pgPool.connect();
+  let accountsAdded = 0, userDataAdded = 0;
+  try {
+    await client.query('BEGIN');
+    for (const [rawUid, acct] of Object.entries(accounts)) {
+      const uid = canonicalUserId(rawUid);
+      if (!uid || !acct) continue;
+      const result = await client.query(
+        `INSERT INTO accounts (username,password_hash,secret_q,secret_a_hash,created_at,last_login,blocked,role)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (username) DO NOTHING`,
+        [uid, acct.passwordHash || '', acct.secretQ || '', acct.secretAHash || '',
+         acct.createdAt || new Date().toISOString(), acct.lastLogin || null, !!acct.blocked, acct.role || 'user']
+      );
+      accountsAdded += result.rowCount || 0;
+    }
+    for (const [rawUid, data] of Object.entries(users)) {
+      const uid = canonicalUserId(rawUid);
+      if (!uid || !data) continue;
+      const result = await client.query(
+        `INSERT INTO user_data (username,data,updated_at) VALUES ($1,$2::jsonb,NOW())
+         ON CONFLICT (username) DO NOTHING`, [uid, JSON.stringify(data)]
+      );
+      userDataAdded += result.rowCount || 0;
+    }
+    const { rows } = await client.query('SELECT COUNT(*)::int AS n FROM accounts');
+    const details = {
+      legacyAccounts: Object.keys(accounts).length,
+      legacyUserData: Object.keys(users).length,
+      accountsAdded,
+      userDataAdded,
+      postgresAccountsAfter: rows[0]?.n || 0
+    };
+    await client.query('INSERT INTO migration_meta(key,details) VALUES($1,$2::jsonb)', [key, JSON.stringify(details)]);
+    await client.query('COMMIT');
+    return { merged:true, ...details };
+  } catch (e) {
+    await client.query('ROLLBACK').catch(()=>{});
+    throw e;
+  } finally { client.release(); }
 }
 
 // ─── POSTGRES STORAGE ADAPTER ───────────────────────────────────────────────
@@ -5876,6 +5936,14 @@ app.listen(PORT, '0.0.0.0', async () => {
         console.log(`🐘 Migrated ${mig.accounts} accounts and ${mig.user_data} user records from pte_data.json`);
       } else {
         console.log(`🐘 No migration needed (${mig.reason})`);
+      }
+      const legacy = await pgMergeLegacyAccountsOnce();
+      if (legacy.merged) {
+        console.log(`🐘 Legacy account merge: ${legacy.accountsAdded}/${legacy.legacyAccounts} accounts and ${legacy.userDataAdded}/${legacy.legacyUserData} user profiles added; Postgres now has ${legacy.postgresAccountsAfter} accounts`);
+      } else if (legacy.reason === 'already_completed') {
+        console.log(`🐘 Legacy account merge already completed; Postgres account count after merge was ${legacy.postgresAccountsAfter || 'unknown'}`);
+      } else {
+        console.log(`🐘 Legacy account merge skipped (${legacy.reason})`);
       }
       // v19.11.1: seed the passages table from the bundle ONLY if it's empty.
       // After this run, every admin edit lives in Postgres and is safe across
