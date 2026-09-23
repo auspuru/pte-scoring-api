@@ -767,7 +767,7 @@ test('Practice draft and result links stay under their task, using original save
 
 test('Question practice supports searching, paging, draft recovery, feedback and account-isolated progress',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();h.click({browseLibrary:'dropdown'});
- assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);assert.match(h.host.innerHTML,/40 questions/);
+ assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);assert.match(h.host.innerHTML,/52 questions/);
  const listing={innerHTML:''},query=h.host.querySelector.bind(h.host);h.host.querySelector=s=>s==='[data-library-list]'?listing:query(s);
  h.click({libraryPage:'1'});assert.match(listing.innerHTML,/pte:RFIB_017/);assert.doesNotMatch(listing.innerHTML,/pte:RFIB_001/);
  h.host.oninput({target:{dataset:{librarySearch:''},value:'How Winds Form'}});assert.match(listing.innerHTML,/1 questions/);assert.match(listing.innerHTML,/pte:RFIB_001/);
