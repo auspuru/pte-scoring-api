@@ -5,7 +5,8 @@ const os=require('node:os');
 const path=require('node:path');
 const express=require('express');
 const {installInterventions}=require('../interventions');
-const passages=require('../passages.json').map(require('../swt-reference').studentPassage);\nconst swtTrainer=require('../swt-selection-trainer');
+const passages=require('../passages.json').map(require('../swt-reference').studentPassage);
+const swtTrainer=require('../swt-selection-trainer');
 
 async function harness(options={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'interventions-'));
