@@ -275,3 +275,21 @@ test('Expanded dictation bank starts all 56 questions and retains the earliest a
  for(const q of catalog.dictation){const id=randomUUID();first ||= id;const response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:q.id})});assert.equal(response.status,200);const a=await response.json();assert.equal(a.questions[0].text,'');assert.equal(a.questions[0].sample,undefined);assert.equal(a.status,'ready');}
  const history=await (await fetch(base+'/attempts',{headers})).json();assert.equal(history.length,56);assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='wfd-practice-50'));
 });
+
+
+test('local Writing fallback returns a usable score when the external model is unavailable',async()=>{
+  const swt={type:'swt',text:'Cities can reduce heat by planting trees and protecting green spaces.',keyPoints:['Cities can reduce heat','planting trees','protecting green spaces']};
+  const answer='Cities can reduce heat by planting trees and protecting green spaces.';
+  const result=await policy.grade(swt,answer,async()=>{throw Error('model offline');});
+  assert.equal(result.scoringMode,'local');
+  assert.equal(result.assessmentType,'Local practice assessment');
+  assert.equal(result.scores.form,1);
+  assert(result.scores.content>=3);
+  assert(Number.isFinite(result.total));
+});
+test('local fallback keeps deterministic WFD scoring unchanged',async()=>{
+  const q={type:'wfd',text:'Students should review the lecture before the tutorial.'};
+  const result=await policy.grade(q,q.text,async()=>{throw Error('must not be called');});
+  assert.equal(result.total,result.maximum);
+  assert.equal(result.assessmentType,'Word-by-word practice assessment');
+});
