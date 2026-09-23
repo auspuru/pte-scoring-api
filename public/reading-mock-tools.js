@@ -11,6 +11,30 @@
     { id: 'wind', label: 'Wind' }, { id: 'office', label: 'Office typing' }
   ]);
   const AUDIO_CUES = Object.freeze(['woodpecker-chirp', 'phone-ring']);
+  const LANGUAGE_FIRST_FIB_EXCLUDE = Object.freeze({
+    dropdown: new Set(['RFIB_002','RFIB_005','RFIB_006','RFIB_007','RFIB_010','RFIB_014','RFIB_018','RFIB_019','RFIB_047','RFIB_049']),
+    wordbank: new Set(['RDWD_001','RDWD_002','RDWD_004','RDWD_005','RDWD_006','RDWD_007','RDWD_008','RDWD_010','RDWD_013','RDWD_016','RDWD_030','RDWD_037','RDWD_047'])
+  });
+  const TECHNICAL_FIB_TERMS = /\b(?:polygenic|deadweight|allele|genotype|phenotype|immunoglobulin|subduction|quantitative easing|bond yield|fiscal multiplier|mitochondri|pathogen resistance)\b/i;
+  function languageFirstFib(q) {
+    if (!q || !['dropdown','wordbank'].includes(q.type)) return false;
+    if (LANGUAGE_FIRST_FIB_EXCLUDE[q.type]?.has(String(q.id))) return false;
+    return !TECHNICAL_FIB_TERMS.test([q.title,q.passage,q.answers,q.answer,q.options,q.wordBank].flat(Infinity).join(' '));
+  }
+  function qualityFibPool(bank, type, offset = 0) {
+    const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
+    const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
+      .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
+    const merged = [...library.filter(languageFirstFib), ...core.filter(languageFirstFib)];
+    const seen = new Set(), unique = merged.filter(q => {
+      const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
+      if (!identity || seen.has(identity)) return false;
+      seen.add(identity); return true;
+    });
+    if (!unique.length) return [];
+    const shift = ((offset % unique.length) + unique.length) % unique.length;
+    return [...unique.slice(shift), ...unique.slice(0,shift)];
+  }
   function hash(value) {
     let n = 2166136261;
     for (const ch of String(value || '')) { n ^= ch.charCodeAt(0); n = Math.imul(n, 16777619); }
@@ -109,16 +133,23 @@
     }
   }
 
-  // Reading-only practice: preserve source IDs/keys and use all five task types.
+  // Reading-only practice uses all five task types. Fill-in-the-blanks are
+  // drawn from the language-first pool: answers must be recoverable from
+  // context, grammar or collocation rather than specialist subject knowledge.
   function composeReadingPractice(bank, preset, preferred) {
-    const index = Math.max(0, (bank.mockCatalogue || []).filter(m => m.family === 'practice' || m.kind === 'reading-blanks').findIndex(m => m.id === preset.id));
+    const practicePresets = (bank.mockCatalogue || []).filter(m => m.family === 'practice' || m.kind === 'reading-blanks');
+    const index = Math.max(0, practicePresets.findIndex(m => m.id === preset.id));
     const sets = bank.sets || [];
     const rotated = sets.map((_,i) => sets[(i + index) % sets.length]);
-    const sources = [preferred, ...rotated, ...(bank.importedSets || [])].filter(Boolean);
     const selected = [], seen = new Set();
     for (const [type, count] of [['dropdown',5],['mcma',2],['reorder',2],['wordbank',5],['mcsa',2]]) {
       let added = 0;
       const spec = readingFormat.tasks.find(task => task.type === type);
+      const fib = ['dropdown','wordbank'].includes(type);
+      const quality = fib ? qualityFibPool(bank,type,index*5) : [];
+      const sources = fib
+        ? [{ id:'language-first-'+type, questions:quality }]
+        : [preferred, ...rotated].filter(Boolean);
       for (const source of sources) {
         for (const q of source.questions || []) {
           if (q.type !== type) continue;
@@ -427,5 +458,5 @@
     }
     return { play, cancel, unlock };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
+  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });
