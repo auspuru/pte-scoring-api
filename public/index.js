@@ -14366,7 +14366,7 @@ function setSwtPracticeMode(mode){
   const description = document.getElementById('swtModeDescription');
   if(description) description.textContent = mode === 'summary'
     ? 'Full Summary Mode: write one sentence of 5–75 words and receive the normal SWT score.'
-    : 'Highlight Key Lines Mode: identify the important content first without writing a summary.';
+    : 'Highlight Key Phrases Mode: drag over the important words and phrases before writing a summary.';
   if(mode === 'highlight'){
     stopTimer();
     const timer = document.getElementById('timerDisplay');
