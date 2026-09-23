@@ -67,7 +67,9 @@ test('SWT practice asks students to choose Full Summary or Highlight Key Phrases
   assert.match(html,/Highlight Key Phrases Mode/);
   assert.match(client,/setSwtPracticeMode/);
   assert.match(client,/swt-selection\/practice/);
-  assert.match(client,/captureSwtHighlightSelection/);\n  assert.match(client,/swt-practice-highlight/);
-  assert.match(trainerClient,/captureTrainerSelection/);\n  assert.match(trainerClient,/swt-trainer-highlight/);
+  assert.match(client,/captureSwtHighlightSelection/);
+  assert.match(client,/swt-practice-highlight/);
+  assert.match(trainerClient,/captureTrainerSelection/);
+  assert.match(trainerClient,/swt-trainer-highlight/);
   assert.doesNotMatch(trainerClient,/swt-trainer-number/);
 });
