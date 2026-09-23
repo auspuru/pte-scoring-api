@@ -4,38 +4,8 @@ const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
-const swtPassages = require('./passages.json');
+const predictions = require('./content/writing-predictions-sep-2026');
 const clone = value => structuredClone(value);
-const uniqueBy = (items, key) => {
-  const seen = new Set();
-  return items.filter(item => {
-    const value = key(item);
-    if (value == null || seen.has(value)) return false;
-    seen.add(value);
-    return true;
-  });
-};
-const normalText = value => String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
-const swtPool = uniqueBy([
-  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'swt')),
-  ...swtPassages.map(p => ({
-    id: 'swt-passage-' + p.id,
-    type: 'swt',
-    title: p.title || 'Summarise written text',
-    minutes: 10,
-    text: p.text,
-    keyPoints: Object.values(p.keyElements || {}).filter(value => typeof value === 'string' && value.trim()),
-    sample: p.sampleResponse || ''
-  }))
-], q => normalText(q.text));
-const sstPool = uniqueBy([
-  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'sst')),
-  ...(bank.spoken || [])
-], q => q.id);
-const wfdPool = uniqueBy([
-  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'wfd')),
-  ...(bank.dictation || [])
-], q => q.id);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
   const slots = items.slice();
@@ -51,16 +21,16 @@ function roundRobinPairs(items) {
   }
   return pairs;
 }
-const predictionSwtPairs = roundRobinPairs(swtPool);
-// Prediction essays stay unchanged. Non-essay tasks are allocated from the
-// validated practice pools so prediction papers no longer clone Mock 1.
+const predictionSwtPairs = roundRobinPairs(predictions.swt);
+// Prediction essays stay unchanged. Every non-essay task comes only from the
+// current September 2026 prediction bank; generic practice pools are not used.
 const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
   const swt = (predictionSwtPairs[index] || predictionSwtPairs[index % predictionSwtPairs.length]).map(clone);
-  const sst = clone(sstPool[(index * 7 + 3) % sstPool.length]);
-  const wfd = [0, 19, 38].map(offset => {
-    const q = clone(wfdPool[(index * 3 + offset) % wfdPool.length]);
+  const sst = clone(predictions.sst[(index * 5 + 2) % predictions.sst.length]);
+  const wfd = [0, 13, 26].map(offset => {
+    const q = clone(predictions.wfd[(index * 3 + offset) % predictions.wfd.length]);
     q.minutes = 4;
     q.timeGroup = 'dictation';
     return q;
@@ -71,6 +41,7 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
     description: essay.title,
     category: 'prediction',
     predictionNumber: number,
+    predictionSource: predictions.source,
     questions: [
       swt[0],
       swt[1],
