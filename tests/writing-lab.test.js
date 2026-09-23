@@ -12,6 +12,7 @@ const report=require('../public/writing-lab-report');
 const {createStore}=require('../writing-lab-store');
 const {createNarration}=require('../writing-lab-audio');
 const bank=require('../content/writing-lab.json');
+const predictions=require('../content/writing-predictions-sep-2026');
 const sentence=n=>Array(n).fill('word').join(' ')+'.';
 test('Published form boundaries and SWT sentence structure',()=>{
   for(const [type,bounds] of Object.entries({sst:[[39,0],[40,1],[49,1],[50,2],[70,2],[71,1],[100,1],[101,0]],essay:[[119,0],[120,1],[199,1],[200,2],[300,2],[301,1],[380,1],[381,0]],swt:[[4,0],[5,1],[75,1],[76,0]]})) {
@@ -57,19 +58,36 @@ test('Original content has correct task counts, lengths and usable reference ans
   assert.equal(bank.mocks[0].questions[2].text,"Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.");
   assert.equal(bank.mocks[1].questions[2].text,"Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.");
 });
-test('Prediction mocks preserve essays while varying every non-essay paper',()=>{
+test('Prediction mocks preserve essays and use only September 2026 prediction tasks',()=>{
   assert.equal(predictionMocks.length,bank.predictionEssays.length);assert.equal(predictionMocks.length,33);
   assert.deepEqual(predictionMocks.map(m=>m.questions.find(q=>q.type==='essay').text),bank.predictionEssays.map(e=>e.text));
   const signatures=predictionMocks.map(m=>m.questions.filter(q=>q.type!=='essay').map(q=>q.id).join('|'));
   assert.equal(new Set(signatures).size,predictionMocks.length);
+  const allowed={
+    swt:new Set(predictions.swt.map(q=>q.id)),
+    sst:new Set(predictions.sst.map(q=>q.id)),
+    wfd:new Set(predictions.wfd.map(q=>q.id))
+  };
   for(const mock of predictionMocks){
     assert.deepEqual(mock.questions.map(q=>q.type),['swt','swt','essay','sst','wfd','wfd','wfd']);
     assert.equal(report.minutesFor(mock.questions),54);
     assert.equal(new Set(mock.questions.filter(q=>q.type==='swt').map(q=>q.id)).size,2);
     assert.equal(new Set(mock.questions.filter(q=>q.type==='wfd').map(q=>q.id)).size,3);
+    for(const q of mock.questions.filter(q=>q.type!=='essay')){
+      assert(q.id.startsWith('pred26-'),q.id+' must come from the prediction bank');
+      assert(allowed[q.type].has(q.id),q.id+' is not in the current prediction bank');
+      assert.equal(q.predictionSource.provider,'PTE Nepal');
+      assert.equal(q.predictionSource.week,'21-27 September 2026');
+      assert(q.predictionSource.sourceId);
+    }
   }
   const distinct=type=>new Set(predictionMocks.flatMap(m=>m.questions.filter(q=>q.type===type).map(q=>q.id))).size;
-  assert(distinct('swt')>=20);assert(distinct('sst')>=15);assert(distinct('wfd')>=50);
+  assert.equal(distinct('swt'),predictions.swt.length);
+  assert.equal(distinct('sst'),predictions.sst.length);
+  assert.equal(distinct('wfd'),predictions.wfd.length);
+  for(const q of predictions.swt) assert.equal(policy.formFor('swt',q.sample).score,1);
+  for(const q of predictions.sst) assert.equal(policy.formFor('sst',q.sample).score,2);
+  for(const q of predictions.wfd) assert.equal(q.sample,q.text);
 });
 test('Authenticated attempts persist, isolate users and lock submitted answers',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'writing-lab-test-'));
@@ -124,6 +142,15 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const history=await request('/attempts');assert.equal(history.length,2);
   assert.equal(history.find(a=>a.id===id).score90,90);assert.equal(history.find(a=>a.id===retryId).kind,'wfd');
   assert.equal(JSON.stringify(bank),before,'The original mock dictation timer group is unchanged');
+});
+
+test('Prediction SST and WFD IDs are accepted by the narration resolver',async t=>{
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'prediction-audio-test-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));
+  const seen=[];
+  const audio=createNarration(dir,async input=>{seen.push(input.input);return Buffer.alloc(2000,7);});
+  await audio.get(predictions.sst[0].id);
+  await audio.get(predictions.wfd[0].id);
+  assert.deepEqual(seen,[predictions.sst[0].text,predictions.wfd[0].text]);
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{
