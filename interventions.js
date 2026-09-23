@@ -234,11 +234,25 @@ function installInterventions(app, options = {}) {
     return null;
   }
   async function reconcile(username) {
-    const plans = await store.list(username);
+    let plans = await store.list(username);
+    const changed = new Map();
+    const contentIntent = /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important/i;
+    const catalogue = await modules();
+    const trainerModule = catalogue.find(m=>m.code==='SWT-CONTENT-01');
+    if (trainerModule) {
+      for (const plan of plans.filter(active)) {
+        if (plan.source!=='student' || plan.moduleCode!=='SWT-01' || (plan.items||[]).some(i=>i.kind==='swt_selection_trainer') || !contentIntent.test(plan.reason||'')) continue;
+        const next = await store.update(username, plan.id, current => sanitizePlan({
+          ...current,moduleCode:trainerModule.code,title:trainerModule.title,area:trainerModule.area,task:trainerModule.task,
+          weakness:trainerModule.weakness,items:trainerModule.items,status:'in_progress'
+        },current));
+        changed.set(plan.id,next);
+      }
+      if (changed.size) plans=plans.map(p=>changed.get(p.id)||p);
+    }
     const candidates = plans.filter(active).filter(p => (p.items || []).some(i => i.kind === 'question' && i.status !== 'completed'));
     if (!candidates.length) return plans;
     const all = await evidence(username);
-    const changed = new Map();
     for (const plan of candidates) {
       const nextItems = (plan.items || []).map(item => {
         if (item.kind !== 'question' || item.status === 'completed') return item;
@@ -418,7 +432,8 @@ function installInterventions(app, options = {}) {
       });
       const updated=(plan.items||[]).find(x=>String(x.id)===String(req.params.itemId));
       res.json({success:true,result,plan,item:updated,
-        progress:{attempted:(updated.trainerProgress?.attemptedIds||[]).length,passed:(updated.trainerProgress?.passedIds||[]).length,
+        progress:{attemptedIds:updated.trainerProgress?.attemptedIds||[],passedIds:updated.trainerProgress?.passedIds||[],scores:updated.trainerProgress?.scores||{},
+          attempted:(updated.trainerProgress?.attemptedIds||[]).length,passed:(updated.trainerProgress?.passedIds||[]).length,
           minimumToComplete:updated.minimumToComplete||10,total:catalog.length}});
     } catch(e){sendError(res,e);}
   });
