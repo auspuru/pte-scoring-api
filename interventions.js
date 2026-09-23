@@ -391,7 +391,7 @@ function installInterventions(app, options = {}) {
     if (swtContentIntent) {
       push('SWT-CONTENT-01','SWT Content Selection — Highlight Trainer',
         'Your question is about deciding what belongs in the summary, so practising full summaries is not the best first step.',
-        'Complete 10–15 existing-passage drills. Highlight only the important sentences; after each submission you will see missed ideas, why they matter, and the central phrases/sentences.');
+        'Complete 10–15 existing-passage drills. Drag over only the important words and phrases; after each submission you will see missed ideas, why they matter, and the central phrases.');
     }
     if ((/how|attempt|approach|structure|format|template|start|begin/.test(text) || !text) && !swtContentIntent) {
       push(TASK_MODULE[task], taskName + ' — How to attempt', 'Start with the task method and scoring requirements before doing more questions.',
@@ -414,7 +414,7 @@ function installInterventions(app, options = {}) {
         .filter(x=>x.ratio<0.8).sort((a,b)=>a.ratio-b.ratio);
       for (const t of weak.slice(0,3)) {
         if (t.k === 'content') push(task === 'essay' ? 'ESSAY-01' : task === 'swt' ? 'SWT-CONTENT-01' : 'CP-01', TRAIT_LABEL[t.k], `Your most recent ${taskName} result was ${t.v}/${t.max} for ${TRAIT_LABEL[t.k]}. Work on this before adding harder practice.`,
-          task==='swt'?'Use the highlight trainer to practise selecting central sentences without writing a full summary.':'Target content selection before harder practice.');
+          task==='swt'?'Use the highlight trainer to practise selecting central phrases without writing a full summary.':'Target content selection before harder practice.');
         else if (t.k === 'form') push(TASK_MODULE[task], TRAIT_LABEL[t.k], `Your most recent Form result was ${t.v}/${t.max}. Review the task format and word/sentence requirements.`);
         else if (t.k === 'grammar') push('GR-01', TRAIT_LABEL[t.k], `Your most recent Grammar result was ${t.v}/${t.max}. Prioritise sentence accuracy and control.`);
         else if (t.k === 'vocabulary') push('VOC-02', TRAIT_LABEL[t.k], `Your most recent Vocabulary result was ${t.v}/${t.max}. Practise precise wording and useful collocations.`);
