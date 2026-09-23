@@ -242,13 +242,12 @@ test('A save scheduled by one account cannot write its draft under the next acco
 
 
 test('An assigned Essay question opens the matching existing essay in practice mode', () => {
+  const calls = { saved: 0, practised: 0 };
   const ctx = {
     essays: [{ id:'essay-2', question:'Discuss public transport.', title:'Transport' }],
     currentId: null,
-    saved: 0,
-    practised: 0,
-    saveAll() { this.saved++; },
-    practiceCurrentEssay() { this.practised++; },
+    saveAll() { calls.saved++; },
+    practiceCurrentEssay() { calls.practised++; },
     toast() { throw Error('Assigned essay should exist'); },
     switchSection() {},
     setTimeout(fn) { fn(); }
@@ -257,6 +256,6 @@ test('An assigned Essay question opens the matching existing essay in practice m
   vm.runInContext(fn('launchAssignedQuestion'), ctx);
   ctx.launchAssignedQuestion({ engine:'essay', questionId:'essay-2' });
   assert.equal(ctx.currentId, 'essay-2');
-  assert.equal(ctx.saved, 1);
-  assert.equal(ctx.practised, 1);
+  assert.equal(calls.saved, 1);
+  assert.equal(calls.practised, 1);
 });
