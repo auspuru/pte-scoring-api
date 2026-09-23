@@ -89,7 +89,7 @@ test('self-help Beta uses recent SWT trait scores and can create a student plan'
   assert.equal(advice.status,200);
   assert.equal(advice.data.beta,true);
   assert.equal(advice.data.latestScore.scores.content,2);
-  assert(advice.data.suggestions.some(x=>x.moduleCode==='CP-01'));
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='SWT-CONTENT-01'));
   const plan=await call(h.base,'/api/interventions/self-plan',{method:'POST',token:'alice',body:{moduleCode:'SWT-01',problem:'How should I attempt SWT?'}});
   assert.equal(plan.status,200);
   assert.equal(plan.data.plan.source,'student');
