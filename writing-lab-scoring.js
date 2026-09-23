@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = 'exam-practice-2026-09-14.2';
+const VERSION = 'exam-practice-2026-09-23.3';
 const report = require('./public/writing-lab-report');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
@@ -86,6 +86,52 @@ function normalize(q, text, raw) {
     feedback: { ...raw.feedback, form: reasons.length ? reasons.join(' ') : `${form.count} words. Form: ${scores.form}/${maxima.form}.` },
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
 }
+function localContentScore(q, text) {
+  const response = String(text || '').toLowerCase();
+  const responseTokens = new Set((response.match(/[a-z0-9]+(?:['’-][a-z0-9]+)*/g) || []).filter(w => w.length > 2));
+  const ideas = (Array.isArray(q.keyPoints) ? q.keyPoints : Object.values(q.keyPoints || {})).filter(Boolean);
+  const scoreIdea = idea => {
+    const words = (String(idea).toLowerCase().match(/[a-z0-9]+(?:['’-][a-z0-9]+)*/g) || [])
+      .filter(w => w.length > 2 && !['the','and','that','with','from','this','into','have','has','were','was','are','for','but'].includes(w));
+    if (!words.length) return 0;
+    return words.filter(w => responseTokens.has(w)).length / words.length;
+  };
+  const ratios = ideas.map(scoreIdea);
+  const captured = ratios.filter(x => x >= 0.34).length;
+  const coverage = ratios.length ? ratios.reduce((a,b)=>a+b,0) / ratios.length : 0;
+  if (q.type === 'essay') {
+    const promptWords = scoreIdea(q.text);
+    return promptWords >= 0.45 ? 6 : promptWords >= 0.3 ? 5 : promptWords >= 0.2 ? 4 : promptWords >= 0.12 ? 3 : promptWords > 0 ? 2 : 1;
+  }
+  if (!ideas.length) return coverage >= 0.45 ? 3 : coverage >= 0.25 ? 2 : 1;
+  if (captured >= Math.min(3, ideas.length) && coverage >= 0.42) return 4;
+  if (captured >= Math.min(2, ideas.length) && coverage >= 0.3) return 3;
+  if (captured >= 1 || coverage >= 0.2) return 2;
+  return coverage >= 0.08 ? 1 : 0;
+}
+function localLanguage(q, text) {
+  const maxima=MAXIMA[q.type], form=formFor(q.type,text), lower=String(text||'').toLowerCase();
+  const words=String(text||'').match(/[A-Za-z]+(?:['’-][A-Za-z]+)*/g)||[];
+  const unique=new Set(words.map(w=>w.toLowerCase()));
+  const repeated=Math.max(0,words.length-unique.size);
+  const obvious=(lower.match(/\b(?:i is|he are|she are|they is|we is|people is|does not has|did not went)\b/g)||[]).length;
+  const grammar=obvious?1:2;
+  const vocabulary=words.length && unique.size/words.length < 0.38 && repeated>8 ? 1:2;
+  const spelling=maxima.spelling == null ? null : 2;
+  return {form,grammar,vocabulary,spelling};
+}
+function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
+  if(q.type==='wfd') return gradeDictation(q,text);
+  const maxima=MAXIMA[q.type], lang=localLanguage(q,text);
+  if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason};
+  const scores={content:localContentScore(q,text),form:lang.form.score,grammar:lang.grammar,vocabulary:lang.vocabulary};
+  if(maxima.spelling!=null)scores.spelling=lang.spelling;
+  if(q.type==='essay'){scores.linguistic=Math.min(maxima.linguistic,wordCount(text)>=200?5:4);scores.coherence=Math.min(maxima.coherence,(String(text).match(/[.!?]/g)||[]).length>=4?5:4);}
+  const total=Object.values(scores).reduce((a,b)=>a+b,0),maximum=Object.values(maxima).reduce((a,b)=>a+b,0);
+  return {version:VERSION,assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,scores,maxima,total,maximum,wordCount:lang.form.count,gated:false,reasons:[],
+    feedback:Object.fromEntries(Object.keys(maxima).map(k=>[k,k==='content'?'Local estimate based on coverage of the supplied task ideas and prompt.':k==='form'?lang.form.count+' words. Form requirements satisfied.':'Local rule-based estimate; AI feedback can refine this when available.'])),
+    strengths:['Your response was scored immediately by the local fallback engine.'],improvements:['Use Retry assessment when available for richer semantic and language feedback.'],errors:[]};
+}
 async function grade(q, text, call) {
   if (q.type === 'wfd') return gradeDictation(q, text);
   const form = formFor(q.type, text);
@@ -95,7 +141,10 @@ async function grade(q, text, call) {
     try { return normalize(q, text, await call(buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : ''))); }
     catch (e) { error = e; }
   }
-  throw error;
+  // Keep the attempt scoreable when the external model is unavailable.
+  // The local result is deliberately conservative and is clearly labelled;
+  // a later Retry can still replace it with richer AI assessment.
+  return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
 }
 function gradeDictation(q, text) {
   const expected = report.tokens(q.text), answer = report.tokens(text);
@@ -122,4 +171,4 @@ function gradeDictation(q, text) {
     strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
     wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeDictation };
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeDictation, localGrade, localContentScore };
