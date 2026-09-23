@@ -511,7 +511,7 @@
         {
           "kind": "instruction",
           "title": "Review SWT scoring",
-          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2).",
+          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2). SWT must remain one sentence and between 5–75 words.",
           "required": true
         },
         {
