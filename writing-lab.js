@@ -5,49 +5,66 @@ const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
 const swtPassages = require('./passages.json');
-
-const baseQuestions = (bank.mocks || []).flatMap(m => m.questions || []);
-const uniqueBy = (items, key) => [...new Map(items.map(item => [key(item), item])).values()];
+const clone = value => structuredClone(value);
+const uniqueBy = (items, key) => {
+  const seen = new Set();
+  return items.filter(item => {
+    const value = key(item);
+    if (value == null || seen.has(value)) return false;
+    seen.add(value);
+    return true;
+  });
+};
+const normalText = value => String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
 const swtPool = uniqueBy([
-  ...baseQuestions.filter(q => q.type === 'swt'),
-  ...(swtPassages || []).map(p => ({
-    id: 'sectional-swt-' + p.id,
+  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'swt')),
+  ...swtPassages.map(p => ({
+    id: 'swt-passage-' + p.id,
     type: 'swt',
     title: p.title || 'Summarise written text',
     minutes: 10,
     text: p.text,
-    keyPoints: Array.isArray(p.keyElements) ? p.keyElements : Object.values(p.keyElements || {}),
+    keyPoints: Object.values(p.keyElements || {}).filter(value => typeof value === 'string' && value.trim()),
     sample: p.sampleResponse || ''
   }))
-], q => String(q.text || '').trim().replace(/\s+/g, ' ').toLowerCase());
+], q => normalText(q.text));
 const sstPool = uniqueBy([
-  ...baseQuestions.filter(q => q.type === 'sst'),
+  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'sst')),
   ...(bank.spoken || [])
 ], q => q.id);
-const dictation = uniqueBy([
-  ...baseQuestions.filter(q => q.type === 'wfd'),
+const wfdPool = uniqueBy([
+  ...bank.mocks.flatMap(mock => mock.questions.filter(q => q.type === 'wfd')),
   ...(bank.dictation || [])
 ], q => q.id);
-
-function pickPool(pool, index) {
-  if (!pool.length) throw Error('Writing sectional question pool is empty.');
-  return structuredClone(pool[((index % pool.length) + pool.length) % pool.length]);
+function roundRobinPairs(items) {
+  if (items.length < 2) return [];
+  const slots = items.slice();
+  if (slots.length % 2) slots.push(null);
+  const fixed = slots[0], rotating = slots.slice(1), pairs = [];
+  for (let round = 0; round < slots.length - 1; round++) {
+    const order = [fixed, ...rotating];
+    for (let i = 0; i < order.length / 2; i++) {
+      const a = order[i], b = order[order.length - 1 - i];
+      if (a && b) pairs.push([a, b]);
+    }
+    rotating.unshift(rotating.pop());
+  }
+  return pairs;
 }
-function predictionQuestionSet(index) {
-  const swtA = pickPool(swtPool, index * 2);
-  const swtB = pickPool(swtPool, index * 2 + 1);
-  const sst = pickPool(sstPool, index * 5 + 2);
-  const wfd = [index * 3, index * 3 + 17, index * 3 + 31].map(i => pickPool(dictation, i));
-  return { swt: [swtA, swtB], sst, wfd };
-}
-
-// Prediction papers keep their existing essay prompts unchanged, but rotate
-// SWT, SST and WFD through the validated content pools so students do not see
-// the same non-essay paper repeated across all sectional mocks.
+const predictionSwtPairs = roundRobinPairs(swtPool);
+// Prediction essays stay unchanged. Non-essay tasks are allocated from the
+// validated practice pools so prediction papers no longer clone Mock 1.
 const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
-  const selected = predictionQuestionSet(index);
+  const swt = (predictionSwtPairs[index] || predictionSwtPairs[index % predictionSwtPairs.length]).map(clone);
+  const sst = clone(sstPool[(index * 7 + 3) % sstPool.length]);
+  const wfd = [0, 19, 38].map(offset => {
+    const q = clone(wfdPool[(index * 3 + offset) % wfdPool.length]);
+    q.minutes = 4;
+    q.timeGroup = 'dictation';
+    return q;
+  });
   return {
     id,
     title: 'Writing Prediction Mock ' + String(number).padStart(2, '0'),
@@ -55,14 +72,16 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
     category: 'prediction',
     predictionNumber: number,
     questions: [
-      ...selected.swt,
-      structuredClone({ ...essay, id: id + '-essay', type: 'essay', minutes: 20 }),
-      selected.sst,
-      ...selected.wfd
+      swt[0],
+      swt[1],
+      clone({ ...essay, id: id + '-essay', type: 'essay', minutes: 20 }),
+      sst,
+      ...wfd
     ]
   };
 });
 const allMocks = [...bank.mocks, ...predictionMocks];
+const dictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -242,4 +261,4 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   app.use('/api/writing-lab', router);
   return { store };
 }
-module.exports = { installWritingLab, advance, reconcile, present };
+module.exports = { installWritingLab, advance, reconcile, present, predictionMocks };
