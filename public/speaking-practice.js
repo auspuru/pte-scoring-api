@@ -227,7 +227,7 @@
     async function submit() {
       if(busy||!attempt)return;if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('Finish recording and save your audio before checking content.');return;}
       busy=true;refreshControls();const id=attempt.id,user=owner;message(attempt.transcript.trim()?'Checking your response…':'Transcribing your recording and checking your response…');
-      try{await saveTranscript();const a=await api('/attempts/'+id+'/submit',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;notice='';render();}}
+      try{await saveTranscript();const a=await api('/attempts/'+id+'/submit',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;notice='';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}}
       catch(e){message(e.message);try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}}
       finally{busy=false;refreshControls();}
     }
