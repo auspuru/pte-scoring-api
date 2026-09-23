@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "code": "PR-01",
+      "area": "Speaking",
+      "task": "All speaking tasks",
+      "weakness": "Pronunciation clarity",
+      "title": "Pronunciation Clarity",
+      "reason": "Improve how clearly individual words and sounds are produced.",
+      "checkpoint": "Complete the exercises and produce three clearly understandable speaking attempts.",
+      "items": [
+        {
+          "kind": "video",
+          "title": "Pronunciation Exercise 1",
+          "url": "https://youtube.com/shorts/kpGv3_wRKO8?si=O0fp8ypTe9-qT2Qi",
+          "description": "Watch, imitate, then repeat the exercise.",
+          "required": true
+        },
+        {
+          "kind": "video",
+          "title": "Pronunciation Exercise 2",
+          "url": "https://youtu.be/S5f0FKhPax0?si=L113kYX-ybsm3Zqin",
+          "description": "Watch, repeat, record yourself and compare.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Record 3 clear speaking attempts",
+          "description": "Use Read Aloud or another assigned speaking question and focus on clarity.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "PR-03",
+      "area": "Speaking",
+      "task": "All speaking tasks",
+      "weakness": "Word endings",
+      "title": "Pronunciation — Word Endings",
+      "reason": "Make final consonants, plural endings and -ed endings audible.",
+      "checkpoint": "Produce the target endings clearly in at least 8 out of 10 items.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Target ending drill",
+          "description": "Practise 10 target words, then use them in 10 short sentences.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Apply endings in PTE speaking",
+          "description": "Complete the teacher-assigned speaking questions without dropping final sounds.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "PR-04",
+      "area": "Speaking",
+      "task": "All speaking tasks",
+      "weakness": "Specific problem sounds",
+      "title": "Pronunciation — Problem Sounds",
+      "reason": "Work on the specific consonant or vowel contrast that is reducing clarity.",
+      "checkpoint": "Produce the target sound clearly in at least 8 out of 10 items.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Minimal-pair practice",
+          "description": "Practise the exact sound pair identified by your teacher.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Sentence application",
+          "description": "Use the target sound in short sentences and record yourself.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "FL-01",
+      "area": "Speaking",
+      "task": "Read Aloud and speaking tasks",
+      "weakness": "Word-by-word speech",
+      "title": "Fluency — Chunking",
+      "reason": "Develop smoother phrasing by speaking in meaningful groups of words.",
+      "checkpoint": "Produce three smooth recordings with sensible chunking.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Chunk-marking drill",
+          "description": "Mark meaningful chunks in 5 short passages before speaking.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Shadow and record",
+          "description": "Shadow a model, then record the same material without the model.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "FL-02",
+      "area": "Speaking",
+      "task": "DI, RL, SGD, RTS",
+      "weakness": "Pauses and restarts",
+      "title": "Fluency — Pauses & Recovery",
+      "reason": "Keep speaking after small errors instead of stopping and restarting.",
+      "checkpoint": "Complete three timed attempts without disruptive pauses.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "30–60 second response drills",
+          "description": "Practise continuing smoothly even when you make a small mistake.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "FL-03",
+      "area": "Speaking",
+      "task": "All speaking tasks",
+      "weakness": "Speaking pace",
+      "title": "Fluency — Pace",
+      "reason": "Maintain a steady pace without rushing or slowing excessively.",
+      "checkpoint": "Maintain a steady, understandable pace in three recordings.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Controlled pace recording",
+          "description": "Record the same response three times at a steady pace.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "CP-01",
+      "area": "Writing / Speaking / Listening",
+      "task": "SWT, RL, SGD, SST",
+      "weakness": "Main idea selection",
+      "title": "Content Picking — Main Idea",
+      "reason": "Identify the central idea before adding supporting information.",
+      "checkpoint": "Identify the correct central idea in at least 4 out of 5 attempts.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Main idea drill",
+          "description": "For 5 passages or audios, identify only the central idea before writing or speaking.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "CP-02",
+      "area": "Writing / Speaking / Listening",
+      "task": "DI, SWT, SST, SGD",
+      "weakness": "Too much detail",
+      "title": "Content Picking — Prioritisation",
+      "reason": "Separate essential information from examples and minor details.",
+      "checkpoint": "Select concise, relevant information in at least 4 out of 5 attempts.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Essential vs minor detail",
+          "description": "Reduce each source to 3–4 essential points and remove examples.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "CP-03",
+      "area": "Writing",
+      "task": "Summarize Written Text",
+      "weakness": "Meaning changes",
+      "title": "SWT — Context Accuracy",
+      "reason": "Preserve the original relationship between ideas, including cause, contrast and viewpoint.",
+      "checkpoint": "Produce at least 4 out of 5 summaries without changing the source meaning.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Source vs summary check",
+          "description": "Compare each sentence with the source and highlight any changed relationship or contradiction.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "CP-04",
+      "area": "Speaking",
+      "task": "Describe Image",
+      "weakness": "Visual content selection",
+      "title": "Describe Image — Content Picking",
+      "reason": "Choose the most reportable features instead of trying to describe everything.",
+      "checkpoint": "Identify the topic and 3–4 important features in at least 4 out of 5 images within preparation time.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Content-only image drill",
+          "description": "Do not speak yet. Identify topic, overall pattern, biggest/smallest and meaningful comparisons.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "NT-01",
+      "area": "Speaking / Listening",
+      "task": "RL, SGD, SST",
+      "weakness": "Notes are too long",
+      "title": "Note-Taking — Keywords",
+      "reason": "Capture useful content words without writing full sentences.",
+      "checkpoint": "Capture the main idea and important support without falling behind.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Keyword-only notes",
+          "description": "Use 5 short audios and write only content words and symbols.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "NT-03",
+      "area": "Speaking",
+      "task": "Summarize Group Discussion",
+      "weakness": "Mixing up speakers",
+      "title": "SGD — Speaker Tracking",
+      "reason": "Track who said what and where speakers agree or disagree.",
+      "checkpoint": "Track all speakers correctly in at least 4 out of 5 discussions.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "S1 / S2 / S3 note grid",
+          "description": "Record each speaker's key viewpoint in a separate column.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "NT-04",
+      "area": "Speaking / Listening",
+      "task": "RL, SGD, SST",
+      "weakness": "Note-taking speed",
+      "title": "Note-Taking — Speed",
+      "reason": "Use abbreviations and symbols so notes do not fall behind the audio.",
+      "checkpoint": "Capture the main idea and support while keeping pace with the audio.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "30–60 second note-speed drills",
+          "description": "Use abbreviations, arrows and content words only.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "GR-01",
+      "area": "Writing",
+      "task": "SWT, SST, Essay",
+      "weakness": "Sentence building",
+      "title": "Grammar — Sentence Building",
+      "reason": "Connect important ideas accurately using controlled clauses.",
+      "checkpoint": "Produce at least 4 out of 5 structurally accurate sentences.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Sentence-combining drill",
+          "description": "Combine 2–3 related ideas while preserving meaning.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "GR-03",
+      "area": "Writing",
+      "task": "SWT, SST, Essay",
+      "weakness": "Run-ons and punctuation",
+      "title": "Grammar — Run-ons & Punctuation",
+      "reason": "Control long sentences and clause boundaries.",
+      "checkpoint": "Produce at least 4 out of 5 controlled sentences without run-ons.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Run-on repair",
+          "description": "Repair 10 long sentences, then apply the same control to your PTE response.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "VOC-02",
+      "area": "Reading / Writing",
+      "task": "FIB, Essay, SWT",
+      "weakness": "Collocations",
+      "title": "Vocabulary — Collocations",
+      "reason": "Learn common word combinations rather than isolated vocabulary.",
+      "checkpoint": "Reach at least 80% across three practice sets.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Collocation notebook",
+          "description": "Record the full phrase, meaning and one example sentence.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Context practice",
+          "description": "Complete the teacher-assigned Fill in the Blanks questions.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "COMP-02",
+      "area": "Reading / Listening",
+      "task": "MCQ, HCS",
+      "weakness": "Distractors and inference",
+      "title": "Comprehension — Distractors",
+      "reason": "Use evidence to separate the best answer from plausible distractors.",
+      "checkpoint": "Answer at least 4 out of 5 questions correctly and explain the evidence.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Evidence drill",
+          "description": "For each option, identify why it is supported or why it should be rejected.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "SP-02",
+      "area": "Listening / Writing",
+      "task": "WFD, FIB, SST",
+      "weakness": "Repeated spelling errors",
+      "title": "Spelling — Personal Error Log",
+      "reason": "Target the spelling mistakes you personally repeat.",
+      "checkpoint": "Reach at least 90% on your personal error list twice.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Build your error list",
+          "description": "Record every repeated spelling error with the corrected form.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Retest",
+          "description": "Retest the same words after 2–3 days.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "MEM-01",
+      "area": "Speaking / Listening",
+      "task": "RS, WFD",
+      "weakness": "Listening memory",
+      "title": "Listening Memory — Chunking",
+      "reason": "Retain meaning and word groups instead of trying to memorise isolated words.",
+      "checkpoint": "Substantially retain at least 4 out of 5 sentences.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Memory ladder",
+          "description": "Start with short chunks and gradually increase sentence length.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "MEM-02",
+      "area": "Speaking / Listening",
+      "task": "RS, WFD",
+      "weakness": "Word order and function words",
+      "title": "Listening Memory — Word Order",
+      "reason": "Retain sentence order, articles, prepositions and other small words.",
+      "checkpoint": "Retain order and key function words in at least 4 out of 5 sentences.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Reconstruction drill",
+          "description": "Rebuild short sentences from chunks, then progress to longer dictation.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "REG-01",
+      "area": "Speaking",
+      "task": "Respond to a Situation",
+      "weakness": "Register and functional language",
+      "title": "RTS — Register & Functional Language",
+      "reason": "Match your language to the audience, purpose and desired outcome.",
+      "checkpoint": "Produce appropriate responses in at least 4 out of 5 situations.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Audience and purpose drill",
+          "description": "Identify who you are speaking to, why, and what outcome you need before responding.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "SWT-01",
+      "area": "Writing",
+      "task": "Summarize Written Text",
+      "weakness": "Form and concision",
+      "title": "SWT — Form & Concision",
+      "reason": "Turn selected key points into one controlled, concise sentence.",
+      "checkpoint": "Produce at least 4 out of 5 coherent one-sentence summaries.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "One-sentence construction",
+          "description": "Convert key-point notes into one controlled sentence without adding unnecessary detail.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "TIME-01",
+      "area": "All",
+      "task": "Timed tasks",
+      "weakness": "Performance under time pressure",
+      "title": "Timing & Preparation",
+      "reason": "Apply a known strategy reliably within PTE timing.",
+      "checkpoint": "Complete at least 4 out of 5 attempts within the required timing.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Three-stage timing",
+          "description": "Practise untimed, then with reduced preparation time, then under full test conditions.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
