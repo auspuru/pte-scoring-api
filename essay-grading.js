@@ -1,6 +1,7 @@
 'use strict';
 const { createHash } = require('node:crypto');
 const policy = require('./public/essay-scoring');
+const localEngine = require('./local-scoring-engine');
 function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
   async function grade(question, essay) {
@@ -39,7 +40,10 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
         if (assessment) return remember({ ...assessment, sampleStatus: 'unavailable', sampleKind: 'unavailable',
           sampleResponse: '', sampleWordCount: 0, sampleSourceIdeas: [],
           sampleNote: 'Your score and feedback are ready. Your Band 9 sample could not be prepared yet. Retry the sample below.' });
-        throw new Error('The essay assessment could not be completed. Please try again.', { cause: lastError });
+        const local = localEngine.essay(question, essay, { formScore: policy.formFor(essay).score });
+        local.scoring_version = policy.VERSION + '+' + localEngine.VERSION;
+        local.fallbackReason = lastError?.message || 'External essay reviewer unavailable';
+        return remember(local);
       })();
       pending.set(key, task);
       task.finally(() => pending.delete(key)).catch(() => {});
