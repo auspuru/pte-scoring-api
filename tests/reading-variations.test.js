@@ -147,9 +147,10 @@ test('Reading FIB choices test grammar plus contextual vocabulary rather than sy
         assert.equal(row.length,4,q.id+' blank '+i);
         assert.equal(new Set(row).size,4,q.id+' blank '+i);
         assert(row.includes(q.answers[i]),q.id+' blank '+i);
-        const correctType=fibQuality.classify(q.answers[i]);
-        assert(row.filter(option=>fibQuality.classify(option)===correctType).length>=3,q.id+' blank '+i+' lacks vocabulary distractors');
-        assert(row.some(option=>fibQuality.classify(option)!==correctType),q.id+' blank '+i+' lacks grammar trap');
+        const correctType=q.fibQuality.blankTypes[i];
+        assert.equal(fibQuality.classifyFor(q,i,q.answers[i]),correctType,q.id+' blank '+i+' context type');
+        assert(row.slice(1,3).every(option=>fibQuality.classify(option)===correctType),q.id+' blank '+i+' lacks vocabulary distractors');
+        assert.notEqual(fibQuality.classify(row[3]),correctType,q.id+' blank '+i+' lacks grammar trap');
       });
     } else {
       assert.equal(q.bank.length,q.answers.length+3,q.id);
