@@ -125,7 +125,7 @@
     const previous=Array.isArray(q.reasoning?.blanks)?q.reasoning.blanks:[];
     q.reasoning={
       ...(q.reasoning||{}),
-      correct:'Read the grammar around each blank first, then use vocabulary, collocation and sentence meaning. The wrong choices are designed to test form and contextual word choice rather than near-synonym guessing.',
+      correct:'Read the grammar around each blank first, then use vocabulary, collocation and sentence meaning. The wrong choices are designed to test form and contextual word choice rather than near-synonym guessing. No specialist subject knowledge is required.',
       blanks:q.answers.map((answer,i)=>({
         ...(previous[i]||{}),
         answer,
