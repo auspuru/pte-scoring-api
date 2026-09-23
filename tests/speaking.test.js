@@ -97,9 +97,8 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   assert.equal((await request('/attempts')).body.length,2);assert.equal((await store.list('bob')).length,0);
   const di=bank.questions.find(q=>q.type==='di'),other=crypto.randomUUID();
   await request('/attempts',{id:other,questionId:di.id});await request('/attempts/'+other+'/transcript',{text:di.sample,revision:0});
-  failModel=true;assert.equal((await request('/attempts/'+other+'/submit',{})).status,503);
-  a=(await request('/attempts/'+other)).body;assert.equal(a.status,'submitted');assert.equal(a.transcript,di.sample);assert.equal(a.question.sample,di.sample);assert.equal(a.result,null);
-  failModel=false;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.result.total,6);
+  failModel=true;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.status,'submitted');assert.equal(a.transcript,di.sample);assert.equal(a.question.sample,di.sample);assert(a.result);assert.equal(a.result.scoringMode,'local');assert(a.result.total>=4);
+  failModel=false;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.result.scoringMode,'local','Saved local fallback remains stable; use a fresh reattempt for AI review.');
   const prompt=await fetch(base+'/speaking-audio/rs-1.mp3',{headers:{Range:'bytes=0-1023'}});assert.equal(prompt.status,206);assert.equal((await prompt.arrayBuffer()).byteLength,1024);
   assert.equal((await fetch(base+'/speaking-image/di-1.svg')).headers.get('content-type').split(';')[0],'image/svg+xml');
   assert.equal((await fetch(base+'/speaking-audio/not-a-question.mp3')).status,404);
@@ -112,4 +111,16 @@ test('Transcription failures identify provider access and quota without exposing
    assert.match(e.message,expected);assert.match(e.message,/recording is saved/);assert(!e.message.includes('SECRET'));return true;
   });
  }
+});
+
+
+test('Semantic Speaking tasks fall back to local content scoring when the reviewer is offline',async()=>{
+  for(const q of bank.questions.filter(q=>['di','rl','sgd','rts'].includes(q.type)).slice(0,8)){
+    const result=await scoring.grade(q,q.sample,async()=>{throw Error('offline');});
+    assert.equal(result.scoringMode,'local');
+    assert.equal(result.maximum,6);
+    assert(Number.isInteger(result.total));
+    assert(result.total>=0&&result.total<=6);
+    assert.equal(result.coverage.length,q.facts.length);
+  }
 });
