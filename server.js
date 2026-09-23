@@ -4014,18 +4014,30 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
   const missing = checks.filter(c => !c.present).map(c => c.name);
   const centralCaptured = present.includes('what') || present.includes('topic');
   const contradiction = detectStrongLocalContradiction(studentText, passageText);
-  // Word overlap cannot establish whether the selected ideas depend on missing
-  // context. Offline scores remain provisional and cannot certify full Content.
-  let score = Math.min(3, coverageToContentScore(present.length, fields.length, centralCaptured));
+  const coverageScore = coverageToContentScore(present.length, fields.length, centralCaptured);
+  const presentChecks = checks.filter(c => c.present);
+  const strongMatches = presentChecks.filter(c => c.strongConceptFallback || c.matchRate >= 42).length;
+  const averageMatch = presentChecks.length
+    ? presentChecks.reduce((sum,c)=>sum + (Number(c.matchRate) || 0),0) / presentChecks.length : 0;
+  // A local result can be confirmed when the response directly and strongly
+  // matches the central idea plus enough supporting propositions, and no local
+  // contradiction is detected. Paraphrased/ambiguous cases remain provisional
+  // so the richer semantic reviewer can still resolve relationships.
+  const locallyConfirmed = !contradiction && coverageScore === SWT_CONTENT_MAX
+    && centralCaptured && strongMatches >= Math.min(3, fields.length) && averageMatch >= 42;
+  let score = locallyConfirmed ? coverageScore : Math.min(3, coverageScore);
   if (contradiction) score = Math.min(score, 1);
   const perIdea = Object.fromEntries(fields.map(f => [f.name, present.includes(f.name) ? 1 : 0]));
 
   return {
     content_score: score,
     content_max: SWT_CONTENT_MAX,
-    content_reason: 'Provisional content estimate: AI assessment of meaning and relationships was unavailable. Retry for a complete score.',
-    full_content_eligible: false,
-    needs_semantic_review: true,
+    content_reason: locallyConfirmed
+      ? 'Local content assessment confirmed strong coverage of the central message and essential supporting ideas.'
+      : 'Provisional local content estimate: the response needs semantic review of paraphrasing or relationships for a confirmed score.',
+    full_content_eligible: locallyConfirmed && score === SWT_CONTENT_MAX,
+    needs_semantic_review: !locallyConfirmed,
+    local_confidence: locallyConfirmed ? 'high' : averageMatch >= 30 ? 'medium' : 'low',
     ideas_captured: present,
     ideas_missing: missing,
     per_idea_scores: perIdea,
@@ -4034,7 +4046,9 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
     grammar_score: grammarHint?.score ?? 2,
     vocabulary_score: 2,
     academic_register: false,
-    feedback_note: contradiction ? 'The summary reverses the passage meaning' : (score < 4 ? 'Strengthen the central message or add another essential supporting idea' : 'Good content coverage'),
+    feedback_note: contradiction ? 'The summary appears to reverse the passage meaning'
+      : locallyConfirmed ? 'Strong local match to the central message and essential support'
+      : 'Retry the semantic review for finer checking of paraphrases and logical relationships',
     source: 'local_fallback'
   };
 }
@@ -4431,7 +4445,8 @@ app.post('/api/grade', async (req, res) => {
     // response can't include grammar annotations or vocabulary swaps. Flag this
     // so the frontend can show an honest "detailed feedback unavailable for this
     // attempt — try again" notice instead of silently dropping those sections.
-    const aiFeedbackDegraded = !llmJudgment || llmJudgment.needs_semantic_review === true;
+    const aiFeedbackDegraded = !llmJudgment && contentVerdict.needs_semantic_review !== false;
+    const scoreProvisional = contentVerdict.needs_semantic_review === true;
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
@@ -4509,7 +4524,7 @@ app.post('/api/grade', async (req, res) => {
       // F1 (v19.17): true when Claude was unavailable and the local fallback
       // produced the scores (no grammar annotations / vocab swaps available).
       ai_feedback_degraded: aiFeedbackDegraded,
-      score_provisional: aiFeedbackDegraded,
+      score_provisional: scoreProvisional,
       trait_scores: {
         form: 1,
         form_max: 1,
