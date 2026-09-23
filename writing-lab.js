@@ -4,13 +4,50 @@ const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
-// Prediction mocks reuse the validated shared SWT, SST and WFD questions from
-// the first sectional paper. Only the essay prompt changes, so every paper
-// keeps the same seven-question structure, timing and /90 scoring.
+const swtPassages = require('./passages.json');
+
+const baseQuestions = (bank.mocks || []).flatMap(m => m.questions || []);
+const uniqueBy = (items, key) => [...new Map(items.map(item => [key(item), item])).values()];
+const swtPool = uniqueBy([
+  ...baseQuestions.filter(q => q.type === 'swt'),
+  ...(swtPassages || []).map(p => ({
+    id: 'sectional-swt-' + p.id,
+    type: 'swt',
+    title: p.title || 'Summarise written text',
+    minutes: 10,
+    text: p.text,
+    keyPoints: Array.isArray(p.keyElements) ? p.keyElements : Object.values(p.keyElements || {}),
+    sample: p.sampleResponse || ''
+  }))
+], q => String(q.text || '').trim().replace(/\s+/g, ' ').toLowerCase());
+const sstPool = uniqueBy([
+  ...baseQuestions.filter(q => q.type === 'sst'),
+  ...(bank.spoken || [])
+], q => q.id);
+const dictation = uniqueBy([
+  ...baseQuestions.filter(q => q.type === 'wfd'),
+  ...(bank.dictation || [])
+], q => q.id);
+
+function pickPool(pool, index) {
+  if (!pool.length) throw Error('Writing sectional question pool is empty.');
+  return structuredClone(pool[((index % pool.length) + pool.length) % pool.length]);
+}
+function predictionQuestionSet(index) {
+  const swtA = pickPool(swtPool, index * 2);
+  const swtB = pickPool(swtPool, index * 2 + 1);
+  const sst = pickPool(sstPool, index * 5 + 2);
+  const wfd = [index * 3, index * 3 + 17, index * 3 + 31].map(i => pickPool(dictation, i));
+  return { swt: [swtA, swtB], sst, wfd };
+}
+
+// Prediction papers keep their existing essay prompts unchanged, but rotate
+// SWT, SST and WFD through the validated content pools so students do not see
+// the same non-essay paper repeated across all sectional mocks.
 const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
-  const shared = (bank.mocks[0]?.questions || []).filter(q => q.type !== 'essay');
+  const selected = predictionQuestionSet(index);
   return {
     id,
     title: 'Writing Prediction Mock ' + String(number).padStart(2, '0'),
@@ -18,14 +55,14 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
     category: 'prediction',
     predictionNumber: number,
     questions: [
-      ...structuredClone(shared.slice(0, 2)),
+      ...selected.swt,
       structuredClone({ ...essay, id: id + '-essay', type: 'essay', minutes: 20 }),
-      ...structuredClone(shared.slice(2))
+      selected.sst,
+      ...selected.wfd
     ]
   };
 });
 const allMocks = [...bank.mocks, ...predictionMocks];
-const dictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
