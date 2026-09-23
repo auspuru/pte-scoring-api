@@ -14,17 +14,18 @@
   }
   async function loadModules(){
     if(modules.length)return modules;
-    const r=await fetch('/improvement-modules.json?v=1',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
+    const r=await fetch('/improvement-modules.json?v=2',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
   }
   function injectModal(){
     if(document.getElementById('improveModal'))return;
     const modal=document.createElement('div');modal.className='modal improve-modal';modal.id='improveModal';
     modal.onclick=e=>{if(e.target===modal)closeManager();};
-    modal.innerHTML='<div class="modal-box"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3 style="margin:0">Student Improvement</h3><p id="improveStudent" style="margin:4px 0 0;color:var(--ink-muted)"></p></div><button class="btn-sm" data-improve-close>Close</button></div><div class="improve-layout" style="margin-top:14px"><section class="improve-section"><h4>Current plans</h4><div id="improvePlans"></div></section><section class="improve-section"><h4>Assign next step</h4><div class="improve-field"><label>Improvement module</label><select id="improveModule"></select></div><div class="improve-inline"><div class="improve-field"><label>Priority</label><select id="improvePriority"><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select></div><div class="improve-field"><label>Due date (optional)</label><input id="improveDue" type="date"></div></div><div class="improve-field"><label>Why this is assigned</label><textarea id="improveReason"></textarea></div><div class="improve-field"><label>Teacher note (optional)</label><textarea id="improveNote" placeholder="e.g. Focus on final sounds and do not rush."></textarea></div><div class="improve-field"><label>Plan items</label><div id="improveItems" class="improve-items"></div></div><button class="btn-sm" id="improveQuestionsBtn">+ Add practice questions</button><div id="improveQuestionPicker" hidden><div class="improve-question-tools"><select id="improveQuestionSection"><option value="all">All sections</option></select><select id="improveQuestionType"><option value="all">All types</option></select><input id="improveQuestionSearch" placeholder="Search questions"></div><div id="improveQuestionList" class="improve-question-list"></div></div><label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px"><input type="checkbox" id="improveNotify" checked> Notify student with a one-time popup</label><div class="improve-status" id="improveStatus"></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn-sm btn-accent" id="improveAssign">Assign to student</button></div></section></div></div>';
+    modal.innerHTML='<div class="modal-box"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3 style="margin:0">Student Improvement</h3><p id="improveStudent" style="margin:4px 0 0;color:var(--ink-muted)"></p></div><button class="btn-sm" data-improve-close>Close</button></div><div class="improve-layout" style="margin-top:14px"><section class="improve-section"><h4>Current plans</h4><div id="improvePlans"></div></section><section class="improve-section"><h4>Assign next step</h4><div class="improve-field"><label>Improvement module</label><select id="improveModule"></select></div><div class="improve-field"><label>Plan title</label><input id="improveTitle" placeholder="e.g. SWT content practice"></div><div class="improve-inline"><div class="improve-field"><label>Area</label><input id="improveArea" placeholder="e.g. Writing"></div><div class="improve-field"><label>Task</label><input id="improveTask" placeholder="e.g. Summarize Written Text"></div></div><div class="improve-inline"><div class="improve-field"><label>Priority</label><select id="improvePriority"><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select></div><div class="improve-field"><label>Due date (optional)</label><input id="improveDue" type="date"></div></div><div class="improve-field"><label>Why this is assigned</label><textarea id="improveReason"></textarea></div><div class="improve-field"><label>Teacher note (optional)</label><textarea id="improveNote" placeholder="e.g. Focus on final sounds and do not rush."></textarea></div><div class="improve-field"><label>Plan items</label><div id="improveItems" class="improve-items"></div></div><div class="improve-section" style="margin:10px 0;padding:10px"><strong style="font-size:13px">Add your own step</strong><div class="improve-field"><label>Step title</label><input id="improveManualTitle" placeholder="e.g. Review your connector mistakes"></div><div class="improve-field"><label>Instruction</label><textarea id="improveManualDescription" placeholder="Write exactly what you want the student to do."></textarea></div><div class="improve-field"><label>Optional link</label><input id="improveManualUrl" type="url" placeholder="https://..."></div><button type="button" class="btn-sm" id="improveManualAdd">+ Add manual step</button></div><button class="btn-sm" id="improveQuestionsBtn">+ Add practice questions</button><div id="improveQuestionPicker" hidden><div class="improve-question-tools"><select id="improveQuestionSection"><option value="all">All sections</option></select><select id="improveQuestionType"><option value="all">All types</option></select><input id="improveQuestionSearch" placeholder="Search questions"></div><div id="improveQuestionList" class="improve-question-list"></div></div><label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px"><input type="checkbox" id="improveNotify" checked> Notify student with a one-time popup</label><div class="improve-status" id="improveStatus"></div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn-sm btn-accent" id="improveAssign">Assign to student</button></div></section></div></div>';
     document.body.appendChild(modal);
     modal.querySelector('[data-improve-close]').onclick=closeManager;
     document.getElementById('improveModule').onchange=applyModule;
     document.getElementById('improveQuestionsBtn').onclick=toggleQuestions;
+    document.getElementById('improveManualAdd').onclick=addManualStep;
     document.getElementById('improveQuestionSection').onchange=renderQuestions;
     document.getElementById('improveQuestionType').onchange=renderQuestions;
     document.getElementById('improveQuestionSearch').oninput=renderQuestions;
@@ -43,13 +44,29 @@
       const [mods,data]=await Promise.all([loadModules(),request('/api/admin/interventions/'+encodeURIComponent(username))]);
       plans=data.plans||[];const select=document.getElementById('improveModule');
       select.innerHTML='<option value="">Custom plan</option>'+mods.map(m=>'<option value="'+esc(m.code)+'">'+esc(m.code+' — '+m.title)+'</option>').join('');
-      renderPlans();select.value='';draftItems=[];renderItems();document.getElementById('improveReason').value='';document.getElementById('improveNote').value='';document.getElementById('improveStatus').textContent='';
+      renderPlans();select.value='';draftItems=[];renderItems();
+      ['improveTitle','improveArea','improveTask','improveReason','improveNote','improveManualTitle','improveManualDescription','improveManualUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.getElementById('improveStatus').textContent='';
     }catch(e){document.getElementById('improveStatus').textContent=e.message;}
   }
   function applyModule(){
     const code=document.getElementById('improveModule').value,m=modules.find(x=>x.code===code);
     draftItems=(m?.items||[]).map(x=>({...x}));
+    document.getElementById('improveTitle').value=m?.title||'';
+    document.getElementById('improveArea').value=m?.area||'';
+    document.getElementById('improveTask').value=m?.task||'';
     document.getElementById('improveReason').value=m?.reason||'';
+    renderItems();
+  }
+  function addManualStep(){
+    const title=document.getElementById('improveManualTitle').value.trim();
+    const description=document.getElementById('improveManualDescription').value.trim();
+    const url=document.getElementById('improveManualUrl').value.trim();
+    if(!title && !description){document.getElementById('improveStatus').textContent='Write a title or instruction for the manual step.';return;}
+    const youtube=/youtu(?:\.be|be\.com)/i.test(url);
+    draftItems.push({kind:url&&youtube?'video':'practice',title:title||'Teacher instruction',description,url,required:true});
+    ['improveManualTitle','improveManualDescription','improveManualUrl'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('improveStatus').textContent='';
     renderItems();
   }
   function renderItems(){
@@ -122,11 +139,13 @@
   async function assign(){
     const code=document.getElementById('improveModule').value,m=modules.find(x=>x.code===code);
     if(!draftItems.length){document.getElementById('improveStatus').textContent='Add at least one plan item or practice question.';return;}
-    const body={moduleCode:code,area:m?.area||'PTE',task:m?.task||'',weakness:m?.weakness||'',title:m?.title||'Teacher Practice Plan',reason:document.getElementById('improveReason').value.trim(),teacherNote:document.getElementById('improveNote').value.trim(),priority:document.getElementById('improvePriority').value,dueAt:document.getElementById('improveDue').value||null,notify:document.getElementById('improveNotify').checked,items:draftItems};
+    const body={moduleCode:code,area:document.getElementById('improveArea').value.trim()||m?.area||'PTE',task:document.getElementById('improveTask').value.trim()||m?.task||'',weakness:m?.weakness||'',title:document.getElementById('improveTitle').value.trim()||m?.title||'Teacher Practice Plan',reason:document.getElementById('improveReason').value.trim(),teacherNote:document.getElementById('improveNote').value.trim(),priority:document.getElementById('improvePriority').value,dueAt:document.getElementById('improveDue').value||null,notify:document.getElementById('improveNotify').checked,items:draftItems};
     try{
       const btn=document.getElementById('improveAssign');btn.disabled=true;document.getElementById('improveStatus').textContent='Assigning…';
       const d=await request('/api/admin/interventions/'+encodeURIComponent(currentStudent),{method:'POST',body});
-      plans.unshift(d.plan);renderPlans();draftItems=[];renderItems();document.getElementById('improveModule').value='';document.getElementById('improveReason').value='';document.getElementById('improveNote').value='';document.getElementById('improveDue').value='';document.getElementById('improveStatus').textContent='Assigned. The student will see it in My Next Steps.';
+      plans.unshift(d.plan);renderPlans();draftItems=[];renderItems();document.getElementById('improveModule').value='';
+      ['improveTitle','improveArea','improveTask','improveReason','improveNote','improveDue','improveManualTitle','improveManualDescription','improveManualUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      document.getElementById('improveStatus').textContent='Assigned. The student will see it in My Next Steps.';
     }catch(e){document.getElementById('improveStatus').textContent=e.message;}finally{document.getElementById('improveAssign').disabled=false;}
   }
   function addButtons(){
