@@ -34,3 +34,5 @@ Placeholder drill cards were removed. Practice items now launch real portal task
 
 ## Inline SWT highlighting
 Content-selection practice keeps the original passage intact. Students drag across key words and phrases directly inside the paragraph. SWT Practice asks students to choose Full Summary Mode or Highlight Key Phrases Mode.
+
+Students can create several phrase highlights in one passage and remove any yellow highlight before checking their selection.
