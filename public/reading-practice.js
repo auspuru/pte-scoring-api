@@ -503,6 +503,7 @@
     timing.complete(s,s.finishedAt,s.completionReason);
     selectedWord=''; examNotice=null; selectedParagraph={};
     syncHistory(s); persist(); renderTimerUpdate();
+    if(s.practiceUid&&typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'reading',questionId:s.practiceUid}}));
     s.questions.filter(q=>q.type==='swt'&&String(s.answers[q.uid]?.[0]||'').trim()).forEach(q=>gradeSwt(q));
   }
   function syncHistory(s) {
