@@ -712,6 +712,7 @@ async function openPortalAsUser(username) {
 function viewUser(username){
   fetch(API+'/api/admin/user-data/'+encodeURIComponent(username),{headers:{'x-admin-key':adminKey}})
     .then(r=>r.json()).then(data=>{
+      const hasAccount=!!data.account;
       const acct=data.account||{};
       const prog=data.progress||{};
       const stats=prog.stats||{};
@@ -721,13 +722,15 @@ function viewUser(username){
       Object.values(history).forEach(a=>{if(Array.isArray(a))totalAttempts+=a.length;});
 
       document.getElementById('detailTitle').textContent=username;
-      document.getElementById('impersonateBtn').onclick = () => openPortalAsUser(username);
+      const impersonateBtn=document.getElementById('impersonateBtn');
+      impersonateBtn.style.display=hasAccount?'':'none';
+      impersonateBtn.onclick = hasAccount ? (() => openPortalAsUser(username)) : null;
       
       let html=`
         <div class="detail-section">
           <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${fmtDate(acct.createdAt)}</span></div>
           <div class="detail-row"><span class="detail-label">Last Login</span><span class="detail-value">${fmtDate(acct.lastLogin)}</span></div>
-          <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${acct.blocked?'<span style="color:var(--red)">Blocked</span>':'<span style="color:var(--green)">Active</span>'}</span></div>
+          <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${hasAccount?(acct.blocked?'<span style="color:var(--red)">Blocked</span>':'<span style="color:var(--green)">Active login account</span>'):'<span style="color:#b45309">Progress-only record</span>'}</span></div>
           <div class="detail-row"><span class="detail-label">Passages Attempted</span><span class="detail-value">${attempted}</span></div>
           <div class="detail-row"><span class="detail-label">Total Attempts</span><span class="detail-value">${totalAttempts}</span></div>
           <div class="detail-row"><span class="detail-label">Average Score</span><span class="detail-value">${stats.averageScore||0}/90</span></div>
