@@ -149,8 +149,12 @@ test('Reading FIB choices test grammar plus contextual vocabulary rather than sy
         assert(row.includes(q.answers[i]),q.id+' blank '+i);
         const correctType=q.fibQuality.blankTypes[i];
         assert.equal(fibQuality.classifyFor(q,i,q.answers[i]),correctType,q.id+' blank '+i+' context type');
-        assert(row.slice(1,3).every(option=>fibQuality.classify(option)===correctType),q.id+' blank '+i+' lacks vocabulary distractors');
-        assert.notEqual(fibQuality.classify(row[3]),correctType,q.id+' blank '+i+' lacks grammar trap');
+        if(q.fibQuality.authoredDistractors){
+          assert.equal(fibQuality.audit(q),true,q.id+' authored distractors');
+        } else {
+          assert(row.slice(1,3).every(option=>fibQuality.classify(option)===correctType),q.id+' blank '+i+' lacks vocabulary distractors');
+          assert.notEqual(fibQuality.classify(row[3]),correctType,q.id+' blank '+i+' lacks grammar trap');
+        }
       });
     } else {
       assert.equal(q.bank.length,q.answers.length+3,q.id);
