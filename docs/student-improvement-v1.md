@@ -19,3 +19,9 @@ This release adds a teacher-assigned improvement workflow to the existing PTE po
 The implementation uses the existing account/session system and a dedicated intervention store. Existing scoring and attempt tables are not repurposed.
 
 V1 also supports assigning exact Essay prompts from the student's existing essay library.
+
+## V2 refinements
+- Exact assigned questions reconcile automatically from submitted portal attempts.
+- Students can use Self-help Beta for SWT, SST and Essay suggestions based on recent score traits where available.
+- Teachers can build fully manual custom plans with instructions and links.
+- Missing legacy JSON accounts are merged into Postgres once without overwriting existing accounts.
