@@ -90,6 +90,22 @@ test('The practice URL opens the hub while essay and legacy mock links retain th
   assert.equal(routeFromHash('#/writing-mocks'), 'writing-mocks');
 });
 
+test('Speaking routes and My Next Steps remain addressable and assigned speaking questions open directly', () => {
+  assert.equal(routeFromHash('#/speaking-ra'), 'speaking-ra');
+  assert.equal(routeFromHash('#/next-steps'), 'next-steps');
+  const h = harness(), opened = [];
+  h.win.SpeakingPractice = { open: (...args) => opened.push(args), leave() {}, reset() {} };
+  h.controller.start();
+  h.controller.activate('speaking-ra', { speakingRequest: { questionId: 'ra-assigned' } });
+  assert.equal(h.controller.current(), 'speaking-ra');
+  assert.equal(h.nodes.get('speakingPane').hidden, false);
+  assert.deepEqual(opened.at(-1), ['ra', 'ra-assigned']);
+  assert.equal(h.nodes.get('nav-practice-hub').attrs['aria-current'], 'page');
+  h.controller.activate('next-steps');
+  assert.equal(h.nodes.get('nextStepsPane').hidden, false);
+  assert.equal(h.nodes.get('nav-next-steps').attrs['aria-current'], 'page');
+});
+
 test('Every Reading and Listening library opens the requested type without starting a mock', () => {
   const h = harness(), opened = []; let left = 0;
   h.win.ReadingPractice = { open: request => opened.push(request), leave: () => left++ };
