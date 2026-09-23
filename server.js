@@ -5892,6 +5892,11 @@ require('./interventions').installInterventions(app, {
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
   getProgress: async uid => StorageAPI.getUserData(uid),
+  getPassages: async () => (await PassageAPI.readAll()).map(studentPassage),
+  getPassage: async id => {
+    const p = await PassageAPI.getById(id);
+    return p ? studentPassage(p) : null;
+  },
   requireAdmin
 });
 
