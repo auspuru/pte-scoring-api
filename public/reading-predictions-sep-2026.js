@@ -1,0 +1,71 @@
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.ReadingPredictionsSep2026=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){'use strict';
+const source={provider:'PTE Nepal',week:'21-27 September 2026',checkedAt:'2026-09-23',rwUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-writing-fib/',rUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-fib/'};
+const rw=[
+['12001225','United Nations','International cooperation can [[1]] conflict when nations [[2]] common rules and support peaceful [[3]].',['prevent','follow','solutions']],
+['12001157','Apartment Renting','A reliable tenant should [[1]] rent on time, keep the property [[2]], and communicate [[3]] with the landlord.',['pay','clean','clearly']],
+['12001119','Genius','Creative achievement is not [[1]] to youth because experience can also [[2]] original work and [[3]] judgement.',['limited','support','strengthen']],
+['12001118','Favorable Traits','A useful trait can become more [[1]] when it improves survival and is [[2]] across many [[3]].',['common','inherited','generations']],
+['12001018','Tutankhamun','Careful excavation helped archaeologists [[1]] objects that had remained [[2]] for centuries and [[3]] Egyptian history.',['preserve','hidden','illuminate']],
+['12000840','Language','Children can [[1]] complex language patterns through social [[2]], even without receiving [[3]] grammar lessons.',['acquire','interaction','formal']],
+['12001330','Sleepwalking','Sleepwalking usually [[1]] during deep sleep, and the person may have little [[2]] of the event after [[3]].',['occurs','memory','waking']],
+['12001329','Communication Skills','Good listeners [[1]] attention, ask for [[2]], and respond in a way that shows they have [[3]] the message.',['give','clarification','understood']],
+['12001327','Insects','Although insects are [[1]] in many cultures, attitudes toward eating them [[2]] widely and can change with [[3]].',['consumed','vary','exposure']],
+['12001314',"Bourdieu's Theory",'Social groups can [[1]] status through cultural habits that are [[2]] as legitimate and then [[3]] through institutions.',['maintain','recognised','reinforced']],
+['12001310','Children and Snacks','Food advertising can [[1]] children’s choices by making particular snacks more [[2]] and encouraging greater [[3]].',['influence','appealing','consumption']],
+['12001309','Novels','Digital media may [[1]] how people read, but new platforms can also [[2]] opportunities for writers and [[3]] audiences.',['change','create','expand']],
+['12001295','Lionfish','An invasive species can [[1]] rapidly when warmer water and new routes [[2]] its movement into a suitable [[3]].',['spread','enable','habitat']],
+['12001253','Dinosaurs','Mass extinction can [[1]] when environmental change happens too [[2]] for many species to [[3]].',['occur','quickly','adapt']],
+['12001205','Fieldwork','Fieldwork allows students to [[1]] classroom knowledge, collect [[2]] evidence, and develop [[3]] skills.',['apply','direct','practical']],
+['12001196','Invention and Innovation','An invention [[1]] something new, while innovation often [[2]] that idea into a useful product or [[3]].',['creates','turns','process']],
+['12001151','Illness','Poor health can [[1]] a person from attending work even when they are [[2]] to fulfil their normal [[3]].',['prevent','willing','duties']],
+['12001148','Circular Time','Some cultures understand time as [[1]], linking daily life to recurring [[2]] rather than constant pressure for [[3]].',['cyclical','seasons','novelty']],
+['12001147','Challenges','New challenges can [[1]] people to use previous experience, build [[2]], and contribute more [[3]] to a team.',['encourage','confidence','effectively']],
+['12001146','BC Driving Licences','Graduated licensing lets new drivers gain [[1]] in stages while following [[2]] designed to improve road [[3]].',['experience','restrictions','safety']],
+['12001145','Insurance in BC','Vehicle insurance provides financial [[1]] after accidents, while optional coverage can [[2]] protection beyond the legally [[3]] minimum.',['support','extend','required']],
+['12001128','Subsidies','Governments may [[1]] industries to lower costs, but poorly designed support can [[2]] markets and create unintended [[3]].',['subsidise','distort','effects']],
+['12001123','Noble Gas','Noble gases are unusually [[1]], and their behaviour helped scientists [[2]] important principles of chemical [[3]].',['stable','understand','bonding']],
+['12001122','Mass Extinction','Researchers compare competing [[1]] and use evidence to [[2]] explanations that do not fit the observed [[3]].',['causes','reject','pattern']],
+['12001120','Dark-silvery Rock','Iron tools gradually [[1]] because stronger materials made farming more [[2]] and allowed communities to work [[3]] soils.',['spread','efficient','tougher']],
+['12001117','Roman and Water','Roman engineers moved water over long [[1]] by using gentle slopes, channels and [[2]] to maintain a steady [[3]].',['distances','aqueducts','flow']],
+['12001116','Early Humans','Permanent settlements often [[1]] near dependable water because communities needed it for people, animals and [[2]], making water management [[3]].',['developed','crops','essential']],
+['12001114','UK Drivers','A simple road sign may [[1]] information without necessarily [[2]] behaviour, so researchers test stronger [[3]].',['provide','changing','interventions']],
+['12001108','Willful Blindness','Willful blindness describes a choice to [[1]] available knowledge when a person has both an opportunity and a [[2]] to become [[3]].',['avoid','responsibility','informed']],
+['12000942','Spanish','A well-designed language course should [[1]] different learners, provide regular [[2]], and build confidence across several communication [[3]].',['support','practice','skills']]
+];
+const rf=[
+['11000994','Tomato','Tomatoes are widely [[1]] because they are useful in many dishes and relatively [[2]] to grow in home [[3]].',['grown','easy','gardens']],
+['11000406','Physical Activity','Regular physical activity can [[1]] health, reduce the risk of chronic disease and [[2]] long-term [[3]].',['improve','support','wellbeing']],
+['11000397','Mathematics and Statistics','Mathematics and statistics [[1]] evidence, help people solve problems and support [[2]] decisions in many [[3]].',['organise','informed','fields']],
+['11000255','Generosity','Charitable giving can [[1]] many organisations, especially when individuals [[2]] regularly and respond to urgent community [[3]].',['support','donate','needs']],
+['11001117','Mountain Forest','Visitors often follow marked [[1]] through mountain forests so they can enjoy the [[2]] while reducing damage to the natural [[3]].',['trails','scenery','environment']],
+['11001116','Recycling Notice','Recycling works best when materials are correctly [[1]], packaging is kept [[2]], and unsuitable items are [[3]].',['sorted','clean','removed']],
+['11001111','Petrified Forest','Erosion can [[1]] fossils that were once buried, giving researchers new [[2]] about ancient plants, animals and human [[3]].',['expose','evidence','activity']],
+['11001098','Cognitive Abilities','Researchers compare groups to [[1]] how experience affects problem solving and which mental [[2]] contribute to child [[3]].',['examine','processes','development']],
+['11001084','Music Education','Music education may [[1]] concentration and learning when it is [[2]] with a balanced school [[3]].',['support','combined','curriculum']],
+['11001083','Abraham Lincoln','Political success can appear [[1]] when a candidate lacks wealth or powerful connections but gains broad public [[2]] through clear [[3]].',['unexpected','support','leadership']],
+['11001081','Mural Projects','Public murals can [[1]] shared spaces, celebrate local identity and [[2]] community memories in a visible [[3]].',['transform','preserve','form']],
+['11001080','Emotional Intelligence','Emotional intelligence includes the [[1]] to recognise feelings, regulate reactions and [[2]] constructively with other [[3]].',['ability','communicate','people']],
+['11001079','Oakham','Effective training [[1]] experienced teachers with individual feedback so learners receive [[2]] that matches their specific [[3]].',['combines','support','needs']],
+['11001078','Hancock Building','Public artwork can [[1]] scientific ideas through light and design, turning complex information into a visually [[2]] public [[3]].',['represent','engaging','display']],
+['11001076','Settlements','Cities may [[1]] after disaster or political change, while older centres continue to [[2]] newcomers because established services create [[3]].',['rebuild','attract','opportunity']],
+['11001075','Newest Hotel','Hotel technology can [[1]] check-in and room controls, reducing routine staff tasks while giving guests more [[2]] over their [[3]].',['automate','control','stay']],
+['11001071','Chimpanzee Behavior','Researchers observe chimpanzees to [[1]] how tool use is learned and how signals are [[2]] within social [[3]].',['understand','shared','groups']],
+['11001032','Wrist Watch','A smart watch can [[1]] health signals, detect unusual changes and [[2]] an alert when help may be [[3]].',['monitor','send','needed']],
+['11001030','Healthy Workplace','Workplace rules should [[1]] hazards, protect employees and ensure organisations [[2]] appropriate safety [[3]].',['reduce','follow','standards']],
+['11001029','Robotic Surgery','Recorded robotic procedures can [[1]] medical training, while remote systems may allow specialists to [[2]] patients from another [[3]].',['support','treat','location']],
+['11001028','Family Commitment','As responsibilities [[1]], adults may have less leisure time, making regular recreation important for preventing [[2]] and maintaining [[3]].',['increase','burnout','wellbeing']],
+['11001027','Parent Invitation','Schools can [[1]] parents by publishing clear event details and explaining how attendance may [[2]] student [[3]].',['invite','support','success']],
+['11001025','Museum Restaurant','Event venues should clearly [[1]] capacity, prices and booking conditions so customers can [[2]] whether a space meets their [[3]].',['state','decide','needs']],
+['11001024','Paper Label','Recycling instructions may ask people to [[1]] labels because unwanted material can [[2]] the sorting and processing [[3]].',['remove','disrupt','system']],
+['11001022','Renting','A rental applicant should [[1]] interest politely, provide reliable information and request an [[2]] to view the [[3]].',['express','appointment','property']],
+['11001020','License Change','Driving history can [[1]] insurance costs because insurers use past experience to [[2]] risk and calculate a [[3]].',['affect','estimate','premium']],
+['11001019',"Children's Breakfast",'Children who eat breakfast regularly may [[1]] important nutrients and maintain better [[2]] during morning [[3]].',['receive','concentration','lessons']],
+['11001016','A Job Application','A strong application should [[1]] relevant skills, explain how experience matches the role and [[2]] supporting documents for employer [[3]].',['highlight','attach','review']],
+['11001015','Driving in British Columbia','Drivers should [[1]] road rules, prepare for changing weather and maintain vehicles to [[2]] the risk of unexpected [[3]].',['follow','reduce','problems']],
+['11001014','Modern Technology','Digital technology can [[1]] access to information while also creating concerns about privacy and the quality of social [[2]], requiring careful [[3]].',['expand','interaction','management']]
+];
+const distract=['change','ignore','rarely','private','delay','weaken','random','narrow'];
+function dropdown(seed,i){const [sourceId,title,text,answers]=seed;return{id:'pred26-rw-'+String(i+1).padStart(2,'0'),uid:'pred26-rw-'+sourceId,type:'dropdown',title,passage:text,answers,options:answers.map((a,j)=>[a,distract[(i+j)%distract.length],distract[(i+j+3)%distract.length],distract[(i+j+5)%distract.length]]),predictionSource:{...source,task:'reading-writing-fib',sourceId,sourceTitle:title},reasoning:{correct:'Use grammar, collocation and surrounding meaning to choose the natural English fit. No specialist subject knowledge is required.'}}}
+function wordbank(seed,i){const [sourceId,title,text,answers]=seed;return{id:'pred26-r-'+String(i+1).padStart(2,'0'),uid:'pred26-r-'+sourceId,type:'wordbank',title,passage:text,answers,bank:[...answers,distract[i%distract.length],distract[(i+2)%distract.length],distract[(i+5)%distract.length]],predictionSource:{...source,task:'reading-fib',sourceId,sourceTitle:title},reasoning:{correct:'Use vocabulary in context, grammar and collocation to place each word. No specialist subject knowledge is required.'}}}
+return{version:'2026-09-23.1',source,dropdown:rw.map(dropdown),wordbank:rf.map(wordbank)};
+});
