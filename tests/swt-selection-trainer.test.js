@@ -64,3 +64,20 @@ test('range selections are validated against passage offsets',()=>{
   assert.equal(result.mode,'phrases');
   assert.equal(result.selectedRanges.length,0);
 });
+
+
+test('central source phrase inside a paraphrased fallback idea is not marked extra',()=>{
+  const passage={
+    id:999,
+    text:'Urban trees cool neighbourhoods during heatwaves and make streets more comfortable. Researchers also record local bird species. Councils therefore protect mature trees when redesigning hot streets.',
+    studyGuide:{items:[{label:'Main idea',idea:'Green infrastructure reduces dangerous urban heat',phrases:[]}]}
+  };
+  const key=trainer.answerKey(passage);
+  assert.equal(key.targets[0].ranges[0].kind,'fallback');
+  const phrase='cool neighbourhoods during heatwaves';
+  const start=passage.text.indexOf(phrase);
+  const result=trainer.grade(passage,[{start,end:start+phrase.length}]);
+  assert.equal(result.ideaRecall.percent,100);
+  assert.equal(result.extraRanges.length,0);
+  assert.equal(result.correctRanges[0].text,phrase);
+});
