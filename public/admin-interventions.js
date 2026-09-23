@@ -86,11 +86,12 @@
   async function loadQuestions(){
     const imp=await request('/api/admin/impersonate/'+encodeURIComponent(currentStudent));
     const headers={'x-session-token':imp.token};
-    const [speakingR,readingR,writingR,swtR]=await Promise.all([
+    const [speakingR,readingR,writingR,swtR,essayData]=await Promise.all([
       fetch('/api/speaking/catalog',{cache:'no-store',headers}),
       fetch('/reading-bank.json?v=8',{cache:'no-store'}),
       fetch('/api/writing-lab/catalog',{cache:'no-store',headers}),
-      fetch('/api/passages',{cache:'no-store'})
+      fetch('/api/passages',{cache:'no-store'}),
+      request('/api/admin/user-data/'+encodeURIComponent(currentStudent))
     ]);
     const [speaking,reading,writing,swt]=await Promise.all([speakingR.json(),readingR.json(),writingR.json(),swtR.json()]);
     const out=[];
@@ -100,6 +101,7 @@
     (writing.spoken||[]).forEach((q,i)=>out.push({key:'sst:'+q.id,section:'Listening',type:'Summarise Spoken Text',title:'SST — Question '+(i+1)+(q.title?' · '+q.title:''),item:{kind:'question',title:'SST — Question '+(i+1),description:q.title||'Complete a new SST attempt.',engine:'writing-lab',route:'spoken-text',testId:String(q.id),requireNewAttempt:true,required:true}}));
     (writing.dictation||[]).forEach((q,i)=>out.push({key:'wfd:'+q.id,section:'Listening',type:'Write From Dictation',title:'WFD — Question '+(i+1)+(q.title?' · '+q.title:''),item:{kind:'question',title:'WFD — Question '+(i+1),description:q.title||'Complete a new dictation attempt.',engine:'writing-lab',route:'dictation',testId:String(q.id),requireNewAttempt:true,required:true}}));
     (swt.passages||[]).forEach((p,i)=>out.push({key:'swt:'+p.id,section:'Writing',type:'Summarize Written Text',title:'SWT P'+p.id+(p.title?' · '+p.title:''),item:{kind:'question',title:'SWT P'+p.id+(p.title?' — '+p.title:''),description:'Complete a new SWT attempt for this passage.',engine:'swt',route:'swt',passageId:String(p.id),requireNewAttempt:true,required:true}}));
+    (essayData.progress?.essays||[]).filter(e=>e&&e.id&&e.question&&String(e.question).trim()).forEach((e,i)=>out.push({key:'essay:'+e.id,section:'Writing',type:'Write Essay',title:'Essay — '+(e.title||('Question '+(i+1))),item:{kind:'question',title:'Essay — '+(e.title||('Question '+(i+1))),description:String(e.question).trim().slice(0,240),engine:'essay',route:'practice',questionId:String(e.id),requireNewAttempt:true,required:true}}));
     questions=out;
   }
   function fillQuestionFilters(){
