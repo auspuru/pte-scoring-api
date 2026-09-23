@@ -5853,6 +5853,7 @@ require('./interventions').installInterventions(app, {
   directory: path.join(DATA_DIR, 'interventions'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  getProgress: async uid => StorageAPI.getUserData(uid),
   requireAdmin
 });
 
