@@ -249,11 +249,14 @@ test('Unexplained claims of grammar meaning change require review rather than a 
   assert.equal(result.full_content_eligible, false);
 });
 
-test('Offline fallback cannot certify meaning or full content from word overlap', async () => {
+test('Offline fallback returns a usable conservative local score without pretending AI feedback exists', async () => {
   const result = await grade(fixtures[1], null);
-  assert.equal(result.score_provisional, true);
+  assert.equal(result.score_provisional, false);
+  assert.equal(result.ai_feedback_degraded, true);
+  assert.equal(result.mode, 'local');
   assert.equal(result.trait_scores.grammar, 2);
   assert(result.trait_scores.content < 4);
+  assert(Number.isFinite(result.overall_score));
   assert.notEqual(result.band, 'Band 9');
 });
 
