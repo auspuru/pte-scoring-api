@@ -605,10 +605,17 @@
       <div id="swtPane" class="pane">
         <div id="swtPracticeScreen" class="swt-sub-screen active">
           <header class="swt-heading">
-            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p>Write one sentence of 5–75 words.</p></div>
-            <ul class="swt-requirements" aria-label="Task requirements"><li>1 sentence</li><li>5–75 words</li><li>10-minute timer available</li></ul>
+            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p id="swtModeDescription">Choose how you want to practise this task.</p></div>
+            <ul class="swt-requirements" id="swtSummaryRequirements" aria-label="Task requirements" hidden><li>1 sentence</li><li>5–75 words</li><li>10-minute timer available</li></ul>
           </header>
-          <div class="passage-nav" aria-label="Choose a passage">
+          <section class="swt-mode-chooser" id="swtModeChooser" aria-labelledby="swtModeHeading">
+            <div><span class="eyebrow">Practice mode</span><h2 id="swtModeHeading">How do you want to practise?</h2><p>Choose full SWT writing or train only your ability to identify the important lines.</p></div>
+            <div class="swt-mode-options">
+              <button type="button" class="swt-mode-card" data-swt-mode="summary" onclick="setSwtPracticeMode('summary')"><strong>Full Summary Mode</strong><span>Read the passage, write one sentence of 5–75 words and receive the normal SWT score.</span></button>
+              <button type="button" class="swt-mode-card" data-swt-mode="highlight" onclick="setSwtPracticeMode('highlight')"><strong>Highlight Key Lines Mode</strong><span>Do not write a summary. Highlight the lines inside the original paragraph that should carry the summary.</span></button>
+            </div>
+          </section>
+          <div class="passage-nav" id="swtPracticeNav" aria-label="Choose a passage" hidden>
             <div class="swt-pager">
               <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">← Back</button>
               <span>Passage <strong class="nav-label" id="navCurrent">01</strong> <span class="swt-muted">of <span id="navTotal">10</span></span></span>
@@ -622,14 +629,14 @@
               <span class="material-symbols-outlined" aria-hidden="true">timer</span><span id="timerState">Timer off</span><span class="timer-pill" id="timerDisplay">—</span>
             </button>
           </div>
-          <div class="practice-grid">
+          <div class="practice-grid" id="swtPracticeGrid" hidden>
             <section class="card passage-pane" aria-labelledby="swtReadHeading">
               <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">1</span><div><h2 id="swtReadHeading">Read the passage</h2></div></div>
               <div class="passage-meta"><span class="eyebrow">Passage <span id="pasNum">01</span></span><span class="meta-tag" id="pasWordCount">0 words</span><span class="meta-tag" id="pasCategory">~10 min</span></div>
               <div class="passage-body" id="passageBody">Loading passage…</div>
               
             </section>
-            <section class="card write-pane" aria-labelledby="swtWriteHeading">
+            <section class="card write-pane" id="swtWritePane" aria-labelledby="swtWriteHeading">
               <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">2</span><div><h2 id="swtWriteHeading">Write your summary</h2></div></div>
               <div class="write-tabs" role="tablist" aria-label="Writing workspace">
                 <button type="button" class="write-tab active" id="tabWrite" role="tab" aria-selected="true" aria-controls="writeTabPane" onclick="switchWriteTab('write')">Your summary</button>
@@ -657,6 +664,19 @@
                 <p class="scratch-note" id="swtScratchHint">Notes saved automatically.</p>
                 <button type="button" class="btn" onclick="switchWriteTab('write'); document.getElementById('summaryInput').focus()">Return to your summary →</button>
               </div>
+            </section>
+            <section class="card write-pane swt-highlight-pane" id="swtHighlightPane" aria-labelledby="swtHighlightHeading" hidden>
+              <div class="swt-card-heading"><span class="swt-step" aria-hidden="true">2</span><div><h2 id="swtHighlightHeading">Highlight key lines</h2><p class="swt-help">Click directly on the lines in the paragraph that contain the main message or essential support.</p></div></div>
+              <div class="swt-highlight-guide">
+                <p><strong>Do not write the summary yet.</strong> Your goal is to decide what deserves to be included.</p>
+                <p id="swtHighlightStatus" role="status">Choose the important lines from the paragraph.</p>
+              </div>
+              <div class="swt-highlight-actions">
+                <span id="swtHighlightCount">0 lines highlighted</span>
+                <button type="button" class="btn btn-ghost" onclick="resetSwtHighlightSelection()">Clear highlights</button>
+                <button type="button" class="btn btn-primary" id="swtHighlightCheckBtn" onclick="checkSwtHighlightSelection()" disabled>Check my highlights</button>
+              </div>
+              <div id="swtHighlightFeedback" class="swt-highlight-feedback" hidden></div>
             </section>
           </div>
         </div>
