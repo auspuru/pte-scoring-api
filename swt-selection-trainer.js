@@ -68,10 +68,17 @@ function makeCatalog(passages,{limit=15}={}) {
     .map(p=>({id:String(p.id),title:normalize(p.title)||('Passage '+p.id),category:normalize(p.category),sentenceCount:splitSentences(p.text).length}));
 }
 function exercise(passage) {
-  const key=answerKey(passage);
+  const key=answerKey(passage),source=String(passage?.text||'');
+  let index=0;
+  const rawParagraphs=source.split(/\n\n+/).filter(x=>x.trim());
+  const paragraphs=(rawParagraphs.length?rawParagraphs:[source]).map(text=>({
+    sentences:splitSentences(text).map(sentence=>({index:index++,text:sentence}))
+  }));
   return {
     id:String(passage.id),title:normalize(passage.title)||('Passage '+passage.id),category:normalize(passage.category),
-    instructions:'Highlight only the sentences you believe carry the central message or essential supporting ideas. Do not write a summary.',
+    instructions:'Read the paragraph normally and highlight only the lines that carry the central message or essential supporting ideas. Do not write a summary.',
+    text:source,
+    paragraphs,
     sentences:key.sentences.map((text,index)=>({index,text}))
   };
 }
