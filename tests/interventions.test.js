@@ -139,3 +139,48 @@ test('SWT highlight trainer serves existing passages and completes after the con
   assert.equal(checked.data.item.status,'completed');
   assert.equal(checked.data.item.completionSource,'trainer_sync');
 });
+
+test('SWT content self-help remaps generic Content Picking to the highlight trainer',async t=>{
+  const h=await harness();
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const result=await call(h.base,'/api/interventions/self-plan',{method:'POST',token:'alice',body:{
+    moduleCode:'CP-01',task:'swt',problem:'how to improve content?'
+  }});
+  assert.equal(result.status,200);
+  assert.equal(result.data.plan.moduleCode,'SWT-CONTENT-01');
+  assert.equal(result.data.plan.task,'Summarize Written Text');
+  assert.equal(result.data.plan.items[0].kind,'swt_selection_trainer');
+});
+
+test('an older generic CP-01 self-help card upgrades automatically to the SWT trainer',async t=>{
+  const h=await harness();
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const created=await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{
+    source:'student',moduleCode:'CP-01',area:'Writing / Speaking / Listening',task:'SWT, RL, SGD, SST',
+    title:'Content Picking — Main Idea · Self-help Beta',reason:'You asked for help with: how to improve content?',
+    items:[{kind:'practice',title:'Main idea drill',description:'For 5 passages or audios, identify only the central idea.'}]
+  }});
+  assert.equal(created.status,200);
+  const listed=await call(h.base,'/api/interventions',{token:'alice'});
+  const plan=listed.data.plans.find(p=>p.id===created.data.plan.id);
+  assert.equal(plan.moduleCode,'SWT-CONTENT-01');
+  assert.equal(plan.items[0].kind,'swt_selection_trainer');
+});
+
+test('practice-set progress completes automatically from qualifying SWT submissions',async t=>{
+  const future1=new Date(Date.now()+3000).toISOString(),future2=new Date(Date.now()+4000).toISOString();
+  const h=await harness({getProgress:async()=>({history:{
+    1:[{timestamp:future1,trait_scores:{content:4,form:1,grammar:2,vocabulary:2}}],
+    2:[{timestamp:future2,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}}]
+  }})});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const created=await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{
+    title:'SWT application',items:[{kind:'practice_set',title:'3 SWT attempts',engine:'swt',route:'swt',practiceType:'swt',minimumAttempts:2}]
+  }});
+  assert.equal(created.status,200);
+  const listed=await call(h.base,'/api/interventions',{token:'alice'});
+  const item=listed.data.plans.find(p=>p.id===created.data.plan.id).items[0];
+  assert.equal(item.attemptProgress.count,2);
+  assert.equal(item.status,'completed');
+  assert.equal(item.completionSource,'attempt_sync');
+});
