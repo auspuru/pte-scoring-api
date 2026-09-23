@@ -1,9 +1,10 @@
 (function (root, factory) {
   const predictions = root.ReadingPredictionsSep2026 || (typeof require === 'function' ? require('./reading-predictions-sep-2026') : null);
-  const api = factory(predictions);
+  const fibQuality = root.ReadingFibQuality || (typeof require === 'function' ? require('./reading-fib-quality') : null);
+  const api = factory(predictions, fibQuality);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingMockTools = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions, fibQuality) {
   'use strict';
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
   const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue', 'mixed']);
@@ -26,7 +27,7 @@
     const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
     const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
       .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
-    const merged = library.filter(languageFirstFib);
+    const merged = library.filter(languageFirstFib).map(q => fibQuality ? fibQuality.strengthen(q, 'practice:'+q.id) : q);
     const seen = new Set(), unique = merged.filter(q => {
       const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
       if (!identity || seen.has(identity)) return false;
@@ -151,7 +152,8 @@
       correct: 'Choose from the grammar, collocation and meaning supplied by the surrounding sentence. No specialist subject knowledge is required.',
       blanks: (q.answers || []).map((answer, i) => ({
         answer,
-        explanation: '"' + answer + '" gives the natural English fit in "' + fibContext(q.passage, i, answer) + '" and keeps the sentence grammatically and logically coherent.',
+        explanation: old[i]?.explanation || ('"' + answer + '" gives the natural English fit in "' + fibContext(q.passage, i, answer) + '" and keeps the sentence grammatically and logically coherent.'),
+        skill: old[i]?.skill || 'grammar + vocabulary/collocation',
         meaning: old[i]?.meaning || ''
       }))
     };
@@ -171,7 +173,8 @@
       return slice.map(q => {
         const words=String(q.passage || '').trim().split(/\s+/).filter(Boolean).length;
         if(words>maxWords) throw Error('A prediction passage exceeds the PTE word limit.');
-        return { ...q, reasoning: languageReasoning(q) };
+        const strengthened = fibQuality ? fibQuality.strengthen(q, 'prediction:'+q.uid) : q;
+        return { ...strengthened, reasoning: languageReasoning(strengthened) };
       });
     };
     const questions = [...take('dropdown', 5, 300), ...take('wordbank', 5, 80)];
