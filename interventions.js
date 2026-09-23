@@ -398,8 +398,11 @@ function installInterventions(app, options = {}) {
         task==='swt'?'Review the SWT method before attempting full summaries.':'Review the task method, then apply it in targeted practice.');
     }
     if (/main idea|content|key point|idea|detail|note|listen|remember/.test(text) && !swtContentIntent) {
-      push(task === 'sst' ? 'NT-01' : 'CP-01', 'Content selection', 'Your description points to selecting and organising the important information first.',
-        task==='sst'?'Practise keyword notes and identify the topic plus strongest supporting points.':'Practise identifying the central message before adding supporting information.');
+      const contentModule=task==='sst'?'SST-01':task==='essay'?'ESSAY-01':'CP-01';
+      push(contentModule, 'Content selection', 'Your description points to selecting and organising the important information first.',
+        task==='sst'?'Review the SST note-taking method, then complete real SST attempts that sync automatically.'
+          :task==='essay'?'Review prompt relevance and idea development, then apply it in real Essay attempts.'
+          :'Practise identifying the central message before adding supporting information.');
     }
     if (/grammar|sentence|connect|punct|run.?on/.test(text)) push('GR-01','Grammar and sentence building','Focus on accurate sentence construction and logical connections.');
     if (/vocab|word|collocation|phrase/.test(text)) push('VOC-02','Vocabulary and collocations','Build useful word combinations and context-appropriate vocabulary.');
