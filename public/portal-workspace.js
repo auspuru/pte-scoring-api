@@ -15,6 +15,7 @@
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
     progress: { pane:'progressPane',nav:'nav-progress',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
+    'next-steps': { pane:'nextStepsPane',nav:'nav-next-steps',title:'My Next Steps',path:'next-steps',eyebrow:'Your improvement plan',context:'Teacher-assigned focus areas and practice' },
     'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },
     swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: '' },
@@ -102,7 +103,7 @@
         if (button) button.style.display = section === 'library' ? '' : 'none';
       });
       if (activePaneId === 'readingPane') win.ReadingPractice?.open({ mockOnly: section === 'reading', ...options.readingRequest, ...(route.readingLibrary ? { libraryId: route.readingLibrary } : {}) });
-      if (route.speakingType) win.SpeakingPractice?.open(route.speakingType);
+      if (route.speakingType) win.SpeakingPractice?.open(route.speakingType, options.speakingRequest?.questionId);
       closeMenu();
       if (ready && options.history !== 'none') {
         const hash = '#/' + routes[section].path;
