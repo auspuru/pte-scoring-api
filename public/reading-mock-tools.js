@@ -1,10 +1,11 @@
 (function (root, factory) {
   const predictions = root.ReadingPredictionsSep2026 || (typeof require === 'function' ? require('./reading-predictions-sep-2026') : null);
   const fibQuality = root.ReadingFibQuality || (typeof require === 'function' ? require('./reading-fib-quality') : null);
-  const api = factory(predictions, fibQuality);
+  const patternBank = root.ReadingFibPatternBank || (typeof require === 'function' ? require('./reading-fib-pattern-bank') : null);
+  const api = factory(predictions, fibQuality, patternBank);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingMockTools = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions, fibQuality) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions, fibQuality, patternBank) {
   'use strict';
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
   const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue', 'mixed']);
@@ -32,7 +33,8 @@
     const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
     const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
       .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
-    const merged = library.filter(languageFirstFib).map(q => strengthenFib(q, 'practice:'+q.id));
+    const pattern = patternBank?.[type] || [];
+    const merged = [...pattern, ...library].filter(languageFirstFib).map(q => strengthenFib(q, 'practice:'+q.id));
     const seen = new Set(), unique = merged.filter(q => {
       const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
       if (!identity || seen.has(identity)) return false;
