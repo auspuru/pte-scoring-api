@@ -28,7 +28,7 @@
     verbPhrase:'verb phrase',phrase:'phrase'
   };
   const POOLS={
-    noun:['boundary','ceremony','device','permission','priority','surface','sequence','identity','capacity','estimate','resource','method'],
+    noun:['boundary','ceremony','device','permission','priority','surface','sequence','identity','capacity','resource','method','location'],
     verb:['calculate','borrow','announce','divide','wander','permit','measure','repair','observe','translate','store','dismiss'],
     adjective:['temporary','silent','legal','remote','domestic','annual','visible','formal','stable','separate','random','urban'],
     adverb:['deliberately','roughly','locally','rarely','strictly','briefly','widely','eventually','quietly','indirectly'],
@@ -41,6 +41,14 @@
     verbPhrase:['was able to','has been','might have','used to be','was expected to'],
     phrase:['with limited','under formal','without any','by several','for certain']
   };
+  // Make generated decoys classify according to the pool they come from.
+  // The pools intentionally use words that are semantically distant from the
+  // target answer; classification here is about grammatical role, not meaning.
+  for(const [type,pool] of Object.entries(POOLS)){
+    if(!GROUPS[type])GROUPS[type]=new Set();
+    for(const value of pool)GROUPS[type].add(value);
+  }
+
   const GRAMMAR_TRAP={
     noun:'adverb',verb:'noun',adjective:'noun',adverb:'adjective',gerund:'adjective',
     past:'noun',connector:'noun',preposition:'adverb',infinitive:'noun',modal:'noun',
