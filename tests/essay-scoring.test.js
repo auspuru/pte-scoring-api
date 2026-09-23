@@ -156,7 +156,7 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   assert(Number.isInteger(local.scores.total));
   const cachedLocal = await broken.grade(question, essay);
   assert.deepEqual(cachedLocal, local);
-  assert.equal(failures, 2);
+  assert.equal(failures, 4,'Unavailable local samples deliberately allow a later AI retry.');
 });
 
 test('Full-score essays retain a complete sample and sample changes never alter original scores', () => {
