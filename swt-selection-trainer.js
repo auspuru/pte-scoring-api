@@ -167,7 +167,13 @@ function rangeMatchesTarget(selection,target) {
     const targetCoverage=overlap/Math.max(1,range.end-range.start);
     const selectedCoverage=overlap/Math.max(1,selection.end-selection.start);
     if(range.kind==='phrase'&&(targetCoverage>=0.35||selectedCoverage>=0.65||overlapScore(selectedText,range.text)>=0.5))return true;
-    if(range.kind!=='phrase'&&selectedCoverage>=0.6&&overlapScore(selectedText,target.idea)>=0.18)return true;
+    // When a study-guide idea is paraphrased, answerKey deliberately falls back
+    // to the source sentence carrying that idea. A student may then select the
+    // exact load-bearing phrase inside that sentence rather than most of the
+    // sentence. Do not mark that valid source phrase red merely because its
+    // wording differs from the paraphrased guide. Require at least three
+    // meaningful content tokens so incidental one/two-word details stay extra.
+    if(range.kind!=='phrase'&&selectedCoverage>=0.6&&(overlapScore(selectedText,target.idea)>=0.18||tokens(selectedText).length>=3))return true;
   }
   return overlapScore(selectedText,target.idea)>=0.34;
 }
