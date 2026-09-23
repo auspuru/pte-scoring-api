@@ -124,7 +124,7 @@
     return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
       + (excluded && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
-      + '<details class="reading-explanation reading-feedback-detail" '+(outcome==='correct'?'':'open')+'><summary>Explanation &amp; feedback</summary>' + feedback + '</details>' + audio + '</article>';
+      + '<section class="reading-explanation reading-feedback-detail" aria-label="Explanation and feedback"><h3>Explanation &amp; feedback</h3>' + feedback + '</section>' + audio + '</article>';
   }
   return { question, models, matches, controls, overview, filters, blankFeedback };
 });
