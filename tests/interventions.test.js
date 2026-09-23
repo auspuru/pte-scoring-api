@@ -92,3 +92,15 @@ test('self-help Beta uses recent SWT trait scores and can create a student plan'
   assert.equal(plan.data.plan.source,'student');
   assert.match(plan.data.plan.title,/Self-help Beta/);
 });
+
+test('SWT Beta routes important-line questions to the highlight trainer first',async t=>{
+  const h=await harness({getProgress:async()=>({history:{1:[{
+    timestamp:new Date().toISOString(),trait_scores:{content:4,form:1,grammar:2,vocabulary:2}
+  }]}})});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'swt',problem:'how to know which lines are important?'}});
+  assert.equal(advice.status,200);
+  assert.equal(advice.data.suggestions[0].moduleCode,'SWT-CONTENT-01');
+  assert.match(advice.data.suggestions[0].action,/Highlight only the important sentences/i);
+  assert.equal(advice.data.latestScore.scores.content,4);
+});
