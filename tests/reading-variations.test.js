@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const { score } = require('../public/reading-practice');
 const tools = require('../public/reading-mock-tools');
 const bank = require('../public/reading-bank.json');
+const predictions = require('../public/reading-predictions-sep-2026');
 
 test('Focused Reading mocks 4–9 are unique FIB-only papers within passage limits', () => {
   const presets=bank.mockCatalogue.filter(m=>m.kind==='reading-blanks'),seen=new Set();
@@ -12,17 +13,24 @@ test('Focused Reading mocks 4–9 are unique FIB-only papers within passage limi
   for(const preset of presets){
     const plan=tools.compose(bank,preset.id,preset.setId);
     assert.equal(plan.questions.length,10);
-    assert.equal(plan.questions.filter(q=>q.type==='dropdown').length,6);
-    assert.equal(plan.questions.filter(q=>q.type==='wordbank').length,4);
+    assert.equal(plan.questions.filter(q=>q.type==='dropdown').length,5);
+    assert.equal(plan.questions.filter(q=>q.type==='wordbank').length,5);
     for(const q of plan.questions){
       const words=String(q.passage||'').trim().split(/\s+/).filter(Boolean).length;
       assert(words<=(q.type==='wordbank'?80:300),q.id);
       assert(!seen.has(q.uid||q.id),'Question repeated across focused mocks: '+(q.uid||q.id));
       seen.add(q.uid||q.id);
       assert.match(q.reasoning.correct,/No specialist subject knowledge is required/);
+      assert.match(q.id,/^pred26-rw?-|^pred26-r-/);
+      assert.equal(q.predictionSource.provider,'PTE Nepal');
+      assert.equal(q.predictionSource.week,'21-27 September 2026');
     }
   }
   assert.equal(seen.size,60);
+  assert.equal(predictions.dropdown.length,30);
+  assert.equal(predictions.wordbank.length,30);
+  assert.equal(new Set(predictions.dropdown.map(q=>q.predictionSource.sourceId)).size,30);
+  assert.equal(new Set(predictions.wordbank.map(q=>q.predictionSource.sourceId)).size,30);
 });
 
 test('Reading answer choices are shuffled for display while answer coordinates and scoring remain unchanged', () => {
