@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {score,diagnostic,report,remaining,storageKey,totals}=require('../public/reading-practice');
-const {compose,createSpeaker}=require('../public/reading-mock-tools');
+const {compose,createSpeaker,scoreExtra}=require('../public/reading-mock-tools');
 const bank=require('../public/reading-bank.json');
 test('Every imported reading question retains a complete usable answer key',()=>{
  for(const set of bank.sets)for(const q of set.questions){
@@ -109,6 +109,16 @@ test('Provisional SWT and unplayed audio are excluded from confirmed totals, wit
  s.assessments[swt.uid]={result:confirmedGrade};s.audioStates[hiw.uid]={status:'complete'};
  const after=totals(s);assert.equal(after.pending,0);assert.equal(after.excluded,3);assert.equal(after.earned,14);assert.equal(after.possible,before.possible+15);
 });
+
+test('A complete local SWT estimate counts in mixed Reading totals even without AI-only annotations',()=>{
+ const q={type:'swt'};
+ const result={raw_score:7,max_raw_score:9,score_provisional:false,ai_feedback_degraded:true,mode:'local',
+  trait_scores:{content:2,form:1,grammar:2,vocabulary:2}};
+ assert.deepEqual(scoreExtra(q,['A locally scored summary.'],{result}),{earned:7,possible:9});
+ result.score_provisional=true;
+ assert.equal(scoreExtra(q,['A locally scored summary.'],{result}).pending,true);
+});
+
 function finishSpeech(audio, first = audio.utterances.length - 1) {
  for(let i=first;i<audio.utterances.length;i++){audio.utterances[i].onstart();audio.utterances[i].onend();}
  return audio.utterances.length;
