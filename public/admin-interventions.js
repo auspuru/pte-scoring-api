@@ -14,7 +14,7 @@
   }
   async function loadModules(){
     if(modules.length)return modules;
-    const r=await fetch('/improvement-modules.json?v=3',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
+    const r=await fetch('/improvement-modules.json?v=4',{cache:'no-store'});const d=await r.json();modules=d.modules||[];return modules;
   }
   function injectModal(){
     if(document.getElementById('improveModal'))return;
@@ -64,7 +64,7 @@
     const url=document.getElementById('improveManualUrl').value.trim();
     if(!title && !description){document.getElementById('improveStatus').textContent='Write a title or instruction for the manual step.';return;}
     const youtube=/youtu(?:\.be|be\.com)/i.test(url);
-    draftItems.push({kind:url&&youtube?'video':'practice',title:title||'Teacher instruction',description,url,required:true});
+    draftItems.push({kind:url&&youtube?'video':'instruction',title:title||'Teacher instruction',description,url,required:true});
     ['improveManualTitle','improveManualDescription','improveManualUrl'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('improveStatus').textContent='';
     renderItems();
