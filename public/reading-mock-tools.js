@@ -133,10 +133,49 @@
     }
   }
 
+  function fibContext(passage, index, answer) {
+    const token = '[[' + (index + 1) + ']]', source = String(passage || ''), at = source.indexOf(token);
+    if (at < 0) return String(answer || '');
+    const before = source.slice(0, at).trim().split(/\s+/).slice(-6).join(' ');
+    const after = source.slice(at + token.length).trim().split(/\s+/).slice(0, 6).join(' ');
+    return [before, answer, after].filter(Boolean).join(' ');
+  }
+  function languageReasoning(q) {
+    const old = q.reasoning?.blanks || [];
+    return {
+      ...(q.reasoning || {}),
+      correct: 'Choose from the grammar, collocation and meaning supplied by the surrounding sentence. No specialist subject knowledge is required.',
+      blanks: (q.answers || []).map((answer, i) => ({
+        answer,
+        explanation: '"' + answer + '" gives the natural English fit in "' + fibContext(q.passage, i, answer) + '" and keeps the sentence grammatically and logically coherent.',
+        meaning: old[i]?.meaning || ''
+      }))
+    };
+  }
+  // Focused Reading mocks 4–9 contain only the two PTE Fill in the Blanks
+  // formats. Six dropdown plus four drag-and-drop items match the published
+  // task-count ranges while keeping every question unique across these mocks.
+  function composeReadingBlanksPractice(bank, preset) {
+    const variants = (bank.mockCatalogue || []).filter(m => m.kind === 'reading-blanks');
+    const index = Math.max(0, variants.findIndex(m => m.id === preset.id));
+    const take = (type, count, maxWords) => {
+      const pool = qualityFibPool(bank, type, 0).filter(q =>
+        String(q.passage || '').trim().split(/\s+/).filter(Boolean).length <= maxWords);
+      const slice = pool.slice(index * count, index * count + count);
+      if (slice.length !== count) throw Error('The language-first ' + type + ' pool is incomplete.');
+      return slice.map(q => ({ ...q, reasoning: languageReasoning(q) }));
+    };
+    const questions = [...take('dropdown', 6, 300), ...take('wordbank', 4, 80)];
+    if (new Set(questions.map(q => q.uid || q.id)).size !== questions.length)
+      throw Error('This Reading FIB mock contains repeated questions.');
+    return { name: preset.name, minutes: preset.minutes || 25, questions };
+  }
+
   // Reading-only practice uses all five task types. Fill-in-the-blanks are
   // drawn from the language-first pool: answers must be recoverable from
   // context, grammar or collocation rather than specialist subject knowledge.
   function composeReadingPractice(bank, preset, preferred) {
+    if (preset.kind === 'reading-blanks') return composeReadingBlanksPractice(bank, preset);
     const family = preset.family === 'sectional' ? 'sectional' : 'practice';
     const familyPresets = (bank.mockCatalogue || []).filter(m => family === 'sectional'
       ? m.family === 'sectional'
