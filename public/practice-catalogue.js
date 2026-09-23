@@ -23,10 +23,23 @@
     ] }
   ];
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const FIB_EXCLUDE = Object.freeze({
+    dropdown: new Set(['RFIB_002','RFIB_005','RFIB_006','RFIB_007','RFIB_010','RFIB_014','RFIB_018','RFIB_019','RFIB_047','RFIB_049']),
+    wordbank: new Set(['RDWD_001','RDWD_002','RDWD_004','RDWD_005','RDWD_006','RDWD_007','RDWD_008','RDWD_010','RDWD_013','RDWD_016','RDWD_030','RDWD_037','RDWD_047'])
+  });
+  const TECHNICAL_FIB_TERMS = /\b(?:polygenic|deadweight|allele|genotype|phenotype|immunoglobulin|subduction|quantitative easing|bond yield|fiscal multiplier|mitochondri|pathogen resistance)\b/i;
+  function languageFirstFib(q) {
+    if (!q || !['dropdown','wordbank'].includes(q.type)) return true;
+    if (FIB_EXCLUDE[q.type]?.has(String(q.id))) return false;
+    return !TECHNICAL_FIB_TERMS.test([q.title,q.passage,q.answers,q.answer,q.options,q.wordBank].flat(Infinity).join(' '));
+  }
 
   // Reuse question identities and answer keys; never edit the source bank.
   function readingLibraries(bank) {
-    const libraries = (bank.practiceLibraries || []).map(l => ({ ...l, questions: [...l.questions] }));
+    const libraries = (bank.practiceLibraries || []).map(l => ({
+      ...l,
+      questions: [...l.questions].filter(q => !['dropdown','wordbank'].includes(l.id) || languageFirstFib(q))
+    }));
     for (const task of groups.flatMap(g => g.tasks).filter(t => t.type)) {
       if (libraries.some(l => l.id === task.type)) continue;
       const questions = ['hcs','hiw'].includes(task.type)
