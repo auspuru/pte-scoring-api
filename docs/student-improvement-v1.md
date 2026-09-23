@@ -17,3 +17,5 @@ This release adds a teacher-assigned improvement workflow to the existing PTE po
 - Continue, Master and Archive review actions
 
 The implementation uses the existing account/session system and a dedicated intervention store. Existing scoring and attempt tables are not repurposed.
+
+V1 also supports assigning exact Essay prompts from the student's existing essay library.
