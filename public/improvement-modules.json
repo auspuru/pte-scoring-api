@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "modules": [
     {
       "code": "PR-01",
@@ -395,6 +395,20 @@
       "checkpoint": "Produce appropriate responses in at least 4 out of 5 situations.",
       "items": [
         {
+          "kind": "video",
+          "title": "Respond to a Situation — Exercise 1",
+          "url": "https://youtube.com/shorts/p-LV9crN3ZA?si=ItIxKoiWXheCm4Gi",
+          "description": "Watch how the response identifies the audience, purpose and appropriate wording.",
+          "required": true
+        },
+        {
+          "kind": "video",
+          "title": "Respond to a Situation — Exercise 2",
+          "url": "https://youtube.com/shorts/QZB_XvsBsTU?si=rad0bCAzlYZGOBVa",
+          "description": "Watch, then apply the same audience-and-purpose thinking to a new situation.",
+          "required": true
+        },
+        {
           "kind": "practice",
           "title": "Audience and purpose drill",
           "description": "Identify who you are speaking to, why, and what outcome you need before responding.",
@@ -432,6 +446,65 @@
           "kind": "practice",
           "title": "Three-stage timing",
           "description": "Practise untimed, then with reduced preparation time, then under full test conditions.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "SST-01",
+      "area": "Listening / Writing",
+      "task": "Summarize Spoken Text",
+      "weakness": "Task method and content selection",
+      "title": "SST — How to Attempt",
+      "reason": "Use an efficient listening, note-taking and summary method while meeting the task's scoring requirements.",
+      "checkpoint": "Complete 4 out of 5 SST attempts with relevant content, correct form and controlled language.",
+      "items": [
+        {
+          "kind": "video",
+          "title": "How to Attempt Summarise Spoken Text",
+          "url": "https://youtu.be/XUYKyqNpdrw?si=HA4F6yI-bO7CRiKg",
+          "description": "Watch the task method before practising.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Topic + key-point notes",
+          "description": "Listen for the topic and the strongest supporting points; use keywords rather than full sentences in your notes.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Write a connected SST summary",
+          "description": "Turn the notes into a clear 50–70 word response, then check Content, Form, Grammar, Vocabulary and Spelling.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "ESSAY-01",
+      "area": "Writing",
+      "task": "Essay Writing",
+      "weakness": "Task approach, development and organisation",
+      "title": "Essay Writing — Core Method",
+      "reason": "Understand the prompt, plan a clear response, develop relevant ideas and meet the essay scoring requirements.",
+      "checkpoint": "Complete an essay that addresses the prompt, meets form requirements and shows clear development and organisation.",
+      "items": [
+        {
+          "kind": "practice",
+          "title": "Identify the question type and requirements",
+          "description": "Underline what the prompt asks you to discuss, compare, explain or give an opinion on. Give an opinion only when the prompt requires it.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Plan before writing",
+          "description": "Prepare a clear position where needed, two body ideas and relevant supporting explanation/examples.",
+          "required": true
+        },
+        {
+          "kind": "practice",
+          "title": "Write and review against the score traits",
+          "description": "Check Content, Form, Grammar, Vocabulary, Spelling, General Linguistic Range, and Development/Structure/Coherence.",
           "required": true
         }
       ]
