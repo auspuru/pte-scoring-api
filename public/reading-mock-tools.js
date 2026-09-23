@@ -25,7 +25,7 @@
     const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
     const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
       .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
-    const merged = [...library.filter(languageFirstFib), ...core.filter(languageFirstFib)];
+    const merged = library.filter(languageFirstFib);
     const seen = new Set(), unique = merged.filter(q => {
       const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
       if (!identity || seen.has(identity)) return false;
@@ -137,8 +137,12 @@
   // drawn from the language-first pool: answers must be recoverable from
   // context, grammar or collocation rather than specialist subject knowledge.
   function composeReadingPractice(bank, preset, preferred) {
-    const practicePresets = (bank.mockCatalogue || []).filter(m => m.family === 'practice' || m.kind === 'reading-blanks');
-    const index = Math.max(0, practicePresets.findIndex(m => m.id === preset.id));
+    const family = preset.family === 'sectional' ? 'sectional' : 'practice';
+    const familyPresets = (bank.mockCatalogue || []).filter(m => family === 'sectional'
+      ? m.family === 'sectional'
+      : (m.family === 'practice' || m.kind === 'reading-blanks'));
+    const familyIndex = Math.max(0, familyPresets.findIndex(m => m.id === preset.id));
+    const index = family === 'sectional' ? familyIndex + 9 : familyIndex;
     const sets = bank.sets || [];
     const rotated = sets.map((_,i) => sets[(i + index) % sets.length]);
     const selected = [], seen = new Set();
@@ -175,7 +179,10 @@
       const set = [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
       if (!set) throw Error('This mock question set is unavailable.');
       if(preset.family==='practice' || preset.kind==='reading-blanks') return composeReadingPractice(bank,preset,set);
-      const reading = set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
+      const prepared = preset.family === 'sectional'
+        ? composeReadingPractice(bank, { ...preset, minutes:set.minutes }, set)
+        : null;
+      const reading = prepared?.questions || set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }));
       validateReading(reading, set.minutes);
       const audio = preset.audioQuestionIds.map(id => bank.audioQuestionBank.find(q => q.id === id));
       if (audio.some(q => !q) || audio.filter(q => q.type === 'hcs').length !== 2 || audio.filter(q => q.type === 'hiw').length !== 2) throw Error('This mock audio set is incomplete.');
