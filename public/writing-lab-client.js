@@ -164,7 +164,9 @@
       const value=await api('/attempts/'+id+'/answer',body);
       if(attempt?.id!==id) return;
       if(value.index!==index || value.status==='submitted') {
-        setAttempt(value); moving=false; showAttempt(); return;
+        setAttempt(value); moving=false; showAttempt();
+        if(value.status==='submitted'&&typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'writing-lab',testId:value.testId}}));
+        return;
       }
       offset=value.serverNow-Date.now();
       if(value.revisions[index]!==body.revision || value.answers[index]!==body.text) {

@@ -13624,6 +13624,7 @@ async function submitPracticeEssay() {
     updatePracticeStats();
     await saving;
     if (!sameOwner()) return;
+    if(typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'essay',questionId}}));
     toast('Essay review saved to your history.');
     if (elapsedMsAtSubmit !== null && elapsedMsAtSubmit > PRACTICE_TIMER_LIMIT_MIN * 60000) {
       setTimeout(() => { if (sameOwner()) toast('You took ' + Math.round(elapsedMsAtSubmit / 60000) +
@@ -14620,6 +14621,10 @@ async function scoreSummary(submission = null){
     try { await saveAttempt(passageId, text, data, spellData); }
     catch { saved = false; }
     if (!sameOwner()) return;
+    if(saved){
+      try{await flushSync();}catch(_){}
+      if(typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'swt',passageId}}));
+    }
     attempted.add(passageId);
     populatePassageDropdowns();
     if (currentPassageId !== passageId) {
