@@ -1,8 +1,9 @@
 (function (root, factory) {
-  const api = factory();
+  const predictions = root.ReadingPredictionsSep2026 || (typeof require === 'function' ? require('./reading-predictions-sep-2026') : null);
+  const api = factory(predictions);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingMockTools = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions) {
   'use strict';
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
   const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue', 'mixed']);
@@ -152,23 +153,28 @@
       }))
     };
   }
-  // Focused Reading mocks 4–9 contain only the two PTE Fill in the Blanks
-  // formats. Six dropdown plus four drag-and-drop items match the published
-  // task-count ranges while keeping every question unique across these mocks.
+  // Focused Reading mocks 4–9 use only the current 21–27 September 2026
+  // prediction bank. Five RW-FIB plus five Reading-FIB questions per paper
+  // stay inside Pearson's published task-count ranges and remain unique.
   function composeReadingBlanksPractice(bank, preset) {
+    if (!predictions || predictions.dropdown?.length < 30 || predictions.wordbank?.length < 30)
+      throw Error('The September 2026 Reading prediction bank is incomplete.');
     const variants = (bank.mockCatalogue || []).filter(m => m.kind === 'reading-blanks');
     const index = Math.max(0, variants.findIndex(m => m.id === preset.id));
     const take = (type, count, maxWords) => {
-      const pool = qualityFibPool(bank, type, 0).filter(q =>
-        String(q.passage || '').trim().split(/\s+/).filter(Boolean).length <= maxWords);
+      const pool = type === 'dropdown' ? predictions.dropdown : predictions.wordbank;
       const slice = pool.slice(index * count, index * count + count);
-      if (slice.length !== count) throw Error('The language-first ' + type + ' pool is incomplete.');
-      return slice.map(q => ({ ...q, reasoning: languageReasoning(q) }));
+      if (slice.length !== count) throw Error('The prediction ' + type + ' pool is incomplete.');
+      return slice.map(q => {
+        const words=String(q.passage || '').trim().split(/\s+/).filter(Boolean).length;
+        if(words>maxWords) throw Error('A prediction passage exceeds the PTE word limit.');
+        return { ...q, reasoning: languageReasoning(q) };
+      });
     };
-    const questions = [...take('dropdown', 6, 300), ...take('wordbank', 4, 80)];
+    const questions = [...take('dropdown', 5, 300), ...take('wordbank', 5, 80)];
     if (new Set(questions.map(q => q.uid || q.id)).size !== questions.length)
-      throw Error('This Reading FIB mock contains repeated questions.');
-    return { name: preset.name, minutes: preset.minutes || 25, questions };
+      throw Error('This Reading prediction mock contains repeated questions.');
+    return { name: preset.name, minutes: preset.minutes || 25, questions, predictionSource: predictions.source };
   }
 
   // Reading-only practice uses all five task types. Fill-in-the-blanks are
