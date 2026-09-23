@@ -110,7 +110,7 @@ test('Authenticated attempts persist, isolate users and lock submitted answers',
   assert.equal(first.index,1);
   assert.equal((await request('/attempts/'+id+'/answer',answer)).body.index,1);
   assert.equal((await request('/attempts/'+id+'/answer',{...answer,text:'Changed answer',revision:3})).body.answers[0],answer.text);
-  await store.update('alice',id,a=>{a.answers[0]='';a.deadline=Date.now()-4000000;return a;});
+  await store.update('alice',id,a=>{a.answers[0]='';a.results[0]=null;a.deadline=Date.now()-4000000;return a;});
   const done=(await request('/attempts/'+id)).body;assert.equal(done.status,'submitted');
   const grade=(await request('/attempts/'+id+'/score/0',{})).body;assert.equal(grade.total,0);
   const restarted=createStore(null,dir);assert.equal((await restarted.list('alice'))[0].results[0].total,0);
