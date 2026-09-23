@@ -38,8 +38,8 @@ function sanitizeItem(input = {}, existing = null) {
     required: input.required === undefined ? (existing?.required !== false) : input.required !== false,
     requireNewAttempt: input.requireNewAttempt === undefined ? !!existing?.requireNewAttempt : !!input.requireNewAttempt,
     status: input.status === 'completed' ? 'completed' : (input.status === 'started' ? 'started' : (existing?.status || 'not_started')),
-    startedAt: iso(input.startedAt) || existing?.startedAt || null,
-    completedAt: iso(input.completedAt) || existing?.completedAt || null
+    startedAt: input.startedAt === null ? null : (iso(input.startedAt) || existing?.startedAt || null),
+    completedAt: input.completedAt === null ? null : (iso(input.completedAt) || existing?.completedAt || null)
   };
   if (item.status === 'completed' && !item.completedAt) item.completedAt = new Date().toISOString();
   return item;
