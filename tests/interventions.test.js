@@ -197,3 +197,20 @@ test('Beta content suggestions stay task-specific for SST and Essay',async t=>{
   assert(advice.data.suggestions.some(x=>x.moduleCode==='ESSAY-01'));
   assert.equal(advice.data.suggestions.some(x=>x.moduleCode==='CP-01'),false);
 });
+
+test('standalone SWT Practice highlight mode uses the hidden trainer key without a plan',async t=>{
+  const h=await harness({
+    getPassages:async()=>passages,
+    getPassage:async id=>passages.find(p=>String(p.id)===String(id))||null
+  });
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const ex=await call(h.base,'/api/interventions/swt-selection/practice/3',{token:'alice'});
+  assert.equal(ex.status,200);
+  assert.equal(ex.data.exercise.id,'3');
+  assert(ex.data.exercise.paragraphs.length>=1);
+  assert.equal(Object.hasOwn(ex.data.exercise,'targetSentenceIndexes'),false);
+  const checked=await call(h.base,'/api/interventions/swt-selection/practice/3/check',{method:'POST',token:'alice',body:{selected:[0]}});
+  assert.equal(checked.status,200);
+  assert(Array.isArray(checked.data.result.targetSentenceIndexes));
+  assert(Array.isArray(checked.data.result.missedIdeas));
+});

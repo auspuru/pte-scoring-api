@@ -458,6 +458,26 @@ function installInterventions(app, options = {}) {
     return {plan,item};
   }
 
+  app.get('/api/interventions/swt-selection/practice/:passageId', student, async (req,res) => {
+    try {
+      const p=await trainerPassage(clean(req.params.passageId,80));
+      if(!p)return res.status(404).json({error:'Passage not found.'});
+      if(!swtTrainer.eligible(p))return res.status(422).json({error:'Content-selection training is not available for this passage yet.'});
+      res.set('Cache-Control','no-store');
+      res.json({exercise:swtTrainer.exercise(p)});
+    } catch(e){sendError(res,e);}
+  });
+
+  app.post('/api/interventions/swt-selection/practice/:passageId/check', student, async (req,res) => {
+    try {
+      const p=await trainerPassage(clean(req.params.passageId,80));
+      if(!p)return res.status(404).json({error:'Passage not found.'});
+      if(!swtTrainer.eligible(p))return res.status(422).json({error:'Content-selection training is not available for this passage yet.'});
+      res.set('Cache-Control','no-store');
+      res.json({success:true,result:swtTrainer.grade(p,req.body?.selected||[])});
+    } catch(e){sendError(res,e);}
+  });
+
   app.get('/api/interventions/:id/items/:itemId/swt-selection', student, async (req,res) => {
     try {
       const {plan,item}=await trainerItem(req.interventionUser,req.params.id,req.params.itemId);

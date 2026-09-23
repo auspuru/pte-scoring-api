@@ -31,3 +31,6 @@ Students who struggle to identify important SWT content can practise on 15 exist
 
 ## Real practice sets
 Placeholder drill cards were removed. Practice items now launch real portal tasks and complete from submitted attempts; only videos and reading/instruction steps use manual acknowledgement.
+
+## Inline SWT highlighting
+Content-selection practice keeps the original passage intact. Students highlight key lines directly inside the paragraph. SWT Practice asks students to choose Full Summary Mode or Highlight Key Lines Mode.

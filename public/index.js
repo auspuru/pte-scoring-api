@@ -90,6 +90,11 @@ let timerSeconds = 0;
 let timerInterval = null;
 let lastSpellData = null;
 let writeTab = 'write';
+let swtPracticeMode = '';
+let swtHighlightExercise = null;
+let swtHighlightSelected = new Set();
+let swtHighlightResult = null;
+let swtHighlightLoadToken = 0;
 
 // Sync state
 let syncQueued = false;
@@ -14337,6 +14342,168 @@ function loadStoredData(){
   Object.keys(h).forEach(id => { if(h[id] && h[id].length) attempted.add(parseInt(id)); });
 }
 
+
+function setSwtPracticeMode(mode){
+  if(!['summary','highlight'].includes(mode)) return;
+  swtPracticeMode = mode;
+  document.querySelectorAll('[data-swt-mode]').forEach(button => {
+    const active = button.dataset.swtMode === mode;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  const nav = document.getElementById('swtPracticeNav');
+  const grid = document.getElementById('swtPracticeGrid');
+  if(nav) nav.hidden = false;
+  if(grid) grid.hidden = false;
+  const requirements = document.getElementById('swtSummaryRequirements');
+  if(requirements) requirements.hidden = mode !== 'summary';
+  const writePane = document.getElementById('swtWritePane');
+  const highlightPane = document.getElementById('swtHighlightPane');
+  if(writePane) writePane.hidden = mode !== 'summary';
+  if(highlightPane) highlightPane.hidden = mode !== 'highlight';
+  const timerToggle = document.getElementById('timerToggle');
+  if(timerToggle) timerToggle.hidden = mode !== 'summary';
+  const description = document.getElementById('swtModeDescription');
+  if(description) description.textContent = mode === 'summary'
+    ? 'Full Summary Mode: write one sentence of 5–75 words and receive the normal SWT score.'
+    : 'Highlight Key Lines Mode: identify the important content first without writing a summary.';
+  if(mode === 'highlight'){
+    stopTimer();
+    const timer = document.getElementById('timerDisplay');
+    if(timer) timer.textContent = '—';
+  }
+  loadPassage(currentPassageId);
+}
+
+function swtPracticePhraseMarkup(text, phrases){
+  const source=String(text||''),ranges=[];
+  (phrases||[]).forEach(phrase=>{
+    const q=String(phrase||'').trim(); if(!q) return;
+    const at=source.toLowerCase().indexOf(q.toLowerCase());
+    if(at>=0) ranges.push([at,at+q.length]);
+  });
+  ranges.sort((a,b)=>a[0]-b[0]);
+  const merged=[];
+  for(const range of ranges){
+    const last=merged.at(-1);
+    if(last&&range[0]<=last[1]) last[1]=Math.max(last[1],range[1]);
+    else merged.push([...range]);
+  }
+  let out='',at=0;
+  for(const [a,b] of merged){out+=escapeHtml(source.slice(at,a))+'<mark>'+escapeHtml(source.slice(a,b))+'</mark>';at=b;}
+  return out+escapeHtml(source.slice(at));
+}
+
+function swtPracticeHighlightClass(index){
+  if(!swtHighlightResult) return swtHighlightSelected.has(index) ? ' selected' : '';
+  const chosen=(swtHighlightResult.selected||[]).includes(index);
+  const target=(swtHighlightResult.targetSentenceIndexes||[]).includes(index);
+  return target ? (chosen?' correct-selected':' central-missed') : (chosen?' extra-selected':'');
+}
+
+function renderSwtHighlightPassage(){
+  const host=document.getElementById('passageBody');
+  if(!host||!swtHighlightExercise) return;
+  host.classList.add('swt-highlight-source');
+  const paragraphs=(swtHighlightExercise.paragraphs||[]).length
+    ? swtHighlightExercise.paragraphs
+    : [{sentences:swtHighlightExercise.sentences||[]}];
+  host.innerHTML=paragraphs.map(paragraph=>'<p>'+(paragraph.sentences||[]).map(sentence=>{
+    const phrases=swtHighlightResult?.phraseBySentence?.[sentence.index]||[];
+    return '<span class="swt-practice-highlight-line'+swtPracticeHighlightClass(sentence.index)+'" data-swt-highlight-index="'+sentence.index+'" role="button" tabindex="'+(swtHighlightResult?'-1':'0')+'" aria-pressed="'+String(swtHighlightSelected.has(sentence.index))+'">'+swtPracticePhraseMarkup(sentence.text,phrases)+'</span>';
+  }).join(' ')+'</p>').join('');
+  host.onclick=toggleSwtHighlightLine;
+  host.onkeydown=event=>{
+    const line=event.target.closest?.('[data-swt-highlight-index]');
+    if(line&&!swtHighlightResult&&(event.key==='Enter'||event.key===' ')){event.preventDefault();line.click();}
+  };
+  renderSwtHighlightControls();
+}
+
+function renderSwtHighlightControls(){
+  const count=document.getElementById('swtHighlightCount');
+  if(count) count.textContent=swtHighlightSelected.size+' line'+(swtHighlightSelected.size===1?'':'s')+' highlighted';
+  const button=document.getElementById('swtHighlightCheckBtn');
+  if(button){button.disabled=!swtHighlightSelected.size||!!swtHighlightResult;button.textContent=swtHighlightResult?'Checked':'Check my highlights';}
+  const status=document.getElementById('swtHighlightStatus');
+  if(status&&!swtHighlightResult) status.textContent=swtHighlightSelected.size
+    ? 'Review your highlighted lines, then check your selection.'
+    : 'Choose the important lines from the paragraph.';
+  const feedback=document.getElementById('swtHighlightFeedback');
+  if(!feedback) return;
+  if(!swtHighlightResult){feedback.hidden=true;feedback.innerHTML='';return;}
+  const r=swtHighlightResult;
+  const missed=(r.missedIdeas||[]).map(item=>'<article><strong>'+escapeHtml(item.label)+': '+escapeHtml(item.idea)+'</strong><p>'+escapeHtml(item.why)+'</p>'
+    +((item.phrases||[]).length?'<div class="key-phrases">'+item.phrases.map(p=>'<span>'+escapeHtml(p)+'</span>').join('')+'</div>':'')+'</article>').join('');
+  const allPhrases=[...new Set((r.centralIdeas||[]).flatMap(item=>item.phrases||[]))];
+  feedback.hidden=false;
+  feedback.innerHTML='<div class="swt-highlight-score"><strong>'+r.ideaRecall.captured+'/'+r.ideaRecall.total+' key ideas found</strong><span>'+r.selectionPrecision.percent+'% selection precision</span></div>'
+    +'<p>'+escapeHtml(r.feedback||'')+'</p>'
+    +(allPhrases.length?'<h3>Central key phrases</h3><div class="key-phrases">'+allPhrases.map(p=>'<span>'+escapeHtml(p)+'</span>').join('')+'</div>':'')
+    +(missed?'<h3>What you missed and why it matters</h3>'+missed:'')
+    +((r.extraSelections||[]).length?'<p><strong>Extra detail:</strong> You also highlighted line'+(r.extraSelections.length===1?' ':'s ')+(r.extraSelections||[]).map(i=>i+1).join(', ')+'. These lines are less important for the summary.</p>':'')
+    +'<div class="write-actions"><button type="button" class="btn btn-ghost" onclick="resetSwtHighlightSelection()">Try this passage again</button><button type="button" class="btn btn-primary" onclick="nextPassage()">Next passage →</button></div>';
+  if(status) status.textContent='Feedback is shown below. Green = central line you selected; amber = central line you missed; red = extra detail.';
+}
+
+function toggleSwtHighlightLine(event){
+  const line=event.target.closest?.('[data-swt-highlight-index]');
+  if(!line||swtHighlightResult) return;
+  const index=Number(line.dataset.swtHighlightIndex);
+  if(!Number.isInteger(index)) return;
+  swtHighlightSelected.has(index)?swtHighlightSelected.delete(index):swtHighlightSelected.add(index);
+  renderSwtHighlightPassage();
+}
+
+function resetSwtHighlightSelection(){
+  swtHighlightSelected=new Set();
+  swtHighlightResult=null;
+  if(swtHighlightExercise) renderSwtHighlightPassage();
+}
+
+async function loadSwtHighlightExercise(id){
+  const requestId=++swtHighlightLoadToken;
+  swtHighlightExercise=null;swtHighlightSelected=new Set();swtHighlightResult=null;
+  const host=document.getElementById('passageBody');
+  if(host){host.classList.add('swt-highlight-source');host.innerHTML='<p>Loading highlight practice…</p>';}
+  renderSwtHighlightControls();
+  try{
+    const response=await fetch(API_URL+'/api/interventions/swt-selection/practice/'+encodeURIComponent(id),{
+      cache:'no-store',headers:{'x-session-token':sessionToken},signal:AbortSignal.timeout(15000)
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw Error(data.error||'Highlight practice could not load.');
+    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||currentPassageId!==id) return;
+    swtHighlightExercise=data.exercise;
+    renderSwtHighlightPassage();
+  }catch(error){
+    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||currentPassageId!==id) return;
+    if(host) host.innerHTML='<p>'+escapeHtml(error.message||'Highlight practice could not load.')+'</p>';
+    const status=document.getElementById('swtHighlightStatus');
+    if(status) status.textContent='Choose another passage or switch to Full Summary Mode.';
+  }
+}
+
+async function checkSwtHighlightSelection(){
+  if(!swtHighlightExercise||!swtHighlightSelected.size||swtHighlightResult) return;
+  const button=document.getElementById('swtHighlightCheckBtn');
+  if(button){button.disabled=true;button.textContent='Checking…';}
+  try{
+    const response=await fetch(API_URL+'/api/interventions/swt-selection/practice/'+encodeURIComponent(currentPassageId)+'/check',{
+      method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','x-session-token':sessionToken},
+      body:JSON.stringify({selected:[...swtHighlightSelected]}),signal:AbortSignal.timeout(15000)
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw Error(data.error||'Your highlights could not be checked.');
+    swtHighlightResult=data.result;
+    renderSwtHighlightPassage();
+  }catch(error){
+    const status=document.getElementById('swtHighlightStatus');
+    if(status) status.textContent=error.message||'Your highlights could not be checked.';
+    if(button){button.disabled=false;button.textContent='Check my highlights';}
+  }
+}
+
 function loadPassage(id){
   if(id < 1 || id > passages.length) return;
   currentPassageId = id;
@@ -14359,7 +14526,16 @@ function loadPassage(id){
   const paras = (p.text || '').split(/\n\n+/).filter(Boolean);
   const passageBodyEl = document.getElementById('passageBody');
   if (passageBodyEl) {
-    passageBodyEl.innerHTML = (paras.length ? paras : [p.text]).map(t => '<p>' + escapeHtml(t) + '</p>').join('');
+    if(swtPracticeMode==='highlight'){
+      loadSwtHighlightExercise(id);
+    } else {
+      ++swtHighlightLoadToken;
+      swtHighlightExercise=null;swtHighlightSelected=new Set();swtHighlightResult=null;
+      passageBodyEl.classList.remove('swt-highlight-source');
+      passageBodyEl.onclick=null;passageBodyEl.onkeydown=null;
+      passageBodyEl.innerHTML = (paras.length ? paras : [p.text]).map(t => '<p>' + escapeHtml(t) + '</p>').join('');
+      renderSwtHighlightControls();
+    }
   }
 
   const navPrevEl = document.getElementById('navPrev');
@@ -14382,7 +14558,7 @@ function loadPassage(id){
 
   switchWriteTab('write');
   onSummaryInput();
-  resetTimer();
+  if(swtPracticeMode==='summary') resetTimer(); else stopTimer();
   const select1 = document.getElementById('passageSelect');
   if (select1) select1.value = id;
 }
