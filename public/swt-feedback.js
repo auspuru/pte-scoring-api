@@ -7,7 +7,7 @@
   'use strict';
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const list = value => Array.isArray(value) ? value : [];
-  const compact = value => clean(value).replace(/\s+/g, ' ');
+  const compact = (value, max = Infinity) => { const text = clean(value).replace(/\s+/g, ' '); return Number.isFinite(max) && text.length > max ? text.slice(0, Math.max(0, max - 1)).trimEnd() + '…' : text; };
   function build(data) {
     const traits = data.trait_scores || {};
     const content = data.content_details || {};
