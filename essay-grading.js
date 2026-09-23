@@ -10,10 +10,13 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
     const hit = cache.get(key);
     const savedAssessment = hit && hit.expires > Date.now() ? hit.result : null;
     if (savedAssessment && savedAssessment.sampleStatus !== 'unavailable') return structuredClone(savedAssessment);
+    // A local fallback is not a validated AI assessment. On a later retry,
+    // start the full AI assessment again rather than asking only for a sample.
+    const savedLocal = savedAssessment?.scoringMode === 'local' ? savedAssessment : null;
     cache.delete(key);
     if (!pending.has(key)) {
       const task = (async () => {
-        let assessment = savedAssessment;
+        let assessment = savedLocal ? null : savedAssessment;
         let lastError;
         const remember = result => {
           cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
@@ -40,6 +43,7 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
         if (assessment) return remember({ ...assessment, sampleStatus: 'unavailable', sampleKind: 'unavailable',
           sampleResponse: '', sampleWordCount: 0, sampleSourceIdeas: [],
           sampleNote: 'Your score and feedback are ready. Your Band 9 sample could not be prepared yet. Retry the sample below.' });
+        if (savedLocal) return remember(savedLocal);
         const local = localEngine.essay(question, essay, { formScore: policy.formFor(essay).score });
         local.scoring_version = policy.VERSION + '+' + localEngine.VERSION;
         local.fallbackReason = lastError?.message || 'External essay reviewer unavailable';
