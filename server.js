@@ -4445,8 +4445,12 @@ app.post('/api/grade', async (req, res) => {
     // response can't include grammar annotations or vocabulary swaps. Flag this
     // so the frontend can show an honest "detailed feedback unavailable for this
     // attempt — try again" notice instead of silently dropping those sections.
-    const aiFeedbackDegraded = !llmJudgment && contentVerdict.needs_semantic_review !== false;
-    const scoreProvisional = contentVerdict.needs_semantic_review === true;
+    // A local fallback is a valid independent practice estimate even when the
+    // richer AI-only semantic annotations are unavailable. Keep those concepts
+    // separate: degraded feedback means fewer annotations, not "no score".
+    // If an AI judgment itself is internally incomplete, it remains provisional.
+    const aiFeedbackDegraded = !llmJudgment || contentVerdict.needs_semantic_review === true;
+    const scoreProvisional = !!llmJudgment && contentVerdict.needs_semantic_review === true;
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
