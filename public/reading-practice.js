@@ -233,7 +233,7 @@
     if (status) status.textContent = mode === 'full' || preset ? 'Preparing your mock test…' : 'Preparing your question…';
     try {
       let swtPassages;
-      if (mode === 'full' || preset && preset.family!=='practice' && preset.kind!=='reading-blanks') {
+      if (mode === 'full' || preset && preset.kind!=='reading-blanks') {
         const valid = p => p && p.id != null && typeof p.text === 'string' && p.text.length > 100 && p.keyElements && Object.values(p.keyElements).some(value => typeof value === 'string' && value.trim());
         const unique = items => { const ids = new Set(), texts = new Set(); return items.filter(valid).filter(p => { const id=String(p.id), text=p.text.trim().replace(/\s+/g,' ').toLowerCase(); if(ids.has(id)||texts.has(text))return false;ids.add(id);texts.add(text);return true; }); };
         let available = unique(typeof passages !== 'undefined' && Array.isArray(passages) ? passages : []);
