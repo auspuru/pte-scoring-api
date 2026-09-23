@@ -6436,15 +6436,13 @@ body.dark #portalSidebar .brand-sub {
 .swt-mode-card:hover,.swt-mode-card:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,92,139,.08);outline:none}
 .swt-mode-card.active{border-color:var(--accent);background:rgba(0,92,139,.07)}
 .swt-mode-card strong,.swt-mode-card span{display:block}.swt-mode-card strong{font-size:.92rem;margin-bottom:5px}.swt-mode-card span{font-size:.78rem;color:var(--ink-muted);line-height:1.45}
-#passageBody.swt-highlight-source{line-height:1.85;user-select:none}
-.swt-practice-highlight-line{display:inline;border-radius:4px;padding:2px 1px;cursor:pointer;transition:background .15s ease,box-shadow .15s ease}
-.swt-practice-highlight-line:hover{background:rgba(0,92,139,.08)}
-.swt-practice-highlight-line:focus-visible{outline:2px solid rgba(0,92,139,.35);outline-offset:2px}
-.swt-practice-highlight-line.selected{background:rgba(250,204,21,.35);box-shadow:0 0 0 1px rgba(202,138,4,.28)}
-.swt-practice-highlight-line.correct-selected{background:rgba(16,185,129,.18);box-shadow:0 0 0 1px rgba(16,185,129,.28)}
-.swt-practice-highlight-line.central-missed{background:rgba(245,158,11,.20);box-shadow:0 0 0 1px rgba(245,158,11,.32)}
-.swt-practice-highlight-line.extra-selected{background:rgba(239,68,68,.12);box-shadow:0 0 0 1px rgba(239,68,68,.25)}
-.swt-practice-highlight-line mark{background:rgba(245,158,11,.36);color:inherit;padding:1px 2px;border-radius:3px}
+#passageBody.swt-highlight-source{line-height:1.85;user-select:text;cursor:text}
+.swt-practice-highlight{padding:1px 0;border-radius:3px;color:inherit}
+.swt-practice-highlight.selected{background:rgba(250,204,21,.38);box-shadow:0 0 0 1px rgba(202,138,4,.20);cursor:pointer}
+.swt-practice-highlight.selected:hover{background:rgba(250,204,21,.52)}
+.swt-practice-highlight.correct-selected{background:rgba(16,185,129,.20);box-shadow:0 0 0 1px rgba(16,185,129,.25)}
+.swt-practice-highlight.central-missed{background:rgba(245,158,11,.22);box-shadow:0 0 0 1px rgba(245,158,11,.28)}
+.swt-practice-highlight.extra-selected{background:rgba(239,68,68,.13);box-shadow:0 0 0 1px rgba(239,68,68,.22)}
 .swt-highlight-guide{padding:12px 13px;border-radius:10px;background:rgba(0,92,139,.06);border-left:3px solid var(--accent);font-size:.84rem;line-height:1.5}
 .swt-highlight-guide p{margin:0 0 8px}.swt-highlight-guide p:last-child{margin-bottom:0}
 .swt-highlight-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.swt-highlight-actions>span{margin-right:auto;font-size:.8rem;color:var(--ink-muted)}

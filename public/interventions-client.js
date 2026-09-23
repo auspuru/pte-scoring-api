@@ -87,72 +87,112 @@
       }catch(e){notify(e.message,true);}
     }
 
-    function phraseMarkup(text,phrases){
-      const src=String(text||''),ranges=[];
-      (phrases||[]).forEach(p=>{const q=String(p||'').trim();if(!q)return;const i=src.toLowerCase().indexOf(q.toLowerCase());if(i>=0)ranges.push([i,i+q.length]);});
-      ranges.sort((a,b)=>a[0]-b[0]);const merged=[];
-      for(const r of ranges){const last=merged.at(-1);if(last&&r[0]<=last[1])last[1]=Math.max(last[1],r[1]);else merged.push([...r]);}
-      let out='',at=0;for(const [a,b] of merged){out+=esc(src.slice(at,a))+'<mark>'+esc(src.slice(a,b))+'</mark>';at=b;}return out+esc(src.slice(at));
-    }
     function trainerProgressText(data){
       const p=data?.progress||{};return (p.attempted||0)+'/'+(p.minimumToComplete||10)+' required exercises reviewed · '+(p.passed||0)+' met the target accuracy';
     }
-    function trainerSentenceClass(index){
-      if(!trainer?.result)return trainer.selected?.has(index)?' selected':'';
-      const r=trainer.result,chosen=r.selected.includes(index),target=r.targetSentenceIndexes.includes(index);
-      return target?(chosen?' correct-selected':' central-missed'):(chosen?' extra-selected':'');
+    function overlaps(range,start,end){return range&&Number(range.start)<end&&Number(range.end)>start;}
+    function mergeTrainerRanges(ranges){
+      const source=String(trainer?.exercise?.text||'');
+      const clean=(ranges||[]).map(r=>({start:Number(r.start),end:Number(r.end)}))
+        .filter(r=>Number.isInteger(r.start)&&Number.isInteger(r.end)&&r.start>=0&&r.end<=source.length&&r.end>r.start)
+        .sort((x,y)=>x.start-y.start||x.end-y.end);
+      const out=[];
+      for(const r of clean){const last=out.at(-1);if(last&&r.start<=last.end)last.end=Math.max(last.end,r.end);else out.push({...r});}
+      return out.map(r=>({...r,text:source.slice(r.start,r.end)}));
     }
-    function trainerSentenceHtml(sentence){
-      const phrases=trainer?.result?.phraseBySentence?.[sentence.index]||[];
-      const label=trainer?.result?(trainer.result.targetSentenceIndexes.includes(sentence.index)?'Central line':trainer.result.selected.includes(sentence.index)?'Extra detail':''):(trainer.selected?.has(sentence.index)?'Highlighted':'');
-      const disabled=!!trainer?.result;
-      return '<span class="swt-trainer-sentence'+trainerSentenceClass(sentence.index)+'" data-trainer-sentence="'+sentence.index+'" role="button" tabindex="'+(disabled?'-1':'0')+'" aria-pressed="'+(trainer?.selected?.has(sentence.index)?'true':'false')+'"'+(label?' data-label="'+esc(label)+'"':'')+'>'+phraseMarkup(sentence.text,phrases)+'</span>';
+    function trainerParagraphs(){
+      const ex=trainer?.exercise,source=String(ex?.text||'');
+      if(Array.isArray(ex?.paragraphs)&&ex.paragraphs.every(p=>Number.isInteger(p.start)&&Number.isInteger(p.end)))return ex.paragraphs;
+      return [{start:0,end:source.length,text:source}];
+    }
+    function trainerSegmentHtml(source,start,end){
+      const text=source.slice(start,end);if(!text)return '';
+      const selected=(trainer?.selected||[]).some(r=>overlaps(r,start,end));
+      if(!trainer?.result){
+        return selected
+          ? '<mark class="swt-trainer-highlight selected" data-trainer-remove="'+start+':'+end+'" title="Click to remove this highlight">'+esc(text)+'</mark>'
+          : esc(text);
+      }
+      const target=(trainer.result.targetRanges||[]).some(r=>overlaps(r,start,end));
+      const cls=target?(selected?' correct-selected':' central-missed'):(selected?' extra-selected':'');
+      return cls?'<mark class="swt-trainer-highlight '+cls+'">'+esc(text)+'</mark>':esc(text);
     }
     function trainerParagraphHtml(paragraph){
-      return '<p class="swt-trainer-paragraph">'+(paragraph.sentences||[]).map(trainerSentenceHtml).join(' ')+'</p>';
+      const source=String(trainer?.exercise?.text||''),start=Number(paragraph.start)||0,end=Number(paragraph.end)||source.length;
+      const ranges=[...(trainer?.selected||[]),...(trainer?.result?.targetRanges||[])].filter(r=>overlaps(r,start,end));
+      const points=[start,end];
+      for(const r of ranges){points.push(Math.max(start,Number(r.start)),Math.min(end,Number(r.end)));}
+      const boundaries=[...new Set(points.filter(n=>Number.isFinite(n)&&n>=start&&n<=end))].sort((x,y)=>x-y);
+      let html='';for(let i=0;i<boundaries.length-1;i++)html+=trainerSegmentHtml(source,boundaries[i],boundaries[i+1]);
+      return '<p class="swt-trainer-paragraph" data-trainer-paragraph-start="'+start+'">'+html+'</p>';
     }
     function trainerFeedback(){
       const r=trainer?.result;if(!r)return '';
       const missed=(r.missedIdeas||[]).map(x=>'<article><strong>'+esc(x.label)+': '+esc(x.idea)+'</strong><p>'+esc(x.why)+'</p>'+(x.phrases?.length?'<div class="swt-trainer-phrases">'+x.phrases.map(p=>'<span>'+esc(p)+'</span>').join('')+'</div>':'')+'</article>').join('');
       const captured=(r.capturedIdeas||[]).map(x=>'<span>'+esc(x.label)+'</span>').join('');
-      return '<section class="swt-trainer-feedback"><div class="swt-trainer-score"><strong>'+r.ideaRecall.captured+'/'+r.ideaRecall.total+' key ideas found</strong><span>'+r.selectionPrecision.percent+'% selection precision</span></div><p>'+esc(r.feedback)+'</p>'
+      const central=(r.centralPhrases||[]).map(p=>'<span>'+esc(p)+'</span>').join('');
+      const extras=(r.extraRanges||[]).map(x=>'<span>“'+esc(x.text)+'”</span>').join('');
+      return '<section class="swt-trainer-feedback"><div class="swt-trainer-score"><strong>'+r.ideaRecall.captured+'/'+r.ideaRecall.total+' key ideas found</strong><span>'+r.selectionPrecision.percent+'% phrase precision</span></div><p>'+esc(r.feedback)+'</p>'
         +(captured?'<div class="swt-trainer-captured"><b>You captured:</b> '+captured+'</div>':'')
+        +(central?'<h4>Central phrases</h4><div class="swt-trainer-phrases">'+central+'</div>':'')
         +(missed?'<h4>What you missed and why it matters</h4><div class="swt-trainer-missed">'+missed+'</div>':'')
-        +(r.extraSelections?.length?'<p class="swt-trainer-extra"><b>Extra detail selected:</b> sentence'+(r.extraSelections.length>1?'s ':' ')+r.extraSelections.map(i=>i+1).join(', ')+'. It may be useful context, but it is not load-bearing for the summary.</p>':'')
+        +(extras?'<div class="swt-trainer-extra"><b>Extra wording highlighted:</b><div class="swt-trainer-phrases">'+extras+'</div></div>':'')
         +'</section>';
     }
     function renderTrainer(){
       let overlay=doc.getElementById('swtHighlightTrainer');
       if(!trainer){overlay?.remove();return;}
       if(!overlay){overlay=doc.createElement('div');overlay.id='swtHighlightTrainer';overlay.className='swt-trainer-backdrop';doc.body.appendChild(overlay);}
-      const ex=trainer.exercise,p=trainer.progress||{};
+      const ex=trainer.exercise,p=trainer.progress||{},selectedCount=(trainer.selected||[]).length;
       overlay.innerHTML='<div class="swt-trainer-modal" role="dialog" aria-modal="true" aria-labelledby="swtTrainerTitle"><header><div><p class="portal-eyebrow">SWT Content Selection</p><h2 id="swtTrainerTitle">'+esc(ex.title)+'</h2><p>'+esc(ex.instructions)+'</p></div><button type="button" class="portal-button" data-trainer-close>Close</button></header>'
         +'<div class="swt-trainer-progress"><span>Exercise '+((p.attempted||0)+1)+' of '+(p.total||15)+'</span><strong>'+esc(trainerProgressText(trainer))+'</strong></div>'
-        +'<div class="swt-trainer-tip"><b>Your task:</b> Read the passage as one paragraph and click directly on the lines you think carry the main message or essential support. Do not write a summary yet.</div>'
-        +'<div class="swt-trainer-passage">'+((ex.paragraphs||[]).length?(ex.paragraphs||[]).map(trainerParagraphHtml).join(''):'<p class="swt-trainer-paragraph">'+(ex.sentences||[]).map(trainerSentenceHtml).join(' ')+'</p>')+'</div>'
+        +'<div class="swt-trainer-tip"><b>Your task:</b> Drag across the exact words or phrases you would use to build the summary. You can make several highlights. Click a yellow highlight to remove it before checking.</div>'
+        +'<div class="swt-trainer-passage">'+trainerParagraphs().map(trainerParagraphHtml).join('')+'</div>'
         +trainerFeedback()
-        +'<footer>'+(trainer.result?'<button type="button" class="portal-button primary" data-trainer-next>Next exercise</button>':'<span>'+(trainer.selected?.size||0)+' line'+((trainer.selected?.size||0)===1?'':'s')+' highlighted</span><button type="button" class="portal-button primary" data-trainer-submit '+(!(trainer.selected?.size)?'disabled':'')+'>Check my selection</button>')+'</footer></div>';
-      overlay.onclick=trainerClick;overlay.onkeydown=trainerKeydown;
+        +'<footer>'+(trainer.result?'<button type="button" class="portal-button primary" data-trainer-next>Next exercise</button>':'<span>'+selectedCount+' phrase'+(selectedCount===1?'':'s')+' highlighted</span><button type="button" class="portal-button primary" data-trainer-submit '+(!selectedCount?'disabled':'')+'>Check my selection</button>')+'</footer></div>';
+      overlay.onclick=trainerClick;
+      overlay.onpointerup=e=>{if(!e.target.closest('[data-trainer-remove],[data-trainer-submit],[data-trainer-next],[data-trainer-close]'))setTimeout(captureTrainerSelection,0);};
+      overlay.onkeyup=e=>{if(e.key==='Shift')setTimeout(captureTrainerSelection,0);};
+    }
+    function selectionOffset(root,node,offset){
+      const range=doc.createRange();range.selectNodeContents(root);range.setEnd(node,offset);return range.toString().length;
+    }
+    function captureTrainerSelection(){
+      if(!trainer||trainer.result)return;
+      const selection=doc.defaultView?.getSelection?.();if(!selection||selection.rangeCount<1||selection.isCollapsed)return;
+      const range=selection.getRangeAt(0),paragraph=range.commonAncestorContainer.nodeType===1
+        ? range.commonAncestorContainer.closest?.('[data-trainer-paragraph-start]')
+        : range.commonAncestorContainer.parentElement?.closest?.('[data-trainer-paragraph-start]');
+      if(!paragraph||!paragraph.contains(range.startContainer)||!paragraph.contains(range.endContainer))return;
+      const base=Number(paragraph.dataset.trainerParagraphStart)||0;
+      let start=base+selectionOffset(paragraph,range.startContainer,range.startOffset);
+      let end=base+selectionOffset(paragraph,range.endContainer,range.endOffset);
+      const source=String(trainer.exercise.text||'');
+      while(start<end&&/\s/.test(source[start]))start++;
+      while(end>start&&/\s/.test(source[end-1]))end--;
+      selection.removeAllRanges();
+      if(end-start<2)return;
+      trainer.selected=mergeTrainerRanges([...(trainer.selected||[]),{start,end}]);
+      renderTrainer();
     }
     async function openTrainer(plan,item,passageId=''){
       try{
         const qs=passageId?'?passageId='+encodeURIComponent(passageId):'';
         const data=await api('/'+encodeURIComponent(plan.id)+'/items/'+encodeURIComponent(item.id)+'/swt-selection'+qs);
-        trainer={planId:plan.id,itemId:item.id,exercise:data.exercise,catalog:data.catalog||[],progress:data.progress||{},selected:new Set(),result:null};
+        trainer={planId:plan.id,itemId:item.id,exercise:data.exercise,catalog:data.catalog||[],progress:data.progress||{},selected:[],result:null};
         renderTrainer();
       }catch(e){notify(e.message,true);}
     }
-    function trainerKeydown(e){
-      const sentence=e.target.closest?.('[data-trainer-sentence]');
-      if(sentence&&!trainer?.result&&(e.key==='Enter'||e.key===' ')){e.preventDefault();sentence.click();}
-    }
     async function trainerClick(e){
       if(e.target.closest('[data-trainer-close]')||e.target===doc.getElementById('swtHighlightTrainer')){trainer=null;renderTrainer();return;}
-      const sentence=e.target.closest('[data-trainer-sentence]');
-      if(sentence&&!trainer.result){const i=Number(sentence.dataset.trainerSentence);trainer.selected.has(i)?trainer.selected.delete(i):trainer.selected.add(i);renderTrainer();return;}
+      const remove=e.target.closest('[data-trainer-remove]');
+      if(remove&&!trainer.result){
+        const [start,end]=String(remove.dataset.trainerRemove||'').split(':').map(Number);
+        trainer.selected=(trainer.selected||[]).filter(r=>!(r.start===start&&r.end===end));renderTrainer();return;
+      }
       if(e.target.closest('[data-trainer-submit]')){
         try{
-          const data=await api('/'+encodeURIComponent(trainer.planId)+'/items/'+encodeURIComponent(trainer.itemId)+'/swt-selection/check',{passageId:trainer.exercise.id,selected:[...trainer.selected]});
+          const data=await api('/'+encodeURIComponent(trainer.planId)+'/items/'+encodeURIComponent(trainer.itemId)+'/swt-selection/check',{passageId:trainer.exercise.id,selected:trainer.selected||[]});
           trainer.result=data.result;trainer.progress={...trainer.progress,...data.progress};plans=plans.map(p=>p.id===data.plan.id?data.plan:p);render();renderDashboard();renderTrainer();
         }catch(err){notify(err.message,true);}return;
       }

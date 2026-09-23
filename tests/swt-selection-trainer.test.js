@@ -19,7 +19,7 @@ test('highlight exercise hides the answer until grading',()=>{
   assert(ex.sentences.length>=4);
   assert.equal(ex.text,bank[2].text);
   assert(ex.paragraphs.length>=1);
-  assert.equal(ex.paragraphs.flatMap(p=>p.sentences).length,ex.sentences.length);
+  assert(ex.paragraphs.every(p=>Number.isInteger(p.start)&&Number.isInteger(p.end)&&p.text));
   assert.equal(Object.hasOwn(ex,'targetSentenceIndexes'),false);
   assert.equal(Object.hasOwn(ex,'studyGuide'),false);
 });
@@ -44,4 +44,23 @@ test('selecting all central sentences captures all key ideas',()=>{
   assert.equal(result.ideaRecall.percent,100);
   assert.equal(result.missedIdeas.length,0);
   assert.equal(result.extraSelections.length,0);
+});
+
+test('phrase grading scores exact highlighted ranges instead of whole sentences',()=>{
+  const p=bank[2],key=trainer.answerKey(p);
+  const first=key.targets.find(t=>t.ranges.length).ranges[0];
+  const result=trainer.grade(p,[{start:first.start,end:first.end}]);
+  assert.equal(result.mode,'phrases');
+  assert.equal(result.selectedRanges.length,1);
+  assert(result.ideaRecall.captured>=1);
+  assert(Array.isArray(result.targetRanges));
+  assert(Array.isArray(result.centralPhrases));
+  assert.equal(result.selectedRanges[0].text,p.text.slice(first.start,first.end));
+});
+
+test('range selections are validated against passage offsets',()=>{
+  const p=bank[2];
+  const result=trainer.grade(p,[{start:-1,end:20},{start:0,end:p.text.length+10},{start:0,end:1}]);
+  assert.equal(result.mode,'phrases');
+  assert.equal(result.selectedRanges.length,0);
 });
