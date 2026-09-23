@@ -85,18 +85,33 @@
     }
     return out;
   }
-  function dropdownOptions(answer,seed){
-    const type=classify(answer),same=pick(POOLS[type]||POOLS.noun,2,seed+':vocab',[answer]);
+  function slotContext(q,index){
+    const token='[['+(index+1)+']]',source=String(q?.passage||''),at=source.indexOf(token);
+    return at<0?{before:'',after:''}:{before:source.slice(0,at).trim(),after:source.slice(at+token.length).trim()};
+  }
+  function classifyFor(q,index,answer){
+    const lower=normal(answer).toLowerCase(),slot=slotContext(q,index);
+    const before=slot.before.toLowerCase();
+    // "support" is intentionally context-sensitive in this bank: compare
+    // "can support learning" with "financial support" / "receive support".
+    if(lower==='support'){
+      if(/\b(?:financial|public|receive)\s*$/.test(before))return 'noun';
+      return 'verb';
+    }
+    return classify(answer);
+  }
+  function dropdownOptions(answer,seed,type=classify(answer)){
+    const same=pick(POOLS[type]||POOLS.noun,2,seed+':vocab',[answer]);
     const trapType=GRAMMAR_TRAP[type]||'noun';
     const trap=pick(POOLS[trapType]||POOLS.noun,1,seed+':grammar',[answer,...same])[0];
     return [answer,...same,trap].filter((value,index,all)=>all.indexOf(value)===index).slice(0,4);
   }
-  function wordbank(answers,seed){
+  function wordbank(answers,seed,types=[]){
     const clean=(answers||[]).map(normal).filter(Boolean);
     const decoys=[];
     for(let i=0;i<3;i++){
       const answer=clean[i%Math.max(1,clean.length)]||'';
-      const type=classify(answer),candidate=pick(POOLS[type]||POOLS.noun,1,seed+':bank:'+i,[...clean,...decoys])[0];
+      const type=types[i%Math.max(1,types.length)]||classify(answer),candidate=pick(POOLS[type]||POOLS.noun,1,seed+':bank:'+i,[...clean,...decoys])[0];
       if(candidate)decoys.push(candidate);
     }
     if(decoys.length<3)decoys.push(...pick(POOLS.noun,3-decoys.length,seed+':bank:fallback',[...clean,...decoys]));
@@ -109,19 +124,20 @@
     const after=source.slice(at+token.length).trim().split(/\s+/).slice(0,7).join(' ');
     return [before,answer,after].filter(Boolean).join(' ');
   }
-  function explanation(q,answer,index){
-    const type=classify(answer),label=LABELS[type]||'word form',sample=context(q.passage,index,answer);
+  function explanation(q,answer,index,type=classifyFor(q,index,answer)){
+    const label=LABELS[type]||'word form',sample=context(q.passage,index,answer),article=/^[aeiou]/i.test(label)?'an':'a';
     if(q.type==='dropdown'){
-      return 'Grammar first: this position requires a '+label+'. Then use vocabulary and collocation: “'+answer+'” is the natural fit in “'+sample+'”. Two distractors have a usable grammatical form but the wrong meaning/collocation, while one option is a grammar/word-form trap.';
+      return 'Grammar first: this position requires '+article+' '+label+'. Then use vocabulary and collocation: “'+answer+'” is the natural fit in “'+sample+'”. Two distractors have a usable grammatical form but the wrong meaning/collocation, while one option is a grammar/word-form trap.';
     }
-    return 'Use grammar to identify that this blank needs a '+label+', then use vocabulary and collocation to choose “'+answer+'” in “'+sample+'”. The word bank contains other grammatically plausible words, so meaning and natural word combination decide the answer.';
+    return 'Use grammar to identify that this blank needs '+article+' '+label+', then use vocabulary and collocation to choose “'+answer+'” in “'+sample+'”. The word bank contains other grammatically plausible words, so meaning and natural word combination decide the answer.';
   }
   function strengthen(question,seed){
     const q=JSON.parse(JSON.stringify(question||{}));
     if(!['dropdown','wordbank'].includes(q.type)||!Array.isArray(q.answers)||!q.answers.length)return q;
     const key=String(seed||q.uid||q.id||q.title||'fib');
-    if(q.type==='dropdown')q.options=q.answers.map((answer,i)=>dropdownOptions(answer,key+':'+i));
-    else q.bank=wordbank(q.answers,key);
+    const blankTypes=q.answers.map((answer,i)=>classifyFor(q,i,answer));
+    if(q.type==='dropdown')q.options=q.answers.map((answer,i)=>dropdownOptions(answer,key+':'+i,blankTypes[i]));
+    else q.bank=wordbank(q.answers,key,blankTypes);
     const previous=Array.isArray(q.reasoning?.blanks)?q.reasoning.blanks:[];
     q.reasoning={
       ...(q.reasoning||{}),
@@ -130,21 +146,24 @@
         ...(previous[i]||{}),
         answer,
         skill:'grammar + vocabulary/collocation',
-        explanation:explanation(q,answer,i)
+        explanation:explanation(q,answer,i,blankTypes[i])
       }))
     };
-    q.fibQuality={version:VERSION,focus:'grammar-vocabulary',sameFormVocabularyDistractors:true,grammarTrap:q.type==='dropdown'};
+    q.fibQuality={version:VERSION,focus:'grammar-vocabulary',sameFormVocabularyDistractors:true,grammarTrap:q.type==='dropdown',blankTypes};
     return q;
   }
   function audit(question){
     const q=strengthen(question,'audit:'+(question?.uid||question?.id||'q'));
     if(q.type==='dropdown'){
-      return q.options.every((row,i)=>row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])
-        &&row.filter(x=>classify(x)===classify(q.answers[i])).length>=3
-        &&row.some(x=>classify(x)!==classify(q.answers[i])));
+      return q.options.every((row,i)=>{
+        const type=q.fibQuality.blankTypes[i];
+        return row.length===4&&new Set(row).size===4&&row.includes(q.answers[i])
+          &&row.slice(1,3).every(x=>classify(x)===type)
+          &&classify(row[3])!==type;
+      });
     }
     if(q.type==='wordbank')return q.bank.length===q.answers.length+3&&q.answers.every(a=>q.bank.includes(a))&&new Set(q.bank).size===q.bank.length;
     return true;
   }
-  return{VERSION,classify,dropdownOptions,wordbank,strengthen,audit};
+  return{VERSION,classify,classifyFor,dropdownOptions,wordbank,strengthen,audit};
 });
