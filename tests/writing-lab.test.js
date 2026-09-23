@@ -7,7 +7,7 @@ const path=require('node:path');
 const {randomUUID}=require('node:crypto');
 const express=require('express');
 const policy=require('../writing-lab-scoring');
-const {installWritingLab,reconcile,present,advance}=require('../writing-lab');
+const {installWritingLab,reconcile,present,advance,predictionMocks}=require('../writing-lab');
 const report=require('../public/writing-lab-report');
 const {createStore}=require('../writing-lab-store');
 const {createNarration}=require('../writing-lab-audio');
@@ -56,6 +56,20 @@ test('Original content has correct task counts, lengths and usable reference ans
   }
   assert.equal(bank.mocks[0].questions[2].text,"Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.");
   assert.equal(bank.mocks[1].questions[2].text,"Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.");
+});
+test('Prediction mocks preserve essays while varying every non-essay paper',()=>{
+  assert.equal(predictionMocks.length,bank.predictionEssays.length);assert.equal(predictionMocks.length,33);
+  assert.deepEqual(predictionMocks.map(m=>m.questions.find(q=>q.type==='essay').text),bank.predictionEssays.map(e=>e.text));
+  const signatures=predictionMocks.map(m=>m.questions.filter(q=>q.type!=='essay').map(q=>q.id).join('|'));
+  assert.equal(new Set(signatures).size,predictionMocks.length);
+  for(const mock of predictionMocks){
+    assert.deepEqual(mock.questions.map(q=>q.type),['swt','swt','essay','sst','wfd','wfd','wfd']);
+    assert.equal(report.minutesFor(mock.questions),54);
+    assert.equal(new Set(mock.questions.filter(q=>q.type==='swt').map(q=>q.id)).size,2);
+    assert.equal(new Set(mock.questions.filter(q=>q.type==='wfd').map(q=>q.id)).size,3);
+  }
+  const distinct=type=>new Set(predictionMocks.flatMap(m=>m.questions.filter(q=>q.type===type).map(q=>q.id))).size;
+  assert(distinct('swt')>=20);assert(distinct('sst')>=15);assert(distinct('wfd')>=50);
 });
 test('Authenticated attempts persist, isolate users and lock submitted answers',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'writing-lab-test-'));
