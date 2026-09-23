@@ -579,6 +579,34 @@ async function pgMergeLegacyAccountsOnce() {
   } finally { client.release(); }
 }
 
+async function pgAdminUserDiagnostics() {
+  if (!pgPool) return null;
+  const one = async sql => Number((await pgPool.query(sql)).rows[0]?.n || 0);
+  const tableExists = async name => !!(await pgPool.query('SELECT to_regclass($1) AS name', ['public.' + name])).rows[0]?.name;
+  const out = {
+    accounts: await one('SELECT COUNT(*)::int AS n FROM accounts'),
+    userDataRows: await one('SELECT COUNT(*)::int AS n FROM user_data'),
+    userDataWithoutAccount: await one('SELECT COUNT(*)::int AS n FROM user_data u LEFT JOIN accounts a USING(username) WHERE a.username IS NULL'),
+    speakingAttemptUsers: 0,
+    writingAttemptUsers: 0,
+    activityUsersWithoutAccount: 0
+  };
+  const unions = ['SELECT username FROM user_data'];
+  if (await tableExists('speaking_lab_attempts')) {
+    out.speakingAttemptUsers = await one('SELECT COUNT(DISTINCT username)::int AS n FROM speaking_lab_attempts');
+    unions.push('SELECT username FROM speaking_lab_attempts');
+  }
+  if (await tableExists('writing_lab_attempts')) {
+    out.writingAttemptUsers = await one('SELECT COUNT(DISTINCT username)::int AS n FROM writing_lab_attempts');
+    unions.push('SELECT username FROM writing_lab_attempts');
+  }
+  out.activityUsersWithoutAccount = await one(
+    `SELECT COUNT(*)::int AS n FROM (SELECT DISTINCT username FROM (${unions.join(' UNION ALL ')}) x) u
+     LEFT JOIN accounts a USING(username) WHERE a.username IS NULL`
+  );
+  return out;
+}
+
 // ─── POSTGRES STORAGE ADAPTER ───────────────────────────────────────────────
 // Same method names as JsonStorage below, but reads/writes through pgPool.
 // All methods are async and use parameterised queries (no SQL injection risk).
@@ -5946,6 +5974,8 @@ app.listen(PORT, '0.0.0.0', async () => {
       } else {
         console.log(`🐘 Legacy account merge skipped (${legacy.reason})`);
       }
+      const adminDiag = await pgAdminUserDiagnostics();
+      console.log('🐘 Admin user diagnostics:', JSON.stringify(adminDiag));
       // v19.11.1: seed the passages table from the bundle ONLY if it's empty.
       // After this run, every admin edit lives in Postgres and is safe across
       // deploys. The previous file-based PassageAPI is no longer used.
