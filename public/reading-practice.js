@@ -218,7 +218,7 @@
     for (const [uid,item] of Object.entries(s.assessments)) if (item.status === 'working' && !pendingGrades.has(s.id+':'+uid)) { item.status = 'error'; item.interrupted = true; item.message = 'The previous grading request was interrupted. Retry your saved response.'; }
     for (const item of Object.values(s.audioStates)) if (['countdown','loading','playing'].includes(item.status)) { item.status = 'error'; item.message = 'Audio was interrupted. Select Play audio when you are ready.'; }
   }
-  function questionList(set) { return set.questions.map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} })); }
+  function questionList(set) { return set.questions.map(q => mock.strengthenFib({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }, 'practice-set:'+set.id+':'+q.id)); }
 
   async function start(mode, practiceUid) {
     if (starting || !owner || identity() !== owner) return;
