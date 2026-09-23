@@ -113,7 +113,7 @@
       }
       const info = q.reasoning || {};
       feedback = '<h3>What to notice</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
-      if (!['dropdown','wordbank'].includes(q.type)) feedback += blankFeedback(q);
+      if (['dropdown','wordbank'].includes(q.type)) feedback += blankFeedback(q);
       if (info.options) feedback += '<details class="reading-review-detail"><summary>Other options explained</summary>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason)) + '</details>';
     }
     if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
