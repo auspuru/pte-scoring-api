@@ -61,7 +61,10 @@
   function readingMocks(bank) {
     let sectional = 0, practice = 0;
     return (bank.mockCatalogue || []).map(m => {
-      const focused = m.family === 'practice' || m.kind === 'reading-blanks';
+      // Only the dedicated FIB-only prediction papers are Practice Mocks.
+      // Integrated practice-mock-1..3 still contain SWT + Reading + audio and
+      // belong with the sectional/integrated catalogue.
+      const focused = m.kind === 'reading-blanks';
       const number = focused ? ++practice : ++sectional;
       return { id: m.id, engine: 'reading', module: 'reading', mode: focused ? 'practice' : 'sectional',
         title: 'Reading ' + (focused ? 'Practice Mock ' : 'Sectional Mock ') + number,
