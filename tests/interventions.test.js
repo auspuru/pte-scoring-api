@@ -5,7 +5,7 @@ const os=require('node:os');
 const path=require('node:path');
 const express=require('express');
 const {installInterventions}=require('../interventions');
-const passages=require('../passages.json').map(require('../swt-reference').studentPassage);
+const passages=require('../passages.json').map(require('../swt-reference').studentPassage);\nconst swtTrainer=require('../swt-selection-trainer');
 
 async function harness(options={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'interventions-'));
@@ -104,7 +104,7 @@ test('SWT Beta routes important-line questions to the highlight trainer first',a
   const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'swt',problem:'how to know which lines are important?'}});
   assert.equal(advice.status,200);
   assert.equal(advice.data.suggestions[0].moduleCode,'SWT-CONTENT-01');
-  assert.match(advice.data.suggestions[0].action,/Highlight only the important sentences/i);
+  assert.match(advice.data.suggestions[0].action,/important words and phrases/i);
   assert.equal(advice.data.latestScore.scores.content,4);
 });
 
@@ -125,15 +125,20 @@ test('SWT highlight trainer serves existing passages and completes after the con
   assert.equal(first.data.catalog.length,15);
   assert.equal(Object.hasOwn(first.data.exercise,'targetSentenceIndexes'),false);
   const firstId=first.data.exercise.id;
-  let checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:firstId,selected:[0]}});
+  const firstPassage=passages.find(p=>String(p.id)===String(firstId));
+  const firstRange=swtTrainer.answerKey(firstPassage).targets[0].ranges[0];
+  let checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:firstId,selected:[{start:firstRange.start,end:firstRange.end}]}});
   assert.equal(checked.status,200);
   assert.equal(checked.data.progress.attempted,1);
   assert.equal(checked.data.item.status,'started');
-  assert(Array.isArray(checked.data.result.targetSentenceIndexes));
+  assert.equal(checked.data.result.mode,'phrases');
+  assert(Array.isArray(checked.data.result.targetRanges));
   const next=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection',{token:'alice'});
   const secondId=next.data.exercise.id;
   assert.notEqual(secondId,firstId);
-  checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:secondId,selected:[0]}});
+  const secondPassage=passages.find(p=>String(p.id)===String(secondId));
+  const secondRange=swtTrainer.answerKey(secondPassage).targets[0].ranges[0];
+  checked=await call(h.base,'/api/interventions/'+plan.id+'/items/'+item.id+'/swt-selection/check',{method:'POST',token:'alice',body:{passageId:secondId,selected:[{start:secondRange.start,end:secondRange.end}]}});
   assert.equal(checked.status,200);
   assert.equal(checked.data.progress.attempted,2);
   assert.equal(checked.data.item.status,'completed');
@@ -209,8 +214,11 @@ test('standalone SWT Practice highlight mode uses the hidden trainer key without
   assert.equal(ex.data.exercise.id,'3');
   assert(ex.data.exercise.paragraphs.length>=1);
   assert.equal(Object.hasOwn(ex.data.exercise,'targetSentenceIndexes'),false);
-  const checked=await call(h.base,'/api/interventions/swt-selection/practice/3/check',{method:'POST',token:'alice',body:{selected:[0]}});
+  const passage=passages.find(p=>String(p.id)==='3');
+  const range=swtTrainer.answerKey(passage).targets[0].ranges[0];
+  const checked=await call(h.base,'/api/interventions/swt-selection/practice/3/check',{method:'POST',token:'alice',body:{selected:[{start:range.start,end:range.end}]}});
   assert.equal(checked.status,200);
-  assert(Array.isArray(checked.data.result.targetSentenceIndexes));
+  assert.equal(checked.data.result.mode,'phrases');
+  assert(Array.isArray(checked.data.result.targetRanges));
   assert(Array.isArray(checked.data.result.missedIdeas));
 });
