@@ -28,3 +28,6 @@ V1 also supports assigning exact Essay prompts from the student's existing essay
 
 ## SWT highlight trainer
 Students who struggle to identify important SWT content can practise on 15 existing passages by selecting central sentences only. Feedback explains missed ideas, why they matter, and the key phrases/sentences that carry the summary.
+
+## Real practice sets
+Placeholder drill cards were removed. Practice items now launch real portal tasks and complete from submitted attempts; only videos and reading/instruction steps use manual acknowledgement.
