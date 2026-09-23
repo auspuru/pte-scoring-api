@@ -150,7 +150,7 @@
   }
   function addButtons(){
     document.querySelectorAll('#usersBody tr').forEach(row=>{
-      if(row.querySelector('.improve-btn'))return;
+      if(row.dataset.hasAccount==='false'||row.querySelector('.improve-btn'))return;
       const username=row.querySelector('.username-cell')?.textContent?.trim();const actions=row.querySelector('.actions');if(!username||!actions)return;
       const b=document.createElement('button');b.className='btn-action improve-btn';b.type='button';b.textContent='Improvement';b.onclick=()=>openManager(username);actions.insertBefore(b,actions.firstChild);
     });

@@ -1547,26 +1547,35 @@ const AuthAPI = {
   // ── Admin functions ──
   async listUsers() {
     const data = await this.readAccounts();
-    return Object.values(data.accounts).map(a => ({
-      username: a.username, createdAt: a.createdAt, lastLogin: a.lastLogin,
-      blocked: a.blocked || false, role: a.role || 'user',
-      stats: (() => {
-        const progress = data.users[a.username] || {};
-        const base = progress.stats || { totalAttempts: 0, averageScore: 0 };
-        const reading = progress.readingProgress || {};
-        const readingHistory = Array.isArray(reading.history) ? reading.history : [];
-        const completed = readingHistory.filter(item => item && item.done);
-        const readingScores = completed.map(item => Number(item.percent)).filter(Number.isFinite);
-        return {
+    const usernames = [...new Set([
+      ...Object.keys(data.accounts || {}),
+      ...Object.keys(data.users || {})
+    ])];
+    return usernames.map(username => {
+      const a = data.accounts?.[username] || null;
+      const progress = data.users?.[username] || {};
+      const base = progress.stats || { totalAttempts: 0, averageScore: 0 };
+      const reading = progress.readingProgress || {};
+      const readingHistory = Array.isArray(reading.history) ? reading.history : [];
+      const completed = readingHistory.filter(item => item && item.done);
+      const readingScores = completed.map(item => Number(item.percent)).filter(Number.isFinite);
+      return {
+        username,
+        hasAccount: !!a,
+        createdAt: a?.createdAt || null,
+        lastLogin: a?.lastLogin || null,
+        blocked: !!a?.blocked,
+        role: a?.role || (a ? 'user' : 'progress_only'),
+        stats: {
           ...base,
           readingAttempts: completed.length,
           readingAverage: readingScores.length ? Math.round(readingScores.reduce((n, x) => n + x, 0) / readingScores.length) : 0,
           readingInProgress: reading.session && !reading.session.done ? 1 : 0,
           essayAttempts: Array.isArray(progress.essayLibrary) ? progress.essayLibrary.length : 0,
           vocabularyWords: Object.keys(progress.vocabProgress?.read || {}).length
-        };
-      })()
-    }));
+        }
+      };
+    });
   },
   async deleteUser(username) {
     const uid = String(username || '').toLowerCase().trim();
@@ -3227,6 +3236,7 @@ function requireAdmin(req, res, next) {
 }
 
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   try { res.json(await AuthAPI.listUsers()); }
   catch (e) { res.status(500).json({ error: 'Failed to list users' }); }
 });
