@@ -104,8 +104,12 @@
     }
     function trainerSentenceHtml(sentence){
       const phrases=trainer?.result?.phraseBySentence?.[sentence.index]||[];
-      const label=trainer?.result?(trainer.result.targetSentenceIndexes.includes(sentence.index)?'Central sentence':trainer.result.selected.includes(sentence.index)?'Extra detail':''):(trainer.selected?.has(sentence.index)?'Selected':'');
-      return '<button type="button" class="swt-trainer-sentence'+trainerSentenceClass(sentence.index)+'" data-trainer-sentence="'+sentence.index+'" aria-pressed="'+(trainer?.selected?.has(sentence.index)?'true':'false')+'" '+(trainer?.result?'disabled':'')+'><span class="swt-trainer-number">'+(sentence.index+1)+'</span><span class="swt-trainer-text">'+phraseMarkup(sentence.text,phrases)+'</span>'+(label?'<span class="swt-trainer-label">'+esc(label)+'</span>':'')+'</button>';
+      const label=trainer?.result?(trainer.result.targetSentenceIndexes.includes(sentence.index)?'Central line':trainer.result.selected.includes(sentence.index)?'Extra detail':''):(trainer.selected?.has(sentence.index)?'Highlighted':'');
+      const disabled=!!trainer?.result;
+      return '<span class="swt-trainer-sentence'+trainerSentenceClass(sentence.index)+'" data-trainer-sentence="'+sentence.index+'" role="button" tabindex="'+(disabled?'-1':'0')+'" aria-pressed="'+(trainer?.selected?.has(sentence.index)?'true':'false')+'"'+(label?' data-label="'+esc(label)+'"':'')+'>'+phraseMarkup(sentence.text,phrases)+'</span>';
+    }
+    function trainerParagraphHtml(paragraph){
+      return '<p class="swt-trainer-paragraph">'+(paragraph.sentences||[]).map(trainerSentenceHtml).join(' ')+'</p>';
     }
     function trainerFeedback(){
       const r=trainer?.result;if(!r)return '';
@@ -124,11 +128,11 @@
       const ex=trainer.exercise,p=trainer.progress||{};
       overlay.innerHTML='<div class="swt-trainer-modal" role="dialog" aria-modal="true" aria-labelledby="swtTrainerTitle"><header><div><p class="portal-eyebrow">SWT Content Selection</p><h2 id="swtTrainerTitle">'+esc(ex.title)+'</h2><p>'+esc(ex.instructions)+'</p></div><button type="button" class="portal-button" data-trainer-close>Close</button></header>'
         +'<div class="swt-trainer-progress"><span>Exercise '+((p.attempted||0)+1)+' of '+(p.total||15)+'</span><strong>'+esc(trainerProgressText(trainer))+'</strong></div>'
-        +'<div class="swt-trainer-tip"><b>Your task:</b> Click the sentences you would keep for the summary. Do not write anything yet. Try to choose the fewest sentences that still preserve the central argument.</div>'
-        +'<div class="swt-trainer-passage">'+(ex.sentences||[]).map(trainerSentenceHtml).join('')+'</div>'
+        +'<div class="swt-trainer-tip"><b>Your task:</b> Read the passage as one paragraph and click directly on the lines you think carry the main message or essential support. Do not write a summary yet.</div>'
+        +'<div class="swt-trainer-passage">'+((ex.paragraphs||[]).length?(ex.paragraphs||[]).map(trainerParagraphHtml).join(''):'<p class="swt-trainer-paragraph">'+(ex.sentences||[]).map(trainerSentenceHtml).join(' ')+'</p>')+'</div>'
         +trainerFeedback()
-        +'<footer>'+(trainer.result?'<button type="button" class="portal-button primary" data-trainer-next>Next exercise</button>':'<span>'+(trainer.selected?.size||0)+' sentence'+((trainer.selected?.size||0)===1?'':'s')+' selected</span><button type="button" class="portal-button primary" data-trainer-submit '+(!(trainer.selected?.size)?'disabled':'')+'>Check my selection</button>')+'</footer></div>';
-      overlay.onclick=trainerClick;
+        +'<footer>'+(trainer.result?'<button type="button" class="portal-button primary" data-trainer-next>Next exercise</button>':'<span>'+(trainer.selected?.size||0)+' line'+((trainer.selected?.size||0)===1?'':'s')+' highlighted</span><button type="button" class="portal-button primary" data-trainer-submit '+(!(trainer.selected?.size)?'disabled':'')+'>Check my selection</button>')+'</footer></div>';
+      overlay.onclick=trainerClick;overlay.onkeydown=trainerKeydown;
     }
     async function openTrainer(plan,item,passageId=''){
       try{
@@ -137,6 +141,10 @@
         trainer={planId:plan.id,itemId:item.id,exercise:data.exercise,catalog:data.catalog||[],progress:data.progress||{},selected:new Set(),result:null};
         renderTrainer();
       }catch(e){notify(e.message,true);}
+    }
+    function trainerKeydown(e){
+      const sentence=e.target.closest?.('[data-trainer-sentence]');
+      if(sentence&&!trainer?.result&&(e.key==='Enter'||e.key===' ')){e.preventDefault();sentence.click();}
     }
     async function trainerClick(e){
       if(e.target.closest('[data-trainer-close]')||e.target===doc.getElementById('swtHighlightTrainer')){trainer=null;renderTrainer();return;}
