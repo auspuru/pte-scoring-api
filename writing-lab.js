@@ -161,7 +161,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       const current = a.status==='active' && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
       const summary = report.summarize(current.questions, current.results);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
-        completed:current.completed.filter(Boolean).length,questions:current.questions.length,
+        index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90 });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
