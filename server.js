@@ -169,12 +169,13 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.set('trust proxy', 1);
 
 // ─── SERVE STATIC FILES (Railway deployment) ─────────────────────────────────
-// Writing Lab runtime assets must never be served stale inside the embedded iframe.
-app.get(['/writing-lab-client.js','/writing-lab.html'], (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.sendFile(path.join(__dirname, 'public', req.path.slice(1)));
+app.use((req,res,next)=>{
+  if(req.method==='GET'&&!req.path.startsWith('/api/')){
+    if(req.path==='/'||req.path.endsWith('.html')) res.set('Cache-Control','no-cache, must-revalidate');
+    else if(req.query.v) res.set('Cache-Control','public, max-age=31536000, immutable');
+    else res.set('Cache-Control','public, max-age=0, must-revalidate');
+  }
+  next();
 });
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/essay-attempt-sync.js', (req, res) => res.sendFile(path.join(__dirname, 'essay-attempt-sync.js')));
@@ -1435,6 +1436,35 @@ function verifySessionToken(token) {
   if (!username || !expiry || Date.now() > expiry) return null;
   return username;
 }
+
+
+function mintPasswordResetToken(username,email){
+  const payload=Buffer.from(JSON.stringify({t:'password-reset',username:canonicalUserId(username),email:String(email||'').toLowerCase(),exp:Date.now()+15*60*1000})).toString('base64url');
+  const sig=crypto.createHmac('sha256',_sessionSecret()).update(payload).digest('hex');
+  return payload+'.'+sig;
+}
+function verifyPasswordResetToken(token){
+  if(!token||typeof token!=='string'||!token.includes('.'))return null;
+  const [payload,sig]=token.split('.'),expected=crypto.createHmac('sha256',_sessionSecret()).update(payload).digest('hex');
+  if(!sig||sig.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;
+  try{const data=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));return data.t==='password-reset'&&data.username&&data.exp>Date.now()?data:null;}catch(_){return null;}
+}
+async function recoveryAccount(identifier){
+  const raw=String(identifier||'').trim().toLowerCase();if(!raw)return null;
+  if(USE_POSTGRES){
+    if(raw.includes('@')){const {rows}=await pgPool.query("SELECT username,data->>'email' AS email FROM user_data WHERE lower(data->>'email')=$1 LIMIT 1",[raw]);return rows[0]||null;}
+    const acct=await PgStorage._getAccount(raw);if(!acct)return null;const data=await StorageAPI.getUserData(raw);return {username:raw,email:String(data?.email||'').trim()};
+  }
+  const data=await StorageAPI.readData();
+  if(raw.includes('@')){const entry=Object.entries(data.users||{}).find(([,u])=>String(u?.email||'').trim().toLowerCase()===raw);return entry?{username:entry[0],email:entry[1].email}:null;}
+  return data.accounts?.[raw]?{username:raw,email:String(data.users?.[raw]?.email||'').trim()}:null;
+}
+async function forcePassword(username,newPassword){
+  const uid=canonicalUserId(username);
+  if(USE_POSTGRES){const acct=await PgStorage._getAccount(uid);if(!acct)return false;await pgPool.query('UPDATE accounts SET password_hash=$1 WHERE username=$2',[hashPw(newPassword),uid]);return true;}
+  const data=await StorageAPI.readData();if(!data.accounts?.[uid])return false;data.accounts[uid].passwordHash=hashPw(newPassword);await StorageAPI.writeData(data);return true;
+}
+
 // Middleware: the request must carry a valid session token whose username
 // matches the :userId route param (case-insensitive). Impersonation tokens are
 // also accepted so the admin "Open as User" flow keeps working.
@@ -1459,7 +1489,7 @@ const AuthAPI = {
   },
   async register(username, password, secretQ, secretA, email) {
     const uid = username.toLowerCase().trim();
-    if (password.length < 4) return { success: false, error: 'Password min 4 chars' };
+    if (password.length < 8) return { success: false, error: 'Password min 8 chars' };
     // v19.10: Postgres fast path — single account lookup + single insert.
     if (USE_POSTGRES) {
       const existing = await PgStorage._getAccount(uid);
@@ -1525,7 +1555,7 @@ const AuthAPI = {
       const acct = await PgStorage._getAccount(uid);
       if (!acct) return { success: false, error: 'User not found' };
       if (!verifyPw(oldPw, acct.passwordHash).ok) return { success: false, error: 'Wrong current password' };
-      if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
+      if (newPw.length < 8) return { success: false, error: 'Min 8 chars' };
       await pgPool.query('UPDATE accounts SET password_hash = $1 WHERE username = $2', [hashPw(newPw), uid]);
       return { success: true };
     }
@@ -1533,7 +1563,7 @@ const AuthAPI = {
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
     if (!verifyPw(oldPw, acct.passwordHash).ok) return { success: false, error: 'Wrong current password' };
-    if (newPw.length < 4) return { success: false, error: 'Min 4 chars' };
+    if (newPw.length < 8) return { success: false, error: 'Min 8 chars' };
     acct.passwordHash = hashPw(newPw);
     await StorageAPI.writeData(data);
     return { success: true };
@@ -1544,7 +1574,7 @@ const AuthAPI = {
     const acct = data.accounts[uid];
     if (!acct) return { success: false, error: 'User not found' };
     if (!acct.secretAHash || !verifyPw(secretA, acct.secretAHash).ok) return { success: false, error: 'Wrong answer' };
-    if (newPw && newPw.length >= 4) { acct.passwordHash = hashPw(newPw); await StorageAPI.writeData(data); return { success: true }; }
+    if (newPw && newPw.length >= 8) { acct.passwordHash = hashPw(newPw); await StorageAPI.writeData(data); return { success: true }; }
     return { success: true, verified: true, secretQ: acct.secretQ };
   },
   async getSecretQ(username) {
@@ -3176,6 +3206,7 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     const { username, password, secretQ, secretA, email } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+    if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
     const result = await AuthAPI.register(username, password, secretQ, secretA, email);
     // C3: hand back a session token the client uses to authorize sync calls.
     if (result && result.success) result.token = mintSessionToken(username);
@@ -3202,10 +3233,30 @@ app.post('/api/auth/change-password', async (req, res) => {
     if (typeof oldPassword !== 'string' || typeof newPassword !== 'string') {
       return res.status(400).json({ success: false, error: 'Current and new password are required' });
     }
-    if (newPassword.length < 4) return res.status(400).json({ success: false, error: 'Min 4 chars' });
+    if (newPassword.length < 8) return res.status(400).json({ success: false, error: 'Min 8 chars' });
     const result = await AuthAPI.changePassword(username, oldPassword, newPassword);
     res.status(result.success ? 200 : 400).json(result);
   } catch (e) { res.status(500).json({ success: false, error: 'Password change failed' }); }
+});
+
+app.post('/api/auth/email-reset/request', async (req,res)=>{
+  try{
+    const target=await recoveryAccount(req.body?.identifier),email=String(target?.email||'').trim();
+    if(target&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&mailTransport){
+      const token=mintPasswordResetToken(target.username,email),resetUrl=req.protocol+'://'+req.get('host')+'/?reset='+encodeURIComponent(token);
+      await mailTransport.sendMail({from:'"IPT Brisbane" <'+GMAIL_USER+'>',to:email,replyTo:GMAIL_USER,subject:'Reset your IPT Brisbane password',text:'Use this link within 15 minutes to reset your password: '+resetUrl,html:'<p>Use the link below within 15 minutes to reset your IPT Brisbane password.</p><p><a href="'+resetUrl+'">Reset password</a></p><p>If you did not request this, you can ignore this email.</p>'});
+    }
+  }catch(e){console.warn('[auth-reset] request failed:',e.message);}
+  res.json({success:true});
+});
+app.post('/api/auth/email-reset/complete', async (req,res)=>{
+  try{
+    const data=verifyPasswordResetToken(req.body?.token),newPassword=String(req.body?.newPassword||'');
+    if(!data)return res.status(400).json({success:false,error:'Reset link is invalid or expired.'});
+    if(newPassword.length<8)return res.status(400).json({success:false,error:'Password must be at least 8 characters.'});
+    const ok=await forcePassword(data.username,newPassword);if(!ok)return res.status(400).json({success:false,error:'Account is unavailable.'});
+    res.json({success:true});
+  }catch(e){res.status(500).json({success:false,error:'Password reset failed.'});}
 });
 
 app.post('/api/auth/reset-password', async (req, res) => {
