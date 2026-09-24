@@ -936,27 +936,56 @@ function signOut() {
   removeAdminPortalEntry();
 }
 
-async function changePassword() {
-  const newPw = prompt('Enter your new password (minimum 4 characters):');
-  if (!newPw) return;
-  if (newPw.length < 4) { toast('Password must be at least 4 characters.', true); return; }
+function changePassword() {
+  if (sessionStorage.getItem('pte_impersonate_token')) {
+    toast('Password changes are unavailable while viewing another account.', true);
+    return;
+  }
+  const form = document.getElementById('changePasswordForm');
+  const status = document.getElementById('changePasswordStatus');
+  if (!form) return;
+  form.hidden = !form.hidden;
+  if (status) status.textContent = '';
+  if (!form.hidden) document.getElementById('changeCurrentPassword')?.focus();
+}
+
+async function submitPasswordChange(ev) {
+  ev.preventDefault();
+  const currentPassword = document.getElementById('changeCurrentPassword')?.value || '';
+  const newPassword = document.getElementById('changeNewPassword')?.value || '';
+  const confirmPassword = document.getElementById('changeConfirmPassword')?.value || '';
+  const status = document.getElementById('changePasswordStatus');
+  const button = document.getElementById('changePasswordSubmit');
+  const fail = message => {
+    if (status) { status.textContent = message; status.style.color = 'var(--accent)'; }
+  };
+  if (!currentPassword) return fail('Enter your current password.');
+  if (newPassword.length < 4) return fail('New password must be at least 4 characters.');
+  if (newPassword !== confirmPassword) return fail('New passwords do not match.');
+
+  if (button) { button.disabled = true; button.textContent = 'Updating…'; }
+  if (status) { status.textContent = ''; status.style.color = 'var(--ink-mute)'; }
   try {
-    const r = await fetch(API_URL+'/api/auth/change-password',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-session-token': sessionToken
-      },
-      body:JSON.stringify({ password: newPw })
+    const r = await fetch(API_URL + '/api/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-session-token': sessionToken },
+      body: JSON.stringify({ oldPassword: currentPassword, newPassword })
     });
-    const d = await r.json();
-    if (d.success) {
-      toast('Password changed successfully ✓');
-    } else {
-      toast('Failed: ' + d.error, true);
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401 || r.status === 403) {
+      handleAuthExpired();
+      return;
     }
+    if (!r.ok || !d.success) return fail(d.error || 'Password could not be changed.');
+    document.getElementById('changeCurrentPassword').value = '';
+    document.getElementById('changeNewPassword').value = '';
+    document.getElementById('changeConfirmPassword').value = '';
+    document.getElementById('changePasswordForm').hidden = true;
+    toast('Password changed successfully ✓');
   } catch (err) {
-    toast('Connection error', true);
+    fail('Connection error. Please try again.');
+  } finally {
+    if (button) { button.disabled = false; button.textContent = 'Update password'; }
   }
 }
 

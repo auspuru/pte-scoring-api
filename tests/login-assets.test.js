@@ -68,3 +68,17 @@ test('Authentication falls back to session storage when local storage quota is e
   assert.doesNotMatch(client, /localStorage\.setItem\('pte_session_token', d\.token\)/);
   assert.match(client, /getAuthStorageValue\('pte_session_token'\)/);
 });
+
+
+test('Change password uses an authenticated form and a session-derived account', () => {
+  const client = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
+  const page = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+  const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+  const route = server.slice(server.indexOf("app.post('/api/auth/change-password'"), server.indexOf("app.post('/api/auth/reset-password'"));
+  assert.match(page, /id="changePasswordForm"/);
+  assert.match(page, /id="changeCurrentPassword"/);
+  assert.doesNotMatch(client, /prompt\('Enter your new password/);
+  assert.match(client, /JSON\.stringify\(\{ oldPassword: currentPassword, newPassword \}\)/);
+  assert.match(route, /verifySessionToken\(token\)/);
+  assert.doesNotMatch(route, /const \{ username, oldPassword, newPassword \} = req\.body/);
+});

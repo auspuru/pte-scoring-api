@@ -63,12 +63,12 @@
 <script src="essay-generation-policy.js?v=1" defer></script>
 <script src="reading-fib-quality.js?v=4" defer></script>
 <script src="reading-fib-pattern-bank.js?v=1" defer></script>
-<script src="practice-catalogue.js?v=9" defer></script>
+<script src="practice-catalogue.js?v=20260924-wrapup" defer></script>
 <script src="portal-workspace.js?v=20260923-nextsteps" defer></script>
 <script src="/pte-estimate-display.js?v=1" defer></script>
-<script src="/student-progress.js?v=1" defer></script>
+<script src="/student-progress.js?v=20260924-wrapup" defer></script>
 <script src="/interventions-client.js?v=5" defer></script>
-<script src="index.js?v=20260924-runtimefix" defer></script>
+<script src="index.js?v=20260924-wrapup" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/student-progress.css?v=1">
 <link rel="stylesheet" href="/interventions.css?v=4">
@@ -1309,6 +1309,13 @@
       <button class="tb-text-btn" onclick="importData()">Restore a backup</button>
       <button class="tb-text-btn" onclick="updateUserEmail()">✉ Update email address</button>
       <button class="tb-text-btn" onclick="changePassword()">🔑 Change password</button>
+      <form id="changePasswordForm" hidden onsubmit="submitPasswordChange(event)" style="padding:12px; border:1px solid var(--line-soft); border-radius:10px; background:var(--bg-list);">
+        <label class="field"><span class="field-label">Current password</span><input class="field-input" id="changeCurrentPassword" type="password" autocomplete="current-password" required></label>
+        <label class="field" style="margin-top:8px;"><span class="field-label">New password</span><input class="field-input" id="changeNewPassword" type="password" autocomplete="new-password" minlength="4" required></label>
+        <label class="field" style="margin-top:8px;"><span class="field-label">Confirm new password</span><input class="field-input" id="changeConfirmPassword" type="password" autocomplete="new-password" minlength="4" required></label>
+        <p id="changePasswordStatus" role="status" aria-live="polite" style="font-size:11px; color:var(--ink-mute); margin:8px 0;"></p>
+        <button type="submit" class="tb-text-btn dark" id="changePasswordSubmit">Update password</button>
+      </form>
       <button class="tb-text-btn" onclick="signOutUser()" style="color:var(--accent); border-color:var(--accent-soft);">→ Sign out</button>
     </div>
     <div class="modal-actions">

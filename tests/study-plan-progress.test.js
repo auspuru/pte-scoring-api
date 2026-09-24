@@ -56,3 +56,21 @@ test('writing lab presents estimate scores without native mark totals', () => {
   assert.doesNotMatch(writingClient, /Task marks are shown first/);
   assert.doesNotMatch(writingClient, /<th>Marks<\/th>/);
 });
+
+
+test('My Progress ignores pending feedback and calculates newest-first API results chronologically', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({ reading: { history: [] }, swt: {}, essays: [] }, [
+    { kind: 'sst', status: 'submitted', total: null, maximum: 12, startedAt: 30 },
+    { kind: 'sst', status: 'submitted', total: 10, maximum: 12, startedAt: 20 },
+    { kind: 'sst', status: 'submitted', total: 6, maximum: 12, startedAt: 10 }
+  ]);
+  const sst = model.areas.find(a => a.name === 'Summarise Spoken Text');
+  assert.equal(sst.count, 2, 'pending feedback must not become a zero score');
+  assert.equal(sst.trend.label, 'Improving');
+  assert.equal(sst.trend.delta, 33);
+});

@@ -80,6 +80,7 @@
   function mockItems(reading, writing) {
     return [...readingMocks(reading), ...(writing.mocks || []).map((m, i) => ({
       ...m, engine: 'writing', module: 'writing', mode: 'sectional', number: m.predictionNumber || 100 + i,
+      searchText: [m.title,m.description,m.topic,m.question,m.category].filter(Boolean).join(' '),
       title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0')),
       description: m.category === 'prediction' ? 'Prediction-aligned Writing sectional practice' : 'Integrated Writing sectional practice',
       scope: 'SWT + Essay + SST + WFD'
@@ -88,7 +89,7 @@
   function filterMocks(items, { mode = 'sectional', module = 'all', search = '' } = {}) {
     const query = search.trim().toLowerCase();
     return items.filter(m => m.mode === mode && (module === 'all' || module === m.module)
-      && (!query || (m.title + ' ' + m.description).toLowerCase().includes(query)))
+      && (!query || [m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query)))
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
   function createController({ document: doc, navigate, launchReading, launchWriting, fetch: get = fetch }) {

@@ -8,7 +8,17 @@ function readingRows(state){
  const all=[...(state?.history||[]),state?.session,...(state?.drafts||[])].filter(Boolean);
  return [...new Map(all.map(a=>[a.id,a])).values()];
 }
-function ratio(total,maximum){return Number.isFinite(total)&&Number.isFinite(maximum)&&maximum>0?Math.max(0,Math.min(1,total/maximum)):null;}
+const numeric=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
+function ratio(total,maximum){
+ const t=numeric(total),m=numeric(maximum);
+ return Number.isFinite(t)&&Number.isFinite(m)&&m>0?Math.max(0,Math.min(1,t/m)):null;
+}
+function scoredSeries(rows,score,when){
+ return rows.map(row=>({value:score(row),at:stamp(when(row))}))
+  .filter(item=>Number.isFinite(item.value))
+  .sort((a,b)=>a.at-b.at)
+  .map(item=>item.value);
+}
 function trend(values){
  if(values.length<2)return null;
  const delta=(values.at(-1)-values[0])*100;
@@ -26,11 +36,11 @@ function model(data,writing){
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
 
  const practiceReading=reading.filter(a=>a.practiceUid&&a.done);
- const readingScores=practiceReading.map(a=>ratio(Number(a.earned??a.total),Number(a.maximum))).filter(Number.isFinite);
- const essayScores=essays.map(a=>ratio(Number(a?.scores?.total),26)).filter(Number.isFinite);
+ const readingScores=scoredSeries(practiceReading,a=>ratio(a.earned??a.total,a.maximum),a=>a.finishedAt||a.startedAt);
+ const essayScores=scoredSeries(essays,a=>ratio(a?.scores?.total,26),a=>a.date);
  const sstRows=writing.filter(a=>a.kind==='sst'&&a.status==='submitted'),wfdRows=writing.filter(a=>a.kind==='wfd'&&a.status==='submitted');
- const sstScores=sstRows.map(a=>ratio(Number(a.total),Number(a.maximum))).filter(Number.isFinite);
- const wfdScores=wfdRows.map(a=>ratio(Number(a.total),Number(a.maximum))).filter(Number.isFinite);
+ const sstScores=scoredSeries(sstRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
+ const wfdScores=scoredSeries(wfdRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
 
  const areas=[
   {name:'Write Essay',route:'practice',scores:essayScores,latest:essays.map(a=>a.date)},

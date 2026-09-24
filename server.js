@@ -3195,9 +3195,17 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.post('/api/auth/change-password', async (req, res) => {
   try {
-    const { username, oldPassword, newPassword } = req.body;
-    res.json(await AuthAPI.changePassword(username, oldPassword, newPassword));
-  } catch (e) { res.status(500).json({ error: 'Password change failed' }); }
+    const token = req.headers['x-session-token'] || '';
+    const username = verifySessionToken(token);
+    if (!username) return res.status(401).json({ success: false, error: 'Not authenticated' });
+    const { oldPassword, newPassword } = req.body || {};
+    if (typeof oldPassword !== 'string' || typeof newPassword !== 'string') {
+      return res.status(400).json({ success: false, error: 'Current and new password are required' });
+    }
+    if (newPassword.length < 4) return res.status(400).json({ success: false, error: 'Min 4 chars' });
+    const result = await AuthAPI.changePassword(username, oldPassword, newPassword);
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (e) { res.status(500).json({ success: false, error: 'Password change failed' }); }
 });
 
 app.post('/api/auth/reset-password', async (req, res) => {
