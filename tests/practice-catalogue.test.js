@@ -130,7 +130,11 @@ test('Portal markup removes redundant navigation and embedded catalogues', () =>
   assert.equal((html.match(/id="nav-practice-hub"/g) || []).length, 1);
   assert.equal((html.match(/id="nav-mock-tests"/g) || []).length, 1);
   assert.doesNotMatch(html, /id="(?:testCentrePane|nav-test-centre|nav-writing-mocks|nav-sst|nav-reading|nav-swt|nav-practice)"/);
-  assert(html.indexOf('practice-catalogue.js') < html.indexOf('reading-practice.js'));
+  assert.match(html, /practice-catalogue\.js/);
+  assert.doesNotMatch(html, /<script[^>]+reading-practice\.js/);
+  const portalClient = fs.readFileSync(require.resolve('../public/index.js'), 'utf8');
+  assert.match(portalClient, /ensureReadingRuntimeLoaded/);
+  assert.match(portalClient, /reading-practice\.js\?v=20260924-pattern/);
   const lab = fs.readFileSync(require.resolve('../public/writing-lab-client.js'), 'utf8');
   assert.doesNotMatch(lab, /renderMockBoard|assignment-board|data-board-mode/);
 });
