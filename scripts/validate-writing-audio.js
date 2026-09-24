@@ -1,7 +1,8 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { createHash } = require('node:crypto');\nconst predictions = require('../content/writing-predictions-sep-2026');
+const { createHash } = require('node:crypto');
+const predictions = require('../content/writing-predictions-sep-2026');
 
 const BITRATE_MPEG1_L3 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,0];
 const BITRATE_MPEG2_L3 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,0];
@@ -57,6 +58,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
     ids.add(q.id);
     const entry = manifest[q.id];
     if (!entry || entry.textSha256 !== hash(q.text)) throw Error('Missing or outdated recording: ' + q.id);
+    if (entry.normalization !== 'EBU R128 -18 LUFS / -1.5 dBTP') throw Error('Recording normalization metadata missing: ' + q.id);
     if (entry.validationStatus !== 'validated' || !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.validatedAt || ''))) {
       throw Error('Recording validation metadata missing: ' + q.id);
     }
