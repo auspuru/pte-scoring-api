@@ -12650,18 +12650,96 @@ function restorePortalEssayDraft(resetSession = false) {
   updatePortalResume();
 }
 
-function updatePortalResume() {
-  const banner = document.getElementById('portalResume');
-  if (!banner) return;
+let portalResumeTarget = null;
+let portalResumeFetchSerial = 0;
+let portalResumeCache = { uid: '', at: 0, item: null };
+
+function readingResumeRoute(session) {
+  const type = session?.questions?.[session.index]?.type || session?.questions?.[0]?.type;
+  return ({ dropdown:'reading-dropdown', mcma:'reading-mcma', reorder:'reading-reorder', wordbank:'reading-wordbank',
+    mcsa:'reading-mcsa', hcs:'listening-hcs', hiw:'listening-hiw' })[type] || 'reading';
+}
+
+function localPortalResumeCandidate() {
+  const candidates = [];
   const draft = portalDraftStore?.read(currentUserId);
   const writing = practiceState.view === 'write' && !!(practiceState.essayText.trim() || practiceState.questionText.trim());
   const reviewing = practiceState.view === 'loading';
+  if ((draft?.essayText || '').trim() || writing || reviewing) {
+    const text = writing ? practiceState.essayText : draft?.essayText || '';
+    candidates.push({
+      engine:'essay', at:Number(draft?.updatedAt || Date.now()), title:reviewing?'Essay feedback in progress':'Essay draft',
+      detail:(writing ? practiceState.questionTitle : draft?.questionTitle) || 'Your unfinished response',
+      subdetail:reviewing?'Feedback is still being prepared.':countWords(text)+' words saved'
+    });
+  }
+
+  try {
+    const packed = localAccountProgress()?.readingProgress;
+    const reading = window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
+    const sessions = [reading?.session, ...(reading?.drafts || [])].filter(s => s && !s.done);
+    const latest = sessions.sort((a,b)=>Number(b.updatedAt || b.startedAt || 0)-Number(a.updatedAt || a.startedAt || 0))[0];
+    if (latest) {
+      const q = latest.questions?.[latest.index];
+      candidates.push({
+        engine:'reading', id:latest.id, route:readingResumeRoute(latest), at:Number(latest.updatedAt || latest.startedAt || 0),
+        title:latest.practiceUid ? (q?.title || 'Reading practice question') : (latest.name || 'Reading mock'),
+        detail:latest.practiceUid ? (PortalWorkspace.routes[readingResumeRoute(latest)]?.title || 'Reading practice') : 'Question '+(Number(latest.index || 0)+1)+' of '+(latest.questions?.length || 1),
+        subdetail:latest.deadline==null?'Saved progress':'Timer continues while you are away'
+      });
+    }
+  } catch (_) {}
+
+  return candidates.sort((a,b)=>b.at-a.at)[0] || null;
+}
+
+function applyPortalResumeCandidate(candidate) {
+  const banner = document.getElementById('portalResume');
+  if (!banner) return;
+  portalResumeTarget = candidate || null;
   const resume = document.getElementById('portalPracticeResume');
-  if (resume) resume.hidden = writing || reviewing || !draft?.essayText.trim();
-  banner.hidden = !writing && !reviewing && !draft?.essayText.trim();
-  document.getElementById('portalResumeTitle').textContent = reviewing ? 'Your essay review is in progress' : 'Continue your essay';
-  document.getElementById('portalResumeDetail').textContent = reviewing ? 'You can move around while your feedback is prepared.' :
-    ((writing ? practiceState.questionTitle : draft?.questionTitle) || 'Your unfinished response') + ' · ' + countWords(writing ? practiceState.essayText : draft?.essayText || '') + ' words';
+  if (resume) resume.hidden = candidate?.engine !== 'essay';
+  banner.hidden = !candidate;
+  if (!candidate) return;
+  document.getElementById('portalResumeTitle').textContent = 'Continue your last activity';
+  document.getElementById('portalResumeDetail').textContent = candidate.title + ' · ' + candidate.detail + (candidate.subdetail ? ' · ' + candidate.subdetail : '');
+  const button = document.getElementById('portalResumeButton');
+  if (button) button.firstChild.textContent = 'Continue ';
+}
+
+async function refreshWritingPortalResume(localCandidate) {
+  const uid = canonicalClientUserId(currentUserId), token = sessionToken, serial = ++portalResumeFetchSerial;
+  if (!uid || !token) return;
+  let item = null;
+  if (portalResumeCache.uid === uid && Date.now() - portalResumeCache.at < 15000) item = portalResumeCache.item;
+  else {
+    try {
+      const response = await fetch(API_URL + '/api/writing-lab/attempts', {
+        cache:'no-store', signal:AbortSignal.timeout(12000), headers:{'x-session-token':token}
+      });
+      if (!response.ok) return;
+      const rows = await response.json();
+      const active = (Array.isArray(rows) ? rows : []).filter(a => ['active','ready'].includes(a.status))
+        .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
+      if (active) item = {
+        engine:'writing-lab', id:active.id,
+        route:active.kind==='mock'?'writing-run':active.kind==='wfd'?'dictation':'spoken-text',
+        at:Number(active.startedAt || 0), title:active.title || 'Writing practice',
+        detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
+        subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'
+      };
+      portalResumeCache = { uid, at:Date.now(), item };
+    } catch (_) { return; }
+  }
+  if (serial !== portalResumeFetchSerial || uid !== canonicalClientUserId(currentUserId) || token !== sessionToken) return;
+  const latest = [localCandidate, item].filter(Boolean).sort((a,b)=>b.at-a.at)[0] || null;
+  applyPortalResumeCandidate(latest);
+}
+
+function updatePortalResume() {
+  const local = localPortalResumeCandidate();
+  applyPortalResumeCandidate(local);
+  refreshWritingPortalResume(local);
 }
 
 function resumePortalEssay() {
@@ -12670,6 +12748,14 @@ function resumePortalEssay() {
   }
   openPractice();
   document.getElementById('practiceEssayInput')?.focus();
+}
+
+function resumePortalActivity() {
+  const target = portalResumeTarget || localPortalResumeCandidate();
+  if (!target) return;
+  if (target.engine === 'essay') return resumePortalEssay();
+  if (target.engine === 'reading') return switchSection(target.route || 'reading', { readingRequest:{ attemptId:target.id } });
+  if (target.engine === 'writing-lab') return switchSection(target.route || 'writing-run', { labRequest:{ attemptId:target.id } });
 }
 
 // Dashboard statistics renderer
