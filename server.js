@@ -50,7 +50,7 @@ async function getBrowser() {
   browserStarting = (async () => {
     console.log('Launching Puppeteer for PDF rendering...');
     const browser = await puppeteer.launch({
-      headless: 'new',
+      headless: true,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
