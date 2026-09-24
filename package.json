@@ -4,7 +4,7 @@
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
-    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js && node scripts/validate-puppeteer-browser.js",
+    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js && npm run install:browser && node scripts/validate-puppeteer-browser.js",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
@@ -17,7 +17,8 @@
     "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js",
     "validate:swt-content": "node scripts/validate-swt-content.js",
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
-    "validate:content-metadata": "node scripts/validate-content-metadata.js"
+    "validate:content-metadata": "node scripts/validate-content-metadata.js",
+    "install:browser": "puppeteer browsers install chrome"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
