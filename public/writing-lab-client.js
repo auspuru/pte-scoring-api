@@ -28,7 +28,18 @@
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
   const draftKey = () => 'ipt-writing-lab:' + username + ':' + attempt?.id;
   function notify(text) { clearTimeout(noticeTimer); document.getElementById('notice').textContent=text; noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',6500); }
-  function token() { try { return sessionStorage.getItem('pte_impersonate_token') || storage.get('pte_session_token') || ''; } catch(_) { return ''; } }
+  function token() {
+    // The parent portal falls back to sessionStorage when localStorage is full.
+    // Prefer that fresh token here too; otherwise the iframe can keep sending
+    // a stale localStorage token and receive 401 while the parent is signed in.
+    try {
+      const impersonation = sessionStorage.getItem('pte_impersonate_token');
+      if (impersonation) return impersonation;
+      const current = sessionStorage.getItem('pte_session_token');
+      if (current) return current;
+    } catch (_) { /* localStorage fallback below */ }
+    return storage.get('pte_session_token') || '';
+  }
   async function api(path, body) {
     const response = await fetch('/api/writing-lab'+path, {method:body===undefined?'GET':'POST',cache:'no-store',
       headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(150000)});

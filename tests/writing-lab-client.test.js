@@ -285,3 +285,11 @@ test('Dictation catalogue pages stay compact and expose all 56 numbered question
  await h.nodes.get('lab').events.click({target:{closest:()=>({disabled:false,dataset:{libraryPage:'4'}})}});
  assert.equal((h.nodes.get('lab').innerHTML.match(/data-start=/g)||[]).length,8);assert.match(h.nodes.get('lab').innerHTML,/Question 56</);assert.match(h.nodes.get('lab').innerHTML,/wfd-practice-50/);
 });
+
+
+test('Writing Lab prefers the sessionStorage login token before stale localStorage auth', () => {
+  assert.match(client, /sessionStorage\.getItem\('pte_session_token'\)/);
+  const sessionIndex=client.indexOf("sessionStorage.getItem('pte_session_token')");
+  const localIndex=client.indexOf("storage.get('pte_session_token')");
+  assert(sessionIndex >= 0 && localIndex > sessionIndex);
+});
