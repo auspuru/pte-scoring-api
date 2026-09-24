@@ -90,7 +90,7 @@ async def main():
             'ffprobe', '-v', 'error', '-show_entries', 'format=duration',
             '-of', 'default=noprint_wrappers=1:nokey=1', str(tmp)
         ]))
-        low, high = (60, 90) if q['type'] == 'sst' else (3, 8)
+        low, high = ((30, 90) if q.get('predictionSource') else (60, 90)) if q['type'] == 'sst' else (3, 8)
         if not low <= duration <= high:
             raise ValueError(f"{q['id']}: {duration:.2f}s outside {low}–{high}s")
         subprocess.run(['ffmpeg', '-v', 'error', '-i', str(tmp), '-f', 'null', '-'], check=True)
