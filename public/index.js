@@ -12353,7 +12353,10 @@ function switchSection(section, options = {}) {
       .catch(error => {
         if (portalWorkspace.current() !== active) return;
         const host = document.getElementById('readingPane');
-        if (host) host.innerHTML = '<div class="reading-card" role="alert">Reading practice could not load. <button type="button" class="portal-button" onclick="switchSection(\'' + active + '\', { history: \'replace\' })">Retry</button></div>';
+        if (host) {
+          host.innerHTML = '<div class="reading-card" role="alert">Reading practice could not load. <button type="button" class="portal-button" data-reading-load-retry>Retry</button></div>';
+          host.querySelector('[data-reading-load-retry]')?.addEventListener('click', () => switchSection(active, { ...options, history: 'replace' }), { once: true });
+        }
         toast(error.message, true);
       });
   }
