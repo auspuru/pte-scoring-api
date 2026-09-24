@@ -22,6 +22,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/Material\+Symbols|material-symbols-outlined|Fraunces|Plus\+Jakarta|Plus Jakarta/i);
   assert.match(html,/writing-lab-portal\.css/);
   assert.match(html,/writing-lab-client\.js/);
+  for(const [id,label] of [['f_intro','Introduction'],['f_bp1','Body paragraph 1'],['f_bp2','Body paragraph 2'],['f_concl','Conclusion']]) {
+    assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
+  }
+  assert.match(html,/<button[^>]+practice-shortcut-link[^>]*>Practise this question/);
+  assert.match(html,/From your teacher/);
+  assert(html.indexOf('id="portalResume"') < html.indexOf('id="nextStepsDashboardCard"'));
+  assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
   assert(html.indexOf('auth-boot.js')<html.indexOf('index.min.js'));
 
@@ -41,6 +48,15 @@ test('portal accessibility and delivery audit stays clean',()=>{
 
   assert.match(css,/--ink-mute:\s*#526174/);
   assert.match(css,/min-height:44px/);
+  const catalogue=read('public/practice-catalogue.js');
+  assert.doesNotMatch(catalogue,/Tests per page/);
+  assert.match(catalogue,/Repeated prediction items are marked Revision/);
+  assert.match(catalogue,/Integrated Reading & Listening Sectional Mock/);
+  assert.match(catalogue,/Summarise Written Text/);
+  assert.match(catalogue,/Highlight Incorrect Words/);
+  assert.match(catalogue,/Highlight Correct Summary/);
+  assert.match(catalogue,/Last attempt/);
+  assert.match(catalogue,/In progress/);
   assert.match(server,/max-age=31536000, immutable/);
   assert.match(build,/terser@5\.44\.0/);
   assert.match(build,/ipt-brisbane-logo\.webp/);
