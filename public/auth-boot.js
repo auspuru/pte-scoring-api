@@ -40,6 +40,14 @@ function installResetForm(){
   wrap.innerHTML='<h2 class="login-title">Choose a new password</h2><p class="login-sub">Use at least 8 characters.</p><form id="emailResetCompleteForm"><div class="login-field"><label for="emailResetPassword">New password</label><input type="password" id="emailResetPassword" autocomplete="new-password" minlength="8" required></div><div class="login-field"><label for="emailResetConfirm">Confirm new password</label><input type="password" id="emailResetConfirm" autocomplete="new-password" minlength="8" required></div><p id="emailResetStatus" class="login-error show" role="status"></p><button class="login-submit" type="submit">Update password</button></form>';
   card.appendChild(wrap);wrap.querySelector('form').addEventListener('submit',completeReset);
 }
+function toggleForgot(show){
+  const login=document.getElementById('loginForm'),register=document.getElementById('registerForm'),forgot=document.getElementById('forgotPasswordForm');
+  if(!login||!forgot)return;
+  login.style.display=show?'none':'block';if(register)register.style.display='none';forgot.style.display=show?'block':'none';
+  clear('loginError');clear('forgotPasswordError');
+  if(show)document.getElementById('forgotUsername')?.focus();
+}
 function install(){document.getElementById('loginSubmitForm')?.addEventListener('submit',login);document.getElementById('emailResetRequestForm')?.addEventListener('submit',requestReset);installResetForm();}
-window.PortalAuthBoot={login,requestReset,completeReset};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+window.toggleForgotPasswordMode=toggleForgot;
+window.PortalAuthBoot={login,requestReset,completeReset,toggleForgot};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
