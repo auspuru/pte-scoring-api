@@ -259,5 +259,30 @@ ${JSON.stringify({ question, essay, promptCoverage: assessment.promptCoverage, c
     result += escape(String(text || '').slice(last));
     return result + (open ? '</span>' : '');
   }
-  return { VERSION, MAXIMA, words, formFor, buildPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt };
+
+  function templateOverlap(essay, templates, { ngram = 4, medium = 20, high = 35 } = {}) {
+    const answer = String(essay || '').toLowerCase().replace(/[’‘]/g, "'").match(/[a-z0-9]+(?:'[a-z0-9]+)*/g) || [];
+    const sources = (Array.isArray(templates) ? templates : [templates]).map(value => String(value || '')).filter(Boolean);
+    if (!answer.length || sources.length === 0 || answer.length < ngram) {
+      return { percent: 0, level: 'low', matchedWords: 0, totalWords: answer.length, ngram, thresholds: { medium, high } };
+    }
+
+    const templateNgrams = new Set();
+    for (const source of sources) {
+      const tokens = source.toLowerCase().replace(/[’‘]/g, "'").match(/[a-z0-9]+(?:'[a-z0-9]+)*/g) || [];
+      for (let i = 0; i <= tokens.length - ngram; i++) templateNgrams.add(tokens.slice(i, i + ngram).join(' '));
+    }
+
+    const matched = new Uint8Array(answer.length);
+    for (let i = 0; i <= answer.length - ngram; i++) {
+      if (!templateNgrams.has(answer.slice(i, i + ngram).join(' '))) continue;
+      for (let j = i; j < i + ngram; j++) matched[j] = 1;
+    }
+    const matchedWords = matched.reduce((sum, value) => sum + value, 0);
+    const percent = Math.round((matchedWords / answer.length) * 100);
+    const level = percent >= high ? 'high' : percent >= medium ? 'medium' : 'low';
+    return { percent, level, matchedWords, totalWords: answer.length, ngram, thresholds: { medium, high } };
+  }
+
+  return { VERSION, MAXIMA, words, formFor, buildPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
 });
