@@ -24,6 +24,10 @@ function validatePassage(label, item, text, sample) {
   const count = words(text);
   if (!within(count, 200, 300)) throw new Error(label + ' must contain 200–300 words; found ' + count + '.');
   if (!sourceStatus(item)) throw new Error(label + ' has source metadata that is not explicitly verified.');
+  if (item.editorialReview?.standard !== 'swt-200-300' || item.editorialReview?.automatedValidation !== 'required'
+    || !['pending','reviewed'].includes(item.editorialReview?.humanReview)) {
+    throw new Error(label + ' is missing editorial review metadata.');
+  }
   if (sample) validateSample(label, sample);
   return count;
 }
