@@ -7,7 +7,8 @@ const path = require('node:path');
 const express = require('express');
 const { createNarration, installNarration } = require('../writing-lab-audio');
 const { validateWritingAudio } = require('../scripts/validate-writing-audio');
-const bank = require('../content/writing-lab.json');\nconst predictions = require('../content/writing-predictions-sep-2026');
+const bank = require('../content/writing-lab.json');
+const predictions = require('../content/writing-predictions-sep-2026');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
 const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
 
