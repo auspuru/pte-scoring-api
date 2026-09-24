@@ -1,9 +1,32 @@
 'use strict';
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const os = require('node:os');
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
 const { createHash, randomUUID } = require('node:crypto');
+const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
+
+async function createLocalNarration(input) {
+  const stem = path.join(os.tmpdir(), 'ipt-writing-audio-' + randomUUID());
+  const wav = stem + '.wav', mp3 = stem + '.mp3';
+  const rate = Math.max(125, Math.min(185, Math.round(160 * Number(input.speed || 1))));
+  try {
+    await run('espeak', ['-v', 'en-us', '-s', String(rate), '-w', wav, String(input.input || '')], {
+      timeout: 60000, maxBuffer: 10 * 1024 * 1024
+    });
+    await run('ffmpeg', ['-loglevel', 'error', '-y', '-i', wav, '-codec:a', 'libmp3lame', '-b:a', '64k', mp3], {
+      timeout: 60000, maxBuffer: 10 * 1024 * 1024
+    });
+    const bytes = await fs.readFile(mp3);
+    if (bytes.length < 1000) throw Error('Local narration output was empty.');
+    return bytes;
+  } finally {
+    await Promise.allSettled([fs.unlink(wav), fs.unlink(mp3)]);
+  }
+}
 function createNarration(directory, generate, { bundledDirectory } = {}) {
   const pending = new Map();
   let manifest;
@@ -37,12 +60,18 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
 }
 function installNarration(app, directory) {
   const narration=createNarration(directory,async input=>{
-    if(!process.env.OPENAI_API_KEY) throw Error('Narration is not configured.');
-    const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
-      headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify(input),signal:AbortSignal.timeout(60000)});
-    if(!response.ok) throw Error('Narration provider returned HTTP '+response.status);
-    return Buffer.from(await response.arrayBuffer());
+    if(process.env.OPENAI_API_KEY) {
+      try {
+        const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
+          headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify(input),signal:AbortSignal.timeout(60000)});
+        if(response.ok) return Buffer.from(await response.arrayBuffer());
+        console.warn('[writing-audio] Remote narration returned HTTP '+response.status+'; using local narrator.');
+      } catch (error) {
+        console.warn('[writing-audio] Remote narration failed; using local narrator:', error.message);
+      }
+    }
+    return createLocalNarration(input);
   }, { bundledDirectory: path.join(__dirname, 'content', 'writing-audio') });
   // Bundled files have no synthesis cost. Range requests and students sharing a
   // classroom IP must not consume the old narration-generation request quota.
@@ -58,4 +87,4 @@ function installNarration(app, directory) {
   });
   return narration;
 }
-module.exports={createNarration,installNarration};
+module.exports={createNarration,createLocalNarration,installNarration};

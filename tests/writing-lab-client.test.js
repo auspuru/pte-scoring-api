@@ -302,3 +302,10 @@ test('Writing Lab result UI exposes estimate scores only', () => {
   assert.doesNotMatch(client, /<th>Marks<\/th>/);
   assert.doesNotMatch(client, /No marks awarded for this response/);
 });
+
+
+test('Writing Lab question view hides prediction provenance descriptions', () => {
+  assert.doesNotMatch(client, /content-provenance/);
+  assert.doesNotMatch(client, /Unseen prediction/);
+  assert.doesNotMatch(client, /Adapted practice/);
+});

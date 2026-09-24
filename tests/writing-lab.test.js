@@ -297,3 +297,12 @@ test('local fallback keeps deterministic WFD scoring unchanged',async()=>{
   assert.equal(result.total,result.maximum);
   assert.equal(result.assessmentType,'Word-by-word practice assessment');
 });
+
+
+test('Writing narration has a local MP3 fallback when remote TTS is unavailable', async () => {
+  const source=await fs.readFile(require.resolve('../writing-lab-audio'),'utf8');
+  assert.match(source,/createLocalNarration/);
+  assert.match(source,/run\('espeak'/);
+  assert.match(source,/run\('ffmpeg'/);
+  assert.match(source,/using local narrator/);
+});

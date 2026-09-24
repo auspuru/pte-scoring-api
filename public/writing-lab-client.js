@@ -15,13 +15,6 @@
   let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd'].includes(q.type);
-  function provenance(q) {
-    const src=q?.predictionSource;if(!src)return '';
-    const state=seenQuestionIds.has(q.id)?'Revision':'Unseen prediction';
-    const adapted=src.contentStatus==='adapted'?'Adapted practice':src.contentStatus || '';
-    const reviewed=src.lastReviewed||src.checkedAt;
-    return [state,src.provider,src.week,adapted,reviewed?'Reviewed '+reviewed:''].filter(Boolean).join(' · ');
-  }
   function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
@@ -158,8 +151,7 @@
     document.body.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
     const instruction=q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.';
-    const sourceLabel=provenance(q);
-    root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main">'+(sourceLabel?'<p class="content-provenance">'+esc(sourceLabel)+'</p>':'')+'<p class="instruction">'+instruction+'</p>'+
+    root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main"><p class="instruction">'+instruction+'</p>'+
       (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><details><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
       '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready':'Saved automatically')+'</p></div><footer class="exam-footer"><button class="secondary" data-leave="1">Exit</button><button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
     document.getElementById('answer').addEventListener('input',onInput);
