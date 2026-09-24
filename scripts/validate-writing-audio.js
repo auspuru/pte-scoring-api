@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { createHash } = require('node:crypto');
+const { createHash } = require('node:crypto');\nconst predictions = require('../content/writing-predictions-sep-2026');
 
 const BITRATE_MPEG1_L3 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,0];
 const BITRATE_MPEG2_L3 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,0];
@@ -49,7 +49,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
   const bank = JSON.parse(fs.readFileSync(path.join(root, 'content', 'writing-lab.json'), 'utf8'));
   const directory = path.join(root, 'content', 'writing-audio');
   const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
-  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions)].filter(q => ['sst', 'wfd'].includes(q.type));
+  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
   const hash = value => createHash('sha256').update(value).digest('hex');
   const ids = new Set();
   for (const q of questions) {
