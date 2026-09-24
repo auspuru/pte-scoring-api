@@ -4,7 +4,7 @@
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
-    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js && (npm audit fix --force --package-lock-only --ignore-scripts || true) && node -e \"const fs=require('fs');console.log('@@PACKAGE_JSON_BEGIN@@');process.stdout.write(fs.readFileSync('package.json','utf8'));console.log('@@PACKAGE_JSON_END@@');console.log('@@PACKAGE_LOCK_BEGIN@@');process.stdout.write(fs.readFileSync('package-lock.json','utf8'));console.log('@@PACKAGE_LOCK_END@@')\"",
+    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
@@ -21,13 +21,13 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
+    "compression": "^1.7.4",
     "cors": "^2.8.6",
     "express": "^4.22.2",
-    "pg": "^8.20.0",
     "express-rate-limit": "^7.4.0",
-    "compression": "^1.7.4",
     "nodemailer": "^10.0.10",
-    "puppeteer": "^23.6.0"
+    "pg": "^8.20.0",
+    "puppeteer": "^25.12.0"
   },
   "engines": {
     "node": ">=20.0.0"
