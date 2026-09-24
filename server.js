@@ -3206,15 +3206,23 @@ app.get('/api/auth/secret-question/:username', async (req, res) => {
 });
 
 app.get('/api/auth/check/:username', async (req, res) => {
-  // Session-validation endpoint. Used by the frontend on page load to decide
-  // whether a saved session is still valid (account exists AND is not blocked).
-  // No password — this only confirms the account is still in good standing.
+  // Validate the saved browser session before the client attempts to load any
+  // account data. This prevents stale/rotated tokens from booting the portal
+  // and then failing later at /api/sync with a misleading connection error.
   try {
     const uid = String(req.params.username || '').toLowerCase().trim();
-    if (!uid) return res.json({ exists: false, blocked: false, valid: false });
+    if (!uid) return res.status(400).json({ exists: false, blocked: false, valid: false });
+
+    const token = req.headers['x-session-token'] || req.query.token || '';
+    let who = verifySessionToken(token);
+    if (!who) who = verifyImpersonationToken(token);
+    if (!who) return res.status(401).json({ exists: false, blocked: false, valid: false });
+    if (who.toLowerCase().trim() !== uid) {
+      return res.status(403).json({ exists: false, blocked: false, valid: false });
+    }
+
     let acct = null;
     if (USE_POSTGRES) {
-      // Fast path — single-row lookup instead of reading the whole store.
       acct = await PgStorage._getAccount(uid);
     } else {
       const data = await StorageAPI.readData();
@@ -3224,7 +3232,7 @@ app.get('/api/auth/check/:username', async (req, res) => {
     const blocked = !!(acct && acct.blocked);
     res.json({ exists, blocked, valid: exists && !blocked, role: acct ? (acct.role || 'user') : null });
   } catch (e) {
-    res.json({ exists: false, blocked: false, valid: false });
+    res.status(500).json({ exists: false, blocked: false, valid: false });
   }
 });
 

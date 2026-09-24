@@ -797,3 +797,15 @@ test('Practice Back and Next traverse the task library and restore an answered d
  assert.equal(snapshot(h).session.answers[questions[0].uid][0],questions[0].answers[0]);
  assert.match(h.host.innerHTML,/data-move="-1" disabled/);
 });
+
+
+test('Reading sync rerenders preserve Recent results expansion and completed practice keeps navigation', () => {
+ const source=fs.readFileSync(require.resolve('../public/reading-practice'),'utf8');
+ assert.match(source,/data-reading-recent-results/);
+ assert.match(source,/recentResultsOpen/);
+ assert.match(source,/addEventListener\?\.\('toggle'/);
+ assert.match(source,/reading-review-navigation/);
+ assert.match(source,/Time mode: Untimed/);
+ assert.match(source,/data-move="\\-1"/);
+ assert.match(source,/reading-next-action/);
+});

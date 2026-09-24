@@ -76,6 +76,7 @@ let currentUser = null;
 let userProfile = null;       // Combined profile stashed locally
 let offlineMode = false;      // True if offline fallback is chosen
 let sessionToken = '';        // Custom sync authentication token
+let authFlowRevision = 0;       // Invalidates stale saved-session boot work when the user signs in manually
 
 // SWT progress elements
 let passages = [];
@@ -726,32 +727,54 @@ async function handleResetPasswordSubmit(ev) {
 
 async function handleLoginSubmit(ev) {
   ev.preventDefault();
+  const revision = ++authFlowRevision;
   const u = document.getElementById('loginUsername').value.trim();
   const pw = document.getElementById('loginPassword').value;
   const btn = document.getElementById('loginSubmitBtn');
   btn.disabled = true;
   btn.textContent = 'Signing in...';
   hideLoginError();
+
+  let d = null;
   try {
     const r = await fetch(API_URL+'/api/auth/login',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({username:u,password:pw})
     });
-    const d = await r.json();
-    if(d.success){
-      if(d.token) {
-        sessionToken = d.token;
-        localStorage.setItem('pte_session_token', d.token);
-      }
-      await enterApp(d.user?.username || canonicalClientUserId(u));
-    } else {
-      showLoginError(d.error || 'Login failed.');
+    d = await r.json().catch(() => null);
+    if (revision !== authFlowRevision) return;
+    if (!r.ok || !d || !d.success) {
+      showLoginError(d?.error || (r.ok ? 'Login failed.' : 'Unable to sign in. Please try again.'));
       btn.disabled = false;
       btn.textContent = 'Sign in';
+      return;
     }
-  } catch(e){
+    if (!d.token) {
+      showLoginError('Sign-in session could not be created. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+      return;
+    }
+  } catch(e) {
+    if (revision !== authFlowRevision) return;
+    console.error('[auth] Login request failed:', e);
     showLoginError('Connection error. Try again.');
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+    return;
+  }
+
+  sessionToken = d.token;
+  localStorage.setItem('pte_session_token', d.token);
+  try {
+    await enterApp(d.user?.username || canonicalClientUserId(u));
+  } catch (e) {
+    if (revision !== authFlowRevision) return;
+    console.error('[auth] Workspace failed after successful login:', e);
+    showLoading(false);
+    showLogin();
+    showLoginError('Signed in successfully, but the workspace could not finish loading. Refresh this page to continue.');
     btn.disabled = false;
     btn.textContent = 'Sign in';
   }
@@ -759,6 +782,7 @@ async function handleLoginSubmit(ev) {
 
 async function handleRegisterSubmit(ev) {
   ev.preventDefault();
+  const revision = ++authFlowRevision;
   const u = document.getElementById('regUsername').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const pw = document.getElementById('regPassword').value;
@@ -782,26 +806,46 @@ async function handleRegisterSubmit(ev) {
     return;
   }
 
+  let d = null;
   try {
     const r = await fetch(API_URL+'/api/auth/register',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa,email:email})
     });
-    const d = await r.json();
-    if(d.success){
-      if(d.token) {
-        sessionToken = d.token;
-        localStorage.setItem('pte_session_token', d.token);
-      }
-      await enterApp(d.user?.username || canonicalClientUserId(u));
-    } else {
-      showRegisterError(d.error || 'Registration failed.');
+    d = await r.json().catch(() => null);
+    if (revision !== authFlowRevision) return;
+    if (!r.ok || !d || !d.success) {
+      showRegisterError(d?.error || (r.ok ? 'Registration failed.' : 'Unable to create account. Please try again.'));
       btn.disabled = false;
       btn.textContent = 'Create account';
+      return;
     }
-  } catch(e){
+    if (!d.token) {
+      showRegisterError('Your account was created, but a sign-in session could not be created. Please sign in.');
+      btn.disabled = false;
+      btn.textContent = 'Create account';
+      return;
+    }
+  } catch(e) {
+    if (revision !== authFlowRevision) return;
+    console.error('[auth] Registration request failed:', e);
     showRegisterError('Connection error. Try again.');
+    btn.disabled = false;
+    btn.textContent = 'Create account';
+    return;
+  }
+
+  sessionToken = d.token;
+  localStorage.setItem('pte_session_token', d.token);
+  try {
+    await enterApp(d.user?.username || canonicalClientUserId(u));
+  } catch (e) {
+    if (revision !== authFlowRevision) return;
+    console.error('[auth] Workspace failed after successful registration:', e);
+    showLoading(false);
+    showLogin();
+    showRegisterError('Account created successfully, but the workspace could not finish loading. Refresh this page to continue.');
     btn.disabled = false;
     btn.textContent = 'Create account';
   }
@@ -886,6 +930,8 @@ async function changePassword() {
 // ============================================================
 
 async function enterApp(uid) {
+  if (!portalWorkspace) initialisePortalWorkspace();
+  if (!portalWorkspace) throw new Error('Portal workspace is unavailable.');
   clearTimeout(portalDraftTimer);
   stopPracticeTimer();
   practiceState = emptyPracticeState();
@@ -12203,6 +12249,7 @@ function bootForLoggedOut() {
 }
 
 async function initApp() {
+  const bootAuthRevision = authFlowRevision;
   initialisePortalWorkspace();
   console.log('[IPT] Integrated app initializing...');
   window.FB = window.FB || { adminEmail: 'admin@ptewriting.com' };
@@ -12261,8 +12308,9 @@ async function initApp() {
     return;
   }
 
-  sessionToken = localStorage.getItem('pte_session_token') || '';
-  if (!sessionToken) {
+  const savedSessionToken = localStorage.getItem('pte_session_token') || '';
+  sessionToken = savedSessionToken;
+  if (!savedSessionToken) {
     showLogin();
     return;
   }
@@ -12271,7 +12319,7 @@ async function initApp() {
   let verdict = 'enter'; // enter | login
   try {
     const r = await fetch(API_URL + '/api/auth/check/' + encodeURIComponent(last), {
-      headers: { 'x-session-token': sessionToken },
+      headers: { 'x-session-token': savedSessionToken },
       cache: 'no-store'
     });
     if (r.ok) {
@@ -12290,9 +12338,18 @@ async function initApp() {
     verdict = 'enter';
   }
 
+  // A manual login/register may have completed while the saved-session check
+  // was in flight. Never let stale boot work overwrite the fresh session.
+  if (bootAuthRevision !== authFlowRevision || sessionToken !== savedSessionToken) {
+    showLoading(false);
+    return;
+  }
+
   if (verdict === 'login') {
     showLoading(false);
     LocalStore.setUserId('');
+    localStorage.removeItem('pte_session_token');
+    if (sessionToken === savedSessionToken) sessionToken = '';
     showLogin();
   } else {
     await enterApp(last);
@@ -12343,7 +12400,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=4', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=10', 'reading review'],
-      ['reading-practice.js?v=20260924-pattern', 'reading practice']
+      ['reading-practice.js?v=20260924-auth-nav', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');

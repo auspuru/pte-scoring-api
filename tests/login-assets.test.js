@@ -42,3 +42,19 @@ test('Release assets are complete and include the full HIW bank', () => {
   const bank = JSON.parse(fs.readFileSync(path.join(root, 'reading-bank.json'), 'utf8'));
   assert.equal(bank.practiceLibraries.find(l => l.id === 'hiw').questions.length, 20);
 });
+
+
+test('Saved-session checks validate the token and successful auth is not mislabeled as a connection failure', () => {
+  const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+  const check = server.slice(server.indexOf("app.get('/api/auth/check/:username'"), server.indexOf('// ═══ ADMIN ROUTES'));
+  assert.match(check, /verifySessionToken\(token\)/);
+  assert.match(check, /status\(401\)/);
+  assert.match(check, /status\(403\)/);
+
+  const client = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
+  const login = client.slice(client.indexOf('async function handleLoginSubmit'), client.indexOf('async function handleRegisterSubmit'));
+  assert.match(login, /Workspace failed after successful login/);
+  assert.match(login, /Signed in successfully, but the workspace could not finish loading/);
+  assert.match(client, /bootAuthRevision !== authFlowRevision/);
+  assert.match(client, /localStorage\.removeItem\('pte_session_token'\)/);
+});

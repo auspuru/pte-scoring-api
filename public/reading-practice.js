@@ -59,6 +59,7 @@
   let libraryView = null, requestSerial = 0;
   const practiceLibraries = () => catalogue ? catalogue.readingLibraries(bank) : bank.practiceLibraries;
   let reviewView = { id: null, filter: 'all', type: 'all', context: false };
+  let recentResultsOpen = false;
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [], drafts: [], practiceResults: {} });
   let lastSnapshot = null;
@@ -119,7 +120,7 @@
   }
   function reset() {
     document.removeEventListener?.('visibilitychange', visibilityChanged);
-    clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
+    clearInterval(interval); interval = null; recentResultsOpen = false; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
     requestSerial++; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
@@ -276,6 +277,8 @@
   }
   function home() {
     if (starting && !viewingQuestion) return;
+    const priorRecent = host?.querySelector?.('[data-reading-recent-results]');
+    if (priorRecent) recentResultsOpen = !!priorRecent.open;
     leave(); libraryView=null;
     const recent=state.history.map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
     const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
@@ -285,7 +288,9 @@
       <p data-start-status role="status" aria-live="polite"></p>
       <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>The timer continues if you leave.</p></details>
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
-      <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
+      <details class="reading-home-help" data-reading-recent-results ${recentResultsOpen?'open':''}><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
+    const recentDetails = host?.querySelector?.('[data-reading-recent-results]');
+    recentDetails?.addEventListener?.('toggle', () => { recentResultsOpen = !!recentDetails.open; });
   }
   function seenBefore(q) {
     if (!q) return false;
@@ -352,7 +357,7 @@
     const libraryQuestions=s.practiceUid?practiceLibraries().find(l=>l.id===q.type)?.questions||[]:s.questions;
     const navigationIndex=s.practiceUid?libraryQuestions.findIndex(item=>item.uid===s.practiceUid):s.index;
     const review=s.done || s.checked.includes(q.uid);
-    host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
+    host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer reading-time-mode" data-time-mode>${timeModeText(s)}</span><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
       <div class="reading-layout"><aside class="reading-card reading-nav" aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
       <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${navigationIndex+1} of ${libraryQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2>${sourceMeta(q)?`<p class="reading-source-meta">${escape(sourceMeta(q))}</p>`:''}<p>${escape(q.instructions)}</p>
@@ -472,6 +477,10 @@
   }
   function renderReview() {
     const s=state.session;
+    const currentQuestion=s.questions[s.index]||s.questions[0];
+    const practiceItems=s.practiceUid?(practiceLibraries().find(l=>l.id===currentQuestion?.type)?.questions||[]):[];
+    const practiceIndex=s.practiceUid?practiceItems.findIndex(item=>item.uid===s.practiceUid):-1;
+    const practiceNavigation=s.practiceUid?'<div class="reading-actions reading-review-navigation"><button class="portal-button" data-move="-1" '+(practiceIndex<=0?'disabled':'')+'>← Back</button><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><button class="portal-button reading-next-action" data-move="1" '+(practiceIndex<0||practiceIndex>=practiceItems.length-1?'disabled':'')+'>Next <span aria-hidden="true">→</span></button></div>':'';
     setExamMode(false);
     if(reviewView.id!==s.id)reviewView={id:s.id,filter:'all',type:'all',context:false};
     const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
@@ -488,7 +497,8 @@
         if(node)node.outerHTML=question(item);
       }
     }else{
-      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+        + practiceNavigation
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Explore your results. Your responses and explanations stay together.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
@@ -496,6 +506,7 @@
     }
     applyReviewFilters(model);
   }
+  function timeModeText(session = state.session) { return session?.deadline == null ? 'Time mode: Untimed' : 'Time mode: Timed'; }
   function timerText() { const left=remaining(state.session, state.session.done ? state.session.finishedAt : Date.now()); return left===null?'Untimed practice':`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}${state.session.done?' · Finished':''}`; }
   function tick() {
     if (!owner || identity()!==owner) return reset();
