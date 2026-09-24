@@ -730,8 +730,8 @@ async function handleResetPasswordSubmit(ev) {
   const npw = document.getElementById('forgotNewPassword').value;
   const btn = document.getElementById('forgotStep2Btn');
   
-  if (npw.length < 4) {
-    showForgotPasswordError('Password must be at least 4 characters.');
+  if (npw.length < 8) {
+    showForgotPasswordError('Password must be at least 8 characters.');
     return;
   }
   
@@ -747,8 +747,8 @@ async function handleResetPasswordSubmit(ev) {
     });
     const d = await r.json();
     if (d.success) {
-      alert('Password reset successfully! You can now log in.');
       toggleForgotPasswordMode(false);
+      showLoginError('Password reset successfully. You can now sign in.');
     } else {
       showForgotPasswordError(d.error || 'Reset failed.');
     }
@@ -821,8 +821,8 @@ async function handleRegisterSubmit(ev) {
   const u = document.getElementById('regUsername').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const pw = document.getElementById('regPassword').value;
-  const sq = document.getElementById('regSecretQ').value;
-  const sa = document.getElementById('regSecretA').value.trim();
+  const sq = document.getElementById('regSecretQ')?.value || '';
+  const sa = document.getElementById('regSecretA')?.value.trim() || '';
   const btn = document.getElementById('regSubmitBtn');
   btn.disabled = true;
   btn.textContent = 'Creating account...';
@@ -886,10 +886,7 @@ async function handleRegisterSubmit(ev) {
   }
 }
 
-function signOutUser() {
-  if (!confirm('Sign out of this account? Any changes waiting for a connection will be kept on this device.')) return;
-  signOut();
-}
+function signOutUser() { signOut(); }
 
 function exitImpersonation() {
   sessionStorage.removeItem('pte_impersonate_token');
@@ -960,7 +957,7 @@ async function submitPasswordChange(ev) {
     if (status) { status.textContent = message; status.style.color = 'var(--accent)'; }
   };
   if (!currentPassword) return fail('Enter your current password.');
-  if (newPassword.length < 4) return fail('New password must be at least 4 characters.');
+  if (newPassword.length < 8) return fail('New password must be at least 8 characters.');
   if (newPassword !== confirmPassword) return fail('New passwords do not match.');
 
   if (button) { button.disabled = true; button.textContent = 'Updating…'; }
@@ -7184,50 +7181,17 @@ function doExportBook() {
   downloadBook();
 }
 
-function getValidatedRecipientEmail(confirmMessagePrefix = "Send this essay as a PDF to") {
-  if (offlineMode || !currentUser) {
-    toast('Sign in to email essays', true);
+function getValidatedRecipientEmail() {
+  if (offlineMode || !currentUser) { toast('Sign in to email essays', true); return null; }
+  const email=String(userProfile?.email||currentUser.email||'').trim();
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.toLowerCase().endsWith('@ptewriting.com')){
+    toast('Add your email address in Account before emailing a PDF.', true);
+    openUserMenu();
+    const form=document.getElementById('updateEmailForm');if(form)form.hidden=false;
+    document.getElementById('accountEmailInput')?.focus();
     return null;
   }
-  let email = '';
-  // Prioritize registered/real email of currentUser
-  if (currentUser.email && currentUser.email.includes('@') && !currentUser.email.toLowerCase().endsWith('@ptewriting.com')) {
-    email = currentUser.email;
-  } else {
-    email = localStorage.getItem('pte_preferred_email') || '';
-  }
-
-  if (!email || email.toLowerCase().endsWith('@ptewriting.com')) {
-    email = currentUser.email || '';
-  }
-  // If the email is a real one (contains @ and is not ptewriting.com), confirm it directly.
-  if (email && email.includes('@') && !email.toLowerCase().endsWith('@ptewriting.com')) {
-    if (confirm(`${confirmMessagePrefix} ${email}?`)) {
-      return email;
-    }
-    // If they cancel, they might want to enter a different one, so fall through to prompt.
-  }
-  const userEmail = prompt("Please enter the email address to send the PDF to:", email.toLowerCase().endsWith('@ptewriting.com') ? "" : email);
-  if (!userEmail) return null; // cancelled
-  const trimmedEmail = userEmail.trim();
-  if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-    toast('Invalid email address', true);
-    return null;
-  }
-  if (trimmedEmail.toLowerCase().endsWith('@ptewriting.com')) {
-    toast('Cannot send to ptewriting.com addresses. Please use your real email.', true);
-    return null;
-  }
-  localStorage.setItem('pte_preferred_email', trimmedEmail);
-
-  // Update userProfile and currentUser to save it back to cloud next sync
-  if (userProfile && (!userProfile.email || userProfile.email !== trimmedEmail)) {
-    userProfile.email = trimmedEmail;
-    currentUser.email = trimmedEmail;
-    flushSync();
-  }
-
-  return trimmedEmail;
+  return email;
 }
 
 async function doEmailCurrent() {
@@ -12805,7 +12769,7 @@ function localPortalResumeCandidate() {
         engine:'reading', id:latest.id, route:readingResumeRoute(latest), at:Number(latest.updatedAt || latest.startedAt || 0),
         title:latest.practiceUid ? (q?.title || 'Reading practice question') : (latest.name || 'Reading mock'),
         detail:latest.practiceUid ? (PortalWorkspace.routes[readingResumeRoute(latest)]?.title || 'Reading practice') : 'Question '+(Number(latest.index || 0)+1)+' of '+(latest.questions?.length || 1),
-        subdetail:latest.deadline==null?'Saved progress':'Timer continues while you are away'
+        subdetail:latest.deadline==null&&latest.pausedRemainingSeconds==null?'Saved progress':'Timer paused while you are away'
       });
     }
   } catch (_) {}
@@ -13235,6 +13199,19 @@ function openPractice(defaultToWelcome = false, options = {}) {
   updatePracticeStats();
 }
 
+function archivePracticeDraftForUndo(message='Previous draft archived') {
+  const stored=portalDraftStore?.read(currentUserId),live=practiceState.view==='write'?practiceState:null;
+  const source=live?.essayText?.trim()?live:stored;if(!source?.essayText?.trim())return false;
+  const snapshot=JSON.parse(JSON.stringify(source));
+  try{localStorage.setItem('ipt_essay_draft_archive_v1:'+encodeURIComponent(currentUserId),JSON.stringify({savedAt:Date.now(),draft:snapshot}));}catch(_){}
+  window.portalUndoToast?.(message,()=>{
+    stopPracticeTimer();practiceState=emptyPracticeState();
+    for(const key of ['essayText','questionText','questionTitle','selectedQuestionId','questionSource','writeStep','timerEnabled','timerStartedAt']) if(snapshot[key]!==undefined)practiceState[key]=snapshot[key];
+    practiceState.view='write';portalDraftStore?.write(currentUserId,practiceState);renderPracticeMain();updatePortalResume();queueSync();document.getElementById('practiceEssayInput')?.focus();
+  });
+  return true;
+}
+
 function practiceCurrentEssay() {
   const e = getCurrent();
   if (!e) return;
@@ -13244,7 +13221,7 @@ function practiceCurrentEssay() {
   }
   if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
   savePortalEssayDraft();
-  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Practise this question? This replaces your unsubmitted essay draft. Cancel to keep it.')) return;
+  archivePracticeDraftForUndo('Previous essay draft archived.');
   
   practiceState.view = 'write';
   practiceState.writeStep = 2;
@@ -13591,7 +13568,7 @@ function startNewPractice() {
   if (practiceSubmissionPending) { toast('Your essay review is still running. You can keep using the other practice sections.'); return; }
   const previous = portalDraftStore?.read(currentUserId);
   if ((practiceState.view === 'write' && practiceState.essayText.trim()) || previous?.essayText.trim()) {
-    if (!confirm('Start a new essay? This replaces your unsubmitted draft. Cancel to keep it.')) return;
+    archivePracticeDraftForUndo('Previous essay draft archived.');
   }
   practiceState.view = 'write';
   practiceState.writeStep = 1;
@@ -13623,9 +13600,7 @@ function startExamSimulator() {
 
 function resetPracticeSetup() {
   if (practiceState.essayText && practiceState.essayText.trim().length > 10) {
-    if (!confirm('Are you sure you want to change the topic? Your current writing progress will be lost.')) {
-      return;
-    }
+    archivePracticeDraftForUndo('Previous topic draft archived.');
   }
   practiceState.writeStep = 1;
   practiceState.essayText = '';
@@ -14508,7 +14483,7 @@ function resultsView() {
 
 function reattemptPractice() {
   if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
-  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Start another attempt? This replaces your unsubmitted essay draft. Cancel to keep it.')) return;
+  archivePracticeDraftForUndo('Previous essay draft archived.');
   // Keep the same question, blank the essay, switch back to write view
   const a = practiceState.currentAttempt;
   if (!a) return startNewPractice();
@@ -14537,7 +14512,7 @@ function revisePracticeEssay() {
   const a = practiceState.currentAttempt;
   if (!a) return;
   if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
-  if (portalDraftStore?.read(currentUserId)?.essayText.trim() && !confirm('Revise this essay? This replaces your unsubmitted draft. Cancel to keep it.')) return;
+  archivePracticeDraftForUndo('Previous essay draft archived.');
   const text = practiceRevision?.attemptId === a.id ? practiceRevision.text : a.essayText;
   practiceState.questionTitle = a.questionTitle || '';
   practiceState.questionText = a.questionText || '';
@@ -17841,25 +17816,24 @@ async function checkUserEmailRequirement() {
   // never interrupts practice with a browser prompt.
 }
 
-async function updateUserEmail() {
-  let emailInput = prompt("Enter your new email address:", (userProfile && userProfile.email && !userProfile.email.toLowerCase().endsWith('@ptewriting.com')) ? userProfile.email : "");
-  if (emailInput === null) return; // cancelled
-  emailInput = emailInput.trim();
-  if (!emailInput || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)) {
-    toast("Invalid email address", true);
-    return;
-  }
-  if (emailInput.toLowerCase().endsWith('@ptewriting.com')) {
-    toast("Cannot use a @ptewriting.com email address", true);
-    return;
-  }
-  userProfile.email = emailInput;
-  currentUser.email = emailInput;
-  localStorage.setItem('pte_preferred_email', emailInput);
-  toast("Email address updated!");
-  await flushSyncDirect();
-  document.getElementById('userMenuEmail').textContent = emailInput;
-  updateEmailLabels();
+function updateUserEmail() {
+  const form=document.getElementById('updateEmailForm'),input=document.getElementById('accountEmailInput'),status=document.getElementById('accountEmailStatus');
+  if(!form||!input)return;
+  form.hidden=!form.hidden;
+  if(!form.hidden){input.value=(userProfile?.email&&!userProfile.email.toLowerCase().endsWith('@ptewriting.com'))?userProfile.email:'';status.textContent='';input.focus();}
+}
+async function submitUserEmailUpdate(ev) {
+  ev.preventDefault();
+  const form=document.getElementById('updateEmailForm'),input=document.getElementById('accountEmailInput'),status=document.getElementById('accountEmailStatus');
+  const emailInput=(input?.value||'').trim();
+  if(!emailInput||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)){status.textContent='Enter a valid email address.';return;}
+  if(emailInput.toLowerCase().endsWith('@ptewriting.com')){status.textContent='Use your real email address.';return;}
+  userProfile.email=emailInput;currentUser.email=emailInput;
+  try{localStorage.setItem('pte_preferred_email',emailInput);}catch(_){}
+  status.textContent='Saving…';
+  const ok=await flushSyncDirect();
+  if(!ok){status.textContent='Saved on this device; cloud sync will retry.';return;}
+  document.getElementById('userMenuEmail').textContent=emailInput;updateEmailLabels();form.hidden=true;toast('Email address updated ✓');
 }
 
 function updateEmailLabels() {
