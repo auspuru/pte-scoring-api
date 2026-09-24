@@ -13,7 +13,7 @@
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
-    "build": "node scripts/build-frontend.js && npm test && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js",
+    "build": "node scripts/build-frontend.js && node --test tests/frontend-build.test.js tests/login-assets.test.js tests/practice-catalogue.test.js tests/portal-workspace.test.js tests/reading-practice.test.js tests/content-trust.test.js tests/study-plan-progress.test.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js",
     "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js",
     "validate:swt-content": "node scripts/validate-swt-content.js",
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
