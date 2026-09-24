@@ -93,7 +93,7 @@
   async function start(testId, button, serial=navigationSerial) {
     if(!username) { notify('Sign in from your workspace first. Your existing account works here.'); return; }
     const mock=catalog.mocks.find(m=>m.id===testId);
-    if(mock && !await confirmAction('Ready to begin?','Allow '+mock.minutes+' minutes. The timer continues if you leave.','Begin '+mock.minutes+'-minute mock')) return;
+    if(mock && !await confirmAction('Ready to begin?','Allow '+mock.minutes+' minutes. The timer continues if you leave. During the mock, Next locks each answer and you cannot return to an earlier question.','Begin '+mock.minutes+'-minute mock')) return;
     if (serial!==navigationSerial || !workspaceVisible) return;
     button.disabled=true;
     try {
@@ -197,7 +197,7 @@
     const originalId=attempt.id, originalIndex=attempt.index;
     const text=document.getElementById('answer').value;
     const final=attempt.index===attempt.questions.length-1;
-    if(attempt.kind==='mock'&&!await confirmAction(final?'Finish this attempt?':'Submit this answer?',(text.trim()?'Your answer will be locked. ':'This answer is blank and will receive zero marks. ')+(final?'You can review scores and feedback after submission.':'You cannot return to this question.'),final?'Finish & submit':'Submit and continue')) return;
+    if(attempt.kind==='mock' && final && !await confirmAction('Finish this attempt?',(text.trim()?'Your final answer will be locked. ':'Your final answer is blank and will receive zero marks. ')+'You can review scores and feedback after submission.','Finish & submit')) return;
     // The timer may have advanced the question while the dialog was open.
     if(!attempt || attempt.status!=='active' || attempt.id!==originalId || attempt.index!==originalIndex) return;
     moving=true; clearTimeout(saveTimer);
