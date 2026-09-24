@@ -90,7 +90,7 @@ test('The practice URL opens the hub while essay and legacy mock links retain th
   assert.equal(routeFromHash('#/writing-mocks'), 'writing-mocks');
 });
 
-test('Speaking routes and My Next Steps remain addressable and assigned speaking questions open directly', () => {
+test('Speaking routes and From your teacher remain addressable and assigned speaking questions open directly', () => {
   assert.equal(routeFromHash('#/speaking-ra'), 'speaking-ra');
   assert.equal(routeFromHash('#/next-steps'), 'next-steps');
   const h = harness(), opened = [];
