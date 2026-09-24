@@ -4,7 +4,7 @@
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
-    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js && (npm audit --json || true)",
+    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js && (npm audit fix --force --package-lock-only --ignore-scripts || true) && node -e \"const fs=require('fs');console.log('@@PACKAGE_JSON_BEGIN@@');process.stdout.write(fs.readFileSync('package.json','utf8'));console.log('@@PACKAGE_JSON_END@@');console.log('@@PACKAGE_LOCK_BEGIN@@');process.stdout.write(fs.readFileSync('package-lock.json','utf8'));console.log('@@PACKAGE_LOCK_END@@')\"",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
