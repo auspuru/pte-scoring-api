@@ -205,13 +205,14 @@ function fn(name) {
   assert(start >= 0, name);
   return source.slice(start, source.indexOf('\n}', start) + 2);
 }
-test('The Home resume banner does not depend on the removed duplicate essay card', () => {
-  const nodes = Object.fromEntries(['portalResume', 'portalResumeTitle', 'portalResumeDetail'].map(id => [id, {}]));
-  const ctx = { document: { getElementById: id => nodes[id] }, portalDraftStore: null, currentUserId: 'tester',
-    practiceState: { view: 'write', essayText: 'Saved response', questionText: 'Question', questionTitle: 'Topic' }, countWords: () => 2 };
-  vm.createContext(ctx); vm.runInContext(fn('updatePortalResume') + ';updatePortalResume();', ctx);
-  assert.equal(nodes.portalResume.hidden, false);
-  assert.match(nodes.portalResumeDetail.textContent, /Topic/);
+test('The Home resume banner is activity-aware and keeps exact resume targets', () => {
+  assert.match(source, /let portalResumeTarget = null/);
+  assert.match(source, /function localPortalResumeCandidate\(\)/);
+  assert.match(source, /function refreshWritingPortalResume\(localCandidate\)/);
+  assert.match(source, /function resumePortalActivity\(\)/);
+  assert.match(source, /readingRequest:\{ attemptId:target\.id \}/);
+  assert.match(source, /labRequest:\{ attemptId:target\.id \}/);
+  assert.match(source, /Continue your last activity/);
 });
 test('Returning to a running assessment or an existing editor does not reset or render over it', () => {
   for (const view of ['write', 'loading', 'results']) {
