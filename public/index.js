@@ -1500,13 +1500,13 @@ function openUserMenu() {
 }
 function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('show'); }
 
-function importLocalEssays() {
+async function importLocalEssays() {
   const raw = safeLSGet('ipt_essays_v2');
   if (!raw) { toast('No local essays found in this browser', true); return; }
   try {
     const local = JSON.parse(raw);
     if (!Array.isArray(local) || local.length === 0) { toast('No local essays found', true); return; }
-    if (!confirm(`Found ${local.length} local essays. Merge them into your cloud account? Local essays with the same title will be skipped to avoid duplicates.`)) return;
+    if (!await portalConfirm(`Found ${local.length} local essays. Merge them into your cloud account? Local essays with the same title will be skipped to avoid duplicates.`, { title:'Import local essays', confirmLabel:'Import essays' })) return;
     const existingTitles = new Set(essays.map(e => (e.title || '').toLowerCase().trim()));
     let added = 0;
     for (const e of local) {
@@ -1617,7 +1617,7 @@ async function adminToggleUser(uid, disabledNew) {
 }
 
 async function adminDeleteUser(uid, email) {
-  if (!confirm(`Delete account for user "${uid}"? This removes their data permanently. This cannot be undone.`)) return;
+  if (!await portalConfirm(`Delete account for user "${uid}"? This removes their data permanently. This cannot be undone.`, { title:'Delete account', confirmLabel:'Delete account', destructive:true })) return;
   try {
     const r = await fetch(API_URL + '/api/admin/delete-user', {
       method: 'POST',
@@ -6361,9 +6361,9 @@ function maybeOfferDraftRecovery() {
       return;
     }
     // There's a meaningful difference — offer recovery
-    setTimeout(() => {
+    setTimeout(async () => {
       const mins = Math.max(1, Math.round(ageMs / 60000));
-      if (confirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`)) {
+      if (await portalConfirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`, { title:'Restore unsaved changes', confirmLabel:'Restore' })) {
         essays = backup.essays;
         if (backup.currentId) currentId = backup.currentId;
         renderList();
@@ -6569,7 +6569,7 @@ function updateBulkPreview() {
   btn.textContent = `Add ${parsed.length} topic${parsed.length === 1 ? '' : 's'}`;
 }
 
-function doBulkImport() {
+async function doBulkImport() {
   const parsed = parseBulkInput(document.getElementById('bulkImportText').value);
   if (parsed.length === 0) { toast('Nothing to import', true); return; }
 
@@ -6577,7 +6577,7 @@ function doBulkImport() {
   const existing = new Set(essays.map(e => (e.title || '').toLowerCase().trim()));
   const dupes = parsed.filter(t => existing.has((t.title || '').toLowerCase().trim()));
   if (dupes.length > 0) {
-    if (!confirm(`${dupes.length} of ${parsed.length} topics have titles that already exist. Skip duplicates and add the rest?`)) return;
+    if (!await portalConfirm(`${dupes.length} of ${parsed.length} topics have titles that already exist. Skip duplicates and add the rest?`, { title:'Duplicate topics found', confirmLabel:'Skip duplicates' })) return;
   }
 
   let added = 0;
@@ -6614,8 +6614,8 @@ function selectEssay(id) {
   setPortalLibraryView('edit');
 }
 
-function deleteEssay(id) {
-  if (!confirm('Delete this essay? This cannot be undone.')) return;
+async function deleteEssay(id) {
+  if (!await portalConfirm('Delete this essay? This cannot be undone.', { title:'Delete essay', confirmLabel:'Delete essay', destructive:true })) return;
   essays = essays.filter(e => e.id !== id);
   if (currentId === id) currentId = essays.length ? essays[0].id : null;
   saveAll(); renderList(); loadCurrent(); renderPreview();
@@ -7534,11 +7534,11 @@ function downloadSingle() {
   if (!e) { toast('No essay selected', true); return; }
   openPrintWindow([renderEssayPageHTML(e, essays.findIndex(x => x.id === e.id) + 1)], `${e.title || 'essay'}.pdf`);
 }
-function downloadBook() {
+async function downloadBook() {
   if (essays.length === 0) { toast('No essays to export', true); return; }
   const written = essays.filter(e => essayStatus(e) !== 'empty');
   if (written.length < essays.length) {
-    if (!confirm(`Only ${written.length} of ${essays.length} essays have content. Export only the written ones?`)) return;
+    if (!await portalConfirm(`Only ${written.length} of ${essays.length} essays have content. Export only the written ones?`, { title:'Export essay book', confirmLabel:'Export written essays' })) return;
     const pages = [renderCoverHTML(), renderTocFor(written)];
     written.forEach((e, i) => pages.push(renderEssayPageHTML(e, i + 1)));
     openPrintWindow(pages, 'IPT_Brisbane_Essay_Book.pdf');
@@ -7702,7 +7702,7 @@ async function saveTemplate() {
 }
 
 async function copyPresetToCustom() {
-  if (!confirm(`Copy ${tplLabel(currentTplTab)} into "My Custom"? Your current custom template will be overwritten.`)) return;
+  if (!await portalConfirm(`Copy ${tplLabel(currentTplTab)} into "My Custom"? Your current custom template will be overwritten.`, { title:'Replace custom template', confirmLabel:'Replace template', destructive:true })) return;
   const bag = getTemplatesBag();
   bag.custom = JSON.parse(JSON.stringify(bag[currentTplTab]));
   await saveTemplatesBag(bag);
@@ -7711,8 +7711,8 @@ async function copyPresetToCustom() {
 }
 
 // Legacy reset (kept for backward compatibility, just resets Custom to Band 9)
-function resetTemplateToDefault() {
-  if (!confirm('Reset My Custom template to the Band 9 preset?')) return;
+async function resetTemplateToDefault() {
+  if (!await portalConfirm('Reset My Custom template to the Band 9 preset?', { title:'Reset custom template', confirmLabel:'Reset template', destructive:true })) return;
   const bag = getTemplatesBag();
   bag.custom = JSON.parse(JSON.stringify(BAND9_TEMPLATE));
   saveTemplatesBag(bag);
@@ -8833,7 +8833,7 @@ async function generateEssayFromApprovedPlan(opts = {}) {
 
   const hasContent = (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0;
   if (hasContent && !opts.skipConfirm) {
-    if (!confirm('This essay already has content. Overwrite it with a new AI-written essay?')) return false;
+    if (!await portalConfirm('This essay already has content. Overwrite it with a new AI-written essay?', { title:'Replace essay content', confirmLabel:'Generate and replace', destructive:true })) return false;
   }
   if (!await consumeQuota('essay')) return false;
   
@@ -9771,9 +9771,9 @@ function openBulkWrite() {
   document.getElementById('bulkWriteModal').classList.add('show');
 }
 
-function closeBulkWrite() {
+async function closeBulkWrite() {
   if (bulkWriteRunning) {
-    if (!confirm('A bulk write is still running. Close anyway? Completed essays are saved; in-progress one will finish then stop.')) return;
+    if (!await portalConfirm('A bulk write is still running. Close anyway? Completed essays are saved; the in-progress essay will finish and then stop.', { title:'Stop bulk writing', confirmLabel:'Stop after current essay' })) return;
     bulkWriteAborted = true;
   }
   document.getElementById('bulkWriteModal').classList.remove('show');
@@ -9854,13 +9854,13 @@ async function doBulkWrite() {
   // Final confirm if user is about to overwrite already-written essays
   const overwriteCount = targets.filter(e => (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0).length;
   if (overwriteCount > 0) {
-    if (!confirm(`${overwriteCount} of the selected ${targets.length} essays already have content. Continuing will overwrite them. Continue?`)) return;
+    if (!await portalConfirm(`${overwriteCount} of the selected ${targets.length} essays already have content. Continuing will overwrite them.`, { title:'Replace existing essays', confirmLabel:'Continue and replace', destructive:true })) return;
   }
 
   // Quota check upfront (warn if user will hit limit mid-run)
   const q = getQuota();
   if (!offlineMode && q.essay < targets.length) {
-    if (!confirm(`You have ${q.essay} essay quota credits left today but selected ${targets.length} essays. The first ${q.essay} will be written, the rest will fail with a quota error. Continue?`)) return;
+    if (!await portalConfirm(`You have ${q.essay} essay quota credits left today but selected ${targets.length} essays. Only the first ${q.essay} can be written today.`, { title:'Not enough quota', confirmLabel:'Write available essays' })) return;
   }
 
   // Switch UI to "running" mode
@@ -10393,7 +10393,7 @@ function importData() {
       try {
         const data = JSON.parse(reader.result);
         if (!Array.isArray(data.essays)) throw new Error('Invalid backup');
-        if (!confirm(`Restore ${data.essays.length} essays?`)) return;
+        if (!await portalConfirm(`Restore ${data.essays.length} essays from this backup?`, { title:'Restore backup', confirmLabel:'Restore essays', destructive:true })) return;
         essays = data.essays;
         if (data.templates) {
           await saveTemplatesBag(data.templates);
@@ -11706,7 +11706,7 @@ async function saveNewWord() {
 
 async function deleteAdminWord(catId, word) {
   if (!VOCAB_DATA[catId]) return;
-  if (!confirm(`Remove "${word}" from ${VOCAB_DATA[catId].label}?\n\nThis removes it for all students.`)) return;
+  if (!await portalConfirm(`Remove "${word}" from ${VOCAB_DATA[catId].label}?\n\nThis removes it for all students.`, { title:'Remove vocabulary item', confirmLabel:'Remove word', destructive:true })) return;
 
   const before = VOCAB_DATA[catId].words.length;
   VOCAB_DATA[catId].words = VOCAB_DATA[catId].words.filter(w => !(w.word === word && w._admin));
@@ -13453,7 +13453,7 @@ function formatPracticeDate(ts) {
 }
 
 async function deletePracticeAttempt(id) {
-  if (!confirm('Delete this practice attempt? Cannot be undone.')) return;
+  if (!await portalConfirm('Delete this practice attempt? This cannot be undone.', { title:'Delete practice attempt', confirmLabel:'Delete attempt', destructive:true })) return;
   let h = getPracticeHistory();
   h = h.filter(a => a.id !== id);
   if (id && !practiceHistoryDeleted.includes(id)) practiceHistoryDeleted.push(id);
@@ -16434,7 +16434,7 @@ async function savePassageEdit() {
 }
 
 async function adminDeletePassage(id) {
-  if (!confirm(`Delete passage #${id}? This action cannot be undone.`)) return;
+  if (!await portalConfirm(`Delete passage #${id}? This action cannot be undone.`, { title:'Delete passage', confirmLabel:'Delete passage', destructive:true })) return;
   try {
     const r = await fetch(API_URL + `/api/admin/passages/${id}`, {
       method: 'DELETE',
