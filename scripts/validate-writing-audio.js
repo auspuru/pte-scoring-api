@@ -47,9 +47,12 @@ function inspectMp3(bytes) {
 
 function validateWritingAudio(root = path.join(__dirname, '..')) {
   const bank = JSON.parse(fs.readFileSync(path.join(root, 'content', 'writing-lab.json'), 'utf8'));
+  const predictionPath = path.join(root, 'content', 'writing-predictions-sep-2026.js');
+  delete require.cache[require.resolve(predictionPath)];
+  const predictions = require(predictionPath);
   const directory = path.join(root, 'content', 'writing-audio');
   const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
-  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions)].filter(q => ['sst', 'wfd'].includes(q.type));
+  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...(predictions.sst || []), ...(predictions.wfd || [])].filter(q => ['sst', 'wfd'].includes(q.type));
   const hash = value => createHash('sha256').update(value).digest('hex');
   const ids = new Set();
   for (const q of questions) {
