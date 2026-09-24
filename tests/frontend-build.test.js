@@ -21,3 +21,14 @@ test('generated utility stylesheet is committed and reproducible', () => {
     assert.ok(committed.includes(rule), 'missing rule: ' + rule);
   }
 });
+
+
+test('production build minifies the portal client and loads the tiny auth boot first', () => {
+  const build = fs.readFileSync(path.join(root, 'scripts', 'build-frontend.js'), 'utf8');
+  const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+  assert.match(build, /terser@5\.44\.0/);
+  assert.match(build, /--mangle', 'false'/);
+  assert.match(html, /index\.min\.js\?v=/);
+  assert.doesNotMatch(html, /src="index\.js\?v=/);
+  assert(html.indexOf('auth-boot.js') < html.indexOf('index.min.js'));
+});
