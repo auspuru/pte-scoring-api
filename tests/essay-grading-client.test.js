@@ -26,6 +26,7 @@ function harness() {
     practiceSubmissionPending: false, practiceSamplePendingId: null, practiceHistoryDeleted: [], practiceRevision: null,
     practiceState: { view: 'write', essayText: essay, questionText: question, selectedQuestionId: 'q', questionTitle: 'Media' },
     document: { getElementById: () => null }, countWords: policy.words,
+    getPracticeTemplateOverlap: () => ({ level:'low', percent:0, matchedWords:0, totalWords:policy.words(essay) }),
     canonicalClientUserId: sync.canonicalUserId, mergePracticeHistoryClient: sync.mergeHistory,
     savePortalEssayDraft() {}, stopPracticeTimer() {}, getPracticeElapsedMs: () => null,
     startLoadingMessages() {}, stopLoadingMessages() {}, renderPracticeHistory() {}, updatePracticeStats() {},
