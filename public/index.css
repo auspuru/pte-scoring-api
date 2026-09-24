@@ -51,7 +51,7 @@ body.light-mode {
   --bg-preview: #e2e8f0;
   --ink: #0f172a;
   --ink-soft: #475569;
-  --ink-mute: #64748b;
+  --ink-mute: #526174;
   --line: rgba(203, 213, 225, 0.7);
   --line-soft: rgba(226, 232, 240, 0.6);
   --accent: #005c8b;
@@ -129,7 +129,7 @@ body.dark {
   --radius: 20px;
   --radius-sm: 12px;
   --ui-font: var(--sans);
-  --primary-grad: linear-gradient(135deg, #6366f1 0%, #0d9488 100%);
+  --primary-grad: linear-gradient(135deg, var(--accent) 0%, #c1272d 100%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
