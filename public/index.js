@@ -2455,13 +2455,13 @@ function buildQuestionExplanationHtml(e, activeType, typeCfg) {
 
   const row = (label, text) => `
       <div style="display:flex; gap:8px; align-items:baseline;">
-        <span style="flex:0 0 92px; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; color:#6b5d3f;">${label}</span>
+        <span style="flex:0 0 92px; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; color:#6b5d3f;">${label}</span>
         <span>${escapeHtml(text)}</span>
       </div>`;
 
   return `
     <div class="question-explainer" style="background:#fdf9ef; border:1px solid #e8dcc0; border-radius:8px; padding:12px 14px; margin-bottom:12px; font-size:12px; color:#4a4030; line-height:1.55;">
-      <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; font-weight:800; color:#8a713d; margin-bottom:6px;">📖 What this question is asking</div>
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-weight:800; color:#8a713d; margin-bottom:6px;">📖 What this question is asking</div>
       <div>${escapeHtml(ex.ask)}</div>
       ${optionsLine}
       <div style="display:flex; flex-direction:column; gap:4px; margin-top:9px; padding-top:9px; border-top:1px dashed #e8dcc0;">
@@ -3492,7 +3492,7 @@ function openEssayGenerationSetup(e = getCurrent()) {
 
   const questionEl = document.getElementById('generationSetupQuestion');
   if (questionEl) {
-    questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(typeCfg.displayName)} question</div><div>${escapeHtml(e.question)}</div>`;
+    questionEl.innerHTML = `<div style="font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(typeCfg.displayName)} question</div><div>${escapeHtml(e.question)}</div>`;
   }
   const exam = document.getElementById('genSetupExam');
   const band = document.getElementById('genSetupBand');
@@ -3646,7 +3646,7 @@ function openEssayPlanReview(e = getCurrent()) {
   ].map(([label, value]) => `<div class="generation-plan-meta-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
 
   const questionEl = document.getElementById('generationPlanQuestion');
-  if (questionEl) questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(e.title || 'Essay topic')}</div><div>${escapeHtml(e.question)}</div>`;
+  if (questionEl) questionEl.innerHTML = `<div style="font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(e.title || 'Essay topic')}</div><div>${escapeHtml(e.question)}</div>`;
   const card = (title, items) => `<div class="generation-plan-card"><h3>${escapeHtml(title)}</h3><ul>${(items.length ? items : ['No item selected']).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
   const reasons = plan.selected_ideas.reasons || [];
   const second = plan.selected_ideas.solutions?.length ? plan.selected_ideas.solutions : (plan.selected_ideas.examples || []);
@@ -4270,7 +4270,7 @@ function showTypeOverrideSelect(show) {
         <select id="typeOverrideSelect" onchange="changeQuestionTypeOverride(this.value)" style="flex:1; padding:6px; font-size:12px; border-radius:4px; border:1px solid var(--line); background:var(--bg); color:var(--ink);">
           ${optionsHtml}
         </select>
-        <button class="btn-cancel-type" onclick="event.preventDefault(); showTypeOverrideSelect(false)" style="background:none; border:none; color:var(--accent); font-size:11px; font-weight:600; cursor:pointer; padding:4px 8px;">Cancel</button>
+        <button class="btn-cancel-type" onclick="event.preventDefault(); showTypeOverrideSelect(false)" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:4px 8px;">Cancel</button>
       </div>
     `;
   } else {
@@ -6459,7 +6459,7 @@ function renderList() {
       <div class="essay-item ${isActive ? 'active' : ''}" onclick="selectEssay('${e.id}')">
         <div class="essay-item-meta">
           <span>ESSAY ${String(i + 1).padStart(2, '0')}</span>
-          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
+          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size:12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
           <span class="essay-item-status ${statusClass}">${statusLabel}</span>
         </div>
         <div class="essay-item-title">${escapeHtml(e.title || 'Untitled')}</div>
@@ -6555,7 +6555,7 @@ function updateBulkPreview() {
   const first3 = parsed.slice(0, 3).map((t, i) =>
     `<div style="padding:6px 8px; background:var(--bg); border-radius:4px; margin:4px 0;">
       <strong>${escapeHtml(t.title || '(no title)')}</strong>
-      ${t.question ? `<div style="color:var(--ink-mute); font-size:11px; margin-top:2px;">${escapeHtml(t.question.slice(0, 100))}${t.question.length > 100 ? '…' : ''}</div>` : ''}
+      ${t.question ? `<div style="color:var(--ink-mute); font-size:12px; margin-top:2px;">${escapeHtml(t.question.slice(0, 100))}${t.question.length > 100 ? '…' : ''}</div>` : ''}
     </div>`
   ).join('');
   preview.innerHTML = `
@@ -6934,7 +6934,7 @@ function renderPreview() {
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           ${alerts.map(a => `<li>${escapeHtml(a)}</li>`).join('')}
         </ul>
-        <div style="margin-top: 8px; font-size: 11.5px; font-style: italic; color: #664d03;">
+        <div style="margin-top: 8px; font-size:12px; font-style: italic; color: #664d03;">
           Open <strong>Review preferences &amp; plan</strong> when you are ready to generate or regenerate the essay.
         </div>
       </div>
@@ -8189,7 +8189,7 @@ function renderStanceController(e) {
     return `
       <button class="stance-pill ${isSelected ? 'active' : ''}" 
               onclick="event.preventDefault(); changeChosenStance('${escapeHtml(opt)}')"
-              style="padding: 6px 12px; font-size: 11.5px; border-radius: 20px; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; background: ${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; color: ${isSelected ? 'var(--accent-deep)' : 'var(--ink-soft)'}; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-bottom: 4px;">
+              style="padding: 6px 12px; font-size:12px; border-radius: 20px; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; background: ${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; color: ${isSelected ? 'var(--accent-deep)' : 'var(--ink-soft)'}; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-bottom: 4px;">
         ${escapeHtml(opt)}
       </button>
     `;
@@ -8197,7 +8197,7 @@ function renderStanceController(e) {
   
   return `
     <div class="stance-controller" style="margin-bottom: 14px;">
-      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); font-weight: 700; margin-bottom: 6px;">
+      <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); font-weight: 700; margin-bottom: 6px;">
         ${stanceHeaderLabel}
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -8247,12 +8247,12 @@ function renderIdeasPicker() {
 
   // 1. Question Type status with manual override Change button
   let typeHeaderHtml = `
-    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:11.5px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:12px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
       <div style="display:flex; align-items:center; gap:8px;">
         <span style="font-size:14px;">🤖</span>
         <span><strong>Question type:</strong> ${escapeHtml(typeCfg.displayName)}</span>
       </div>
-      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:11px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
+      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:12px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
     </div>
   `;
 
@@ -8316,16 +8316,16 @@ function renderIdeasPicker() {
       const pickedReasons = e.selectedReasonIds || [];
       const pickedSolutions = e.selectedSolutionIds || [];
       const needStance = !e.chosenStance;
-      const fallbackHint = `<div style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
+      const fallbackHint = `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
 
       const colA = leftFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
+        ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
         : (leftFellBack ? fallbackHint : '') + leftFiltered.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8333,13 +8333,13 @@ function renderIdeasPicker() {
           }).join('');
 
       const colB = rightFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
+        ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
         : (rightFellBack ? fallbackHint : '') + rightFiltered.map((idea) => {
             const isSelected = pickedSolutions.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('solution', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8349,18 +8349,18 @@ function renderIdeasPicker() {
       listsHtml = `
         <div class="ideas-cols">
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Why this area matters
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
             ${colA}
           </div>
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               Examples &amp; solutions
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
             ${colB}
           </div>
@@ -8375,17 +8375,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             Causes / Challenges
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8395,12 +8395,12 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             Solutions (Auto-paired)
             <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
-              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+              <span style="font-size:12px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:2px 4px;">
                 ${window.ideasEditMode ? 'Done' : 'Edit'}
               </button>
             </span>
@@ -8412,7 +8412,7 @@ function renderIdeasPicker() {
             let rightContentHtml = '';
             if (window.ideasEditMode) {
               rightContentHtml = `
-                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:12px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
               `;
             } else {
               rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
@@ -8421,7 +8421,7 @@ function renderIdeasPicker() {
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 ${rightContentHtml}
               </div>
@@ -8455,17 +8455,17 @@ function renderIdeasPicker() {
         <div class="ideas-cols ideas-cols-3">
           <!-- Column A: Reasons to Agree -->
           <div class="ideas-side-col ${agreeColDisabled ? 'col-disabled' : ''}" style="${agreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Reasons to Agree
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
             </div>
-            ${agreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
+            ${agreeReasons.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8475,17 +8475,17 @@ function renderIdeasPicker() {
           
           <!-- Column B: Reasons to Disagree -->
           <div class="ideas-side-col ${disagreeColDisabled ? 'col-disabled' : ''}" style="${disagreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               Reasons to Disagree
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
             </div>
-            ${disagreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
+            ${disagreeReasons.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8495,17 +8495,17 @@ function renderIdeasPicker() {
           
           <!-- Column C: Alternative Actions -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">C</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">C</span>
               Alternative Actions
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
-            ${alternativeActions.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
+            ${alternativeActions.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
               const isSelected = pickedSolutions.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8530,17 +8530,17 @@ function renderIdeasPicker() {
         <div class="ideas-cols">
           <!-- Main reasons -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Supporting Reasons
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
-            ${mainSupport.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
+            ${mainSupport.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8550,17 +8550,17 @@ function renderIdeasPicker() {
           
           <!-- Second Column (Optional Contrast) -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               ${secondColLabel}
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
             </div>
-            ${secondColIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
+            ${secondColIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
               const isSelected = pickedSecondCol.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${secondColCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: 0.8; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8583,17 +8583,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             ${escapeHtml(leftLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8603,12 +8603,12 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             ${escapeHtml(rightLabel)}
             <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
-              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+              <span style="font-size:12px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:2px 4px;">
                 ${window.ideasEditMode ? 'Done' : 'Edit'}
               </button>
             </span>
@@ -8620,7 +8620,7 @@ function renderIdeasPicker() {
             let rightContentHtml = '';
             if (window.ideasEditMode) {
               rightContentHtml = `
-                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:12px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
               `;
             } else {
               rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
@@ -8629,7 +8629,7 @@ function renderIdeasPicker() {
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 ${rightContentHtml}
               </div>
@@ -8655,17 +8655,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             ${escapeHtml(leftLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8675,17 +8675,17 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             ${escapeHtml(rightLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${rightIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : rightIdeas.map((idea) => {
+          ${rightIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : rightIdeas.map((idea) => {
             const isSelected = pickedRight.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${rightCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8699,7 +8699,7 @@ function renderIdeasPicker() {
   let warningsHtml = '';
   if (e.ideaValidationWarnings && e.ideaValidationWarnings.length > 0) {
     warningsHtml = e.ideaValidationWarnings.map(w => `
-      <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+      <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
         <span>⚠️</span>
         <span>${escapeHtml(w)}</span>
       </div>
@@ -8718,7 +8718,7 @@ function renderIdeasPicker() {
   let errorsHtml = '';
   if (e.ideaValidationErrors && e.ideaValidationErrors.length > 0) {
     errorsHtml = e.ideaValidationErrors.map(err => `
-      <div style="background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+      <div style="background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
         <span>❌</span>
         <span>${escapeHtml(err)}</span>
       </div>
@@ -8782,7 +8782,7 @@ function renderIdeasPicker() {
     ${errorsHtml}
     ${warningsHtml}
     <div class="ideas-actions" style="margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
-      <div class="ideas-counter" style="font-size:11.5px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
+      <div class="ideas-counter" style="font-size:12px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
       <div style="display:flex; gap:8px;">
         <button class="ideas-refresh-btn" onclick="aiSuggestIdeas()" style="background:var(--bg); border:1px solid var(--line); color:var(--ink-soft); font-size:12px; cursor:pointer; padding:6px 12px; border-radius:6px; font-weight:600; font-family:var(--sans);">↻ Refresh</button>
         <button class="ideas-use-btn" id="ideasUseBtn" onclick="usePickerSelectedIdeas()" ${isReady ? '' : 'disabled'} style="background:${isReady ? 'var(--accent)' : 'var(--line-soft)'}; color:${isReady ? 'white' : 'var(--ink-mute)'}; border:none; font-size:12px; cursor:${isReady ? 'pointer' : 'default'}; padding:6px 14px; border-radius:6px; font-weight:600; font-family:var(--sans);">Review plan &amp; generate →</button>
@@ -9273,15 +9273,15 @@ function renderFreestyleIdeasPicker() {
     [type.leftLabel || type.bp1Role || 'Column A', type.rightLabel || type.bp2Role || 'Column B'];
 
   area.innerHTML = `
-    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
       <div>
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">A</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
           ${escapeHtml(fsLbls[0])}
         </div>
         ${fsSuggestedLeftIdeas.map((p, i) => `
@@ -9292,8 +9292,8 @@ function renderFreestyleIdeasPicker() {
         `).join('')}
       </div>
       <div>
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">B</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
           ${escapeHtml(fsLbls[1])}
         </div>
         ${fsSuggestedRightIdeas.map((c, i) => `
@@ -9304,9 +9304,9 @@ function renderFreestyleIdeasPicker() {
         `).join('')}
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px;">
       <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">Pick <strong>2 from each side</strong> (4 total)</div>
-      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:12px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
     </div>
   `;
   updateFreestyleIdeasCounter();
@@ -9439,10 +9439,10 @@ function renderFreestyleSidedPicker(type) {
 
     return `
       <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="fs-col-${col.key}" style="opacity:${isDisabledSide ? '0.4' : '1'}; pointer-events:${isDisabledSide ? 'none' : 'auto'};">
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">${badge}</span>
           ${escapeHtml(colLabel)}
-          <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
         </div>
         ${ideas.map((idea, i) => {
           let badgeHtml = '';
@@ -9452,11 +9452,11 @@ function renderFreestyleSidedPicker(type) {
               const labelA = getFsColLabel(sideCols[0]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
               const labelB = getFsColLabel(sideCols[1]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
               if (i === 0 || i === 1) {
-                badgeHtml = `<span style="font-size:9px; background:#d4ebf5; color:#2a5577; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelA)}</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#d4ebf5; color:#2a5577; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelA)}</span>`;
               } else if (i === 2 || i === 3) {
-                badgeHtml = `<span style="font-size:9px; background:#f5dbd4; color:#7a4030; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelB)}</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#f5dbd4; color:#7a4030; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelB)}</span>`;
               } else if (i === 4) {
-                badgeHtml = `<span style="font-size:9px; background:#f3f4f6; color:#4b5563; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">neutral</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#f3f4f6; color:#4b5563; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">neutral</span>`;
               }
             }
           }
@@ -9478,12 +9478,12 @@ function renderFreestyleSidedPicker(type) {
   const fixedColHtml = colHtml(fixedCol, '+', thirdPalette);
 
   area.innerHTML = `
-    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:12px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
-    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
+    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#0369a1; line-height:1.4;">
       <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(getFsColLabel(sideCols[0]))}</strong> or <strong>${escapeHtml(getFsColLabel(sideCols[1]))}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(getFsColLabel(fixedCol))}</strong>.
     </div>
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
@@ -9494,9 +9494,9 @@ function renderFreestyleSidedPicker(type) {
         ${fixedColHtml}
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px;">
       <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">👈 First, click an idea to choose your stance.</div>
-      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:12px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
     </div>
   `;
   updateFreestyleIdeasCounter();
@@ -10909,7 +10909,7 @@ function renderVocabWordCard(w, idx) {
       
       <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
         <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; display: flex; flex-direction: column;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
           <ul style="margin: 0; padding: 0;">
             ${examplesHtml}
           </ul>
@@ -11126,7 +11126,7 @@ function renderMasterWordCard(w, idx) {
       }).join('');
       return `
         <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
           <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
           <ul style="margin: 0; padding: 0;">${examplesList}</ul>
         </div>
@@ -11145,7 +11145,7 @@ function renderMasterWordCard(w, idx) {
       
       <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
         <div>
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
           ${contextsHtml}
         </div>
         <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
@@ -11413,9 +11413,9 @@ function openVocabPractice() {
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
       <!-- Quiz Panel -->
-      <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+      <div style="background: rgba(0,92,139,0.05); border: 1px solid rgba(0,92,139,0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
         <h3 style="font-size:15px; margin-bottom:6px; color:var(--accent);">🎯 Definition Quiz</h3>
-        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
+        <p style="font-size:12px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
         <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
           <button class="tb-text-btn dark" onclick="startQuizMode('spelling')">Start Spelling Quiz</button>
           <button class="tb-text-btn dark" onclick="startQuizMode('mcq')">Start Multiple Choice</button>
@@ -11425,7 +11425,7 @@ function openVocabPractice() {
       <!-- Matching Game Panel -->
       <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
         <h3 style="font-size:15px; margin-bottom:6px; color:#10b981;">⚡ Synonyms Matcher</h3>
-        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
+        <p style="font-size:12px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
         <div style="margin-top:14px;">
           <button class="tb-text-btn dark" onclick="startSynonymsMatcher()" style="background:#10b981; border-color:#10b981; width:100%;">Play Matcher Game</button>
         </div>
@@ -11615,12 +11615,12 @@ function renderAdminVocabList() {
       <div style="flex:1;">
         <div style="font-weight:600; font-family:var(--serif); font-size:14px;">
           ${escapeHtml(w.word)}
-          <span style="font-size:10px; color:var(--ink-mute); font-weight:400; font-style:italic; margin-left:6px;">${escapeHtml(w.pos || '')} · ${escapeHtml(w.level || 'C1')}</span>
-          ${w._admin ? '<span style="background:#8fd18f; color:#fff; font-size:9px; padding:1px 6px; border-radius:3px; margin-left:6px;">ADMIN</span>' : ''}
+          <span style="font-size:12px; color:var(--ink-mute); font-weight:400; font-style:italic; margin-left:6px;">${escapeHtml(w.pos || '')} · ${escapeHtml(w.level || 'C1')}</span>
+          ${w._admin ? '<span style="background:#8fd18f; color:#fff; font-size:12px; padding:1px 6px; border-radius:3px; margin-left:6px;">ADMIN</span>' : ''}
         </div>
-        <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml((w.meaning || '').slice(0, 90))}${(w.meaning || '').length > 90 ? '…' : ''}</div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml((w.meaning || '').slice(0, 90))}${(w.meaning || '').length > 90 ? '…' : ''}</div>
       </div>
-      ${w._admin ? `<button class="tb-text-btn" onclick="deleteAdminWord('${catId}', '${escapeHtml(w.word).replace(/'/g, "\\'")}')" style="font-size:11px; padding:4px 10px;">Delete</button>` : '<span style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:0 6px;">seed</span>'}
+      ${w._admin ? `<button class="tb-text-btn" onclick="deleteAdminWord('${catId}', '${escapeHtml(w.word).replace(/'/g, "\\'")}')" style="font-size:12px; padding:4px 10px;">Delete</button>` : '<span style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:0 6px;">seed</span>'}
     </div>
   `).join('');
 }
@@ -11864,9 +11864,9 @@ function renderSuggestionList() {
       <input type="checkbox" ${w.checked ? 'checked' : ''} ${w.duplicate ? 'disabled' : ''} onchange="toggleSuggestion(${i}, this.checked)">
       <div style="flex:1; line-height:1.4;">
         <strong style="font-family:var(--serif); font-size:14px;">${escapeHtml(w.word)}</strong>
-        <span style="color:var(--ink-mute); font-size:11px; margin-left:6px;">${escapeHtml(w.pos)} · ${escapeHtml(w.level)}</span>
-        ${w.duplicate ? '<span style="background:#bbb; color:#fff; font-size:9px; padding:1px 5px; border-radius:3px; margin-left:6px;">EXISTS</span>' : ''}
-        <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(w.preview)}</div>
+        <span style="color:var(--ink-mute); font-size:12px; margin-left:6px;">${escapeHtml(w.pos)} · ${escapeHtml(w.level)}</span>
+        ${w.duplicate ? '<span style="background:#bbb; color:#fff; font-size:12px; padding:1px 5px; border-radius:3px; margin-left:6px;">EXISTS</span>' : ''}
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(w.preview)}</div>
       </div>
     </label>
   `).join('');
@@ -11988,13 +11988,13 @@ function renderDetailsPreview() {
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
         <input type="checkbox" ${d.keep ? 'checked' : ''} onchange="suggestState.details[${i}].keep = this.checked; updateSaveBtnCount();">
         <strong style="font-family:var(--serif); font-size:15px;">${escapeHtml(d.word)}</strong>
-        <span style="color:var(--ink-mute); font-size:11px; font-style:italic;">${escapeHtml(d.pos)}</span>
-        <span style="background:var(--accent); color:#fff; font-size:9px; padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.07em;">${escapeHtml(d.level)}</span>
+        <span style="color:var(--ink-mute); font-size:12px; font-style:italic;">${escapeHtml(d.pos)}</span>
+        <span style="background:var(--accent); color:#fff; font-size:12px; padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.07em;">${escapeHtml(d.level)}</span>
       </div>
       <div style="font-size:12.5px; line-height:1.55; color:var(--ink); margin:6px 0;">${escapeHtml(d.meaning)}</div>
-      ${d.compare ? `<div style="background:#fff8e6; border-left:3px solid #b07a2a; padding:6px 10px; border-radius:0 4px 4px 0; font-size:11.5px; color:#5a4400; margin:6px 0;">${escapeHtml(d.compare)}</div>` : ''}
+      ${d.compare ? `<div style="background:#fff8e6; border-left:3px solid #b07a2a; padding:6px 10px; border-radius:0 4px 4px 0; font-size:12px; color:#5a4400; margin:6px 0;">${escapeHtml(d.compare)}</div>` : ''}
       <ul style="margin:6px 0 0; padding:0 0 0 18px; list-style:none;">
-        ${d.examples.map(ex => `<li style="font-size:11.5px; color:var(--ink-soft); font-style:italic; line-height:1.5; padding:2px 0;">› ${escapeHtml(ex)}</li>`).join('')}
+        ${d.examples.map(ex => `<li style="font-size:12px; color:var(--ink-soft); font-style:italic; line-height:1.5; padding:2px 0;">› ${escapeHtml(ex)}</li>`).join('')}
       </ul>
     </div>
   `).join('');
@@ -13407,7 +13407,7 @@ function renderPracticeHistory() {
             <span>${dateStr}</span>
             <span class="practice-history-score ${scoreBand}">${total}/${PRACTICE_MAX_TOTAL}</span>
           </div>
-          <div style="font-size: 11.5px; color: var(--ink-soft); line-height: 1.4;">
+          <div style="font-size:12px; color: var(--ink-soft); line-height: 1.4;">
             Attempt with ${a.wordCount} words
           </div>
           <button class="practice-history-del" style="right: 6px; top: 8px;" onclick="event.stopPropagation(); deletePracticeAttempt('${a.id}')" title="Delete">✕</button>
@@ -13422,7 +13422,7 @@ function renderPracticeHistory() {
             <div style="font-family: var(--serif); font-size: 13.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(g.title)}">
               ${escapeHtml(g.title)}
             </div>
-            <div style="font-size: 11px; color: var(--ink-soft); margin-top: 2px;">
+            <div style="font-size:12px; color: var(--ink-soft); margin-top: 2px;">
               ${g.attempts.length} attempt${g.attempts.length === 1 ? '' : 's'}
             </div>
           </div>
@@ -13668,7 +13668,7 @@ function writeView() {
         <div class="simulator-timer-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
           <div class="practice-timer-bar ${practiceState.timerEnabled ? 'show' : ''}" id="practiceTimerBar" style="margin: 0; display: ${practiceState.timerEnabled ? 'inline-flex' : 'none'}; align-items: center; gap: 8px; padding: 6px 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 13.5px; font-weight: 700; color: var(--ink);">
             <span id="practiceTimerElapsed">00:00</span>
-            <span class="practice-timer-target" style="color: var(--ink-mute); font-family: var(--sans); font-weight: 400; font-size: 11px;">/ ${PRACTICE_TIMER_LIMIT_MIN}:00 exam target</span>
+            <span class="practice-timer-target" style="color: var(--ink-mute); font-family: var(--sans); font-weight: 400; font-size:12px;">/ ${PRACTICE_TIMER_LIMIT_MIN}:00 exam target</span>
           </div>
           <div style="font-size: 12px; color: var(--ink-soft); font-family: var(--serif); font-style: italic; display: flex; align-items: center; gap: 6px;">
             <span>⏱️ Time Mode:</span>
@@ -13685,17 +13685,17 @@ function writeView() {
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
             <div>
               <strong style="font-size:13px; color:var(--ink);">Template overlap</strong>
-              <span style="font-size:11px; color:var(--ink-mute); margin-left:6px;">with your stored scaffolds</span>
+              <span style="font-size:12px; color:var(--ink-mute); margin-left:6px;">with your stored scaffolds</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <strong id="practiceTemplateOverlapValue" style="font-size:13px; color:var(--ink);">—</strong>
-              <span id="practiceTemplateOverlapLevel" style="font-size:11px; font-weight:700; color:var(--ink-mute);">Waiting</span>
+              <span id="practiceTemplateOverlapLevel" style="font-size:12px; font-weight:700; color:var(--ink-mute);">Waiting</span>
             </div>
           </div>
           <div style="height:7px; background:var(--line-soft); border-radius:999px; overflow:hidden; margin-top:10px;">
             <div id="practiceTemplateOverlapBar" style="height:100%; width:0%; border-radius:999px; background:#10b981; transition:width .2s ease, background-color .2s ease;"></div>
           </div>
-          <p id="practiceTemplateOverlapGuidance" style="font-size:11.5px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
+          <p id="practiceTemplateOverlapGuidance" style="font-size:12px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
         </div>
 
         <!-- Dynamic Word Count Progress Visualizer -->
@@ -13709,7 +13709,7 @@ function writeView() {
             <div style="position: absolute; left: 57.14%; top: 0; bottom: 0; width: 28.57%; background: rgba(16, 185, 129, 0.12); border-left: 1px dashed rgba(16, 185, 129, 0.3); border-right: 1px dashed rgba(16, 185, 129, 0.3);" title="Ideal range (200-300 words)"></div>
             <div class="practice-progress-bar" id="practiceProgressBar" style="height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: width 0.2s ease, background-color 0.2s ease;"></div>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 9.5px; color: var(--ink-mute); margin-top: 6px; padding: 0 2px; font-family: var(--sans);">
+          <div style="display: flex; justify-content: space-between; font-size:12px; color: var(--ink-mute); margin-top: 6px; padding: 0 2px; font-family: var(--sans);">
             <span>0 words</span>
             <span style="margin-left: 32%;">200 words (min)</span>
             <span>300 words (max)</span>
@@ -14244,7 +14244,7 @@ function renderPracticeSample(a) {
         <button class="admin-btn" style="padding:6px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">${fullEssay ? 'Copy sample essay' : 'Copy revised excerpt'}</button>
       </div>
       <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
-        ${fullEssay ? '' : `<div style="display:flex; flex-wrap:wrap; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
+        ${fullEssay ? '' : `<div style="display:flex; flex-wrap:wrap; gap:16px; font-size:12px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
           <div><span class="diff-ins">ins</span> Added / Improved</div>
           <div><span class="diff-del">del</span> Replaced / Removed</div>
         </div>`}
@@ -14405,11 +14405,11 @@ function resultsView() {
     <details style="margin-bottom:18px; background:var(--bg-card); border:1px solid var(--line); border-radius:8px; padding:10px 14px;">
       <summary style="cursor:pointer; font-weight:600; font-size:13px;">▸ View your question &amp; essay (${a.wordCount} words)</summary>
       <div style="margin-top:10px; font-size:12.5px; color:var(--ink-soft); line-height:1.6;">
-        <div style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Question</div>
+        <div style="font-weight:700; color:var(--accent); font-size:12px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Question</div>
         <div style="margin-bottom:10px; color:var(--ink);">${escapeHtml(a.questionText)}</div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <span style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;">Your essay</span>
-          <button class="admin-btn" style="padding:2px 8px; font-size:11px; cursor:pointer;" onclick="copyPracticeText('attempted')">📋 Copy Original</button>
+          <span style="font-weight:700; color:var(--accent); font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">Your essay</span>
+          <button class="admin-btn" style="padding:2px 8px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('attempted')">📋 Copy Original</button>
         </div>
         <div style="white-space:pre-wrap; color:var(--ink); font-family:var(--serif); font-size:13px; line-height:1.7;">${escapeHtml(a.essayText)}</div>
       </div>
@@ -14419,7 +14419,7 @@ function resultsView() {
   return `
     <div class="practice-results">
       <div class="practice-verdict-banner" style="background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; padding:18px 24px; margin-bottom:20px; box-shadow:var(--shadow);">
-        <div style="font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Evaluation Verdict</div>
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Evaluation Verdict</div>
         <div style="font-family:var(--serif); font-size:18px; font-weight:700; color:var(--ink);">${escapeHtml(verdict)}</div>
       </div>
 
@@ -16289,7 +16289,7 @@ function renderAdminPassages(passagesList) {
       <div class="pid" style="font-weight:700; width:30px;">#${p.id}</div>
       <div class="pinfo" style="flex:1;">
         <div class="ptitle" style="font-weight:600; font-size:14px;">${escapeHtml(p.title || 'Untitled')}</div>
-        <div class="pcat" style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(p.category || 'General')} · ${(p.text || '').split(/\s+/).filter(Boolean).length} words</div>
+        <div class="pcat" style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(p.category || 'General')} · ${(p.text || '').split(/\s+/).filter(Boolean).length} words</div>
       </div>
       <div class="pactions" style="display:flex; gap:6px;">
         <button class="tb-text-btn" onclick="adminEditPassage(${p.id})" style="font-size:12px; padding:4px 10px;">Edit</button>
@@ -16533,7 +16533,7 @@ function renderDraft(draft) {
   box.innerHTML = `
     <div class="extract-draft-head" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
       <span class="extract-draft-title" style="font-weight:700;">AI Draft — review before applying</span>
-      <span class="draft-badge fw" style="font-size:10px; padding:2px 6px; background:var(--accent-soft); color:var(--accent);">${fw}</span>
+      <span class="draft-badge fw" style="font-size:12px; padding:2px 6px; background:var(--accent-soft); color:var(--accent);">${fw}</span>
       <span class="draft-badge conf-${conf}">${conf} confidence</span>
     </div>
     ${draft.framework_reason ? '<div class="draft-reason">' + escapeHtml(draft.framework_reason) + '</div>' : ''}
@@ -16882,8 +16882,8 @@ function showChartTooltip(x, y, title, score, date, maxScore) {
   
   tooltip.innerHTML = `
     <div style="font-weight:800; color:var(--accent); font-size:13px; margin-bottom:2px;">${score} / ${maxScore}</div>
-    <div style="font-weight:700; max-width:180px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:var(--ink); font-size:11px;">${escapeHtml(title)}</div>
-    <div style="font-size:9.5px; color:var(--ink-mute); margin-top:2px;">${date}</div>
+    <div style="font-weight:700; max-width:180px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:var(--ink); font-size:12px;">${escapeHtml(title)}</div>
+    <div style="font-size:12px; color:var(--ink-mute); margin-top:2px;">${date}</div>
   `;
   tooltip.style.left = `${xPct}%`;
   tooltip.style.top = `${yPct}%`;
@@ -17125,7 +17125,7 @@ function showVocabFlashcard() {
       <div style="font-size: 13px; line-height: 1.5; color: var(--ink); margin-bottom: 12px;">
         <strong>Meaning:</strong> ${escapeHtml(w.meaning)}
       </div>
-      ${w.compare ? `<div style="font-size: 12px; margin-bottom: 12px; padding: 6px 10px; background: rgba(99, 102, 241, 0.05); border-radius: 6px;"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
+      ${w.compare ? `<div style="font-size: 12px; margin-bottom: 12px; padding: 6px 10px; background: rgba(0,92,139,0.05); border-radius: 6px;"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
       <div style="font-size: 12px; color: var(--ink-soft);">
         <strong>Examples:</strong>
         <ul style="margin: 6px 0 0 16px; padding: 0;">
@@ -17281,8 +17281,8 @@ function renderMCQQuestion() {
       <span style="font-size:12px; color:var(--ink-soft); font-weight:700;">Question ${mcqCurrentIndex + 1} of ${quizWords.length}</span>
     </div>
     
-    <div style="margin: 16px 0; background:rgba(99, 102, 241, 0.03); border:1px solid var(--line-soft); padding:16px; border-radius:8px;">
-      <div style="font-size:11px; text-transform:uppercase; font-weight:700; color:var(--ink-mute); margin-bottom:6px;">Meaning:</div>
+    <div style="margin: 16px 0; background:rgba(0,92,139,0.03); border:1px solid var(--line-soft); padding:16px; border-radius:8px;">
+      <div style="font-size:12px; text-transform:uppercase; font-weight:700; color:var(--ink-mute); margin-bottom:6px;">Meaning:</div>
       <div style="font-size:14px; font-weight:600; line-height:1.5; color:var(--ink);">${escapeHtml(w.meaning)}</div>
     </div>
     
@@ -17682,7 +17682,7 @@ For Case 2 (Typo/Suggestions):
         }).join('');
         return `
           <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+            <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
             <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
             <ul style="margin: 0; padding: 0;">${examplesList}</ul>
           </div>
@@ -17710,7 +17710,7 @@ For Case 2 (Typo/Suggestions):
           
           <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
             <div>
-              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+              <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
               ${contextsHtml}
             </div>
             <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
@@ -17735,7 +17735,7 @@ For Case 2 (Typo/Suggestions):
             <div>
               <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
                 <strong style="font-family: var(--serif); font-size: 14px; color: var(--ink);">${escapeHtml(s.word)}</strong>
-                <span class="pos-badge pos-noun" style="font-size: 10px; padding: 1px 4px;">${escapeHtml(s.pos)}</span>
+                <span class="pos-badge pos-noun" style="font-size:12px; padding: 1px 4px;">${escapeHtml(s.pos)}</span>
               </div>
               <div style="font-size: 12px; color: var(--ink-soft);">${escapeHtml(s.meaning)}</div>
             </div>
