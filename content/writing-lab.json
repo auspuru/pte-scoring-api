@@ -254,7 +254,12 @@
             "Physical spaces support learning and community participation.",
             "Services should adapt to local needs within resource limits."
           ],
-          "sample": "Public libraries remain important by combining books, digital guidance and shared spaces to improve access to knowledge and community participation, although limited resources require them to adapt services carefully to local needs."
+          "sample": "Public libraries remain important by combining books, digital guidance and shared spaces to improve access to knowledge and community participation, although limited resources require them to adapt services carefully to local needs.",
+          "editorialReview": {
+            "standard": "swt-200-300",
+            "automatedValidation": "required",
+            "humanReview": "pending"
+          }
         },
         {
           "id": "wm1-swt2",
@@ -267,7 +272,12 @@
             "Repair can conserve materials and support local services, but cost and confidence affect choices.",
             "Cooperation should make safe, worthwhile repairs practical."
           ],
-          "sample": "Making household products repairable through accessible design, spare parts and reliable information can extend their lives and conserve materials, but manufacturers, repair services and consumers must also address cost and confidence to make safe repairs a practical choice."
+          "sample": "Making household products repairable through accessible design, spare parts and reliable information can extend their lives and conserve materials, but manufacturers, repair services and consumers must also address cost and confidence to make safe repairs a practical choice.",
+          "editorialReview": {
+            "standard": "swt-200-300",
+            "automatedValidation": "required",
+            "humanReview": "pending"
+          }
         },
         {
           "id": "wm1-essay",
@@ -354,7 +364,12 @@
             "Training, verification and attention to sampling bias are necessary for reliable data.",
             "Ongoing communication and recognition make citizen science a meaningful partnership."
           ],
-          "sample": "Citizen science can expand data collection and public learning, provided projects use clear training, verification and checks for sampling bias, while continuing communication and recognition help maintain meaningful participation and reliable research."
+          "sample": "Citizen science can expand data collection and public learning, provided projects use clear training, verification and checks for sampling bias, while continuing communication and recognition help maintain meaningful participation and reliable research.",
+          "editorialReview": {
+            "standard": "swt-200-300",
+            "automatedValidation": "required",
+            "humanReview": "pending"
+          }
         },
         {
           "id": "wm2-swt2",
@@ -367,7 +382,12 @@
             "Operational improvements and accurate disruption information can help reliability.",
             "Evaluation should consider differing passenger needs, not only average travel times."
           ],
-          "sample": "Reliable public transport enables people to plan daily activities, so authorities should complement speed improvements with dependable operations and accurate information, evaluating services against different passengers' needs as well as average journey times."
+          "sample": "Reliable public transport enables people to plan daily activities, so authorities should complement speed improvements with dependable operations and accurate information, evaluating services against different passengers' needs as well as average journey times.",
+          "editorialReview": {
+            "standard": "swt-200-300",
+            "automatedValidation": "required",
+            "humanReview": "pending"
+          }
         },
         {
           "id": "wm2-essay",
