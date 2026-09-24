@@ -71,9 +71,9 @@
       const focused = m.kind === 'reading-blanks';
       const number = focused ? ++practice : ++sectional;
       return { id: m.id, engine: 'reading', module: 'reading', mode: focused ? 'practice' : 'sectional',
-        title: 'Reading ' + (focused ? 'Practice Mock ' : 'Sectional Mock ') + number,
+        title: focused ? 'Reading Practice Mock ' + number : 'Integrated Reading & Listening Sectional Mock ' + number,
         description: focused ? 'Focused FIB practice only' : 'Integrated Reading sectional practice',
-        scope: focused ? '10 FIB questions · Dropdown + Drag & Drop' : 'SWT + all Reading tasks + HIW + HCS',
+        scope: focused ? '10 Fill in the Blanks questions · Dropdown + Drag & Drop' : 'Summarise Written Text + all Reading tasks + Highlight Incorrect Words + Highlight Correct Summary',
         minutes: m.minutes || 55, number };
     });
   }
@@ -83,7 +83,7 @@
       searchText: [m.title,m.description,m.topic,m.question,m.category].filter(Boolean).join(' '),
       title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0')),
       description: m.category === 'prediction' ? 'Prediction-aligned Writing sectional practice' : 'Integrated Writing sectional practice',
-      scope: 'SWT + Essay + SST + WFD'
+      scope: 'Summarise Written Text + Write Essay + Summarise Spoken Text + Write From Dictation'
     }))];
   }
   function filterMocks(items, { mode = 'sectional', module = 'all', search = '' } = {}) {
@@ -137,11 +137,7 @@
       if (filters.mode === 'practice') {
         description.textContent = 'Focused practice mocks cover a limited task set. They are not full Reading or full PTE mocks.';
       } else {
-        const pool=data.writing?.predictionBank;
-        const bankNote=pool && ['all','writing'].includes(filters.module)
-          ? ' Current Writing prediction pool: '+pool.unique.swt+' SWT, '+pool.unique.sst+' SST and '+pool.unique.wfd+' WFD unique items across '+pool.mockCount+' prediction mocks. Repeated prediction items are labelled Revision inside the test.'
-          : '';
-        description.textContent = 'Sectional mocks practise one integrated module. They do not represent a complete PTE exam.' + bankNote;
+        description.textContent = 'Sectional mocks practise one integrated module. Repeated prediction items are marked Revision.';
       }
     }
     async function openMocks(options = {}) {
@@ -154,11 +150,10 @@
       }
       host.innerHTML = '<div class="catalogue-heading"><h2>Mock Tests</h2></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span></div>'
-        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label><label>Tests per page<select id="catalogue-size"><option value="12">12</option><option value="24">24</option><option value="1000">All</option></select></label></div>'
+        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
       doc.getElementById('catalogue-module').value = filters.module;
-      doc.getElementById('catalogue-size').value = String(pageSize);
       host.onclick = e => {
         const b = e.target.closest('button'); if (!b || b.disabled) return;
         if (b.dataset.catalogueMode) { filters.mode = b.dataset.catalogueMode; page = 0; renderList(); }
@@ -172,7 +167,6 @@
       host.oninput = e => { if (e.target.id === 'catalogue-search') { filters.search = e.target.value; page = 0; renderList(); } };
       host.onchange = e => {
         if (e.target.id === 'catalogue-module') filters.module = e.target.value;
-        if (e.target.id === 'catalogue-size') pageSize = Number(e.target.value);
         page = 0; renderList();
       };
       renderList();
