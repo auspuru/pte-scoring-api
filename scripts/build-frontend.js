@@ -37,6 +37,9 @@ function assertProductionHtml(html) {
   if (!/href=["']utility\.css\?v=1["']/.test(html)) {
     throw new Error('Production HTML must load utility.css?v=1.');
   }
+  if (/\\n(?=<(?:script|link|style)\b)/.test(html)) {
+    throw new Error('Production HTML contains a literal \\n before a head asset tag.');
+  }
 }
 
 function build() {
