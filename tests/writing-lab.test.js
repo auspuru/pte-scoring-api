@@ -113,6 +113,10 @@ test('Authenticated attempts persist, isolate users and lock submitted answers',
   await store.update('alice',id,a=>{a.answers[0]='';a.results[0]=null;a.deadline=Date.now()-4000000;return a;});
   const done=(await request('/attempts/'+id)).body;assert.equal(done.status,'submitted');
   const grade=(await request('/attempts/'+id+'/score/0',{})).body;assert.equal(grade.total,0);
+  // Expiry queues every unanswered item. Wait for those persisted results before
+  // checking the reopened store and removing its directory during teardown.
+  const remaining=await Promise.all(done.questions.slice(1).map((_,index)=>request('/attempts/'+id+'/score/'+(index+1),{})));
+  for(const result of remaining){assert.equal(result.status,200);assert.equal(result.body.total,0);}
   const restarted=createStore(null,dir);assert.equal((await restarted.list('alice'))[0].results[0].total,0);
   assert.equal((await restarted.list('bob')).length,0);
 });
