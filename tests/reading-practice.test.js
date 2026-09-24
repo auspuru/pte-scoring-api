@@ -39,7 +39,7 @@ const fs=require('node:fs'),vm=require('node:vm');
 function client(){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
- const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,confirm:()=>true};
+ const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,portalConfirm:async()=>true};
  vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-quality'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-pattern-bank'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-predictions-sep-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
@@ -152,15 +152,15 @@ test('Full mock preserves submitted SWT through a failed grade and retries witho
 test('A late SWT grade updates its completed history while another mock remains untouched',async()=>{
  const h=client();h.ctx.passages=swtPassages;let resolve,calls=0;
  h.ctx.requestSwtGrade=()=>{calls++;return new Promise(r=>resolve=r);};
- await h.ctx.ReadingPractice.open();await h.click({start:'full'});h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved summary for assessment.'}});h.click({action:'submit'});
- h.click({action:'home'});h.click({history:'0'});await h.click({action:'retry-swt'});assert.equal(calls,1);
- h.click({action:'home'});await h.click({start:'sectional-1'});resolve(confirmedGrade);await flush();
+ await h.ctx.ReadingPractice.open();await h.click({start:'full'});h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved summary for assessment.'}});await h.click({action:'submit'});
+ await h.click({action:'home'});await h.click({history:'0'});await h.click({action:'retry-swt'});assert.equal(calls,1);
+ await h.click({action:'home'});await h.click({start:'sectional-1'});resolve(confirmedGrade);await flush();
  const saved=JSON.parse(h.values.get(storageKey('first')));assert.equal(saved.session.mode,'sectional-1');assert.equal(saved.session.done,false);assert.equal(saved.history.length,1);assert.equal(saved.history[0].pending,0);
 });
 test('A SWT grade arriving after an account switch cannot write to either account',async()=>{
  const h=client();h.ctx.passages=swtPassages;let resolve;
  h.ctx.requestSwtGrade=()=>new Promise(r=>resolve=r);
- await h.ctx.ReadingPractice.open();await h.click({start:'full'});h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved summary for assessment.'}});h.click({action:'submit'});
+ await h.ctx.ReadingPractice.open();await h.click({start:'full'});h.host.oninput({target:{dataset:{swtResponse:''},value:'A saved summary for assessment.'}});await h.click({action:'submit'});
  const first=h.values.get(storageKey('first'));h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();const second=h.values.get(storageKey('second'));
  resolve(confirmedGrade);await flush();assert.equal(h.values.get(storageKey('first')),first);assert.equal(h.values.get(storageKey('second')),second);assert.doesNotMatch(h.host.innerHTML,/8\/9/);
 });
