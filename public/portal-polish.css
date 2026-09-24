@@ -115,3 +115,7 @@ body.dark .speaking-status.inaccurate { color: #ffa5b0; }
 .today-plan-action.primary{border-color:color-mix(in srgb,var(--accent) 45%,var(--line-soft));background:color-mix(in srgb,var(--accent) 7%,var(--bg-card))}
 .study-plan-settings .field{display:grid;gap:6px}.study-plan-settings .field-label{font-size:11px;color:var(--ink-soft)}
 @media(max-width:760px){.today-plan-head{flex-direction:column}.today-plan-actions{grid-template-columns:1fr}.study-plan-settings>div{grid-template-columns:1fr!important}}
+
+.catalogue-coming-soon{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border:1px dashed var(--line);border-radius:8px;color:var(--ink-mute);font-size:13px;font-weight:600}
+.mock-catalogue-description{margin:8px 0 4px;color:var(--ink-soft)}
+.mock-catalogue-scope{margin:0 0 16px;color:var(--ink);font-size:13px!important}
