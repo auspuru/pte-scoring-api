@@ -19,8 +19,8 @@ test('Reading runtime is deferred until a Reading-backed view is opened', () => 
     'reading-review.js',
     'reading-practice.js'
   ]) {
-    assert.doesNotMatch(markup, new RegExp('<script[^>]+src=["\\\'][^"\\\']*' + asset.replaceAll('.', '\\\\.') + '[^"\\\']*["\\\']'));
-    assert.match(js, new RegExp(asset.replaceAll('.', '\\\\.')));
+    assert.equal(markup.includes(asset), false, asset + ' should not be in startup HTML');
+    assert.equal(js.includes(asset), true, asset + ' should remain available through the lazy loader');
   }
   assert.match(markup, /reading-fib-quality\.js/);
   assert.match(markup, /reading-fib-pattern-bank\.js/);
