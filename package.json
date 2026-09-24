@@ -4,7 +4,7 @@
   "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
-    "postinstall": "node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js",
+    "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && node scripts/validate-speaking-content.js",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
@@ -12,7 +12,8 @@
     "dev": "node server.js",
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
-    "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js"
+    "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
+    "build": "node scripts/build-frontend.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
