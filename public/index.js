@@ -1421,8 +1421,9 @@ function todayPlanWeakArea() {
   return candidates.sort((a,b)=>a.score-b.score)[0] || null;
 }
 
-function todayPlanActionHtml({ eyebrow, title, detail, route, primary = false }) {
-  return '<button type="button" class="today-plan-action'+(primary?' primary':'')+'" onclick="switchSection(\''+route+'\')">'+
+function todayPlanActionHtml({ eyebrow, title, detail, route, primary = false, resume = false }) {
+  const action = resume ? 'resumePortalActivity()' : 'switchSection(\''+route+'\')';
+  return '<button type="button" class="today-plan-action'+(primary?' primary':'')+'" onclick="'+action+'">'+
     '<small>'+escapeHtml(eyebrow)+'</small><strong>'+escapeHtml(title)+'</strong><span class="portal-task-link">'+escapeHtml(detail)+' <span aria-hidden="true">→</span></span></button>';
 }
 
@@ -1442,14 +1443,12 @@ function renderTodayPlan() {
   target.textContent = parts.length ? parts.join(' · ') : 'Set a target score and test date to personalise this plan.';
 
   const actions = [];
-  const draft = portalDraftStore?.read(currentUserId);
-  if (draft?.essayText?.trim()) {
-    actions.push({ eyebrow:'Continue', title:draft.questionTitle || 'Your unfinished essay', detail:countWords(draft.essayText)+' words saved', route:'practice', primary:true });
+  const resume = localPortalResumeCandidate();
+  if (resume) {
+    portalResumeTarget = resume;
+    actions.push({ eyebrow:'Continue', title:resume.title, detail:resume.detail, route:resume.route || 'practice', primary:true, resume:true });
   } else {
-    let reading = null;
-    try { reading = window.AccountProgress?.unpackReading?.(localAccountProgress()?.readingProgress)?.session; } catch (_) {}
-    if (reading && !reading.done) actions.push({ eyebrow:'Continue', title:reading.name || 'Reading session', detail:'Resume where you stopped', route:'reading', primary:true });
-    else actions.push({ eyebrow:'Start here', title:'One focused practice question', detail:'Build momentum in 10–15 minutes', route:'practice-hub', primary:true });
+    actions.push({ eyebrow:'Start here', title:'One focused practice question', detail:'Build momentum in 10–15 minutes', route:'practice-hub', primary:true });
   }
 
   const weak = todayPlanWeakArea();
@@ -12757,6 +12756,14 @@ function resumePortalActivity() {
   if (target.engine === 'reading') return switchSection(target.route || 'reading', { readingRequest:{ attemptId:target.id } });
   if (target.engine === 'writing-lab') return switchSection(target.route || 'writing-run', { labRequest:{ attemptId:target.id } });
 }
+
+window.addEventListener?.('pte:attempt-completed', () => {
+  portalResumeCache.at = 0;
+  if (document.body?.dataset?.section === 'dashboard') {
+    updatePortalResume();
+    renderTodayPlan();
+  }
+});
 
 // Dashboard statistics renderer
 function updateDashboard() {
