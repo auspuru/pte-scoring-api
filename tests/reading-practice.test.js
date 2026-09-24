@@ -806,6 +806,6 @@ test('Reading sync rerenders preserve Recent results expansion and completed pra
  assert.match(source,/addEventListener\?\.\('toggle'/);
  assert.match(source,/reading-review-navigation/);
  assert.match(source,/Time mode: Untimed/);
- assert.match(source,/data-move="\\-1"/);
+ assert.match(source,/data-move="-1"/);
  assert.match(source,/reading-next-action/);
 });
