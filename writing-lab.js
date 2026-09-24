@@ -72,6 +72,7 @@ function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
+    ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
     ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + bank.version } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
@@ -134,9 +135,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return account && !account.blocked ? uid : null;
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
+    predictionBank:{source:predictions.source,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
-    mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
+    mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
         return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];
@@ -162,6 +164,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       const summary = report.summarize(current.questions, current.results);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
+        questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90 });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
