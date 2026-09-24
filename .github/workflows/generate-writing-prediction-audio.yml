@@ -1,0 +1,48 @@
+name: Generate writing prediction audio
+
+on:
+  push:
+    branches:
+      - wrapup/writing-sectional-audio-swt-20260924
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-verify:
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[audio-generated]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          npm ci --ignore-scripts
+          python -m pip install --disable-pip-version-check edge-tts==7.2.8
+      - name: Generate bundled neural narration
+        run: python scripts/generate-writing-audio.py
+      - name: Validate audio and tests
+        run: |
+          node scripts/validate-writing-audio.js
+          npm test
+      - name: Commit generated recordings
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/writing-audio
+          if git diff --cached --quiet; then
+            echo "No generated audio changes."
+            exit 0
+          fi
+          git commit -m "[audio-generated] Bundle neural prediction narration"
+          git push origin HEAD:wrapup/writing-sectional-audio-swt-20260924
