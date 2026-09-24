@@ -50,7 +50,7 @@ function build() {
   assertProductionHtml(html);
   fs.writeFileSync(cssPath, css);
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  execFileSync(npx, ['--yes','terser@5.44.0', clientPath, '--compress', '--mangle', 'false', '--output', minClientPath], { cwd: root, stdio: 'inherit' });
+  execFileSync(npx, ['--yes','terser@5.44.0', clientPath, '--compress', '--output', minClientPath], { cwd: root, stdio: 'inherit' });
   const sourceBytes = fs.statSync(clientPath).size, minBytes = fs.statSync(minClientPath).size;
   if (minBytes >= sourceBytes) throw new Error('Production JavaScript was not reduced by minification.');
   console.log('Built public/utility.css (' + Buffer.byteLength(css) + ' bytes) and public/index.min.js (' + minBytes + ' bytes from ' + sourceBytes + ').');
