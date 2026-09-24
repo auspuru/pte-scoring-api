@@ -92,8 +92,8 @@
       && (!query || [m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query)))
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
-  function createController({ document: doc, navigate, launchReading, launchWriting, fetch: get = fetch }) {
-    let data, loading, page = 0;
+  function createController({ document: doc, navigate, launchReading, launchWriting, fetch: get = fetch, getProgress = async () => ({}) }) {
+    let data, loading, page = 0, progress = { practice: {}, mocks: {} };
     const filters = { mode: 'sectional', module: 'all', search: '' };
     let pageSize = 12;
     async function load() {
@@ -106,14 +106,36 @@
         .finally(() => { loading = null; });
       return loading;
     }
-    function openPractice() {
+    async function refreshProgress() {
+      try { progress = await Promise.resolve(getProgress()) || { practice: {}, mocks: {} }; }
+      catch (_) { progress = { practice: {}, mocks: {} }; }
+      progress.practice ||= {}; progress.mocks ||= {};
+      return progress;
+    }
+    const dateLabel = value => {
+      const time = Number(value || 0); if (!time) return '';
+      try { return new Date(time).toLocaleDateString(undefined, { day:'numeric', month:'short' }); } catch (_) { return ''; }
+    };
+    function practiceCount(task) {
+      const custom = Number(progress.practice?.[task.route]?.count);
+      if (Number.isFinite(custom) && custom >= 0) return custom;
+      if (task.type) return readingLibraries(data.reading).find(l => l.id === task.type)?.questions?.length || 0;
+      if (task.route === 'spoken-text') return data.writing?.spoken?.length || 0;
+      if (task.route === 'dictation') return data.writing?.dictation?.length || 0;
+      return 0;
+    }
+    async function openPractice() {
       const host = doc.getElementById('practiceHubPane');
-      if (host.dataset.ready) return;
-      host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2></div>'
+      host.innerHTML = '<p role="status">Loading practice choices…</p>';
+      try { await Promise.all([load(), refreshProgress()]); }
+      catch (error) { host.innerHTML = '<p role="alert">' + esc(error.message) + '</p>'; return; }
+      host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a task. Question totals and your most recent attempt are shown below.</p></div>'
         + '<div class="practice-banners">' + groups.map(g => '<section class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><h3 id="practice-' + g.id + '">' + g.title + '</h3><div>'
-          + g.tasks.map(t => '<button type="button" data-practice-route="' + t.route + '"><span>' + esc(t.label) + '</span><span aria-hidden="true">→</span></button>').join('') + '</div></section>').join('') + '</div>';
+          + g.tasks.map(t => {
+            const meta=progress.practice?.[t.route] || {}, count=practiceCount(t), last=dateLabel(meta.lastAttempt);
+            return '<button type="button" data-practice-route="' + t.route + '"><span class="practice-task-copy"><strong>' + esc(t.label) + '</strong><small>' + count + ' question' + (count===1?'':'s') + ' · ' + (last ? 'Last attempt ' + esc(last) : 'Not attempted yet') + '</small></span><span aria-hidden="true">→</span></button>';
+          }).join('') + '</div></section>').join('') + '</div>';
       host.onclick = e => { const b = e.target.closest('[data-practice-route]'); if (b) navigate(b.dataset.practiceRoute); };
-      host.dataset.ready = 'true';
     }
     function renderList() {
       const board = doc.getElementById('catalogue-board');
@@ -121,9 +143,12 @@
       const items = filterMocks(data.mocks, filters), pages = Math.max(1, Math.ceil(items.length / pageSize));
       page = Math.min(page, pages - 1);
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
-      board.innerHTML = shown.map(m => '<article class="mock-catalogue-card ' + m.module + '"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><h3>' + esc(m.title) + '</h3>'
-        + '<p class="mock-catalogue-description">' + esc(m.description || '') + '</p><p class="mock-catalogue-scope"><strong>Includes:</strong> ' + esc(m.scope || '') + '</p>'
-        + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">Start timed test <span aria-hidden="true">→</span></button></footer></article>').join('');
+      board.innerHTML = shown.map(m => {
+        const saved=progress.mocks?.[m.id] || {}, status=saved.status || 'New', when=dateLabel(saved.date);
+        return '<article class="mock-catalogue-card ' + m.module + '"><div class="mock-card-meta"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><span class="mock-status" data-status="' + esc(status.toLowerCase().replace(/\s+/g,'-')) + '">' + esc(status) + (when ? ' · ' + esc(when) : '') + '</span></div><h3>' + esc(m.title) + '</h3>'
+          + '<p class="mock-catalogue-description">' + esc(m.description || '') + '</p><p class="mock-catalogue-scope"><strong>Includes:</strong> ' + esc(m.scope || '') + '</p>'
+          + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
+      }).join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
       const empty = doc.getElementById('catalogue-empty'); empty.hidden = !!items.length;
       empty.textContent = filters.mode === 'full' ? 'No tests available yet.' : 'No mocks match these filters.';
@@ -144,7 +169,7 @@
       const host = doc.getElementById('mockTestsPane');
       if (options.module) { filters.module = options.module; filters.mode = 'sectional'; page = 0; }
       if (!data) host.innerHTML = '<p role="status">Loading mock tests…</p>';
-      try { await load(); } catch (error) {
+      try { await Promise.all([load(), refreshProgress()]); } catch (error) {
         host.innerHTML = '<p role="alert">' + esc(error.message) + '</p><button type="button" class="portal-button" data-retry-catalogue>Retry</button>';
         host.onclick = e => { if (e.target.closest('[data-retry-catalogue]')) openMocks(options); }; return;
       }
