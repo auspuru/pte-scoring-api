@@ -53,7 +53,7 @@ async def main():
         subprocess.run(['ffmpeg', '-v', 'error', '-i', str(tmp), '-f', 'null', '-'], check=True)
         data = tmp.read_bytes()
         tmp.replace(file)
-        manifest[q['id']] = {'textSha256': text_hash, 'audioSha256': digest(data), 'bytes': len(data), 'seconds': round(duration, 3), 'voice': voice, 'rate': rate}
+        manifest[q['id']] = {'textSha256': text_hash, 'audioSha256': digest(data), 'bytes': len(data), 'seconds': round(duration, 3), 'voice': voice, 'rate': rate, 'validationStatus': 'validated', 'validatedAt': __import__('datetime').date.today().isoformat()}
         manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
         print(q['id'], f'{duration:.2f}s', len(data), 'bytes', flush=True)
 
