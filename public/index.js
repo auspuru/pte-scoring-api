@@ -485,6 +485,10 @@ function captureAccountProgress() {
 function receiveAccountProgress(remote, initial = false) {
   if (!currentUserId || !window.AccountProgress) return remote;
   accountCloudSnapshot.set(canonicalClientUserId(currentUserId), remote);
+  if (userProfile && Number(remote?.studyPlan?.updatedAt || 0) > Number(userProfile.studyPlan?.updatedAt || 0)) {
+    userProfile.studyPlan = remote.studyPlan;
+    LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_studyPlan`, remote.studyPlan);
+  }
   const local = initial ? localAccountProgress() : captureAccountProgress() || localAccountProgress();
   const merged = window.AccountProgress.mergeProgress(remote, local);
   cacheAccountProgress(merged);
@@ -517,7 +521,7 @@ function accountSyncPayload(full) {
   const previous = accountCloudSnapshot.get(canonicalClientUserId(currentUserId)) || {};
   const delta = window.AccountProgress.progressDelta(previous, full);
   const oldAttempts = new Map((previous.practiceHistory || []).map(a => [String(a.id), a]));
-  return { ...delta, email: full.email, templates: full.templates, currentId: full.currentId, quotaUsed: full.quotaUsed, quotaDate: full.quotaDate,
+  return { ...delta, email: full.email, templates: full.templates, currentId: full.currentId, quotaUsed: full.quotaUsed, quotaDate: full.quotaDate, studyPlan: full.studyPlan || {},
     practiceHistory: full.practiceHistory.filter(a => !window.AccountProgress.equal(a, oldAttempts.get(String(a.id)))),
     practiceHistoryDeleted: full.practiceHistoryDeleted.filter(id => !(previous.practiceHistoryDeleted || []).includes(id)) };
 }
@@ -977,6 +981,7 @@ async function loadUserData(uid) {
         practiceHistory: mergedPracticeHistory,
         practiceHistoryDeleted,
         vocabProgress: data.vocabProgress || {},
+        studyPlan: data.studyPlan || LocalStore.get(`pte_${uid}_studyPlan`) || {},
         templates: data.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
       };
       if (userProfile.email) {
@@ -991,6 +996,7 @@ async function loadUserData(uid) {
       // server.
       LocalStore.set(`pte_${uid}_essays`, essays);
       LocalStore.set(`pte_${uid}_currentId`, currentId);
+      LocalStore.set(`pte_${uid}_studyPlan`, userProfile.studyPlan || {});
       
       // Seed first time if essays are empty
       if (essays.length === 0) {
@@ -1058,7 +1064,7 @@ async function loadUserData(uid) {
     userProfile = {
       email: '', quotaUsed: {}, quotaDate: todayStamp(),
       practiceHistory: cachedPracticeHistory, practiceHistoryDeleted,
-      vocabProgress: cachedProgress.vocabProgress, templates: getDefaultTemplates()
+      vocabProgress: cachedProgress.vocabProgress, studyPlan: LocalStore.get(`pte_${uid}_studyPlan`) || {}, templates: getDefaultTemplates()
     };
     syncQueued = true;
     return true; // continue in offline mode
@@ -1133,6 +1139,7 @@ async function flushSyncDirect(options = {}) {
       currentId: currentId,
       quotaUsed: userProfile?.quotaUsed || { essay: 0, idea: 0 },
       quotaDate: userProfile?.quotaDate || todayStamp(),
+      studyPlan: userProfile?.studyPlan || {},
       practiceHistory: userProfile?.practiceHistory || [],
       practiceHistoryDeleted: practiceHistoryDeleted || userProfile?.practiceHistoryDeleted || [],
       vocabProgress: userProfile?.vocabProgress || {},
@@ -1177,6 +1184,7 @@ async function flushSyncDirect(options = {}) {
     cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
     LocalStore.set(`pte_${currentUserId}_currentId`, currentId);
+    LocalStore.set(`pte_${syncUserId}_studyPlan`, userProfile?.studyPlan || {});
     LocalStore.set(`pte_${syncUserId}_syncPending`, syncQueued);
     setSync(syncQueued ? 'syncing' : 'synced', syncQueued ? 'Saving latest changes…' : 'Synced across devices');
     lastSyncOk = true;
@@ -1340,10 +1348,124 @@ async function consumeQuota(kind) {
 }
 
 // ============================================================
+//  STUDY TARGET + TODAY'S PLAN
+// ============================================================
+function normaliseStudyPlan(plan = {}) {
+  const score = Number(plan.targetScore);
+  const frequency = Number(plan.weeklyFrequency);
+  return {
+    targetScore: Number.isFinite(score) && score >= 10 && score <= 90 ? Math.round(score) : null,
+    testDate: /^\d{4}-\d{2}-\d{2}$/.test(String(plan.testDate || '')) ? String(plan.testDate) : '',
+    weeklyFrequency: Number.isInteger(frequency) && frequency >= 2 && frequency <= 7 ? frequency : null,
+    updatedAt: Number(plan.updatedAt || 0)
+  };
+}
+
+function currentStudyPlan() {
+  return normaliseStudyPlan(userProfile?.studyPlan || LocalStore.get(`pte_${canonicalClientUserId(currentUserId)}_studyPlan`) || {});
+}
+
+function saveStudyPlanSettings() {
+  if (!userProfile) return;
+  const scoreRaw = document.getElementById('studyTargetScore')?.value.trim() || '';
+  const dateRaw = document.getElementById('studyTestDate')?.value || '';
+  const frequencyRaw = document.getElementById('studyWeeklyFrequency')?.value || '';
+  const score = scoreRaw === '' ? null : Number(scoreRaw);
+  if (score !== null && (!Number.isInteger(score) || score < 10 || score > 90)) {
+    toast('Target PTE score must be a whole number from 10 to 90.', true);
+    return;
+  }
+  const frequency = frequencyRaw ? Number(frequencyRaw) : null;
+  userProfile.studyPlan = normaliseStudyPlan({ targetScore: score, testDate: dateRaw, weeklyFrequency: frequency, updatedAt: Date.now() });
+  LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_studyPlan`, userProfile.studyPlan);
+  queueSync();
+  renderTodayPlan();
+  const status = document.getElementById('studyPlanSettingsStatus');
+  if (status) status.textContent = 'Saved to your account.';
+  toast('Study target saved.');
+}
+
+function fillStudyPlanSettings() {
+  const plan = currentStudyPlan();
+  const score = document.getElementById('studyTargetScore');
+  const date = document.getElementById('studyTestDate');
+  const frequency = document.getElementById('studyWeeklyFrequency');
+  if (score) score.value = plan.targetScore ?? '';
+  if (date) date.value = plan.testDate || '';
+  if (frequency) frequency.value = plan.weeklyFrequency || '';
+  const status = document.getElementById('studyPlanSettingsStatus');
+  if (status) status.textContent = '';
+}
+
+function openStudyPlanSettings() {
+  openUserMenu();
+  fillStudyPlanSettings();
+  setTimeout(() => document.getElementById('studyTargetScore')?.focus(), 0);
+}
+
+function todayPlanWeakArea() {
+  const candidates = [];
+  const swt = Object.values(LocalStore.get(getPteStorageKey('history')) || {}).flat().filter(Boolean)
+    .map(a => Number(a.overall_score)).filter(Number.isFinite);
+  if (swt.length >= 2) candidates.push({ label: 'Summarise Written Text', route: 'swt', score: swt.reduce((a,b)=>a+b,0) / swt.length / 90 });
+
+  const essays = getPracticeHistory().filter(a => Number.isFinite(a?.scores?.total));
+  if (essays.length >= 2) candidates.push({ label: 'Write Essay', route: 'practice', score: essays.reduce((n,a)=>n+a.scores.total,0) / essays.length / 26 });
+
+  const reading = localAccountProgress()?.readingProgress;
+  const results = Object.values(window.AccountProgress?.unpackReading?.(reading)?.practiceResults || {})
+    .filter(r => Number.isFinite(r?.earned) && Number.isFinite(r?.maximum || r?.total) && Number(r.maximum || r.total) > 0);
+  if (results.length >= 2) candidates.push({ label: 'Reading practice', route: 'practice-hub',
+    score: results.reduce((n,r)=>n + (r.earned / Number(r.maximum || r.total)),0) / results.length });
+
+  return candidates.sort((a,b)=>a.score-b.score)[0] || null;
+}
+
+function todayPlanActionHtml({ eyebrow, title, detail, route, primary = false }) {
+  return '<button type="button" class="today-plan-action'+(primary?' primary':'')+'" onclick="switchSection(\''+route+'\')">'+
+    '<small>'+escapeHtml(eyebrow)+'</small><strong>'+escapeHtml(title)+'</strong><span class="portal-task-link">'+escapeHtml(detail)+' <span aria-hidden="true">→</span></span></button>';
+}
+
+function renderTodayPlan() {
+  const host = document.getElementById('todayPlanActions');
+  const target = document.getElementById('todayPlanTarget');
+  if (!host || !target) return;
+
+  const plan = currentStudyPlan();
+  const parts = [];
+  if (plan.targetScore) parts.push('Target PTE ' + plan.targetScore);
+  if (plan.testDate) {
+    const parsed = new Date(plan.testDate + 'T12:00:00');
+    if (!Number.isNaN(parsed.getTime())) parts.push('Test ' + parsed.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}));
+  }
+  if (plan.weeklyFrequency) parts.push(plan.weeklyFrequency === 7 ? 'Daily study' : plan.weeklyFrequency + ' days/week');
+  target.textContent = parts.length ? parts.join(' · ') : 'Set a target score and test date to personalise this plan.';
+
+  const actions = [];
+  const draft = portalDraftStore?.read(currentUserId);
+  if (draft?.essayText?.trim()) {
+    actions.push({ eyebrow:'Continue', title:draft.questionTitle || 'Your unfinished essay', detail:countWords(draft.essayText)+' words saved', route:'practice', primary:true });
+  } else {
+    let reading = null;
+    try { reading = window.AccountProgress?.unpackReading?.(localAccountProgress()?.readingProgress)?.session; } catch (_) {}
+    if (reading && !reading.done) actions.push({ eyebrow:'Continue', title:reading.name || 'Reading session', detail:'Resume where you stopped', route:'reading', primary:true });
+    else actions.push({ eyebrow:'Start here', title:'One focused practice question', detail:'Build momentum in 10–15 minutes', route:'practice-hub', primary:true });
+  }
+
+  const weak = todayPlanWeakArea();
+  actions.push(weak
+    ? { eyebrow:'Focus area', title:weak.label, detail:'Based on your saved practice results', route:weak.route }
+    : { eyebrow:'Build your baseline', title:'Complete two scored practices', detail:'Unlock a data-backed focus area', route:'practice-hub' });
+  actions.push({ eyebrow:'Short revision', title:'Review vocabulary', detail:'Finish with a quick recall task', route:'vocab' });
+  host.innerHTML = actions.slice(0,3).map(todayPlanActionHtml).join('');
+}
+
+// ============================================================
 //  USER MENU
 // ============================================================
 function openUserMenu() {
   document.getElementById('userMenuEmail').textContent = (currentUser && currentUser.email) || (currentUserId.includes('@') ? currentUserId : (currentUserId + '@ptewriting.com'));
+  fillStudyPlanSettings();
   const written = essays.filter(e => essayStatus(e) === 'written').length;
   document.getElementById('userMenuStats').innerHTML =
     `${essays.length} essays · ${written} written · Unlimited practice attempts`;
@@ -12635,6 +12757,8 @@ function updateDashboard() {
 
   const swtPassagesEl = document.getElementById('dashSwtPassages');
   if (swtPassagesEl) swtPassagesEl.textContent = swtPassagesCount;
+
+  renderTodayPlan();
 
   // Quota Status
   updateDashboardQuota();
