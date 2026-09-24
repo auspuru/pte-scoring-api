@@ -52,7 +52,7 @@ test('The single catalogue classifies integrated Reading sets as sectional and f
   const focused = catalogue.filterMocks(items, { mode: 'practice', module: 'reading' });
   assert.deepEqual(sectionals.map(m => m.id), ['practice-mock-1', 'practice-mock-2', 'practice-mock-3', 'sectional-mock-1', 'sectional-mock-2', 'sectional-mock-3']);
   assert.deepEqual(focused.map(m => m.id), ['practice-mock-4', 'practice-mock-5', 'practice-mock-6', 'practice-mock-7', 'practice-mock-8', 'practice-mock-9']);
-  assert(sectionals.every(m => /SWT.*Reading.*HIW.*HCS/.test(m.scope)));
+  assert(sectionals.every(m => /Summarise Written Text.*Reading.*Highlight Incorrect Words.*Highlight Correct Summary/.test(m.scope)));
   assert.deepEqual(catalogue.filterMocks(items, { mode: 'full' }), []);
   assert.equal(catalogue.filterMocks(items, { module: 'writing' }).length, 33);
   assert.equal(catalogue.filterMocks(items, { search: 'essay topic 33' })[0].id, 'writing-33');
@@ -104,7 +104,7 @@ test('Mock tabs, module filtering, pagination, topic search and launch keep one 
   assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 39 tests');
   h.click({ cataloguePage: '1' }); assert.equal(h.nodes.get('catalogue-page').textContent, '2 / 4');
   h.change('catalogue-module', 'reading'); assert.equal((board().match(/data-mock-id=/g) || []).length, 6);
-  h.click({ catalogueMode: 'practice' }); assert.match(board(), /practice-mock-4/); assert.match(board(), /Focused FIB practice only/); assert.match(board(), /10 FIB questions/); assert.doesNotMatch(board(), /SWT \+ all Reading/);
+  h.click({ catalogueMode: 'practice' }); assert.match(board(), /practice-mock-4/); assert.match(board(), /Focused FIB practice only/); assert.match(board(), /10 Fill in the Blanks questions/); assert.doesNotMatch(board(), /SWT \+ all Reading/);
   h.click({ mockId: 'practice-mock-4' }); assert.deepEqual(h.starts, [['reading', 'practice-mock-4']]);
   h.click({ catalogueMode: 'sectional' }); h.change('catalogue-module', 'writing');
   h.mocks.oninput({ target: { id: 'catalogue-search', value: 'essay topic 33' } });
@@ -115,7 +115,7 @@ test('Mock tabs, module filtering, pagination, topic search and launch keep one 
   assert.equal(h.starts.length, 2, 'Filtering never starts or replaces an attempt');
   await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
   assert.equal(h.nodes.get('catalogue-module').value, 'writing');
-  assert.match(h.mocks.innerHTML, /value="essay topic 33"/);
+  assert.match(h.mocks.innerHTML, /value="essay topic 33"/); assert.doesNotMatch(h.mocks.innerHTML,/Tests per page/);
   h.click({ mockHistory: 'reading' }); h.click({ mockHistory: 'writing' });
   assert.deepEqual(h.navigations.map(n => n[0]), ['reading', 'writing-history']);
   assert.equal(h.navigations[0][1].readingRequest.history, true);
@@ -155,4 +155,14 @@ test('Original prediction-pattern FIB questions are exposed without copying the 
       assert.match(q.reasoning.correct,/grammar|collocation|vocabulary/i);
     });
   }
+});
+
+
+test('Leaving Reading parks timed sessions instead of letting clocks run away', () => {
+  const source=fs.readFileSync(require.resolve('../public/reading-practice'),'utf8');
+  assert.match(source,/function parkSession/);
+  assert.match(source,/pausedRemainingSeconds/);
+  assert.match(source,/function resumeParkedSession/);
+  assert.match(source,/function leave\(\).*parkSession\(\)/);
+  assert.doesNotMatch(source,/timer continues/i);
 });
