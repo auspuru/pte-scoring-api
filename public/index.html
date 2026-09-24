@@ -70,6 +70,9 @@
 <script src="/pte-estimate-display.js?v=1" defer></script>
 <script src="/student-progress.js?v=20260924-wrapup" defer></script>
 <script src="/interventions-client.js?v=5" defer></script>
+<script src="/writing-lab-report.js?v=2" defer></script>
+<script src="/pte-estimate-display.js?v=1" defer></script>
+<script src="/writing-lab-client.js?v=20260924-inpage" defer></script>
 <script src="index.min.js?v=20260924-accessibility" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/student-progress.css?v=1">
@@ -253,8 +256,17 @@
 
       <section id="speakingPane" class="pane" hidden aria-label="Speaking practice"></section>
       <section id="readingPane" class="pane" hidden aria-label="Reading practice"></section>
-      <section id="writingLabScreen" class="pane" hidden aria-label="Writing sectional mocks and spoken text practice">
-        <iframe id="writingLabFrame" title="Writing practice" loading="lazy"></iframe>
+      <section id="writingLabScreen" class="pane writing-lab-shell" hidden aria-label="Writing sectional mocks and spoken text practice">
+        <main id="lab" tabindex="-1"><p class="loading" role="status">Open a Writing or Listening task to begin.</p></main>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+          <h2 id="confirm-title">Move to the next question?</h2>
+          <p id="confirm-text"></p>
+          <div class="dialog-actions">
+            <button id="confirm-cancel" class="secondary" type="button">Keep writing</button>
+            <button id="confirm-ok" class="primary" type="button">Submit and continue</button>
+          </div>
+        </dialog>
       </section>
       <!-- Combined Dashboard Pane -->
       <div id="dashboardPane" class="pane active">
