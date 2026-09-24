@@ -75,13 +75,13 @@
     const auth=username?'':'<p class="auth-note">Sign in to your existing workspace account to practise.</p>';
     let content='';
     if(tab==='history') {
-      content='<h1>'+(historyKind==='mock'?'Writing mock attempts':historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h1><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
+      content='<h2>'+(historyKind==='mock'?'Writing mock attempts':historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h2><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
     } else if(tab==='mocks') {
-      content='<h1>Writing sectional mock</h1><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
+      content='<h2>Writing sectional mock</h2><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
     } else {
       const dictation=tab==='wfd', questions=dictation?(catalog.dictation||[]):catalog.spoken;
       libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(questions.length/12)-1));
-      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h1>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h1><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
+      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
         +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card"><h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+q.minutes+' minutes</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
     }
     root.innerHTML='<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>';
@@ -361,7 +361,7 @@
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -447,7 +447,7 @@
         else if(!inPortal) await hub(requestedView);
         return true;
       } catch(e) {
-        if(!inPortal) root.innerHTML='<div class="hub"><h1>Unable to load practice</h1><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';
+        if(!inPortal) root.innerHTML='<div class="hub"><h2>Unable to load practice</h2><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';
         document.getElementById('reload-lab')?.addEventListener('click',()=>{bootPromise=null;boot();},{once:true});
         throw e;
       } finally { bootPromise=null; }
