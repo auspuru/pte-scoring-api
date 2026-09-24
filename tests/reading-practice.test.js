@@ -188,14 +188,15 @@ test('Every mock and diagnostic uses the same exam shell while practice keeps it
   }else assert.match(h.host.innerHTML,/data-action="check"/);
  }
 });
-test('Exam Next immediately skips unanswered parts, blocks backward movement, and preserves the deadline',async()=>{
- const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+test('Exam Next skips unanswered parts and parks the remaining time on exit',async()=>{
+ const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
  const saved=()=>JSON.parse(h.values.get(storageKey('first'))),deadline=saved().session.deadline;
- h.click({action:'exam-next'});assert.equal(saved().session.index,1);assert.doesNotMatch(h.host.innerHTML,/unanswered parts|Continue to next question|Keep working/);
- assert.deepEqual(saved().session.answers,{});
+ clock.add(30000);h.click({action:'exam-next'});assert.equal(saved().session.index,1);assert.deepEqual(saved().session.answers,{});
  h.click({question:'0'});h.click({move:'-1'});h.click({action:'check'});assert.equal(saved().session.index,1);assert.equal(saved().session.checked.length,0);
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);assert.match(h.host.innerHTML,/Continue session/);
- h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.equal(saved().session.index,1);assert.equal(saved().session.deadline,deadline);assert.match(h.host.innerHTML,/Question 2 of 16/);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
+ const parked=saved().session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,Math.ceil((deadline-clock.now)/1000));assert.match(h.host.innerHTML,/Continue session/);
+ clock.add(5*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ const resumed=saved().session;assert.equal(resumed.index,1);assert.equal(resumed.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert.match(h.host.innerHTML,/Question 2 of 16/);
 });
 test('Finish mock submits once and shows every question on one review page',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
@@ -257,16 +258,18 @@ test('An answer event after the deadline cannot change the response before the n
  h.timers.at(-1)();assert.equal(JSON.parse(h.values.get(key)).history.length,1);
 });
 
-test('Next and resume enforce expiry even when browser background timers have not run',async()=>{
- for(const action of ['exam-next','resume']){
-  const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
-  const key=storageKey('first'),initial=JSON.parse(h.values.get(key)).session;
-  h.ctx.Date=class extends Date { static now(){return initial.deadline+3600000;} };
-  h.click({action});const saved=JSON.parse(h.values.get(key));
-  assert.equal(saved.session.done,true);assert.equal(saved.session.index,0);
-  assert.equal(saved.session.finishedAt-initial.startedAt,30*60000);
-  assert.equal(saved.history.length,1);
- }
+test('Active actions enforce expiry while a parked session ignores time away until resume',async()=>{
+ const active=client();await active.ctx.ReadingPractice.open();await active.click({start:'sectional-2'});
+ const activeKey=storageKey('first'),initial=JSON.parse(active.values.get(activeKey)).session;
+ active.ctx.Date=class extends Date { static now(){return initial.deadline+3600000;} };
+ active.click({action:'exam-next'});let saved=JSON.parse(active.values.get(activeKey));
+ assert.equal(saved.session.done,true);assert.equal(saved.session.finishedAt-initial.startedAt,30*60000);assert.equal(saved.history.length,1);
+
+ const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();await h.click({start:'sectional-2'});
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
+ assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
+ clock.add(60*60000);h.click({action:'resume'});saved=snapshot(h);
+ assert.equal(saved.session.done,false);assert.equal(saved.history.length,0);assert.equal(saved.session.deadline,clock.now+parked.pausedRemainingSeconds*1000);
  assert.equal(remaining({deadline:0},1),0);
 });
 
@@ -346,13 +349,13 @@ test('Reading expiry skips remaining reading items and starts the shared HCS/HIW
  assert.equal(s.audioStates[s.questions[s.index].uid].status,'countdown');
 });
 
-test('Returning after all four stage deadlines finishes once without granting new time or starting audio',async()=>{
- const {h,clock,audio}=await mixedClient(true);const began=snapshot(h).session.startedAt;
- h.ctx.ReadingPractice.leave();clock.set(began+80*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
- const saved=snapshot(h);assert.equal(saved.session.done,true);assert.equal(saved.session.finishedAt,began+55*60000);
- assert.equal(saved.session.stageIndex,3);assert(saved.session.stages.every(stage=>stage.completionReason==='timeout'));
- assert.equal(saved.history.length,1);assert.equal(audio.utterances.length,0);
- h.timers.at(-1)();assert.equal(snapshot(h).history.length,1);
+test('Leaving a mixed mock parks its stage even after a long absence',async()=>{
+ const {h,clock,audio}=await mixedClient(true);
+ h.ctx.ReadingPractice.leave();const parked=snapshot(h).session;
+ assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));assert.equal(parked.stageIndex,0);
+ clock.add(80*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ const saved=snapshot(h);assert.equal(saved.session.done,false);assert.equal(saved.history.length,0);assert.equal(saved.session.stageIndex,0);
+ assert.equal(saved.session.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert.equal(audio.utterances.length,0);
 });
 
 test('Both saved SWT responses use the existing grader independently and merge into one attempt',async()=>{
@@ -401,22 +404,27 @@ test('A speech engine that silently blocks startup offers recovery after eight s
  h.speaker.play('blocked','Text to hear.');h.utterances[1].onstart();h.utterances[1].onend();assert.equal(h.events.at(-1)[1],'complete');
 });
 
-test('Exiting or refreshing during the countdown cancels autoplay while retaining the stage deadline',async()=>{
- const {h,clock,audio}=await mixedClient(true);goToAudio(h);const s=snapshot(h).session,q=s.questions[s.index],deadline=s.deadline;
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});clock.add(15000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
- h.click({action:'resume'});assert.equal(snapshot(h).session.audioStates[q.uid].status,'error');assert.equal(snapshot(h).session.deadline,deadline);
- h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();h.timers.at(-1)();assert.equal(audio.utterances.length,0);assert.equal(snapshot(h).session.deadline,deadline);
+test('Exiting during the countdown cancels autoplay and shifts the deadline by time spent away',async()=>{
+ const {h,clock,audio}=await mixedClient(true);goToAudio(h);const s0=snapshot(h).session,q=s0.questions[s0.index],oldDeadline=s0.deadline;
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
+ assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
+ clock.add(15000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
+ h.click({action:'resume'});let resumed=snapshot(h).session;assert.equal(resumed.audioStates[q.uid].status,'error');assert.equal(resumed.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert(resumed.deadline>oldDeadline);
+ const resumedDeadline=resumed.deadline;h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();h.timers.at(-1)();assert.equal(audio.utterances.length,0);assert.equal(snapshot(h).session.deadline,resumedDeadline);
  h.click({action:'play'});assert.equal(audio.utterances.length,1);
  h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();audio.utterances[0].onstart();audio.utterances[0].onend();assert.doesNotMatch(h.host.innerHTML,/data-audio-status/);
 });
 
-test('A backgrounded page cancels pending audio and late completion cannot pass a stage deadline',async()=>{
+test('A backgrounded page parks the timer, cancels pending audio, and resumes with the same remaining time',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness(),listeners=new Map();Object.assign(h.ctx,audio.env);
  h.ctx.document.addEventListener=(name,fn)=>listeners.set(name,fn);h.ctx.document.removeEventListener=name=>listeners.delete(name);
  h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();await h.click({start:'full'});goToAudio(h);
- let s=snapshot(h).session,q=s.questions[s.index];h.ctx.document.hidden=true;listeners.get('visibilitychange')();clock.add(12000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
- h.ctx.document.hidden=false;listeners.get('visibilitychange')();h.click({action:'play'});const utterance=audio.utterances[0];utterance.onstart();
- s=snapshot(h).session;clock.set(s.deadline+1);utterance.onend();
+ let s=snapshot(h).session,q=s.questions[s.index];h.ctx.document.hidden=true;listeners.get('visibilitychange')();const parked=snapshot(h).session;
+ assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
+ clock.add(12000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
+ h.ctx.document.hidden=false;listeners.get('visibilitychange')();s=snapshot(h).session;
+ assert.equal(s.done,false);assert.equal(s.deadline,clock.now+parked.pausedRemainingSeconds*1000);
+ h.click({action:'play'});const utterance=audio.utterances[0];utterance.onstart();clock.set(s.deadline+1);utterance.onend();
  const saved=snapshot(h);assert.equal(saved.session.done,true);assert.notEqual(saved.session.audioStates[q.uid].status,'complete');assert.equal(saved.history.length,1);
 });
 
@@ -428,56 +436,42 @@ test('Legacy mixed attempts keep their single timer and original SWT count on re
  assert.equal(snapshot(h).session.questions.filter(q=>q.type==='swt').length,1);assert.equal(snapshot(h).session.deadline,legacy.session.deadline);
 });
 
-test('Stage expiry on Reading home stays on home and cannot start audio until Resume',async()=>{
+test('Reading home parks the current stage and no audio can start until Resume',async()=>{
  const {h,clock,audio}=await mixedClient(true);nextQuestion(h);nextQuestion(h);
- const reading=snapshot(h).session;
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
- clock.set(reading.deadline+1);h.timers.at(-1)();
- let s=snapshot(h).session;assert.equal(s.stageIndex,3);assert.equal(s.done,false);
- assert.doesNotMatch(h.host.innerHTML,/data-exam-player/);assert.match(h.host.innerHTML,/Continue session/);
- assert.equal(s.audioStates[s.questions[s.index].uid],undefined);
- clock.add(15000);h.timers.at(-1)();assert.equal(audio.utterances.length,0);
- const deadline=s.deadline;h.click({action:'resume'});s=snapshot(h).session;
- assert.match(h.host.innerHTML,/data-exam-player/);assert.equal(s.deadline,deadline);
- assert.equal(s.audioStates[s.questions[s.index].uid].readyAt,clock.now+10000);
- clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);
+ const before=snapshot(h).session;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
+ assert.equal(parked.stageIndex,2);assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
+ clock.set(before.deadline+15*60000);h.timers.at(-1)();let s=snapshot(h).session;
+ assert.equal(s.stageIndex,2);assert.equal(s.done,false);assert.equal(audio.utterances.length,0);assert.match(h.host.innerHTML,/Continue session/);
+ h.click({action:'resume'});s=snapshot(h).session;assert.equal(s.stageIndex,2);assert.equal(s.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert.match(h.host.innerHTML,/data-exam-player/);
 });
 
-test('Automatic completion on Reading home saves both SWT grades without forcing open the report',async()=>{
+test('Reading home does not consume the parked clock or auto-complete a mock',async()=>{
  const {h,clock,audio}=await mixedClient(true);let calls=0;h.ctx.requestSwtGrade=async()=>{calls++;return confirmedGrade;};
  h.host.oninput({target:{dataset:{swtResponse:''},value:'My first saved response.'}});nextQuestion(h);
  h.host.oninput({target:{dataset:{swtResponse:''},value:'My second saved response.'}});
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
- clock.set(snapshot(h).session.startedAt+80*60000);h.timers.at(-1)();await flush();
- const saved=snapshot(h);assert(saved.session.done);assert.equal(saved.history.length,1);assert.equal(calls,2);assert.equal(saved.history[0].pending,0);
- assert.doesNotMatch(h.host.innerHTML,/reading-report|data-exam-player/);assert.match(h.host.innerHTML,/Review result/);assert.equal(audio.utterances.length,0);
- h.click({action:'resume'});assert.match(h.host.innerHTML,/reading-report/);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
+ clock.add(80*60000);h.timers.at(-1)();await flush();
+ const saved=snapshot(h);assert.equal(saved.session.done,false);assert.equal(saved.history.length,0);assert.equal(saved.session.deadline,null);
+ assert.equal(saved.session.pausedRemainingSeconds,parked.pausedRemainingSeconds);assert.equal(calls,1);assert.equal(audio.utterances.length,0);
+ h.click({action:'resume'});assert.match(h.host.innerHTML,/data-exam-player/);
 });
 
-test('Background expiry and SWT grade completion cannot cancel a newly requested mixed test',async()=>{
- const {h,clock}=await mixedClient();let calls=0;
- h.ctx.requestSwtGrade=async()=>{calls++;return confirmedGrade;};
- h.host.oninput({target:{dataset:{swtResponse:''},value:'My saved response.'}});
- const startedAt=snapshot(h).session.startedAt;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
- delete h.ctx.passages;
+test('A parked prior mock and its SWT grade cannot cancel a newly requested mixed test',async()=>{
+ const {h,clock}=await mixedClient();let calls=0;h.ctx.requestSwtGrade=async()=>{calls++;return confirmedGrade;};
+ h.host.oninput({target:{dataset:{swtResponse:''},value:'My saved response.'}});nextQuestion(h);await flush();assert.equal(calls,1);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});delete h.ctx.passages;
  let resolve;h.ctx.fetch=()=>new Promise(r=>resolve=r);const pending=h.click({start:'full'});
- clock.set(startedAt+80*60000);h.timers.at(-1)();await flush();
- assert.equal(calls,1);assert.equal(snapshot(h).history[0].pending,0);
- assert.doesNotMatch(h.host.innerHTML,/reading-report|data-exam-player/);
+ clock.add(80*60000);h.timers.at(-1)();await flush();assert.equal(snapshot(h).history.length,0);
  resolve({ok:true,json:async()=>swtPassages});await pending;
- const s=snapshot(h).session;assert.equal(s.mode,'full');assert.equal(s.done,false);assert.equal(s.stageIndex,0);
+ const next=snapshot(h).session;assert.equal(next.mode,'full');assert.equal(next.done,false);assert.equal(next.stageIndex,0);assert.equal(calls,1);
 });
 
-test('Resume opens the current stage or completed result on its first click when background timers were delayed',async()=>{
- for(const expiredAll of [false,true]){
-  const {h,clock}=await mixedClient();nextQuestion(h);nextQuestion(h);
-  const reading=snapshot(h).session;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
-  clock.set(expiredAll?reading.startedAt+80*60000:reading.deadline+1);
-  h.click({action:'resume'});
-  const s=snapshot(h).session;assert.equal(s.done,expiredAll);
-  assert.match(h.host.innerHTML,expiredAll?/reading-report/:/data-exam-player/);
-  if(!expiredAll){assert.equal(s.stageIndex,3);assert.equal(s.deadline,reading.deadline+10*60000);}
- }
+test('Resume restores the parked current stage even after a long delay',async()=>{
+ const {h,clock}=await mixedClient();nextQuestion(h);nextQuestion(h);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
+ clock.add(80*60000);h.click({action:'resume'});
+ const s=snapshot(h).session;assert.equal(s.done,false);assert.equal(s.stageIndex,2);assert.match(h.host.innerHTML,/data-exam-player/);
+ assert.equal(s.deadline,clock.now+parked.pausedRemainingSeconds*1000);
 });
 
 test('The mock catalogue keeps the six integrated mocks and adds six imported practice mocks',async()=>{
@@ -561,18 +555,17 @@ test('The complete review escapes student and model content and exposes feedback
  assert.doesNotMatch(html,/<script>|<img src=x|<svg|<details|data-question=/);assert.match(html,/&lt;svg/);assert.match(html,/A useful example/);assert.match(html,/Optional refinement/);
 });
 
-test('Practice mocks keep one 25-minute deadline across SWT, Reading, audio, reload and expiry',async()=>{
+test('Practice mocks preserve a 25-minute budget across tasks and pause that budget while away',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);h.ctx.passages=swtPassages;
  await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-1'});
- const initial=snapshot(h).session,deadline=initial.startedAt+25*60000;
- clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,deadline);
- clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.questions[2].type,'dropdown');assert.equal(snapshot(h).session.deadline,deadline);
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});clock.add(60000);
- h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
- assert.equal(snapshot(h).session.deadline,deadline);assert.match(h.host.innerHTML,/20:00/);
- goToAudio(h);assert.equal(snapshot(h).session.deadline,deadline);
- const readyAt=snapshot(h).session.audioStates[snapshot(h).session.questions[snapshot(h).session.index].uid].readyAt;
- clock.set(readyAt);h.timers.at(-1)();const utterance=audio.utterances.at(-1);utterance.onstart();
+ const initial=snapshot(h).session,firstDeadline=initial.startedAt+25*60000;
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,firstDeadline);
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.questions[2].type,'dropdown');assert.equal(snapshot(h).session.deadline,firstDeadline);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,21*60);
+ clock.add(60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
+ let active=snapshot(h).session;assert.equal(active.deadline,clock.now+21*60000);assert.match(h.host.innerHTML,/21:00/);
+ goToAudio(h);active=snapshot(h).session;const deadline=active.deadline;
+ const readyAt=active.audioStates[active.questions[active.index].uid].readyAt;clock.set(readyAt);h.timers.at(-1)();const utterance=audio.utterances.at(-1);utterance.onstart();
  clock.set(deadline);h.timers.at(-1)();utterance.onend();
  const finished=snapshot(h);assert.equal(finished.session.done,true);assert.equal(finished.session.completionReason,'timeout');assert.equal(finished.session.finishedAt,deadline);assert.equal(finished.history.length,1);assert.equal(finished.history[0].excluded,4);
  h.timers.at(-1)();h.host.onchange({target:{dataset:{choice:'0'}}});h.host.oninput({target:{dataset:{swtResponse:''},value:'Too late'}});
@@ -588,13 +581,13 @@ test('Saved untimed practice drafts retain their original format while new mocks
  await h.click({start:'practice-mock-2'});assert.equal(snapshot(h).session.deadline-clock.now,25*60000);
 });
 
-test('Switching task libraries leaves a running mock and its deadline intact',async()=>{
+test('Switching task libraries parks a running mock until the student resumes it',async()=>{
  const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open({mockId:'practice-mock-1'});
  const before=snapshot(h).session;
- await h.ctx.ReadingPractice.open({libraryId:'mcma'});
+ await h.ctx.ReadingPractice.open({libraryId:'mcma'});const parked=snapshot(h).session;
  assert.match(h.host.innerHTML,/Reading Multiple Answers/);assert.doesNotMatch(h.host.innerHTML,/data-start=/);
- assert.equal(snapshot(h).session.id,before.id);assert.equal(snapshot(h).session.deadline,before.deadline);
- await h.ctx.ReadingPractice.open({history:true});
+ assert.equal(parked.id,before.id);assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
+ await h.ctx.ReadingPractice.open({history:true});assert.equal(snapshot(h).session.deadline,null);
  assert.match(h.host.innerHTML,/Reading mock attempts/);assert.match(h.host.innerHTML,/Continue session/);
 });
 
