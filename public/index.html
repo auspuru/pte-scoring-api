@@ -295,6 +295,18 @@
           </div>
         </div>
 
+        <section class="today-plan-card" id="todayPlanCard" aria-labelledby="todayPlanTitle">
+          <div class="today-plan-head">
+            <div>
+              <span class="portal-eyebrow">Your study focus</span>
+              <h3 id="todayPlanTitle">Today’s plan</h3>
+              <p id="todayPlanTarget">Set a target score and test date to personalise this plan.</p>
+            </div>
+            <button type="button" class="portal-button" onclick="openStudyPlanSettings()">Edit target</button>
+          </div>
+          <div class="today-plan-actions" id="todayPlanActions" aria-live="polite"></div>
+        </section>
+
         <div class="portal-resume" id="portalResume" hidden>
           <div><span class="portal-eyebrow">Ready when you are</span><strong id="portalResumeTitle">Your essay draft is here</strong><p id="portalResumeDetail">Continue from where you left off.</p></div>
           <button type="button" class="portal-button primary" onclick="resumePortalEssay()">Continue essay <span aria-hidden="true">→</span></button>
@@ -1277,6 +1289,20 @@
     <h2 id="userMenuTitle">Account</h2>
     <p id="userMenuEmail" style="color:var(--ink-soft); margin-bottom:4px;">—</p>
     <p style="font-size:12px; color:var(--ink-mute); font-style:italic;" id="userMenuStats">—</p>
+    <div class="study-plan-settings" style="margin-top:18px; padding:14px; border:1px solid var(--line-soft); border-radius:10px; background:var(--bg-list);">
+      <strong style="display:block; margin-bottom:10px;">Study target</strong>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <label class="field"><span class="field-label">Target PTE score</span><input class="field-input" id="studyTargetScore" type="number" min="10" max="90" step="1" inputmode="numeric" placeholder="e.g. 79"></label>
+        <label class="field"><span class="field-label">Test date</span><input class="field-input" id="studyTestDate" type="date"></label>
+      </div>
+      <label class="field" style="margin-top:10px;"><span class="field-label">Study frequency</span>
+        <select class="field-input" id="studyWeeklyFrequency">
+          <option value="">Not set</option><option value="2">2 days/week</option><option value="3">3 days/week</option><option value="4">4 days/week</option><option value="5">5 days/week</option><option value="6">6 days/week</option><option value="7">Daily</option>
+        </select>
+      </label>
+      <button type="button" class="tb-text-btn dark" onclick="saveStudyPlanSettings()" style="margin-top:10px;">Save study target</button>
+      <p id="studyPlanSettingsStatus" role="status" aria-live="polite" style="font-size:11px; color:var(--ink-mute); margin:8px 0 0;"></p>
+    </div>
     <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px;">
       <button class="tb-text-btn" onclick="manualSync()">↻ Sync now</button>
       <button class="tb-text-btn" onclick="exportData()">Download a backup</button>
