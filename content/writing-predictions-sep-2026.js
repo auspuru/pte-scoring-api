@@ -34,6 +34,11 @@ function makeSwt(item, index) {
       teacherEditable: true,
       humanReview: 'pending'
     },
+    editorialReview: {
+      standard: 'swt-200-300',
+      automatedValidation: 'required',
+      humanReview: 'pending'
+    },
     predictionSource: { ...source, task: 'swt', sourceId: item.sourceId, sourceTitle: item.title }
   };
 }
