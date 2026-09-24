@@ -340,7 +340,7 @@
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
+      <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
   }
   function playback(q) { return mock.audioPlayback(q); }
   function audioHTML(q) {
@@ -725,6 +725,16 @@
     }
     if(d.hiwWord!==undefined&&q.type==='hiw'){const index=Number(d.hiwWord),a=s.answers[q.uid]||[];s.answers[q.uid]=a.includes(index)?a.filter(x=>x!==index):[...a,index];b.setAttribute('aria-pressed',String(s.answers[q.uid].includes(index)));persist();return;}
     if(d.action==='check'){s.checked.push(q.uid);persist();return renderSession();}
+    if(d.action==='retry-question'&&s.practiceUid){
+      cancelAudio();
+      s.answers[q.uid]=[];
+      s.checked=s.checked.filter(id=>id!==q.uid);
+      delete s.assessments?.[q.uid];
+      delete s.audioStates?.[q.uid];
+      selectedWord='';selectedParagraph={};persist();renderSession();
+      host.querySelector('select,input,button[data-word],textarea')?.focus();
+      return;
+    }
     if(d.word!==undefined){selectedWord=d.word;host.querySelectorAll('[data-word]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.word===selectedWord)));return;}
     if(d.blank!==undefined)return place(Number(d.blank),selectedWord);
     if(d.clear!==undefined){(s.answers[q.uid]||[])[Number(d.clear)]='';persist();return renderSession();}

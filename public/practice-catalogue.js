@@ -72,7 +72,8 @@
       const number = focused ? ++practice : ++sectional;
       return { id: m.id, engine: 'reading', module: 'reading', mode: focused ? 'practice' : 'sectional',
         title: 'Reading ' + (focused ? 'Practice Mock ' : 'Sectional Mock ') + number,
-        description: focused ? 'Reading practice mock' : 'SWT + all Reading tasks + HIW + HCS',
+        description: focused ? 'Focused FIB practice only' : 'Integrated Reading sectional practice',
+        scope: focused ? '10 FIB questions · Dropdown + Drag & Drop' : 'SWT + all Reading tasks + HIW + HCS',
         minutes: m.minutes || 55, number };
     });
   }
@@ -80,6 +81,7 @@
     return [...readingMocks(reading), ...(writing.mocks || []).map((m, i) => ({
       ...m, engine: 'writing', module: 'writing', mode: 'sectional', number: m.predictionNumber || 100 + i,
       title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0')),
+      description: 'Integrated Writing sectional practice',
       scope: 'SWT + Essay + SST + WFD'
     }))];
   }
@@ -119,8 +121,8 @@
       page = Math.min(page, pages - 1);
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
       board.innerHTML = shown.map(m => '<article class="mock-catalogue-card ' + m.module + '"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><h3>' + esc(m.title) + '</h3>'
-        + ''
-        + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">Start Exam <span aria-hidden="true">→</span></button></footer></article>').join('');
+        + '<p class="mock-catalogue-description">' + esc(m.description || '') + '</p><p class="mock-catalogue-scope"><strong>Includes:</strong> ' + esc(m.scope || '') + '</p>'
+        + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">Start timed test <span aria-hidden="true">→</span></button></footer></article>').join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
       const empty = doc.getElementById('catalogue-empty'); empty.hidden = !!items.length;
       empty.textContent = filters.mode === 'full' ? 'No tests available yet.' : 'No mocks match these filters.';
@@ -129,7 +131,11 @@
       doc.getElementById('catalogue-next').disabled = page >= pages - 1;
       doc.getElementById('catalogue-pagination').hidden = pages <= 1;
       doc.querySelectorAll('[data-catalogue-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.catalogueMode === filters.mode)));
-      doc.getElementById('catalogue-description').hidden = true;
+      const description = doc.getElementById('catalogue-description');
+      description.hidden = false;
+      description.textContent = filters.mode === 'practice'
+        ? 'Focused practice mocks cover a limited task set. They are not full Reading or full PTE mocks.'
+        : 'Sectional mocks practise one integrated module. They do not represent a complete PTE exam.';
     }
     async function openMocks(options = {}) {
       const host = doc.getElementById('mockTestsPane');
@@ -140,7 +146,7 @@
         host.onclick = e => { if (e.target.closest('[data-retry-catalogue]')) openMocks(options); }; return;
       }
       host.innerHTML = '<div class="catalogue-heading"><h2>Mock Tests</h2></div>'
-        + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['full','Full Mock'],['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '</div>'
+        + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span></div>'
         + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label><label>Tests per page<select id="catalogue-size"><option value="12">12</option><option value="24">24</option><option value="1000">All</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
