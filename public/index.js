@@ -12200,7 +12200,11 @@ function loadDeferredScript(src, key) {
       script.dataset.loaded = 'true';
       resolve();
     }, { once: true });
-    script.addEventListener('error', () => reject(new Error('Unable to load ' + key + '.')), { once: true });
+    script.addEventListener('error', () => {
+      script._loadPromise = null;
+      script.remove();
+      reject(new Error('Unable to load ' + key + '.'));
+    }, { once: true });
   });
   if (!existing) document.head.appendChild(script);
   return script._loadPromise;
