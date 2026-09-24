@@ -213,6 +213,7 @@ if (rateLimit) {
   app.use('/api/spellcheck', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
+  app.use('/api/auth/email-reset', authLimiter);
 }
 
 let anthropic = null;
@@ -3259,16 +3260,11 @@ app.post('/api/auth/email-reset/complete', async (req,res)=>{
   }catch(e){res.status(500).json({success:false,error:'Password reset failed.'});}
 });
 
-app.post('/api/auth/reset-password', async (req, res) => {
-  try {
-    const { username, secretAnswer, newPassword } = req.body;
-    res.json(await AuthAPI.resetPassword(username, secretAnswer, newPassword));
-  } catch (e) { res.status(500).json({ error: 'Reset failed' }); }
+app.post('/api/auth/reset-password', (req, res) => {
+  res.status(410).json({ success: false, error: 'Password recovery now uses the email reset link.' });
 });
-
-app.get('/api/auth/secret-question/:username', async (req, res) => {
-  try { res.json(await AuthAPI.getSecretQ(req.params.username)); }
-  catch (e) { res.status(500).json({ error: 'Failed' }); }
+app.get('/api/auth/secret-question/:username', (req, res) => {
+  res.status(410).json({ success: false, error: 'Security-question recovery is no longer available.' });
 });
 
 app.get('/api/auth/check/:username', async (req, res) => {
