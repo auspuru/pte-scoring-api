@@ -702,12 +702,13 @@
 
                 <div class="ai-section-label">
                   <span class="ai-section-label-text">Writing Style</span>
-                  <span class="ai-section-label-aux" id="generationModeAux">Exam Template Mode</span>
+                  <span class="ai-section-label-aux" id="generationModeAux">Structure Practice</span>
                 </div>
                 <select class="field-input" id="generationModeSelect" onchange="setGenerationMode(this.value)" style="width:100%; margin-bottom:14px; padding:8px; border-radius:6px; border:1px solid var(--line-soft); background:var(--bg); color:var(--ink-soft); font-weight:700; font-size:12.5px;">
-                  <option value="template">Exam Template Mode</option>
+                  <option value="template">Structure Practice</option>
                   <option value="natural">Natural Band 8/9 Mode</option>
                 </select>
+                <div class="generation-setup-help" style="margin-top:-7px; margin-bottom:14px;">Structure Practice is a learning scaffold. Keep the organisation, but replace memorised wording with prompt-specific reasoning before using it in an exam.</div>
 
                 <div class="ai-section-label">
                   <span class="ai-section-label-text">Student ideas</span>
@@ -1008,9 +1009,10 @@
         <label class="generation-pref-field">
           <span>Writing style</span>
           <select class="field-input" id="genSetupStyle">
-            <option value="template">Exam Template Mode</option>
+            <option value="template">Structure Practice</option>
             <option value="natural">Natural Band 8/9 Mode</option>
           </select>
+          <small>Structure Practice teaches organisation; it is not an exam-ready memorised answer.</small>
         </label>
       </div>
     </div>
@@ -1120,9 +1122,10 @@
       <div>
         <label class="field-label">Writing Style</label>
         <select class="field-input" id="fsStyle" onchange="setGenerationModeFromFs(this.value)">
-          <option value="template">Exam Template Mode</option>
+          <option value="template">Structure Practice</option>
           <option value="natural">Natural Band 8/9 Mode</option>
         </select>
+        <div class="generation-setup-help">Use the structure as a scaffold and make the wording specific to this question.</div>
       </div>
     </div>
     <div id="fsIdeasArea" style="display:none; margin-top:14px; border:1px solid var(--line); border-radius:12px; padding:14px; background:var(--bg-list); max-height:280px; overflow-y:auto;"></div>

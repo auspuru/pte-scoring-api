@@ -7678,7 +7678,7 @@ function updateGenerationModeUI() {
   }
   const labelAux = document.getElementById('generationModeAux');
   if (labelAux) {
-    labelAux.textContent = mode === 'natural' ? 'Natural Band 8/9 Mode' : 'Exam Template Mode';
+    labelAux.textContent = mode === 'natural' ? 'Natural Band 8/9 Mode' : 'Structure Practice';
   }
   const fsSelect = document.getElementById('fsStyle');
   if (fsSelect) {
@@ -9940,7 +9940,7 @@ ${existing}
 OTHER PARAGRAPHS (do NOT rewrite — for context only):
 ${others}
 
-TEMPLATE FOR ${PARA_LABELS[which].toUpperCase()} (only relevant in Exam Template Mode):
+TEMPLATE FOR ${PARA_LABELS[which].toUpperCase()} (only relevant in Structure Practice):
 ${effTemplate[which]}
 
 INSTRUCTIONS:
@@ -13393,9 +13393,26 @@ function writeView() {
         </div>
 
         <div class="practice-textarea-container" style="position: relative; border-radius: 12px; border: 1px solid var(--line-soft); background: var(--bg); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow: hidden; margin-bottom: 16px; transition: border-color 0.2s;">
-          <textarea class="practice-essay-area" id="practiceEssayInput" aria-label="Your essay response" aria-describedby="practiceDraftStatus practiceWordCount" placeholder="Write your response here..." style="width: 100%; border: none; background: transparent; padding: 20px 24px; font-family: var(--sans); font-size: 16px; color: var(--ink); line-height: 1.8; min-height: 340px; resize: vertical; box-sizing: border-box;">${escapeHtml(practiceState.essayText)}</textarea>
+          <textarea class="practice-essay-area" id="practiceEssayInput" aria-label="Your essay response" aria-describedby="practiceDraftStatus practiceWordCount practiceTemplateOverlapGuidance" placeholder="Write your response here..." style="width: 100%; border: none; background: transparent; padding: 20px 24px; font-family: var(--sans); font-size: 16px; color: var(--ink); line-height: 1.8; min-height: 340px; resize: vertical; box-sizing: border-box;">${escapeHtml(practiceState.essayText)}</textarea>
         </div>
         <span id="practiceDraftStatus" class="portal-draft-status" role="status" aria-live="polite">Saving draft on this device…</span>
+
+        <div id="practiceTemplateOverlap" data-level="low" role="status" aria-live="polite" style="margin-top:14px; background:var(--bg-list); border:1px solid var(--line-soft); border-radius:12px; padding:14px 16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div>
+              <strong style="font-size:13px; color:var(--ink);">Template overlap</strong>
+              <span style="font-size:11px; color:var(--ink-mute); margin-left:6px;">with your stored scaffolds</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <strong id="practiceTemplateOverlapValue" style="font-size:13px; color:var(--ink);">—</strong>
+              <span id="practiceTemplateOverlapLevel" style="font-size:11px; font-weight:700; color:var(--ink-mute);">Waiting</span>
+            </div>
+          </div>
+          <div style="height:7px; background:var(--line-soft); border-radius:999px; overflow:hidden; margin-top:10px;">
+            <div id="practiceTemplateOverlapBar" style="height:100%; width:0%; border-radius:999px; background:#10b981; transition:width .2s ease, background-color .2s ease;"></div>
+          </div>
+          <p id="practiceTemplateOverlapGuidance" style="font-size:11.5px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
+        </div>
 
         <!-- Dynamic Word Count Progress Visualizer -->
         <div class="practice-progress-container" style="margin-top: 20px; background: var(--bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--line-soft);">
@@ -13550,6 +13567,58 @@ function onCustomPromptInput(val) {
   updateSubmitBtnState();
 }
 
+function practiceTemplateTextsForOverlap() {
+  const bag = getTemplatesBag();
+  return ['band6', 'band9', 'custom'].map(key => {
+    const template = bag?.[key];
+    if (!template || typeof template !== 'object') return '';
+    return [template.intro, template.bp1, template.bp2, template.concl].filter(Boolean).join(' ');
+  }).filter(Boolean);
+}
+
+function getPracticeTemplateOverlap(text = practiceState.essayText) {
+  if (!window.EssayScoring?.templateOverlap) return { percent: 0, level: 'low', matchedWords: 0, totalWords: countWords(text), thresholds: { medium: 20, high: 35 } };
+  return window.EssayScoring.templateOverlap(text, practiceTemplateTextsForOverlap(), { ngram: 4, medium: 20, high: 35 });
+}
+
+function updatePracticeTemplateOverlap() {
+  const box = document.getElementById('practiceTemplateOverlap');
+  if (!box) return;
+  const result = getPracticeTemplateOverlap(practiceState.essayText);
+  const value = document.getElementById('practiceTemplateOverlapValue');
+  const level = document.getElementById('practiceTemplateOverlapLevel');
+  const bar = document.getElementById('practiceTemplateOverlapBar');
+  const guidance = document.getElementById('practiceTemplateOverlapGuidance');
+
+  if (result.totalWords < 20) {
+    box.dataset.level = 'low';
+    if (value) value.textContent = '—';
+    if (level) { level.textContent = 'Waiting'; level.style.color = 'var(--ink-mute)'; }
+    if (bar) { bar.style.width = '0%'; bar.style.backgroundColor = '#10b981'; }
+    if (guidance) guidance.textContent = 'Write at least 20 words to check how much wording matches your saved templates.';
+    return result;
+  }
+
+  box.dataset.level = result.level;
+  if (value) value.textContent = result.percent + '%';
+  if (bar) bar.style.width = Math.min(100, result.percent) + '%';
+
+  if (result.level === 'high') {
+    if (level) { level.textContent = 'High'; level.style.color = '#b91c1c'; }
+    if (bar) bar.style.backgroundColor = '#ef4444';
+    if (guidance) guidance.textContent = 'High overlap: keep the structure if it helps, but replace memorised wording with prompt-specific arguments, explanations and examples before the exam.';
+  } else if (result.level === 'medium') {
+    if (level) { level.textContent = 'Medium'; level.style.color = '#b45309'; }
+    if (bar) bar.style.backgroundColor = '#f59e0b';
+    if (guidance) guidance.textContent = 'Some scaffold wording is repeated. Personalise the explanation and examples so the response clearly answers this question.';
+  } else {
+    if (level) { level.textContent = 'Low'; level.style.color = '#047857'; }
+    if (bar) bar.style.backgroundColor = '#10b981';
+    if (guidance) guidance.textContent = 'Low overlap. Your wording is mostly topic-specific; keep using the structure only as an organisational guide.';
+  }
+  return result;
+}
+
 function updateLiveWordCount() {
   const ta = document.getElementById('practiceEssayInput');
   if (!ta) return;
@@ -13601,6 +13670,7 @@ function updateLiveWordCount() {
   if (practiceState.timerEnabled && !practiceState.timerStartedAt && count > 0) {
     startPracticeTimer();
   }
+  updatePracticeTemplateOverlap();
   updateSubmitBtnState();
 }
 
@@ -13745,6 +13815,10 @@ async function submitPracticeEssay() {
   const essay = practiceState.essayText.trim();
   if (!question) { toast('Please pick or write a question first', true); return; }
   if (countWords(essay) < 50) { toast('Please write at least 50 words before scoring', true); return; }
+  const templateOverlap = getPracticeTemplateOverlap(essay);
+  if (templateOverlap.level === 'high') {
+    toast('High template overlap (' + templateOverlap.percent + '%). Your essay will still be assessed, but replace memorised wording with question-specific reasoning before the exam.', true);
+  }
   savePortalEssayDraft();
 
   const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
