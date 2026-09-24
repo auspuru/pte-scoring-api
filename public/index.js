@@ -6960,7 +6960,7 @@ function renderEssayPageHTML(e, num) {
         <span class="essay-page-header-tag">2026 Edition</span>
       </div>
       <div class="essay-num-label">ESSAY ${String(num).padStart(2, '0')}</div>
-      <h1 class="essay-title">${escapeHtml(e.title || 'Untitled')}</h1>
+      <h2 class="essay-title">${escapeHtml(e.title || 'Untitled')}</h2>
       ${e.question ? `<div class="essay-question">${escapeHtml(e.question)}</div>` : ''}
       ${e.explanation ? `<div class="essay-topic-exp"><strong>Topic Explanation:</strong> ${escapeHtml(e.explanation)}</div>` : ''}
       ${(prosList.length || consList.length) ? `
