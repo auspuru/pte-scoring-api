@@ -1,5 +1,5 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.ReadingPredictionsSep2026=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){'use strict';
-const source={provider:'PTE Nepal',week:'21-27 September 2026',checkedAt:'2026-09-23',rwUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-writing-fib/',rUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-fib/'};
+const source={provider:'PTE Nepal',week:'21-27 September 2026',checkedAt:'2026-09-23',lastReviewed:'2026-09-24',contentStatus:'adapted',rwUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-writing-fib/',rUrl:'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-fib/'};
 const rw=[
 ['12001225','United Nations','International cooperation can [[1]] conflict when nations [[2]] common rules and support peaceful [[3]].',['prevent','follow','solutions']],
 ['12001157','Apartment Renting','A reliable tenant should [[1]] rent on time, keep the property [[2]], and communicate [[3]] with the landlord.',['pay','clean','clearly']],
