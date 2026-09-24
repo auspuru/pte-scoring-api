@@ -18,6 +18,31 @@ VOICES = {
     'shimmer': 'en-GB-SoniaNeural',
     'echo': 'en-US-GuyNeural',
 }
+VOICE_KEYS = tuple(VOICES)
+
+
+def voice_key(question):
+    configured = question.get('voice')
+    if configured in VOICES:
+        return configured
+    # Prediction items do not carry a voice. Keep their checked-in narration
+    # deterministic so a rebuild does not reshuffle speakers.
+    slot = int(hashlib.sha256(question['id'].encode()).hexdigest()[:8], 16) % len(VOICE_KEYS)
+    return VOICE_KEYS[slot]
+
+
+def audio_rate(question):
+    if question.get('audioRate'):
+        return question['audioRate']
+    if question['type'] == 'wfd':
+        return '-5%'
+    # Aim prediction SST narration near the middle of the accepted 60–90s
+    # window while keeping speech natural across different transcript lengths.
+    words = len(question['text'].split())
+    target_wpm = words / (72 / 60)
+    percent = round((target_wpm / 170 - 1) * 100)
+    percent = max(-25, min(12, percent))
+    return f'{percent:+d}%'
 
 
 def digest(value):
@@ -29,7 +54,12 @@ async def main():
     if os.environ.get('SSL_CERT_FILE'):
         edge_tts.communicate._SSL_CTX.load_verify_locations(os.environ['SSL_CERT_FILE'])
     bank = json.loads((ROOT / 'content' / 'writing-lab.json').read_text())
-    questions = bank['spoken'] + bank.get('dictation', []) + [q for m in bank['mocks'] for q in m['questions'] if q['type'] in ('sst', 'wfd')]
+    prediction_data = json.loads(subprocess.check_output([
+        'node', '-e',
+        "const p=require('./content/writing-predictions-sep-2026');process.stdout.write(JSON.stringify({sst:p.sst||[],wfd:p.wfd||[]}));"
+    ], cwd=ROOT, text=True))
+    combined = bank['spoken'] + bank.get('dictation', []) + [q for m in bank['mocks'] for q in m['questions'] if q['type'] in ('sst', 'wfd')] + prediction_data['sst'] + prediction_data['wfd']
+    questions = list({q['id']: q for q in combined}.values())
     DEST.mkdir(parents=True, exist_ok=True)
     manifest_path = DEST / 'manifest.json'
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
@@ -42,8 +72,8 @@ async def main():
             print(q['id'], 'already verified', flush=True)
             return
         tmp = file.with_suffix('.tmp.mp3')
-        voice = VOICES[q['voice']]
-        rate = q.get('audioRate', '-5%')
+        voice = VOICES[voice_key(q)]
+        rate = audio_rate(q)
         async with semaphore:
             await asyncio.wait_for(edge_tts.Communicate(q['text'], voice, rate=rate).save(str(tmp)), timeout=55)
         duration = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(tmp)]))
