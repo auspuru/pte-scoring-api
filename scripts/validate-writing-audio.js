@@ -64,7 +64,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
     if (bytes.length < 1000 || bytes.length !== entry.bytes || hash(bytes) !== entry.audioSha256) throw Error('Invalid recording: ' + q.id);
     const inspected = inspectMp3(bytes);
     if (!inspected.valid) throw Error('Corrupt or truncated MP3: ' + q.id + ' (' + inspected.reason + ')');
-    const [min, max] = q.type === 'sst' ? [60, 90] : [3, 8];
+    const [min, max] = q.type === 'sst' ? (q.predictionSource ? [30, 90] : [60, 90]) : [3, 8];
     if (!Number.isFinite(entry.seconds) || entry.seconds < min || entry.seconds > max) throw Error('Invalid recording duration: ' + q.id);
   }
   return ids.size;
