@@ -12379,13 +12379,76 @@ function ensureSpeakingRuntimeLoaded() {
   return speakingRuntimeLoadPromise;
 }
 
+let portalCatalogueProgressCache = { uid:'', at:0, value:null };
+function practiceLastTime(value) {
+  if (value == null) return 0;
+  if (Array.isArray(value)) return value.reduce((max,item)=>Math.max(max,practiceLastTime(item)),0);
+  if (typeof value !== 'object') return 0;
+  let max=0;
+  for (const key of ['finishedAt','updatedAt','date','timestamp','startedAt','createdAt']) {
+    const raw=value[key], time=typeof raw==='string'?Date.parse(raw):Number(raw||0);
+    if (Number.isFinite(time)) max=Math.max(max,time);
+  }
+  for (const item of Object.values(value)) if (item && typeof item==='object') max=Math.max(max,practiceLastTime(item));
+  return max;
+}
+function setLatestPracticeMeta(target, route, time) {
+  time=Number(time||0); if(!time)return;
+  target[route] ||= {};
+  target[route].lastAttempt=Math.max(Number(target[route].lastAttempt||0),time);
+}
+async function getPortalCatalogueProgress() {
+  const uid=canonicalClientUserId(currentUserId), token=sessionToken;
+  if (!uid) return { practice:{}, mocks:{} };
+  if (portalCatalogueProgressCache.uid===uid && Date.now()-portalCatalogueProgressCache.at<10000 && portalCatalogueProgressCache.value) return portalCatalogueProgressCache.value;
+  const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
+  try { setLatestPracticeMeta(result.practice,'swt',practiceLastTime(LocalStore.get(getPteStorageKey('history'))||{})); } catch (_) {}
+  try { setLatestPracticeMeta(result.practice,'practice',practiceLastTime(getPracticeHistory())); } catch (_) {}
+  try {
+    const packed=localAccountProgress(uid)?.readingProgress;
+    const reading=window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
+    const sessions=[reading?.session,...(reading?.drafts||[]),...(reading?.history||[])].filter(Boolean);
+    const routeByType={dropdown:'reading-dropdown',mcma:'reading-mcma',reorder:'reading-reorder',wordbank:'reading-wordbank',mcsa:'reading-mcsa',hcs:'listening-hcs',hiw:'listening-hiw'};
+    for(const session of sessions){
+      const at=Number(session.finishedAt||session.updatedAt||session.startedAt||0);
+      if(session.practiceUid){
+        const type=session.questions?.[0]?.type,route=routeByType[type];
+        if(route)setLatestPracticeMeta(result.practice,route,at);
+      } else if(session.mode){
+        const current=result.mocks[session.mode], done=!!session.done;
+        if(!current || done || current.status!=='Done') result.mocks[session.mode]={status:done?'Done':'In progress',date:at};
+      }
+    }
+  } catch (_) {}
+  if(token){
+    try{
+      const response=await fetch(API_URL+'/api/writing-lab/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
+      if(response.ok){
+        const rows=await response.json();
+        for(const attempt of Array.isArray(rows)?rows:[]){
+          const at=Number(attempt.finishedAt||attempt.updatedAt||attempt._updatedAt||attempt.startedAt||0);
+          if(attempt.kind==='sst')setLatestPracticeMeta(result.practice,'spoken-text',at);
+          if(attempt.kind==='wfd')setLatestPracticeMeta(result.practice,'dictation',at);
+          if(attempt.kind==='mock'&&attempt.testId){
+            const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
+            if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
+          }
+        }
+      }
+    }catch(_){}
+  }
+  portalCatalogueProgressCache={uid,at:Date.now(),value:result};
+  return result;
+}
+
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
   portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
   portalCatalogue = PracticeCatalogue.createController({
     document, navigate: switchSection,
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
-    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } })
+    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } }),
+    getProgress: getPortalCatalogueProgress
   });
   studentInterventionsController = window.StudentInterventions?.create({
     document,
