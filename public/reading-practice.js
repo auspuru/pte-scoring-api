@@ -287,6 +287,24 @@
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
       <details class="reading-home-help"><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
   }
+  function seenBefore(q) {
+    if (!q) return false;
+    if (state?.practiceResults?.[q.uid]) return true;
+    return (state?.history || []).some(session => session?.id !== state?.session?.id && (session.questions || []).some(item =>
+      (q.uid && item.uid === q.uid) || (!q.uid && q.id && item.id === q.id)));
+  }
+  function sourceMeta(q) {
+    const prediction=q?.predictionSource, pattern=q?.patternSource;
+    if(!prediction&&!pattern)return '';
+    const seen=seenBefore(q), src=prediction||pattern;
+    const status=prediction?(seen?'Revision':'Unseen prediction'):(seen?'Revision':'Original IPT practice');
+    const origin=prediction
+      ? [src.provider,src.week,src.contentStatus==='adapted'?'Adapted practice':src.contentStatus].filter(Boolean).join(' · ')
+      : ['IPT Brisbane',src.kind==='original-pattern-derived'?'Pattern-derived original':src.contentStatus].filter(Boolean).join(' · ');
+    const reviewed=src.lastReviewed||src.checkedAt;
+    return [status,origin,reviewed?'Reviewed '+reviewed:''].filter(Boolean).join(' · ');
+  }
+
   function libraryQuestions() {
     const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase();
     return (library?.questions||[]).filter(q=>!query||[q.title,q.topic,q.id].join(' ').toLowerCase().includes(query));
@@ -295,7 +313,8 @@
     const questions=libraryQuestions(),page=libraryView.page,pages=Math.max(1,Math.ceil(questions.length/10));
     return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map((q,i)=>{
       const result=state.practiceResults[q.uid];
-      return `<li><div><strong>Question ${page*10+i+1}</strong>${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${page*10+i+1}">Practise <span aria-hidden="true">→</span></button></li>`;
+      const meta=sourceMeta(q);
+      return `<li><div><strong>Question ${page*10+i+1}</strong>${meta?`<span class="reading-source-meta">${escape(meta)}</span>`:''}${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${page*10+i+1}">Practise <span aria-hidden="true">→</span></button></li>`;
     }).join('')}</ul>${questions.length?'':'<p>No questions match your search.</p>'}${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-library-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span>${page+1} / ${pages}</span><button class="portal-button" data-library-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}`;
   }
   function browseLibrary(id, query='', page=0) {
@@ -326,7 +345,7 @@
     if(mock.isAudio(q))prepareAudio(q);
     if(testing) {
       prepareAudio(q);
-      host.innerHTML=exam.render({session:s,question:q,content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice});
+      host.innerHTML=exam.render({session:s,question:q,metadata:sourceMeta(q),content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice});
       updateAutoplay();
       return;
     }
@@ -336,7 +355,7 @@
     host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
       <div class="reading-layout"><aside class="reading-card reading-nav" aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
-      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${navigationIndex+1} of ${libraryQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2><p>${escape(q.instructions)}</p>
+      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${navigationIndex+1} of ${libraryQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2>${sourceMeta(q)?`<p class="reading-source-meta">${escape(sourceMeta(q))}</p>`:''}<p>${escape(q.instructions)}</p>
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
