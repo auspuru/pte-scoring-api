@@ -74,7 +74,7 @@ function present(a) {
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + (q.predictionSource ? predictions.version + '-local2' : bank.version) } : {}),
+    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + (q.predictionSource ? predictions.version + '-neural1' : bank.version) } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
   return result;
 }
