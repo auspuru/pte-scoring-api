@@ -12653,6 +12653,13 @@ let portalResumeTarget = null;
 let portalResumeFetchSerial = 0;
 let portalResumeCache = { uid: '', at: 0, item: null };
 
+function portalResumeStamp(value) {
+  const numeric = Number(value);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function readingResumeRoute(session) {
   const type = session?.questions?.[session.index]?.type || session?.questions?.[0]?.type;
   return ({ dropdown:'reading-dropdown', mcma:'reading-mcma', reorder:'reading-reorder', wordbank:'reading-wordbank',
@@ -12681,7 +12688,7 @@ function localPortalResumeCandidate() {
     if (latest) {
       const q = latest.questions?.[latest.index];
       candidates.push({
-        engine:'reading', id:latest.id, route:readingResumeRoute(latest), at:Number(latest.updatedAt || latest.startedAt || 0),
+        engine:'reading', id:latest.id, route:readingResumeRoute(latest), at:portalResumeStamp(latest.updatedAt || latest.startedAt),
         title:latest.practiceUid ? (q?.title || 'Reading practice question') : (latest.name || 'Reading mock'),
         detail:latest.practiceUid ? (PortalWorkspace.routes[readingResumeRoute(latest)]?.title || 'Reading practice') : 'Question '+(Number(latest.index || 0)+1)+' of '+(latest.questions?.length || 1),
         subdetail:latest.deadline==null?'Saved progress':'Timer continues while you are away'
@@ -12723,7 +12730,7 @@ async function refreshWritingPortalResume(localCandidate) {
       if (active) item = {
         engine:'writing-lab', id:active.id,
         route:active.kind==='mock'?'writing-run':active.kind==='wfd'?'dictation':'spoken-text',
-        at:Number(active.startedAt || 0), title:active.title || 'Writing practice',
+        at:portalResumeStamp(active.startedAt), title:active.title || 'Writing practice',
         detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
         subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'
       };
