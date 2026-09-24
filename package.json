@@ -26,10 +26,10 @@
     "pg": "^8.20.0",
     "express-rate-limit": "^7.4.0",
     "compression": "^1.7.4",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^10.0.10",
     "puppeteer": "^23.6.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }
