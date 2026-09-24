@@ -64,7 +64,7 @@
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
       if (changed && routes[current]?.pane === 'readingPane') win.ReadingPractice?.leave();
       if (changed && routes[current]?.pane === 'writingLabScreen' && routes[section]?.pane !== 'writingLabScreen') {
-        doc.getElementById('writingLabFrame')?.contentWindow?.postMessage({ type: 'writing-lab-suspend' }, win.location.origin);
+        win.WritingLab?.leave?.();
       }
       current = section;
       const activePaneId = routes[section].pane;
