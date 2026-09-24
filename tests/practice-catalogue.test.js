@@ -143,7 +143,7 @@ test('Portal markup removes redundant navigation and embedded catalogues', () =>
   assert.doesNotMatch(html, /<script[^>]+reading-practice\.js/);
   const portalClient = fs.readFileSync(require.resolve('../public/index.js'), 'utf8');
   assert.match(portalClient, /ensureReadingRuntimeLoaded/);
-  assert.match(portalClient, /reading-practice\.js\?v=20260924-pattern/);
+  assert.match(portalClient, /reading-practice\.js\?v=20260924-a11y/);
   const lab = fs.readFileSync(require.resolve('../public/writing-lab-client.js'), 'utf8');
   assert.doesNotMatch(lab, /renderMockBoard|assignment-board|data-board-mode/);
 });
