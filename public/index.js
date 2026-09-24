@@ -12456,11 +12456,7 @@ function initialisePortalWorkspace() {
     navigate: switchSection,
     launch: launchAssignedQuestion
   }) || null;
-  window.addEventListener('message', event => {
-    const frame = document.getElementById('writingLabFrame');
-    if (event.source !== frame?.contentWindow || event.origin !== location.origin || event.data?.type !== 'writing-lab-navigate') return;
-    if (['practice-hub', 'mock-tests'].includes(event.data.section)) switchSection(event.data.section);
-  });
+  // Writing Lab is mounted directly in this document; navigation uses switchSection().
   // Access to storage can be denied by browser privacy settings.
   try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
   window.addEventListener('pagehide', savePortalEssayDraft);
@@ -12469,31 +12465,22 @@ function initialisePortalWorkspace() {
   });
 }
 
-function openWritingLab(tab = 'mocks', options = {}) {
-  const frame = document.getElementById('writingLabFrame');
-  if (!frame) return;
+async function openWritingLab(tab = 'mocks', options = {}) {
   const nextTab = ['sst','wfd','mocks','history'].includes(tab) ? tab : 'mocks';
-  const request = { type: 'writing-lab-tab', tab: nextTab, ...options, requestId: crypto.randomUUID() };
-  frame.dataset.writingLabRequest = JSON.stringify(request);
-  const send = () => frame.contentWindow?.postMessage(JSON.parse(frame.dataset.writingLabRequest), window.location.origin);
-  if (frame.dataset.writingLabLoaded === 'true') { send(); return; }
-  if (frame.dataset.writingLabLoading === 'true') return;
-  frame.dataset.writingLabLoading = 'true';
-  frame.addEventListener('load', () => {
-    frame.dataset.writingLabLoading = 'false';
-    frame.dataset.writingLabLoaded = 'true';
-    if (frame.dataset.writingLabRequest) send();
-  }, { once: true });
-  frame.src = '/writing-mocks?embedded=1&v=20260924-runtimefix';
+  const request = { tab: nextTab, ...options, requestId: crypto.randomUUID() };
+  try {
+    if (!window.WritingLab?.open) throw Error('Writing practice is still loading. Please retry.');
+    await window.WritingLab.open(request);
+  } catch (error) {
+    const host=document.getElementById('lab');
+    if(host)host.innerHTML='<div class="hub"><h2>Writing practice could not load</h2><p>'+escapeHtml(error.message||'Please retry.')+'</p><button class="primary" type="button" data-writing-retry>Retry</button></div>';
+    host?.querySelector('[data-writing-retry]')?.addEventListener('click',()=>openWritingLab(nextTab,options),{once:true});
+    toast(error.message || 'Writing practice could not load.', true);
+  }
 }
 
 function resetWritingLabFrame() {
-  const frame = document.getElementById('writingLabFrame');
-  if (!frame) return;
-  frame.dataset.writingLabLoaded = 'false';
-  frame.dataset.writingLabLoading = 'false';
-  delete frame.dataset.writingLabRequest;
-  frame.src = 'about:blank';
+  window.WritingLab?.reset?.();
 }
 
 function launchAssignedQuestion(item) {
