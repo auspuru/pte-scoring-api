@@ -48,10 +48,11 @@ test('My Progress derives a weakest area only from comparable saved native resul
   assert.equal(model.areas.find(a => a.name === 'Summarise Spoken Text').count, 2);
 });
 
-test('writing lab presents native marks before secondary /90 practice estimates', () => {
-  assert.match(writingClient, /Native practice result/);
-  assert.match(writingClient, /native marks/);
-  assert.match(writingClient, /Practice estimate:/);
-  assert.match(writingClient, /r\.total\+'\/'\+r\.maximum/);
-  assert.doesNotMatch(writingClient, /<div class="score-total">'\+\(scored\?summary\.score90/);
+test('writing lab presents estimate scores without native mark totals', () => {
+  assert.match(writingClient, /<h2>Practice estimate<\/h2>/);
+  assert.match(writingClient, /summary\.score90/);
+  assert.match(writingClient, /Estimate '\+report\.score90\(r\.total,r\.maximum\)\+'\/90/);
+  assert.doesNotMatch(writingClient, /Native practice result/);
+  assert.doesNotMatch(writingClient, /Task marks are shown first/);
+  assert.doesNotMatch(writingClient, /<th>Marks<\/th>/);
 });

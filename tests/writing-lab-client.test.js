@@ -293,3 +293,12 @@ test('Writing Lab prefers the sessionStorage login token before stale localStora
   const localIndex=client.indexOf("storage.get('pte_session_token')");
   assert(sessionIndex >= 0 && localIndex > sessionIndex);
 });
+
+
+test('Writing Lab result UI exposes estimate scores only', () => {
+  assert.match(client, /<h2>Practice estimate<\/h2>/);
+  assert.match(client, /<small> \/ 90<\/small>/);
+  assert.doesNotMatch(client, /Native practice result/);
+  assert.doesNotMatch(client, /<th>Marks<\/th>/);
+  assert.doesNotMatch(client, /No marks awarded for this response/);
+});
