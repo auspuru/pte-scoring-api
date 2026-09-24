@@ -44,9 +44,9 @@ test('student UIs label reused predictions as Revision instead of presenting the
   assert.match(reading,/Unseen prediction/);
   assert.match(reading,/Revision/);
   assert.match(reading,/Reviewed /);
-  assert.match(writing,/Unseen prediction/);
-  assert.match(writing,/Revision/);
-  assert.match(writing,/Adapted practice/);
+  assert.doesNotMatch(writing,/Unseen prediction/);
+  assert.doesNotMatch(writing,/Adapted practice/);
+  assert.doesNotMatch(writing,/content-provenance/);
   assert.doesNotMatch(catalogue,/Current Writing prediction pool/);
   assert.match(catalogue,/Repeated prediction items are marked Revision/);
 });

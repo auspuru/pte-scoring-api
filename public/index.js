@@ -662,102 +662,23 @@ function toggleForgotPasswordMode(show) {
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
   const forgotForm = document.getElementById('forgotPasswordForm');
-  
-  if (show) {
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'none';
-    forgotForm.style.display = 'block';
-    
-    document.getElementById('forgotPassFormStep1').style.display = 'block';
-    document.getElementById('forgotPassFormStep2').style.display = 'none';
-    document.getElementById('forgotUsername').disabled = false;
-    document.getElementById('forgotUsername').value = '';
-    document.getElementById('forgotAnswer').value = '';
-    document.getElementById('forgotNewPassword').value = '';
-    hideForgotPasswordError();
-  } else {
-    forgotForm.style.display = 'none';
-    registerForm.style.display = 'none';
-    loginForm.style.display = 'block';
-    hideLoginError();
-  }
+  if (!loginForm || !forgotForm) return;
+  loginForm.style.display = show ? 'none' : 'block';
+  if (registerForm) registerForm.style.display = 'none';
+  forgotForm.style.display = show ? 'block' : 'none';
+  hideLoginError();
+  hideForgotPasswordError();
+  if (show) document.getElementById('forgotUsername')?.focus();
 }
 
 function showForgotPasswordError(msg) {
   const el = document.getElementById('forgotPasswordError');
+  if (!el) return;
   el.textContent = msg;
   el.classList.add('show');
 }
 function hideForgotPasswordError() {
-  const el = document.getElementById('forgotPasswordError');
-  if (el) el.classList.remove('show');
-}
-
-async function handleRequestSecretQuestion(ev) {
-  ev.preventDefault();
-  const u = document.getElementById('forgotUsername').value.trim();
-  const btn = document.getElementById('forgotStep1Btn');
-  btn.disabled = true;
-  btn.textContent = 'Searching...';
-  hideForgotPasswordError();
-  
-  try {
-    const r = await fetch(API_URL + '/api/auth/secret-question/' + encodeURIComponent(u));
-    const d = await r.json();
-    if (d.success) {
-      const questionKey = d.secretQ;
-      const questionText = SECRET_QUESTIONS_MAP[questionKey] || questionKey || "Please answer your security question";
-      
-      document.getElementById('forgotQuestionDisplay').textContent = questionText;
-      document.getElementById('forgotPassFormStep1').style.display = 'none';
-      document.getElementById('forgotPassFormStep2').style.display = 'block';
-      document.getElementById('forgotUsername').disabled = true;
-    } else {
-      showForgotPasswordError(d.error || 'Username not found or has no security question.');
-    }
-  } catch (e) {
-    showForgotPasswordError('Connection error. Try again.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Continue';
-  }
-}
-
-async function handleResetPasswordSubmit(ev) {
-  ev.preventDefault();
-  const u = document.getElementById('forgotUsername').value.trim();
-  const sa = document.getElementById('forgotAnswer').value.trim();
-  const npw = document.getElementById('forgotNewPassword').value;
-  const btn = document.getElementById('forgotStep2Btn');
-  
-  if (npw.length < 8) {
-    showForgotPasswordError('Password must be at least 8 characters.');
-    return;
-  }
-  
-  btn.disabled = true;
-  btn.textContent = 'Resetting...';
-  hideForgotPasswordError();
-  
-  try {
-    const r = await fetch(API_URL + '/api/auth/reset-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: u, secretAnswer: sa, newPassword: npw })
-    });
-    const d = await r.json();
-    if (d.success) {
-      toggleForgotPasswordMode(false);
-      showLoginError('Password reset successfully. You can now sign in.');
-    } else {
-      showForgotPasswordError(d.error || 'Reset failed.');
-    }
-  } catch (e) {
-    showForgotPasswordError('Connection error. Try again.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Reset password';
-  }
+  document.getElementById('forgotPasswordError')?.classList.remove('show');
 }
 
 async function handleLoginSubmit(ev) {
@@ -1579,13 +1500,13 @@ function openUserMenu() {
 }
 function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('show'); }
 
-function importLocalEssays() {
+async function importLocalEssays() {
   const raw = safeLSGet('ipt_essays_v2');
   if (!raw) { toast('No local essays found in this browser', true); return; }
   try {
     const local = JSON.parse(raw);
     if (!Array.isArray(local) || local.length === 0) { toast('No local essays found', true); return; }
-    if (!confirm(`Found ${local.length} local essays. Merge them into your cloud account? Local essays with the same title will be skipped to avoid duplicates.`)) return;
+    if (!await portalConfirm(`Found ${local.length} local essays. Merge them into your cloud account? Local essays with the same title will be skipped to avoid duplicates.`, { title:'Import local essays', confirmLabel:'Import essays' })) return;
     const existingTitles = new Set(essays.map(e => (e.title || '').toLowerCase().trim()));
     let added = 0;
     for (const e of local) {
@@ -1696,7 +1617,7 @@ async function adminToggleUser(uid, disabledNew) {
 }
 
 async function adminDeleteUser(uid, email) {
-  if (!confirm(`Delete account for user "${uid}"? This removes their data permanently. This cannot be undone.`)) return;
+  if (!await portalConfirm(`Delete account for user "${uid}"? This removes their data permanently. This cannot be undone.`, { title:'Delete account', confirmLabel:'Delete account', destructive:true })) return;
   try {
     const r = await fetch(API_URL + '/api/admin/delete-user', {
       method: 'POST',
@@ -2534,13 +2455,13 @@ function buildQuestionExplanationHtml(e, activeType, typeCfg) {
 
   const row = (label, text) => `
       <div style="display:flex; gap:8px; align-items:baseline;">
-        <span style="flex:0 0 92px; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; color:#6b5d3f;">${label}</span>
+        <span style="flex:0 0 92px; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; color:#6b5d3f;">${label}</span>
         <span>${escapeHtml(text)}</span>
       </div>`;
 
   return `
     <div class="question-explainer" style="background:#fdf9ef; border:1px solid #e8dcc0; border-radius:8px; padding:12px 14px; margin-bottom:12px; font-size:12px; color:#4a4030; line-height:1.55;">
-      <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; font-weight:800; color:#8a713d; margin-bottom:6px;">📖 What this question is asking</div>
+      <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.06em; font-weight:800; color:#8a713d; margin-bottom:6px;">📖 What this question is asking</div>
       <div>${escapeHtml(ex.ask)}</div>
       ${optionsLine}
       <div style="display:flex; flex-direction:column; gap:4px; margin-top:9px; padding-top:9px; border-top:1px dashed #e8dcc0;">
@@ -3571,7 +3492,7 @@ function openEssayGenerationSetup(e = getCurrent()) {
 
   const questionEl = document.getElementById('generationSetupQuestion');
   if (questionEl) {
-    questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(typeCfg.displayName)} question</div><div>${escapeHtml(e.question)}</div>`;
+    questionEl.innerHTML = `<div style="font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(typeCfg.displayName)} question</div><div>${escapeHtml(e.question)}</div>`;
   }
   const exam = document.getElementById('genSetupExam');
   const band = document.getElementById('genSetupBand');
@@ -3725,7 +3646,7 @@ function openEssayPlanReview(e = getCurrent()) {
   ].map(([label, value]) => `<div class="generation-plan-meta-item"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join('');
 
   const questionEl = document.getElementById('generationPlanQuestion');
-  if (questionEl) questionEl.innerHTML = `<div style="font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(e.title || 'Essay topic')}</div><div>${escapeHtml(e.question)}</div>`;
+  if (questionEl) questionEl.innerHTML = `<div style="font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#8a713d; margin-bottom:5px;">${escapeHtml(e.title || 'Essay topic')}</div><div>${escapeHtml(e.question)}</div>`;
   const card = (title, items) => `<div class="generation-plan-card"><h3>${escapeHtml(title)}</h3><ul>${(items.length ? items : ['No item selected']).map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul></div>`;
   const reasons = plan.selected_ideas.reasons || [];
   const second = plan.selected_ideas.solutions?.length ? plan.selected_ideas.solutions : (plan.selected_ideas.examples || []);
@@ -4349,7 +4270,7 @@ function showTypeOverrideSelect(show) {
         <select id="typeOverrideSelect" onchange="changeQuestionTypeOverride(this.value)" style="flex:1; padding:6px; font-size:12px; border-radius:4px; border:1px solid var(--line); background:var(--bg); color:var(--ink);">
           ${optionsHtml}
         </select>
-        <button class="btn-cancel-type" onclick="event.preventDefault(); showTypeOverrideSelect(false)" style="background:none; border:none; color:var(--accent); font-size:11px; font-weight:600; cursor:pointer; padding:4px 8px;">Cancel</button>
+        <button class="btn-cancel-type" onclick="event.preventDefault(); showTypeOverrideSelect(false)" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:4px 8px;">Cancel</button>
       </div>
     `;
   } else {
@@ -6440,9 +6361,9 @@ function maybeOfferDraftRecovery() {
       return;
     }
     // There's a meaningful difference — offer recovery
-    setTimeout(() => {
+    setTimeout(async () => {
       const mins = Math.max(1, Math.round(ageMs / 60000));
-      if (confirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`)) {
+      if (await portalConfirm(`You have unsaved changes from ${mins} minute(s) ago that didn't finish syncing. Restore them?`, { title:'Restore unsaved changes', confirmLabel:'Restore' })) {
         essays = backup.essays;
         if (backup.currentId) currentId = backup.currentId;
         renderList();
@@ -6538,7 +6459,7 @@ function renderList() {
       <div class="essay-item ${isActive ? 'active' : ''}" onclick="selectEssay('${e.id}')">
         <div class="essay-item-meta">
           <span>ESSAY ${String(i + 1).padStart(2, '0')}</span>
-          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
+          ${e.badge ? `<span class="essay-item-badge" style="background: var(--accent-soft); color: var(--accent); font-size:12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-family: var(--sans);">${escapeHtml(e.badge)}</span>` : ''}
           <span class="essay-item-status ${statusClass}">${statusLabel}</span>
         </div>
         <div class="essay-item-title">${escapeHtml(e.title || 'Untitled')}</div>
@@ -6634,7 +6555,7 @@ function updateBulkPreview() {
   const first3 = parsed.slice(0, 3).map((t, i) =>
     `<div style="padding:6px 8px; background:var(--bg); border-radius:4px; margin:4px 0;">
       <strong>${escapeHtml(t.title || '(no title)')}</strong>
-      ${t.question ? `<div style="color:var(--ink-mute); font-size:11px; margin-top:2px;">${escapeHtml(t.question.slice(0, 100))}${t.question.length > 100 ? '…' : ''}</div>` : ''}
+      ${t.question ? `<div style="color:var(--ink-mute); font-size:12px; margin-top:2px;">${escapeHtml(t.question.slice(0, 100))}${t.question.length > 100 ? '…' : ''}</div>` : ''}
     </div>`
   ).join('');
   preview.innerHTML = `
@@ -6648,7 +6569,7 @@ function updateBulkPreview() {
   btn.textContent = `Add ${parsed.length} topic${parsed.length === 1 ? '' : 's'}`;
 }
 
-function doBulkImport() {
+async function doBulkImport() {
   const parsed = parseBulkInput(document.getElementById('bulkImportText').value);
   if (parsed.length === 0) { toast('Nothing to import', true); return; }
 
@@ -6656,7 +6577,7 @@ function doBulkImport() {
   const existing = new Set(essays.map(e => (e.title || '').toLowerCase().trim()));
   const dupes = parsed.filter(t => existing.has((t.title || '').toLowerCase().trim()));
   if (dupes.length > 0) {
-    if (!confirm(`${dupes.length} of ${parsed.length} topics have titles that already exist. Skip duplicates and add the rest?`)) return;
+    if (!await portalConfirm(`${dupes.length} of ${parsed.length} topics have titles that already exist. Skip duplicates and add the rest?`, { title:'Duplicate topics found', confirmLabel:'Skip duplicates' })) return;
   }
 
   let added = 0;
@@ -6693,8 +6614,8 @@ function selectEssay(id) {
   setPortalLibraryView('edit');
 }
 
-function deleteEssay(id) {
-  if (!confirm('Delete this essay? This cannot be undone.')) return;
+async function deleteEssay(id) {
+  if (!await portalConfirm('Delete this essay? This cannot be undone.', { title:'Delete essay', confirmLabel:'Delete essay', destructive:true })) return;
   essays = essays.filter(e => e.id !== id);
   if (currentId === id) currentId = essays.length ? essays[0].id : null;
   saveAll(); renderList(); loadCurrent(); renderPreview();
@@ -7013,7 +6934,7 @@ function renderPreview() {
         <ul style="margin: 0; padding-left: 20px; line-height: 1.5;">
           ${alerts.map(a => `<li>${escapeHtml(a)}</li>`).join('')}
         </ul>
-        <div style="margin-top: 8px; font-size: 11.5px; font-style: italic; color: #664d03;">
+        <div style="margin-top: 8px; font-size:12px; font-style: italic; color: #664d03;">
           Open <strong>Review preferences &amp; plan</strong> when you are ready to generate or regenerate the essay.
         </div>
       </div>
@@ -7039,7 +6960,7 @@ function renderEssayPageHTML(e, num) {
         <span class="essay-page-header-tag">2026 Edition</span>
       </div>
       <div class="essay-num-label">ESSAY ${String(num).padStart(2, '0')}</div>
-      <h1 class="essay-title">${escapeHtml(e.title || 'Untitled')}</h1>
+      <h2 class="essay-title">${escapeHtml(e.title || 'Untitled')}</h2>
       ${e.question ? `<div class="essay-question">${escapeHtml(e.question)}</div>` : ''}
       ${e.explanation ? `<div class="essay-topic-exp"><strong>Topic Explanation:</strong> ${escapeHtml(e.explanation)}</div>` : ''}
       ${(prosList.length || consList.length) ? `
@@ -7613,11 +7534,11 @@ function downloadSingle() {
   if (!e) { toast('No essay selected', true); return; }
   openPrintWindow([renderEssayPageHTML(e, essays.findIndex(x => x.id === e.id) + 1)], `${e.title || 'essay'}.pdf`);
 }
-function downloadBook() {
+async function downloadBook() {
   if (essays.length === 0) { toast('No essays to export', true); return; }
   const written = essays.filter(e => essayStatus(e) !== 'empty');
   if (written.length < essays.length) {
-    if (!confirm(`Only ${written.length} of ${essays.length} essays have content. Export only the written ones?`)) return;
+    if (!await portalConfirm(`Only ${written.length} of ${essays.length} essays have content. Export only the written ones?`, { title:'Export essay book', confirmLabel:'Export written essays' })) return;
     const pages = [renderCoverHTML(), renderTocFor(written)];
     written.forEach((e, i) => pages.push(renderEssayPageHTML(e, i + 1)));
     openPrintWindow(pages, 'IPT_Brisbane_Essay_Book.pdf');
@@ -7781,7 +7702,7 @@ async function saveTemplate() {
 }
 
 async function copyPresetToCustom() {
-  if (!confirm(`Copy ${tplLabel(currentTplTab)} into "My Custom"? Your current custom template will be overwritten.`)) return;
+  if (!await portalConfirm(`Copy ${tplLabel(currentTplTab)} into "My Custom"? Your current custom template will be overwritten.`, { title:'Replace custom template', confirmLabel:'Replace template', destructive:true })) return;
   const bag = getTemplatesBag();
   bag.custom = JSON.parse(JSON.stringify(bag[currentTplTab]));
   await saveTemplatesBag(bag);
@@ -7790,8 +7711,8 @@ async function copyPresetToCustom() {
 }
 
 // Legacy reset (kept for backward compatibility, just resets Custom to Band 9)
-function resetTemplateToDefault() {
-  if (!confirm('Reset My Custom template to the Band 9 preset?')) return;
+async function resetTemplateToDefault() {
+  if (!await portalConfirm('Reset My Custom template to the Band 9 preset?', { title:'Reset custom template', confirmLabel:'Reset template', destructive:true })) return;
   const bag = getTemplatesBag();
   bag.custom = JSON.parse(JSON.stringify(BAND9_TEMPLATE));
   saveTemplatesBag(bag);
@@ -8268,7 +8189,7 @@ function renderStanceController(e) {
     return `
       <button class="stance-pill ${isSelected ? 'active' : ''}" 
               onclick="event.preventDefault(); changeChosenStance('${escapeHtml(opt)}')"
-              style="padding: 6px 12px; font-size: 11.5px; border-radius: 20px; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; background: ${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; color: ${isSelected ? 'var(--accent-deep)' : 'var(--ink-soft)'}; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-bottom: 4px;">
+              style="padding: 6px 12px; font-size:12px; border-radius: 20px; border: 1px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; background: ${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; color: ${isSelected ? 'var(--accent-deep)' : 'var(--ink-soft)'}; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-bottom: 4px;">
         ${escapeHtml(opt)}
       </button>
     `;
@@ -8276,7 +8197,7 @@ function renderStanceController(e) {
   
   return `
     <div class="stance-controller" style="margin-bottom: 14px;">
-      <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); font-weight: 700; margin-bottom: 6px;">
+      <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); font-weight: 700; margin-bottom: 6px;">
         ${stanceHeaderLabel}
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 8px;">
@@ -8326,12 +8247,12 @@ function renderIdeasPicker() {
 
   // 1. Question Type status with manual override Change button
   let typeHeaderHtml = `
-    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:11.5px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+    <div id="typeOverrideContainer" style="background:#f0f4ff; border:1px solid #c8d4f0; border-radius:6px; padding:9px 13px; margin-bottom:12px; font-size:12px; color:#2a3a7a; display:flex; align-items:center; justify-content:space-between; gap:8px;">
       <div style="display:flex; align-items:center; gap:8px;">
         <span style="font-size:14px;">🤖</span>
         <span><strong>Question type:</strong> ${escapeHtml(typeCfg.displayName)}</span>
       </div>
-      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:11px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
+      <button class="btn-change-type" onclick="event.preventDefault(); showTypeOverrideSelect(true)" style="background:var(--bg); border:1px solid #c8d4f0; color:#2a3a7a; font-weight:600; font-size:12px; cursor:pointer; padding:3px 7px; border-radius:4px; font-family:var(--sans);">Change</button>
     </div>
   `;
 
@@ -8395,16 +8316,16 @@ function renderIdeasPicker() {
       const pickedReasons = e.selectedReasonIds || [];
       const pickedSolutions = e.selectedSolutionIds || [];
       const needStance = !e.chosenStance;
-      const fallbackHint = `<div style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
+      const fallbackHint = `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:2px 8px 6px;">Showing all options — pick the ones that fit this area.</div>`;
 
       const colA = leftFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
+        ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see reasons.' : 'No reasons available — try Refresh.'}</div>`
         : (leftFellBack ? fallbackHint : '') + leftFiltered.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('main_support', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8412,13 +8333,13 @@ function renderIdeasPicker() {
           }).join('');
 
       const colB = rightFiltered.length === 0
-        ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
+        ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">${needStance ? 'Choose a focus area above to see examples.' : 'No examples available — try Refresh.'}</div>`
         : (rightFellBack ? fallbackHint : '') + rightFiltered.map((idea) => {
             const isSelected = pickedSolutions.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('solution', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8428,18 +8349,18 @@ function renderIdeasPicker() {
       listsHtml = `
         <div class="ideas-cols">
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Why this area matters
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
             ${colA}
           </div>
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               Examples &amp; solutions
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
             ${colB}
           </div>
@@ -8454,17 +8375,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             Causes / Challenges
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available. Choose a stance/option.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8474,12 +8395,12 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             Solutions (Auto-paired)
             <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
-              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+              <span style="font-size:12px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:2px 4px;">
                 ${window.ideasEditMode ? 'Done' : 'Edit'}
               </button>
             </span>
@@ -8491,7 +8412,7 @@ function renderIdeasPicker() {
             let rightContentHtml = '';
             if (window.ideasEditMode) {
               rightContentHtml = `
-                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:12px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
               `;
             } else {
               rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
@@ -8500,7 +8421,7 @@ function renderIdeasPicker() {
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 ${rightContentHtml}
               </div>
@@ -8534,17 +8455,17 @@ function renderIdeasPicker() {
         <div class="ideas-cols ideas-cols-3">
           <!-- Column A: Reasons to Agree -->
           <div class="ideas-side-col ${agreeColDisabled ? 'col-disabled' : ''}" style="${agreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Reasons to Agree
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">${isAgreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
             </div>
-            ${agreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
+            ${agreeReasons.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : agreeReasons.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8554,17 +8475,17 @@ function renderIdeasPicker() {
           
           <!-- Column B: Reasons to Disagree -->
           <div class="ideas-side-col ${disagreeColDisabled ? 'col-disabled' : ''}" style="${disagreeColDisabled ? 'opacity: 0.35; pointer-events: none;' : ''}">
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               Reasons to Disagree
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">${isDisagreeStance ? 'pick 2' : (e.chosenStance ? 'inactive' : 'pick 2')}</span>
             </div>
-            ${disagreeReasons.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
+            ${disagreeReasons.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : disagreeReasons.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8574,17 +8495,17 @@ function renderIdeasPicker() {
           
           <!-- Column C: Alternative Actions -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">C</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">C</span>
               Alternative Actions
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
-            ${alternativeActions.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
+            ${alternativeActions.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No alternative actions.</div>` : alternativeActions.map((idea) => {
               const isSelected = pickedSolutions.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8609,17 +8530,17 @@ function renderIdeasPicker() {
         <div class="ideas-cols">
           <!-- Main reasons -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
               Supporting Reasons
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
-            ${mainSupport.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
+            ${mainSupport.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No supporting reasons. Choose a stance.</div>` : mainSupport.map((idea) => {
               const isSelected = pickedReasons.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8629,17 +8550,17 @@ function renderIdeasPicker() {
           
           <!-- Second Column (Optional Contrast) -->
           <div>
-            <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+            <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
               ${secondColLabel}
-              <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
+              <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick ${secondColLimit}</span>
             </div>
-            ${secondColIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
+            ${secondColIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ${secondColLabel.toLowerCase()} points.</div>` : secondColIdeas.map((idea) => {
               const isSelected = pickedSecondCol.includes(idea.text);
               return `
                 <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${secondColCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: 0.8; transition:all 0.2s;">
                   <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                    ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                    ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                   </div>
                   <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
                 </div>
@@ -8662,17 +8583,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             ${escapeHtml(leftLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8682,12 +8603,12 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             ${escapeHtml(rightLabel)}
             <span style="margin-left:auto; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:9px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
-              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:10px; font-weight:600; cursor:pointer; padding:2px 4px;">
+              <span style="font-size:12px; color:var(--ink-mute); font-weight:600;">auto-paired</span>
+              <button onclick="event.preventDefault(); window.ideasEditMode = !window.ideasEditMode; renderIdeasPicker();" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; padding:2px 4px;">
                 ${window.ideasEditMode ? 'Done' : 'Edit'}
               </button>
             </span>
@@ -8699,7 +8620,7 @@ function renderIdeasPicker() {
             let rightContentHtml = '';
             if (window.ideasEditMode) {
               rightContentHtml = `
-                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:11.5px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
+                <input type="text" value="${escapeHtml(pairedVal)}" onchange="updatePairedText(${idx}, this.value)" style="width:100%; font-size:12px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; font-family:var(--sans); background:var(--bg); color:var(--ink);" />
               `;
             } else {
               rightContentHtml = `<div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(pairedVal)}</div>`;
@@ -8708,7 +8629,7 @@ function renderIdeasPicker() {
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" style="padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; opacity: ${isSelected ? 1 : 0.65}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 ${rightContentHtml}
               </div>
@@ -8734,17 +8655,17 @@ function renderIdeasPicker() {
       <div class="ideas-cols">
         <!-- Left Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">A</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
             ${escapeHtml(leftLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${leftIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
+          ${leftIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : leftIdeas.map((idea) => {
             const isSelected = pickedReasons.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${idea.category}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8754,17 +8675,17 @@ function renderIdeasPicker() {
         
         <!-- Right Column -->
         <div>
-          <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">B</span>
+          <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
             ${escapeHtml(rightLabel)}
-            <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+            <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
           </div>
-          ${rightIdeas.length === 0 ? `<div style="font-size:11px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : rightIdeas.map((idea) => {
+          ${rightIdeas.length === 0 ? `<div style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:8px;">No ideas available.</div>` : rightIdeas.map((idea) => {
             const isSelected = pickedRight.includes(idea.text);
             return `
               <div class="idea-item ${isSelected ? 'selected' : ''}" onclick="toggleIdeaText('${rightCategory}', '${escapeHtml(idea.text)}')" style="cursor:pointer; padding:8px 10px; margin-bottom:6px; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--line-soft)'}; border-radius:6px; display:flex; align-items:center; gap:8px; background:${isSelected ? 'var(--accent-soft)' : 'var(--bg)'}; transition:all 0.2s;">
                 <div class="idea-checkbox" style="width:14px; height:14px; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--line)'}; border-radius:3px; background:${isSelected ? 'var(--accent)' : 'transparent'}; display:flex; align-items:center; justify-content:center;">
-                  ${isSelected ? `<span style="color:white; font-size:10px; font-weight:bold;">✓</span>` : ''}
+                  ${isSelected ? `<span style="color:white; font-size:12px; font-weight:bold;">✓</span>` : ''}
                 </div>
                 <div class="idea-text" style="font-size:12px; color:var(--ink);">${escapeHtml(idea.text)}</div>
               </div>
@@ -8778,7 +8699,7 @@ function renderIdeasPicker() {
   let warningsHtml = '';
   if (e.ideaValidationWarnings && e.ideaValidationWarnings.length > 0) {
     warningsHtml = e.ideaValidationWarnings.map(w => `
-      <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+      <div style="background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
         <span>⚠️</span>
         <span>${escapeHtml(w)}</span>
       </div>
@@ -8797,7 +8718,7 @@ function renderIdeasPicker() {
   let errorsHtml = '';
   if (e.ideaValidationErrors && e.ideaValidationErrors.length > 0) {
     errorsHtml = e.ideaValidationErrors.map(err => `
-      <div style="background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:6px;">
+      <div style="background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:8px 12px; border-radius:6px; margin-top:10px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px;">
         <span>❌</span>
         <span>${escapeHtml(err)}</span>
       </div>
@@ -8861,7 +8782,7 @@ function renderIdeasPicker() {
     ${errorsHtml}
     ${warningsHtml}
     <div class="ideas-actions" style="margin-top:14px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
-      <div class="ideas-counter" style="font-size:11.5px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
+      <div class="ideas-counter" style="font-size:12px; color:${isReady ? 'green' : 'var(--ink-soft)'};">${statusText}</div>
       <div style="display:flex; gap:8px;">
         <button class="ideas-refresh-btn" onclick="aiSuggestIdeas()" style="background:var(--bg); border:1px solid var(--line); color:var(--ink-soft); font-size:12px; cursor:pointer; padding:6px 12px; border-radius:6px; font-weight:600; font-family:var(--sans);">↻ Refresh</button>
         <button class="ideas-use-btn" id="ideasUseBtn" onclick="usePickerSelectedIdeas()" ${isReady ? '' : 'disabled'} style="background:${isReady ? 'var(--accent)' : 'var(--line-soft)'}; color:${isReady ? 'white' : 'var(--ink-mute)'}; border:none; font-size:12px; cursor:${isReady ? 'pointer' : 'default'}; padding:6px 14px; border-radius:6px; font-weight:600; font-family:var(--sans);">Review plan &amp; generate →</button>
@@ -8912,7 +8833,7 @@ async function generateEssayFromApprovedPlan(opts = {}) {
 
   const hasContent = (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0;
   if (hasContent && !opts.skipConfirm) {
-    if (!confirm('This essay already has content. Overwrite it with a new AI-written essay?')) return false;
+    if (!await portalConfirm('This essay already has content. Overwrite it with a new AI-written essay?', { title:'Replace essay content', confirmLabel:'Generate and replace', destructive:true })) return false;
   }
   if (!await consumeQuota('essay')) return false;
   
@@ -9352,15 +9273,15 @@ function renderFreestyleIdeasPicker() {
     [type.leftLabel || type.bp1Role || 'Column A', type.rightLabel || type.bp2Role || 'Column B'];
 
   area.innerHTML = `
-    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
       <div>
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">A</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#d4ebf5; color:#2a5577; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">A</span>
           ${escapeHtml(fsLbls[0])}
         </div>
         ${fsSuggestedLeftIdeas.map((p, i) => `
@@ -9371,8 +9292,8 @@ function renderFreestyleIdeasPicker() {
         `).join('')}
       </div>
       <div>
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700;">B</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
           ${escapeHtml(fsLbls[1])}
         </div>
         ${fsSuggestedRightIdeas.map((c, i) => `
@@ -9383,9 +9304,9 @@ function renderFreestyleIdeasPicker() {
         `).join('')}
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px;">
       <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">Pick <strong>2 from each side</strong> (4 total)</div>
-      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:12px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
     </div>
   `;
   updateFreestyleIdeasCounter();
@@ -9518,10 +9439,10 @@ function renderFreestyleSidedPicker(type) {
 
     return `
       <div class="ideas-side-col ${isDisabledSide ? 'col-disabled' : ''}" id="fs-col-${col.key}" style="opacity:${isDisabledSide ? '0.4' : '1'}; pointer-events:${isDisabledSide ? 'none' : 'auto'};">
-        <div style="font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700;">${badge}</span>
+        <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span style="background:${badgeColor.bg}; color:${badgeColor.fg}; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">${badge}</span>
           ${escapeHtml(colLabel)}
-          <span style="margin-left:auto; font-size:9px; color:var(--ink-mute); font-weight:600;">pick 2</span>
+          <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
         </div>
         ${ideas.map((idea, i) => {
           let badgeHtml = '';
@@ -9531,11 +9452,11 @@ function renderFreestyleSidedPicker(type) {
               const labelA = getFsColLabel(sideCols[0]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
               const labelB = getFsColLabel(sideCols[1]).replace(/Reasons to/gi, '').replace(/If you choose/gi, '').replace(/living is better/gi, '').replace(/is better/gi, '').trim();
               if (i === 0 || i === 1) {
-                badgeHtml = `<span style="font-size:9px; background:#d4ebf5; color:#2a5577; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelA)}</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#d4ebf5; color:#2a5577; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelA)}</span>`;
               } else if (i === 2 || i === 3) {
-                badgeHtml = `<span style="font-size:9px; background:#f5dbd4; color:#7a4030; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelB)}</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#f5dbd4; color:#7a4030; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">for ${escapeHtml(labelB)}</span>`;
               } else if (i === 4) {
-                badgeHtml = `<span style="font-size:9px; background:#f3f4f6; color:#4b5563; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">neutral</span>`;
+                badgeHtml = `<span style="font-size:12px; background:#f3f4f6; color:#4b5563; padding:2px 6px; border-radius:4px; font-weight:600; margin-left:8px; display:inline-block;">neutral</span>`;
               }
             }
           }
@@ -9557,12 +9478,12 @@ function renderFreestyleSidedPicker(type) {
   const fixedColHtml = colHtml(fixedCol, '+', thirdPalette);
 
   area.innerHTML = `
-    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
+    <div style="background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:12px; color:var(--accent-deep); display:flex; align-items:center; gap:8px;">
       <span style="font-size:14px;">🤖</span>
       <span><strong>Question Type:</strong> ${escapeHtml(type.detect)}</span>
     </div>
     ${buildQuestionExplanationHtml(null, normalizeQuestionType(fsDetectedQuestionType), type)}
-    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:11px; color:#0369a1; line-height:1.4;">
+    <div style="background:#e0f2fe; border:1px solid #7dd3fc; border-radius:6px; padding:8px 12px; margin-bottom:12px; font-size:12px; color:#0369a1; line-height:1.4;">
       <strong>👉 First, choose your stance.</strong> Click an idea in <strong>${escapeHtml(getFsColLabel(sideCols[0]))}</strong> or <strong>${escapeHtml(getFsColLabel(sideCols[1]))}</strong> to pick your stance. Then pick 2 ideas from that stance, and 2 from <strong>${escapeHtml(getFsColLabel(fixedCol))}</strong>.
     </div>
     <div class="ideas-cols" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:12px;">
@@ -9573,9 +9494,9 @@ function renderFreestyleSidedPicker(type) {
         ${fixedColHtml}
       </div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:11.5px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; font-size:12px;">
       <div id="fsIdeasCounter" style="font-weight:600; color:var(--ink-soft);">👈 First, click an idea to choose your stance.</div>
-      <button class="tb-text-btn" style="padding:4px 8px; font-size:11px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
+      <button class="tb-text-btn" style="padding:4px 8px; font-size:12px; border:1px solid var(--line); border-radius:4px;" onclick="freestyleSuggestIdeas()">↻ Refresh Ideas</button>
     </div>
   `;
   updateFreestyleIdeasCounter();
@@ -9850,9 +9771,9 @@ function openBulkWrite() {
   document.getElementById('bulkWriteModal').classList.add('show');
 }
 
-function closeBulkWrite() {
+async function closeBulkWrite() {
   if (bulkWriteRunning) {
-    if (!confirm('A bulk write is still running. Close anyway? Completed essays are saved; in-progress one will finish then stop.')) return;
+    if (!await portalConfirm('A bulk write is still running. Close anyway? Completed essays are saved; the in-progress essay will finish and then stop.', { title:'Stop bulk writing', confirmLabel:'Stop after current essay' })) return;
     bulkWriteAborted = true;
   }
   document.getElementById('bulkWriteModal').classList.remove('show');
@@ -9933,13 +9854,13 @@ async function doBulkWrite() {
   // Final confirm if user is about to overwrite already-written essays
   const overwriteCount = targets.filter(e => (e.intro || e.bp1 || e.bp2 || e.concl).trim().length > 0).length;
   if (overwriteCount > 0) {
-    if (!confirm(`${overwriteCount} of the selected ${targets.length} essays already have content. Continuing will overwrite them. Continue?`)) return;
+    if (!await portalConfirm(`${overwriteCount} of the selected ${targets.length} essays already have content. Continuing will overwrite them.`, { title:'Replace existing essays', confirmLabel:'Continue and replace', destructive:true })) return;
   }
 
   // Quota check upfront (warn if user will hit limit mid-run)
   const q = getQuota();
   if (!offlineMode && q.essay < targets.length) {
-    if (!confirm(`You have ${q.essay} essay quota credits left today but selected ${targets.length} essays. The first ${q.essay} will be written, the rest will fail with a quota error. Continue?`)) return;
+    if (!await portalConfirm(`You have ${q.essay} essay quota credits left today but selected ${targets.length} essays. Only the first ${q.essay} can be written today.`, { title:'Not enough quota', confirmLabel:'Write available essays' })) return;
   }
 
   // Switch UI to "running" mode
@@ -10472,7 +10393,7 @@ function importData() {
       try {
         const data = JSON.parse(reader.result);
         if (!Array.isArray(data.essays)) throw new Error('Invalid backup');
-        if (!confirm(`Restore ${data.essays.length} essays?`)) return;
+        if (!await portalConfirm(`Restore ${data.essays.length} essays from this backup?`, { title:'Restore backup', confirmLabel:'Restore essays', destructive:true })) return;
         essays = data.essays;
         if (data.templates) {
           await saveTemplatesBag(data.templates);
@@ -10988,7 +10909,7 @@ function renderVocabWordCard(w, idx) {
       
       <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
         <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; display: flex; flex-direction: column;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px;">In Context</div>
           <ul style="margin: 0; padding: 0;">
             ${examplesHtml}
           </ul>
@@ -11205,7 +11126,7 @@ function renderMasterWordCard(w, idx) {
       }).join('');
       return `
         <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
           <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
           <ul style="margin: 0; padding: 0;">${examplesList}</ul>
         </div>
@@ -11224,7 +11145,7 @@ function renderMasterWordCard(w, idx) {
       
       <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
         <div>
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+          <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
           ${contextsHtml}
         </div>
         <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
@@ -11492,9 +11413,9 @@ function openVocabPractice() {
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
       <!-- Quiz Panel -->
-      <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
+      <div style="background: rgba(0,92,139,0.05); border: 1px solid rgba(0,92,139,0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
         <h3 style="font-size:15px; margin-bottom:6px; color:var(--accent);">🎯 Definition Quiz</h3>
-        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
+        <p style="font-size:12px; color:var(--ink-soft); flex:1; line-height:1.4;">Test your knowledge of definitions. Choose spelling or multiple-choice questions.</p>
         <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px;">
           <button class="tb-text-btn dark" onclick="startQuizMode('spelling')">Start Spelling Quiz</button>
           <button class="tb-text-btn dark" onclick="startQuizMode('mcq')">Start Multiple Choice</button>
@@ -11504,7 +11425,7 @@ function openVocabPractice() {
       <!-- Matching Game Panel -->
       <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 8px; padding: 16px; display: flex; flex-direction: column;">
         <h3 style="font-size:15px; margin-bottom:6px; color:#10b981;">⚡ Synonyms Matcher</h3>
-        <p style="font-size:11.5px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
+        <p style="font-size:12px; color:var(--ink-soft); flex:1; line-height:1.4;">Match advanced terms to their synonyms against the clock. Compete for the high score!</p>
         <div style="margin-top:14px;">
           <button class="tb-text-btn dark" onclick="startSynonymsMatcher()" style="background:#10b981; border-color:#10b981; width:100%;">Play Matcher Game</button>
         </div>
@@ -11694,12 +11615,12 @@ function renderAdminVocabList() {
       <div style="flex:1;">
         <div style="font-weight:600; font-family:var(--serif); font-size:14px;">
           ${escapeHtml(w.word)}
-          <span style="font-size:10px; color:var(--ink-mute); font-weight:400; font-style:italic; margin-left:6px;">${escapeHtml(w.pos || '')} · ${escapeHtml(w.level || 'C1')}</span>
-          ${w._admin ? '<span style="background:#8fd18f; color:#fff; font-size:9px; padding:1px 6px; border-radius:3px; margin-left:6px;">ADMIN</span>' : ''}
+          <span style="font-size:12px; color:var(--ink-mute); font-weight:400; font-style:italic; margin-left:6px;">${escapeHtml(w.pos || '')} · ${escapeHtml(w.level || 'C1')}</span>
+          ${w._admin ? '<span style="background:#8fd18f; color:#fff; font-size:12px; padding:1px 6px; border-radius:3px; margin-left:6px;">ADMIN</span>' : ''}
         </div>
-        <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml((w.meaning || '').slice(0, 90))}${(w.meaning || '').length > 90 ? '…' : ''}</div>
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml((w.meaning || '').slice(0, 90))}${(w.meaning || '').length > 90 ? '…' : ''}</div>
       </div>
-      ${w._admin ? `<button class="tb-text-btn" onclick="deleteAdminWord('${catId}', '${escapeHtml(w.word).replace(/'/g, "\\'")}')" style="font-size:11px; padding:4px 10px;">Delete</button>` : '<span style="font-size:10px; color:var(--ink-mute); font-style:italic; padding:0 6px;">seed</span>'}
+      ${w._admin ? `<button class="tb-text-btn" onclick="deleteAdminWord('${catId}', '${escapeHtml(w.word).replace(/'/g, "\\'")}')" style="font-size:12px; padding:4px 10px;">Delete</button>` : '<span style="font-size:12px; color:var(--ink-mute); font-style:italic; padding:0 6px;">seed</span>'}
     </div>
   `).join('');
 }
@@ -11785,7 +11706,7 @@ async function saveNewWord() {
 
 async function deleteAdminWord(catId, word) {
   if (!VOCAB_DATA[catId]) return;
-  if (!confirm(`Remove "${word}" from ${VOCAB_DATA[catId].label}?\n\nThis removes it for all students.`)) return;
+  if (!await portalConfirm(`Remove "${word}" from ${VOCAB_DATA[catId].label}?\n\nThis removes it for all students.`, { title:'Remove vocabulary item', confirmLabel:'Remove word', destructive:true })) return;
 
   const before = VOCAB_DATA[catId].words.length;
   VOCAB_DATA[catId].words = VOCAB_DATA[catId].words.filter(w => !(w.word === word && w._admin));
@@ -11943,9 +11864,9 @@ function renderSuggestionList() {
       <input type="checkbox" ${w.checked ? 'checked' : ''} ${w.duplicate ? 'disabled' : ''} onchange="toggleSuggestion(${i}, this.checked)">
       <div style="flex:1; line-height:1.4;">
         <strong style="font-family:var(--serif); font-size:14px;">${escapeHtml(w.word)}</strong>
-        <span style="color:var(--ink-mute); font-size:11px; margin-left:6px;">${escapeHtml(w.pos)} · ${escapeHtml(w.level)}</span>
-        ${w.duplicate ? '<span style="background:#bbb; color:#fff; font-size:9px; padding:1px 5px; border-radius:3px; margin-left:6px;">EXISTS</span>' : ''}
-        <div style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(w.preview)}</div>
+        <span style="color:var(--ink-mute); font-size:12px; margin-left:6px;">${escapeHtml(w.pos)} · ${escapeHtml(w.level)}</span>
+        ${w.duplicate ? '<span style="background:#bbb; color:#fff; font-size:12px; padding:1px 5px; border-radius:3px; margin-left:6px;">EXISTS</span>' : ''}
+        <div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(w.preview)}</div>
       </div>
     </label>
   `).join('');
@@ -12067,13 +11988,13 @@ function renderDetailsPreview() {
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
         <input type="checkbox" ${d.keep ? 'checked' : ''} onchange="suggestState.details[${i}].keep = this.checked; updateSaveBtnCount();">
         <strong style="font-family:var(--serif); font-size:15px;">${escapeHtml(d.word)}</strong>
-        <span style="color:var(--ink-mute); font-size:11px; font-style:italic;">${escapeHtml(d.pos)}</span>
-        <span style="background:var(--accent); color:#fff; font-size:9px; padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.07em;">${escapeHtml(d.level)}</span>
+        <span style="color:var(--ink-mute); font-size:12px; font-style:italic;">${escapeHtml(d.pos)}</span>
+        <span style="background:var(--accent); color:#fff; font-size:12px; padding:2px 6px; border-radius:3px; font-weight:700; letter-spacing:0.07em;">${escapeHtml(d.level)}</span>
       </div>
       <div style="font-size:12.5px; line-height:1.55; color:var(--ink); margin:6px 0;">${escapeHtml(d.meaning)}</div>
-      ${d.compare ? `<div style="background:#fff8e6; border-left:3px solid #b07a2a; padding:6px 10px; border-radius:0 4px 4px 0; font-size:11.5px; color:#5a4400; margin:6px 0;">${escapeHtml(d.compare)}</div>` : ''}
+      ${d.compare ? `<div style="background:#fff8e6; border-left:3px solid #b07a2a; padding:6px 10px; border-radius:0 4px 4px 0; font-size:12px; color:#5a4400; margin:6px 0;">${escapeHtml(d.compare)}</div>` : ''}
       <ul style="margin:6px 0 0; padding:0 0 0 18px; list-style:none;">
-        ${d.examples.map(ex => `<li style="font-size:11.5px; color:var(--ink-soft); font-style:italic; line-height:1.5; padding:2px 0;">› ${escapeHtml(ex)}</li>`).join('')}
+        ${d.examples.map(ex => `<li style="font-size:12px; color:var(--ink-soft); font-style:italic; line-height:1.5; padding:2px 0;">› ${escapeHtml(ex)}</li>`).join('')}
       </ul>
     </div>
   `).join('');
@@ -12428,7 +12349,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=4', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=10', 'reading review'],
-      ['reading-practice.js?v=20260924-auth-nav', 'reading practice']
+      ['reading-practice.js?v=20260924-a11y', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
@@ -12458,13 +12379,76 @@ function ensureSpeakingRuntimeLoaded() {
   return speakingRuntimeLoadPromise;
 }
 
+let portalCatalogueProgressCache = { uid:'', at:0, value:null };
+function practiceLastTime(value) {
+  if (value == null) return 0;
+  if (Array.isArray(value)) return value.reduce((max,item)=>Math.max(max,practiceLastTime(item)),0);
+  if (typeof value !== 'object') return 0;
+  let max=0;
+  for (const key of ['finishedAt','updatedAt','date','timestamp','startedAt','createdAt']) {
+    const raw=value[key], time=typeof raw==='string'?Date.parse(raw):Number(raw||0);
+    if (Number.isFinite(time)) max=Math.max(max,time);
+  }
+  for (const item of Object.values(value)) if (item && typeof item==='object') max=Math.max(max,practiceLastTime(item));
+  return max;
+}
+function setLatestPracticeMeta(target, route, time) {
+  time=Number(time||0); if(!time)return;
+  target[route] ||= {};
+  target[route].lastAttempt=Math.max(Number(target[route].lastAttempt||0),time);
+}
+async function getPortalCatalogueProgress() {
+  const uid=canonicalClientUserId(currentUserId), token=sessionToken;
+  if (!uid) return { practice:{}, mocks:{} };
+  if (portalCatalogueProgressCache.uid===uid && Date.now()-portalCatalogueProgressCache.at<10000 && portalCatalogueProgressCache.value) return portalCatalogueProgressCache.value;
+  const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
+  try { setLatestPracticeMeta(result.practice,'swt',practiceLastTime(LocalStore.get(getPteStorageKey('history'))||{})); } catch (_) {}
+  try { setLatestPracticeMeta(result.practice,'practice',practiceLastTime(getPracticeHistory())); } catch (_) {}
+  try {
+    const packed=localAccountProgress(uid)?.readingProgress;
+    const reading=window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
+    const sessions=[reading?.session,...(reading?.drafts||[]),...(reading?.history||[])].filter(Boolean);
+    const routeByType={dropdown:'reading-dropdown',mcma:'reading-mcma',reorder:'reading-reorder',wordbank:'reading-wordbank',mcsa:'reading-mcsa',hcs:'listening-hcs',hiw:'listening-hiw'};
+    for(const session of sessions){
+      const at=Number(session.finishedAt||session.updatedAt||session.startedAt||0);
+      if(session.practiceUid){
+        const type=session.questions?.[0]?.type,route=routeByType[type];
+        if(route)setLatestPracticeMeta(result.practice,route,at);
+      } else if(session.mode){
+        const current=result.mocks[session.mode], done=!!session.done;
+        if(!current || done || current.status!=='Done') result.mocks[session.mode]={status:done?'Done':'In progress',date:at};
+      }
+    }
+  } catch (_) {}
+  if(token){
+    try{
+      const response=await fetch(API_URL+'/api/writing-lab/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
+      if(response.ok){
+        const rows=await response.json();
+        for(const attempt of Array.isArray(rows)?rows:[]){
+          const at=Number(attempt.finishedAt||attempt.updatedAt||attempt._updatedAt||attempt.startedAt||0);
+          if(attempt.kind==='sst')setLatestPracticeMeta(result.practice,'spoken-text',at);
+          if(attempt.kind==='wfd')setLatestPracticeMeta(result.practice,'dictation',at);
+          if(attempt.kind==='mock'&&attempt.testId){
+            const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
+            if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
+          }
+        }
+      }
+    }catch(_){}
+  }
+  portalCatalogueProgressCache={uid,at:Date.now(),value:result};
+  return result;
+}
+
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
   portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
   portalCatalogue = PracticeCatalogue.createController({
     document, navigate: switchSection,
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
-    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } })
+    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } }),
+    getProgress: getPortalCatalogueProgress
   });
   studentInterventionsController = window.StudentInterventions?.create({
     document,
@@ -12472,11 +12456,7 @@ function initialisePortalWorkspace() {
     navigate: switchSection,
     launch: launchAssignedQuestion
   }) || null;
-  window.addEventListener('message', event => {
-    const frame = document.getElementById('writingLabFrame');
-    if (event.source !== frame?.contentWindow || event.origin !== location.origin || event.data?.type !== 'writing-lab-navigate') return;
-    if (['practice-hub', 'mock-tests'].includes(event.data.section)) switchSection(event.data.section);
-  });
+  // Writing Lab is mounted directly in this document; navigation uses switchSection().
   // Access to storage can be denied by browser privacy settings.
   try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
   window.addEventListener('pagehide', savePortalEssayDraft);
@@ -12485,31 +12465,22 @@ function initialisePortalWorkspace() {
   });
 }
 
-function openWritingLab(tab = 'mocks', options = {}) {
-  const frame = document.getElementById('writingLabFrame');
-  if (!frame) return;
+async function openWritingLab(tab = 'mocks', options = {}) {
   const nextTab = ['sst','wfd','mocks','history'].includes(tab) ? tab : 'mocks';
-  const request = { type: 'writing-lab-tab', tab: nextTab, ...options, requestId: crypto.randomUUID() };
-  frame.dataset.writingLabRequest = JSON.stringify(request);
-  const send = () => frame.contentWindow?.postMessage(JSON.parse(frame.dataset.writingLabRequest), window.location.origin);
-  if (frame.dataset.writingLabLoaded === 'true') { send(); return; }
-  if (frame.dataset.writingLabLoading === 'true') return;
-  frame.dataset.writingLabLoading = 'true';
-  frame.addEventListener('load', () => {
-    frame.dataset.writingLabLoading = 'false';
-    frame.dataset.writingLabLoaded = 'true';
-    if (frame.dataset.writingLabRequest) send();
-  }, { once: true });
-  frame.src = '/writing-mocks?embedded=1&v=20260924-runtimefix';
+  const request = { tab: nextTab, ...options, requestId: crypto.randomUUID() };
+  try {
+    if (!window.WritingLab?.open) throw Error('Writing practice is still loading. Please retry.');
+    await window.WritingLab.open(request);
+  } catch (error) {
+    const host=document.getElementById('lab');
+    if(host)host.innerHTML='<div class="hub"><h2>Writing practice could not load</h2><p>'+escapeHtml(error.message||'Please retry.')+'</p><button class="primary" type="button" data-writing-retry>Retry</button></div>';
+    host?.querySelector('[data-writing-retry]')?.addEventListener('click',()=>openWritingLab(nextTab,options),{once:true});
+    toast(error.message || 'Writing practice could not load.', true);
+  }
 }
 
 function resetWritingLabFrame() {
-  const frame = document.getElementById('writingLabFrame');
-  if (!frame) return;
-  frame.dataset.writingLabLoaded = 'false';
-  frame.dataset.writingLabLoading = 'false';
-  delete frame.dataset.writingLabRequest;
-  frame.src = 'about:blank';
+  window.WritingLab?.reset?.();
 }
 
 function launchAssignedQuestion(item) {
@@ -13436,7 +13407,7 @@ function renderPracticeHistory() {
             <span>${dateStr}</span>
             <span class="practice-history-score ${scoreBand}">${total}/${PRACTICE_MAX_TOTAL}</span>
           </div>
-          <div style="font-size: 11.5px; color: var(--ink-soft); line-height: 1.4;">
+          <div style="font-size:12px; color: var(--ink-soft); line-height: 1.4;">
             Attempt with ${a.wordCount} words
           </div>
           <button class="practice-history-del" style="right: 6px; top: 8px;" onclick="event.stopPropagation(); deletePracticeAttempt('${a.id}')" title="Delete">✕</button>
@@ -13451,7 +13422,7 @@ function renderPracticeHistory() {
             <div style="font-family: var(--serif); font-size: 13.5px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(g.title)}">
               ${escapeHtml(g.title)}
             </div>
-            <div style="font-size: 11px; color: var(--ink-soft); margin-top: 2px;">
+            <div style="font-size:12px; color: var(--ink-soft); margin-top: 2px;">
               ${g.attempts.length} attempt${g.attempts.length === 1 ? '' : 's'}
             </div>
           </div>
@@ -13482,7 +13453,7 @@ function formatPracticeDate(ts) {
 }
 
 async function deletePracticeAttempt(id) {
-  if (!confirm('Delete this practice attempt? Cannot be undone.')) return;
+  if (!await portalConfirm('Delete this practice attempt? This cannot be undone.', { title:'Delete practice attempt', confirmLabel:'Delete attempt', destructive:true })) return;
   let h = getPracticeHistory();
   h = h.filter(a => a.id !== id);
   if (id && !practiceHistoryDeleted.includes(id)) practiceHistoryDeleted.push(id);
@@ -13697,7 +13668,7 @@ function writeView() {
         <div class="simulator-timer-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
           <div class="practice-timer-bar ${practiceState.timerEnabled ? 'show' : ''}" id="practiceTimerBar" style="margin: 0; display: ${practiceState.timerEnabled ? 'inline-flex' : 'none'}; align-items: center; gap: 8px; padding: 6px 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 13.5px; font-weight: 700; color: var(--ink);">
             <span id="practiceTimerElapsed">00:00</span>
-            <span class="practice-timer-target" style="color: var(--ink-mute); font-family: var(--sans); font-weight: 400; font-size: 11px;">/ ${PRACTICE_TIMER_LIMIT_MIN}:00 exam target</span>
+            <span class="practice-timer-target" style="color: var(--ink-mute); font-family: var(--sans); font-weight: 400; font-size:12px;">/ ${PRACTICE_TIMER_LIMIT_MIN}:00 exam target</span>
           </div>
           <div style="font-size: 12px; color: var(--ink-soft); font-family: var(--serif); font-style: italic; display: flex; align-items: center; gap: 6px;">
             <span>⏱️ Time Mode:</span>
@@ -13714,17 +13685,17 @@ function writeView() {
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
             <div>
               <strong style="font-size:13px; color:var(--ink);">Template overlap</strong>
-              <span style="font-size:11px; color:var(--ink-mute); margin-left:6px;">with your stored scaffolds</span>
+              <span style="font-size:12px; color:var(--ink-mute); margin-left:6px;">with your stored scaffolds</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <strong id="practiceTemplateOverlapValue" style="font-size:13px; color:var(--ink);">—</strong>
-              <span id="practiceTemplateOverlapLevel" style="font-size:11px; font-weight:700; color:var(--ink-mute);">Waiting</span>
+              <span id="practiceTemplateOverlapLevel" style="font-size:12px; font-weight:700; color:var(--ink-mute);">Waiting</span>
             </div>
           </div>
           <div style="height:7px; background:var(--line-soft); border-radius:999px; overflow:hidden; margin-top:10px;">
             <div id="practiceTemplateOverlapBar" style="height:100%; width:0%; border-radius:999px; background:#10b981; transition:width .2s ease, background-color .2s ease;"></div>
           </div>
-          <p id="practiceTemplateOverlapGuidance" style="font-size:11.5px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
+          <p id="practiceTemplateOverlapGuidance" style="font-size:12px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
         </div>
 
         <!-- Dynamic Word Count Progress Visualizer -->
@@ -13738,7 +13709,7 @@ function writeView() {
             <div style="position: absolute; left: 57.14%; top: 0; bottom: 0; width: 28.57%; background: rgba(16, 185, 129, 0.12); border-left: 1px dashed rgba(16, 185, 129, 0.3); border-right: 1px dashed rgba(16, 185, 129, 0.3);" title="Ideal range (200-300 words)"></div>
             <div class="practice-progress-bar" id="practiceProgressBar" style="height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: width 0.2s ease, background-color 0.2s ease;"></div>
           </div>
-          <div style="display: flex; justify-content: space-between; font-size: 9.5px; color: var(--ink-mute); margin-top: 6px; padding: 0 2px; font-family: var(--sans);">
+          <div style="display: flex; justify-content: space-between; font-size:12px; color: var(--ink-mute); margin-top: 6px; padding: 0 2px; font-family: var(--sans);">
             <span>0 words</span>
             <span style="margin-left: 32%;">200 words (min)</span>
             <span>300 words (max)</span>
@@ -14273,7 +14244,7 @@ function renderPracticeSample(a) {
         <button class="admin-btn" style="padding:6px 12px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('rewritten')">${fullEssay ? 'Copy sample essay' : 'Copy revised excerpt'}</button>
       </div>
       <div style="padding:18px 24px; background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; margin-bottom:18px; box-shadow:var(--shadow);">
-        ${fullEssay ? '' : `<div style="display:flex; flex-wrap:wrap; gap:16px; font-size:11px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
+        ${fullEssay ? '' : `<div style="display:flex; flex-wrap:wrap; gap:16px; font-size:12px; margin-bottom:14px; border-bottom:1px solid var(--line-soft); padding-bottom:8px; color:var(--ink-soft);">
           <div><span class="diff-ins">ins</span> Added / Improved</div>
           <div><span class="diff-del">del</span> Replaced / Removed</div>
         </div>`}
@@ -14434,11 +14405,11 @@ function resultsView() {
     <details style="margin-bottom:18px; background:var(--bg-card); border:1px solid var(--line); border-radius:8px; padding:10px 14px;">
       <summary style="cursor:pointer; font-weight:600; font-size:13px;">▸ View your question &amp; essay (${a.wordCount} words)</summary>
       <div style="margin-top:10px; font-size:12.5px; color:var(--ink-soft); line-height:1.6;">
-        <div style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Question</div>
+        <div style="font-weight:700; color:var(--accent); font-size:12px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:4px;">Question</div>
         <div style="margin-bottom:10px; color:var(--ink);">${escapeHtml(a.questionText)}</div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <span style="font-weight:700; color:var(--accent); font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase;">Your essay</span>
-          <button class="admin-btn" style="padding:2px 8px; font-size:11px; cursor:pointer;" onclick="copyPracticeText('attempted')">📋 Copy Original</button>
+          <span style="font-weight:700; color:var(--accent); font-size:12px; letter-spacing:0.12em; text-transform:uppercase;">Your essay</span>
+          <button class="admin-btn" style="padding:2px 8px; font-size:12px; cursor:pointer;" onclick="copyPracticeText('attempted')">📋 Copy Original</button>
         </div>
         <div style="white-space:pre-wrap; color:var(--ink); font-family:var(--serif); font-size:13px; line-height:1.7;">${escapeHtml(a.essayText)}</div>
       </div>
@@ -14448,7 +14419,7 @@ function resultsView() {
   return `
     <div class="practice-results">
       <div class="practice-verdict-banner" style="background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; padding:18px 24px; margin-bottom:20px; box-shadow:var(--shadow);">
-        <div style="font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Evaluation Verdict</div>
+        <div style="font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Evaluation Verdict</div>
         <div style="font-family:var(--serif); font-size:18px; font-weight:700; color:var(--ink);">${escapeHtml(verdict)}</div>
       </div>
 
@@ -16318,7 +16289,7 @@ function renderAdminPassages(passagesList) {
       <div class="pid" style="font-weight:700; width:30px;">#${p.id}</div>
       <div class="pinfo" style="flex:1;">
         <div class="ptitle" style="font-weight:600; font-size:14px;">${escapeHtml(p.title || 'Untitled')}</div>
-        <div class="pcat" style="font-size:11.5px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(p.category || 'General')} · ${(p.text || '').split(/\s+/).filter(Boolean).length} words</div>
+        <div class="pcat" style="font-size:12px; color:var(--ink-soft); margin-top:2px;">${escapeHtml(p.category || 'General')} · ${(p.text || '').split(/\s+/).filter(Boolean).length} words</div>
       </div>
       <div class="pactions" style="display:flex; gap:6px;">
         <button class="tb-text-btn" onclick="adminEditPassage(${p.id})" style="font-size:12px; padding:4px 10px;">Edit</button>
@@ -16463,7 +16434,7 @@ async function savePassageEdit() {
 }
 
 async function adminDeletePassage(id) {
-  if (!confirm(`Delete passage #${id}? This action cannot be undone.`)) return;
+  if (!await portalConfirm(`Delete passage #${id}? This action cannot be undone.`, { title:'Delete passage', confirmLabel:'Delete passage', destructive:true })) return;
   try {
     const r = await fetch(API_URL + `/api/admin/passages/${id}`, {
       method: 'DELETE',
@@ -16562,7 +16533,7 @@ function renderDraft(draft) {
   box.innerHTML = `
     <div class="extract-draft-head" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
       <span class="extract-draft-title" style="font-weight:700;">AI Draft — review before applying</span>
-      <span class="draft-badge fw" style="font-size:10px; padding:2px 6px; background:var(--accent-soft); color:var(--accent);">${fw}</span>
+      <span class="draft-badge fw" style="font-size:12px; padding:2px 6px; background:var(--accent-soft); color:var(--accent);">${fw}</span>
       <span class="draft-badge conf-${conf}">${conf} confidence</span>
     </div>
     ${draft.framework_reason ? '<div class="draft-reason">' + escapeHtml(draft.framework_reason) + '</div>' : ''}
@@ -16911,8 +16882,8 @@ function showChartTooltip(x, y, title, score, date, maxScore) {
   
   tooltip.innerHTML = `
     <div style="font-weight:800; color:var(--accent); font-size:13px; margin-bottom:2px;">${score} / ${maxScore}</div>
-    <div style="font-weight:700; max-width:180px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:var(--ink); font-size:11px;">${escapeHtml(title)}</div>
-    <div style="font-size:9.5px; color:var(--ink-mute); margin-top:2px;">${date}</div>
+    <div style="font-weight:700; max-width:180px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; color:var(--ink); font-size:12px;">${escapeHtml(title)}</div>
+    <div style="font-size:12px; color:var(--ink-mute); margin-top:2px;">${date}</div>
   `;
   tooltip.style.left = `${xPct}%`;
   tooltip.style.top = `${yPct}%`;
@@ -17154,7 +17125,7 @@ function showVocabFlashcard() {
       <div style="font-size: 13px; line-height: 1.5; color: var(--ink); margin-bottom: 12px;">
         <strong>Meaning:</strong> ${escapeHtml(w.meaning)}
       </div>
-      ${w.compare ? `<div style="font-size: 12px; margin-bottom: 12px; padding: 6px 10px; background: rgba(99, 102, 241, 0.05); border-radius: 6px;"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
+      ${w.compare ? `<div style="font-size: 12px; margin-bottom: 12px; padding: 6px 10px; background: rgba(0,92,139,0.05); border-radius: 6px;"><strong>Compare:</strong> ${escapeHtml(w.compare)}</div>` : ''}
       <div style="font-size: 12px; color: var(--ink-soft);">
         <strong>Examples:</strong>
         <ul style="margin: 6px 0 0 16px; padding: 0;">
@@ -17310,8 +17281,8 @@ function renderMCQQuestion() {
       <span style="font-size:12px; color:var(--ink-soft); font-weight:700;">Question ${mcqCurrentIndex + 1} of ${quizWords.length}</span>
     </div>
     
-    <div style="margin: 16px 0; background:rgba(99, 102, 241, 0.03); border:1px solid var(--line-soft); padding:16px; border-radius:8px;">
-      <div style="font-size:11px; text-transform:uppercase; font-weight:700; color:var(--ink-mute); margin-bottom:6px;">Meaning:</div>
+    <div style="margin: 16px 0; background:rgba(0,92,139,0.03); border:1px solid var(--line-soft); padding:16px; border-radius:8px;">
+      <div style="font-size:12px; text-transform:uppercase; font-weight:700; color:var(--ink-mute); margin-bottom:6px;">Meaning:</div>
       <div style="font-size:14px; font-weight:600; line-height:1.5; color:var(--ink);">${escapeHtml(w.meaning)}</div>
     </div>
     
@@ -17711,7 +17682,7 @@ For Case 2 (Typo/Suggestions):
         }).join('');
         return `
           <div style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; padding: 14px; margin-bottom: 12px; text-align: left;">
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
+            <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; margin-bottom: 4px;">${escapeHtml(ctx.name)} Context</div>
             <div style="font-size: 13px; color: var(--ink); margin-bottom: 8px;">${escapeHtml(ctx.meaning)}</div>
             <ul style="margin: 0; padding: 0;">${examplesList}</ul>
           </div>
@@ -17739,7 +17710,7 @@ For Case 2 (Typo/Suggestions):
           
           <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
             <div>
-              <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
+              <div style="font-size:12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); font-weight: 700; margin-bottom: 10px; text-align: left;">Contextual Meanings &amp; Examples</div>
               ${contextsHtml}
             </div>
             <div class="vocab-try" style="margin: 0; display: flex; flex-direction: column; justify-content: space-between;">
@@ -17764,7 +17735,7 @@ For Case 2 (Typo/Suggestions):
             <div>
               <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 4px;">
                 <strong style="font-family: var(--serif); font-size: 14px; color: var(--ink);">${escapeHtml(s.word)}</strong>
-                <span class="pos-badge pos-noun" style="font-size: 10px; padding: 1px 4px;">${escapeHtml(s.pos)}</span>
+                <span class="pos-badge pos-noun" style="font-size:12px; padding: 1px 4px;">${escapeHtml(s.pos)}</span>
               </div>
               <div style="font-size: 12px; color: var(--ink-soft);">${escapeHtml(s.meaning)}</div>
             </div>

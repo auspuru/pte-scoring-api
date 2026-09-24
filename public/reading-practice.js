@@ -153,7 +153,7 @@
     if (request.attemptId) {
       const saved = [state.session,...state.history,...state.drafts].find(a=>a?.id===request.attemptId);
       if (!saved) { home(); const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This saved result is unavailable. Refresh My Progress and try again.';host.prepend(notice);return; }
-      if (state.session?.id===saved.id) return render();
+      if (state.session?.id===saved.id) { if(resumeParkedSession(state.session))persist(); return render(); }
       if (state.session && !state.session.done) { parkSession(state.session); state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)]; }
       cancelAudio();
       state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);resumeParkedSession(state.session);persist();render();resumeSwtAssessments();return;
@@ -161,7 +161,7 @@
     if (request.practiceUid) {
       const target=practiceLibraries().flatMap(l=>l.questions||[]).find(item=>String(item.uid)===String(request.practiceUid));
       if(!target){home();const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This assigned practice question is unavailable.';host.prepend(notice);return;}
-      if(state.session?.practiceUid===target.uid&&!state.session.done)return render();
+      if(state.session?.practiceUid===target.uid&&!state.session.done){if(resumeParkedSession(state.session))persist();return render();}
       if(state.session&&!state.session.done){parkSession(state.session);state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)];persist();}
       speaker?.unlock();
       return start('practice',target.uid);
@@ -178,6 +178,7 @@
       return start(request.mockId);
     }
     if (request.history || (request.mockOnly && state.session?.practiceUid)) return home();
+    if(state.session&&!state.session.done&&resumeParkedSession(state.session))persist();
     return render();
   }
   async function open(request = {}) {
@@ -187,7 +188,7 @@
       const serial = ++requestSerial;
       if (typeof resumeAccountSync === 'function') await resumeAccountSync();
       if (serial !== requestSerial || owner !== nextOwner || nextOwner !== identity() || !state || host.hidden) return;
-      activeSince = Date.now(); if(!host.hidden&&state.session&&!state.session.done)resumeParkedSession(state.session); tick(); await showRequested(request); return;
+      activeSince = Date.now(); tick(); await showRequested(request); return;
     }
     reset(); owner = nextOwner; host = document.getElementById('readingPane');
     const serial = ++requestSerial;
@@ -300,9 +301,9 @@
     const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
 
     host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
-      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved. The timer keeps running while you are away.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
+      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':Number.isFinite(state.session.pausedRemainingSeconds)?'Your answers are saved. The timer is paused until you continue.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
       <p data-start-status role="status" aria-live="polite"></p>
-      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>The timer continues if you leave.</p></details>
+      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Your timer pauses if you leave the test screen and resumes when you continue.</p></details>
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
       <details class="reading-home-help" data-reading-recent-results ${recentResultsOpen?'open':''}><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
     const recentDetails = host?.querySelector?.('[data-reading-recent-results]');
@@ -415,8 +416,8 @@
     speaker?.cancel();
   }
   function visibilityChanged() {
-    if(document.hidden){recordTime();cancelAudio();}
-    else if(owner&&identity()===owner&&state?.session&&viewingQuestion&&!host.hidden){if(!expireSession())renderSession();}
+    if(document.hidden){recordTime();parkSession();cancelAudio();persist();}
+    else if(owner&&identity()===owner&&state?.session&&viewingQuestion&&!host.hidden){if(resumeParkedSession())persist();if(!expireSession())renderSession();}
   }
   function audioState(key, status, message) {
     if (!owner || identity() !== owner) return;
@@ -693,11 +694,11 @@
       return advanceExam();
     }
     if(action==='exam-exit'){
-      persist();examNotice={action:'exit',message:'Leave the test screen? '+(s.deadline==null?'Your progress will be saved.':'The timer will keep running.')+' Resume this question from Reading home. '+saveNotice+'.'};
+      persist();examNotice={action:'exit',message:'Leave the test screen? '+(s.deadline==null?'Your progress will be saved.':'Your timer will pause until you resume.')+' Resume this question from Reading home. '+saveNotice+'.'};
     }else if(action==='exam-next')return advanceExam();
     renderSession();host.querySelector('[data-action="exam-stay"]')?.focus();
   }
-  function click(e) {
+  async function click(e) {
     if(!owner||identity()!==owner||!state)return;
     if(expireSession() && viewingQuestion)return;
     // Pearson allows a selected single answer to be clicked again to clear it.
@@ -716,15 +717,15 @@
       const page=Number(d.libraryPage),max=Math.ceil(libraryQuestions().length/10);
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>libraryView.page?1:-1);libraryView.page=page;refreshLibraryList();(host.querySelector('[data-library-page="'+next+'"]:not([disabled])')||host.querySelector('[data-library-page]:not([disabled])'))?.focus();}return;
     }
-    if(d.practiceUid){if(s&&!s.done&&!confirm('Start this practice question? Your current answers remain saved. Any running mock timer will continue.'))return;return start('practice',d.practiceUid);}
+    if(d.practiceUid){if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];persist();}return start('practice',d.practiceUid);}
     if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();
     if(d.action==='mock-home')return typeof switchSection==='function'?switchSection('mock-tests'):home();
-    if(d.start){if(s&&!s.done&&!confirm('Start a new reading session? Your current draft will remain in Other saved sessions.'))return;return start(d.start);}
+    if(d.start){if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];persist();}return start(d.start);}
     if(d.action==='soundcheck')return speaker.play('soundcheck','Welcome to IPT Brisbane. If you can hear this sentence, your audio is ready for the mixed reading mock.');
-    if(d.draft!==undefined){const draft=state.drafts[Number(d.draft)];if(!draft)return;cancelAudio();state.drafts=state.drafts.filter(r=>r.id!==draft.id);if(s&&!s.done)state.drafts.push(s);state.session=draft;repairSession(draft);persist();return render();}
-    if(d.history!==undefined){if(s&&!s.done&&!confirm('Review this result? Your current draft will remain in Other saved sessions.'))return;cancelAudio();if(s&&!s.done)state.drafts=[s,...state.drafts.filter(r=>r.id!==s.id)];state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();render();resumeSwtAssessments();return;}
+    if(d.draft!==undefined){const draft=state.drafts[Number(d.draft)];if(!draft)return;cancelAudio();state.drafts=state.drafts.filter(r=>r.id!==draft.id);if(s&&!s.done){parkSession(s);state.drafts.push(s);}state.session=draft;repairSession(draft);resumeParkedSession(draft);persist();return render();}
+    if(d.history!==undefined){cancelAudio();if(s&&!s.done){parkSession(s);state.drafts=[s,...state.drafts.filter(r=>r.id!==s.id)];}state.session=JSON.parse(JSON.stringify(state.history[Number(d.history)]));repairSession(state.session);persist();render();resumeSwtAssessments();return;}
     if(d.action==='home')return s?.practiceUid ? browseLibrary(s.questions[0].type) : home();
-    if(d.action==='resume')return render();
+    if(d.action==='resume'){if(s&&!s.done&&resumeParkedSession(s))persist();return render();}
     if(!s)return;
     if(s.done){
       if(d.reviewFilter!==undefined&&Object.hasOwn(review.filters,d.reviewFilter)){reviewView.filter=d.reviewFilter;applyReviewFilters();return;}
@@ -758,7 +759,10 @@
     if(d.action==='submit'){
       const unfinished=s.questions.filter(item=>mock.isAudio(item)&&s.audioStates[item.uid]?.status!=='complete').length;
       const message=unfinished ? unfinished+' recording'+(unfinished===1?' has':'s have')+' not finished. Those answers will be unassessed if you finish now. Keep listening or replay the audio to include them in your score. Finish anyway?' : 'Finish this reading session and show the answers?';
-      if(!unfinished || confirm(message))finish();return;
+      const accepted=!unfinished || await (typeof globalThis.portalConfirm==='function'
+        ? globalThis.portalConfirm(message,{title:'Finish reading session',confirmLabel:'Finish and review'})
+        : Promise.resolve(true));
+      if(accepted)finish();return;
     }
     if(!editable())return;
     if(testing&&q.type==='reorder'){

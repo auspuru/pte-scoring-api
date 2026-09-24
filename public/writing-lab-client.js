@@ -1,13 +1,16 @@
 (function () {
   'use strict';
   const root = document.getElementById('lab');
+  const portalShell = document.getElementById('writingLabScreen');
+  const shell = portalShell || document.body;
+  const inPortal = !!portalShell;
   const report = window.WritingLabReport;
   const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const count = text => text.trim().split(/\s+/).filter(Boolean).length;
   const clock = seconds => Math.floor(Math.max(0,seconds)/60)+':'+String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0');
   const labels = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
   let libraryPage=0;
-  let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view;
+  let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view, bootPromise = null;
   let seenQuestionIds = new Set();
   let workspaceVisible = true, navigationSerial = 0, pendingRequest = null, handledRequest = null, historyKind = 'mock';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
@@ -56,6 +59,7 @@
   }
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
   function returnToPortal(section) {
+    if (inPortal && typeof window.switchSection === 'function') return window.switchSection(section);
     if (window.parent !== window) window.parent.postMessage({ type: 'writing-lab-navigate', section }, location.origin);
     else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : 'mock-tests');
   }
@@ -64,20 +68,20 @@
     requestedView=tab;
     if(tab !== 'history') historyKind=tab === 'mocks' ? 'mock' : tab;
     clearInterval(timer); clearTimeout(saveTimer); stopAudio();
-    document.body.classList.remove('exam-mode');
+    shell.classList.remove('exam-mode');
     attempt=null; view=tab;
     const destination=historyKind==='mock'?'mock-tests':'practice-hub';
     const back='<button class="secondary" data-portal="'+destination+'">← '+(destination==='mock-tests'?'Mock Tests':'Practice')+'</button>';
     const auth=username?'':'<p class="auth-note">Sign in to your existing workspace account to practise.</p>';
     let content='';
     if(tab==='history') {
-      content='<h1>'+(historyKind==='mock'?'Writing mock attempts':historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h1><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
+      content='<h2>'+(historyKind==='mock'?'Writing mock attempts':historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h2><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
     } else if(tab==='mocks') {
-      content='<h1>Writing sectional mock</h1><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
+      content='<h2>Writing sectional mock</h2><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
     } else {
       const dictation=tab==='wfd', questions=dictation?(catalog.dictation||[]):catalog.spoken;
       libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(questions.length/12)-1));
-      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h1>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h1><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
+      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
         +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card"><h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+q.minutes+' minutes</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
     }
     root.innerHTML='<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>';
@@ -148,7 +152,7 @@
   function showAttempt() {
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
-    document.body.classList.add('exam-mode');
+    shell.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
     const instruction=q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.';
     root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main"><p class="instruction">'+instruction+'</p>'+
@@ -354,10 +358,10 @@
     }catch(e){notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
   }
   function renderResults() {
-    document.body.classList.remove('exam-mode'); clearInterval(timer);
+    shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h1>'+esc(attempt.title)+'</h1><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -428,12 +432,45 @@
     if (attempt?.kind===kind && ['active','ready'].includes(attempt.status)) return showAttempt();
     return hub(tab);
   }
+  async function suspend() {
+    navigationSerial++; pendingRequest=null; workspaceVisible=false; stopAudio(); writeDraft();
+    try { await saveAnswer(false); } catch (_) {}
+  }
+  async function boot() {
+    if (bootPromise) return bootPromise;
+    bootPromise=(async()=>{
+      try {
+        const values=await Promise.all([api('/catalog'),api('/session'),api('/attempts')]);
+        catalog=values[0];username=values[1].username;
+        seenQuestionIds=new Set((values[2]||[]).filter(a=>a.status==='submitted').flatMap(a=>a.questionIds||[]));
+        if(pendingRequest){const request=pendingRequest;pendingRequest=null;await handleRequest(request);}
+        else if(!inPortal) await hub(requestedView);
+        return true;
+      } catch(e) {
+        if(!inPortal) root.innerHTML='<div class="hub"><h2>Unable to load practice</h2><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';
+        document.getElementById('reload-lab')?.addEventListener('click',()=>{bootPromise=null;boot();},{once:true});
+        throw e;
+      } finally { bootPromise=null; }
+    })();
+    return bootPromise;
+  }
+  window.WritingLab={
+    async open(request={}) {
+      workspaceVisible=true;
+      if(!catalog||!username) await boot();
+      return handleRequest({type:'writing-lab-tab',...request});
+    },
+    leave:suspend,
+    reset() {
+      suspend();catalog=null;username=null;attempt=null;requestedView='mocks';view='mocks';handledRequest=null;pendingRequest=null;
+      shell.classList.remove('exam-mode');
+      if(inPortal) root.innerHTML='<p class="loading" role="status">Open a Writing or Listening task to begin.</p>';
+    }
+  };
   window.addEventListener('message',e=>{
     if(e.source!==window.parent || e.origin!==location.origin || !e.data) return;
-    if(e.data.type==='writing-lab-suspend') {
-      navigationSerial++; pendingRequest=null; workspaceVisible=false; stopAudio(); writeDraft(); saveAnswer(false); return;
-    }
-    if(e.data.type==='writing-lab-tab') handleRequest(e.data).catch(error=>notify(error.message));
+    if(e.data.type==='writing-lab-suspend') { suspend(); return; }
+    if(e.data.type==='writing-lab-tab') window.WritingLab.open(e.data).catch(error=>notify(error.message));
   });
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
@@ -457,13 +494,5 @@
   window.addEventListener('online',()=>saveAnswer(false));
   window.addEventListener('storage',event=>{if(event.key==='pte_session_token') location.reload();});
   setInterval(()=>{if(attempt?.status==='active' && !moving) saveAnswer(false);},15000);
-  (async()=>{
-    try {
-      const values=await Promise.all([api('/catalog'),api('/session'),api('/attempts')]);
-      catalog=values[0];username=values[1].username;
-      seenQuestionIds=new Set((values[2]||[]).filter(a=>a.status==='submitted').flatMap(a=>a.questionIds||[]));
-      if(pendingRequest)await handleRequest(pendingRequest);else await hub(requestedView);
-    }
-    catch(e) {root.innerHTML='<div class="hub"><h1>Unable to load practice</h1><p>'+esc(e.message)+'</p><button class="primary" id="reload-lab">Retry</button></div>';document.getElementById('reload-lab').onclick=()=>location.reload();}
-  })();
+  if(!inPortal) boot();
 })();

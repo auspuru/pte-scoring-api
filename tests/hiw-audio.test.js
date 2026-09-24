@@ -243,7 +243,7 @@ async function readingClient() {
     fetch: async () => ({ ok: true, json: async () => bank }),
     AbortSignal: { timeout() {} },
     Date: class extends Date { static now() { return now; } },
-    setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, confirm: () => true };
+    setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, portalConfirm: async () => true };
   vm.createContext(ctx);
   for (const file of ['reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) {
     vm.runInContext(fs.readFileSync(require.resolve('../public/' + file), 'utf8'), ctx);
@@ -267,7 +267,7 @@ async function readingClient() {
     fetch: async () => ({ ok: true, json: async () => bank }),
     AbortSignal: { timeout() {} },
     Date: class extends Date { static now() { return now; } },
-    setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, confirm: () => true };
+    setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, portalConfirm: async () => true };
   vm.createContext(ctx);
   for (const file of ['reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) {
     vm.runInContext(fs.readFileSync(require.resolve('../public/' + file), 'utf8'), ctx);
@@ -303,12 +303,12 @@ test('Infrastructure practice warns before incomplete submission and grades six 
   await h.click({ practiceUid: q.uid });
   for (const index of q.answers) h.click({ hiwWord: String(index) });
   let warning;
-  h.ctx.confirm = message => { warning = message; return false; };
-  h.click({ action: 'submit' });
+  h.ctx.portalConfirm = async message => { warning = message; return false; };
+  await h.click({ action: 'submit' });
   assert.match(warning, /unassessed/); assert.equal(h.snapshot().session.done, false);
   h.countdown();
   for (let i = 0; i < h.utterances.length; i++) { h.utterances[i].onstart(); h.fire(700); h.fire(4500); h.utterances[i].onend(); }
-  h.ctx.confirm = () => true; h.click({ action: 'submit' });
+  h.ctx.portalConfirm = async () => true; await h.click({ action: 'submit' });
   const saved = h.snapshot();
   assert.equal(saved.history[0].earned, 6); assert.equal(saved.history[0].possible, 6);
   assert.equal(saved.history[0].excluded, 0);
@@ -324,7 +324,7 @@ test('Review explains the saved audio failure without converting an incomplete a
   const h = await readingClient(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions[0];
   await h.click({ practiceUid: q.uid }); h.countdown();
   h.utterances[0].onerror({ error: 'not-allowed' });
-  h.click({ action: 'submit' });
+  await h.click({ action: 'submit' });
   assert.match(h.host.innerHTML, /Playback status:/);
   assert.match(h.host.innerHTML, /blocked autoplay/);
   assert.equal(h.snapshot().history[0].excluded, 1);

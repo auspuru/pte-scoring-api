@@ -68,6 +68,9 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
               code: response ? 'incomplete_assessment' : 'empty_response', issues: response ? validationIssues(response, summary) : [] });
             return response;
           } catch (error) {
+            // A provider timeout has consumed this request's usable budget.
+            // Do not race a second provider call into a millisecond-scale remainder.
+            if (error.code === 'SWT_TIMEOUT') attempts = 2;
             onAttemptError({ stage, attempt: attempts, code: error.code || error.name || 'unknown', status: error.status });
             return null;
           } finally { clearTimeout(timer); }

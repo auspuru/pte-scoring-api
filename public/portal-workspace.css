@@ -164,7 +164,9 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   overflow: hidden; background: var(--bg);
 }
 #writingLabScreen.pane.active { display: flex; flex-direction: column; }
-#writingLabFrame { display: block; width: 100%; height: 100%; min-height: 0; flex: 1; border: 0; background: var(--bg); }
+#writingLabScreen > #lab { display:block; width:100%; height:100%; min-height:0; flex:1; overflow:auto; background:var(--bg); }
+#writingLabScreen > #notice { position:fixed; right:20px; bottom:20px; z-index:11000; }
+#writingLabScreen > #confirm-dialog { max-width:min(520px,calc(100vw - 32px)); }
 .portal-vocab-canvas { display: flex; flex-direction: column; min-height: 0; width: 100%; height: 100%; margin: 0; background: var(--bg); color: var(--ink); }
 .portal-task-toolbar { display: flex; align-items: center; flex: 0 0 auto; gap: 12px; flex-wrap: wrap; min-height: 64px; padding: 12px 24px; background: var(--bg-card); border-bottom: 1px solid var(--line-soft); box-shadow: none; }
 .portal-toolbar-actions { display: flex; align-items: center; gap: 8px; margin-right: auto; }
@@ -247,7 +249,7 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
 .login-card h1, .login-card h2 { font-family: var(--sans); }
 .login-card input { font-size: 16px; min-height: 46px; }
 
-@media (max-width: 1240px) {
+@media (max-width: 1200px) {
   .app-shell { grid-template-columns: 218px minmax(0, 1fr); }
   #portalSidebar { padding-inline: 10px; }
   #portalSidebar .nav-item { padding-inline: 10px; }
@@ -270,7 +272,7 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   .portal-library-toolbar { display: flex; }
   .portal-library-toolbar [data-library-view="topics"] { display: none; }
 }
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
   .practice-body { display: flex; flex-direction: column; }
   .practice-sidebar, .vocab-sidebar { display: none; }
   .portal-button.portal-secondary-toggle { display: inline-flex; }
@@ -292,7 +294,7 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   #libraryPane[data-library-view="topics"] .editor, #libraryPane[data-library-view="topics"] .preview-pane { display: none; }
   .portal-library-toolbar [data-library-view="topics"] { display: inline-flex; }
 }
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   .app-shell { grid-template-columns: minmax(0, 1fr); }
   #portalSidebar { position: fixed; left: 0; top: 0; bottom: 0; width: min(290px, 86vw); height: 100dvh; visibility: hidden; transform: translateX(-100%); box-shadow: var(--shadow-lg); }
   .portal-menu-open #portalSidebar { visibility: visible; transform: translateX(0); }
@@ -332,7 +334,7 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   .practice-setup-actions { gap: 12px !important; }
   .practice-step-header { align-items: flex-start; flex-direction: column; }
   .practice-progress-container { padding: 14px !important; }
-  .practice-progress-container > div:last-child { font-size: 11px !important; gap: 8px; }
+  .practice-progress-container > div:last-child { font-size:12px !important; gap: 8px; }
   .practice-progress-container > div:last-child span { margin: 0 !important; }
   .practice-essay-area { padding: 16px !important; }
   #libraryPane .editor { padding: 20px 16px 48px; }
@@ -347,7 +349,7 @@ body > .ambient-glow, body > .ambient-blob, body > .bg-blob, body > .ambient-glo
   .vocab-control-card .vocab-practice-btn { width: 100%; }
   #vocabProgressSummary { font-size: 12px !important; padding: 6px 10px !important; }
 }
-@media (max-width: 420px) {
+@media (max-width: 640px) {
   .topbar-right .tb-text-btn { padding: 8px; font-size: 12px; }
   .dashboard-col-right .dashboard-grid { grid-template-columns: 1fr; }
   .portal-practice-steps { grid-template-columns: 1fr; }
@@ -359,7 +361,7 @@ body.dark .practice-sync-status { color: #90e6c4; background: #123c36; border-co
 body.dark .practice-sync-status[data-state="error"] { color: #ffc0b8; background: #492931; border-color: #79434b; }
 body.dark .practice-sync-status[data-state="syncing"] { color: #ffdc92; background: #453b27; border-color: #6d5935; }
 body.dark .portal-draft-status[data-state="error"] { color: #ffdc92; }
-body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary { background: #5a51da !important; color: #fff !important; }
+body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary { background: var(--accent) !important; color: #fff !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -390,14 +392,14 @@ body.dark #portalSidebar .brand-name { color: #e7f6ff; }
 body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
 
 /* Four task launchers fit without narrowing the writing tools. */
-@media (min-width: 761px) { .portal-task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 640px) { .portal-task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 #portalSidebar .nav-group-secondary:has(#nav-admin[style*="display:none"]) { display: none; }
 
 /* Quiet branding stays in the header, clear of the student's work. */
 .portal-corner-brand { display: flex; align-items: center; gap: 9px; margin-left: 10px; padding-left: 16px; border-left: 1px solid var(--line-soft); color: var(--ink-soft); flex-shrink: 0; }
 .portal-corner-brand img { width: 42px; height: 26px; object-fit: contain; background: #fff; border-radius: 3px; }
 .portal-corner-brand strong { display: block; font: 650 12px/1.4 var(--sans); color: var(--accent); white-space: nowrap; }
-.portal-corner-brand small { display: block; font-size: 10px; line-height: 1.5; white-space: nowrap; }
+.portal-corner-brand small { display: block; font-size:12px; line-height: 1.5; white-space: nowrap; }
 #dashboardPane .portal-task { box-shadow: none; padding: 22px; }
 #dashboardPane .portal-task-grid { margin-bottom: 20px; }
 #dashboardPane .portal-task-top { margin-bottom: 14px; }
@@ -411,10 +413,10 @@ body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
 .portal-progress-content { padding-top: 4px; }
 .portal-progress-content .streak-card { margin-bottom: 20px; }
 .portal-progress-panel > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-@media (max-width: 650px) {
+@media (max-width: 640px) {
   .portal-corner-brand { gap: 6px; margin-left: 2px; padding-left: 8px; }
   .portal-corner-brand img { width: 30px; height: 20px; }
-  .portal-corner-brand strong { font-size: 11px; }
+  .portal-corner-brand strong { font-size:12px; }
   .portal-corner-brand small { display: none; }
   .portal-progress-panel > summary span { display: block; margin: 6px 0 0 17px; }
 }

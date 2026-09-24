@@ -12,26 +12,26 @@
 <meta property="og:title" content="IPT Brisbane | IELTS &amp; PTE Practice">
 <meta property="og:description" content="Practise SWT, essays and Reading with IPT Brisbane’s AI-powered feedback.">
 <meta property="og:url" content="https://swt.up.railway.app/">
-<meta property="og:image" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.png">
-<meta property="og:image:secure_url" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.png">
-<meta property="og:image:type" content="image/png">
+<meta property="og:image" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.webp?v=20260924-logo">
+<meta property="og:image:secure_url" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.webp?v=20260924-logo">
+<meta property="og:image:type" content="image/webp">
 <meta property="og:image:width" content="298">
 <meta property="og:image:height" content="180">
 <meta property="og:image:alt" content="IELTS and PTE Tutorial Brisbane — blue tree hands and red stars">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="IPT Brisbane | IELTS &amp; PTE Practice">
 <meta name="twitter:description" content="Practise SWT, essays and Reading with IPT Brisbane’s AI-powered feedback.">
-<meta name="twitter:image" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.png">
+<meta name="twitter:image" content="https://swt.up.railway.app/assets/ipt-brisbane-logo.webp?v=20260924-logo">
 <meta name="twitter:image:alt" content="IELTS and PTE Tutorial Brisbane logo">
-<link rel="icon" type="image/png" href="/assets/ipt-brisbane-logo.png">
+<link rel="icon" type="image/webp" href="/assets/ipt-brisbane-logo.webp?v=20260924-logo">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="index.css?v=20.4.18">
 <link rel="stylesheet" href="utility.css?v=1">
 <link rel="stylesheet" href="swt-ui.css?v=20.3.7">
 <link rel="stylesheet" href="portal-workspace.css?v=20.4.13">
+<link rel="stylesheet" href="/writing-lab-portal.css?v=20260924-inpage">
 <link rel="stylesheet" href="practice-catalogue.css?v=2">
 <link rel="stylesheet" href="reading-practice.css?v=13">
 <link rel="stylesheet" href="speaking-practice.css?v=2">
@@ -70,6 +70,8 @@
 <script src="/pte-estimate-display.js?v=1" defer></script>
 <script src="/student-progress.js?v=20260924-wrapup" defer></script>
 <script src="/interventions-client.js?v=5" defer></script>
+<script src="/writing-lab-report.js?v=2" defer></script>
+<script src="/writing-lab-client.js?v=20260924-inpage" defer></script>
 <script src="index.min.js?v=20260924-accessibility" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/student-progress.css?v=1">
@@ -77,14 +79,14 @@
 </head>
 <body>
 
-<div class="ambient-glow-blob" style="top: -10%; left: -10%; width: 45vw; height: 45vw; background: rgba(0, 92, 139, 0.12);"></div>
-<div class="ambient-glow-blob" style="bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: rgba(193, 39, 45, 0.10);"></div>
+<div class="ambient-glow-blob u-inline-001"></div>
+<div class="ambient-glow-blob u-inline-002"></div>
 
 <!-- ============ LOGIN SCREEN ============ -->
 <div class="login-screen active" id="loginScreen">
   <div class="login-card">
     <div class="login-brand">
-      <img class="login-brand-logo" src="assets/ipt-brisbane-logo.png" alt="IELTS and PTE Tutorial Brisbane logo">
+      <img class="login-brand-logo" src="assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="IELTS and PTE Tutorial Brisbane logo">
       <div>
         <div class="login-brand-name">IELTS and PTE Tutorial</div>
         <div class="login-brand-sub">Brisbane · PTE Writing Portal</div>
@@ -93,7 +95,7 @@
 
     <!-- Login form -->
     <div id="loginForm">
-      <h1 class="login-title">Welcome back</h1>
+      <h2 class="login-title">Welcome back</h2>
       <p class="login-sub">Sign in to practice SWT and essays</p>
       <div class="login-error" id="loginError" role="alert"></div>
       <form id="loginSubmitForm">
@@ -102,8 +104,8 @@
           <input type="text" id="loginUsername" autocomplete="username" required placeholder="your username">
         </div>
         <div class="login-field">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label for="loginPassword" style="margin-bottom: 0;">Password</label>
+          <div class="u-inline-003">
+            <label class="u-inline-004" for="loginPassword">Password</label>
             <button type="button" class="login-text-link" onclick="toggleForgotPasswordMode(true)">Forgot?</button>
           </div>
           <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
@@ -116,7 +118,7 @@
     </div>
 
     <!-- Register form -->
-    <div id="registerForm" style="display:none;">
+    <div class="u-inline-005" id="registerForm">
       <h2 class="login-title">Create account</h2>
       <p class="login-sub">Track your summary and essay scores</p>
       <div class="login-error" id="registerError" role="alert"></div>
@@ -141,7 +143,7 @@
     </div>
 
     <!-- Forgot Password form -->
-    <div id="forgotPasswordForm" style="display:none;">
+    <div class="u-inline-005" id="forgotPasswordForm">
       <h2 class="login-title">Reset password</h2>
       <p class="login-sub">Recover your account credentials</p>
       <div class="login-error" id="forgotPasswordError" role="alert"></div>
@@ -163,13 +165,13 @@
 </div>
 
 <!-- ============ APP CORE CONTAINER ============ -->
-<div class="app-shell" style="display:none;" id="appShell">
+<div class="app-shell u-inline-005" id="appShell">
   <a class="portal-skip-link" href="#portalContent" onclick="event.preventDefault(); document.getElementById('portalContent').focus()">Skip to practice content</a>
   <button type="button" class="portal-menu-backdrop" id="portalMenuBackdrop" aria-label="Close navigation" tabindex="-1"></button>
   <!-- Collapsible Left Sidebar -->
   <aside class="sidebar-nav" id="portalSidebar" aria-label="Workspace navigation">
     <div class="sidebar-brand">
-      <img class="brand-logo" src="assets/ipt-brisbane-logo.png" alt="IELTS and PTE Tutorial Brisbane logo">
+      <img class="brand-logo" src="assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="IELTS and PTE Tutorial Brisbane logo">
       <div>
         <div class="brand-name">IELTS and PTE Tutorial</div>
         <div class="brand-sub">Brisbane · PTE practice workspace</div>
@@ -178,23 +180,23 @@
     
     <nav class="sidebar-menu" aria-label="Main navigation">
       <div class="nav-group" aria-label="Study workspace">
-        <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')"><span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span><span>Home</span></button>
-        <button class="nav-item" id="nav-practice-hub" onclick="switchSection('practice-hub')"><span class="nav-icon material-symbols-outlined text-[22px]">menu_book</span><span>Practice</span></button>
-        <button class="nav-item" id="nav-mock-tests" onclick="switchSection('mock-tests')"><span class="nav-icon material-symbols-outlined text-[22px]">quiz</span><span>Mock Tests</span></button>
-        <button class="nav-item" id="nav-next-steps" onclick="switchSection('next-steps')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">assignment_turned_in</span><span>From your teacher</span></button>
-        <button class="nav-item" id="nav-progress" onclick="switchSection('progress')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">monitoring</span><span>My Progress</span></button>
+        <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="dashboard" aria-hidden="true"></span><span>Home</span></button>
+        <button class="nav-item" id="nav-practice-hub" onclick="switchSection('practice-hub')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="menu_book" aria-hidden="true"></span><span>Practice</span></button>
+        <button class="nav-item" id="nav-mock-tests" onclick="switchSection('mock-tests')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="quiz" aria-hidden="true"></span><span>Mock Tests</span></button>
+        <button class="nav-item" id="nav-next-steps" onclick="switchSection('next-steps')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="assignment_turned_in" aria-hidden="true"></span><span>From your teacher</span></button>
+        <button class="nav-item" id="nav-progress" onclick="switchSection('progress')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="monitoring" aria-hidden="true"></span><span>My Progress</span></button>
       </div>
       <div class="nav-group" aria-labelledby="navGroupReview">
         <p class="nav-group-label" id="navGroupReview">Resources</p>
-        <button class="nav-item" id="nav-vocab" onclick="switchSection('vocab')"><span class="nav-icon material-symbols-outlined text-[22px]">auto_stories</span><span>Vocabulary</span></button>
+        <button class="nav-item" id="nav-vocab" onclick="switchSection('vocab')"><span class="nav-icon portal-glyph text-[22px]" data-glyph="auto_stories" aria-hidden="true"></span><span>Vocabulary</span></button>
         <button class="nav-item" id="nav-library" onclick="switchSection('library')">
-          <span class="nav-icon material-symbols-outlined text-[22px]">library_books</span>
+          <span class="nav-icon portal-glyph text-[22px]" data-glyph="library_books" aria-hidden="true"></span>
           <span>Essay library</span>
         </button>
       </div>
       <div class="nav-group nav-group-secondary" aria-label="Administration">
-        <button class="nav-item" id="nav-admin" onclick="openAdmin()" style="display:none;">
-          <span class="nav-icon material-symbols-outlined text-[22px]">admin_panel_settings</span>
+        <button class="nav-item u-inline-005" id="nav-admin" onclick="openAdmin()">
+          <span class="nav-icon portal-glyph text-[22px]" data-glyph="admin_panel_settings" aria-hidden="true"></span>
           <span>Admin Panel</span>
         </button>
       </div>
@@ -228,16 +230,16 @@
       </div>
       
       <div class="topbar-right">
-        <span class="quota-chip" id="quotaChip" title="Daily AI quota" style="display:none;">⚡ <span id="quotaText">— / —</span></span>
-        <button class="tb-text-btn" id="essayTemplateBtn" style="display:none;" onclick="openTemplate()">⊞ Template</button>
-        <button class="tb-text-btn dark" style="display:none;" onclick="openExportMenu()" id="exportBtn">Export ▾</button>
+        <span class="quota-chip u-inline-005" id="quotaChip" title="Daily AI quota">⚡ <span id="quotaText">— / —</span></span>
+        <button class="tb-text-btn u-inline-005" id="essayTemplateBtn" onclick="openTemplate()">⊞ Template</button>
+        <button class="tb-text-btn dark u-inline-005" onclick="openExportMenu()" id="exportBtn">Export ▾</button>
         <button class="tb-text-btn" id="themeToggleBtn" onclick="toggleTheme()">🌙 Dark</button>
-        <div class="portal-corner-brand" aria-label="IPT Brisbane — IELTS and PTE Tutorial"><img src="assets/ipt-brisbane-logo.png" alt="" width="42" height="26"><span><strong>IPT Brisbane</strong><small>IELTS &amp; PTE Tutorial</small></span></div>
+        <div class="portal-corner-brand" aria-label="IPT Brisbane — IELTS and PTE Tutorial"><img src="assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="" width="42" height="26"><span><strong>IPT Brisbane</strong><small>IELTS &amp; PTE Tutorial</small></span></div>
       </div>
     </div>
 
     <!-- Impersonation Banner -->
-    <div id="impersonateBanner" class="imp-banner" style="display:none;">
+    <div id="impersonateBanner" class="imp-banner u-inline-005">
       <span class="imp-eye">👁</span>
       <span class="imp-text">Admin view — acting as <strong id="impersonateName">…</strong>. Any submission writes to this student's record.</span>
       <button class="imp-exit" onclick="exitImpersonation()">Exit admin view</button>
@@ -253,8 +255,17 @@
 
       <section id="speakingPane" class="pane" hidden aria-label="Speaking practice"></section>
       <section id="readingPane" class="pane" hidden aria-label="Reading practice"></section>
-      <section id="writingLabScreen" class="pane" hidden aria-label="Writing sectional mocks and spoken text practice">
-        <iframe id="writingLabFrame" title="Writing practice" loading="lazy"></iframe>
+      <section id="writingLabScreen" class="pane writing-lab-shell" hidden aria-label="Writing sectional mocks and spoken text practice">
+        <main id="lab" tabindex="-1"><p class="loading" role="status">Open a Writing or Listening task to begin.</p></main>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+          <h2 id="confirm-title">Move to the next question?</h2>
+          <p id="confirm-text"></p>
+          <div class="dialog-actions">
+            <button id="confirm-cancel" class="secondary" type="button">Keep writing</button>
+            <button id="confirm-ok" class="primary" type="button">Submit and continue</button>
+          </div>
+        </dialog>
       </section>
       <!-- Combined Dashboard Pane -->
       <div id="dashboardPane" class="pane active">
@@ -287,11 +298,11 @@
         </section>
         <div class="portal-task-grid" aria-label="Choose your study mode">
           <button type="button" class="portal-task portal-task-swt" onclick="switchSection('practice-hub')">
-            <span class="portal-task-top"><span class="material-symbols-outlined" aria-hidden="true">menu_book</span><span>Individual questions</span></span>
+            <span class="portal-task-top"><span class="portal-glyph" data-glyph="menu_book" aria-hidden="true"></span><span>Individual questions</span></span>
             <strong>Practice</strong><p>Choose a Writing, Reading or Listening question type.</p><span class="portal-task-link">Browse practice <span aria-hidden="true">→</span></span>
           </button>
           <button type="button" class="portal-task" onclick="switchSection('mock-tests')">
-            <span class="portal-task-top"><span class="material-symbols-outlined" aria-hidden="true">quiz</span><span>Timed tests</span></span>
+            <span class="portal-task-top"><span class="portal-glyph" data-glyph="quiz" aria-hidden="true"></span><span>Timed tests</span></span>
             <strong>Mock Tests</strong><p>Find practice mocks and integrated sectional mocks in one catalogue.</p><span class="portal-task-link">Browse mocks <span aria-hidden="true">→</span></span>
           </button>
         </div>
@@ -303,14 +314,14 @@
 
         <!-- Habit Streak Calendar Banner -->
         <div class="dash-card streak-card">
-          <div class="dash-card-header" style="justify-content: space-between; margin-bottom: 4px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+          <div class="dash-card-header u-inline-006">
+            <div class="u-inline-007">
               <span class="dash-card-icon">🔥</span>
               <span class="dash-card-title">Practice Habit Streak</span>
             </div>
             <div class="streak-metrics">
               <div>Current Streak: <strong class="streak-val" id="dashStreakCurrent">0 days</strong></div>
-              <div style="margin-left: 12px;">Best Streak: <strong class="streak-val" id="dashStreakBest" style="color:var(--good);">0 days</strong></div>
+              <div class="u-inline-008">Best Streak: <strong class="streak-val u-inline-009" id="dashStreakBest">0 days</strong></div>
             </div>
           </div>
           <div class="streak-grid" id="dashStreakGrid">
@@ -329,7 +340,7 @@
               <div class="chart-header">
                 <div class="chart-title-area">
                   <h3>Score trends</h3>
-                  <p style="font-size: 12px; color: var(--ink-soft); margin-top: 2px;">Visual score history over your last 10 attempts</p>
+                  <p class="u-inline-010">Visual score history over your last 10 attempts</p>
                 </div>
                 <div class="chart-toggles">
                   <button class="chart-toggle-btn active" id="chartToggleSwt" onclick="setDashboardChartMetric('swt')">SWT</button>
@@ -355,32 +366,32 @@
             <div class="dashboard-interaction-row">
               <!-- Daily Challenge -->
               <div class="dash-card daily-challenge-card">
-                <div class="dash-card-header" style="margin-bottom: 8px;">
+                <div class="dash-card-header u-inline-011">
                   <span class="dash-card-icon">💡</span>
                   <span class="dash-card-title">Daily Vocab Challenge</span>
                 </div>
-                <div class="challenge-word-box" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="challenge-word-box u-inline-012">
                   <span class="challenge-word" id="challengeWord">—</span>
-                  <div style="display: flex; gap: 8px;">
+                  <div class="u-inline-013">
                     <button class="reveal-btn" id="challengeRevealBtn" onclick="revealChallengeWord()">Reveal meaning</button>
-                    <button class="reveal-btn" id="challengeNextBtn" onclick="loadNextChallengeWord()" style="background: var(--ink); border: 1px solid var(--line-soft);">Next</button>
+                    <button class="reveal-btn u-inline-014" id="challengeNextBtn" onclick="loadNextChallengeWord()">Next</button>
                   </div>
                 </div>
-                <div class="challenge-definition" id="challengeDefinition" style="display: none; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); min-height: 38px; margin-bottom: 12px;">
+                <div class="challenge-definition u-inline-015" id="challengeDefinition">
                   Definition will appear here.
                 </div>
-                <div class="vocab-try" style="margin-top: auto; padding-top: 10px;">
+                <div class="vocab-try u-inline-016">
                   <div class="vocab-try-row">
                     <input type="text" id="challengeInput" placeholder="Try using it in a sentence…" onkeydown="if(event.key==='Enter') checkChallengeSentence()">
                     <button class="vocab-try-check" onclick="checkChallengeSentence()">Check</button>
                   </div>
-                  <div class="vocab-try-feedback" id="challengeFeedback" style="margin-top: 8px;"></div>
+                  <div class="vocab-try-feedback u-inline-017" id="challengeFeedback"></div>
                 </div>
               </div>
 
               <!-- Recommended Actions List -->
-              <div class="dash-card action-items-card" id="dashActionCard" style="justify-content: flex-start; gap: 0;">
-                <div class="dash-card-header" style="margin-bottom: 8px;">
+              <div class="dash-card action-items-card u-inline-018" id="dashActionCard">
+                <div class="dash-card-header u-inline-011">
                   <span class="dash-card-icon">⚡</span>
                   <span class="dash-card-title">Practice suggestions</span>
                 </div>
@@ -404,7 +415,7 @@
                 </div>
                 <div class="dash-card-body">
                   <div class="big-score"><span id="dashSwtAvgScore">—</span><span class="score-max">/90</span></div>
-                  <div class="dash-progress-stats" style="margin-top: 14px;">
+                  <div class="dash-progress-stats u-inline-019">
                     <div class="stat-row"><span>Summary Attempts:</span> <strong id="dashSwtAttempts">0</strong></div>
                     <div class="stat-row"><span>Passages Explored:</span> <strong id="dashSwtPassages">0</strong></div>
                   </div>
@@ -488,7 +499,7 @@
       <div id="swtPane" class="pane">
         <div id="swtPracticeScreen" class="swt-sub-screen active">
           <header class="swt-heading">
-            <div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Summarise written text</h1><p id="swtModeDescription">Choose how you want to practise this task.</p></div>
+            <div><div class="eyebrow">Writing practice · SWT</div><h2 tabindex="-1">Summarise written text</h2><p id="swtModeDescription">Choose how you want to practise this task.</p></div>
             <ul class="swt-requirements" id="swtSummaryRequirements" aria-label="Task requirements" hidden><li>1 sentence</li><li>5–75 words</li><li>10-minute timer available</li></ul>
           </header>
           <section class="swt-mode-chooser" id="swtModeChooser" aria-labelledby="swtModeHeading">
@@ -509,7 +520,7 @@
             </select></label>
             <label class="swt-select-label swt-passage-picker">Choose passage<select id="passageSelect" class="passage-select-dropdown" onchange="jumpToPassage(parseInt(this.value))"></select></label>
             <button type="button" class="timer-toggle" id="timerToggle" onclick="toggleTimer()" aria-pressed="false" aria-label="Turn on the 10-minute timer">
-              <span class="material-symbols-outlined" aria-hidden="true">timer</span><span id="timerState">Timer off</span><span class="timer-pill" id="timerDisplay">—</span>
+              <span class="portal-glyph" data-glyph="timer" aria-hidden="true"></span><span id="timerState">Timer off</span><span class="timer-pill" id="timerDisplay">—</span>
             </button>
           </div>
           <div class="practice-grid" id="swtPracticeGrid" hidden>
@@ -537,7 +548,7 @@
                 <div class="write-actions">
                   <button type="button" class="btn btn-ghost" onclick="resetSummary()">Clear</button>
                   <button type="button" class="btn btn-ghost" id="swtUndoClear" onclick="undoSwtClear()" hidden>Undo clear</button>
-                  <button type="button" class="btn btn-ghost" onclick="loadPreviousAnswer()" id="prevAnswerBtn" style="display:none;">Previous result</button>
+                  <button type="button" class="btn btn-ghost u-inline-005" onclick="loadPreviousAnswer()" id="prevAnswerBtn">Previous result</button>
                   <button type="button" class="btn btn-primary" onclick="scoreSummary()" id="scoreBtn">Submit <span aria-hidden="true">→</span></button>
                 </div>
               </div>
@@ -564,7 +575,7 @@
           </div>
         </div>
         <div id="swtResultsScreen" class="swt-sub-screen">
-          <header class="swt-heading"><div><div class="eyebrow">Writing practice · SWT</div><h1 tabindex="-1">Your summary, reviewed</h1><p id="resultsBreadcrumb">Review your result, then make one useful improvement.</p></div><button type="button" class="btn" onclick="backToPractice()">← Back to writing</button></header>
+          <header class="swt-heading"><div><div class="eyebrow">Writing practice · SWT</div><h2 tabindex="-1">Your summary, reviewed</h2><p id="resultsBreadcrumb">Review your result, then make one useful improvement.</p></div><button type="button" class="btn" onclick="backToPractice()">← Back to writing</button></header>
           <div class="passage-nav" aria-label="Browse your results">
             <div class="swt-pager"><button type="button" class="nav-arrow" id="resNavPrev" onclick="navResultsPassage(-1)" aria-label="Previous passage result">← Back</button><span>Passage <strong class="nav-label" id="resNavCurrent">01</strong> of <span id="resNavTotal">10</span></span><button type="button" class="nav-arrow" id="resNavNext" onclick="navResultsPassage(1)" aria-label="Next passage result">Next →</button></div>
             <label class="swt-select-label">Show<select id="resPassageFilter" class="passage-filter-select" onchange="changeResultsPassageFilter(this.value)"><option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option></select></label>
@@ -575,7 +586,7 @@
               <div class="score-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="54"></circle><circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle></svg><div class="ring-value"><strong id="heroScore">—</strong><span id="swtRawMax">/ 90</span></div></div>
               <div id="swtScoreLabel" class="score-ring-label">PTE estimate</div><div id="swtEstimate" class="swt-help"></div>
             </div>
-            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><p class="swt-help" id="swtRubricNotice" role="status" hidden></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice" id="aiDegradedNotice" role="status" style="display:none;"></div><button class="btn ghost" id="swtRetryAssessmentBtn" onclick="retrySwtAssessment()" style="display:none;" hidden>Retry assessment</button></div>
+            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><p class="swt-help" id="swtRubricNotice" role="status" hidden></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice u-inline-005" id="aiDegradedNotice" role="status"></div><button class="btn ghost u-inline-005" id="swtRetryAssessmentBtn" onclick="retrySwtAssessment()" hidden>Retry assessment</button></div>
             <div class="results-hero-actions"><button type="button" class="btn btn-primary" onclick="backToPractice()">Improve this summary</button><button type="button" class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button><button type="button" class="btn btn-ghost" onclick="compareSwtSample()">Compare with sample</button></div>
           </section>
           <section class="card swt-guidance" aria-labelledby="swtGuidanceHeading"><div class="swt-card-heading"><div><h2 id="swtGuidanceHeading">Your next step</h2><p>Focus on what will help this response most.</p></div></div><div id="swtGuidanceBody"></div></section>
@@ -585,11 +596,11 @@
             <p class="swt-help">Read your summary against the original, or compare it with a checked sample.</p>
             <div class="side-by-side">
               <div class="sbs-col"><h3 class="sbs-head">Original passage</h3><div class="annotated-text" id="annotatedPassage"></div></div>
-              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" style="display:none;"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
+              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div class="u-inline-005" id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
             </div>
           </section>
           <details class="card swt-details" aria-labelledby="swtTraitsHeading"><summary id="swtTraitsHeading">Score breakdown</summary><div class="trait-breakdown" id="traitBreakdown"></div></details>
-          <details class="card swt-details" id="vocabCoachCard" style="display:none;"><summary>Explore vocabulary alternatives</summary><p class="swt-help">Optional practice: choose a word only if it keeps the same meaning. Replacing accurate source words is not required.</p><div class="vocab-coach" id="vocabCoachBody"></div></details>
+          <details class="card swt-details u-inline-005" id="vocabCoachCard"><summary>Explore vocabulary alternatives</summary><p class="swt-help">Optional practice: choose a word only if it keeps the same meaning. Replacing accurate source words is not required.</p><div class="vocab-coach" id="vocabCoachBody"></div></details>
           <details class="card swt-details"><summary>Source wording</summary><div class="originality" id="originalityChecks"></div></details>
         </div>
       </div>
@@ -618,28 +629,28 @@
               <button class="chip" data-filter="draft" onclick="setFilter('draft')">Draft <span class="chip-count" id="cnt-draft">0</span></button>
               <button class="chip" data-filter="empty" onclick="setFilter('empty')">Empty <span class="chip-count" id="cnt-empty">35</span></button>
             </div>
-            <div style="display:flex; gap:8px; margin-bottom:14px;">
-              <button class="new-essay-btn" onclick="addEssay()" style="flex:1; margin-bottom:0; width:auto;">+ New essay</button>
-              <button class="new-essay-btn" onclick="openBulkImport()" style="flex:1; margin-bottom:0; width:auto;" title="Add many essay topics at once">⊞ Bulk add</button>
+            <div class="u-inline-020">
+              <button class="new-essay-btn u-inline-021" onclick="addEssay()">+ New essay</button>
+              <button class="new-essay-btn u-inline-021" onclick="openBulkImport()" title="Add many essay topics at once">⊞ Bulk add</button>
             </div>
             <div id="essayList"></div>
           </div>
 
           <div class="editor" id="editorPane">
-            <div id="emptyState" style="text-align:center; padding:60px 20px; color:var(--ink-mute);">
-              <p style="font-size:14px; margin-bottom:12px;">No essay selected.</p>
+            <div class="u-inline-022" id="emptyState">
+              <p class="u-inline-023">No essay selected.</p>
               <button class="tb-text-btn dark" onclick="addEssay()">+ Create your first essay</button>
             </div>
-            <div id="editor" style="display:none;">
+            <div class="u-inline-005" id="editor">
               <div class="breadcrumb">
                 <span id="bcEssayNum">ESSAY 01</span>
                 <span class="breadcrumb-sep">/</span>
                 <span id="bcStatus">EMPTY</span>
               </div>
-              <h1 class="editor-title" id="editorTitle">—</h1>
+              <h2 class="editor-title" id="editorTitle">—</h2>
 
-              <div class="topic-banner" id="topicBanner" style="display:none;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+              <div class="topic-banner u-inline-005" id="topicBanner">
+                <div class="u-inline-024">
                   <div class="topic-banner-label">The question</div>
                   <button type="button" class="practice-shortcut-link" onclick="practiceCurrentEssay()">Practise this question →</button>
                 </div>
@@ -664,7 +675,7 @@
                   <span class="ai-section-label-text">Template</span>
                   <span class="ai-section-label-aux" id="tplChoiceAux">Using default</span>
                 </div>
-                <div style="display:flex; gap:5px; margin-bottom:14px;" id="essayTplPicker">
+                <div class="u-inline-025" id="essayTplPicker">
                   <button class="tpl-essay-pill active" data-tpl="default" onclick="setEssayTemplate('default')">Default</button>
                   <button class="tpl-essay-pill" data-tpl="band6" onclick="setEssayTemplate('band6')">Band 6</button>
                   <button class="tpl-essay-pill" data-tpl="band9" onclick="setEssayTemplate('band9')">Band 9</button>
@@ -689,11 +700,11 @@
                   <span class="ai-section-label-text">Writing Style</span>
                   <span class="ai-section-label-aux" id="generationModeAux">Structure Practice</span>
                 </div>
-                <select class="field-input" id="generationModeSelect" onchange="setGenerationMode(this.value)" style="width:100%; margin-bottom:14px; padding:8px; border-radius:6px; border:1px solid var(--line-soft); background:var(--bg); color:var(--ink-soft); font-weight:700; font-size:12.5px;">
+                <select class="field-input u-inline-026" id="generationModeSelect" onchange="setGenerationMode(this.value)">
                   <option value="template">Structure Practice</option>
                   <option value="natural">Natural Band 8/9 Mode</option>
                 </select>
-                <div class="generation-setup-help" style="margin-top:-7px; margin-bottom:14px;">Structure Practice is a learning scaffold. Keep the organisation, but replace memorised wording with prompt-specific reasoning before using it in an exam.</div>
+                <div class="generation-setup-help u-inline-027">Structure Practice is a learning scaffold. Keep the organisation, but replace memorised wording with prompt-specific reasoning before using it in an exam.</div>
 
                 <div class="ai-section-label">
                   <span class="ai-section-label-text">Student ideas</span>
@@ -764,8 +775,8 @@
                     <textarea class="field-textarea" id="f_cons" placeholder="Flexible extensions&#10;Capped penalties" oninput="saveCurrent(); renderPreview()"></textarea>
                   </div>
                 </div>
-                <button class="gen-btn" onclick="aiGenerate('proscons')" style="margin-top:8px;">+ Extract pros &amp; cons</button>
-                <div class="field" style="margin-top:14px;">
+                <button class="gen-btn u-inline-028" onclick="aiGenerate('proscons')">+ Extract pros &amp; cons</button>
+                <div class="field u-inline-029">
                   <div class="field-row"><span class="field-label">Approach tip</span></div>
                   <textarea class="field-textarea" id="f_approach" placeholder="e.g. Support mark deduction while recommending flexibility..." oninput="saveCurrent(); renderPreview()"></textarea>
                   <button class="gen-btn" onclick="aiGenerate('approach')">+ Suggest approach tip</button>
@@ -779,7 +790,7 @@
                 <div class="field">
                   <div class="field-row">
                     <span class="field-label">Introduction</span>
-                    <div style="display:flex; gap:6px; align-items:center;">
+                    <div class="u-inline-030">
                       <span class="field-counter" id="ch_intro">0 words</span>
                       <button class="regen-btn" onclick="regenerateParagraph('intro')">↻ Rewrite</button>
                     </div>
@@ -790,7 +801,7 @@
                 <div class="field">
                   <div class="field-row">
                     <span class="field-label">Body paragraph 1</span>
-                    <div style="display:flex; gap:6px; align-items:center;">
+                    <div class="u-inline-030">
                       <span class="field-counter" id="ch_bp1">0 words</span>
                       <button class="regen-btn" onclick="regenerateParagraph('bp1')">↻ Rewrite</button>
                     </div>
@@ -801,7 +812,7 @@
                 <div class="field">
                   <div class="field-row">
                     <span class="field-label">Body paragraph 2</span>
-                    <div style="display:flex; gap:6px; align-items:center;">
+                    <div class="u-inline-030">
                       <span class="field-counter" id="ch_bp2">0 words</span>
                       <button class="regen-btn" onclick="regenerateParagraph('bp2')">↻ Rewrite</button>
                     </div>
@@ -812,7 +823,7 @@
                 <div class="field">
                   <div class="field-row">
                     <span class="field-label">Conclusion</span>
-                    <div style="display:flex; gap:6px; align-items:center;">
+                    <div class="u-inline-030">
                       <span class="field-counter" id="ch_concl">0 words</span>
                       <button class="regen-btn" onclick="regenerateParagraph('concl')">↻ Rewrite</button>
                     </div>
@@ -820,7 +831,7 @@
                   <textarea class="field-textarea essay" id="f_concl" aria-label="Conclusion" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('concl')"></textarea>
                   <div class="sentence-list" id="sentences_concl"></div>
                 </div>
-                <button class="gen-btn" onclick="aiGenerate('all')" style="margin-top:8px;">+ Re-extract outline from essay</button>
+                <button class="gen-btn u-inline-028" onclick="aiGenerate('all')">+ Re-extract outline from essay</button>
               </div>
             </div>
           </div>
@@ -859,12 +870,12 @@
 
 <!-- TEMPLATE CONFIG MODAL -->
 <div class="modal-overlay" id="templateModal">
-  <div class="modal" style="max-width: 820px;">
+  <div class="modal u-inline-031">
     <h2>⊞ Essay Templates</h2>
     <p>The AI uses one of these structures when auto-writing. Select your default template configuration below.</p>
-    <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:12px 14px; margin-bottom:14px;">
-      <div style="font-size:10.5px; text-transform:uppercase; letter-spacing:0.14em; color:var(--ink-soft); font-weight:600; margin-bottom:8px;">Default Template</div>
-      <div style="display:flex; gap:6px;" id="defaultTplPicker">
+    <div class="u-inline-032">
+      <div class="u-inline-033">Default Template</div>
+      <div class="u-inline-034" id="defaultTplPicker">
         <button class="tpl-default-pill" data-tpl="band6" onclick="setDefaultTemplate('band6')">Band 6</button>
         <button class="tpl-default-pill" data-tpl="band9" onclick="setDefaultTemplate('band9')">Band 9</button>
         <button class="tpl-default-pill" data-tpl="custom" onclick="setDefaultTemplate('custom')">My Custom</button>
@@ -872,43 +883,43 @@
     </div>
 
     <!-- Tab Selector -->
-    <div style="display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:14px; align-items:center;">
-      <button class="tpl-tab active" data-tab="band6" onclick="switchTemplateTab('band6')">Band 6 <span style="opacity:0.5; font-size:10px;">read-only</span></button>
-      <button class="tpl-tab" data-tab="band9" onclick="switchTemplateTab('band9')">Band 9 <span style="opacity:0.5; font-size:10px;">read-only</span></button>
-      <button class="tpl-tab" data-tab="custom" onclick="switchTemplateTab('custom')">My Custom <span style="opacity:0.5; font-size:10px;">editable</span></button>
-      <div style="flex:1;"></div>
-      <button class="tb-text-btn" id="tplResetBtn" onclick="resetTemplateToDefault()" style="display:none; font-size:11px; padding:4px 10px;">Reset to Band 9</button>
-      <span style="font-size:11px; color:var(--ink-mute);" id="tplCharCount">0 characters</span>
+    <div class="u-inline-035">
+      <button class="tpl-tab active" data-tab="band6" onclick="switchTemplateTab('band6')">Band 6 <span class="u-inline-036">read-only</span></button>
+      <button class="tpl-tab" data-tab="band9" onclick="switchTemplateTab('band9')">Band 9 <span class="u-inline-036">read-only</span></button>
+      <button class="tpl-tab" data-tab="custom" onclick="switchTemplateTab('custom')">My Custom <span class="u-inline-036">editable</span></button>
+      <div class="u-inline-037"></div>
+      <button class="tb-text-btn u-inline-038" id="tplResetBtn" onclick="resetTemplateToDefault()">Reset to Band 9</button>
+      <span class="u-inline-039" id="tplCharCount">0 characters</span>
     </div>
 
-    <div id="tplReadonlyBanner" style="display:none; background:#fff8e6; border:1px solid #f0c674; border-radius:6px; padding:8px 12px; margin-bottom:10px; font-size:11.5px; color:#5a4400;">
+    <div class="u-inline-040" id="tplReadonlyBanner">
       This is a read-only preset. To edit, customize the <strong>My Custom</strong> tab.
     </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+    <div class="u-inline-041">
       <div>
         <span class="field-label">Introduction Template</span>
-        <textarea class="field-textarea" id="tpl_intro" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+        <textarea class="field-textarea u-inline-042" id="tpl_intro" oninput="updateTemplateCharCount()"></textarea>
       </div>
       <div>
         <span class="field-label">Body Paragraph 1 Template</span>
-        <textarea class="field-textarea" id="tpl_bp1" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+        <textarea class="field-textarea u-inline-042" id="tpl_bp1" oninput="updateTemplateCharCount()"></textarea>
       </div>
       <div>
         <span class="field-label">Body Paragraph 2 Template</span>
-        <textarea class="field-textarea" id="tpl_bp2" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+        <textarea class="field-textarea u-inline-042" id="tpl_bp2" oninput="updateTemplateCharCount()"></textarea>
       </div>
       <div>
         <span class="field-label">Conclusion Template</span>
-        <textarea class="field-textarea" id="tpl_concl" style="min-height:140px; font-size:12px; margin-top:6px;" oninput="updateTemplateCharCount()"></textarea>
+        <textarea class="field-textarea u-inline-042" id="tpl_concl" oninput="updateTemplateCharCount()"></textarea>
       </div>
     </div>
-    <details style="margin-bottom:10px;">
+    <details class="u-inline-043">
       <summary>▸ Advanced: extra AI instructions</summary>
-      <textarea class="field-textarea" id="tpl_notes" style="min-height:60px; font-size:12px; margin-top:6px;" placeholder="Style notes, banned words, etc."></textarea>
+      <textarea class="field-textarea u-inline-044" id="tpl_notes" placeholder="Style notes, banned words, etc."></textarea>
     </details>
     <div class="modal-actions">
-      <button class="tb-text-btn" onclick="copyPresetToCustom()" id="tplCopyToCustom" style="display:none;">Copy into My Custom →</button>
+      <button class="tb-text-btn u-inline-005" onclick="copyPresetToCustom()" id="tplCopyToCustom">Copy into My Custom →</button>
       <button class="tb-text-btn" onclick="closeTemplate()">Close</button>
       <button class="tb-text-btn dark" onclick="saveTemplate()" id="tplSaveBtn">Save Template</button>
     </div>
@@ -917,20 +928,20 @@
 
 <!-- BULK WRITE MODAL -->
 <div class="modal-overlay" id="bulkWriteModal">
-  <div class="modal" style="max-width: 640px;">
+  <div class="modal u-inline-045">
     <h2>📚 Write Many Essays at Once</h2>
     <p>Select essays with saved preferences and approved plans. They will be generated in order using those choices.</p>
-    <div id="bulkWritePickerList" style="max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg); margin-top:14px;"></div>
-    <div id="bulkWriteProgress" style="display:none; margin-top:12px; padding:10px 12px; background:var(--bg); border-radius:6px; border:1px solid var(--line);">
-      <div style="font-size:12px; font-weight:600; margin-bottom:6px;" id="bulkWriteProgressText">Writing essay 0 of 0…</div>
-      <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;">
-        <div id="bulkWriteProgressBar" style="height:100%; background:var(--accent); width:0%;"></div>
+    <div class="u-inline-046" id="bulkWritePickerList"></div>
+    <div class="u-inline-047" id="bulkWriteProgress">
+      <div class="u-inline-048" id="bulkWriteProgressText">Writing essay 0 of 0…</div>
+      <div class="u-inline-049">
+        <div class="u-inline-050" id="bulkWriteProgressBar"></div>
       </div>
     </div>
     <div class="modal-actions">
-      <span class="ideas-counter" style="margin-right:auto;"><strong id="bulkWritePickedCount">0</strong> essays selected</span>
+      <span class="ideas-counter u-inline-051"><strong id="bulkWritePickedCount">0</strong> essays selected</span>
       <button class="tb-text-btn" onclick="closeBulkWrite()" id="bulkWriteCloseBtn">Cancel</button>
-      <button class="tb-text-btn" onclick="abortBulkWrite()" id="bulkWriteAbortBtn" style="display:none; color:var(--accent);">Stop after current</button>
+      <button class="tb-text-btn u-inline-052" onclick="abortBulkWrite()" id="bulkWriteAbortBtn">Stop after current</button>
       <button class="tb-text-btn dark" onclick="doBulkWrite()" id="bulkWriteStartBtn" disabled>Write selected →</button>
     </div>
   </div>
@@ -938,11 +949,11 @@
 
 <!-- BULK IMPORT MODAL -->
 <div class="modal-overlay" id="bulkImportModal">
-  <div class="modal" style="max-width: 640px;">
+  <div class="modal u-inline-045">
     <h2>⊞ Bulk Add Essay Topics</h2>
     <p>Paste topics below — one per line, or pipe-separated: Title | Question | Explanation.</p>
-    <textarea id="bulkImportText" class="field-textarea" style="min-height:240px; font-family:monospace; font-size:12px;" placeholder="Paste topics here..." oninput="updateBulkPreview()"></textarea>
-    <div id="bulkPreview" style="margin-top:12px; font-size:12px; color:var(--ink-soft); font-style:italic;">
+    <textarea id="bulkImportText" class="field-textarea u-inline-053" placeholder="Paste topics here..." oninput="updateBulkPreview()"></textarea>
+    <div class="u-inline-054" id="bulkPreview">
       Paste topics to see preview.
     </div>
     <div class="modal-actions">
@@ -954,7 +965,7 @@
 
 <!-- ESSAY GENERATION SETUP MODAL -->
 <div class="modal-overlay" id="essayGenerationSetupModal">
-  <div class="modal generation-setup-modal" style="max-width: 720px;">
+  <div class="modal generation-setup-modal u-inline-055">
     <div class="generation-modal-kicker">STEP 1 OF 2 · PREFERENCES</div>
     <h2>Set up this essay</h2>
     <p>Tell the writer what you want before it builds the plan. Your preferences will be saved with this essay for future regeneration.</p>
@@ -1060,7 +1071,7 @@
 
 <!-- ESSAY PLAN REVIEW MODAL -->
 <div class="modal-overlay" id="essayPlanReviewModal">
-  <div class="modal generation-plan-modal" style="max-width: 760px;">
+  <div class="modal generation-plan-modal u-inline-056">
     <div class="generation-modal-kicker">STEP 2 OF 2 · PLAN REVIEW</div>
     <h2>Review your essay plan</h2>
     <p>Check the topic, stance and arguments below. The essay will not be generated until you approve this plan.</p>
@@ -1077,19 +1088,19 @@
 
 <!-- FREESTYLE MODAL -->
 <div class="modal-overlay" id="freestyleModal">
-  <div class="modal" style="max-width: 640px;">
+  <div class="modal u-inline-045">
     <h2>✍️ Freestyle Essay</h2>
     <p>Paste any question prompt and generate a complete essay instantly. This is a temporary draft.</p>
-    <div class="field" style="margin-bottom:10px;">
+    <div class="field u-inline-043">
       <div class="field-row"><span class="field-label">Pick a saved topic</span><span class="field-counter">fills the question below</span></div>
       <select class="field-input" id="fsLibrarySelect" onchange="fsPickFromLibrary(this.value)">
         <option value="">— Choose from your library —</option>
       </select>
     </div>
     <div class="field">
-      <textarea class="field-textarea" id="fsQuestion" placeholder="Type prompt here..." style="min-height:90px;"></textarea>
+      <textarea class="field-textarea u-inline-057" id="fsQuestion" placeholder="Type prompt here..."></textarea>
     </div>
-    <div class="fs-controls" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;">
+    <div class="fs-controls u-inline-058">
       <div>
         <label class="field-label">Band Target</label>
         <select class="field-input" id="fsBand">
@@ -1113,8 +1124,8 @@
         <div class="generation-setup-help">Use the structure as a scaffold and make the wording specific to this question.</div>
       </div>
     </div>
-    <div id="fsIdeasArea" style="display:none; margin-top:14px; border:1px solid var(--line); border-radius:12px; padding:14px; background:var(--bg-list); max-height:280px; overflow-y:auto;"></div>
-    <div id="fsResultArea" style="display:none; max-height:240px; overflow-y:auto; margin-top:14px; padding:12px; border:1px solid var(--line); border-radius:6px; background:var(--bg);">
+    <div class="u-inline-059" id="fsIdeasArea"></div>
+    <div class="u-inline-060" id="fsResultArea">
       <div id="fsResult"></div>
     </div>
     <div class="modal-actions" id="fsActions">
@@ -1136,7 +1147,7 @@
       </div>
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2">
-          <div class="vocab-progress-summary" id="vocabProgressSummary" style="font-size:12px; font-weight:700; color:var(--ink-soft); background:var(--bg); border:1px solid var(--line-soft); border-radius:100px; padding:6px 16px;">0 / 0 words read</div>
+          <div class="vocab-progress-summary u-inline-061" id="vocabProgressSummary">0 / 0 words read</div>
         </div>
       </div>
     </header>
@@ -1167,8 +1178,8 @@
                   </div>
                   <div class="vocab-hero-stat-box">
                     <span class="vocab-hero-stat-lbl">STUDY STREAK</span>
-                    <span class="vocab-hero-stat-val flex items-center gap-1" style="color: #f97316;">
-                      <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                    <span class="vocab-hero-stat-val flex items-center gap-1 u-inline-062">
+                      <span class="portal-glyph text-[20px]" data-glyph="local_fire_department" aria-hidden="true"></span>
                       <span id="vocabStreak">0 days</span>
                     </span>
                   </div>
@@ -1193,20 +1204,20 @@
                 <h3 class="vocab-control-title">Study Mode</h3>
                 <div class="vocab-mode-toggles">
                   <button class="vocab-mode-btn active" id="vocabToggleList" onclick="setVocabViewState('list')">
-                    <span class="material-symbols-outlined">list_alt</span>
+                    <span class="portal-glyph" data-glyph="list_alt" aria-hidden="true"></span>
                     <span>List View</span>
                   </button>
                   <button class="vocab-mode-btn" id="vocabToggleFlashcard" onclick="setVocabViewState('flashcard')">
-                    <span class="material-symbols-outlined">style</span>
+                    <span class="portal-glyph" data-glyph="style" aria-hidden="true"></span>
                     <span>Flashcards</span>
                   </button>
                 </div>
               </div>
-              <div id="vocabStudyModePlaceholder" style="display:none; text-align:center; padding: 20px 0; color: var(--ink-soft); font-size:13px;">
+              <div class="u-inline-063" id="vocabStudyModePlaceholder">
                 Choose a category to start learning words.
               </div>
               <button class="vocab-practice-btn" onclick="openVocabPractice()">
-                <span class="material-symbols-outlined">play_arrow</span>
+                <span class="portal-glyph" data-glyph="play_arrow" aria-hidden="true"></span>
                 Start Quick Quiz
               </button>
             </div>
@@ -1251,32 +1262,32 @@
 
 <!-- VOCAB PRACTICE MODAL -->
 <div class="modal-overlay" id="vocabPracticeModal">
-  <div class="modal" style="max-width: 720px;">
+  <div class="modal u-inline-055">
     <div id="vocabPracticeContent"></div>
   </div>
 </div>
 
 <!-- USER ACCOUNT MODAL -->
 <div class="modal-overlay" id="userMenuModal">
-  <div class="modal" style="max-width: 440px;">
+  <div class="modal u-inline-064">
     <h2 id="userMenuTitle">Account</h2>
-    <p id="userMenuEmail" style="color:var(--ink-soft); margin-bottom:4px;">—</p>
-    <p style="font-size:12px; color:var(--ink-mute); font-style:italic;" id="userMenuStats">—</p>
-    <div class="study-plan-settings" style="margin-top:18px; padding:14px; border:1px solid var(--line-soft); border-radius:10px; background:var(--bg-list);">
-      <strong style="display:block; margin-bottom:10px;">Study target</strong>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+    <p class="u-inline-065" id="userMenuEmail">—</p>
+    <p class="u-inline-066" id="userMenuStats">—</p>
+    <div class="study-plan-settings u-inline-067">
+      <strong class="u-inline-068">Study target</strong>
+      <div class="u-inline-069">
         <label class="field"><span class="field-label">Target PTE score</span><input class="field-input" id="studyTargetScore" type="number" min="10" max="90" step="1" inputmode="numeric" placeholder="e.g. 79"></label>
         <label class="field"><span class="field-label">Test date</span><input class="field-input" id="studyTestDate" type="date"></label>
       </div>
-      <label class="field" style="margin-top:10px;"><span class="field-label">Study frequency</span>
+      <label class="field u-inline-070"><span class="field-label">Study frequency</span>
         <select class="field-input" id="studyWeeklyFrequency">
           <option value="">Not set</option><option value="2">2 days/week</option><option value="3">3 days/week</option><option value="4">4 days/week</option><option value="5">5 days/week</option><option value="6">6 days/week</option><option value="7">Daily</option>
         </select>
       </label>
-      <button type="button" class="tb-text-btn dark" onclick="saveStudyPlanSettings()" style="margin-top:10px;">Save study target</button>
-      <p id="studyPlanSettingsStatus" role="status" aria-live="polite" style="font-size:11px; color:var(--ink-mute); margin:8px 0 0;"></p>
+      <button type="button" class="tb-text-btn dark u-inline-070" onclick="saveStudyPlanSettings()">Save study target</button>
+      <p class="u-inline-071" id="studyPlanSettingsStatus" role="status" aria-live="polite"></p>
     </div>
-    <div style="margin-top:18px; display:flex; flex-direction:column; gap:8px;">
+    <div class="u-inline-072">
       <button class="tb-text-btn" onclick="manualSync()">↻ Sync now</button>
       <button class="tb-text-btn" onclick="exportData()">Download a backup</button>
       <button class="tb-text-btn" onclick="importData()">Restore a backup</button>
@@ -1287,14 +1298,14 @@
         <button type="submit" class="tb-text-btn dark">Save email</button>
       </form>
       <button class="tb-text-btn" onclick="changePassword()">🔑 Change password</button>
-      <form id="changePasswordForm" hidden onsubmit="submitPasswordChange(event)" style="padding:12px; border:1px solid var(--line-soft); border-radius:10px; background:var(--bg-list);">
+      <form class="u-inline-073" id="changePasswordForm" hidden onsubmit="submitPasswordChange(event)">
         <label class="field"><span class="field-label">Current password</span><input class="field-input" id="changeCurrentPassword" type="password" autocomplete="current-password" required></label>
-        <label class="field" style="margin-top:8px;"><span class="field-label">New password</span><input class="field-input" id="changeNewPassword" type="password" autocomplete="new-password" minlength="8" required></label>
-        <label class="field" style="margin-top:8px;"><span class="field-label">Confirm new password</span><input class="field-input" id="changeConfirmPassword" type="password" autocomplete="new-password" minlength="8" required></label>
-        <p id="changePasswordStatus" role="status" aria-live="polite" style="font-size:11px; color:var(--ink-mute); margin:8px 0;"></p>
+        <label class="field u-inline-028"><span class="field-label">New password</span><input class="field-input" id="changeNewPassword" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label class="field u-inline-028"><span class="field-label">Confirm new password</span><input class="field-input" id="changeConfirmPassword" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="u-inline-074" id="changePasswordStatus" role="status" aria-live="polite"></p>
         <button type="submit" class="tb-text-btn dark" id="changePasswordSubmit">Update password</button>
       </form>
-      <button class="tb-text-btn" onclick="signOutUser()" style="color:var(--accent); border-color:var(--accent-soft);">→ Sign out</button>
+      <button class="tb-text-btn u-inline-075" onclick="signOutUser()">→ Sign out</button>
     </div>
     <div class="modal-actions">
       <button class="tb-text-btn" onclick="closeUserMenu()">Close</button>
@@ -1304,46 +1315,46 @@
 
 <!-- ADMIN PORTAL MODAL -->
 <div class="modal-overlay" id="adminModal">
-  <div class="modal" style="max-width: 820px; width: 90%;">
+  <div class="modal u-inline-076">
     <h2>👑 Admin Control Panel</h2>
-    <div style="display:flex; gap:6px; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px;">
-      <button class="tb-text-btn" id="adminTabUsersBtn" onclick="adminSwitchTab('users')" style="background:var(--ink); color:#fff;">👥 Users</button>
+    <div class="u-inline-077">
+      <button class="tb-text-btn u-inline-078" id="adminTabUsersBtn" onclick="adminSwitchTab('users')">👥 Users</button>
       <button class="tb-text-btn" id="adminTabPassagesBtn" onclick="adminSwitchTab('passages')">📝 SWT Passages</button>
       <button class="tb-text-btn" id="adminTabVocabBtn" onclick="adminSwitchTab('vocab')">📚 Vocabulary</button>
     </div>
 
     <!-- Users Admin panel -->
     <div id="adminTabUsers">
-      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
-        <input type="text" class="field-input" id="adminSearch" placeholder="Search by email..." style="flex:1;" oninput="renderAdminUsers()">
+      <div class="u-inline-079">
+        <input type="text" class="field-input u-inline-037" id="adminSearch" placeholder="Search by email..." oninput="renderAdminUsers()">
         <button class="tb-text-btn" onclick="loadAdminUsers()">Refresh ↻</button>
       </div>
-      <div id="adminUserList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+      <div class="u-inline-080" id="adminUserList"></div>
     </div>
 
     <!-- Passages Admin panel (SWT) -->
-    <div id="adminTabPassages" style="display:none;">
-      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+    <div class="u-inline-005" id="adminTabPassages">
+      <div class="u-inline-079">
         <button class="tb-text-btn dark" onclick="adminAddPassage()">+ Add passage</button>
         <button class="tb-text-btn" onclick="loadAdminPassages()">Refresh ↻</button>
       </div>
-      <div id="adminPassageList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+      <div class="u-inline-080" id="adminPassageList"></div>
     </div>
 
     <!-- Vocab Admin panel -->
-    <div id="adminTabVocab" style="display:none;">
-      <div style="display:flex; gap:10px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
-        <div style="flex:1; min-width:200px;">
-          <select class="field-input" id="adminVocabCat" onchange="renderAdminVocabList()" style="font-weight:600; font-family:var(--serif);"></select>
+    <div class="u-inline-005" id="adminTabVocab">
+      <div class="u-inline-081">
+        <div class="u-inline-082">
+          <select class="field-input u-inline-083" id="adminVocabCat" onchange="renderAdminVocabList()"></select>
         </div>
         <button class="tb-text-btn dark" onclick="adminAddVocabWord()">+ Add Word</button>
         <button class="tb-text-btn" onclick="openSuggestWords()">🤖 AI Suggest Words</button>
         <button class="tb-text-btn" onclick="loadAdminVocab()">Refresh ↻</button>
       </div>
-      <div id="adminVocabList" style="max-height:300px; overflow-y:auto; padding:4px;"></div>
+      <div class="u-inline-080" id="adminVocabList"></div>
     </div>
 
-    <div class="modal-actions" style="margin-top:20px;">
+    <div class="modal-actions u-inline-084">
       <button class="tb-text-btn" onclick="closeAdmin()">Close</button>
     </div>
   </div>
@@ -1351,11 +1362,11 @@
 
 <!-- PASSAGE EDIT MODAL (ADMIN) -->
 <div class="modal-overlay" id="passageEditModal">
-  <div class="modal" style="max-width: 820px; width: 90%; max-height: 85vh; overflow-y: auto;">
+  <div class="modal u-inline-085">
     <h3 id="passageEditTitle">Edit Passage</h3>
     <input type="hidden" id="peId">
     
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+    <div class="u-inline-086">
       <div class="field">
         <label class="field-label">Title</label>
         <input type="text" class="field-input" id="peTitle" placeholder="e.g. Climate Change Economics">
@@ -1368,71 +1379,71 @@
 
     <div class="field">
       <label class="field-label">Passage Content</label>
-      <textarea class="field-textarea" id="peText" style="min-height:140px;" placeholder="Paste the full passage here..."></textarea>
+      <textarea class="field-textarea u-inline-087" id="peText" placeholder="Paste the full passage here..."></textarea>
     </div>
 
-    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
-      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 6px;">Key Elements</h4>
-      <div style="font-size: 12px; color: var(--ink-soft); margin-bottom: 10px; line-height: 1.4;">
+    <div class="u-inline-088">
+      <h4 class="u-inline-089">Key Elements</h4>
+      <div class="u-inline-090">
         The scoring system checks for each of these in the student's summary. <strong>Keep each field to one atomic fact</strong> — don't combine facts with "and"/"but".
       </div>
 
       <!-- AI auto-extraction -->
-      <div class="extract-bar" style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <div class="extract-bar u-inline-091">
         <button type="button" class="tb-text-btn dark" id="extractBtn" onclick="runExtraction()">✨ Auto-extract with AI</button>
-        <span class="extract-hint" style="font-size: 12px; color: var(--ink-soft);">Claude reads the passage and drafts elements for review.</span>
+        <span class="extract-hint u-inline-092">Claude reads the passage and drafts elements for review.</span>
       </div>
-      <div class="extract-draft" id="extractDraft" style="margin-bottom: 12px;"></div>
+      <div class="extract-draft u-inline-093" id="extractDraft"></div>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+      <div class="u-inline-094">
         <div class="field" id="field_what">
           <label class="field-label" id="lbl_what">What (Primary Subject)</label>
-          <textarea class="field-textarea" id="peWhat" style="min-height:50px;"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peWhat"></textarea>
         </div>
         <div class="field" id="field_why">
           <label class="field-label" id="lbl_why">Why (Motivation)</label>
-          <textarea class="field-textarea" id="peWhy" style="min-height:50px;"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peWhy"></textarea>
         </div>
         <div class="field" id="field_how">
           <label class="field-label" id="lbl_how">How (Action/Method)</label>
-          <textarea class="field-textarea" id="peHow" style="min-height:50px;"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peHow"></textarea>
         </div>
         <div class="field" id="field_result">
           <label class="field-label" id="lbl_result">Result (Outcome)</label>
-          <textarea class="field-textarea" id="peResult" style="min-height:50px;"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peResult"></textarea>
         </div>
       </div>
     </div>
 
-    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
-      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">About This Passage (Student Explanations)</h4>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+    <div class="u-inline-088">
+      <h4 class="u-inline-096">About This Passage (Student Explanations)</h4>
+      <div class="u-inline-094">
         <div class="field">
           <label class="field-label">Topic — what the passage is about</label>
-          <textarea class="field-textarea" id="peRatTopic" style="min-height:50px;" placeholder="2–3 sentences explaining the topic structure"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peRatTopic" placeholder="2–3 sentences explaining the topic structure"></textarea>
         </div>
         <div class="field">
           <label class="field-label">Importance — why these are the critical ideas</label>
-          <textarea class="field-textarea" id="peRatImportance" style="min-height:50px;" placeholder="2–3 sentences explaining why these elements are key"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peRatImportance" placeholder="2–3 sentences explaining why these elements are key"></textarea>
         </div>
       </div>
     </div>
 
-    <div style="border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px;">
-      <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 10px;">Model Sample Answer</h4>
-      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+    <div class="u-inline-088">
+      <h4 class="u-inline-096">Model Sample Answer</h4>
+      <div class="u-inline-097">
         <div class="field">
           <label class="field-label">Sample Response</label>
-          <textarea class="field-textarea" id="peSampleResponse" style="min-height:50px;" placeholder="A high-scoring model summary of this passage"></textarea>
+          <textarea class="field-textarea u-inline-095" id="peSampleResponse" placeholder="A high-scoring model summary of this passage"></textarea>
         </div>
         <div class="field">
           <label class="field-label">Sample Notes (Optional)</label>
-          <textarea class="field-textarea" id="peSampleNotes" style="min-height:50px;" placeholder="e.g. Verbatim Method — 3 connectors."></textarea>
+          <textarea class="field-textarea u-inline-095" id="peSampleNotes" placeholder="e.g. Verbatim Method — 3 connectors."></textarea>
         </div>
       </div>
     </div>
 
-    <div class="modal-actions" style="margin-top:20px; border-top: 1px solid var(--line); padding-top: 14px;">
+    <div class="modal-actions u-inline-098">
       <button class="tb-text-btn" onclick="closePassageEdit()">Cancel</button>
       <button class="tb-text-btn dark" onclick="savePassageEdit()">Save</button>
     </div>
@@ -1442,22 +1453,22 @@
 
 <!-- ADD WORD MODAL -->
 <div class="modal-overlay" id="addWordModal">
-  <div class="modal" style="max-width: 560px;">
+  <div class="modal u-inline-099">
     <h2 id="addWordTitle">+ Add Vocabulary Word</h2>
-    <p style="font-size:12.5px; color:var(--ink-soft);">Word goes live for all students after you save.</p>
+    <p class="u-inline-100">Word goes live for all students after you save.</p>
     <input type="hidden" id="addWordCatId">
     <input type="hidden" id="addWordEditId">
 
-    <div style="display:flex; gap:8px; margin-bottom:8px;">
-      <div style="flex:2;">
+    <div class="u-inline-101">
+      <div class="u-inline-102">
         <div class="field-label">Word *</div>
         <input type="text" class="field-input" id="addWordWord" placeholder="e.g. perseverance">
       </div>
-      <div style="flex:1.5;">
+      <div class="u-inline-103">
         <div class="field-label">Part of speech</div>
         <input type="text" class="field-input" id="addWordPos" placeholder="noun / verb / adjective">
       </div>
-      <div style="flex:0.6;">
+      <div class="u-inline-104">
         <div class="field-label">Level</div>
         <select id="addWordLevel" class="field-input">
           <option>C1</option>
@@ -1469,14 +1480,14 @@
     <div class="field-label">Meaning *</div>
     <textarea class="field-textarea" id="addWordMeaning" rows="2" placeholder="A clear, plain-English definition."></textarea>
 
-    <div class="field-label" style="margin-top:8px;">Example sentence 1 *</div>
+    <div class="field-label u-inline-028">Example sentence 1 *</div>
     <textarea class="field-textarea" id="addWordEx1" rows="2" placeholder="Use the word in a natural context."></textarea>
-    <div class="field-label" style="margin-top:8px;">Example sentence 2 *</div>
+    <div class="field-label u-inline-028">Example sentence 2 *</div>
     <textarea class="field-textarea" id="addWordEx2" rows="2"></textarea>
-    <div class="field-label" style="margin-top:8px;">Example sentence 3</div>
+    <div class="field-label u-inline-028">Example sentence 3</div>
     <textarea class="field-textarea" id="addWordEx3" rows="2"></textarea>
 
-    <div class="field-label" style="margin-top:8px;">Compare with (optional)</div>
+    <div class="field-label u-inline-028">Compare with (optional)</div>
     <textarea class="field-textarea" id="addWordCompare" rows="2" placeholder="e.g. vs. persistence: 'perseverance' suggests longer-term effort despite hardship."></textarea>
 
     <div class="modal-actions">
@@ -1488,62 +1499,62 @@
 
 <!-- AI SUGGEST WORDS MODAL -->
 <div class="modal-overlay" id="suggestWordsModal">
-  <div class="modal" style="max-width: 680px;">
+  <div class="modal u-inline-105">
     <h2 id="suggestTitle">🤖 Suggest Vocabulary Words</h2>
     <input type="hidden" id="suggestCatId">
 
     <!-- STAGE 1: loading 20 word suggestions -->
-    <div id="suggestStage1" style="display:none;">
-      <div style="text-align:center; padding:40px 0; color:var(--ink-soft);">
-        <div class="spinner-dark" style="width:24px; height:24px; margin:0 auto 16px; display:block;"></div>
+    <div class="u-inline-005" id="suggestStage1">
+      <div class="u-inline-106">
+        <div class="spinner-dark u-inline-107"></div>
         <div id="suggestStage1Msg">Asking AI for 20 new word ideas…</div>
       </div>
     </div>
 
     <!-- STAGE 2: pick which words to keep -->
-    <div id="suggestStage2" style="display:none;">
-      <p style="font-size:13px; color:var(--ink-soft);">AI suggested these 20 words. Tick which ones to keep, then click <strong>Generate details</strong>. (Already-existing words shown greyed out.)</p>
-      <div style="display:flex; gap:8px; margin-bottom:10px;">
-        <button class="tb-text-btn" onclick="toggleAllSuggestions(true)" style="font-size:11px; padding:4px 10px;">Select all</button>
-        <button class="tb-text-btn" onclick="toggleAllSuggestions(false)" style="font-size:11px; padding:4px 10px;">None</button>
-        <span style="flex:1;"></span>
-        <span id="suggestPickedCount" style="font-size:12px; color:var(--ink-soft); font-family:var(--serif);">0 selected</span>
+    <div class="u-inline-005" id="suggestStage2">
+      <p class="u-inline-108">AI suggested these 20 words. Tick which ones to keep, then click <strong>Generate details</strong>. (Already-existing words shown greyed out.)</p>
+      <div class="u-inline-109">
+        <button class="tb-text-btn u-inline-110" onclick="toggleAllSuggestions(true)">Select all</button>
+        <button class="tb-text-btn u-inline-110" onclick="toggleAllSuggestions(false)">None</button>
+        <span class="u-inline-037"></span>
+        <span class="u-inline-111" id="suggestPickedCount">0 selected</span>
       </div>
-      <div id="suggestList" style="max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg);"></div>
+      <div class="u-inline-112" id="suggestList"></div>
     </div>
 
     <!-- STAGE 3: generating details -->
-    <div id="suggestStage3" style="display:none;">
-      <div style="text-align:center; padding:40px 0; color:var(--ink-soft);">
-        <div class="spinner-dark" style="width:24px; height:24px; margin:0 auto 16px; display:block;"></div>
+    <div class="u-inline-005" id="suggestStage3">
+      <div class="u-inline-106">
+        <div class="spinner-dark u-inline-107"></div>
         <div id="suggestStage3Msg">Generating definitions and examples…</div>
       </div>
     </div>
 
     <!-- STAGE 4: preview generated cards + save -->
-    <div id="suggestStage4" style="display:none;">
-      <p style="font-size:13px; color:var(--ink-soft);">Here are the full word cards. Untick any you don't want, then click <strong>Save all</strong> to publish to all students.</p>
-      <div id="suggestPreview" style="max-height:380px; overflow-y:auto; padding-right:6px;"></div>
+    <div class="u-inline-005" id="suggestStage4">
+      <p class="u-inline-108">Here are the full word cards. Untick any you don't want, then click <strong>Save all</strong> to publish to all students.</p>
+      <div class="u-inline-113" id="suggestPreview"></div>
     </div>
 
     <div class="modal-actions" id="suggestActions">
       <button class="tb-text-btn" onclick="closeSuggestWords()">Cancel</button>
-      <button class="tb-text-btn dark" id="suggestNextBtn" onclick="suggestNextStep()" style="display:none;">Generate details →</button>
+      <button class="tb-text-btn dark u-inline-005" id="suggestNextBtn" onclick="suggestNextStep()">Generate details →</button>
     </div>
   </div>
 </div>
 
 <!-- BAND 6 MODE CHOOSER MODAL -->
 <div class="modal-overlay" id="band6ModeModal">
-  <div class="modal" style="max-width: 480px; padding: 30px;">
-    <h2 style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-family: var(--serif); font-size: 22px;">
-      <span style="font-size: 26px;">💡</span> Band 6 Essay Options
+  <div class="modal u-inline-114">
+    <h2 class="u-inline-115">
+      <span class="u-inline-116">💡</span> Band 6 Essay Options
     </h2>
-    <p style="font-size:13.5px; color:var(--ink-soft); line-height: 1.5; margin-bottom: 24px;">
+    <p class="u-inline-117">
       How would you like the AI to help you build your body paragraphs?
     </p>
     
-    <div style="display:flex; flex-direction:column; gap:14px; margin-bottom: 24px;">
+    <div class="u-inline-118">
       <!-- Option 1: Full Written Essay -->
       <button class="band6-mode-btn" onclick="selectBand6Mode('full_essay')">
         <div class="mode-btn-title">✍️ Full Essay on Selected Ideas</div>
@@ -1561,7 +1572,7 @@
       </button>
     </div>
     
-    <div class="modal-actions" style="border-top: 1px solid var(--line-soft); padding-top: 16px; display: flex; justify-content: flex-end;">
+    <div class="modal-actions u-inline-119">
       <button class="tb-text-btn" onclick="closeBand6ModeModal()">Cancel</button>
     </div>
   </div>
@@ -1569,70 +1580,70 @@
 
 <!-- EXPORT MODAL -->
 <div class="modal-overlay" id="exportModal">
-  <div class="modal" style="max-width: 600px;">
+  <div class="modal u-inline-120">
     <h2>📥 Export Essays</h2>
-    <p style="font-size:13px; color:var(--ink-soft); margin-bottom: 16px;">Download your written essays as PDFs or send them directly to your email inbox.</p>
+    <p class="u-inline-121">Download your written essays as PDFs or send them directly to your email inbox.</p>
     
-    <div style="display:flex; flex-direction:column; gap:12px;">
+    <div class="u-inline-122">
       <!-- PDF Download Options -->
-      <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px;">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">PDF Download</div>
-        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
-          <button class="tb-text-btn dark" onclick="doExportCurrent()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
-            <div style="font-weight:600;">Download Current Essay</div>
-            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px;" id="exportCurrentName">Current essay only</div>
+      <div class="u-inline-123">
+        <div class="u-inline-124">PDF Download</div>
+        <div class="u-inline-125">
+          <button class="tb-text-btn dark u-inline-126" onclick="doExportCurrent()">
+            <div class="u-inline-127">Download Current Essay</div>
+            <div class="u-inline-128" id="exportCurrentName">Current essay only</div>
           </button>
-          <button class="tb-text-btn dark" onclick="doExportBook()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
-            <div style="font-weight:600;">Download Complete Essay Book</div>
-            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px;" id="exportBookCount">All written essays with cover page</div>
+          <button class="tb-text-btn dark u-inline-126" onclick="doExportBook()">
+            <div class="u-inline-127">Download Complete Essay Book</div>
+            <div class="u-inline-128" id="exportBookCount">All written essays with cover page</div>
           </button>
-          <button class="tb-text-btn" onclick="openExportPicker()" style="justify-content:flex-start; text-align:left; height:auto; padding:10px 12px; display:block; width:100%;">
-            <div style="font-weight:600; color:var(--accent);">Select specific essays...</div>
-            <div style="font-size:11px; opacity:0.75; font-weight:400; margin-top:2px; color:var(--ink-soft);">Choose which essays to compile into a PDF</div>
+          <button class="tb-text-btn u-inline-126" onclick="openExportPicker()">
+            <div class="u-inline-129">Select specific essays...</div>
+            <div class="u-inline-130">Choose which essays to compile into a PDF</div>
           </button>
         </div>
       </div>
 
       <!-- Email Delivery Options -->
-      <div style="background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px;">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">Email Delivery</div>
-        <div style="display:grid; grid-template-columns:1fr; gap:8px;">
-          <div id="emailOption" style="border:1px solid var(--line); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="doEmailCurrent()">
+      <div class="u-inline-123">
+        <div class="u-inline-124">Email Delivery</div>
+        <div class="u-inline-125">
+          <div class="u-inline-131" id="emailOption" onclick="doEmailCurrent()">
             <div>
-              <div style="font-weight:600; font-size:13px;">Email Current Essay</div>
-              <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;" id="emailRecipient">Sign in with an email account</div>
+              <div class="u-inline-132">Email Current Essay</div>
+              <div class="u-inline-133" id="emailRecipient">Sign in with an email account</div>
             </div>
-            <span style="font-size:18px;">✉️</span>
+            <span class="u-inline-134">✉️</span>
           </div>
-          <div id="emailBookOption" style="border:1px solid var(--line); border-radius:6px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="doEmailBook()">
+          <div class="u-inline-131" id="emailBookOption" onclick="doEmailBook()">
             <div>
-              <div style="font-weight:600; font-size:13px;">Email Complete Book</div>
-              <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;" id="emailBookRecipient">All written essays compiled</div>
+              <div class="u-inline-132">Email Complete Book</div>
+              <div class="u-inline-133" id="emailBookRecipient">All written essays compiled</div>
             </div>
-            <span style="font-size:18px;">📚</span>
+            <span class="u-inline-134">📚</span>
           </div>
         </div>
       </div>
 
       <!-- Essay Selection Picker -->
-      <div id="exportPicker" style="display:none; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:14px; margin-top:4px;">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--ink-soft); font-weight:600; margin-bottom:10px;">Select Essays to Export</div>
-        <div id="exportPickerList" style="max-height:200px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; padding:6px; background:var(--bg-card); display:flex; flex-direction:column; gap:4px; margin-bottom:10px;"></div>
-        <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <div class="u-inline-135" id="exportPicker">
+        <div class="u-inline-124">Select Essays to Export</div>
+        <div class="u-inline-136" id="exportPickerList"></div>
+        <div class="u-inline-137">
           <button class="tb-text-btn" id="emailPickedBtn" onclick="doEmailPicked()">Email Selection</button>
           <button class="tb-text-btn dark" id="exportPickedBtn" onclick="doExportPicked()">Download Selection (<span id="exportPickedCount">0</span>)</button>
         </div>
       </div>
     </div>
 
-    <div class="modal-actions" style="margin-top:20px; border-top:1px solid var(--line); padding-top:14px;">
+    <div class="modal-actions u-inline-138">
       <button class="tb-text-btn" onclick="closeExportMenu()">Close</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-<div class="loading-veil hidden" id="loadingVeil" role="status" aria-live="polite"><img class="ipt-assessment-logo hidden" id="loadingBrandLogo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109"><div class="spinner" aria-hidden="true"></div><span>Getting your next practice ready...</span></div>
+<div class="loading-veil hidden" id="loadingVeil" role="status" aria-live="polite"><img class="ipt-assessment-logo hidden" id="loadingBrandLogo" src="assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109"><div class="spinner" aria-hidden="true"></div><span>Getting your next practice ready...</span></div>
 
 </body>
 </html>

@@ -38,7 +38,8 @@ test('Saved-session checks validate the token and successful auth is not mislabe
   assert.match(login, /Workspace failed after successful login/);
   assert.match(login, /Signed in successfully, but the workspace could not finish loading/);
   assert.match(client, /bootAuthRevision !== authFlowRevision/);
-  assert.match(client, /localStorage\.removeItem\('pte_session_token'\)/);
+  assert.match(client, /removeAuthStorageValue\('pte_session_token'\)/);
+  assert.match(client, /function removeAuthStorageValue\(key\)/);
 });
 
 

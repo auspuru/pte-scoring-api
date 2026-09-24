@@ -49,9 +49,9 @@ function harness({ audioReadyState = 4 } = {}) {
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={WritingLabReport:report,parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
+  context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  (async()=>{\n    try { const values=',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt,movePractice}; return;\n  (async()=>{\n    try { const values=`);
+  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -308,4 +308,12 @@ test('Writing Lab question view hides prediction provenance descriptions', () =>
   assert.doesNotMatch(client, /content-provenance/);
   assert.doesNotMatch(client, /Unseen prediction/);
   assert.doesNotMatch(client, /Adapted practice/);
+});
+
+
+test('Writing Lab exposes a direct in-page portal lifecycle API',()=>{
+  assert.match(client,/window\.WritingLab=\{/);
+  assert.match(client,/leave:suspend/);
+  assert.match(client,/async open\(request=\{\}\)/);
+  assert.match(client,/const inPortal = !!portalShell/);
 });

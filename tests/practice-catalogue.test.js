@@ -7,7 +7,11 @@ const { routes } = require('../public/portal-workspace');
 const bank = require('../public/reading-bank.json');
 const fibQuality = require('../public/reading-fib-quality');
 const patternBank = require('../public/reading-fib-pattern-bank');
-const writing = { mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 })) };
+const writing = {
+  spoken: Array.from({ length: 17 }, (_, i) => ({ id:'sst-'+i })),
+  dictation: Array.from({ length: 36 }, (_, i) => ({ id:'wfd-'+i })),
+  mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 }))
+};
 
 test('Each available individual task has exactly one primary home and a working portal route', () => {
   const all = catalogue.groups.flatMap(g => g.tasks);
@@ -80,25 +84,28 @@ function harness() {
   let fail = false;
   const controller = catalogue.createController({ document, navigate: (...args) => navigations.push(args),
     launchReading: id => starts.push(['reading', id]), launchWriting: id => starts.push(['writing', id]),
+    getProgress: async () => ({ practice:{ swt:{count:18,lastAttempt:1000}, practice:{count:36}, dictation:{lastAttempt:2000} }, mocks:{'practice-mock-1':{status:'In progress',date:3000},'practice-mock-2':{status:'Done',date:4000},'writing-1':{status:'Done',date:4000}} }),
     fetch: async url => { calls.push(url); return { ok: !fail, json: async () => url.includes('reading-bank') ? bank : writing }; } });
   return { controller, nodes, practice, mocks, calls, navigations, starts, fail: value => fail = value,
     click: data => mocks.onclick({ target: { closest: () => ({ dataset: data }) } }),
     change: (id, value) => mocks.onchange({ target: { id, value } }) };
 }
 
-test('Practice renders only task banners and routes clicks without loading or starting any mock', () => {
-  const h = harness(); h.controller.openPractice();
+test('Practice shows task counts and last attempts while routes remain direct', async () => {
+  const h = harness(); await h.controller.openPractice();
   assert.match(h.practice.innerHTML, /Writing Practice/); assert.match(h.practice.innerHTML, /Reading Practice/); assert.match(h.practice.innerHTML, /Listening Practice/);
+  assert.match(h.practice.innerHTML, /18 questions/); assert.match(h.practice.innerHTML, /17 questions/); assert.match(h.practice.innerHTML, /36 questions/);
+  assert.match(h.practice.innerHTML, /Last attempt/); assert.match(h.practice.innerHTML, /Not attempted yet/);
   assert.doesNotMatch(h.practice.innerHTML, /Start Exam|data-mock-id/);
   h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'dictation' } }) } });
-  assert.deepEqual(h.navigations, [['dictation']]); assert.equal(h.calls.length, 0); assert.equal(h.starts.length, 0);
+  assert.deepEqual(h.navigations, [['dictation']]); assert.equal(h.calls.length, 2); assert.equal(h.starts.length, 0);
 });
 
 test('Mock tabs, module filtering, pagination, topic search and launch keep one catalogue', async () => {
   const h = harness(); await h.controller.openMocks();
   const board = () => h.nodes.get('catalogue-board').innerHTML;
   assert.match(board(),/Integrated Writing sectional practice|Integrated Reading sectional practice/);
-  assert.match(board(),/Includes:/);
+  assert.match(board(),/Includes:/); assert.match(board(),/In progress/); assert.match(board(),/Done/); assert.match(board(),/New/);
   assert.equal(h.nodes.get('catalogue-description').hidden,false);
   assert.equal((board().match(/data-mock-id=/g) || []).length, 12);
   assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 39 tests');
@@ -124,7 +131,7 @@ test('Mock tabs, module filtering, pagination, topic search and launch keep one 
 test('Catalogue load failures have a retry, without creating an empty successful catalogue', async () => {
   const h = harness(); h.fail(true); await h.controller.openMocks();
   assert.match(h.mocks.innerHTML, /role="alert"/); assert.match(h.mocks.innerHTML, /data-retry-catalogue/);
-  h.fail(false); await h.controller.openMocks(); assert.match(h.nodes.get('catalogue-board').innerHTML, /Start Exam/);
+  h.fail(false); await h.controller.openMocks(); assert.match(h.nodes.get('catalogue-board').innerHTML, /Start timed test|Continue timed test|Try again/);
 });
 
 test('Portal markup removes redundant navigation and embedded catalogues', () => {
@@ -136,7 +143,7 @@ test('Portal markup removes redundant navigation and embedded catalogues', () =>
   assert.doesNotMatch(html, /<script[^>]+reading-practice\.js/);
   const portalClient = fs.readFileSync(require.resolve('../public/index.js'), 'utf8');
   assert.match(portalClient, /ensureReadingRuntimeLoaded/);
-  assert.match(portalClient, /reading-practice\.js\?v=20260924-pattern/);
+  assert.match(portalClient, /reading-practice\.js\?v=20260924-a11y/);
   const lab = fs.readFileSync(require.resolve('../public/writing-lab-client.js'), 'utf8');
   assert.doesNotMatch(lab, /renderMockBoard|assignment-board|data-board-mode/);
 });
