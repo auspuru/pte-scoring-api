@@ -18,7 +18,7 @@ test('every active Reading FIB surface passes one shared grammar-vocabulary qual
 });
 
 test('bundled Writing audio is bound to transcripts, duration metadata and decodable MP3 frames', () => {
-  assert.equal(audio.validateWritingAudio(), 73);
+  assert.equal(audio.validateWritingAudio(), 126);
   const file=fs.readFileSync(path.join(__dirname,'..','content','writing-audio','sst-urban-trees.mp3'));
   const ok=audio.inspectMp3(file);
   assert.equal(ok.valid,true,ok.reason);

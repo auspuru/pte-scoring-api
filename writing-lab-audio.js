@@ -40,7 +40,7 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
           entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
     }
-    const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95, preferLocal:!!q.predictionSource };
+    const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95 };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }

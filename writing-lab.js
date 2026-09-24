@@ -5,6 +5,7 @@ const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
+const AUDIO_VERSION = '20260924-neural126';
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
@@ -74,7 +75,7 @@ function present(a) {
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + (q.predictionSource ? predictions.version + '-local2' : bank.version) } : {}),
+    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + AUDIO_VERSION } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
   return result;
 }
@@ -136,8 +137,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
     predictionBank:{source:predictions.source,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
-    spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
-    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+bank.version })),
+    spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);

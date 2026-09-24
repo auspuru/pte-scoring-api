@@ -2,6 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
+const predictions = require('../content/writing-predictions-sep-2026');
 
 const BITRATE_MPEG1_L3 = [0,32,40,48,56,64,80,96,112,128,160,192,224,256,320,0];
 const BITRATE_MPEG2_L3 = [0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,0];
@@ -49,7 +50,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
   const bank = JSON.parse(fs.readFileSync(path.join(root, 'content', 'writing-lab.json'), 'utf8'));
   const directory = path.join(root, 'content', 'writing-audio');
   const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
-  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions)].filter(q => ['sst', 'wfd'].includes(q.type));
+  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
   const hash = value => createHash('sha256').update(value).digest('hex');
   const ids = new Set();
   for (const q of questions) {
@@ -57,6 +58,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
     ids.add(q.id);
     const entry = manifest[q.id];
     if (!entry || entry.textSha256 !== hash(q.text)) throw Error('Missing or outdated recording: ' + q.id);
+    if (entry.normalization !== 'EBU R128 -18 LUFS / -1.5 dBTP') throw Error('Recording normalization metadata missing: ' + q.id);
     if (entry.validationStatus !== 'validated' || !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.validatedAt || ''))) {
       throw Error('Recording validation metadata missing: ' + q.id);
     }
@@ -64,7 +66,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
     if (bytes.length < 1000 || bytes.length !== entry.bytes || hash(bytes) !== entry.audioSha256) throw Error('Invalid recording: ' + q.id);
     const inspected = inspectMp3(bytes);
     if (!inspected.valid) throw Error('Corrupt or truncated MP3: ' + q.id + ' (' + inspected.reason + ')');
-    const [min, max] = q.type === 'sst' ? [60, 90] : [3, 8];
+    const [min, max] = q.type === 'sst' ? (q.predictionSource ? [30, 90] : [60, 90]) : [3, 8];
     if (!Number.isFinite(entry.seconds) || entry.seconds < min || entry.seconds > max) throw Error('Invalid recording duration: ' + q.id);
   }
   return ids.size;
