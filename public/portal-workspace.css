@@ -361,7 +361,7 @@ body.dark .practice-sync-status { color: #90e6c4; background: #123c36; border-co
 body.dark .practice-sync-status[data-state="error"] { color: #ffc0b8; background: #492931; border-color: #79434b; }
 body.dark .practice-sync-status[data-state="syncing"] { color: #ffdc92; background: #453b27; border-color: #6d5935; }
 body.dark .portal-draft-status[data-state="error"] { color: #ffdc92; }
-body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary { background: #5a51da !important; color: #fff !important; }
+body.dark .practice-submit-btn.primary, body.dark .practice-action-btn.primary { background: var(--accent) !important; color: #fff !important; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
