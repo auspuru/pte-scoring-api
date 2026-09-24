@@ -49,7 +49,7 @@ function harness({ audioReadyState = 4 } = {}) {
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={WritingLabReport:report,parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
+  context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
   const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
