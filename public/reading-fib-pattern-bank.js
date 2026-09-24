@@ -7,7 +7,9 @@
 
   const source={
     kind:'original-pattern-derived',
+    contentStatus:'original',
     checkedAt:'2026-09-24',
+    lastReviewed:'2026-09-24',
     note:'Original IPT Brisbane questions modelled on recurring grammar, collocation, word-form and contextual-vocabulary patterns seen in public PTE prediction files. No third-party passage text is reproduced.',
     references:[
       'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-writing-fib/',
