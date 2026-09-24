@@ -51,7 +51,24 @@
     return { rows, earned, possible, pending: sum('pending'), excluded: sum('excluded'), percent: possible ? Math.round(earned/possible*100) : null };
   }
   function storageKey(owner) { return 'ipt_reading_v1:' + encodeURIComponent(String(owner).trim().toLowerCase()); }
-  function remaining(session, now = Date.now()) { return session.deadline == null ? null : Math.max(0, Math.ceil((session.deadline - now) / 1000)); }
+  function remaining(session, now = Date.now()) {
+    if(Number.isFinite(session?.pausedRemainingSeconds)) return Math.max(0, Math.ceil(session.pausedRemainingSeconds));
+    return session.deadline == null ? null : Math.max(0, Math.ceil((session.deadline - now) / 1000));
+  }
+  function parkSession(session=state?.session){
+    if(!session||session.done||session.deadline==null||Number.isFinite(session.pausedRemainingSeconds))return false;
+    const now=Date.now(),stage=timing.current(session);
+    session.pausedRemainingSeconds=Math.max(0,Math.ceil((session.deadline-now)/1000));session.pausedAt=now;session.deadline=null;
+    if(stage?.deadline!=null){stage.pausedRemainingSeconds=Math.max(0,Math.ceil((stage.deadline-now)/1000));stage.deadline=null;}
+    return true;
+  }
+  function resumeParkedSession(session=state?.session){
+    if(!session||session.done||!Number.isFinite(session.pausedRemainingSeconds))return false;
+    const now=Date.now(),stage=timing.current(session);
+    session.deadline=now+session.pausedRemainingSeconds*1000;
+    if(stage){const left=Number.isFinite(stage.pausedRemainingSeconds)?stage.pausedRemainingSeconds:session.pausedRemainingSeconds;stage.deadline=now+left*1000;delete stage.pausedRemainingSeconds;}
+    delete session.pausedRemainingSeconds;delete session.pausedAt;activeSince=now;return true;
+  }
   let host, bank, owner = '', state, generation = 0, interval, selectedWord = '', saveNotice = '';
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
   let selectedParagraph = {}, examNotice = null;
@@ -131,22 +148,21 @@
     host?.classList?.toggle('reading-exam-active',active);
     document.body?.classList?.toggle('reading-exam-open',active);
   }
-  function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
+  function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); parkSession(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function showRequested(request) {
     if (request.attemptId) {
       const saved = [state.session,...state.history,...state.drafts].find(a=>a?.id===request.attemptId);
       if (!saved) { home(); const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This saved result is unavailable. Refresh My Progress and try again.';host.prepend(notice);return; }
       if (state.session?.id===saved.id) return render();
-      if (state.session && !state.session.done && !confirm('Open this saved attempt? Your current answers remain saved and its timer continues.')) return render();
+      if (state.session && !state.session.done) { parkSession(state.session); state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)]; }
       cancelAudio();
-      if (state.session && !state.session.done) state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)];
-      state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);persist();render();resumeSwtAssessments();return;
+      state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);resumeParkedSession(state.session);persist();render();resumeSwtAssessments();return;
     }
     if (request.practiceUid) {
       const target=practiceLibraries().flatMap(l=>l.questions||[]).find(item=>String(item.uid)===String(request.practiceUid));
       if(!target){home();const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This assigned practice question is unavailable.';host.prepend(notice);return;}
       if(state.session?.practiceUid===target.uid&&!state.session.done)return render();
-      if(state.session&&!state.session.done&&!confirm('Start this assigned practice question? Your current answers remain saved. Any running mock timer will continue.'))return render();
+      if(state.session&&!state.session.done){parkSession(state.session);state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)];persist();}
       speaker?.unlock();
       return start('practice',target.uid);
     }
@@ -157,7 +173,7 @@
     if (request.mockId) {
       home();
       if (!bank.mockCatalogue.some(m => m.id === request.mockId)) return;
-      if (state.session && !state.session.done && !confirm('Start a new mock? Your current answers remain saved and its timer continues.')) return render();
+      if (state.session && !state.session.done) { parkSession(state.session); state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)]; persist(); }
       speaker?.unlock();
       return start(request.mockId);
     }
@@ -171,7 +187,7 @@
       const serial = ++requestSerial;
       if (typeof resumeAccountSync === 'function') await resumeAccountSync();
       if (serial !== requestSerial || owner !== nextOwner || nextOwner !== identity() || !state || host.hidden) return;
-      activeSince = Date.now(); tick(); await showRequested(request); return;
+      activeSince = Date.now(); if(!host.hidden&&state.session&&!state.session.done)resumeParkedSession(state.session); tick(); await showRequested(request); return;
     }
     reset(); owner = nextOwner; host = document.getElementById('readingPane');
     const serial = ++requestSerial;
@@ -506,7 +522,7 @@
     }
     applyReviewFilters(model);
   }
-  function timeModeText(session = state.session) { return session?.deadline == null ? 'Time mode: Untimed' : 'Time mode: Timed'; }
+  function timeModeText(session = state.session) { return Number.isFinite(session?.pausedRemainingSeconds) ? 'Time mode: Timed · Paused' : session?.deadline == null ? 'Time mode: Untimed' : 'Time mode: Timed'; }
   function timerText() { const left=remaining(state.session, state.session.done ? state.session.finishedAt : Date.now()); return left===null?'Untimed practice':`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}${state.session.done?' · Finished':''}`; }
   function tick() {
     if (!owner || identity()!==owner) return reset();
