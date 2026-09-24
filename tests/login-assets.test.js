@@ -18,24 +18,6 @@ test('Deployment validation rejects the truncation that disabled sign-in', t => 
   assert.throws(() => validatePublicAssets(root), /Invalid public asset reading-bank.json/);
 });
 
-test('Login keeps the form in place and shows an error when the application cannot load', () => {
-  const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-  const handler = html.slice(html.indexOf('id="loginForm"')).match(/<form onsubmit="([^"]+)"/)[1];
-  const fields = { loginUsername: { value: 'student' }, loginPassword: { value: 'test-password' }, loginError: { style: {}, textContent: '' } };
-  let cancelled = false;
-  const context = { event: { preventDefault() { cancelled = true; } }, document: { getElementById: id => fields[id] } };
-  vm.runInNewContext(handler, context);
-  assert(cancelled);
-  assert.equal(fields.loginUsername.value, 'student');
-  assert.equal(fields.loginPassword.value, 'test-password');
-  assert.equal(fields.loginError.style.display, 'block');
-  assert.match(fields.loginError.textContent, /refresh this page/);
-  let calls = 0;
-  context.handleLoginSubmit = event => { assert.equal(event, context.event); calls++; };
-  vm.runInNewContext(handler, context);
-  assert.equal(calls, 1);
-});
-
 test('Release assets are complete and include the full HIW bank', () => {
   const root = path.join(__dirname, '../public');
   assert(validatePublicAssets(root).includes('index.js'));
@@ -81,4 +63,34 @@ test('Change password uses an authenticated form and a session-derived account',
   assert.match(client, /JSON\.stringify\(\{ oldPassword: currentPassword, newPassword \}\)/);
   assert.match(route, /verifySessionToken\(token\)/);
   assert.doesNotMatch(route, /const \{ username, oldPassword, newPassword \} = req\.body/);
+});
+
+
+test('Login is handled by a tiny boot client before the main portal bundle', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+  const boot = fs.readFileSync(path.join(__dirname, '../public/auth-boot.js'), 'utf8');
+  assert.match(page, /id="loginSubmitForm"/);
+  assert.doesNotMatch(page, /Sign-in has not finished loading/);
+  assert(page.indexOf('auth-boot.js') < page.indexOf('index.min.js'));
+  assert.match(boot, /\/api\/auth\/login/);
+  assert.match(boot, /pte_session_token/);
+});
+
+test('Account recovery is email based and passwords require eight characters', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
+  const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+  assert.match(page, /emailResetRequestForm/);
+  assert.doesNotMatch(page, /regSecretQ/);
+  assert.match(page, /minlength="8"/);
+  assert.match(server, /\/api\/auth\/email-reset\/request/);
+  assert.match(server, /\/api\/auth\/email-reset\/complete/);
+  assert.match(server, /Password must be at least 8 characters/);
+});
+
+test('Shared modal helper provides dialog semantics, Escape and focus trapping', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../public/portal-accessibility.js'), 'utf8');
+  assert.match(source, /aria-modal/);
+  assert.match(source, /ev\.key==='Escape'/);
+  assert.match(source, /ev\.key!=='Tab'/);
+  assert.match(source, /portalUndoToast/);
 });
