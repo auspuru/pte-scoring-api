@@ -5,7 +5,9 @@
     "bytes": 492768,
     "seconds": 82.128,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-active-learning": {
     "textSha256": "8748dca6643fa239cd37c85c9ae5d3aa70ea18401db5e807fbb7ae8c05054782",
@@ -13,7 +15,9 @@
     "bytes": 416016,
     "seconds": 69.336,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-food-waste": {
     "textSha256": "9a495b34e4ddc4ce7ea3751aaec2a06b48397d55aebf1751b17605fc20285810",
@@ -21,7 +25,9 @@
     "bytes": 445248,
     "seconds": 74.208,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-hybrid-work": {
     "textSha256": "9822e01fd0bf20de9ce6c13db9bd017c89810b30b98b91772a9589ca9cd517e3",
@@ -29,15 +35,19 @@
     "bytes": 472176,
     "seconds": 78.696,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-community-museums": {
     "textSha256": "f7f1e0a1d78cfc2f6247eec5fbb39440956fb7796d1f28f941ebcf2cdc8b5c01",
     "audioSha256": "31b2aeccab5c8c31e9e68ca9faa98579f5ee15f644a3e8f5df76a27587ea9794",
     "bytes": 486000,
-    "seconds": 81.0,
+    "seconds": 81,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm1-sst": {
     "textSha256": "0fecdacc5467dfd4d725538aad8107dce261b108e0e525916fa365d637cfffd7",
@@ -45,7 +55,9 @@
     "bytes": 522864,
     "seconds": 87.144,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm1-wfd1": {
     "textSha256": "9d8322deba45c2eb783a62c05484b75fe854c040441e7869421f17813dbc77ec",
@@ -53,7 +65,9 @@
     "bytes": 33264,
     "seconds": 5.544,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm1-wfd2": {
     "textSha256": "40b5d7b1296fbe0cd2c195df27e35cea6ad632ea6ebba2683e1ac549ce383fe5",
@@ -61,7 +75,9 @@
     "bytes": 29376,
     "seconds": 4.896,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm1-wfd3": {
     "textSha256": "80119ca2faa19cb9bd2d86082ed44d64db5399a7e63bd1ee96392ac930dc29c3",
@@ -69,7 +85,9 @@
     "bytes": 34128,
     "seconds": 5.688,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm2-sst": {
     "textSha256": "035187aa612e88607dc91161f14e190d85b5143b5958aaa8149b8652aaa5cc9b",
@@ -77,7 +95,9 @@
     "bytes": 448560,
     "seconds": 74.76,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm2-wfd1": {
     "textSha256": "165694004cc53812817213f6d5797f69d1108e8fbdb5d8a4c0a15022aaf05e83",
@@ -85,7 +105,9 @@
     "bytes": 28656,
     "seconds": 4.776,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm2-wfd2": {
     "textSha256": "858082fb03efa95cf80f1082377b06aa665665751ff5a1d864b3500db4427bde",
@@ -93,7 +115,9 @@
     "bytes": 29088,
     "seconds": 4.848,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wm2-wfd3": {
     "textSha256": "6fa94f441fd2715f0731135a5716a977df7aa96239f4c1bc09425114983db0ca",
@@ -101,7 +125,9 @@
     "bytes": 31680,
     "seconds": 5.28,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-citizen-science": {
     "textSha256": "62c638025efee71c8566d9837415fab91cdbe5a94cf06ad9fe97347db7090cbb",
@@ -109,7 +135,9 @@
     "bytes": 500400,
     "seconds": 83.4,
     "voice": "en-AU-NatashaNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-sleep-memory": {
     "textSha256": "50b90becd315a17f2feac3f61a96d38e00c99f217152c2ccac1b631cecd63444",
@@ -117,7 +145,9 @@
     "bytes": 371376,
     "seconds": 61.896,
     "voice": "en-AU-WilliamNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-water-reuse": {
     "textSha256": "b4afa25430389e7d74cf470b4c2a9ee1d2e18f4a65cb97c3a0f597b6c140923f",
@@ -125,7 +155,9 @@
     "bytes": 435312,
     "seconds": 72.552,
     "voice": "en-GB-RyanNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-public-transport": {
     "textSha256": "72657bed3a8d510dfc6734ea4e16cab89ed7c3b131237b859f92bd207ae7a192",
@@ -133,7 +165,9 @@
     "bytes": 433008,
     "seconds": 72.168,
     "voice": "en-GB-SoniaNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-digital-archives": {
     "textSha256": "2b5285c030fbb8208f40602448a5577f0f33c63ebf244e8958d20b544ffc0c64",
@@ -141,7 +175,9 @@
     "bytes": 407088,
     "seconds": 67.848,
     "voice": "en-US-GuyNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-urban-pollinators": {
     "textSha256": "d292578a762e5b89e87c91bcf4dff81fe16514021da0e3e2039958542a54fc6a",
@@ -149,7 +185,9 @@
     "bytes": 470448,
     "seconds": 78.408,
     "voice": "en-AU-NatashaNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-peer-feedback": {
     "textSha256": "96ee413bab6d2d2a5403c9c3108e3e8b4da08d9c6847d86d403cc8c1a5a89ac2",
@@ -157,7 +195,9 @@
     "bytes": 385632,
     "seconds": 64.272,
     "voice": "en-AU-WilliamNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-repair-cafes": {
     "textSha256": "745824eeb539fcae8c21ffbb8b7cf4a811036202e1f0ccccfe799c32a08a5896",
@@ -165,7 +205,9 @@
     "bytes": 420048,
     "seconds": 70.008,
     "voice": "en-GB-RyanNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-forecast-uncertainty": {
     "textSha256": "e5c282d1d649f88a4e44c7a93214e6ab859b29b0401725684a17201097ae7cc9",
@@ -173,7 +215,9 @@
     "bytes": 438768,
     "seconds": 73.128,
     "voice": "en-GB-SoniaNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "sst-shared-workspaces": {
     "textSha256": "db255362558583905f1d04efa96b0480d82e65cf227bc43576300f806674b9b7",
@@ -181,7 +225,9 @@
     "bytes": 437184,
     "seconds": 72.864,
     "voice": "en-US-GuyNeural",
-    "rate": "+5%"
+    "rate": "+5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-01": {
     "textSha256": "1764bc85afe9442983ded418920d7775439f66d90f7602201d023066d94e4545",
@@ -189,7 +235,9 @@
     "bytes": 32688,
     "seconds": 5.448,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-03": {
     "textSha256": "5c76c4706ff351767648e636868ebb93650420ed738abd5bdf02beafed596171",
@@ -197,7 +245,9 @@
     "bytes": 36576,
     "seconds": 6.096,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-02": {
     "textSha256": "ebb3f7c3d2b95c7d1f7e4a4ae922c4a4f5b7dd72ffa64dcaa8f27ad27a6c06b0",
@@ -205,7 +255,9 @@
     "bytes": 26640,
     "seconds": 4.44,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-04": {
     "textSha256": "ef7130208ad130fc03fa1bdbd905019beb6a020aa28faca3483dfeab0e90de86",
@@ -213,7 +265,9 @@
     "bytes": 37152,
     "seconds": 6.192,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-08": {
     "textSha256": "0401b2ee1e40b68ae2620b2dca640f8c1ba95c210b0c2ba562a4ce4f318ab9a0",
@@ -221,7 +275,9 @@
     "bytes": 35568,
     "seconds": 5.928,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-06": {
     "textSha256": "8c0ed7ddc369b17de2b9be022fcba4228f0399317e2427075801a24c819d8172",
@@ -229,7 +285,9 @@
     "bytes": 34560,
     "seconds": 5.76,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-05": {
     "textSha256": "f97169c62bdb236e1ca06bc8ea36e3bfb577988c082931d33e40b43c354d3a54",
@@ -237,7 +295,9 @@
     "bytes": 37584,
     "seconds": 6.264,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-07": {
     "textSha256": "0a1278d216f8de788fb65c12adbabca8f3086886448947e431974abbe6d57ad8",
@@ -245,7 +305,9 @@
     "bytes": 30960,
     "seconds": 5.16,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-10": {
     "textSha256": "493b98e5d96227bc2d0496cc9afcdb8e4eab53ba4e9a7a8bf9275e5271889bd6",
@@ -253,7 +315,9 @@
     "bytes": 30096,
     "seconds": 5.016,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-11": {
     "textSha256": "0d9ac977ba6816b588032ae07a5e48dc99bfb5efb77d522e7960fc72cbeae8f9",
@@ -261,7 +325,9 @@
     "bytes": 30384,
     "seconds": 5.064,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-12": {
     "textSha256": "a826576e168a722cfa887e31bc9ee65143cf24a9f1519e7fb8c7cedb2c45b76b",
@@ -269,7 +335,9 @@
     "bytes": 32832,
     "seconds": 5.472,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-09": {
     "textSha256": "f6e9358b1e30c2e82aaba54f6c14fc9dc0085ea3dc9ef5abc21131c7a323ef5d",
@@ -277,7 +345,9 @@
     "bytes": 36144,
     "seconds": 6.024,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-13": {
     "textSha256": "61e9391699a05acd43b2230d7aa6327ecb70f37e4c3760fb73d461260b88507b",
@@ -285,7 +355,9 @@
     "bytes": 30960,
     "seconds": 5.16,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-16": {
     "textSha256": "11f14b99bd7caf3c2e5118701941c5cc661c3744581bbc58c30c88ae95aec010",
@@ -293,7 +365,9 @@
     "bytes": 35424,
     "seconds": 5.904,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-15": {
     "textSha256": "e0195738ab00ec7155bc295dbbc6db9f125b0c005ba1ecea53f529023eea5482",
@@ -301,7 +375,9 @@
     "bytes": 36864,
     "seconds": 6.144,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-14": {
     "textSha256": "fa2408f593bb69f5517e96251b413aa24a1abc83e2331621310b85ed0319ed55",
@@ -309,7 +385,9 @@
     "bytes": 34272,
     "seconds": 5.712,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-20": {
     "textSha256": "e42d66c167160ef5cd3b3ac8a3f7258e508e2c11ef305974eda2d1511afb6c1b",
@@ -317,7 +395,9 @@
     "bytes": 34416,
     "seconds": 5.736,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-18": {
     "textSha256": "9db969b0ecef16f9547a1c62bd790cd6cade17c07b785fbb49181fd658390211",
@@ -325,7 +405,9 @@
     "bytes": 35568,
     "seconds": 5.928,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-17": {
     "textSha256": "6f7a61d8d0318fe728db6c387171aa22293f5807acbce3e712b5fa4789ae9ff8",
@@ -333,7 +415,9 @@
     "bytes": 34128,
     "seconds": 5.688,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-19": {
     "textSha256": "708528d5b2fa790b6b6280c1f492ef88db54f7bbf37535bdf6610bac1e117e8e",
@@ -341,7 +425,9 @@
     "bytes": 32400,
     "seconds": 5.4,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-23": {
     "textSha256": "d9eeb098ac36d012a1eeb6d0ca54292af4d6ee3aaed6db01bed3ea91f30b29c2",
@@ -349,7 +435,9 @@
     "bytes": 35424,
     "seconds": 5.904,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-22": {
     "textSha256": "a8ee3dcc5fa6154790e247d3ba6d3eb7b5b8c54d9e089d655431ecbc5db4a5b2",
@@ -357,7 +445,9 @@
     "bytes": 31536,
     "seconds": 5.256,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-21": {
     "textSha256": "87f6e54be5ddee6b24b2bb86b34b43e6159def7ee0a538320041162a480b39eb",
@@ -365,7 +455,9 @@
     "bytes": 34128,
     "seconds": 5.688,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-24": {
     "textSha256": "6565fee3de1d5c77c6ca272897c4cdb10b89a704c94c438b1f0d238b3b0ca521",
@@ -373,7 +465,9 @@
     "bytes": 27792,
     "seconds": 4.632,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-28": {
     "textSha256": "925a5404e5c392765f8465b72fd57822be16e817a99cd334be9ed642718982a5",
@@ -381,7 +475,9 @@
     "bytes": 29664,
     "seconds": 4.944,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-26": {
     "textSha256": "a64fc5691feb8a4aba6509ed30f94abc6f325ac4640f98ae256eb5908d34b8f2",
@@ -389,7 +485,9 @@
     "bytes": 35568,
     "seconds": 5.928,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-25": {
     "textSha256": "105d4cf1d1c9f6aca74dadb65b8967b0e80c956b3a4183e0c3099de57d7132a7",
@@ -397,7 +495,9 @@
     "bytes": 34560,
     "seconds": 5.76,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-27": {
     "textSha256": "51deac5c3ff4b6abc39e386b1b4a70400f735975b9c0e142d97f5632f92ccccb",
@@ -405,7 +505,9 @@
     "bytes": 36576,
     "seconds": 6.096,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-31": {
     "textSha256": "a291f17385d9d26cc2025ce71c310020d53a31b82db36aff0eb7d13c3daf9a7f",
@@ -413,7 +515,9 @@
     "bytes": 34560,
     "seconds": 5.76,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-30": {
     "textSha256": "0526ae5b93757d78fe60a24c681a497429817c653552ee7202eb261ebd8ddafc",
@@ -421,7 +525,9 @@
     "bytes": 32544,
     "seconds": 5.424,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-32": {
     "textSha256": "514cabb871083494879fead4d866021572d64d5df1c7eba91b16925c35830876",
@@ -429,7 +535,9 @@
     "bytes": 30816,
     "seconds": 5.136,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-29": {
     "textSha256": "2638f69a943c5a00fb5715f9d34c2d6c60fbee32bcc821e1c425170640a58121",
@@ -437,7 +545,9 @@
     "bytes": 27648,
     "seconds": 4.608,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-36": {
     "textSha256": "9a479524e79029b094d2b057d4506d801a63ae78a4fa7a1d8f913b3ee272a451",
@@ -445,7 +555,9 @@
     "bytes": 31824,
     "seconds": 5.304,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-33": {
     "textSha256": "7333216cafd8f475dd4b526e0fa6aa21a8a5743ce5a769fc7bbb8c0a15886f5c",
@@ -453,7 +565,9 @@
     "bytes": 34128,
     "seconds": 5.688,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-35": {
     "textSha256": "a0b50b93e016f958e3c29a45adba427d0f51a26731408d8fd3ed99a19121cab6",
@@ -461,7 +575,9 @@
     "bytes": 33552,
     "seconds": 5.592,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-34": {
     "textSha256": "bb8c7ed5ef88176b5950ee95872a09ea5d5d865be02708a3584a6ee5ebfdd0ec",
@@ -469,7 +585,9 @@
     "bytes": 34272,
     "seconds": 5.712,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-38": {
     "textSha256": "e001b8671dd34f1d71517901afdf0da44b8c08808b9e07af827011f2e47326be",
@@ -477,7 +595,9 @@
     "bytes": 32112,
     "seconds": 5.352,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-40": {
     "textSha256": "6fa8a538113c7013f07d1f27ec7bfd4993c41e76c7e18147a9b1198503fdd70b",
@@ -485,7 +605,9 @@
     "bytes": 34848,
     "seconds": 5.808,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-37": {
     "textSha256": "d69068231655a76db54b4edca0688fadecfc366b76e4f0e9438f7dccff3ed13d",
@@ -493,7 +615,9 @@
     "bytes": 29088,
     "seconds": 4.848,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-39": {
     "textSha256": "fb8d2e671ad5a59ee2cbd73542160ef2b24d7b4a939ba23fcd230998f9c6ad1b",
@@ -501,7 +625,9 @@
     "bytes": 37296,
     "seconds": 6.216,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-43": {
     "textSha256": "ca85e51ae7565af1fbac27b9868e0f17817397dcfc00449a8e2c98ffb4f550ec",
@@ -509,7 +635,9 @@
     "bytes": 31536,
     "seconds": 5.256,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-41": {
     "textSha256": "4805757d55b430f3507709efd062c7a2db317cf81228f0ba76bf47890c637cf3",
@@ -517,7 +645,9 @@
     "bytes": 40032,
     "seconds": 6.672,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-44": {
     "textSha256": "166e9212abd2a9b9760aa2484394375cd3daafaa52e82d5c01bddd05335063fc",
@@ -525,7 +655,9 @@
     "bytes": 30096,
     "seconds": 5.016,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-42": {
     "textSha256": "d8e047c137a038817b7600b3e949a0b6b83f44c6b0a04fff0f57ac5cc9d7866b",
@@ -533,7 +665,9 @@
     "bytes": 30960,
     "seconds": 5.16,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-45": {
     "textSha256": "244d3138b10fed26bbde704ff399d3dc662dc59989b984de64293232fe51313c",
@@ -541,7 +675,9 @@
     "bytes": 38160,
     "seconds": 6.36,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-46": {
     "textSha256": "ef387cfffeea5a5ebe08c2eb93df24e24279e9330e28e9c61d22c0138fb81f57",
@@ -549,7 +685,9 @@
     "bytes": 38880,
     "seconds": 6.48,
     "voice": "en-AU-NatashaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-48": {
     "textSha256": "b75f5c1c14114f26c76c80c637bdacd502f989528146785188c8ed66fd51b28a",
@@ -557,7 +695,9 @@
     "bytes": 36432,
     "seconds": 6.072,
     "voice": "en-GB-RyanNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-47": {
     "textSha256": "8b3eb33e3499578bc97a7251a1316a849fe2f14db59057bc44710affa2ad7052",
@@ -565,7 +705,9 @@
     "bytes": 24768,
     "seconds": 4.128,
     "voice": "en-AU-WilliamNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-50": {
     "textSha256": "30d38dbed2d84e255e6198e8ce93880cff5e841b79a59c0ef1858a3149c6b817",
@@ -573,7 +715,9 @@
     "bytes": 35856,
     "seconds": 5.976,
     "voice": "en-US-GuyNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   },
   "wfd-practice-49": {
     "textSha256": "f2f2f841ac457337c3259cffac86846de8cda290f8f152b9abce5c0e0a4cff4a",
@@ -581,6 +725,8 @@
     "bytes": 41904,
     "seconds": 6.984,
     "voice": "en-GB-SoniaNeural",
-    "rate": "-5%"
+    "rate": "-5%",
+    "validationStatus": "validated",
+    "validatedAt": "2026-09-24"
   }
 }

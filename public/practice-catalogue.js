@@ -81,7 +81,7 @@
     return [...readingMocks(reading), ...(writing.mocks || []).map((m, i) => ({
       ...m, engine: 'writing', module: 'writing', mode: 'sectional', number: m.predictionNumber || 100 + i,
       title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0')),
-      description: 'Integrated Writing sectional practice',
+      description: m.category === 'prediction' ? 'Prediction-aligned Writing sectional practice' : 'Integrated Writing sectional practice',
       scope: 'SWT + Essay + SST + WFD'
     }))];
   }
@@ -133,9 +133,15 @@
       doc.querySelectorAll('[data-catalogue-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.catalogueMode === filters.mode)));
       const description = doc.getElementById('catalogue-description');
       description.hidden = false;
-      description.textContent = filters.mode === 'practice'
-        ? 'Focused practice mocks cover a limited task set. They are not full Reading or full PTE mocks.'
-        : 'Sectional mocks practise one integrated module. They do not represent a complete PTE exam.';
+      if (filters.mode === 'practice') {
+        description.textContent = 'Focused practice mocks cover a limited task set. They are not full Reading or full PTE mocks.';
+      } else {
+        const pool=data.writing?.predictionBank;
+        const bankNote=pool && ['all','writing'].includes(filters.module)
+          ? ' Current Writing prediction pool: '+pool.unique.swt+' SWT, '+pool.unique.sst+' SST and '+pool.unique.wfd+' WFD unique items across '+pool.mockCount+' prediction mocks. Repeated prediction items are labelled Revision inside the test.'
+          : '';
+        description.textContent = 'Sectional mocks practise one integrated module. They do not represent a complete PTE exam.' + bankNote;
+      }
     }
     async function openMocks(options = {}) {
       const host = doc.getElementById('mockTestsPane');

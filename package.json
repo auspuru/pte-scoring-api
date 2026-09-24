@@ -13,9 +13,11 @@
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
-    "build": "node scripts/build-frontend.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js",
+    "build": "node scripts/build-frontend.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js",
     "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js",
-    "validate:swt-content": "node scripts/validate-swt-content.js"
+    "validate:swt-content": "node scripts/validate-swt-content.js",
+    "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
+    "validate:content-metadata": "node scripts/validate-content-metadata.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

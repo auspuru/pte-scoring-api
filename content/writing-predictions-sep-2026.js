@@ -8,6 +8,8 @@ const source = {
   provider: 'PTE Nepal',
   week: '21-27 September 2026',
   checkedAt: '2026-09-23',
+  lastReviewed: '2026-09-24',
+  contentStatus: 'adapted',
   swtUrl: 'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/',
   sstUrl: 'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/',
   wfdUrl: 'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/'
