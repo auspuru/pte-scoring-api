@@ -21,6 +21,11 @@
         "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) — this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
         "result": "The $4 trillion annual investment requirement, framed against military spending — this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
       }
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -45,6 +50,11 @@
         "how": "The 23 diagnostic errors — this is the necessary counterweight; without it the summary reads as cheerleading rather than analysis.",
         "result": "The $150 billion annual saving — this quantifies why the question is worth resolving. Without it, the conclusion is moralistic rather than economic."
       }
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -69,6 +79,11 @@
         "how": "Participatory governance — the process-level response. Without it the summary describes physical changes but not how they happen.",
         "result": "Resilient urban ecosystems at the metropolitan scale — the outcome that justifies the effort. Skipping it leaves the summary mid-argument."
       }
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -83,7 +98,12 @@
       "result": "Peer review enables methodological transparency and replication so investigations yield credible evidence advancing knowledge"
     },
     "sampleResponse": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
-    "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words."
+    "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 5,
@@ -103,6 +123,11 @@
       "expectedBand": "Band 9",
       "response": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, as he knew that it was a good idea because he had been there before; moreover, there were many benefits, but few disadvantages; thus, he was trying to persuade his wife that exchanging a warm town house for a windswept farm cottage on a much lower income was a beneficial idea.",
       "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -123,6 +148,11 @@
       "expectedBand": "Band 9",
       "response": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of world's mighty money capital; however, the progress was not completely smooth; moreover, the city dominates foreign exchange trading by holding 70% of the global secondary bond market; furthermore, London is one of the most expensive cities, and its transport systems groan; despite these obstacles, foreigners in finance wants to live here.",
       "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -143,6 +173,11 @@
       "expectedBand": "Band 9",
       "response": "The scientists that were engaged in establishing what the world should expect from climate change have recieved the Nobel peace prize, and Al Gore told the world that it will expect five-metre sea-level rises over this century; moreover, rising temperatures will reduce the number of cold spells, which are a much bigger killer than heat; therefore, global warming will actually save lives.",
       "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -163,6 +198,11 @@
       "expectedBand": "Band 9",
       "response": "Travel and tourism generates a significant percentage of GDP, which can be expected to continue to grow; moreover, jobs created by them employ a huge number of females, minority groups and young individuals, and offer good training and transferability to them; furthermore, tourism acts as a catalyst for conservation and development of the environment and maintenance of local diversity and culture.",
       "purpose": "Regression test for holistic scoring; minor language errors and one omitted secondary point must not automatically block Band 9."
+    },
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
     }
   },
   {
@@ -177,7 +217,12 @@
       "result": "The Oxford computer scientist invented the Web because he was frustrated that he could not find all the information he wanted in one place"
     },
     "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
-    "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words."
+    "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 10,
@@ -191,7 +236,12 @@
       "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
     },
     "sampleResponse": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
-    "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words."
+    "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 11,
@@ -205,7 +255,12 @@
       "result": "They corresponded with Octave Chanute, a civil engineer and aviation authority who supported them through the critical years 1900 to 1905"
     },
     "sampleResponse": "The Wright brothers opened a bicycle shop in 1892 and began building bicycles in 1896; however, profits from this business funded their aeronautical experiments from 1899 to 1905; moreover, news of Lilienthal's death in 1896 sparked their serious interest in flight; therefore, they corresponded with Octave Chanute, an aviation authority who supported them through the critical years from 1900 to 1905.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 61 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 61 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 12,
@@ -219,7 +274,12 @@
       "result": "The notion left a lasting impression and has been commemorated as an important milestone that laid the groundwork for future reforms and feminist thought"
     },
     "sampleResponse": "The concept of the New Woman emerged in Britain and North America, advanced by a writer named Sarah; however, her book emphasized the need to uplift women's status in a male-dominated society; moreover, although her ideas received mixed responses, her advocacy contributed to broader discussions about women's rights; therefore, the notion has been commemorated as a milestone that laid the groundwork for future feminist thought.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 65 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 65 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 13,
@@ -233,7 +293,12 @@
       "result": "Monitoring is expensive and not all volcanoes are covered, so residents who recognise precursor phenomena can alert scientists and help prevent disasters"
     },
     "sampleResponse": "No single event can predict a volcanic eruption, so many events must be monitored together to forecast one; however, each volcano behaves differently and some eruptions occur with no precursors at all; moreover, after the 1980 Mount St. Helens eruption, dedicated monitoring of seismic energy, dome expansion, tilt, and SO2 emissions allowed scientists to predict eruptions with increasing accuracy; therefore, residents who recognise precursor phenomena can alert scientists and help prevent disasters.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 14,
@@ -247,7 +312,12 @@
       "result": "Eventually the market shrinks in the Decline Stage due to saturation or consumers switching, though companies may still profit by adopting cheaper production methods"
     },
     "sampleResponse": "The product life cycle has four stages; the Introduction Stage is expensive with low sales but high R&D and marketing costs; however, the Growth Stage delivers strong sales and profit growth through economies of scale; moreover, the Maturity Stage requires manufacturers to maintain market share through wise marketing and product improvements; therefore, the Decline Stage eventually shrinks the market, though companies may still profit by adopting cheaper production methods.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 69 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 69 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 15,
@@ -261,7 +331,12 @@
       "result": "Many schools have reduced or eliminated handwriting instruction in favour of computers, which is a mistake because handwriting is essential for academic and professional success"
     },
     "sampleResponse": "Handwriting skills have been declining in recent years due to the rising use of technology; however, handwriting is a complex motor and cognitive skill that develops coordination, dexterity, and memory; moreover, good handwriting helps students learn more effectively by enabling them to take notes and express ideas clearly; therefore, schools that have eliminated handwriting instruction in favour of computers are making a mistake because the skill is essential for academic and professional success.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 73 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 73 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 16,
@@ -275,7 +350,12 @@
       "result": "Affordability can be improved by increasing the availability of used and rental textbooks and by using open educational resources that are freely available online"
     },
     "sampleResponse": "Expensive textbooks are a major burden for students, with the average cost rising over 1,000% since the 1970s; however, the high cost is driven by industry consolidation and the frequent release of minor new editions; moreover, these costs force students to choose between textbooks and necessities like food and housing; therefore, affordability can be improved by increasing used and rental textbook availability and by using freely available open educational resources.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 70 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 70 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 17,
@@ -289,7 +369,12 @@
       "result": "Classes can benefit students of all ages and backgrounds, from those being bullied to those feeling stressed or being abused at home"
     },
     "sampleResponse": "Self-defense classes offer many benefits for students, including increased safety, confidence, fitness, and self-discipline; however, they teach students how to protect themselves from attacks, which can reduce bullying in schools; moreover, classes involve physical activity that improves health and teach life skills like respect and conflict resolution; therefore, they can benefit students of all ages, from those being bullied to those feeling stressed or abused at home.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 67 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 67 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 18,
@@ -303,7 +388,12 @@
       "result": "Although off-grid living requires careful planning and preparation, the benefits in health, cost savings, and freedom to live and work as one chooses can be significant"
     },
     "sampleResponse": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, and greater freedom; however, off-grid homes produce their own energy and water, reducing reliance on fossil fuels and lowering carbon footprint; moreover, residents meet their own basic needs such as generating electricity, growing food, and maintaining the home, which builds valuable self-sufficiency skills; therefore, although off-grid living requires careful planning, the benefits can be significant.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 68 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 68 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 19,
@@ -317,7 +407,12 @@
       "result": "Fake news can also harm individuals and businesses by defaming people, damaging reputations, and promoting scams or fraudulent products"
     },
     "sampleResponse": "Fake news is false or misleading information presented as news, which can be spread intentionally or unintentionally; however, social media platforms are particularly vulnerable because they allow users to share information without verification; moreover, fake news can mislead people into bad decisions such as refusing COVID-19 vaccinations and can be used by foreign governments to spread propaganda; therefore, it also harms individuals and businesses by defaming people, damaging reputations, and promoting scams.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   },
   {
     "id": 20,
@@ -331,6 +426,11 @@
       "result": "The book remains one of the most important works in human history, still scientifically valuable more than 150 years after publication"
     },
     "sampleResponse": "In 1837, at age 28, Darwin wrote Species Change in a notebook, the earliest record of his evolutionary ideas after sailing on HMS Beagle; however, he recognised the theory was a radical view with insufficient evidence to publish; moreover, over 20 years he accumulated data and presented his views to a small circle before publishing On the Origin of Species in 1859; therefore, the book remains one of the most important works in human history.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 75 words."
+    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 75 words.",
+    "editorialReview": {
+      "standard": "swt-200-300",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
   }
 ]
