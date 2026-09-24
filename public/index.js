@@ -12184,6 +12184,55 @@ let portalCatalogue = null;
 let portalDraftStore = null;
 let portalDraftTimer = null;
 let portalDraftRevision = 0;
+let readingRuntimeLoadPromise = null;
+
+function loadDeferredScript(src, key) {
+  const existing = document.querySelector('script[data-deferred-module="' + key + '"]');
+  if (existing?.dataset.loaded === 'true') return Promise.resolve();
+  if (existing?._loadPromise) return existing._loadPromise;
+
+  const script = existing || document.createElement('script');
+  script.src = src;
+  script.dataset.deferredModule = key;
+  script.async = false;
+  script._loadPromise = new Promise((resolve, reject) => {
+    script.addEventListener('load', () => {
+      script.dataset.loaded = 'true';
+      resolve();
+    }, { once: true });
+    script.addEventListener('error', () => {
+      script._loadPromise = null;
+      script.remove();
+      reject(new Error('Unable to load ' + key + '.'));
+    }, { once: true });
+  });
+  if (!existing) document.head.appendChild(script);
+  return script._loadPromise;
+}
+
+function ensureReadingRuntimeLoaded() {
+  if (window.ReadingPractice) return Promise.resolve(window.ReadingPractice);
+  if (readingRuntimeLoadPromise) return readingRuntimeLoadPromise;
+
+  readingRuntimeLoadPromise = (async () => {
+    const modules = [
+      ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
+      ['reading-mock-tools.js?v=22', 'reading mock tools'],
+      ['reading-exam-player.js?v=4', 'reading exam player'],
+      ['reading-session-timing.js?v=1', 'reading session timing'],
+      ['reading-review.js?v=10', 'reading review'],
+      ['reading-practice.js?v=20260924-pattern', 'reading practice']
+    ];
+    for (const [src, key] of modules) await loadDeferredScript(src, key);
+    if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
+    return window.ReadingPractice;
+  })().catch(error => {
+    readingRuntimeLoadPromise = null;
+    throw error;
+  });
+
+  return readingRuntimeLoadPromise;
+}
 
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
@@ -12281,11 +12330,41 @@ function switchSection(section, options = {}) {
     openWritingLab(route.labTab, options.labRequest || {});
     return;
   }
+
+  const needsReadingRuntime = route?.pane === 'readingPane' && !window.ReadingPractice;
+  if (needsReadingRuntime) {
+    const host = document.getElementById('readingPane');
+    if (host) host.innerHTML = '<div class="reading-card" role="status">Preparing Reading practice…</div>';
+  }
+
   const active = portalWorkspace.activate(section, options);
+  const activeRoute = PortalWorkspace.routes[active];
+
+  if (needsReadingRuntime) {
+    const request = {
+      mockOnly: active === 'reading',
+      ...options.readingRequest,
+      ...(activeRoute?.readingLibrary ? { libraryId: activeRoute.readingLibrary } : {})
+    };
+    ensureReadingRuntimeLoaded()
+      .then(reading => {
+        if (portalWorkspace.current() === active) reading.open(request);
+      })
+      .catch(error => {
+        if (portalWorkspace.current() !== active) return;
+        const host = document.getElementById('readingPane');
+        if (host) {
+          host.innerHTML = '<div class="reading-card" role="alert">Reading practice could not load. <button type="button" class="portal-button" data-reading-load-retry>Retry</button></div>';
+          host.querySelector('[data-reading-load-retry]')?.addEventListener('click', () => switchSection(active, { ...options, history: 'replace' }), { once: true });
+        }
+        toast(error.message, true);
+      });
+  }
+
   if (active === 'progress') openStudentProgress();
   if (active === 'next-steps') studentInterventionsController?.open();
   if (active === 'practice-hub') portalCatalogue.openPractice();
-  if (PortalWorkspace.routes[active]?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
+  if (activeRoute?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();
     updatePortalResume();
@@ -12298,6 +12377,19 @@ function switchSection(section, options = {}) {
 let studentProgressController;
 let studentInterventionsController = null;
 function openStudentProgress() {
+  if (!window.ReadingPractice) {
+    const pane = document.getElementById('progressPane');
+    if (pane && !pane.children.length) pane.innerHTML = '<div class="dash-card" role="status">Preparing progress history…</div>';
+    return ensureReadingRuntimeLoaded()
+      .then(() => {
+        if (portalWorkspace.current() === 'progress') return openStudentProgress();
+      })
+      .catch(error => {
+        if (portalWorkspace.current() !== 'progress') return;
+        if (pane) pane.innerHTML = '<div class="dash-card" role="alert">Progress history could not load. <button type="button" class="portal-button" onclick="openStudentProgress()">Retry</button></div>';
+        toast(error.message, true);
+      });
+  }
   if (!studentProgressController) studentProgressController = StudentProgress.create({
     document,
     identity: () => ({uid:currentUserId,token:sessionToken}),
