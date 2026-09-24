@@ -18,7 +18,7 @@
     "validate:swt-content": "node scripts/validate-swt-content.js",
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
     "validate:content-metadata": "node scripts/validate-content-metadata.js",
-    "install:browser": "puppeteer browsers install chrome"
+    "install:browser": "node -e \"require('fs').rmSync('.cache/puppeteer/chrome',{recursive:true,force:true})\" && puppeteer browsers install chrome"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
