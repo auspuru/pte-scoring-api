@@ -37,7 +37,10 @@
     if(!response.ok) throw Error(value.error || 'The request could not be completed.');
     return value;
   }
-  function setAttempt(value) { attempt=value; offset=value.serverNow-Date.now(); saveConflict=false; }
+  function setAttempt(value) {
+    attempt=value; offset=value.serverNow-Date.now(); saveConflict=false;
+    if(value?.status==='submitted') (value.questions||[]).forEach(q=>seenQuestionIds.add(q.id));
+  }
   function writeDraft() {
     const editor=document.getElementById('answer');
     if(!attempt || attempt.status!=='active' || !editor) return;
