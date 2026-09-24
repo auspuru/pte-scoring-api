@@ -22,6 +22,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/Material\+Symbols|material-symbols-outlined|Fraunces|Plus\+Jakarta|Plus Jakarta/i);
   assert.match(html,/writing-lab-portal\.css/);
   assert.match(html,/writing-lab-client\.js/);
+  assert.doesNotMatch(lab,/<h1\b/,'Writing Lab uses the application page title instead of nested H1s');
+  assert.doesNotMatch(portal,/<h1 class="essay-title">/,'Essay preview must not add a second application H1');
   for(const [id,label] of [['f_intro','Introduction'],['f_bp1','Body paragraph 1'],['f_bp2','Body paragraph 2'],['f_concl','Conclusion']]) {
     assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
   }
