@@ -698,7 +698,7 @@
     }else if(action==='exam-next')return advanceExam();
     renderSession();host.querySelector('[data-action="exam-stay"]')?.focus();
   }
-  function click(e) {
+  async function click(e) {
     if(!owner||identity()!==owner||!state)return;
     if(expireSession() && viewingQuestion)return;
     // Pearson allows a selected single answer to be clicked again to clear it.
@@ -759,7 +759,10 @@
     if(d.action==='submit'){
       const unfinished=s.questions.filter(item=>mock.isAudio(item)&&s.audioStates[item.uid]?.status!=='complete').length;
       const message=unfinished ? unfinished+' recording'+(unfinished===1?' has':'s have')+' not finished. Those answers will be unassessed if you finish now. Keep listening or replay the audio to include them in your score. Finish anyway?' : 'Finish this reading session and show the answers?';
-      if(!unfinished || confirm(message))finish();return;
+      const accepted=!unfinished || await (typeof globalThis.portalConfirm==='function'
+        ? globalThis.portalConfirm(message,{title:'Finish reading session',confirmLabel:'Finish and review'})
+        : Promise.resolve(true));
+      if(accepted)finish();return;
     }
     if(!editable())return;
     if(testing&&q.type==='reorder'){
