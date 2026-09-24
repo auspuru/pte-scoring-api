@@ -206,12 +206,14 @@ function fn(name) {
   return source.slice(start, source.indexOf('\n}', start) + 2);
 }
 test('The Home resume banner does not depend on the removed duplicate essay card', () => {
-  const nodes = Object.fromEntries(['portalResume', 'portalResumeTitle', 'portalResumeDetail'].map(id => [id, {}]));
-  const ctx = { document: { getElementById: id => nodes[id] }, portalDraftStore: null, currentUserId: 'tester',
-    practiceState: { view: 'write', essayText: 'Saved response', questionText: 'Question', questionTitle: 'Topic' }, countWords: () => 2 };
-  vm.createContext(ctx); vm.runInContext(fn('updatePortalResume') + ';updatePortalResume();', ctx);
+  const nodes = Object.fromEntries(['portalResume', 'portalResumeTitle', 'portalResumeDetail', 'portalPracticeResume'].map(id => [id, {}]));
+  nodes.portalResumeButton = { firstChild: { textContent: '' } };
+  const ctx = { document: { getElementById: id => nodes[id] }, portalResumeTarget: null };
+  vm.createContext(ctx);
+  vm.runInContext(fn('applyPortalResumeCandidate') + ';applyPortalResumeCandidate({engine:"essay",title:"Essay draft",detail:"Topic",subdetail:"2 words saved"});', ctx);
   assert.equal(nodes.portalResume.hidden, false);
   assert.match(nodes.portalResumeDetail.textContent, /Topic/);
+  assert.equal(nodes.portalPracticeResume.hidden, false);
 });
 test('Returning to a running assessment or an existing editor does not reset or render over it', () => {
   for (const view of ['write', 'loading', 'results']) {
