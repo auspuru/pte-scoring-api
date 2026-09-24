@@ -10317,6 +10317,32 @@ function toast(msg, isError) {
 //  LEARN VOCABULARY
 // ============================================================
 let currentVocabCategory = null;
+let vocabMasterLoadPromise = null;
+
+function ensureMasterVocabLoaded() {
+  if (typeof VOCAB_1000 !== 'undefined') return Promise.resolve(VOCAB_1000);
+  if (vocabMasterLoadPromise) return vocabMasterLoadPromise;
+
+  vocabMasterLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'vocab_1000.js?v=1';
+    script.dataset.vocabMaster = 'true';
+    script.onload = () => {
+      if (typeof VOCAB_1000 === 'undefined') {
+        reject(new Error('Vocabulary bank loaded without data.'));
+        return;
+      }
+      resolve(VOCAB_1000);
+    };
+    script.onerror = () => reject(new Error('Vocabulary bank could not be loaded.'));
+    document.head.appendChild(script);
+  }).catch(error => {
+    vocabMasterLoadPromise = null;
+    throw error;
+  });
+
+  return vocabMasterLoadPromise;
+}
 
 function openVocab(options = {}) {
   savePortalEssayDraft();
@@ -10512,6 +10538,19 @@ function renderVocabMain() {
   if (!main) return;
 
   if (currentVocabCategory === 'master1000') {
+    if (typeof VOCAB_1000 === 'undefined') {
+      main.innerHTML = '<div class="vocab-loading" role="status">Loading the 1000-word vocabulary bank…</div>';
+      ensureMasterVocabLoaded()
+        .then(() => {
+          if (currentVocabCategory === 'master1000') renderMaster1000Vocab();
+        })
+        .catch(error => {
+          if (currentVocabCategory !== 'master1000') return;
+          main.innerHTML = '<div class="vocab-loading" role="alert">The vocabulary bank could not load. <button type="button" class="tb-text-btn" onclick="renderVocabMain()">Retry</button></div>';
+          toast(error.message, true);
+        });
+      return;
+    }
     renderMaster1000Vocab();
     return;
   }
