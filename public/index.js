@@ -12185,6 +12185,7 @@ let portalDraftStore = null;
 let portalDraftTimer = null;
 let portalDraftRevision = 0;
 let readingRuntimeLoadPromise = null;
+let speakingRuntimeLoadPromise = null;
 
 function loadDeferredScript(src, key) {
   const existing = document.querySelector('script[data-deferred-module="' + key + '"]');
@@ -12232,6 +12233,23 @@ function ensureReadingRuntimeLoaded() {
   });
 
   return readingRuntimeLoadPromise;
+}
+
+function ensureSpeakingRuntimeLoaded() {
+  if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
+  if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
+
+  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20260923-nextsteps', 'speaking practice')
+    .then(() => {
+      if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
+      return window.SpeakingPractice;
+    })
+    .catch(error => {
+      speakingRuntimeLoadPromise = null;
+      throw error;
+    });
+
+  return speakingRuntimeLoadPromise;
 }
 
 function initialisePortalWorkspace() {
@@ -12332,9 +12350,14 @@ function switchSection(section, options = {}) {
   }
 
   const needsReadingRuntime = route?.pane === 'readingPane' && !window.ReadingPractice;
+  const needsSpeakingRuntime = !!route?.speakingType && !window.SpeakingPractice;
   if (needsReadingRuntime) {
     const host = document.getElementById('readingPane');
     if (host) host.innerHTML = '<div class="reading-card" role="status">Preparing Reading practice…</div>';
+  }
+  if (needsSpeakingRuntime) {
+    const host = document.getElementById('speakingPane');
+    if (host) host.innerHTML = '<div class="speaking-card" role="status">Preparing Speaking practice…</div>';
   }
 
   const active = portalWorkspace.activate(section, options);
@@ -12356,6 +12379,22 @@ function switchSection(section, options = {}) {
         if (host) {
           host.innerHTML = '<div class="reading-card" role="alert">Reading practice could not load. <button type="button" class="portal-button" data-reading-load-retry>Retry</button></div>';
           host.querySelector('[data-reading-load-retry]')?.addEventListener('click', () => switchSection(active, { ...options, history: 'replace' }), { once: true });
+        }
+        toast(error.message, true);
+      });
+  }
+
+  if (needsSpeakingRuntime) {
+    ensureSpeakingRuntimeLoaded()
+      .then(speaking => {
+        if (portalWorkspace.current() === active) speaking.open(activeRoute.speakingType, options.speakingRequest?.questionId);
+      })
+      .catch(error => {
+        if (portalWorkspace.current() !== active) return;
+        const host = document.getElementById('speakingPane');
+        if (host) {
+          host.innerHTML = '<div class="speaking-card" role="alert">Speaking practice could not load. <button type="button" class="portal-button" data-speaking-load-retry>Retry</button></div>';
+          host.querySelector('[data-speaking-load-retry]')?.addEventListener('click', () => switchSection(active, { ...options, history: 'replace' }), { once: true });
         }
         toast(error.message, true);
       });
