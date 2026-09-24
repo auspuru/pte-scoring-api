@@ -26,7 +26,7 @@
 <link rel="icon" type="image/png" href="/assets/ipt-brisbane-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="index.css?v=20.4.18">
 <link rel="stylesheet" href="utility.css?v=1">
@@ -56,6 +56,8 @@
             opacity: 0.15;
         }
 </style>
+<script src="/auth-boot.js?v=20260924-accessibility" defer></script>
+<script src="/portal-accessibility.js?v=20260924-accessibility" defer></script>
 <script src="swt-feedback.js?v=20260924-local" defer></script>
 <script src="essay-attempt-sync.js?v=20.3.6" defer></script>
 <script src="account-progress.js?v=1" defer></script>
@@ -68,7 +70,7 @@
 <script src="/pte-estimate-display.js?v=1" defer></script>
 <script src="/student-progress.js?v=20260924-wrapup" defer></script>
 <script src="/interventions-client.js?v=5" defer></script>
-<script src="index.js?v=20260924-wrapup" defer></script>
+<script src="index.min.js?v=20260924-accessibility" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/student-progress.css?v=1">
 <link rel="stylesheet" href="/interventions.css?v=4">
@@ -94,7 +96,7 @@
       <h1 class="login-title">Welcome back</h1>
       <p class="login-sub">Sign in to practice SWT and essays</p>
       <div class="login-error" id="loginError" role="alert"></div>
-      <form onsubmit="event.preventDefault(); if (typeof handleLoginSubmit === 'function') { handleLoginSubmit(event); } else { const error = document.getElementById('loginError'); error.textContent = 'Sign-in has not finished loading. Please refresh this page and try again.'; error.style.display = 'block'; }">
+      <form id="loginSubmitForm">
         <div class="login-field">
           <label for="loginUsername">Username</label>
           <input type="text" id="loginUsername" autocomplete="username" required placeholder="your username">
@@ -115,7 +117,7 @@
 
     <!-- Register form -->
     <div id="registerForm" style="display:none;">
-      <h1 class="login-title">Create account</h1>
+      <h2 class="login-title">Create account</h2>
       <p class="login-sub">Track your summary and essay scores</p>
       <div class="login-error" id="registerError" role="alert"></div>
       <form onsubmit="handleRegisterSubmit(event)">
@@ -129,22 +131,7 @@
         </div>
         <div class="login-field">
           <label for="regPassword">Password</label>
-          <input type="password" id="regPassword" autocomplete="new-password" required minlength="4" placeholder="min 4 characters">
-        </div>
-        <div class="login-field">
-          <label for="regSecretQ">Security question</label>
-          <select id="regSecretQ">
-            <option value="pet">What was the name of your first pet?</option>
-            <option value="school">What primary school did you attend?</option>
-            <option value="city">What city were you born in?</option>
-            <option value="mother">What is your mother's maiden name?</option>
-            <option value="food">What is your favourite food?</option>
-            <option value="friend">What was your childhood best friend's name?</option>
-          </select>
-        </div>
-        <div class="login-field">
-          <label for="regSecretA">Answer</label>
-          <input type="text" id="regSecretA" required placeholder="for password recovery">
+          <input type="password" id="regPassword" autocomplete="new-password" required minlength="8" placeholder="minimum 8 characters">
         </div>
         <button type="submit" class="login-submit" id="regSubmitBtn">Create account</button>
       </form>
@@ -155,36 +142,19 @@
 
     <!-- Forgot Password form -->
     <div id="forgotPasswordForm" style="display:none;">
-      <h1 class="login-title">Reset password</h1>
+      <h2 class="login-title">Reset password</h2>
       <p class="login-sub">Recover your account credentials</p>
       <div class="login-error" id="forgotPasswordError" role="alert"></div>
       
       <!-- Step 1: Find Username -->
-      <form id="forgotPassFormStep1" onsubmit="handleRequestSecretQuestion(event)">
+      <form id="emailResetRequestForm">
         <div class="login-field">
-          <label for="forgotUsername">Username</label>
-          <input type="text" id="forgotUsername" required placeholder="your username">
+          <label for="forgotUsername">Username or email</label>
+          <input type="text" id="forgotUsername" autocomplete="username" required placeholder="your username or email">
         </div>
-        <button type="submit" class="login-submit" id="forgotStep1Btn">Continue</button>
+        <button type="submit" class="login-submit" id="forgotStep1Btn">Email reset link</button>
+        <p id="forgotPasswordNotice" class="login-sub" role="status" aria-live="polite"></p>
       </form>
-      
-      <!-- Step 2: Answer & Reset (Initially Hidden) -->
-      <form id="forgotPassFormStep2" style="display:none;" onsubmit="handleResetPasswordSubmit(event)">
-        <div class="login-field">
-          <label>Security Question</label>
-          <div id="forgotQuestionDisplay" style="font-size: 13.5px; color: var(--ink); margin-bottom: 12px; font-weight: 500; padding: 11px 14px; background: rgba(99, 102, 241, 0.06); border-radius: 8px; border: 1px solid var(--line); line-height: 1.4;"></div>
-        </div>
-        <div class="login-field">
-          <label for="forgotAnswer">Answer</label>
-          <input type="text" id="forgotAnswer" required placeholder="your security answer">
-        </div>
-        <div class="login-field">
-          <label for="forgotNewPassword">New Password</label>
-          <input type="password" id="forgotNewPassword" required minlength="4" placeholder="min 4 characters">
-        </div>
-        <button type="submit" class="login-submit" id="forgotStep2Btn">Reset password</button>
-      </form>
-      
       <div class="login-toggle">
         Remembered your password? <button type="button" class="login-text-link" onclick="toggleForgotPasswordMode(false)">Sign in</button>
       </div>
@@ -211,7 +181,7 @@
         <button class="nav-item active" id="nav-dashboard" onclick="switchSection('dashboard')"><span class="nav-icon material-symbols-outlined text-[22px]">dashboard</span><span>Home</span></button>
         <button class="nav-item" id="nav-practice-hub" onclick="switchSection('practice-hub')"><span class="nav-icon material-symbols-outlined text-[22px]">menu_book</span><span>Practice</span></button>
         <button class="nav-item" id="nav-mock-tests" onclick="switchSection('mock-tests')"><span class="nav-icon material-symbols-outlined text-[22px]">quiz</span><span>Mock Tests</span></button>
-        <button class="nav-item" id="nav-next-steps" onclick="switchSection('next-steps')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">assignment_turned_in</span><span>My Next Steps</span></button>
+        <button class="nav-item" id="nav-next-steps" onclick="switchSection('next-steps')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">assignment_turned_in</span><span>From your teacher</span></button>
         <button class="nav-item" id="nav-progress" onclick="switchSection('progress')"><span class="nav-icon material-symbols-outlined text-[22px]" aria-hidden="true">monitoring</span><span>My Progress</span></button>
       </div>
       <div class="nav-group" aria-labelledby="navGroupReview">
@@ -277,7 +247,7 @@
     <div class="panes-container" id="portalContent" role="main" tabindex="-1">
 
       <section id="practiceHubPane" class="pane" hidden aria-label="Individual question practice"></section>
-      <section id="nextStepsPane" class="pane" hidden aria-label="My Next Steps"></section>
+      <section id="nextStepsPane" class="pane" hidden aria-label="From your teacher"></section>
       <section id="progressPane" class="pane" hidden aria-label="My Progress"></section>
       <section id="mockTestsPane" class="pane" hidden aria-label="Mock tests"></section>
 
@@ -295,6 +265,13 @@
           </div>
         </div>
 
+        <section class="home-next-card" id="homeNextCard" aria-label="What to do next">
+          <div class="home-next-heading"><span class="portal-eyebrow">Up next</span><h3>What to do next</h3></div>
+        <div class="portal-resume" id="portalResume" hidden>
+          <div><span class="portal-eyebrow">Ready when you are</span><strong id="portalResumeTitle">Your essay draft is here</strong><p id="portalResumeDetail">Continue from where you left off.</p></div>
+          <button type="button" class="portal-button primary" id="portalResumeButton" onclick="resumePortalActivity()">Continue activity <span aria-hidden="true">→</span></button>
+        </div>
+        <div id="nextStepsDashboardCard" class="next-step-dashboard" hidden></div>
         <section class="today-plan-card" id="todayPlanCard" aria-labelledby="todayPlanTitle">
           <div class="today-plan-head">
             <div>
@@ -307,11 +284,7 @@
           <div class="today-plan-actions" id="todayPlanActions" aria-live="polite"></div>
         </section>
 
-        <div class="portal-resume" id="portalResume" hidden>
-          <div><span class="portal-eyebrow">Ready when you are</span><strong id="portalResumeTitle">Your essay draft is here</strong><p id="portalResumeDetail">Continue from where you left off.</p></div>
-          <button type="button" class="portal-button primary" id="portalResumeButton" onclick="resumePortalActivity()">Continue activity <span aria-hidden="true">→</span></button>
-        </div>
-        <div id="nextStepsDashboardCard" class="next-step-dashboard" hidden></div>
+        </section>
         <div class="portal-task-grid" aria-label="Choose your study mode">
           <button type="button" class="portal-task portal-task-swt" onclick="switchSection('practice-hub')">
             <span class="portal-task-top"><span class="material-symbols-outlined" aria-hidden="true">menu_book</span><span>Individual questions</span></span>
@@ -409,7 +382,7 @@
               <div class="dash-card action-items-card" id="dashActionCard" style="justify-content: flex-start; gap: 0;">
                 <div class="dash-card-header" style="margin-bottom: 8px;">
                   <span class="dash-card-icon">⚡</span>
-                  <span class="dash-card-title">Recommended Next Steps</span>
+                  <span class="dash-card-title">Practice suggestions</span>
                 </div>
                 <div class="action-items-list" id="dashActionItems">
                   <!-- Dynamically populated via JS -->
@@ -811,7 +784,7 @@
                       <button class="regen-btn" onclick="regenerateParagraph('intro')">↻ Rewrite</button>
                     </div>
                   </div>
-                  <textarea class="field-textarea essay" id="f_intro" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('intro')"></textarea>
+                  <textarea class="field-textarea essay" id="f_intro" aria-label="Introduction" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('intro')"></textarea>
                   <div class="sentence-list" id="sentences_intro"></div>
                 </div>
                 <div class="field">
@@ -822,7 +795,7 @@
                       <button class="regen-btn" onclick="regenerateParagraph('bp1')">↻ Rewrite</button>
                     </div>
                   </div>
-                  <textarea class="field-textarea essay" id="f_bp1" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp1')"></textarea>
+                  <textarea class="field-textarea essay" id="f_bp1" aria-label="Body paragraph 1" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp1')"></textarea>
                   <div class="sentence-list" id="sentences_bp1"></div>
                 </div>
                 <div class="field">
@@ -833,7 +806,7 @@
                       <button class="regen-btn" onclick="regenerateParagraph('bp2')">↻ Rewrite</button>
                     </div>
                   </div>
-                  <textarea class="field-textarea essay" id="f_bp2" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp2')"></textarea>
+                  <textarea class="field-textarea essay" id="f_bp2" aria-label="Body paragraph 2" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('bp2')"></textarea>
                   <div class="sentence-list" id="sentences_bp2"></div>
                 </div>
                 <div class="field">
@@ -844,7 +817,7 @@
                       <button class="regen-btn" onclick="regenerateParagraph('concl')">↻ Rewrite</button>
                     </div>
                   </div>
-                  <textarea class="field-textarea essay" id="f_concl" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('concl')"></textarea>
+                  <textarea class="field-textarea essay" id="f_concl" aria-label="Conclusion" oninput="saveCurrent(); renderPreview(); updateCounters(); renderSentenceList('concl')"></textarea>
                   <div class="sentence-list" id="sentences_concl"></div>
                 </div>
                 <button class="gen-btn" onclick="aiGenerate('all')" style="margin-top:8px;">+ Re-extract outline from essay</button>
@@ -1308,11 +1281,16 @@
       <button class="tb-text-btn" onclick="exportData()">Download a backup</button>
       <button class="tb-text-btn" onclick="importData()">Restore a backup</button>
       <button class="tb-text-btn" onclick="updateUserEmail()">✉ Update email address</button>
+      <form id="updateEmailForm" hidden onsubmit="submitUserEmailUpdate(event)" class="account-inline-form">
+        <label class="field"><span class="field-label">Email address</span><input class="field-input" id="accountEmailInput" type="email" autocomplete="email" required></label>
+        <p id="accountEmailStatus" role="status" aria-live="polite"></p>
+        <button type="submit" class="tb-text-btn dark">Save email</button>
+      </form>
       <button class="tb-text-btn" onclick="changePassword()">🔑 Change password</button>
       <form id="changePasswordForm" hidden onsubmit="submitPasswordChange(event)" style="padding:12px; border:1px solid var(--line-soft); border-radius:10px; background:var(--bg-list);">
         <label class="field"><span class="field-label">Current password</span><input class="field-input" id="changeCurrentPassword" type="password" autocomplete="current-password" required></label>
-        <label class="field" style="margin-top:8px;"><span class="field-label">New password</span><input class="field-input" id="changeNewPassword" type="password" autocomplete="new-password" minlength="4" required></label>
-        <label class="field" style="margin-top:8px;"><span class="field-label">Confirm new password</span><input class="field-input" id="changeConfirmPassword" type="password" autocomplete="new-password" minlength="4" required></label>
+        <label class="field" style="margin-top:8px;"><span class="field-label">New password</span><input class="field-input" id="changeNewPassword" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label class="field" style="margin-top:8px;"><span class="field-label">Confirm new password</span><input class="field-input" id="changeConfirmPassword" type="password" autocomplete="new-password" minlength="8" required></label>
         <p id="changePasswordStatus" role="status" aria-live="polite" style="font-size:11px; color:var(--ink-mute); margin:8px 0;"></p>
         <button type="submit" class="tb-text-btn dark" id="changePasswordSubmit">Update password</button>
       </form>
