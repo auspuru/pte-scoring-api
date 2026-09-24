@@ -58,3 +58,13 @@ test('Saved-session checks validate the token and successful auth is not mislabe
   assert.match(client, /bootAuthRevision !== authFlowRevision/);
   assert.match(client, /localStorage\.removeItem\('pte_session_token'\)/);
 });
+
+
+test('Authentication falls back to session storage when local storage quota is exhausted', () => {
+  const client = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
+  assert.match(client, /function setAuthStorageValue\(key, value\)/);
+  assert.match(client, /sessionStorage\.setItem\(key, value\)/);
+  assert.match(client, /sessionStorage wins when localStorage is full/);
+  assert.doesNotMatch(client, /localStorage\.setItem\('pte_session_token', d\.token\)/);
+  assert.match(client, /getAuthStorageValue\('pte_session_token'\)/);
+});

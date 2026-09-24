@@ -422,12 +422,47 @@ function cleanAndParseJSON(text) {
   }
 }
 
+
+function getAuthStorageValue(key) {
+  // sessionStorage wins when localStorage is full and contains a stale value.
+  try {
+    const sessionValue = sessionStorage.getItem(key);
+    if (sessionValue) return sessionValue;
+  } catch (_) { /* keep going */ }
+  try { return localStorage.getItem(key) || ''; }
+  catch (_) { return ''; }
+}
+
+function setAuthStorageValue(key, value) {
+  // Prefer durable localStorage, but authentication must never fail simply
+  // because practice/history data has filled the browser's local quota.
+  try {
+    localStorage.setItem(key, value);
+    try { sessionStorage.removeItem(key); } catch (_) {}
+    return 'local';
+  } catch (error) {
+    console.warn('[auth] localStorage unavailable/full; using sessionStorage for', key, error?.name || error);
+    try {
+      sessionStorage.setItem(key, value);
+      return 'session';
+    } catch (sessionError) {
+      console.warn('[auth] sessionStorage unavailable; keeping auth in memory for this page.', sessionError?.name || sessionError);
+      return 'memory';
+    }
+  }
+}
+
+function removeAuthStorageValue(key) {
+  try { localStorage.removeItem(key); } catch (_) {}
+  try { sessionStorage.removeItem(key); } catch (_) {}
+}
+
 const LocalStore = {
   get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
   remove(k){ try{ localStorage.removeItem(k); return true; }catch(e){ return false; } },
-  getUserId(){ return localStorage.getItem('pte_user_id') || ''; },
-  setUserId(id){ try{ localStorage.setItem('pte_user_id', id); }catch(e){} }
+  getUserId(){ return getAuthStorageValue('pte_user_id'); },
+  setUserId(id){ if (id) return setAuthStorageValue('pte_user_id', id); removeAuthStorageValue('pte_user_id'); return 'cleared'; }
 };
 
 // Account names are stored lowercase by the API.  Always use that canonical
@@ -766,7 +801,7 @@ async function handleLoginSubmit(ev) {
   }
 
   sessionToken = d.token;
-  localStorage.setItem('pte_session_token', d.token);
+  setAuthStorageValue('pte_session_token', d.token);
   try {
     await enterApp(d.user?.username || canonicalClientUserId(u));
   } catch (e) {
@@ -837,7 +872,7 @@ async function handleRegisterSubmit(ev) {
   }
 
   sessionToken = d.token;
-  localStorage.setItem('pte_session_token', d.token);
+  setAuthStorageValue('pte_session_token', d.token);
   try {
     await enterApp(d.user?.username || canonicalClientUserId(u));
   } catch (e) {
@@ -879,7 +914,7 @@ function signOut() {
   practiceState = emptyPracticeState();
   currentUserId = '';
   sessionToken = '';
-  localStorage.removeItem('pte_session_token');
+  removeAuthStorageValue('pte_session_token');
   sessionStorage.removeItem('pte_impersonate_token');
   LocalStore.setUserId('');
   userProfile = null;
@@ -12308,7 +12343,7 @@ async function initApp() {
     return;
   }
 
-  const savedSessionToken = localStorage.getItem('pte_session_token') || '';
+  const savedSessionToken = getAuthStorageValue('pte_session_token');
   sessionToken = savedSessionToken;
   if (!savedSessionToken) {
     showLogin();
@@ -12348,7 +12383,7 @@ async function initApp() {
   if (verdict === 'login') {
     showLoading(false);
     LocalStore.setUserId('');
-    localStorage.removeItem('pte_session_token');
+    removeAuthStorageValue('pte_session_token');
     if (sessionToken === savedSessionToken) sessionToken = '';
     showLogin();
   } else {
@@ -13110,7 +13145,7 @@ initApp();
 // Boot a minimal state IMMEDIATELY so the login screen can render only if no saved session
 const urlParams = new URLSearchParams(window.location.search);
 const hasImpersonate = urlParams.get('impersonate') || sessionStorage.getItem('pte_impersonate_token');
-if (!hasImpersonate && (!LocalStore.getUserId() || !localStorage.getItem('pte_session_token'))) {
+if (!hasImpersonate && (!LocalStore.getUserId() || !getAuthStorageValue('pte_session_token'))) {
   showLogin();
 }
 
