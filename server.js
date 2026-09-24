@@ -770,7 +770,7 @@ const PgStorage = {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
         essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
-        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}
+        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}, studyPlan: {}
       };
     }
     const u = rows[0].data || {};
@@ -779,7 +779,7 @@ const PgStorage = {
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
       quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
       practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || '',
-      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}
+      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}, studyPlan: u.studyPlan || {}
     };
   },
   async setUserData(userId, userData) {
@@ -806,6 +806,8 @@ const PgStorage = {
         currentId: incoming.currentId !== undefined ? incoming.currentId : (existing.currentId || null),
         quotaUsed: incoming.quotaUsed !== undefined ? incoming.quotaUsed : (existing.quotaUsed || {}),
         quotaDate: incoming.quotaDate !== undefined ? incoming.quotaDate : (existing.quotaDate || ""),
+        studyPlan: Number(incoming.studyPlan?.updatedAt || 0) >= Number(existing.studyPlan?.updatedAt || 0)
+          ? (incoming.studyPlan || existing.studyPlan || {}) : (existing.studyPlan || {}),
         practiceHistory: mergedPracticeHistory,
         practiceHistoryDeleted: deleted
       };
@@ -896,7 +898,7 @@ const JsonStorage = {
       return {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
         essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
-        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}
+        practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}, studyPlan: {}
       };
     }
     return {
@@ -904,7 +906,7 @@ const JsonStorage = {
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
       quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
       practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || '',
-      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}
+      readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}, studyPlan: u.studyPlan || {}
     };
   },
   
@@ -923,6 +925,7 @@ const JsonStorage = {
     u.currentId = userData.currentId !== undefined ? userData.currentId : (u.currentId || null);
     u.quotaUsed = userData.quotaUsed !== undefined ? userData.quotaUsed : (u.quotaUsed || {});
     u.quotaDate = userData.quotaDate !== undefined ? userData.quotaDate : (u.quotaDate || "");
+    if (Number(userData.studyPlan?.updatedAt || 0) >= Number(u.studyPlan?.updatedAt || 0)) u.studyPlan = userData.studyPlan || u.studyPlan || {};
     const deleted = mergeDeleted(u.practiceHistoryDeleted, userData.practiceHistoryDeleted);
     u.practiceHistory = mergeHistory(u.practiceHistory, userData.practiceHistory, deleted);
     u.practiceHistoryDeleted = deleted;
