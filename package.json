@@ -13,7 +13,8 @@
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
-    "build": "node scripts/build-frontend.js"
+    "build": "node scripts/build-frontend.js && node scripts/validate-prediction-swt-samples.js",
+    "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
