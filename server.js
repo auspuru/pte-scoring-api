@@ -169,6 +169,13 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 app.set('trust proxy', 1);
 
 // ─── SERVE STATIC FILES (Railway deployment) ─────────────────────────────────
+// Writing Lab runtime assets must never be served stale inside the embedded iframe.
+app.get(['/writing-lab-client.js','/writing-lab.html'], (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.sendFile(path.join(__dirname, 'public', req.path.slice(1)));
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/essay-attempt-sync.js', (req, res) => res.sendFile(path.join(__dirname, 'essay-attempt-sync.js')));
 

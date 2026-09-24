@@ -12507,7 +12507,7 @@ function openWritingLab(tab = 'mocks', options = {}) {
     frame.dataset.writingLabLoaded = 'true';
     if (frame.dataset.writingLabRequest) send();
   }, { once: true });
-  frame.src = '/writing-mocks?embedded=1';
+  frame.src = '/writing-mocks?embedded=1&v=20260924-runtimefix';
 }
 
 function resetWritingLabFrame() {

@@ -40,7 +40,7 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
           entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
     }
-    const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95 };
+    const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95, preferLocal:!!q.predictionSource };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }
@@ -60,11 +60,12 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
 }
 function installNarration(app, directory) {
   const narration=createNarration(directory,async input=>{
+    if(input.preferLocal) return createLocalNarration(input);
     if(process.env.OPENAI_API_KEY) {
       try {
         const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
           headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
-          body:JSON.stringify(input),signal:AbortSignal.timeout(60000)});
+          body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed}),signal:AbortSignal.timeout(60000)});
         if(response.ok) return Buffer.from(await response.arrayBuffer());
         console.warn('[writing-audio] Remote narration returned HTTP '+response.status+'; using local narrator.');
       } catch (error) {
