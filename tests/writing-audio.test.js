@@ -5,10 +5,11 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const express = require('express');
-const { createNarration, installNarration, normalizeMp3, prewarmNarration } = require('../writing-lab-audio');
+const { createNarration, installNarration, normalizeMp3, createAmbiencePcm, prewarmNarration } = require('../writing-lab-audio');
 const { validateWritingAudio, inspectMp3 } = require('../scripts/validate-writing-audio');
 const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
+const userSst = require('../content/user-sst-predictions');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
 const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
 const bundledQuestions = questions.filter(q => q.audioMode !== 'runtime-neural');
@@ -58,7 +59,7 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
 });
 
 
-test('User SST predictions keep verbatim source text while audio adds only light human hesitations', async t => {
+test('User SST predictions preserve verbatim source text while audio adds varied human delivery and restrained distractors', async t => {
   assert.equal(runtimeQuestions.length, 13);
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-neural-audio-'));
   t.after(() => fs.rm(cache, { recursive: true, force: true }));
@@ -73,20 +74,30 @@ test('User SST predictions keep verbatim source text while audio adds only light
   assert(['nova','onyx','shimmer','echo'].includes(seen[0].voice));
   assert.equal(seen[0].speed,0.94);
   assert.equal(seen[0].instructions,'');
+  assert.deepEqual(seen[0].ambience,q.audioAmbience);
   assert.equal(seen[0].requireNeural,true);
   assert.match(seen[0].input,/\n\n/);
 
-  const tokens=value=>String(value).match(/[\p{L}\p{N}]+/gu) || [];
-  for (const item of runtimeQuestions) {
-    const narrationTokens=tokens(item.narrationText);
-    const fillers=narrationTokens.filter(token=>/^(?:um|uh)$/i.test(token));
-    assert(fillers.length>=1 && fillers.length<=2,item.id+' should have only one or two human hesitations');
-    assert.deepEqual(
-      narrationTokens.filter(token=>!/^(?:um|uh)$/i.test(token)),
-      tokens(item.text),
-      item.id+' narration must preserve every supplied transcript word in order'
-    );
+  const ambienceTypes=new Set();
+  for (const [index,item] of runtimeQuestions.entries()) {
+    const edits=userSst.deliveryEdits[index] || [];
+    assert(edits.length>=2 && edits.length<=4,item.id+' should have two to four natural delivery edits');
+    let restored=item.narrationText;
+    for (const [anchor,filler] of edits) {
+      const spoken=filler+' '+anchor;
+      assert(restored.includes(spoken),item.id+' should include its planned delivery edit');
+      restored=restored.replace(spoken,anchor);
+    }
+    assert.equal(restored,userSst.naturalNarration(item.text),item.id+' must keep the supplied transcript unchanged beneath audio-only delivery edits');
+
+    assert(Array.isArray(item.audioAmbience),item.id+' ambience must be explicit');
+    assert(item.audioAmbience.length<=2,item.id+' should have at most two subtle environmental distractors');
+    for(const effect of item.audioAmbience) ambienceTypes.add(effect.type);
   }
+  assert(ambienceTypes.has('room'));
+  assert(ambienceTypes.has('clock'));
+  assert(ambienceTypes.has('paper'));
+  assert(runtimeQuestions.some(item=>item.audioAmbience.length===0),'some lectures should stay acoustically clean');
 });
 
 test('A cache processing upgrade reuses the paid recording instead of calling the provider again', async t => {
@@ -128,6 +139,20 @@ test('A named prior cache version is reprocessed without another TTS call', asyn
   assert.equal(providerCalls,1);
   assert.equal(processCalls,1);
   assert.equal((await fs.readFile(upgradedFile)).length,2001);
+});
+
+test('Lecture ambience stays subtle and mixes into a valid HD master', async () => {
+  const room=createAmbiencePcm(5,[{type:'room'},{type:'clock',start:1,duration:2},{type:'paper',at:3}]);
+  const peak=room.reduce((max,value)=>Math.max(max,Math.abs(value)),0);
+  assert(peak<600,'background effects must remain far below normal speech peaks');
+
+  const q=bundledQuestions.find(item=>item.type==='wfd');
+  const sourceBytes=await fs.readFile(path.join(directory,q.id+'.mp3'));
+  const mixed=await normalizeMp3(sourceBytes,{ambience:[{type:'clock',start:1,duration:2},{type:'paper',at:3}]});
+  const inspected=inspectMp3(mixed);
+  assert.equal(inspected.valid,true);
+  assert.equal(inspected.sampleRate,48000);
+  assert.equal(inspected.bitrate,192000);
 });
 
 test('Runtime narration cleanup returns a clean HD speech MP3', async () => {
