@@ -76,8 +76,13 @@ test('Prediction mocks preserve essays and use only September 2026 prediction ta
     for(const q of mock.questions.filter(q=>q.type!=='essay')){
       assert(q.id.startsWith('pred26-'),q.id+' must come from the prediction bank');
       assert(allowed[q.type].has(q.id),q.id+' is not in the current prediction bank');
-      assert.equal(q.predictionSource.provider,'PTE Nepal');
-      assert.equal(q.predictionSource.week,'21-27 September 2026');
+      if(q.predictionSource.contentStatus==='verbatim-user-provided'){
+        assert.equal(q.predictionSource.provider,'User supplied prediction transcript');
+        assert.equal(q.predictionSource.week,'25 September 2026');
+      } else {
+        assert.equal(q.predictionSource.provider,'PTE Nepal');
+        assert.equal(q.predictionSource.week,'21-27 September 2026');
+      }
       assert(q.predictionSource.sourceId);
     }
   }
