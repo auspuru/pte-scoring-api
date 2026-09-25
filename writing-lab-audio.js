@@ -8,7 +8,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'native-hd-edge-v4';
+const RUNTIME_CACHE_VERSION = 'native-hd-edge-v5';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SPEECH_CLEANUP_FILTER = [
   'highpass=f=75',
@@ -186,7 +186,8 @@ function installNarration(app, directory, { prewarm=true } = {}) {
         console.log('[writing-audio] Edge native-HD neural source generated audio.');
         return bytes;
       } catch(error) {
-        console.warn('[writing-audio] Edge native-HD source failed:',String(error.message || error).slice(0,240));
+        const detail=String(error?.stderr || error?.message || error).trim().slice(-1200);
+        console.warn('[writing-audio] Edge native-HD source failed:',detail);
       }
       if(process.env.OPENAI_API_KEY && Date.now() >= openAiNeuralRetryAt) {
         try {
