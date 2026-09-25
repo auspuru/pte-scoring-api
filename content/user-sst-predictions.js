@@ -171,7 +171,7 @@ const sst = raw.map((item, index) => ({
   title: item.title,
   topic: item.topic,
   minutes: 10,
-  voice: ['nova', 'onyx', 'alloy', 'fable'][index % 4],
+  voice: ['marin', 'cedar'][index % 2],
   text: item.transcript,
   narrationText: naturalNarration(item.transcript),
   audioMode: 'runtime-neural',
