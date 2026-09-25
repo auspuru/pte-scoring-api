@@ -8,12 +8,12 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'native-hd-edge-v5';
+const RUNTIME_CACHE_VERSION = 'openai-tts1-hd-v6';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SPEECH_CLEANUP_FILTER = [
-  'highpass=f=75',
-  'lowpass=f=19000',
-  'afftdn=nr=4:nf=-55',
+  'highpass=f=60',
+  'lowpass=f=18000',
+  'acompressor=threshold=-20dB:ratio=1.6:attack=15:release=180:makeup=1.5',
   'loudnorm=I=-18:TP=-1.5:LRA=7',
   'alimiter=limit=0.95',
   'aresample=48000'
@@ -181,22 +181,21 @@ function installNarration(app, directory, { prewarm=true } = {}) {
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
     if(input.requireNeural) {
-      try {
-        const bytes=await createEdgeNarration(input);
-        console.log('[writing-audio] Edge native-HD neural source generated audio.');
-        return bytes;
-      } catch(error) {
-        const detail=String(error?.stderr || error?.message || error).trim().slice(-1200);
-        console.warn('[writing-audio] Edge native-HD source failed:',detail);
-      }
       if(process.env.OPENAI_API_KEY && Date.now() >= openAiNeuralRetryAt) {
         try {
           const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
             headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
-            body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
+            body:JSON.stringify({
+              model:input.model,
+              voice:input.voice,
+              input:input.input,
+              response_format:input.response_format,
+              speed:input.speed,
+              ...(input.instructions && !/^tts-1(?:-hd)?$/.test(input.model) ? {instructions:input.instructions} : {})
+            }),signal:AbortSignal.timeout(60000)});
           if(response.ok) {
             openAiNeuralRetryAt=0;
-            console.log('[writing-audio] OpenAI lossless fallback generated audio.');
+            console.log('[writing-audio] OpenAI quality-optimized HD master generated audio.');
             return Buffer.from(await response.arrayBuffer());
           }
           let detail='HTTP '+response.status, code='';
@@ -207,12 +206,12 @@ function installNarration(app, directory, { prewarm=true } = {}) {
           } catch (_) {}
           if([401,403].includes(response.status) || (response.status===429 && /credit_balance_exhausted|insufficient_quota/.test(code)))
             openAiNeuralRetryAt=Date.now()+OPENAI_RETRY_COOLDOWN_MS;
-          console.warn('[writing-audio] OpenAI neural fallback unavailable:',detail.trim());
+          console.warn('[writing-audio] OpenAI HD master unavailable:',detail.trim());
         } catch(error) {
-          console.warn('[writing-audio] OpenAI neural fallback failed:',String(error.message || error).slice(0,240));
+          console.warn('[writing-audio] OpenAI HD master failed:',String(error.message || error).slice(0,240));
         }
       }
-      throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
+      throw Error('Natural HD narration is temporarily unavailable. Please retry shortly.');
     }
     if(process.env.OPENAI_API_KEY) {
       try {
