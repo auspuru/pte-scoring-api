@@ -48,7 +48,7 @@ test('student UIs label reused predictions as Revision instead of presenting the
   assert.doesNotMatch(writing,/Adapted practice/);
   assert.doesNotMatch(writing,/content-provenance/);
   assert.doesNotMatch(catalogue,/Current Writing prediction pool/);
-  assert.match(catalogue,/Repeated prediction items are marked Revision/);
+  assert.doesNotMatch(catalogue,/Repeated prediction items are marked Revision/);
 });
 
 test('Writing audio load failures keep a visible retry path', () => {

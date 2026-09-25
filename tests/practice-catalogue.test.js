@@ -50,16 +50,20 @@ test('Reading and Listening individual libraries reuse complete keys and stable 
   assert.equal(JSON.stringify(bank), before, 'The source bank stays immutable while the practice view receives stronger distractors.');
 });
 
-test('The single catalogue classifies integrated Reading sets as sectional and focused sets as practice', () => {
+test('The single catalogue exposes 15 exam-shaped Reading practice mocks without descriptions', () => {
   const items = catalogue.mockItems(bank, writing);
   const sectionals = catalogue.filterMocks(items, { module: 'reading' });
-  const focused = catalogue.filterMocks(items, { mode: 'practice', module: 'reading' });
+  const practice = catalogue.filterMocks(items, { mode: 'practice', module: 'reading' });
   assert.deepEqual(sectionals.map(m => m.id), ['practice-mock-1', 'practice-mock-2', 'practice-mock-3', 'sectional-mock-1', 'sectional-mock-2', 'sectional-mock-3']);
-  assert.deepEqual(focused.map(m => m.id), ['practice-mock-4', 'practice-mock-5', 'practice-mock-6', 'practice-mock-7', 'practice-mock-8', 'practice-mock-9']);
-  assert(sectionals.every(m => /Summarise Written Text.*Reading.*Highlight Incorrect Words.*Highlight Correct Summary/.test(m.scope)));
+  assert.equal(practice.length, 15);
+  assert.deepEqual(practice.map(m => m.id), Array.from({length:15},(_,i)=>'reading-practice-mock-'+(i+1)));
+  assert(practice.every(m => m.minutes === 23));
+  assert(practice.every(m => m.title === 'Reading Practice Mock ' + m.number));
+  assert(items.every(m => !Object.hasOwn(m,'scope')));
+  assert(items.filter(m=>m.module==='reading').every(m => !Object.hasOwn(m,'description')));
   assert.deepEqual(catalogue.filterMocks(items, { mode: 'full' }), []);
   assert.equal(catalogue.filterMocks(items, { module: 'writing' }).length, 33);
-  assert.equal(catalogue.filterMocks(items, { search: 'essay topic 33' })[0].id, 'writing-33');
+  assert.equal(catalogue.filterMocks(items, { module:'writing', search: 'Writing Sectional Mock 33' })[0].id, 'writing-33');
 });
 
 function harness() {
@@ -101,20 +105,24 @@ test('Practice shows task counts and last attempts while routes remain direct', 
   assert.deepEqual(h.navigations, [['dictation']]); assert.equal(h.calls.length, 2); assert.equal(h.starts.length, 0);
 });
 
-test('Mock tabs, module filtering, pagination, topic search and launch keep one catalogue', async () => {
+test('Mock tabs, filtering and launch show labels and timing without content descriptions', async () => {
   const h = harness(); await h.controller.openMocks();
   const board = () => h.nodes.get('catalogue-board').innerHTML;
-  assert.match(board(),/Integrated Writing sectional practice|Integrated Reading sectional practice/);
-  assert.match(board(),/Includes:/); assert.match(board(),/In progress/); assert.match(board(),/Done/); assert.match(board(),/New/);
-  assert.equal(h.nodes.get('catalogue-description').hidden,false);
+  assert.doesNotMatch(board(),/mock-catalogue-description|mock-catalogue-scope|Includes:/);
+  assert.match(board(),/In progress|Done|New/);
+  assert.equal(h.nodes.get('catalogue-description').hidden,true);
   assert.equal((board().match(/data-mock-id=/g) || []).length, 12);
   assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 39 tests');
-  h.click({ cataloguePage: '1' }); assert.equal(h.nodes.get('catalogue-page').textContent, '2 / 4');
   h.change('catalogue-module', 'reading'); assert.equal((board().match(/data-mock-id=/g) || []).length, 6);
-  h.click({ catalogueMode: 'practice' }); assert.match(board(), /practice-mock-4/); assert.match(board(), /Focused FIB practice only/); assert.match(board(), /10 Fill in the Blanks questions/); assert.doesNotMatch(board(), /SWT \+ all Reading/);
-  h.click({ mockId: 'practice-mock-4' }); assert.deepEqual(h.starts, [['reading', 'practice-mock-4']]);
+  h.click({ catalogueMode: 'practice' });
+  assert.match(board(), /Reading Practice Mock 1/);
+  assert.match(board(), /23 minutes/);
+  assert.doesNotMatch(board(), /Focused FIB|Fill in the Blanks questions|Includes:/);
+  assert.equal((board().match(/data-mock-id=/g) || []).length, 12);
+  assert.equal(h.nodes.get('catalogue-count').textContent, 'Showing 1–12 of 15 tests');
+  h.click({ mockId: 'reading-practice-mock-1' }); assert.deepEqual(h.starts, [['reading', 'reading-practice-mock-1']]);
   h.click({ catalogueMode: 'sectional' }); h.change('catalogue-module', 'writing');
-  h.mocks.oninput({ target: { id: 'catalogue-search', value: 'essay topic 33' } });
+  h.mocks.oninput({ target: { id: 'catalogue-search', value: 'Writing Sectional Mock 33' } });
   assert.match(board(), /writing-33/); assert.equal((board().match(/data-mock-id=/g) || []).length, 1);
   h.click({ mockId: 'writing-33' }); assert.deepEqual(h.starts[1], ['writing', 'writing-33']);
   assert.doesNotMatch(h.mocks.innerHTML, /data-catalogue-mode="full"/);
@@ -122,11 +130,12 @@ test('Mock tabs, module filtering, pagination, topic search and launch keep one 
   assert.equal(h.starts.length, 2, 'Filtering never starts or replaces an attempt');
   await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
   assert.equal(h.nodes.get('catalogue-module').value, 'writing');
-  assert.match(h.mocks.innerHTML, /value="essay topic 33"/); assert.doesNotMatch(h.mocks.innerHTML,/Tests per page/);
+  assert.match(h.mocks.innerHTML, /value="Writing Sectional Mock 33"/); assert.doesNotMatch(h.mocks.innerHTML,/Tests per page/);
   h.click({ mockHistory: 'reading' }); h.click({ mockHistory: 'writing' });
   assert.deepEqual(h.navigations.map(n => n[0]), ['reading', 'writing-history']);
   assert.equal(h.navigations[0][1].readingRequest.history, true);
 });
+
 
 test('Catalogue load failures have a retry, without creating an empty successful catalogue', async () => {
   const h = harness(); h.fail(true); await h.controller.openMocks();

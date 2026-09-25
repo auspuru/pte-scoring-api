@@ -193,13 +193,32 @@
   // Reading-only practice uses all five task types. Fill-in-the-blanks are
   // drawn from the language-first pool: answers must be recoverable from
   // context, grammar or collocation rather than specialist subject knowledge.
+  function practiceMockNumber(id) {
+    const match = /^reading-practice-mock-(\d+)$/.exec(String(id || ''));
+    const number = Number(match?.[1]);
+    return Number.isInteger(number) && number >= 1 && number <= 15 ? number : null;
+  }
+  function predictionFibPool(type, offset = 0) {
+    const pool = type === 'dropdown' ? predictions?.dropdown : predictions?.wordbank;
+    if (!Array.isArray(pool) || !pool.length) return [];
+    const shift = ((offset % pool.length) + pool.length) % pool.length;
+    return [...pool.slice(shift), ...pool.slice(0, shift)].map(q => {
+      const strengthened = strengthenFib(q, 'prediction:' + (q.uid || q.id));
+      return { ...strengthened, reasoning: languageReasoning(strengthened) };
+    });
+  }
+
+  // Reading Practice mocks mirror the current Reading section shape: all five
+  // Reading task types, exam order and published task-count ranges. Prediction
+  // FIB items are retained, but they are no longer presented as FIB-only tests.
   function composeReadingPractice(bank, preset, preferred) {
-    if (preset.kind === 'reading-blanks') return composeReadingBlanksPractice(bank, preset);
+    const syntheticNumber = practiceMockNumber(preset.id);
     const family = preset.family === 'sectional' ? 'sectional' : 'practice';
     const familyPresets = (bank.mockCatalogue || []).filter(m => family === 'sectional'
       ? m.family === 'sectional'
       : (m.family === 'practice' || m.kind === 'reading-blanks'));
-    const familyIndex = Math.max(0, familyPresets.findIndex(m => m.id === preset.id));
+    const listedIndex = Math.max(0, familyPresets.findIndex(m => m.id === preset.id));
+    const familyIndex = syntheticNumber ? syntheticNumber - 1 : listedIndex;
     const index = family === 'sectional' ? familyIndex + 9 : familyIndex;
     const sets = bank.sets || [];
     const rotated = sets.map((_,i) => sets[(i + index) % sets.length]);
@@ -208,7 +227,8 @@
       let added = 0;
       const spec = readingFormat.tasks.find(task => task.type === type);
       const fib = ['dropdown','wordbank'].includes(type);
-      const quality = fib ? qualityFibPool(bank,type,index*5) : [];
+      const predictionPool = fib && (syntheticNumber || preset.kind === 'reading-blanks') ? predictionFibPool(type,index*5) : [];
+      const quality = fib ? [...predictionPool, ...qualityFibPool(bank,type,index*5)] : [];
       const sources = fib
         ? [{ id:'language-first-'+type, questions:quality }]
         : [preferred, ...rotated].filter(Boolean);
@@ -226,20 +246,22 @@
       }
       if (added !== count) throw Error('Not enough distinct '+spec.label.toLowerCase()+' questions for this mock.');
     }
-    const minutes = preset.minutes || 25;
+    const minutes = syntheticNumber ? 23 : (preset.minutes || 23);
     validateReading(selected, minutes);
-    return {name:'Reading Practice Mock '+(index+1),minutes,questions:selected};
+    return {name:preset.name || ('Reading Practice Mock '+(index+1)),minutes,questions:selected};
   }
 
   function compose(bank, mode, setId, swtPassages) {
-    const preset = bank.mockCatalogue?.find(item => item.id === mode);
+    const syntheticNumber = practiceMockNumber(mode);
+    const preset = bank.mockCatalogue?.find(item => item.id === mode) || (syntheticNumber ? {
+      id: mode, name: 'Reading Practice Mock ' + syntheticNumber, family: 'practice', timed: true, minutes: 23
+    } : null);
     if (preset) {
-      const set = [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
+      const set = syntheticNumber
+        ? (bank.sets || [])[(syntheticNumber - 1) % (bank.sets || []).length]
+        : [...bank.sets,...(bank.importedSets||[])].find(item => item.id === preset.setId);
       if (!set) throw Error('This mock question set is unavailable.');
-      // Focused prediction FIB mocks 4–9 are Reading-only. The earlier
-      // practice mocks keep their existing integrated SWT + Reading + audio
-      // structure, using language-first Reading questions inside that shell.
-      if(preset.kind==='reading-blanks') return composeReadingBlanksPractice(bank,preset);
+      if(syntheticNumber || preset.kind==='reading-blanks') return composeReadingPractice(bank, { ...preset, minutes:23 }, set);
       const prepared = ['sectional','practice'].includes(preset.family)
         ? composeReadingPractice(bank, { ...preset, minutes:set.minutes }, set)
         : null;

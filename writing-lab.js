@@ -39,7 +39,6 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   return {
     id,
     title: 'Writing Prediction Mock ' + String(number).padStart(2, '0'),
-    description: essay.title,
     category: 'prediction',
     predictionNumber: number,
     predictionSource: predictions.source,
@@ -139,7 +138,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     predictionBank:{source:predictions.source,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
-    mocks:allMocks.map(m => ({ id:m.id,title:m.title,description:m.description,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
+    mocks:allMocks.map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
         return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];

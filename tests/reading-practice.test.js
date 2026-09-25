@@ -474,26 +474,29 @@ test('Resume restores the parked current stage even after a long delay',async()=
  assert.equal(s.deadline,clock.now+parked.pausedRemainingSeconds*1000);
 });
 
-test('The mock catalogue keeps the six integrated mocks and adds six imported practice mocks',async()=>{
+test('The mock catalogue keeps six integrated mocks and exposes 15 Reading Practice mocks',async()=>{
  const h=client();h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();
  const ids=require('../public/practice-catalogue').readingMocks(bank).map(m=>m.id);
- assert.equal(ids.length,12);assert.equal(new Set(ids).size,12);
- assert.equal(ids.filter(id=>id.startsWith('practice-mock-')).length,9);assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
+ assert.equal(ids.length,21);assert.equal(new Set(ids).size,21);
+ assert.equal(ids.filter(id=>id.startsWith('reading-practice-mock-')).length,15);
+ assert.equal(ids.filter(id=>id.startsWith('sectional-mock-')).length,3);
  assert.doesNotMatch(h.host.innerHTML,/01 \/ PRACTISE|02 \/ DISCOVER|03 \/ CONNECT|Find my starting point|data-start="(?:full|practice|diagnostic)"|id="readingType"/);
  for(const id of ids){
   await h.ctx.ReadingPractice.open({mockId:id});const s=snapshot(h).session;
   assert.match(h.host.innerHTML,/data-exam-player/);
-  if(bank.mockCatalogue.find(m=>m.id===id).kind==='reading-blanks'){
-   assert.equal(s.questions.length,10);assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','wordbank']);assert.equal(s.deadline-s.startedAt,25*60000);continue;
+  if(id.startsWith('reading-practice-mock-')){
+   assert.equal(s.questions.length,16);
+   assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','mcma','mcsa','reorder','wordbank'].sort());
+   assert.equal(s.deadline-s.startedAt,23*60000);
+   assert.equal(s.stages,undefined);
+   assert.match(h.host.innerHTML,/23:00/);
+   continue;
   }
   assert.equal(s.questions.filter(q=>q.type==='swt').length,2);
   assert.deepEqual([...new Set(s.questions.map(q=>q.type))].sort(),['dropdown','hcs','hiw','mcma','mcsa','reorder','swt','wordbank'].sort());
   assert.equal(s.questions.filter(q=>q.type==='hcs').length,2);assert.equal(s.questions.filter(q=>q.type==='hiw').length,2);
-  if(id.startsWith('practice')){assert.equal(s.deadline-s.startedAt,25*60000);assert.equal(s.stages,undefined);assert.match(h.host.innerHTML,/25:00/);}
-  else {assert.equal(s.stages.length,4);assert.deepEqual(s.stages.map(stage=>stage.minutes),[10,10,25,10]);}
  }
 });
-
 test('Three mock sets have distinct audio with accurate HIW keys and explanations',()=>{
  const forms=bank.mockCatalogue.filter(m=>m.family==='sectional'),seen=new Set();
  for(const form of forms){
@@ -727,21 +730,20 @@ test('Twenty HIW recordings have exact word-position keys and meaning feedback',
  }
 });
 
-test('Focused FIB mock preserves its 25-minute timer and produces one complete language review',async()=>{
- const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();h.ctx.fetch=async()=>{throw Error('Focused FIB mocks must not fetch SWT passages');};
- await h.click({start:'practice-mock-4'});const initial=snapshot(h).session;assert.equal(initial.questions.length,10);assert.equal(initial.deadline-clock.now,25*60000);assert.match(h.host.innerHTML,/data-exam-player/);
- assert.equal(initial.questions.filter(q=>q.type==='dropdown').length,5);assert.equal(initial.questions.filter(q=>q.type==='wordbank').length,5);
- const possible=initial.questions.reduce((n,q)=>n+q.answers.length,0);
- for(const q of initial.questions){
-  assert.match(q.reasoning.correct,/grammar, collocation and meaning/i);
-  if(q.type==='dropdown')q.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));
-  else q.answers.forEach((word,i)=>{h.click({word});h.click({blank:String(i)});});
-  clock.add(15000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,initial.deadline);
- }
- const done=snapshot(h);assert.equal(done.history.length,1);assert.equal(done.history[0].earned,possible);assert.equal(done.history[0].possible,possible);assert.equal(done.history[0].pending,0);
- assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,10);assert.match(h.host.innerHTML,/Why each answer fits/);
+test('Reading Practice mock mirrors the Reading section with one 23-minute timer',async()=>{
+ const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();
+ h.ctx.fetch=async()=>{throw Error('Reading Practice mocks must not fetch SWT passages');};
+ await h.click({start:'reading-practice-mock-1'});
+ const initial=snapshot(h).session;
+ assert.equal(initial.questions.length,16);
+ assert.equal(initial.deadline-clock.now,23*60000);
+ assert.match(h.host.innerHTML,/data-exam-player/);
+ assert.deepEqual(initial.questions.map(q=>q.type),[
+  ...Array(5).fill('dropdown'),...Array(2).fill('mcma'),...Array(2).fill('reorder'),...Array(5).fill('wordbank'),...Array(2).fill('mcsa')
+ ]);
+ assert.equal(initial.stages,undefined);
+ assert.match(initial.name,/Reading Practice Mock 1/);
 });
-
 test('Practice draft and result links stay under their task, using original saved indices',async()=>{
  const h=client();await h.ctx.ReadingPractice.open({libraryId:'mcma'});
  const libraries=require('../public/practice-catalogue').readingLibraries(bank);

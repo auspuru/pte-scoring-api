@@ -63,27 +63,26 @@
     return libraries;
   }
   function readingMocks(bank) {
-    let sectional = 0, practice = 0;
-    return (bank.mockCatalogue || []).map(m => {
-      // Only the dedicated FIB-only prediction papers are Practice Mocks.
-      // Integrated practice-mock-1..3 still contain SWT + Reading + audio and
-      // belong with the sectional/integrated catalogue.
-      const focused = m.kind === 'reading-blanks';
-      const number = focused ? ++practice : ++sectional;
-      return { id: m.id, engine: 'reading', module: 'reading', mode: focused ? 'practice' : 'sectional',
-        title: focused ? 'Reading Practice Mock ' + number : 'Integrated Reading & Listening Sectional Mock ' + number,
-        description: focused ? 'Focused FIB practice only' : 'Integrated Reading sectional practice',
-        scope: focused ? '10 Fill in the Blanks questions · Dropdown + Drag & Drop' : 'Summarise Written Text + all Reading tasks + Highlight Incorrect Words + Highlight Correct Summary',
+    let sectional = 0;
+    const sectionalMocks = (bank.mockCatalogue || []).filter(m => m.kind !== 'reading-blanks').map(m => {
+      const number = ++sectional;
+      return { id: m.id, engine: 'reading', module: 'reading', mode: 'sectional',
+        title: 'Integrated Reading & Listening Sectional Mock ' + number,
         minutes: m.minutes || 55, number };
     });
+    const practiceMocks = Array.from({ length: 15 }, (_, i) => ({
+      id: 'reading-practice-mock-' + (i + 1),
+      engine: 'reading', module: 'reading', mode: 'practice',
+      title: 'Reading Practice Mock ' + (i + 1),
+      minutes: 23, number: i + 1
+    }));
+    return [...sectionalMocks, ...practiceMocks];
   }
   function mockItems(reading, writing) {
     return [...readingMocks(reading), ...(writing.mocks || []).map((m, i) => ({
       ...m, engine: 'writing', module: 'writing', mode: 'sectional', number: m.predictionNumber || 100 + i,
-      searchText: [m.title,m.description,m.topic,m.question,m.category].filter(Boolean).join(' '),
-      title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0')),
-      description: m.category === 'prediction' ? 'Prediction-aligned Writing sectional practice' : 'Integrated Writing sectional practice',
-      scope: 'Summarise Written Text + Write Essay + Summarise Spoken Text + Write From Dictation'
+      searchText: [m.title,m.topic,m.question,m.category].filter(Boolean).join(' '),
+      title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0'))
     }))];
   }
   function filterMocks(items, { mode = 'sectional', module = 'all', search = '' } = {}) {
@@ -146,7 +145,6 @@
       board.innerHTML = shown.map(m => {
         const saved=progress.mocks?.[m.id] || {}, status=saved.status || 'New', when=dateLabel(saved.date);
         return '<article class="mock-catalogue-card ' + m.module + '"><div class="mock-card-meta"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><span class="mock-status" data-status="' + esc(status.toLowerCase().replace(/\s+/g,'-')) + '">' + esc(status) + (when ? ' · ' + esc(when) : '') + '</span></div><h3>' + esc(m.title) + '</h3>'
-          + '<p class="mock-catalogue-description">' + esc(m.description || '') + '</p><p class="mock-catalogue-scope"><strong>Includes:</strong> ' + esc(m.scope || '') + '</p>'
           + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
       }).join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
@@ -158,12 +156,7 @@
       doc.getElementById('catalogue-pagination').hidden = pages <= 1;
       doc.querySelectorAll('[data-catalogue-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.catalogueMode === filters.mode)));
       const description = doc.getElementById('catalogue-description');
-      description.hidden = false;
-      if (filters.mode === 'practice') {
-        description.textContent = 'Focused practice mocks cover a limited task set. They are not full Reading or full PTE mocks.';
-      } else {
-        description.textContent = 'Sectional mocks practise one integrated module. Repeated prediction items are marked Revision.';
-      }
+      if (description) { description.hidden = true; description.textContent = ''; }
     }
     async function openMocks(options = {}) {
       const host = doc.getElementById('mockTestsPane');

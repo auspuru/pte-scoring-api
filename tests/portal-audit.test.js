@@ -52,11 +52,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(css,/min-height:44px/);
   const catalogue=read('public/practice-catalogue.js');
   assert.doesNotMatch(catalogue,/Tests per page/);
-  assert.match(catalogue,/Repeated prediction items are marked Revision/);
   assert.match(catalogue,/Integrated Reading & Listening Sectional Mock/);
-  assert.match(catalogue,/Summarise Written Text/);
-  assert.match(catalogue,/Highlight Incorrect Words/);
-  assert.match(catalogue,/Highlight Correct Summary/);
+  assert.match(catalogue,/Reading Practice Mock/);
+  assert.match(catalogue,/Array\.from\(\{ length: 15 \}/);
+  assert.match(catalogue,/minutes: 23/);
+  assert.doesNotMatch(catalogue,/mock-catalogue-description/);
+  assert.doesNotMatch(catalogue,/mock-catalogue-scope/);
+  assert.doesNotMatch(catalogue,/Includes:/);
   assert.match(catalogue,/Last attempt/);
   assert.match(catalogue,/In progress/);
   assert.match(server,/max-age=31536000, immutable/);
