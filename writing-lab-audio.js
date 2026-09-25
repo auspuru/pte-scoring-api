@@ -27,6 +27,23 @@ async function createLocalNarration(input) {
     await Promise.allSettled([fs.unlink(wav), fs.unlink(mp3)]);
   }
 }
+async function createEdgeNarration(input) {
+  const mp3 = path.join(os.tmpdir(), 'ipt-edge-audio-' + randomUUID() + '.mp3');
+  const executable = path.join(__dirname, '.edge-tts', 'bin', 'edge-tts');
+  try {
+    await run(executable, [
+      '--voice', input.edgeVoice || 'en-AU-NatashaNeural',
+      '--rate=-5%',
+      '--text', String(input.input || ''),
+      '--write-media', mp3
+    ], { timeout: 90000, maxBuffer: 2 * 1024 * 1024 });
+    const bytes = await fs.readFile(mp3);
+    if (bytes.length < 1000) throw Error('Edge neural narration output was empty.');
+    return bytes;
+  } finally {
+    await fs.unlink(mp3).catch(()=>{});
+  }
+}
 function createNarration(directory, generate, { bundledDirectory } = {}) {
   const pending = new Map();
   let manifest;
@@ -40,7 +57,7 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
           entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
     }
-    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', requireNeural:q.audioMode === 'runtime-neural' };
+    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', requireNeural:q.audioMode === 'runtime-neural' };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }
@@ -59,30 +76,48 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
   return { get };
 }
 function installNarration(app, directory) {
+  let openAiNeuralUnavailable = false;
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
+    if(input.requireNeural) {
+      if(process.env.OPENAI_API_KEY && !openAiNeuralUnavailable) {
+        try {
+          const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
+            headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
+            body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
+          if(response.ok) return Buffer.from(await response.arrayBuffer());
+          let detail='HTTP '+response.status, code='';
+          try {
+            const payload=await response.json();
+            code=String(payload?.error?.code || payload?.error?.type || '');
+            detail+=' '+code.slice(0,80)+' '+String(payload?.error?.message || '').slice(0,180);
+          } catch (_) {}
+          if(response.status===429 && /credit_balance_exhausted|insufficient_quota/.test(code)) openAiNeuralUnavailable=true;
+          console.warn('[writing-audio] OpenAI neural narration unavailable:',detail.trim());
+        } catch(error) {
+          console.warn('[writing-audio] OpenAI neural narration failed:',String(error.message || error).slice(0,240));
+        }
+      }
+      try {
+        const bytes=await createEdgeNarration(input);
+        console.log('[writing-audio] Edge neural fallback generated audio.');
+        return bytes;
+      } catch(error) {
+        console.warn('[writing-audio] Edge neural fallback failed:',String(error.message || error).slice(0,240));
+        throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
+      }
+    }
     if(process.env.OPENAI_API_KEY) {
       try {
         const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
           headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
         if(response.ok) return Buffer.from(await response.arrayBuffer());
-        if(input.requireNeural) {
-          let detail='HTTP '+response.status;
-          try {
-            const payload=await response.json();
-            detail+=' '+String(payload?.error?.code || payload?.error?.type || '').slice(0,80)+' '+String(payload?.error?.message || '').slice(0,180);
-          } catch (_) {}
-          console.warn('[writing-audio] Neural narration provider rejected request:',detail.trim());
-          throw Error('Natural narration is temporarily unavailable.');
-        }
         console.warn('[writing-audio] Remote narration returned HTTP '+response.status+'; using local narrator.');
       } catch (error) {
-        if(input.requireNeural) throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
         console.warn('[writing-audio] Remote narration failed; using local narrator:', error.message);
       }
     }
-    if(input.requireNeural) throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
     return createLocalNarration(input);
   }, { bundledDirectory: path.join(__dirname, 'content', 'writing-audio') });
   // Bundled files have no synthesis cost. Range requests and students sharing a
@@ -97,20 +132,18 @@ function installNarration(app, directory) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
-  if(process.env.OPENAI_API_KEY) {
-    const runtimeIds=(predictions.sst||[]).filter(q=>q.audioMode==='runtime-neural').map(q=>q.id);
-    setImmediate(async()=>{
-      for(const id of runtimeIds) {
-        try {
-          await narration.get(id);
-          console.log('[writing-audio] Prewarmed '+id);
-        } catch(error) {
-          console.warn('[writing-audio] Prewarm stopped at '+id+': '+error.message);
-          break;
-        }
+  const runtimeIds=(predictions.sst||[]).filter(q=>q.audioMode==='runtime-neural').map(q=>q.id);
+  setImmediate(async()=>{
+    for(const id of runtimeIds) {
+      try {
+        await narration.get(id);
+        console.log('[writing-audio] Prewarmed '+id);
+      } catch(error) {
+        console.warn('[writing-audio] Prewarm stopped at '+id+': '+error.message);
+        break;
       }
-    });
-  }
+    }
+  });
   return narration;
 }
-module.exports={createNarration,createLocalNarration,installNarration};
+module.exports={createNarration,createLocalNarration,createEdgeNarration,installNarration};
