@@ -8,7 +8,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'native-hd-v3';
+const RUNTIME_CACHE_VERSION = 'native-hd-edge-v4';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SPEECH_CLEANUP_FILTER = [
   'highpass=f=75',
@@ -181,12 +181,23 @@ function installNarration(app, directory, { prewarm=true } = {}) {
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
     if(input.requireNeural) {
+      try {
+        const bytes=await createEdgeNarration(input);
+        console.log('[writing-audio] Edge native HD narration selected.');
+        return bytes;
+      } catch(error) {
+        console.warn('[writing-audio] Edge native HD narration failed:',String(error.message || error).slice(0,240));
+      }
       if(process.env.OPENAI_API_KEY && Date.now() >= openAiNeuralRetryAt) {
         try {
           const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
             headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
             body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
-          if(response.ok) { openAiNeuralRetryAt=0; return Buffer.from(await response.arrayBuffer()); }
+          if(response.ok) {
+            openAiNeuralRetryAt=0;
+            console.log('[writing-audio] OpenAI lossless fallback generated audio.');
+            return Buffer.from(await response.arrayBuffer());
+          }
           let detail='HTTP '+response.status, code='';
           try {
             const payload=await response.json();
@@ -195,19 +206,12 @@ function installNarration(app, directory, { prewarm=true } = {}) {
           } catch (_) {}
           if([401,403].includes(response.status) || (response.status===429 && /credit_balance_exhausted|insufficient_quota/.test(code)))
             openAiNeuralRetryAt=Date.now()+OPENAI_RETRY_COOLDOWN_MS;
-          console.warn('[writing-audio] OpenAI neural narration unavailable:',detail.trim());
+          console.warn('[writing-audio] OpenAI neural fallback unavailable:',detail.trim());
         } catch(error) {
-          console.warn('[writing-audio] OpenAI neural narration failed:',String(error.message || error).slice(0,240));
+          console.warn('[writing-audio] OpenAI neural fallback failed:',String(error.message || error).slice(0,240));
         }
       }
-      try {
-        const bytes=await createEdgeNarration(input);
-        console.log('[writing-audio] Edge neural fallback generated audio.');
-        return bytes;
-      } catch(error) {
-        console.warn('[writing-audio] Edge neural fallback failed:',String(error.message || error).slice(0,240));
-        throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
-      }
+      throw Error('Natural HD narration is temporarily unavailable. Please retry shortly.');
     }
     if(process.env.OPENAI_API_KEY) {
       try {
