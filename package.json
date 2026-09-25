@@ -19,7 +19,7 @@
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
     "validate:content-metadata": "node scripts/validate-content-metadata.js",
     "install:browser": "node -e \"require('fs').rmSync('.cache/puppeteer/chrome',{recursive:true,force:true})\" && puppeteer browsers install chrome",
-    "install:edge-tts": "rm -rf .edge-tts && python3 -m venv .edge-tts && .edge-tts/bin/pip install --disable-pip-version-check edge-tts==7.2.8",
+    "install:edge-tts": "rm -rf .edge-tts && python3 -m venv .edge-tts && .edge-tts/bin/pip install --disable-pip-version-check edge-tts==7.2.8 && .edge-tts/bin/python scripts/patch-edge-tts-hd.py .edge-tts",
     "validate:edge-tts": "node scripts/validate-edge-tts.js"
   },
   "dependencies": {
