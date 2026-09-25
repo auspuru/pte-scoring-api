@@ -168,26 +168,26 @@ function naturalNarration(text) {
 // Light, deterministic lecturer-style hesitations. These affect audio only:
 // q.text always remains the exact transcript supplied by the user.
 const HESITATIONS = Object.freeze([
-  [['Researchers have found', 'Um, researchers have found'], ['By studying when smiles happened', 'Uh, by studying when smiles happened']],
-  [['Now this is interesting', 'Um, now this is interesting'], ['That was basically based', 'Uh, that was basically based']],
-  [["Let's look at two important reasons", "Um, let's look at two important reasons"]],
-  [['So vitamin D really', 'Um, so vitamin D really'], ['As humans migrated away', 'Uh, as humans migrated away']],
-  [["In the 20th century", "Um, in the 20th century"]],
-  [['So, in fact, today', 'So, um, in fact, today']],
-  [['However, there are some different uses', 'Um, however, there are some different uses']],
-  [['We can think of leadership as a spectrum', 'Um, we can think of leadership as a spectrum'], ['Over the centuries', 'Uh, over the centuries']],
-  [['In fact, one of the most interesting books', 'Um, in fact, one of the most interesting books']],
-  [['So what does science say', 'Um, so what does science say'], ["Let's break this idea down", "Uh, let's break this idea down"]],
-  [['Many of us would prefer', 'Um, many of us would prefer']],
-  [['When I started out forty-odd years ago', 'Um, when I started out forty-odd years ago']],
-  [['After careful observation', 'Um, after careful observation'], ['On the other hand', 'Uh, on the other hand']]
+  [['Researchers have found', 'Um,'], ['By studying when smiles happened', 'Uh,']],
+  [['Now this is interesting', 'Um,'], ['That was basically based', 'Uh,']],
+  [["Let's look at two important reasons", 'Um,']],
+  [['So vitamin D really', 'Um,'], ['As humans migrated away', 'Uh,']],
+  [["In the 20th century", 'Um,']],
+  [['in fact, today', 'um,']],
+  [['However, there are some different uses', 'Um,']],
+  [['We can think of leadership as a spectrum', 'Um,'], ['Over the centuries', 'Uh,']],
+  [['In fact, one of the most interesting books', 'Um,']],
+  [['So what does science say', 'Um,'], ["Let's break this idea down", 'Uh,']],
+  [['Many of us would prefer', 'Um,']],
+  [['When I started out forty-odd years ago', 'Um,']],
+  [['After careful observation', 'Um,'], ['On the other hand', 'Uh,']]
 ]);
 
 function humanisedNarration(text, index) {
   let narration = naturalNarration(text);
-  for (const [anchor, replacement] of HESITATIONS[index] || []) {
+  for (const [anchor, filler] of HESITATIONS[index] || []) {
     if (!narration.includes(anchor)) throw new Error('Missing SST narration anchor: ' + anchor);
-    narration = narration.replace(anchor, replacement);
+    narration = narration.replace(anchor, filler + ' ' + anchor);
   }
   return narration;
 }
