@@ -17,7 +17,7 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install media build tools
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak python3-venv
       - run: npm ci
       - run: npm test
       - run: npm run build
