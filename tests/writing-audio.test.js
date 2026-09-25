@@ -70,6 +70,7 @@ test('User SST predictions use natural neural narration without changing transcr
   assert.equal(seen[0].input,q.narrationText);
   assert.equal(seen[0].model,'gpt-4o-mini-tts');
   assert(['marin','cedar'].includes(seen[0].voice));
+  assert(['en-AU-NatashaNeural','en-AU-WilliamNeural'].includes(seen[0].edgeVoice));
   assert.equal(seen[0].speed,0.94);
   assert.match(seen[0].instructions,/natural academic lecture/);
   assert.match(seen[0].instructions,/wording exactly as provided/);
@@ -77,4 +78,16 @@ test('User SST predictions use natural neural narration without changing transcr
   assert.match(seen[0].input,/\n\n/);
   const tokens=value=>String(value).match(/[\p{L}\p{N}]+/gu) || [];
   assert.deepEqual(tokens(q.narrationText),tokens(q.text));
+});
+
+
+test('Neural SST fallback remains Edge neural rather than robotic local speech', async () => {
+  const source=await fs.readFile(require.resolve('../writing-lab-audio'),'utf8');
+  assert.match(source,/createEdgeNarration/);
+  assert.match(source,/edge-tts/);
+  assert.match(source,/--rate=-5%/);
+  assert.match(source,/OpenAI neural narration unavailable/);
+  assert.match(source,/Edge neural fallback generated audio/);
+  const neuralBlock=source.slice(source.indexOf('if(input.requireNeural)'),source.indexOf("if(process.env.OPENAI_API_KEY)",source.indexOf('if(input.requireNeural)')+1));
+  assert.doesNotMatch(neuralBlock,/createLocalNarration/);
 });
