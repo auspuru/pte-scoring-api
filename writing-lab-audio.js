@@ -8,7 +8,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'native-hd-edge-v5';
+const RUNTIME_CACHE_VERSION = 'native-hd-node-v6';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SPEECH_CLEANUP_FILTER = [
   'highpass=f=75',
@@ -68,32 +68,37 @@ async function createLocalNarration(input) {
   }
 }
 async function createEdgeNarration(input) {
-  const mp3 = path.join(os.tmpdir(), 'ipt-edge-audio-' + randomUUID() + '.mp3');
-  const executable = path.join(__dirname, '.edge-tts', 'bin', 'edge-tts');
+  const stem = path.join(os.tmpdir(), 'ipt-edge-hd-' + randomUUID());
+  const requestFile = stem + '.json', mp3 = stem + '.mp3';
   try {
-    await run(executable, [
-      '--voice', input.edgeVoice || 'en-AU-NatashaNeural',
-      '--rate=-5%',
-      '--text', String(input.input || ''),
-      '--write-media', mp3
-    ], { timeout: 90000, maxBuffer: 2 * 1024 * 1024 });
+    await fs.writeFile(requestFile, JSON.stringify({
+      text:String(input.input || ''),
+      voice:input.edgeVoice || 'en-AU-NatashaNeural',
+      rate:-5
+    }));
+    await run(process.execPath, [
+      path.join(__dirname, 'scripts', 'generate-edge-hd.js'),
+      requestFile,
+      mp3
+    ], { timeout:120000, maxBuffer:2 * 1024 * 1024 });
     const bytes = await fs.readFile(mp3);
-    if (bytes.length < 1000) throw Error('Edge neural narration output was empty.');
+    if (bytes.length < 1000) throw Error('Edge native-HD narration output was empty.');
     const { stdout } = await run('ffprobe', [
       '-v','error','-select_streams','a:0',
-      '-show_entries','stream=sample_rate,bit_rate',
+      '-show_entries','stream=codec_name,sample_rate,bit_rate,channels',
       '-of','json',mp3
     ], { timeout:15000, maxBuffer:1024*1024 });
     const stream = JSON.parse(stdout || '{}')?.streams?.[0] || {};
     const sampleRate = Number(stream.sample_rate || 0);
     const bitRate = Number(stream.bit_rate || 0);
-    if (sampleRate !== 48000 || bitRate < 180000) {
-      throw Error('Edge neural source is not native HD ('+sampleRate+' Hz / '+bitRate+' bps).');
+    const channels = Number(stream.channels || 0);
+    if (stream.codec_name !== 'mp3' || sampleRate !== 48000 || bitRate < 180000 || channels !== 1) {
+      throw Error('Edge neural source is not native HD MP3 ('+sampleRate+' Hz / '+bitRate+' bps / '+channels+' ch).');
     }
-    console.log('[writing-audio] Edge native HD source: '+sampleRate+' Hz / '+bitRate+' bps.');
+    console.log('[writing-audio] Edge native HD source: '+sampleRate+' Hz / '+bitRate+' bps / '+channels+' ch.');
     return bytes;
   } finally {
-    await fs.unlink(mp3).catch(()=>{});
+    await Promise.allSettled([fs.unlink(requestFile), fs.unlink(mp3)]);
   }
 }
 function createNarration(directory, generate, { bundledDirectory, cacheVersion, previousCacheVersions=[], postProcess } = {}) {
