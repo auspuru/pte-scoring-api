@@ -49,9 +49,10 @@ function activeFibQuestions() {
       rows.push({ surface:'reading-set', q, label:'Reading set ' + set.id + ' ' + (q.uid || q.id) });
     }
   }
-  for (const preset of (bank.mockCatalogue || []).filter(m => m.kind === 'reading-blanks')) {
-    for (const q of tools.compose(bank, preset.id, preset.setId).questions.filter(q => FIB.has(q.type))) {
-      rows.push({ surface:'focused-mock', q, label:'Focused mock ' + preset.id + ' ' + (q.uid || q.id) });
+  for (let number = 1; number <= 15; number++) {
+    const id = 'reading-practice-mock-' + number;
+    for (const q of tools.compose(bank, id).questions.filter(q => FIB.has(q.type))) {
+      rows.push({ surface:'practice-mock', q, label:'Reading Practice mock ' + number + ' ' + (q.uid || q.id) });
     }
   }
   return rows;
