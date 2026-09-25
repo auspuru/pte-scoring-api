@@ -51,7 +51,7 @@ function harness({ audioReadyState = 4 } = {}) {
   };
   context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,reattempt,movePractice,suspend,boot}; return;`);
+  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -88,7 +88,86 @@ test('A delayed navigation cannot reopen a suspended lab',async()=>{
  const request=h.hooks.handleRequest({tab:'wfd',requestId:'slow'});await flush();
  h.context.window.events.message({source:h.context.window.parent,origin:h.context.location.origin,data:{type:'writing-lab-suspend'}});
  release();await request;
- assert.equal(h.nodes.get('lab').innerHTML,old);assert.equal(h.hooks.current().kind,'mock');
+  assert.equal(h.nodes.get('lab').innerHTML,old);assert.equal(h.hooks.current().kind,'mock');
+});
+
+for(const action of ['resume','reattempt']) {
+  test('A delayed '+action+' cannot reopen the task after leaving the workspace',async()=>{
+    const h=harness(), original=attempt();open(h,original);
+    const fetchNormally=h.context.fetch;
+    let release;
+    h.context.fetch=(url,options)=>url.endsWith('/answer')?fetchNormally(url,options):new Promise(resolve=>{
+      release=()=>resolve({ok:true,json:async()=>({...attempt(),id:'late-attempt',serverNow:100000})});
+    });
+    const request=h.hooks[action]('late-attempt',{disabled:false});
+    await flush();await h.hooks.suspend();
+    const old=h.nodes.get('lab').innerHTML;
+    release();await request;
+    assert.equal(h.hooks.current().id,original.id);
+    assert.equal(h.nodes.get('lab').innerHTML,old);
+    assert.equal(h.recordings.length,1);
+  });
+}
+
+test('Returning to the question list cancels a pending Resume response',async()=>{
+  const h=harness();h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});
+  let release;
+  h.context.fetch=()=>new Promise(resolve=>{release=()=>resolve({ok:true,json:async()=>({...attempt(),serverNow:100000})});});
+  const request=h.hooks.resume('test-id',{disabled:false});
+  await h.hooks.hub('sst');
+  const list=h.nodes.get('lab').innerHTML;
+  release();await request;
+  assert.equal(h.hooks.current(),null);
+  assert.equal(h.nodes.get('lab').innerHTML,list);
+});
+
+test('The most recent Resume selection wins when responses arrive out of order',async()=>{
+  const h=harness(), responses=new Map();
+  h.context.fetch=(url,options)=>url.endsWith('/answer')
+    ? Promise.resolve({ok:true,json:async()=>structuredClone(h.hooks.current())})
+    : new Promise(resolve=>responses.set(url.split('/').pop(),()=>resolve({ok:true,json:async()=>({...attempt(),id:url.split('/').pop(),serverNow:100000})})));
+  const first=h.hooks.resume('first',{disabled:false});
+  const second=h.hooks.resume('second',{disabled:false});
+  responses.get('second')();await second;
+  responses.get('first')();await first;
+  assert.equal(h.hooks.current().id,'second');
+});
+
+test('Play can start loading when a browser defers preloading, without starting the timer early',async()=>{
+  const h=harness({audioReadyState:0}), a=attempt();
+  Object.assign(a,{kind:'sst',status:'ready',deadline:null});open(h,a);
+  const button=h.nodes.get('audio-start'),player=h.recordings[0];
+  assert.equal(button.disabled,false,'The learner must be able to supply the gesture that loads audio');
+  let allowPlayback;
+  player.play=()=>{player.plays++;return new Promise(resolve=>{allowPlayback=()=>{player.paused=false;resolve();};});};
+  const clicked=button.onclick();
+  assert.equal(player.plays,1);
+  assert.equal(h.requests.length,0);
+  assert.equal(h.hooks.current().deadline,null);
+  player.readyState=4;player.oncanplay();
+  assert.equal(h.requests.length,0);
+  h.context.reply={...a,status:'active',deadline:700000};h.context.replyOnce=true;
+  allowPlayback();await clicked;
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/begin')).length,1);
+  assert.equal(h.hooks.current().status,'active');
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
+});
+
+test('A stale start response cannot pause audio after returning to the same question',async()=>{
+  const h=harness(), a=attempt();Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});open(h,a);
+  let release;
+  const fetchNormally=h.context.fetch;
+  h.context.fetch=()=>new Promise(resolve=>{release=()=>resolve({ok:true,json:async()=>({...a,status:'active',deadline:700000})});});
+  const oldClick=h.nodes.get('audio-start').onclick();await flush();
+  await h.hooks.suspend();
+  await h.hooks.handleRequest({tab:'sst',requestId:'returned'});
+  h.context.fetch=fetchNormally;h.context.reply={...a,status:'active',deadline:700000};h.context.replyOnce=true;
+  await h.nodes.get('audio-start').onclick();
+  assert.equal(h.recordings[0].paused,false);
+  release();await oldClick;
+  assert.equal(h.recordings[0].paused,false,'The earlier request no longer owns the visible player');
+  assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
 });
 
 test('The standalone SST Play button starts through the real API, saves playback, and resumes the same timer',async t=>{
@@ -205,25 +284,28 @@ test('Refresh resumes the current question from server progress without inheriti
   assert.equal(finished.recordings[0].plays,0);
 });
 
-test('SST waits for playable audio, retries a failed load, and starts its timer only when the student can play',async()=>{
+test('SST retries a failed load in one click and starts its timer only after playback begins',async()=>{
   const h=harness({audioReadyState:1}), a=attempt(3);
   Object.assign(a,{kind:'sst',status:'ready',deadline:null});
   open(h,a);
   const player=h.recordings[0], button=h.nodes.get('audio-start');
   player.onloadedmetadata();
-  assert.equal(button.disabled,true);
+  assert.equal(button.disabled,false);
   assert.equal(h.requests.length,0);
   player.error={code:2};player.onerror();
   assert.equal(button.textContent,'Retry audio');
   assert.equal(h.hooks.current().status,'ready');
   assert.equal(h.requests.length,0);
-  await button.onclick();assert.equal(player.loads,1);
+  let allowPlayback;
+  player.play=()=>{player.plays++;return new Promise(resolve=>{allowPlayback=()=>{player.paused=false;resolve();};});};
+  const clicked=button.onclick();assert.equal(player.loads,1);
+  assert.equal(player.plays,1,'Retry requests playback within the same user gesture');
   player.readyState=4;player.oncanplay();
-  assert.equal(button.disabled,false);
+  assert.equal(button.disabled,true);
   assert.equal(h.requests.length,0);
   h.context.reply={...a,status:'active',deadline:700000};
   h.context.replyOnce=true;
-  await button.onclick();await flush();
+  allowPlayback();await clicked;await flush();
   assert.equal(player.plays,1);
   assert.equal(h.requests.filter(r=>r.url.endsWith('/begin')).length,1);
   assert.equal(h.nodes.get('audio-status').textContent,'Playing…');

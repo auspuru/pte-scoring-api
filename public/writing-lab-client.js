@@ -64,6 +64,7 @@
     else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : 'mock-tests');
   }
   async function hub(tab=view) {
+    navigationSerial++;
     if(tab!==view)libraryPage=0;
     requestedView=tab;
     if(tab !== 'history') historyKind=tab === 'mocks' ? 'mock' : tab;
@@ -109,7 +110,7 @@
       dialog.onclose=()=>resolve(accepted);
     });
   }
-  async function start(testId, button, serial=navigationSerial) {
+  async function start(testId, button, serial=++navigationSerial) {
     if(!username) { notify('Sign in from your workspace first. Your existing account works here.'); return; }
     const mock=catalog.mocks.find(m=>m.id===testId);
     if(mock && !await confirmAction('Ready to begin?','Allow '+mock.minutes+' minutes. The timer continues if you leave. During the mock, Next locks each answer and you cannot return to an earlier question.','Begin '+mock.minutes+'-minute mock')) return;
@@ -120,12 +121,14 @@
       if (serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(started);
       showAttempt();
-    } catch(e) { notify(e.message); button.disabled=false; }
+    } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
-  async function resume(id,button) {
+  async function resume(id,button,serial=++navigationSerial) {
     button.disabled=true;
     try {
-      setAttempt(await api('/attempts/'+id));
+      const value=await api('/attempts/'+id);
+      if(serial!==navigationSerial || !workspaceVisible) return;
+      setAttempt(value);
       const local=draft();
       if(attempt.status==='active' && local?.index===attempt.index && local.at<attempt.deadline && local.revision>=attempt.revisions[attempt.index]) {
         attempt.answers[attempt.index]=local.text; attempt.revisions[attempt.index]=local.revision; attempt.notes=local.notes||'';
@@ -133,16 +136,18 @@
       historyKind=attempt.kind;
       showAttempt();
       if(attempt?.status==='active') saveAnswer(false);
-    } catch(e) { notify(e.message); button.disabled=false; }
+    } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
-  async function reattempt(testId,button) {
+  async function reattempt(testId,button,serial=++navigationSerial) {
     if(!username || !testId) return;
     button.disabled=true;
     try {
       // A new UUID keeps the completed attempt and its feedback in My attempts.
-      setAttempt(await api('/attempts',{id:crypto.randomUUID(),testId}));
+      const value=await api('/attempts',{id:crypto.randomUUID(),testId});
+      if(serial!==navigationSerial || !workspaceVisible) return;
+      setAttempt(value);
       showAttempt();
-    } catch(e) { notify(e.message); button.disabled=false; }
+    } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
   function questionPosition() {
     const questions=catalog&&(attempt.kind==='sst'?catalog.spoken:attempt.kind==='wfd'?catalog.dictation:null);
@@ -254,9 +259,18 @@
       audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0);
     }
     const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
-    const current=()=>attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
+    const current=()=>workspaceVisible && attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
+    // Reopening the same question reuses its player. An old request must not
+    // pause playback now owned by the new view; leaving still stops the audio.
+    const stopStalePlayback=()=>{
+      if(!workspaceVisible || document.hidden || audio!==player || audioAttempt!==key) player.pause();
+    };
     const completeText=q.type==='wfd'?'Recording complete. Check your sentence.':'Recording complete. Write your summary.';
     let prepared=false, starting=false, resumePosition=Math.max(local?.audioTime||0,saved?.position||0);
+    const restorePosition=()=>{
+      if(current() && player.readyState>=1 && resumePosition && player.currentTime<resumePosition)
+        player.currentTime=Math.min(resumePosition,player.duration||resumePosition);
+    };
     const update=()=>{
       if(!current()) return;
       document.getElementById('audio-progress').value=player.duration?player.currentTime/player.duration*100:0;
@@ -265,32 +279,36 @@
     const play=async()=>{
       clearInterval(audioCountdown);
       if(!current() || audioFinished || document.hidden || starting) return;
-      if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); status.textContent='Loading audio…'; startButton.disabled=true; return; }
+      if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); }
       if(attempt.status==='active' && attempt.deadline<=Date.now()+offset) { tick(); return; }
       starting=true;
       startButton.disabled=true;
+      status.textContent=player.readyState<3?'Loading recording…':'Starting recording…';
       let phase='playback';
       try {
         // Call play directly in the click handler, before a network await loses
         // Safari's user gesture. A blocked play must not start the SST timer.
         await player.play();
-        if(!current() || document.hidden) { player.pause(); return; }
+        if(!current() || document.hidden) { stopStalePlayback(); return; }
         if(attempt.status==='ready') {
           phase='attempt';
           status.textContent='Starting your attempt…';
           const value=await api('/attempts/'+id+'/begin',{});
-          if(!current()) { player.pause(); return; }
+          if(!current()) { stopStalePlayback(); return; }
           setAttempt(value);
           if(attempt.status!=='active') { player.pause(); showAttempt(); return; }
           document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
         }
-        if(!current() || attempt.deadline<=Date.now()+offset || document.hidden) { player.pause(); if(current()) tick(); return; }
-        status.textContent='Playing…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
+        if(!current()) { stopStalePlayback(); return; }
+        if(attempt.deadline<=Date.now()+offset || document.hidden) { player.pause(); tick(); return; }
+        status.textContent=audioFinished?completeText:'Playing…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
       } catch(e) {
+        if(!current()) { stopStalePlayback(); return; }
         player.pause();
-        if(!current()) return;
         startButton.disabled=false; startButton.classList.remove('hidden'); startButton.textContent='Play';
-        status.textContent=phase==='attempt' ? e.message+' Press Play recording to retry.' : 'Press Play recording to allow audio and continue.';
+        if(phase==='attempt') status.textContent=e.message+' Press Play recording to retry.';
+        else if(player.error) {startButton.textContent='Retry audio';status.textContent='Audio could not load. Check your connection and retry.';}
+        else status.textContent='Press Play recording to allow audio and continue.';
       } finally { starting=false; }
     };
     player.ontimeupdate=()=>{
@@ -300,14 +318,13 @@
     };
     const ready=()=>{
       if(!current()) return;
-      const position=resumePosition;
-      if(position && player.currentTime<position) player.currentTime=Math.min(position,player.duration||position);
+      restorePosition();
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
       startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
       startButton.textContent=attempt.status==='ready'?'Play':player.currentTime>0?'Continue recording':'Play';
       if(!player.paused) startButton.classList.add('hidden');
       update();
-      if(!prepared && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden && workspaceVisible) {
+      if(!prepared && !starting && player.paused && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden && workspaceVisible) {
         let remaining=3;
         status.textContent='Recording starts in '+remaining+'…';
         clearInterval(audioCountdown);
@@ -319,8 +336,15 @@
       }
       prepared=true;
     };
-    player.onloadedmetadata=update;
-    player.oncanplay=ready; if(player.readyState>=3) ready();
+    player.onloadedmetadata=()=>{restorePosition();update();};
+    player.oncanplay=ready;
+    if(audioFinished || player.readyState>=3) ready();
+    else {
+      // Preload is only a browser hint. Play must remain available so a user
+      // gesture can start loading even when the browser has buffered nothing.
+      startButton.disabled=false;
+      status.textContent='Press Play to load the recording.';
+    }
     player.onended=()=>{
       if(!current()) return;
       audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
@@ -350,12 +374,12 @@
     if(moving||saveConflict||!attempt)return;
     const questions=attempt.kind==='sst'?catalog.spoken:catalog.dictation,index=questions.findIndex(q=>q.id===attempt.testId),target=questions[index+direction];
     if(!target)return;
-    const serial=navigationSerial;moving=true;button.disabled=true;clearTimeout(saveTimer);stopAudio();writeDraft();
+    const serial=++navigationSerial;moving=true;button.disabled=true;clearTimeout(saveTimer);stopAudio();writeDraft();
     try {await saveAnswer(false);await saving;if(saveConflict)throw Error('Resolve the saved-answer conflict before changing questions.');
       const history=await api('/attempts'),saved=history.filter(a=>a.testId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
       if(serial!==navigationSerial||!workspaceVisible)return;
-      clearInterval(timer);if(saved)await resume(saved.id,button);else await start(target.id,button);
-    }catch(e){notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
+      clearInterval(timer);if(saved)await resume(saved.id,button,serial);else await start(target.id,button,serial);
+    }catch(e){if(serial===navigationSerial && workspaceVisible)notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
   }
   function renderResults() {
     shell.classList.remove('exam-mode'); clearInterval(timer);
@@ -419,7 +443,7 @@
     requestedView=tab;
     if (attempt?.status==='active') await saveAnswer(false);
     if (serial!==navigationSerial || !workspaceVisible) return;
-    if (request.attemptId) return resume(request.attemptId,{disabled:false});
+    if (request.attemptId) return resume(request.attemptId,{disabled:false},serial);
     if (request.testId) {
       historyKind='mock';
       if (attempt?.testId===request.testId && ['active','ready'].includes(attempt.status)) return showAttempt();
