@@ -40,7 +40,7 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
           entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
     }
-    const input = { model:'tts-1', voice:q.voice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, requireNeural:q.audioMode === 'runtime-neural' };
+    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', requireNeural:q.audioMode === 'runtime-neural' };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }
@@ -65,9 +65,17 @@ function installNarration(app, directory) {
       try {
         const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
           headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
-          body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed}),signal:AbortSignal.timeout(60000)});
+          body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
         if(response.ok) return Buffer.from(await response.arrayBuffer());
-        if(input.requireNeural) throw Error('Natural narration is temporarily unavailable.');
+        if(input.requireNeural) {
+          let detail='HTTP '+response.status;
+          try {
+            const payload=await response.json();
+            detail+=' '+String(payload?.error?.code || payload?.error?.type || '').slice(0,80)+' '+String(payload?.error?.message || '').slice(0,180);
+          } catch (_) {}
+          console.warn('[writing-audio] Neural narration provider rejected request:',detail.trim());
+          throw Error('Natural narration is temporarily unavailable.');
+        }
         console.warn('[writing-audio] Remote narration returned HTTP '+response.status+'; using local narrator.');
       } catch (error) {
         if(input.requireNeural) throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
