@@ -165,27 +165,43 @@ function naturalNarration(text) {
     .replace(/([.!?])\s+/g, '$1\n\n');
 }
 
-// Light, deterministic lecturer-style hesitations. These affect audio only:
-// q.text always remains the exact transcript supplied by the user.
-const HESITATIONS = Object.freeze([
-  [['Researchers have found', 'Um,'], ['By studying when smiles happened', 'Uh,']],
-  [['Now this is interesting', 'Um,'], ['That was basically based', 'Uh,']],
-  [["Let's look at two important reasons", 'Um,']],
-  [['So vitamin D really', 'Um,'], ['As humans migrated away', 'Uh,']],
-  [["In the 20th century", 'Um,']],
-  [['in fact, today', 'um,']],
-  [['However, there are some different uses', 'Um,']],
-  [['We can think of leadership as a spectrum', 'Um,'], ['Over the centuries', 'Uh,']],
-  [['In fact, one of the most interesting books', 'Um,']],
-  [['So what does science say', 'Um,'], ["Let's break this idea down", 'Uh,']],
-  [['Many of us would prefer', 'Um,']],
-  [['When I started out forty-odd years ago', 'Um,']],
-  [['After careful observation', 'Um,'], ['On the other hand', 'Uh,']]
+// Deterministic lecture-delivery edits. These affect audio only:
+ // q.text remains the exact transcript supplied by the user.
+const DELIVERY_EDITS = Object.freeze([
+  [['Researchers have found', 'Um,'], ['The researchers enlisted', 'Now, well,'], ['By studying when smiles happened', 'So, you know,']],
+  [['Now this is interesting', 'Well,'], ['That was basically based', 'Um,'], ['So, when we begin', 'So, you know,']],
+  [['This structure is clearly defined', 'Now,'], ["Let's look at two important reasons", 'Um, well,'], ['Second, this structure', 'So,']],
+  [['And I think the real important words', 'I mean,'], ['So vitamin D really', 'Um,'], ['As humans migrated away', 'And, you know,']],
+  [['So the stars', 'Well,'], ['In the 20th century', 'Um,'], ['But in some sense', 'Now, actually,']],
+  [['English, in fact, has borrowed', 'Well,'], ['By looking at the history', 'You know,'], ['So, in fact, today', 'Um,'], ["So for example in Shakespeare's time", 'Now,']],
+  [["The term 'stock market'", 'Now,'], ['However, there are some different uses', 'Um,'], ['In the 18th century', 'So,'], ['From 19th to 20th century', 'I mean,']],
+  [["Leaders can mobilize people's energies", 'Well,'], ['We can think of leadership as a spectrum', 'Um,'], ['At the opposite end of the spectrum', 'You know,'], ['Over the centuries', 'Now,']],
+  [['Let me just say that', 'Well,'], ['In fact, one of the most interesting books', 'Um,'], ['In your reading, I give you', 'You know,'], ['And with that kind of analysis', 'So,']],
+  [['So what does science say', 'Well,'], ['True happiness', 'Um,'], ["Let's break this idea down", 'Now,'], ['Second, this is balanced', 'So, you know,']],
+  [['Many of us would prefer', 'Well,'], ['Our most basic emotions', 'Um,'], ['It would be dangerous', 'You know,'], ['This most primitive part of our brain', 'So,']],
+  [['When I started out forty-odd years ago', 'Well,'], ['But now for really very sound scientific reasons', 'Um,'], ['And we also know', 'You know,'], ['A very neat example of this', 'Now,']],
+  [['After careful observation', 'Um,'], ['The finding further stated', 'Well,'], ['On the other hand', 'You know,'], ['Those who did not lose weight', 'I mean,']]
+]);
+
+const AMBIENCE_PROFILES = Object.freeze([
+  [{type:'room'}],
+  [{type:'clock', start:12, duration:10}],
+  [],
+  [{type:'paper', at:18}],
+  [{type:'room'}, {type:'paper', at:24}],
+  [{type:'clock', start:16, duration:9}],
+  [],
+  [{type:'room'}],
+  [{type:'paper', at:20}],
+  [{type:'room'}, {type:'clock', start:22, duration:8}],
+  [{type:'room'}],
+  [],
+  [{type:'paper', at:14}]
 ]);
 
 function humanisedNarration(text, index) {
   let narration = naturalNarration(text);
-  for (const [anchor, filler] of HESITATIONS[index] || []) {
+  for (const [anchor, filler] of DELIVERY_EDITS[index] || []) {
     if (!narration.includes(anchor)) throw new Error('Missing SST narration anchor: ' + anchor);
     narration = narration.replace(anchor, filler + ' ' + anchor);
   }
@@ -205,6 +221,7 @@ const sst = raw.map((item, index) => ({
   ttsModel: 'tts-1-hd',
   audioSpeed: 0.94,
   audioInstructions: '',
+  audioAmbience: AMBIENCE_PROFILES[index],
   keyPoints: item.keyPoints,
   sample: item.sample,
   predictionSource: {
@@ -215,4 +232,4 @@ const sst = raw.map((item, index) => ({
   }
 }));
 
-module.exports = { source, sst };
+module.exports = { source, sst, naturalNarration, deliveryEdits:DELIVERY_EDITS, ambienceProfiles:AMBIENCE_PROFILES };
