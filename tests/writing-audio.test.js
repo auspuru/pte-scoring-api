@@ -68,14 +68,11 @@ test('User SST predictions keep verbatim source text while audio adds only light
   await narration.get(q.id);
   assert.equal(seen.length,1);
   assert.equal(seen[0].input,q.narrationText);
-  assert.equal(seen[0].model,'gpt-4o-mini-tts');
+  assert.equal(seen[0].model,'tts-1-hd');
   assert.equal(seen[0].response_format,'wav');
-  assert(['marin','cedar'].includes(seen[0].voice));
-  assert(['en-AU-NatashaNeural','en-AU-WilliamNeural'].includes(seen[0].edgeVoice));
+  assert(['nova','onyx','shimmer','echo'].includes(seen[0].voice));
   assert.equal(seen[0].speed,0.94);
-  assert.match(seen[0].instructions,/natural academic lecture/);
-  assert.match(seen[0].instructions,/occasional um or uh hesitation/);
-  assert.match(seen[0].instructions,/do not add any other words/);
+  assert.equal(seen[0].instructions,'');
   assert.equal(seen[0].requireNeural,true);
   assert.match(seen[0].input,/\n\n/);
 
@@ -161,23 +158,16 @@ test('Prewarming retries a failed item and continues through the remaining recor
 });
 
 
-test('Neural SST fallback remains Edge neural rather than robotic local speech', async () => {
+test('User SST masters use OpenAI quality-optimized HD TTS and never robotic local speech', async () => {
   const source=await fs.readFile(require.resolve('../writing-lab-audio'),'utf8');
-  assert.match(source,/createEdgeNarration/);
-  assert.match(source,/edge-tts/);
-  assert.match(source,/--rate=-5%/);
-  assert.match(source,/ffprobe/);
-  assert.match(source,/sampleRate !== 48000/);
-  assert.match(source,/bitRate < 180000/);
-  assert.match(source,/Edge native HD source/);
-  assert.match(source,/Edge native-HD neural source generated audio/);
-  assert.match(source,/OpenAI neural fallback unavailable/);
-  assert.match(source,/openAiNeuralRetryAt/);
-  assert.doesNotMatch(source,/openAiNeuralUnavailable\s*=\s*true/);
+  assert.match(source,/OpenAI quality-optimized HD master generated audio/);
+  assert.match(source,/Natural HD narration is temporarily unavailable/);
+  assert.match(source,/\^tts-1\(\?:-hd\)\?\$/);
   const neuralStart=source.indexOf('if(input.requireNeural)');
-  const edgeCall=source.indexOf('const bytes=await createEdgeNarration(input)',neuralStart);
-  const openAiFallback=source.indexOf('if(process.env.OPENAI_API_KEY',neuralStart);
-  assert(edgeCall>neuralStart && openAiFallback>edgeCall,'native HD Edge must be attempted before OpenAI');
-  const neuralBlock=source.slice(neuralStart,source.indexOf("if(process.env.OPENAI_API_KEY)",openAiFallback+1));
+  const openAiCall=source.indexOf('if(process.env.OPENAI_API_KEY',neuralStart);
+  assert(openAiCall>neuralStart,'OpenAI HD must be the runtime-neural provider');
+  const neuralEnd=source.indexOf('\n    }\n    if(process.env.OPENAI_API_KEY)',openAiCall);
+  const neuralBlock=source.slice(neuralStart,neuralEnd);
   assert.doesNotMatch(neuralBlock,/createLocalNarration/);
+  assert.doesNotMatch(neuralBlock,/createEdgeNarration/);
 });
