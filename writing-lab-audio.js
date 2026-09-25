@@ -8,8 +8,16 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'loudnorm-v1';
-const NORMALIZATION_FILTER = 'loudnorm=I=-18:TP=-1.5:LRA=7';
+const RUNTIME_CACHE_VERSION = 'speech-hd-v2';
+const PREVIOUS_RUNTIME_CACHE_VERSIONS = ['loudnorm-v1'];
+const SPEECH_CLEANUP_FILTER = [
+  'highpass=f=75',
+  'lowpass=f=16000',
+  'afftdn=nr=6:nf=-50',
+  'loudnorm=I=-18:TP=-1.5:LRA=7',
+  'alimiter=limit=0.95',
+  'aresample=48000'
+].join(',');
 const OPENAI_RETRY_COOLDOWN_MS = 5 * 60 * 1000;
 
 async function writeAtomic(file, bytes) {
@@ -30,8 +38,8 @@ async function normalizeMp3(bytes) {
     await fs.writeFile(source, bytes);
     await run('ffmpeg', [
       '-loglevel', 'error', '-y', '-i', source,
-      '-af', NORMALIZATION_FILTER,
-      '-codec:a', 'libmp3lame', '-b:a', '128k', output
+      '-af', SPEECH_CLEANUP_FILTER,
+      '-codec:a', 'libmp3lame', '-b:a', '192k', '-ar', '48000', '-ac', '1', output
     ], { timeout:120000, maxBuffer:10 * 1024 * 1024 });
     const normalized = await fs.readFile(output);
     if (normalized.length < 1000) throw Error('Normalized narration output was empty.');
@@ -76,7 +84,7 @@ async function createEdgeNarration(input) {
     await fs.unlink(mp3).catch(()=>{});
   }
 }
-function createNarration(directory, generate, { bundledDirectory, cacheVersion, postProcess } = {}) {
+function createNarration(directory, generate, { bundledDirectory, cacheVersion, previousCacheVersions=[], postProcess } = {}) {
   const pending = new Map();
   let manifest;
   const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
@@ -103,12 +111,19 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     if(await usable(file)) return file;
     if(!pending.has(file)) {
       const task=(async()=>{
-        // A processing-only cache upgrade reuses the already-paid-for recording.
-        // This avoids another provider call when loudness or encoding is improved.
-        const legacyFile = path.resolve(directory, id + '-' + legacyHash + '.mp3');
-        let bytes = cacheVersion && legacyFile !== file && await usable(legacyFile)
-          ? await fs.readFile(legacyFile)
-          : await generate(input);
+        // A processing-only cache upgrade reuses an already-generated recording.
+        // Search both the pre-version cache key and explicitly supported prior
+        // processing versions so cleanup/encoding upgrades never spend TTS again.
+        const candidateHashes = [
+          legacyHash,
+          ...previousCacheVersions.map(version => digest({ ...input, cacheVersion:version }))
+        ];
+        let sourceFile = null;
+        for (const candidateHash of candidateHashes) {
+          const candidate = path.resolve(directory, id + '-' + candidateHash + '.mp3');
+          if (candidate !== file && await usable(candidate)) { sourceFile = candidate; break; }
+        }
+        let bytes = sourceFile ? await fs.readFile(sourceFile) : await generate(input);
         if(postProcess) bytes=await postProcess(bytes, input);
         if(!Buffer.isBuffer(bytes) || bytes.length<1000 || bytes.length>8*1024*1024) throw Error('Invalid narration response.');
         await writeAtomic(file,bytes);
@@ -193,7 +208,12 @@ function installNarration(app, directory, { prewarm=true } = {}) {
       }
     }
     return createLocalNarration(input);
-  }, { bundledDirectory:path.join(__dirname, 'content', 'writing-audio'), cacheVersion:RUNTIME_CACHE_VERSION, postProcess:normalizeMp3 });
+  }, {
+    bundledDirectory:path.join(__dirname, 'content', 'writing-audio'),
+    cacheVersion:RUNTIME_CACHE_VERSION,
+    previousCacheVersions:PREVIOUS_RUNTIME_CACHE_VERSIONS,
+    postProcess:normalizeMp3
+  });
   // Bundled files have no synthesis cost. Range requests and students sharing a
   // classroom IP must not consume the old narration-generation request quota.
   app.get('/writing-audio/:id.mp3',async(req,res)=>{
