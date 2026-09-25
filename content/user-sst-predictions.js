@@ -158,6 +158,10 @@ function naturalNarration(text) {
   return String(text || '')
     .replace(/\s+/g, ' ')
     .trim()
+    .replace(/\s*-\s*/g, '-')
+    .replace(/\s*'\s*/g, "'")
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .replace(/\s*—\s*/g, ' — ')
     .replace(/([.!?])\s+/g, '$1\n\n');
 }
 
