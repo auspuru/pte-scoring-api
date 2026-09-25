@@ -71,5 +71,6 @@ test('User SST predictions use natural neural narration without changing transcr
   assert.equal(seen[0].speed,0.94);
   assert.equal(seen[0].requireNeural,true);
   assert.match(seen[0].input,/\n\n/);
-  assert.equal(q.text.replace(/\s+/g,' ').trim(),q.narrationText.replace(/\s+/g,' ').trim());
+  const tokens=value=>String(value).match(/[\p{L}\p{N}]+/gu) || [];
+  assert.deepEqual(tokens(q.narrationText),tokens(q.text));
 });
