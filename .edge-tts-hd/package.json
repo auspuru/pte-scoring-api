@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "@andresaya/edge-tts": "1.8.1"
+  }
+}
