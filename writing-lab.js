@@ -5,7 +5,7 @@ const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const AUDIO_VERSION = '20260924-neural126';
+const AUDIO_VERSION = '20260925-user-sst30';
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
@@ -135,8 +135,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return account && !account.blocked ? uid : null;
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
-    predictionBank:{source:predictions.source,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
-    spoken:bank.spoken.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
+    spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     mocks:allMocks.map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
@@ -171,7 +171,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   }));
   router.post('/attempts', route(async(req,res) => {
     const { id, testId } = req.body || {};
-    const mock = allMocks.find(m => m.id === testId), individual = [...bank.spoken, ...dictation].find(q => q.id === testId);
+    const mock = allMocks.find(m => m.id === testId), individual = [...predictions.sst, ...dictation].find(q => q.id === testId);
     if (!mock && !individual) throw bad('Question set not found.',404);
     const q = structuredClone(mock ? mock.questions : [individual]);
     if (!mock) delete q[0].timeGroup;
