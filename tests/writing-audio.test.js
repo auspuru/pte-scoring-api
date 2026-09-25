@@ -161,14 +161,18 @@ test('Prewarming retries a failed item and continues through the remaining recor
 });
 
 
-test('Neural SST fallback remains Edge neural rather than robotic local speech', async () => {
+test('Neural SST source is native-HD Edge first and never robotic local speech', async () => {
   const source=await fs.readFile(require.resolve('../writing-lab-audio'),'utf8');
+  const helper=await fs.readFile(path.join(__dirname,'..','scripts','generate-edge-hd.js'),'utf8');
   assert.match(source,/createEdgeNarration/);
-  assert.match(source,/edge-tts/);
-  assert.match(source,/--rate=-5%/);
+  assert.match(source,/generate-edge-hd\.js/);
+  assert.match(helper,/@andresaya/);
+  assert.match(helper,/audio-48khz-192kbitrate-mono-mp3/);
+  assert.match(helper,/rate:-5|rate: Number/);
   assert.match(source,/ffprobe/);
   assert.match(source,/sampleRate !== 48000/);
   assert.match(source,/bitRate < 180000/);
+  assert.match(source,/channels !== 1/);
   assert.match(source,/Edge native HD source/);
   assert.match(source,/Edge native-HD neural source generated audio/);
   assert.match(source,/OpenAI neural fallback unavailable/);
