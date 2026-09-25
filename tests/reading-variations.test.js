@@ -9,32 +9,32 @@ const predictions = require('../public/reading-predictions-sep-2026');
 const fibQuality = require('../public/reading-fib-quality');
 const catalogue = require('../public/practice-catalogue');
 
-test('Focused Reading mocks 4–9 are unique FIB-only papers within passage limits', () => {
-  const presets=bank.mockCatalogue.filter(m=>m.kind==='reading-blanks'),seen=new Set();
-  assert.equal(presets.length,6);
-  for(const preset of presets){
-    const plan=tools.compose(bank,preset.id,preset.setId);
-    assert.equal(plan.questions.length,10);
-    assert.equal(plan.questions.filter(q=>q.type==='dropdown').length,5);
-    assert.equal(plan.questions.filter(q=>q.type==='wordbank').length,5);
-    for(const q of plan.questions){
+test('Fifteen Reading Practice mocks use all five real Reading task types in 23 minutes', () => {
+  const seenPredictionIds=new Set();
+  for(let number=1;number<=15;number++){
+    const plan=tools.compose(bank,'reading-practice-mock-'+number);
+    assert.equal(plan.minutes,23);
+    assert.equal(plan.questions.length,16);
+    assert.deepEqual(plan.questions.map(q=>q.type),[
+      ...Array(5).fill('dropdown'),...Array(2).fill('mcma'),...Array(2).fill('reorder'),...Array(5).fill('wordbank'),...Array(2).fill('mcsa')
+    ]);
+    for(const q of plan.questions.filter(q=>['dropdown','wordbank'].includes(q.type))){
       const words=String(q.passage||'').trim().split(/\s+/).filter(Boolean).length;
       assert(words<=(q.type==='wordbank'?80:300),q.id);
-      assert(!seen.has(q.uid||q.id),'Question repeated across focused mocks: '+(q.uid||q.id));
-      seen.add(q.uid||q.id);
       assert.match(q.reasoning.correct,/No specialist subject knowledge is required/);
-      assert.match(q.id,/^pred26-rw?-|^pred26-r-/);
-      assert.equal(q.predictionSource.provider,'PTE Nepal');
-      assert.equal(q.predictionSource.week,'21-27 September 2026');
+      if(q.predictionSource){
+        seenPredictionIds.add(q.predictionSource.sourceId);
+        assert.equal(q.predictionSource.provider,'PTE Nepal');
+        assert.equal(q.predictionSource.week,'21-27 September 2026');
+      }
     }
   }
-  assert.equal(seen.size,60);
   assert.equal(predictions.dropdown.length,30);
   assert.equal(predictions.wordbank.length,30);
   assert.equal(new Set(predictions.dropdown.map(q=>q.predictionSource.sourceId)).size,30);
   assert.equal(new Set(predictions.wordbank.map(q=>q.predictionSource.sourceId)).size,30);
+  assert(seenPredictionIds.size>=30,'Reading Practice mocks should retain a broad prediction FIB pool');
 });
-
 test('Reading answer choices are shuffled for display while answer coordinates and scoring remain unchanged', () => {
   let checked = 0;
   for (const set of bank.sets) for (const raw of set.questions) {
@@ -163,8 +163,8 @@ test('Reading FIB choices test grammar plus contextual vocabulary rather than sy
     }
   };
 
-  for(const preset of bank.mockCatalogue.filter(m=>m.kind==='reading-blanks')){
-    tools.compose(bank,preset.id,preset.setId).questions.forEach(check);
+  for(let number=1;number<=15;number++){
+    tools.compose(bank,'reading-practice-mock-'+number).questions.filter(q=>['dropdown','wordbank'].includes(q.type)).forEach(check);
   }
   for(const library of catalogue.readingLibraries(bank).filter(l=>['dropdown','wordbank'].includes(l.id))){
     library.questions.forEach(check);
