@@ -58,7 +58,7 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
 });
 
 
-test('User SST predictions use natural neural narration without changing transcript wording', async t => {
+test('User SST predictions keep verbatim source text while audio adds only light human hesitations', async t => {
   assert.equal(runtimeQuestions.length, 13);
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-neural-audio-'));
   t.after(() => fs.rm(cache, { recursive: true, force: true }));
@@ -73,11 +73,22 @@ test('User SST predictions use natural neural narration without changing transcr
   assert(['en-AU-NatashaNeural','en-AU-WilliamNeural'].includes(seen[0].edgeVoice));
   assert.equal(seen[0].speed,0.94);
   assert.match(seen[0].instructions,/natural academic lecture/);
-  assert.match(seen[0].instructions,/wording exactly as provided/);
+  assert.match(seen[0].instructions,/occasional um or uh hesitation/);
+  assert.match(seen[0].instructions,/do not add any other words/);
   assert.equal(seen[0].requireNeural,true);
   assert.match(seen[0].input,/\n\n/);
+
   const tokens=value=>String(value).match(/[\p{L}\p{N}]+/gu) || [];
-  assert.deepEqual(tokens(q.narrationText),tokens(q.text));
+  for (const item of runtimeQuestions) {
+    const narrationTokens=tokens(item.narrationText);
+    const fillers=narrationTokens.filter(token=>/^(?:um|uh)$/i.test(token));
+    assert(fillers.length>=1 && fillers.length<=2,item.id+' should have only one or two human hesitations');
+    assert.deepEqual(
+      narrationTokens.filter(token=>!/^(?:um|uh)$/i.test(token)),
+      tokens(item.text),
+      item.id+' narration must preserve every supplied transcript word in order'
+    );
+  }
 });
 
 test('A cache processing upgrade reuses the paid recording instead of calling the provider again', async t => {

@@ -165,6 +165,33 @@ function naturalNarration(text) {
     .replace(/([.!?])\s+/g, '$1\n\n');
 }
 
+// Light, deterministic lecturer-style hesitations. These affect audio only:
+// q.text always remains the exact transcript supplied by the user.
+const HESITATIONS = Object.freeze([
+  [['Researchers have found', 'Um,'], ['By studying when smiles happened', 'Uh,']],
+  [['Now this is interesting', 'Um,'], ['That was basically based', 'Uh,']],
+  [["Let's look at two important reasons", 'Um,']],
+  [['So vitamin D really', 'Um,'], ['As humans migrated away', 'Uh,']],
+  [["In the 20th century", 'Um,']],
+  [['in fact, today', 'um,']],
+  [['However, there are some different uses', 'Um,']],
+  [['We can think of leadership as a spectrum', 'Um,'], ['Over the centuries', 'Uh,']],
+  [['In fact, one of the most interesting books', 'Um,']],
+  [['So what does science say', 'Um,'], ["Let's break this idea down", 'Uh,']],
+  [['Many of us would prefer', 'Um,']],
+  [['When I started out forty-odd years ago', 'Um,']],
+  [['After careful observation', 'Um,'], ['On the other hand', 'Uh,']]
+]);
+
+function humanisedNarration(text, index) {
+  let narration = naturalNarration(text);
+  for (const [anchor, filler] of HESITATIONS[index] || []) {
+    if (!narration.includes(anchor)) throw new Error('Missing SST narration anchor: ' + anchor);
+    narration = narration.replace(anchor, filler + ' ' + anchor);
+  }
+  return narration;
+}
+
 const sst = raw.map((item, index) => ({
   id: 'pred26-user-sst-' + String(index + 1).padStart(2, '0'),
   type: 'sst',
@@ -174,11 +201,11 @@ const sst = raw.map((item, index) => ({
   voice: ['marin', 'cedar'][index % 2],
   edgeVoice: ['en-AU-NatashaNeural', 'en-AU-WilliamNeural'][index % 2],
   text: item.transcript,
-  narrationText: naturalNarration(item.transcript),
+  narrationText: humanisedNarration(item.transcript, index),
   audioMode: 'runtime-neural',
   ttsModel: 'gpt-4o-mini-tts',
   audioSpeed: 0.94,
-  audioInstructions: 'Read this as a natural academic lecture. Keep the wording exactly as provided. Use clear conversational intonation, brief pauses at sentence boundaries, slightly longer pauses at paragraph breaks, and avoid a robotic or rushed delivery.',
+  audioInstructions: 'Read this as a natural academic lecture. Follow the supplied narration text exactly, including its occasional um or uh hesitation, and do not add any other words. Use smooth conversational intonation, subtle emphasis changes, brief pauses at sentence boundaries, slightly longer pauses at paragraph breaks, and avoid a robotic, theatrical, or rushed delivery.',
   keyPoints: item.keyPoints,
   sample: item.sample,
   predictionSource: {
