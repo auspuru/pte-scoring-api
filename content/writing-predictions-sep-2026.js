@@ -1,9 +1,10 @@
 'use strict';
 
 // September 2026 prediction-aligned practice bank.
-// Source IDs/titles are drawn from the public PTE Nepal weekly prediction index
-// for 21-27 September 2026. Practice passages/transcripts below are original
-// adaptations for this portal, not copies of third-party passage text.
+// The first 13 SST items are verbatim transcripts supplied directly by the user.
+// The remaining source IDs/titles are drawn from the public PTE Nepal weekly
+// prediction index for 21-27 September 2026; those portal-authored items remain
+// adaptations rather than copies of third-party passage text.
 const userSst = require('./user-sst-predictions');
 
 const source = {
