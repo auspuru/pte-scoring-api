@@ -8,6 +8,38 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
+const RUNTIME_CACHE_VERSION = 'loudnorm-v1';
+const NORMALIZATION_FILTER = 'loudnorm=I=-18:TP=-1.5:LRA=7';
+const OPENAI_RETRY_COOLDOWN_MS = 5 * 60 * 1000;
+
+async function writeAtomic(file, bytes) {
+  await fs.mkdir(path.dirname(file), { recursive:true });
+  const tmp = file + '.' + randomUUID() + '.tmp';
+  try {
+    await fs.writeFile(tmp, bytes);
+    await fs.rename(tmp, file);
+  } finally {
+    await fs.unlink(tmp).catch(()=>{});
+  }
+}
+
+async function normalizeMp3(bytes) {
+  const stem = path.join(os.tmpdir(), 'ipt-normalize-audio-' + randomUUID());
+  const source = stem + '-source.mp3', output = stem + '.mp3';
+  try {
+    await fs.writeFile(source, bytes);
+    await run('ffmpeg', [
+      '-loglevel', 'error', '-y', '-i', source,
+      '-af', NORMALIZATION_FILTER,
+      '-codec:a', 'libmp3lame', '-b:a', '128k', output
+    ], { timeout:120000, maxBuffer:10 * 1024 * 1024 });
+    const normalized = await fs.readFile(output);
+    if (normalized.length < 1000) throw Error('Normalized narration output was empty.');
+    return normalized;
+  } finally {
+    await Promise.allSettled([fs.unlink(source), fs.unlink(output)]);
+  }
+}
 
 async function createLocalNarration(input) {
   const stem = path.join(os.tmpdir(), 'ipt-writing-audio-' + randomUUID());
@@ -44,9 +76,14 @@ async function createEdgeNarration(input) {
     await fs.unlink(mp3).catch(()=>{});
   }
 }
-function createNarration(directory, generate, { bundledDirectory } = {}) {
+function createNarration(directory, generate, { bundledDirectory, cacheVersion, postProcess } = {}) {
   const pending = new Map();
   let manifest;
+  const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
+  const usable = async file => {
+    try { return (await fs.stat(file)).size > 1000; }
+    catch(error) { if(error.code === 'ENOENT') return false; throw error; }
+  };
   async function get(id) {
     const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || [])].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
@@ -54,45 +91,82 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       manifest ||= JSON.parse(await fs.readFile(path.join(bundledDirectory, 'manifest.json'), 'utf8'));
       const entry = manifest[id], bundledFile = path.resolve(bundledDirectory, id + '.mp3');
       // Content hashes prevent an edited lecture from using an old recording.
-      if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
-          entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
+      if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') && entry.bytes > 1000) {
+        try { if ((await fs.stat(bundledFile)).size === entry.bytes) return bundledFile; }
+        catch(error) { if(error.code !== 'ENOENT') throw error; }
+      }
     }
     const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', requireNeural:q.audioMode === 'runtime-neural' };
-    const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
+    const legacyHash = digest(input);
+    const hash = digest(cacheVersion ? { ...input, cacheVersion } : input);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
-    try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }
-    if(!pending.has(id)) {
+    if(await usable(file)) return file;
+    if(!pending.has(file)) {
       const task=(async()=>{
-        const bytes=await generate(input);
+        // A processing-only cache upgrade reuses the already-paid-for recording.
+        // This avoids another provider call when loudness or encoding is improved.
+        const legacyFile = path.resolve(directory, id + '-' + legacyHash + '.mp3');
+        let bytes = cacheVersion && legacyFile !== file && await usable(legacyFile)
+          ? await fs.readFile(legacyFile)
+          : await generate(input);
+        if(postProcess) bytes=await postProcess(bytes, input);
         if(!Buffer.isBuffer(bytes) || bytes.length<1000 || bytes.length>8*1024*1024) throw Error('Invalid narration response.');
-        await fs.mkdir(directory,{recursive:true});
-        const tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,bytes);await fs.rename(tmp,file);
+        await writeAtomic(file,bytes);
         return file;
       })();
-      pending.set(id,task);task.finally(()=>pending.delete(id)).catch(()=>{});
+      pending.set(file,task);task.finally(()=>pending.delete(file)).catch(()=>{});
     }
-    return pending.get(id);
+    return pending.get(file);
   }
   return { get };
 }
-function installNarration(app, directory) {
-  let openAiNeuralUnavailable = false;
+async function prewarmNarration(narration, ids, { attempts=3, baseDelayMs=1000, sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms)), logger=console } = {}) {
+  const failed=[];
+  let succeeded=0;
+  for(const id of ids) {
+    let lastError;
+    for(let attempt=1; attempt<=attempts; attempt++) {
+      try {
+        await narration.get(id);
+        logger.log('[writing-audio] Prewarmed '+id);
+        succeeded++;
+        lastError=null;
+        break;
+      } catch(error) {
+        lastError=error;
+        if(attempt<attempts) {
+          logger.warn('[writing-audio] Prewarm retry '+attempt+'/'+attempts+' for '+id+': '+error.message);
+          await sleep(baseDelayMs * 2 ** (attempt - 1));
+        }
+      }
+    }
+    if(lastError) {
+      failed.push(id);
+      logger.warn('[writing-audio] Prewarm failed for '+id+'; continuing: '+lastError.message);
+    }
+  }
+  logger.log('[writing-audio] Prewarm complete: '+succeeded+'/'+ids.length+' cached'+(failed.length ? '; failed: '+failed.join(', ') : ''));
+  return { total:ids.length, succeeded, failed };
+}
+function installNarration(app, directory, { prewarm=true } = {}) {
+  let openAiNeuralRetryAt = 0;
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
     if(input.requireNeural) {
-      if(process.env.OPENAI_API_KEY && !openAiNeuralUnavailable) {
+      if(process.env.OPENAI_API_KEY && Date.now() >= openAiNeuralRetryAt) {
         try {
           const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',
             headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
             body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed,...(input.instructions?{instructions:input.instructions}:{})}),signal:AbortSignal.timeout(60000)});
-          if(response.ok) return Buffer.from(await response.arrayBuffer());
+          if(response.ok) { openAiNeuralRetryAt=0; return Buffer.from(await response.arrayBuffer()); }
           let detail='HTTP '+response.status, code='';
           try {
             const payload=await response.json();
             code=String(payload?.error?.code || payload?.error?.type || '');
             detail+=' '+code.slice(0,80)+' '+String(payload?.error?.message || '').slice(0,180);
           } catch (_) {}
-          if(response.status===429 && /credit_balance_exhausted|insufficient_quota/.test(code)) openAiNeuralUnavailable=true;
+          if([401,403].includes(response.status) || (response.status===429 && /credit_balance_exhausted|insufficient_quota/.test(code)))
+            openAiNeuralRetryAt=Date.now()+OPENAI_RETRY_COOLDOWN_MS;
           console.warn('[writing-audio] OpenAI neural narration unavailable:',detail.trim());
         } catch(error) {
           console.warn('[writing-audio] OpenAI neural narration failed:',String(error.message || error).slice(0,240));
@@ -119,7 +193,7 @@ function installNarration(app, directory) {
       }
     }
     return createLocalNarration(input);
-  }, { bundledDirectory: path.join(__dirname, 'content', 'writing-audio') });
+  }, { bundledDirectory:path.join(__dirname, 'content', 'writing-audio'), cacheVersion:RUNTIME_CACHE_VERSION, postProcess:normalizeMp3 });
   // Bundled files have no synthesis cost. Range requests and students sharing a
   // classroom IP must not consume the old narration-generation request quota.
   app.get('/writing-audio/:id.mp3',async(req,res)=>{
@@ -133,17 +207,8 @@ function installNarration(app, directory) {
     }
   });
   const runtimeIds=(predictions.sst||[]).filter(q=>q.audioMode==='runtime-neural').map(q=>q.id);
-  setImmediate(async()=>{
-    for(const id of runtimeIds) {
-      try {
-        await narration.get(id);
-        console.log('[writing-audio] Prewarmed '+id);
-      } catch(error) {
-        console.warn('[writing-audio] Prewarm stopped at '+id+': '+error.message);
-        break;
-      }
-    }
-  });
+  if(prewarm) setImmediate(()=>prewarmNarration(narration,runtimeIds).catch(error=>
+    console.warn('[writing-audio] Prewarm task failed:',error.message)));
   return narration;
 }
-module.exports={createNarration,createLocalNarration,createEdgeNarration,installNarration};
+module.exports={createNarration,createLocalNarration,createEdgeNarration,normalizeMp3,prewarmNarration,installNarration};
