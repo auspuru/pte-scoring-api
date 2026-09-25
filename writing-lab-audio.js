@@ -8,7 +8,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const RUNTIME_CACHE_VERSION = 'openai-tts1-hd-v6';
+const RUNTIME_CACHE_VERSION = 'openai-tts1-hd-realism-v7';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SPEECH_CLEANUP_FILTER = [
   'highpass=f=60',
@@ -31,21 +31,87 @@ async function writeAtomic(file, bytes) {
   }
 }
 
-async function normalizeMp3(bytes) {
+function wavFromPcm16(pcm, sampleRate=48000) {
+  const dataBytes=pcm.byteLength;
+  const header=Buffer.alloc(44);
+  header.write('RIFF',0); header.writeUInt32LE(36+dataBytes,4); header.write('WAVE',8);
+  header.write('fmt ',12); header.writeUInt32LE(16,16); header.writeUInt16LE(1,20);
+  header.writeUInt16LE(1,22); header.writeUInt32LE(sampleRate,24);
+  header.writeUInt32LE(sampleRate*2,28); header.writeUInt16LE(2,32); header.writeUInt16LE(16,34);
+  header.write('data',36); header.writeUInt32LE(dataBytes,40);
+  return Buffer.concat([header,Buffer.from(pcm.buffer,pcm.byteOffset,pcm.byteLength)]);
+}
+
+function createAmbiencePcm(seconds, effects, sampleRate=48000) {
+  const count=Math.max(1,Math.ceil(seconds*sampleRate));
+  const pcm=new Int16Array(count);
+  let state=0x13579bdf;
+  const rand=()=>((state=(Math.imul(state,1664525)+1013904223)>>>0)/0xffffffff)*2-1;
+  const add=(index,value)=>{ if(index>=0&&index<count) pcm[index]=Math.max(-32768,Math.min(32767,pcm[index]+Math.round(value))); };
+
+  for(const effect of effects||[]) {
+    if(effect.type==='room') {
+      let smooth=0;
+      for(let i=0;i<count;i++) {
+        const white=rand();
+        smooth=smooth*0.985+white*0.015;
+        add(i,(smooth*70+white*8));
+      }
+    } else if(effect.type==='clock') {
+      const start=Math.max(0,Number(effect.start||8));
+      const end=Math.min(seconds,start+Math.max(1,Number(effect.duration||8)));
+      for(let tick=start;tick<end;tick+=1) {
+        const base=Math.floor(tick*sampleRate);
+        const length=Math.floor(0.028*sampleRate);
+        for(let j=0;j<length;j++) {
+          const t=j/sampleRate, env=Math.exp(-t*115);
+          add(base+j,env*(170*Math.sin(2*Math.PI*2300*t)+75*Math.sin(2*Math.PI*3450*t)));
+        }
+      }
+    } else if(effect.type==='paper') {
+      const at=Math.min(Math.max(0,Number(effect.at||12)),Math.max(0,seconds-0.8));
+      const base=Math.floor(at*sampleRate), length=Math.floor(0.55*sampleRate);
+      let previous=0;
+      for(let j=0;j<length;j++) {
+        const x=rand(), high=x-previous*0.72; previous=x;
+        const p=j/length, env=Math.sin(Math.PI*Math.min(1,p))*Math.sin(Math.PI*Math.min(1,p));
+        add(base+j,high*135*env);
+      }
+    }
+  }
+  return pcm;
+}
+
+async function normalizeMp3(bytes, input={}) {
   const stem = path.join(os.tmpdir(), 'ipt-normalize-audio-' + randomUUID());
-  const source = stem + '-source.mp3', output = stem + '.mp3';
+  const source = stem + '-source.wav', ambience = stem + '-ambience.wav', output = stem + '.mp3';
   try {
     await fs.writeFile(source, bytes);
-    await run('ffmpeg', [
-      '-loglevel', 'error', '-y', '-i', source,
-      '-af', SPEECH_CLEANUP_FILTER,
-      '-codec:a', 'libmp3lame', '-b:a', '192k', '-ar', '48000', '-ac', '1', output
-    ], { timeout:120000, maxBuffer:10 * 1024 * 1024 });
+    const effects=Array.isArray(input.ambience)?input.ambience:[];
+    if(effects.length) {
+      const { stdout }=await run('ffprobe',[
+        '-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',source
+      ],{timeout:15000,maxBuffer:1024*1024});
+      const seconds=Math.max(1,Math.min(360,Number.parseFloat(stdout)||90));
+      await fs.writeFile(ambience,wavFromPcm16(createAmbiencePcm(seconds,effects)));
+      await run('ffmpeg', [
+        '-loglevel','error','-y','-i',source,'-i',ambience,
+        '-filter_complex',
+        '[0:a]'+SPEECH_CLEANUP_FILTER+'[speech];[1:a]highpass=f=90,lowpass=f=12000[amb];[speech][amb]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,alimiter=limit=0.95,aresample=48000[out]',
+        '-map','[out]','-codec:a','libmp3lame','-b:a','192k','-ar','48000','-ac','1',output
+      ], { timeout:120000, maxBuffer:10 * 1024 * 1024 });
+    } else {
+      await run('ffmpeg', [
+        '-loglevel', 'error', '-y', '-i', source,
+        '-af', SPEECH_CLEANUP_FILTER,
+        '-codec:a', 'libmp3lame', '-b:a', '192k', '-ar', '48000', '-ac', '1', output
+      ], { timeout:120000, maxBuffer:10 * 1024 * 1024 });
+    }
     const normalized = await fs.readFile(output);
     if (normalized.length < 1000) throw Error('Normalized narration output was empty.');
     return normalized;
   } finally {
-    await Promise.allSettled([fs.unlink(source), fs.unlink(output)]);
+    await Promise.allSettled([fs.unlink(source), fs.unlink(ambience), fs.unlink(output)]);
   }
 }
 
@@ -117,7 +183,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
       }
     }
     const neural = q.audioMode === 'runtime-neural';
-    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:neural ? 'wav' : 'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', requireNeural:neural };
+    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:neural ? 'wav' : 'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:neural };
     const legacyHash = digest(input);
     const hash = digest(cacheVersion ? { ...input, cacheVersion } : input);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
@@ -248,4 +314,4 @@ function installNarration(app, directory, { prewarm=true } = {}) {
     console.warn('[writing-audio] Prewarm task failed:',error.message)));
   return narration;
 }
-module.exports={createNarration,createLocalNarration,createEdgeNarration,normalizeMp3,prewarmNarration,installNarration};
+module.exports={createNarration,createLocalNarration,createEdgeNarration,normalizeMp3,createAmbiencePcm,wavFromPcm16,prewarmNarration,installNarration};
