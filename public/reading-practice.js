@@ -75,6 +75,7 @@
   let startGeneration = 0;
   let libraryView = null, requestSerial = 0;
   const practiceLibraries = () => catalogue ? catalogue.readingLibraries(bank) : bank.practiceLibraries;
+  const isReadingPracticeMockId = id => /^reading-practice-mock-(?:[1-9]|1[0-5])$/.test(String(id || ''));
   let reviewView = { id: null, filter: 'all', type: 'all', context: false };
   let recentResultsOpen = false;
   const pendingGrades = new Map();
@@ -172,7 +173,7 @@
     }
     if (request.mockId) {
       home();
-      if (!bank.mockCatalogue.some(m => m.id === request.mockId)) return;
+      if (!bank.mockCatalogue.some(m => m.id === request.mockId) && !isReadingPracticeMockId(request.mockId)) return;
       if (state.session && !state.session.done) { parkSession(state.session); state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)]; persist(); }
       speaker?.unlock();
       return start(request.mockId);
@@ -248,7 +249,7 @@
     const startTicket = ++startGeneration;
     starting = true;
     const status = host.querySelector('[data-start-status]');
-    if (status) status.textContent = mode === 'full' || preset ? 'Preparing your mock test…' : 'Preparing your question…';
+    if (status) status.textContent = mode === 'full' || preset || isReadingPracticeMockId(mode) ? 'Preparing your mock test…' : 'Preparing your question…';
     try {
       let swtPassages;
       if (mode === 'full' || preset && preset.kind!=='reading-blanks') {
@@ -301,7 +302,7 @@
     const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
 
     host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
-      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':Number.isFinite(state.session.pausedRemainingSeconds)?'Your answers are saved. The timer is paused until you continue.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 25-minute timer.':'Your answers are saved.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
+      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':Number.isFinite(state.session.pausedRemainingSeconds)?'Your answers are saved. The timer is paused until you continue.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 23-minute timer.':'Your answers are saved.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
       <p data-start-status role="status" aria-live="polite"></p>
       <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Your timer pauses if you leave the test screen and resumes when you continue.</p></details>
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
