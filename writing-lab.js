@@ -29,7 +29,7 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
   const swt = (predictionSwtPairs[index] || predictionSwtPairs[index % predictionSwtPairs.length]).map(clone);
-  const sst = clone(predictions.sst[(index * 5 + 2) % predictions.sst.length]);
+  const sst = clone(predictions.sst[(index * 7 + 2) % predictions.sst.length]);
   const wfd = [0, 13, 26].map(offset => {
     const q = clone(predictions.wfd[(index * 3 + offset) % predictions.wfd.length]);
     q.minutes = 4;
