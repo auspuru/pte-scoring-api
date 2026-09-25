@@ -43,7 +43,13 @@ function inspectMp3(bytes) {
   const consumed=offset-first;
   const payload=Math.max(1,bytes.length-first-(id3v1?128:0));
   const valid=frames.length>=20 && consumed/payload>=0.98 && (trailing===0 || id3v1);
-  return { valid, reason:valid?'':('frames='+frames.length+', consumed='+Math.round(consumed/payload*100)+'%, trailing='+trailing), frames:frames.length };
+  return {
+    valid,
+    reason:valid?'':('frames='+frames.length+', consumed='+Math.round(consumed/payload*100)+'%, trailing='+trailing),
+    frames:frames.length,
+    sampleRate:frames[0]?.sampleRate || 0,
+    bitrate:frames[0]?.bitrate || 0
+  };
 }
 
 function validateWritingAudio(root = path.join(__dirname, '..')) {

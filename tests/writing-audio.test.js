@@ -112,10 +112,33 @@ test('A cache processing upgrade reuses the paid recording instead of calling th
   assert.equal(processCalls,1);
 });
 
-test('Runtime narration normalization returns a decodable MP3', async () => {
+test('A named prior cache version is reprocessed without another TTS call', async t => {
+  const cache=await fs.mkdtemp(path.join(os.tmpdir(),'runtime-version-migration-'));
+  t.after(()=>fs.rm(cache,{recursive:true,force:true}));
+  const q=runtimeQuestions[0];
+  let providerCalls=0;
+  const prior=createNarration(cache,async()=>{providerCalls++;return Buffer.alloc(2000,9);},{cacheVersion:'prior-v1'});
+  const priorFile=await prior.get(q.id);
+  let processCalls=0;
+  const upgraded=createNarration(cache,()=>{throw Error('TTS must not be called during audio-only upgrade');},{
+    cacheVersion:'clean-hd-v2',
+    previousCacheVersions:['prior-v1'],
+    postProcess:async bytes=>{processCalls++;return Buffer.concat([bytes,Buffer.from([10])]);}
+  });
+  const upgradedFile=await upgraded.get(q.id);
+  assert.notEqual(upgradedFile,priorFile);
+  assert.equal(providerCalls,1);
+  assert.equal(processCalls,1);
+  assert.equal((await fs.readFile(upgradedFile)).length,2001);
+});
+
+test('Runtime narration cleanup returns a clean HD speech MP3', async () => {
   const q=bundledQuestions.find(item=>item.type==='wfd');
   const normalized=await normalizeMp3(await fs.readFile(path.join(directory,q.id+'.mp3')));
-  assert.equal(inspectMp3(normalized).valid,true);
+  const inspected=inspectMp3(normalized);
+  assert.equal(inspected.valid,true);
+  assert.equal(inspected.sampleRate,48000);
+  assert.equal(inspected.bitrate,192000);
 });
 
 test('Prewarming retries a failed item and continues through the remaining recordings', async () => {
