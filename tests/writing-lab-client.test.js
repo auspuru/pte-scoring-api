@@ -106,7 +106,7 @@ test('The standalone SST Play button starts through the real API, saves playback
     return fetch(base+url,options);
   };
   const id=require('node:crypto').randomUUID();
-  const response=await fetch(base+'/api/writing-lab/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:JSON.stringify({id,testId:bank.spoken[0].id})});
+  const response=await fetch(base+'/api/writing-lab/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:JSON.stringify({id,testId:require('../content/writing-predictions-sep-2026').sst[0].id})});
   const a=await response.json();assert.equal(a.status,'ready');
   h.hooks.set(a);h.hooks.showAttempt();
   const button=h.nodes.get('audio-start'), player=h.recordings[0];

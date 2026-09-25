@@ -34,7 +34,7 @@ def prediction_questions():
     )
     payload = subprocess.check_output(['node', '-e', script], cwd=ROOT, text=True)
     data = json.loads(payload)
-    return data['sst'] + data['wfd']
+    return [q for q in data['sst'] + data['wfd'] if q.get('audioMode') != 'runtime-neural']
 
 
 async def main():

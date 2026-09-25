@@ -40,7 +40,7 @@ function createNarration(directory, generate, { bundledDirectory } = {}) {
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') &&
           entry.bytes > 1000 && (await fs.stat(bundledFile)).size === entry.bytes) return bundledFile;
     }
-    const input = { model:'tts-1', voice:q.voice, input:q.text, response_format:'mp3', speed:0.95 };
+    const input = { model:'tts-1', voice:q.voice, input:q.narrationText || q.text, response_format:'mp3', speed:q.audioSpeed || 0.95, requireNeural:q.audioMode === 'runtime-neural' };
     const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     try { if((await fs.stat(file)).size > 1000) return file; } catch(e) { if(e.code !== 'ENOENT') throw e; }
@@ -67,11 +67,14 @@ function installNarration(app, directory) {
           headers:{Authorization:'Bearer '+process.env.OPENAI_API_KEY,'Content-Type':'application/json'},
           body:JSON.stringify({model:input.model,voice:input.voice,input:input.input,response_format:input.response_format,speed:input.speed}),signal:AbortSignal.timeout(60000)});
         if(response.ok) return Buffer.from(await response.arrayBuffer());
+        if(input.requireNeural) throw Error('Natural narration is temporarily unavailable.');
         console.warn('[writing-audio] Remote narration returned HTTP '+response.status+'; using local narrator.');
       } catch (error) {
+        if(input.requireNeural) throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
         console.warn('[writing-audio] Remote narration failed; using local narrator:', error.message);
       }
     }
+    if(input.requireNeural) throw Error('Natural narration is temporarily unavailable. Please retry shortly.');
     return createLocalNarration(input);
   }, { bundledDirectory: path.join(__dirname, 'content', 'writing-audio') });
   // Bundled files have no synthesis cost. Range requests and students sharing a
