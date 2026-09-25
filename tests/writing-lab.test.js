@@ -129,6 +129,7 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
   async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
   const before=JSON.stringify(bank),catalog=await request('/catalog');
+  assert.equal(catalog.spoken.length,30);assert.equal(catalog.spoken[0].id,predictions.sst[0].id);assert.equal(catalog.spoken[12].id,predictions.sst[12].id);assert.equal(catalog.spoken[13].id,predictions.sst[13].id);
   assert.equal(catalog.dictation.length,56);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,56);
   for(const q of catalog.dictation) {assert(q.audioUrl.includes(q.id));assert.equal(q.text,undefined);assert.equal(q.sample,undefined);}
   const q=bank.mocks[0].questions.find(q=>q.type==='wfd'),id=randomUUID();
@@ -154,7 +155,7 @@ test('Prediction SST and WFD IDs are accepted by the narration resolver',async t
   const audio=createNarration(dir,async input=>{seen.push(input.input);return Buffer.alloc(2000,7);});
   await audio.get(predictions.sst[0].id);
   await audio.get(predictions.wfd[0].id);
-  assert.deepEqual(seen,[predictions.sst[0].text,predictions.wfd[0].text]);
+  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text]);
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{
