@@ -174,7 +174,7 @@ const DELIVERY_EDITS = Object.freeze([
   [['And I think the real important words', 'I mean,'], ['So vitamin D really', 'Um,'], ['As humans migrated away', 'And, you know,']],
   [['So the stars', 'Well,'], ['In the 20th century', 'Um,'], ['But in some sense', 'Now, actually,']],
   [['English, in fact, has borrowed', 'Well,'], ['By looking at the history', 'You know,'], ['So, in fact, today', 'Um,'], ["So for example in Shakespeare's time", 'Now,']],
-  [["The term 'stock market'", 'Now,'], ['However, there are some different uses', 'Um,'], ['In the 18th century', 'So,'], ['From 19th to 20th century', 'I mean,']],
+  [['The term', 'Now,'], ['However, there are some different uses', 'Um,'], ['In the 18th century', 'So,'], ['From 19th to 20th century', 'I mean,']],
   [["Leaders can mobilize people's energies", 'Well,'], ['We can think of leadership as a spectrum', 'Um,'], ['At the opposite end of the spectrum', 'You know,'], ['Over the centuries', 'Now,']],
   [['Let me just say that', 'Well,'], ['In fact, one of the most interesting books', 'Um,'], ['In your reading, I give you', 'You know,'], ['And with that kind of analysis', 'So,']],
   [['So what does science say', 'Well,'], ['True happiness', 'Um,'], ["Let's break this idea down", 'Now,'], ['Second, this is balanced', 'So, you know,']],
