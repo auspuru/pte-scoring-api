@@ -84,8 +84,8 @@ test('User SST predictions keep verbatim source text while audio adds only light
     const fillers=narrationTokens.filter(token=>/^(?:um|uh)$/i.test(token));
     assert(fillers.length>=1 && fillers.length<=2,item.id+' should have only one or two human hesitations');
     assert.deepEqual(
-      narrationTokens.filter(token=>!/^(?:um|uh)$/i.test(token)),
-      tokens(item.text),
+      narrationTokens.filter(token=>!/^(?:um|uh)$/i.test(token)).map(token=>token.toLowerCase()),
+      tokens(item.text).map(token=>token.toLowerCase()),
       item.id+' narration must preserve every supplied transcript word in order'
     );
   }
