@@ -5,8 +5,8 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const express = require('express');
-const { createNarration, installNarration } = require('../writing-lab-audio');
-const { validateWritingAudio } = require('../scripts/validate-writing-audio');
+const { createNarration, installNarration, normalizeMp3, prewarmNarration } = require('../writing-lab-audio');
+const { validateWritingAudio, inspectMp3 } = require('../scripts/validate-writing-audio');
 const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
@@ -30,7 +30,7 @@ test('A cold cache and failed narration provider cannot prevent bundled audio pl
 test('The student audio endpoint serves real MP3 data and byte ranges for loading and resuming', async t => {
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'audio-http-'));
   const app = express();
-  installNarration(app, cache);
+  installNarration(app, cache, { prewarm:false });
   const server = app.listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   t.after(async () => { await new Promise(resolve => server.close(resolve)); await fs.rm(cache, { recursive: true, force: true }); });
@@ -80,6 +80,51 @@ test('User SST predictions use natural neural narration without changing transcr
   assert.deepEqual(tokens(q.narrationText),tokens(q.text));
 });
 
+test('A cache processing upgrade reuses the paid recording instead of calling the provider again', async t => {
+  const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-cache-upgrade-'));
+  t.after(() => fs.rm(cache, { recursive:true, force:true }));
+  const q=runtimeQuestions[0];
+  let providerCalls=0;
+  const original=createNarration(cache,async()=>{providerCalls++;return Buffer.alloc(2000,7);});
+  const legacyFile=await original.get(q.id);
+  let processCalls=0;
+  const upgraded=createNarration(cache,()=>{throw Error('Provider must not be called');},{
+    cacheVersion:'test-processing-v1',
+    postProcess:async bytes=>{processCalls++;return Buffer.concat([bytes,Buffer.from([8])]);}
+  });
+  const upgradedFile=await upgraded.get(q.id);
+  assert.notEqual(upgradedFile,legacyFile);
+  assert.equal(providerCalls,1);
+  assert.equal(processCalls,1);
+  assert.equal((await fs.readFile(upgradedFile)).length,2001);
+  await upgraded.get(q.id);
+  assert.equal(processCalls,1);
+});
+
+test('Runtime narration normalization returns a decodable MP3', async () => {
+  const q=bundledQuestions.find(item=>item.type==='wfd');
+  const normalized=await normalizeMp3(await fs.readFile(path.join(directory,q.id+'.mp3')));
+  assert.equal(inspectMp3(normalized).valid,true);
+});
+
+test('Prewarming retries a failed item and continues through the remaining recordings', async () => {
+  const calls={}, messages=[];
+  const narration={get:async id=>{
+    calls[id]=(calls[id]||0)+1;
+    if(id==='retry' && calls[id]===1) throw Error('temporary');
+    if(id==='broken') throw Error('still unavailable');
+    return id;
+  }};
+  const result=await prewarmNarration(narration,['retry','broken','last'],{
+    attempts:2,baseDelayMs:0,sleep:async()=>{},
+    logger:{log:value=>messages.push(value),warn:value=>messages.push(value)}
+  });
+  assert.deepEqual(result,{total:3,succeeded:2,failed:['broken']});
+  assert.deepEqual(calls,{retry:2,broken:2,last:1});
+  assert(messages.some(message=>message.includes('continuing')));
+  assert(messages.some(message=>message.includes('2/3 cached')));
+});
+
 
 test('Neural SST fallback remains Edge neural rather than robotic local speech', async () => {
   const source=await fs.readFile(require.resolve('../writing-lab-audio'),'utf8');
@@ -88,6 +133,8 @@ test('Neural SST fallback remains Edge neural rather than robotic local speech',
   assert.match(source,/--rate=-5%/);
   assert.match(source,/OpenAI neural narration unavailable/);
   assert.match(source,/Edge neural fallback generated audio/);
+  assert.match(source,/openAiNeuralRetryAt/);
+  assert.doesNotMatch(source,/openAiNeuralUnavailable\s*=\s*true/);
   const neuralBlock=source.slice(source.indexOf('if(input.requireNeural)'),source.indexOf("if(process.env.OPENAI_API_KEY)",source.indexOf('if(input.requireNeural)')+1));
   assert.doesNotMatch(neuralBlock,/createLocalNarration/);
 });
