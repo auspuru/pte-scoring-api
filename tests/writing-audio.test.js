@@ -69,6 +69,7 @@ test('User SST predictions keep verbatim source text while audio adds only light
   assert.equal(seen.length,1);
   assert.equal(seen[0].input,q.narrationText);
   assert.equal(seen[0].model,'gpt-4o-mini-tts');
+  assert.equal(seen[0].response_format,'wav');
   assert(['marin','cedar'].includes(seen[0].voice));
   assert(['en-AU-NatashaNeural','en-AU-WilliamNeural'].includes(seen[0].edgeVoice));
   assert.equal(seen[0].speed,0.94);
@@ -165,6 +166,10 @@ test('Neural SST fallback remains Edge neural rather than robotic local speech',
   assert.match(source,/createEdgeNarration/);
   assert.match(source,/edge-tts/);
   assert.match(source,/--rate=-5%/);
+  assert.match(source,/ffprobe/);
+  assert.match(source,/sampleRate !== 48000/);
+  assert.match(source,/bitRate < 180000/);
+  assert.match(source,/Edge native HD source/);
   assert.match(source,/OpenAI neural narration unavailable/);
   assert.match(source,/Edge neural fallback generated audio/);
   assert.match(source,/openAiNeuralRetryAt/);
