@@ -4,6 +4,8 @@
 // Source IDs/titles are drawn from the public PTE Nepal weekly prediction index
 // for 21-27 September 2026. Practice passages/transcripts below are original
 // adaptations for this portal, not copies of third-party passage text.
+const userSst = require('./user-sst-predictions');
+
 const source = {
   provider: 'PTE Nepal',
   week: '21-27 September 2026',
@@ -420,7 +422,7 @@ const wfdSeeds = [
 ];
 
 const swt = swtSeeds.map(makeSwt);
-const sst = sstSeeds.map(makeSst);
+const sst = [...userSst.sst, ...sstSeeds.map(makeSst)];
 const wfd = wfdSeeds.map(([sourceId,label,text], index) => ({
   id: 'pred26-wfd-' + String(index + 1).padStart(2, '0'),
   type: 'wfd',
@@ -436,6 +438,7 @@ const wfd = wfdSeeds.map(([sourceId,label,text], index) => ({
 module.exports = {
   version: '2026-09-23.1',
   source,
+  userSource: userSst.source,
   swt,
   sst,
   wfd
