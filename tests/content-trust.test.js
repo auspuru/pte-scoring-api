@@ -31,7 +31,7 @@ test('prediction/original content exposes freshness and unique-bank metadata', (
   const stats=metadata.validateContentMetadata();
   assert.deepEqual(stats.readingPrediction,{dropdown:30,wordbank:30});
   assert.equal(stats.writingPrediction.swt,18);
-  assert.equal(stats.writingPrediction.sst,17);
+  assert.equal(stats.writingPrediction.sst,30);
   assert.equal(stats.writingPrediction.wfd,36);
   assert.equal(stats.patternOriginal.dropdown,12);
   assert.equal(stats.patternOriginal.wordbank,12);
@@ -56,4 +56,15 @@ test('Writing audio load failures keep a visible retry path', () => {
   assert.match(client,/Audio could not load\. Check your connection and retry\./);
   assert.match(client,/startButton\.textContent='Retry audio'/);
   assert.match(client,/startButton\.disabled=false/);
+});
+
+
+test('user-supplied SST predictions stay first and verbatim-tagged', () => {
+  const predictions=require('../content/writing-predictions-sep-2026');
+  const first=predictions.sst.slice(0,13);
+  assert.equal(first.length,13);
+  assert.deepEqual(first.map(q=>q.title),['Smile of Mother','Roman Building','Separation of power','Vitamin D','Einstein','History of English','Stock market and business','Leadership','Industrial Revolution','Moods','Fight or flight','Big Bang','body fat change']);
+  assert(first.every(q=>q.predictionSource.contentStatus==='verbatim-user-provided'));
+  assert(first.every(q=>q.audioMode==='runtime-neural'));
+  assert.equal(predictions.sst.length,30);
 });
