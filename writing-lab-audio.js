@@ -97,6 +97,20 @@ function installNarration(app, directory) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
+  if(process.env.OPENAI_API_KEY) {
+    const runtimeIds=(predictions.sst||[]).filter(q=>q.audioMode==='runtime-neural').map(q=>q.id);
+    setImmediate(async()=>{
+      for(const id of runtimeIds) {
+        try {
+          await narration.get(id);
+          console.log('[writing-audio] Prewarmed '+id);
+        } catch(error) {
+          console.warn('[writing-audio] Prewarm stopped at '+id+': '+error.message);
+          break;
+        }
+      }
+    });
+  }
   return narration;
 }
 module.exports={createNarration,createLocalNarration,installNarration};
