@@ -8,7 +8,7 @@ const bank = require('../public/reading-bank.json');
 const fibQuality = require('../public/reading-fib-quality');
 const patternBank = require('../public/reading-fib-pattern-bank');
 const writing = {
-  spoken: Array.from({ length: 17 }, (_, i) => ({ id:'sst-'+i })),
+  spoken: Array.from({ length: 30 }, (_, i) => ({ id:'sst-'+i })),
   dictation: Array.from({ length: 36 }, (_, i) => ({ id:'wfd-'+i })),
   mocks: Array.from({ length: 33 }, (_, i) => ({ id: 'writing-' + (i + 1), predictionNumber: i + 1, description: 'Essay topic ' + (i + 1), minutes: 54 }))
 };
@@ -98,7 +98,7 @@ function harness() {
 test('Practice shows task counts and last attempts while routes remain direct', async () => {
   const h = harness(); await h.controller.openPractice();
   assert.match(h.practice.innerHTML, /Writing Practice/); assert.match(h.practice.innerHTML, /Reading Practice/); assert.match(h.practice.innerHTML, /Listening Practice/);
-  assert.match(h.practice.innerHTML, /18 questions/); assert.match(h.practice.innerHTML, /17 questions/); assert.match(h.practice.innerHTML, /36 questions/);
+  assert.match(h.practice.innerHTML, /18 questions/); assert.match(h.practice.innerHTML, /30 questions/); assert.match(h.practice.innerHTML, /36 questions/);
   assert.match(h.practice.innerHTML, /Last attempt/); assert.match(h.practice.innerHTML, /Not attempted yet/);
   assert.doesNotMatch(h.practice.innerHTML, /Start Exam|data-mock-id/);
   h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'dictation' } }) } });
