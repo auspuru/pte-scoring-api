@@ -170,10 +170,14 @@ test('Neural SST fallback remains Edge neural rather than robotic local speech',
   assert.match(source,/sampleRate !== 48000/);
   assert.match(source,/bitRate < 180000/);
   assert.match(source,/Edge native HD source/);
-  assert.match(source,/OpenAI neural narration unavailable/);
-  assert.match(source,/Edge neural fallback generated audio/);
+  assert.match(source,/Edge native-HD neural source generated audio/);
+  assert.match(source,/OpenAI neural fallback unavailable/);
   assert.match(source,/openAiNeuralRetryAt/);
   assert.doesNotMatch(source,/openAiNeuralUnavailable\s*=\s*true/);
-  const neuralBlock=source.slice(source.indexOf('if(input.requireNeural)'),source.indexOf("if(process.env.OPENAI_API_KEY)",source.indexOf('if(input.requireNeural)')+1));
+  const neuralStart=source.indexOf('if(input.requireNeural)');
+  const edgeCall=source.indexOf('const bytes=await createEdgeNarration(input)',neuralStart);
+  const openAiFallback=source.indexOf('if(process.env.OPENAI_API_KEY',neuralStart);
+  assert(edgeCall>neuralStart && openAiFallback>edgeCall,'native HD Edge must be attempted before OpenAI');
+  const neuralBlock=source.slice(neuralStart,source.indexOf("if(process.env.OPENAI_API_KEY)",openAiFallback+1));
   assert.doesNotMatch(neuralBlock,/createLocalNarration/);
 });
