@@ -68,7 +68,11 @@ test('User SST predictions use natural neural narration without changing transcr
   await narration.get(q.id);
   assert.equal(seen.length,1);
   assert.equal(seen[0].input,q.narrationText);
+  assert.equal(seen[0].model,'gpt-4o-mini-tts');
+  assert(['marin','cedar'].includes(seen[0].voice));
   assert.equal(seen[0].speed,0.94);
+  assert.match(seen[0].instructions,/natural academic lecture/);
+  assert.match(seen[0].instructions,/wording exactly as provided/);
   assert.equal(seen[0].requireNeural,true);
   assert.match(seen[0].input,/\n\n/);
   const tokens=value=>String(value).match(/[\p{L}\p{N}]+/gu) || [];
