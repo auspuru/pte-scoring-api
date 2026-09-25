@@ -50,7 +50,7 @@ function validateWritingAudio(root = path.join(__dirname, '..')) {
   const bank = JSON.parse(fs.readFileSync(path.join(root, 'content', 'writing-lab.json'), 'utf8'));
   const directory = path.join(root, 'content', 'writing-audio');
   const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
-  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
+  const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type) && q.audioMode !== 'runtime-neural');
   const hash = value => createHash('sha256').update(value).digest('hex');
   const ids = new Set();
   for (const q of questions) {
