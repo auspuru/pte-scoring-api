@@ -11,6 +11,8 @@ const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
 const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
+const bundledQuestions = questions.filter(q => q.audioMode !== 'runtime-neural');
+const runtimeQuestions = questions.filter(q => q.audioMode === 'runtime-neural');
 
 test('Every current lecture and dictation has a verified recording with the correct content and duration', () => {
   assert.equal(validateWritingAudio(), 126);
@@ -20,7 +22,7 @@ test('A cold cache and failed narration provider cannot prevent bundled audio pl
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'bundled-audio-'));
   t.after(() => fs.rm(cache, { recursive: true, force: true }));
   const narration = createNarration(cache, () => { throw Error('Provider quota exhausted'); }, { bundledDirectory: directory });
-  for (const q of questions) assert.equal(await narration.get(q.id), path.join(directory, q.id + '.mp3'));
+  for (const q of bundledQuestions) assert.equal(await narration.get(q.id), path.join(directory, q.id + '.mp3'));
   assert.deepEqual(await fs.readdir(cache), []);
   await assert.rejects(narration.get('../../private'), { status: 404 });
 });
@@ -33,7 +35,7 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
   await new Promise(resolve => server.once('listening', resolve));
   t.after(async () => { await new Promise(resolve => server.close(resolve)); await fs.rm(cache, { recursive: true, force: true }); });
   const base = 'http://127.0.0.1:' + server.address().port;
-  for (const q of questions) {
+  for (const q of bundledQuestions) {
     const bytes = await fs.readFile(path.join(directory, q.id + '.mp3'));
     const url = base + '/writing-audio/' + q.id + '.mp3?v=' + bank.version;
     const full = await fetch(url);
@@ -47,10 +49,27 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
   }
   // Loading media and seeking can exceed 30 requests from a shared classroom IP.
   for (let i=0; i<8; i++) {
-    const head = await fetch(base + '/writing-audio/' + questions[0].id + '.mp3', { method:'HEAD' });
+    const head = await fetch(base + '/writing-audio/' + bundledQuestions[0].id + '.mp3', { method:'HEAD' });
     assert.equal(head.status, 200);
   }
   const missing = await fetch(base + '/writing-audio/missing.mp3');
   assert.equal(missing.status, 404);
   assert.equal(missing.headers.get('cache-control'), 'no-store');
+});
+
+
+test('User SST predictions use natural neural narration without changing transcript wording', async t => {
+  assert.equal(runtimeQuestions.length, 13);
+  const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-neural-audio-'));
+  t.after(() => fs.rm(cache, { recursive: true, force: true }));
+  const seen=[];
+  const narration=createNarration(cache,async input=>{seen.push(input);return Buffer.alloc(2000,7);});
+  const q=runtimeQuestions[0];
+  await narration.get(q.id);
+  assert.equal(seen.length,1);
+  assert.equal(seen[0].input,q.narrationText);
+  assert.equal(seen[0].speed,0.94);
+  assert.equal(seen[0].requireNeural,true);
+  assert.match(seen[0].input,/\n\n/);
+  assert.equal(q.text.replace(/\s+/g,' ').trim(),q.narrationText.replace(/\s+/g,' ').trim());
 });
