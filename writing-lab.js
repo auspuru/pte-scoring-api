@@ -5,7 +5,7 @@ const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const AUDIO_VERSION = '20260925-user-sst30-audio2';
+const AUDIO_VERSION = '20260925-user-sst30-hdmaster3';
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
