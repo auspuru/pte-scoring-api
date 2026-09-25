@@ -165,6 +165,33 @@ function naturalNarration(text) {
     .replace(/([.!?])\s+/g, '$1\n\n');
 }
 
+// Light, deterministic lecturer-style hesitations. These affect audio only:
+// q.text always remains the exact transcript supplied by the user.
+const HESITATIONS = Object.freeze([
+  [['Researchers have found', 'Um, researchers have found'], ['By studying when smiles happened', 'Uh, by studying when smiles happened']],
+  [['Now this is interesting', 'Um, now this is interesting'], ['That was basically based', 'Uh, that was basically based']],
+  [["Let's look at two important reasons", "Um, let's look at two important reasons"]],
+  [['So vitamin D really', 'Um, so vitamin D really'], ['As humans migrated away', 'Uh, as humans migrated away']],
+  [["In the 20th century", "Um, in the 20th century"]],
+  [['So, in fact, today', 'So, um, in fact, today']],
+  [['However, there are some different uses', 'Um, however, there are some different uses']],
+  [['We can think of leadership as a spectrum', 'Um, we can think of leadership as a spectrum'], ['Over the centuries', 'Uh, over the centuries']],
+  [['In fact, one of the most interesting books', 'Um, in fact, one of the most interesting books']],
+  [['So what does science say', 'Um, so what does science say'], ["Let's break this idea down", "Uh, let's break this idea down"]],
+  [['Many of us would prefer', 'Um, many of us would prefer']],
+  [['When I started out forty-odd years ago', 'Um, when I started out forty-odd years ago']],
+  [['After careful observation', 'Um, after careful observation'], ['On the other hand', 'Uh, on the other hand']]
+]);
+
+function humanisedNarration(text, index) {
+  let narration = naturalNarration(text);
+  for (const [anchor, replacement] of HESITATIONS[index] || []) {
+    if (!narration.includes(anchor)) throw new Error('Missing SST narration anchor: ' + anchor);
+    narration = narration.replace(anchor, replacement);
+  }
+  return narration;
+}
+
 const sst = raw.map((item, index) => ({
   id: 'pred26-user-sst-' + String(index + 1).padStart(2, '0'),
   type: 'sst',
@@ -174,11 +201,11 @@ const sst = raw.map((item, index) => ({
   voice: ['marin', 'cedar'][index % 2],
   edgeVoice: ['en-AU-NatashaNeural', 'en-AU-WilliamNeural'][index % 2],
   text: item.transcript,
-  narrationText: naturalNarration(item.transcript),
+  narrationText: humanisedNarration(item.transcript, index),
   audioMode: 'runtime-neural',
   ttsModel: 'gpt-4o-mini-tts',
   audioSpeed: 0.94,
-  audioInstructions: 'Read this as a natural academic lecture. Keep the wording exactly as provided. Use clear conversational intonation, brief pauses at sentence boundaries, slightly longer pauses at paragraph breaks, and avoid a robotic or rushed delivery.',
+  audioInstructions: 'Read this as a natural academic lecture. Follow the supplied narration text exactly, including its occasional um or uh hesitation, and do not add any other words. Use smooth conversational intonation, subtle emphasis changes, brief pauses at sentence boundaries, slightly longer pauses at paragraph breaks, and avoid a robotic, theatrical, or rushed delivery.',
   keyPoints: item.keyPoints,
   sample: item.sample,
   predictionSource: {
