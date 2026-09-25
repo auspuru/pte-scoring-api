@@ -13,7 +13,9 @@ function checkSource(label, source, status) {
 function checkPrediction(label, q) {
   const src=q?.predictionSource;
   if (!src?.provider || !src?.week || !src?.sourceId || !src?.sourceTitle) throw Error(label + ': incomplete prediction source metadata.');
-  checkSource(label, src, 'adapted');
+  const allowed = ['adapted','verbatim-user-provided'];
+  if (!allowed.includes(src.contentStatus)) throw Error(label + ': unsupported prediction contentStatus ' + src.contentStatus + '.');
+  checkSource(label, src, src.contentStatus);
 }
 function validateContentMetadata() {
   checkSource('Reading prediction bank', reading.source, 'adapted');
@@ -37,7 +39,7 @@ function validateContentMetadata() {
     patternOriginal:{dropdown:unique(patterns.dropdown||[]),wordbank:unique(patterns.wordbank||[])}
   };
   if (stats.readingPrediction.dropdown < 30 || stats.readingPrediction.wordbank < 30) throw Error('Reading prediction bank shrank unexpectedly.');
-  if (stats.writingPrediction.swt < 18 || stats.writingPrediction.sst < 17 || stats.writingPrediction.wfd < 36) throw Error('Writing prediction bank shrank unexpectedly.');
+  if (stats.writingPrediction.swt < 18 || stats.writingPrediction.sst < 30 || stats.writingPrediction.wfd < 36) throw Error('Writing prediction bank shrank unexpectedly.');
   return stats;
 }
 if (require.main === module) {
