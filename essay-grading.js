@@ -77,4 +77,20 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   return { grade };
 }
 
-module.exports = { createEssayGrader };
+function essayResultForClient(result, clientVersion) {
+  if (!result || result.scoreGate?.status !== 'zero_content' || clientVersion === policy.VERSION) {
+    return result;
+  }
+  // Compatibility for an already-open browser running the pre-zero-content
+  // validator. That validator needs diagnostic trait values as its input, then
+  // applies the Content=0 hard gate itself. Current clients receive the
+  // canonical already-zeroed result.
+  if (!result.diagnosticScores || Number(result.diagnosticScores.content) !== 0) return result;
+  return {
+    ...structuredClone(result),
+    scores: { ...result.diagnosticScores, total: 0 },
+    compatibility: 'legacy-zero-content-input'
+  };
+}
+
+module.exports = { createEssayGrader, essayResultForClient };
