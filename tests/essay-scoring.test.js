@@ -15,10 +15,44 @@ function good() {
     feedback: Object.fromEntries(Object.keys(policy.MAXIMA).map(key => [key, 'Your ideas are clear and relevant.'])),
     errors: [], optionalRefinements: [],
     promptCoverage: [{ requirement: 'Positive and negative effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }],
+    scoringEvidence: {
+      linguisticExamples: ['mass media supports learning', 'Schools can respond by teaching students'],
+      developmentEvidence: ['News reports help students understand events', 'Advertisements often connect expensive products'],
+      vocabularyExamples: ['critical reading', 'unrealistic expectations']
+    },
     templateDetector: 'good', templateNote: 'The structure is filled with relevant ideas.',
     strengths: ['Clear relevant examples.'], improvements: [],
     sampleStatus: 'ready', sampleResponse: essay,
     sampleSourceIdeas: ['mass media supports learning', 'unrealistic expectations'], sampleNote: '' };
+}
+
+function goodReview(overrides = {}) {
+  return {
+    scores: { content: 6, linguistic: 6, coherence: 6, ...(overrides.scores || {}) },
+    promptCoverage: overrides.promptCoverage || [
+      { requirement: 'Positive and negative effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }
+    ],
+    scoringEvidence: overrides.scoringEvidence || {
+      linguisticExamples: ['mass media supports learning', 'Schools can respond by teaching students'],
+      developmentEvidence: ['News reports help students understand events', 'Advertisements often connect expensive products']
+    },
+    rationale: { content: 'Complete and relevant.', linguistic: 'Varied controlled expression.', coherence: 'Ideas are developed and connected.' }
+  };
+}
+
+function sampleOnly() {
+  return {
+    sampleStatus: 'ready',
+    sampleResponse: essay,
+    sampleSourceIdeas: ['mass media supports learning', 'unrealistic expectations'],
+    sampleNote: ''
+  };
+}
+
+function standardModelResponse(prompt, primary = good()) {
+  if (/Independently review ONLY/.test(prompt) || /Resolve a disagreement/.test(prompt)) return goodReview();
+  if (/do not rescore or change the assessment/.test(prompt)) return sampleOnly();
+  return primary;
 }
 
 test('Essay word-count boundaries are deterministic and independent of model counting', () => {
@@ -86,10 +120,9 @@ test('Quoted real misspellings support deductions without counting stylistic adv
   const raw = good(); raw.scores.spelling = 1;
   raw.errors = [{ type: 'spelling', phrase: 'infromation', correction: 'information', impact: 'minor', explanation: 'Correct the letter order.' }];
   const result = policy.normalizeResult(raw, text);
-  assert.equal(result.scores.spelling, 2);
+  assert.equal(result.scores.spelling, 1);
   assert.equal(result.scores.grammar, 2);
-  assert.deepEqual(result.spellingErrors, []);
-  assert.equal(result.optionalRefinements[0].affects_score, false);
+  assert.deepEqual(result.spellingErrors, ['infromation']);
 });
 
 test('Meaning-changing language errors are the only grammar deductions', () => {
