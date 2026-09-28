@@ -18,20 +18,6 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
       };
     }
 
-    const primaryStillMatches = primaryRaw && primaryRaw.sampleStatus
-      && (assessment.subjectiveReview?.source === 'agreement'
-        || assessment.subjectiveReview?.source === 'primary-only'
-        || !assessment.subjectiveReview)
-      && assessment.scoreGate?.status !== 'zero_content';
-
-    if (primaryStillMatches) {
-      try {
-        return policy.normalizeSample(primaryRaw, essay, assessment, { allowUnavailable: false });
-      } catch (error) {
-        onAttemptError({ attempt: 1, stage: 'sample-from-primary', code: error.code || error.name || 'unknown' });
-      }
-    }
-
     let lastError;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
