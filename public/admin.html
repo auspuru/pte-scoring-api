@@ -653,8 +653,8 @@ function renderUsers(users){
   updateBulkDeleteState();
 }
 function userList(){const q=(document.getElementById('userSearch')?.value||'').toLowerCase(),o=document.getElementById('userSort')?.value||'newest';const a=allUsers.filter(u=>(u.username||'').toLowerCase().includes(q));return a.sort((x,y)=>o.startsWith('name')?((x.username||'').localeCompare(y.username||'')*(o==='name-desc'?-1:1)):((((Date.parse(y.createdAt)||0)-(Date.parse(x.createdAt)||0)))*(o==='oldest'?-1:1)));}
-function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}
-async function deleteSelectedUsers(){const s=[...document.querySelectorAll('.user-select:checked')].map(e=>e.value);if(!s.length||!confirm('Delete '+s.length+' selected user(s) and all their data permanently?')||!confirm('This cannot be undone. Continue?'))return;const r=await fetch(API+'/api/admin/delete-users',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({usernames:s})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success){toast(d.error||'Bulk delete failed');return;}toast('Deleted '+(d.deleted||[]).length+' user(s)');loadUsers();}
+function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select:not(:disabled)').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked:not(:disabled)').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}
+async function deleteSelectedUsers(){const s=[...document.querySelectorAll('.user-select:checked:not(:disabled)')].map(e=>e.value);if(!s.length||!confirm('Delete '+s.length+' selected user(s) and all their data permanently?')||!confirm('This cannot be undone. Continue?'))return;const r=await fetch(API+'/api/admin/delete-users',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({usernames:s})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success){toast(d.error||'Bulk delete failed');return;}toast('Deleted '+(d.deleted||[]).length+' user(s)');loadUsers();}
 
 function showResetModal(username){
   document.getElementById('resetUser').textContent=username;
@@ -775,11 +775,15 @@ function viewUser(username){
 let allPassages = [];
 
 function switchTab(name) {
-  document.getElementById('tabUsers').classList.toggle('active', name === 'users');
-  document.getElementById('tabPassages').classList.toggle('active', name === 'passages');
-  document.getElementById('panelUsers').classList.toggle('active', name === 'users');
-  document.getElementById('panelPassages').classList.toggle('active', name === 'passages');
-  if (name === 'passages' && allPassages.length === 0) loadPassages();
+  const tabUsers = document.getElementById('tabUsers');
+  const tabPassages = document.getElementById('tabPassages');
+  const panelUsers = document.getElementById('panelUsers');
+  const panelPassages = document.getElementById('panelPassages');
+  if (tabUsers) tabUsers.classList.toggle('active', name === 'users');
+  if (tabPassages) tabPassages.classList.toggle('active', name === 'passages');
+  if (panelUsers) panelUsers.classList.toggle('active', name === 'users');
+  if (panelPassages) panelPassages.classList.toggle('active', name === 'passages');
+  if (name === 'passages' && panelPassages && allPassages.length === 0) loadPassages();
 }
 
 async function loadPassages() {
