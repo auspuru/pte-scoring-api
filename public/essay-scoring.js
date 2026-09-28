@@ -358,6 +358,24 @@ ${JSON.stringify({ question, essay, promptCoverage: assessment.promptCoverage, c
       sampleKind: raw.sampleStatus === 'ready' ? 'full-essay' : raw.sampleStatus };
   }
   function normalizeResult(raw, essay) {
+    // Form=0 responses are intentionally short-circuited before semantic
+    // assessment. Accept that already-normalized server result in the browser
+    // while still verifying the deterministic Form gate and zeroed scores.
+    if (raw && raw.scoring_version === VERSION && raw.scoreGate?.status === 'zero_form') {
+      const form = formFor(essay);
+      if (form.score !== 0 || !raw.scores || Number(raw.scores.total) !== 0
+        || Object.keys(MAXIMA).some(key => Number(raw.scores[key]) !== 0)) {
+        fail('zero_form_mismatch', 'A zero-Form server result must match the deterministic Form check and contain only zero score points.');
+      }
+      const assessment = {
+        ...raw,
+        scoreGate: { status: 'zero_form', cap: 0, reason: form.feedback },
+        feedback: { ...(raw.feedback || {}), form: form.feedback },
+        wordCount: form.count,
+        scoring_version: VERSION
+      };
+      return { ...assessment, ...normalizeSample(raw, essay, assessment) };
+    }
     const assessment = normalizeAssessment(raw, essay);
     return { ...assessment, ...normalizeSample(raw, essay, assessment) };
   }
