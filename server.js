@@ -8,6 +8,7 @@ const path = require('path');
 const compression = require('compression');
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
+const { installGracefulShutdown } = require('./graceful-shutdown');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
@@ -6063,7 +6064,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', async () => {
+const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   console.log(`✅ PTE SWT and Essay Builder Unified Portal running on port ${PORT}`);
   console.log(`🌐 Frontend: http://localhost:${PORT}`);
   console.log(`🔑 Admin: http://localhost:${PORT}/admin (key: ${ADMIN_KEY === 'admin123' ? 'admin123 ⚠ CHANGE THIS!' : 'configured'})`);
@@ -6146,14 +6147,12 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 });
 
-// Graceful shutdown — close browser before exit
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM — closing browser');
-  if (browserInstance) await browserInstance.close().catch(() => {});
-  process.exit(0);
-});
-process.on('SIGINT', async () => {
-  console.log('SIGINT — closing browser');
-  if (browserInstance) await browserInstance.close().catch(() => {});
-  process.exit(0);
+installGracefulShutdown(httpServer, {
+  cleanup: async () => {
+    if (browserStarting) await browserStarting.catch(() => {});
+    await Promise.all([
+      browserInstance ? browserInstance.close() : Promise.resolve(),
+      pgPool ? pgPool.end() : Promise.resolve(),
+    ]);
+  },
 });
