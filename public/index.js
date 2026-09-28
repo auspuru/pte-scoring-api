@@ -3006,7 +3006,7 @@ function revalidateSelectedIdeas(e) {
     if (!e.chosenStance) {
       warnings.push("Please choose a focus area first.");
     } else if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
-      warnings.push("Please select exactly 2 reasons and 2 examples/solutions.");
+      warnings.push("Please select exactly 2 reasons and 2 examples or research angles.");
     }
   } else if (isRel) {
     if (pickedReasonsCount !== 2) {
@@ -3874,7 +3874,7 @@ function validateEssayStateBeforeGeneration(e) {
         if (!e.chosenStance) {
           errors.push("Please choose a focus area first.");
         } else if (pickedReasonsCount !== 2 || pickedSolutionsCount !== 2) {
-          errors.push("Please select exactly 2 reasons and 2 examples/solutions.");
+          errors.push("Please select exactly 2 reasons and 2 examples or research angles.");
         }
       } else if (pickedReasonsCount !== 2) {
         errors.push("Please select exactly 2 causes/challenges.");
@@ -8092,7 +8092,7 @@ Format:
 
     // Distinguish the two single_best_option sub-variants:
     //  - "most pressing problem": pick ONE problem, list causes + paired solutions
-    //  - "focus area": pick ONE sub-area of a topic, give reasons + examples/solutions
+    //  - "focus area": pick ONE sub-area of a topic, give reasons + examples or research angles
     // The focus-area variant is signalled by "which area / aspect ... focus on".
     const isFocusArea = !lockedType && (activeType === 'single_best_option') && !isMostPressing && (
       (lowerQ.includes('area') || lowerQ.includes('aspect') || lowerQ.includes('field')) &&
@@ -8260,7 +8260,7 @@ function renderIdeasPicker() {
     if (activeType === 'single_best_option') {
       const isFocusArea = e.secondaryFeatures && e.secondaryFeatures.includes('focus_area');
       if (isFocusArea) {
-        helpEl.innerHTML = `Choose a focus area, then pick exactly 2 reasons and 2 examples/solutions`;
+        helpEl.innerHTML = `Choose a focus area, then pick exactly 2 reasons and 2 examples or research angles`;
       } else {
         helpEl.innerHTML = `Choose a stance, pick exactly 2 causes/challenges`;
       }
@@ -8320,7 +8320,7 @@ function renderIdeasPicker() {
 
     if (isFocusArea) {
       // FOCUS-AREA layout: pick ONE sub-area (stance), then pick 2 reasons it
-      // matters (BP1) and 2 examples/solutions (BP2). Ideas are filtered to the
+      // matters (BP1) and 2 examples or research angles (BP2). Ideas are filtered to the
       // chosen sub-area via their "supports" tag. No auto-pairing.
       const reasonIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'main_support' || i.category === 'cause' || i.category === 'problem' || i.category === 'challenge' || i.category === 'advantage');
       const solutionIdeas = (e.suggestedIdeas || []).filter(i => i.category === 'solution' || i.category === 'example');
@@ -8396,7 +8396,7 @@ function renderIdeasPicker() {
           <div>
             <div style="font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
               <span style="background:#f5dbd4; color:#7a4030; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">B</span>
-              Examples &amp; solutions
+              Examples &amp; research angles
               <span style="margin-left:auto; font-size:12px; color:var(--ink-mute); font-weight:600;">pick 2</span>
             </div>
             ${colB}
@@ -8790,7 +8790,7 @@ function renderIdeasPicker() {
   let statusText = isReady 
     ? `<strong>Ready! All required ideas selected.</strong>` 
     : isFocusAreaStatus
-      ? `Choose a focus area, then select exactly 2 reasons and 2 examples/solutions.`
+      ? `Choose a focus area, then select exactly 2 reasons and 2 examples or research angles.`
       : (activeType === 'single_best_option')
         ? `Pick a stance/option, then select exactly 2 causes/challenges.`
         : (activeType === 'opinion_alternatives')
