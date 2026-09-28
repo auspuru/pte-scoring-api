@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#edf3f8">
+<title>IPT Brisbane · Interactive Emoji Actions</title>
+<link rel="stylesheet" href="../ipt-tokens.css">
+<link rel="stylesheet" href="./emoji-interactions.css">
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;color:#18202A;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 7% 4%,rgba(45,108,165,.22),transparent 30rem),
+    radial-gradient(circle at 94% 17%,rgba(197,48,48,.13),transparent 26rem),
+    linear-gradient(145deg,#f8fbff,#edf3f8 48%,#e8eef5);
+  -webkit-font-smoothing:antialiased
+}
+.wrap{width:min(1160px,100%);margin:auto;padding:30px 18px 60px}
+.hero{
+  padding:27px 28px 24px;margin-bottom:18px;border:1px solid rgba(255,255,255,.82);border-radius:30px;
+  background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(255,255,255,.18)),rgba(255,255,255,.43);
+  box-shadow:0 28px 72px rgba(23,59,99,.13),inset 0 1px 0 #fff;
+  -webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%)
+}
+h1{margin:0;color:#173B63;font-size:clamp(30px,5vw,48px);line-height:1.03;letter-spacing:-.045em}
+.hero p{max-width:800px;margin:11px 0 0;color:#566476;font-size:14px;line-height:1.6}
+.hero .note{display:inline-flex;margin-top:15px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.78);color:#205080;font-size:11px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.demo-card{
+  position:relative;min-height:192px;padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.76);border-radius:27px;
+  background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(255,255,255,.12)),rgba(255,255,255,.39);
+  box-shadow:0 18px 46px rgba(23,59,99,.10),inset 0 1px 0 rgba(255,255,255,.94);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)
+}
+.demo-card strong{margin-top:13px;color:#173B63;font-size:13px;text-align:center}
+.demo-card small{margin-top:4px;color:#C53030;font-size:10.5px;font-weight:700;text-align:center}
+.state{position:absolute;right:9px;top:9px;padding:4px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.58);color:#6c7888;font-size:8px;font-weight:900;letter-spacing:.05em}
+.state .active{display:none}.demo-card:has(.ipt-action-toggle:checked) .state{background:#16805F;color:#fff;border-color:transparent}
+.demo-card:has(.ipt-action-toggle:checked) .state .ready{display:none}.demo-card:has(.ipt-action-toggle:checked) .state .active{display:inline}
+.footer{margin-top:18px;text-align:center;color:#6c7888;font-size:11px;line-height:1.6}
+@media(max-width:640px){
+  .wrap{padding:16px 9px 38px}.hero{padding:20px 17px;border-radius:24px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .demo-card{min-height:166px;padding:13px 6px 10px;border-radius:22px}.ipt-action-emoji{width:78px;height:78px;border-radius:22px}
+  .demo-card strong{font-size:12px}.demo-card small{font-size:9.5px}.state{font-size:7px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <h1>IPT Brisbane · Interactive Emoji Actions</h1>
+    <p>Tap an emoji to activate a meaningful PTE-related micro-interaction. Tap it again to reset. The interaction layer is CSS-only, while the original SVG files remain portable static assets.</p>
+    <span class="note">17 semantic interactions · liquid glass · iPhone-friendly</span>
+  </section>
+  <section class="grid">
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="ipt" aria-label="IPT: Brand spark">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./ipt.svg" alt="">
+    <span class="fx"><span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span></span>
+  </label>
+  <strong>IPT</strong>
+  <small>Brand spark</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="pte-ai" aria-label="PTE AI: AI scan">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./pte-ai.svg" alt="">
+    <span class="fx"><span class="scan"></span><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span></span>
+  </label>
+  <strong>PTE AI</strong>
+  <small>AI scan</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="score-90" aria-label="Score 90: Achievement burst">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./score-90.svg" alt="">
+    <span class="fx"><span class="confetti c1"></span><span class="confetti c2"></span><span class="confetti c3"></span><span class="confetti c4"></span></span>
+  </label>
+  <strong>Score 90</strong>
+  <small>Achievement burst</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="swt" aria-label="SWT: Summarise text">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./swt.svg" alt="">
+    <span class="fx"><span class="summary-line l1"></span><span class="summary-line l2"></span><span class="summary-line l3"></span><span class="summary-line out"></span></span>
+  </label>
+  <strong>SWT</strong>
+  <small>Summarise text</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="essay" aria-label="Essay: Pencil writes">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./essay.svg" alt="">
+    <span class="fx"><span class="wave"></span><span class="pencil"></span></span>
+  </label>
+  <strong>Essay</strong>
+  <small>Pencil writes</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="speaking" aria-label="Speaking: Record + sound waves">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./speaking.svg" alt="">
+    <span class="fx"><span class="dot"></span><span class="ring r1"></span><span class="ring r2"></span></span>
+  </label>
+  <strong>Speaking</strong>
+  <small>Record + sound waves</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="reading" aria-label="Reading: Flip page">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./reading.svg" alt="">
+    <span class="fx"><span class="page"></span></span>
+  </label>
+  <strong>Reading</strong>
+  <small>Flip page</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="listening" aria-label="Listening: Audio signal">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./listening.svg" alt="">
+    <span class="fx"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span></span>
+  </label>
+  <strong>Listening</strong>
+  <small>Audio signal</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="pronunciation" aria-label="Pronunciation: Pronunciation waves">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./pronunciation.svg" alt="">
+    <span class="fx"><span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span></span>
+  </label>
+  <strong>Pronunciation</strong>
+  <small>Pronunciation waves</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="fluency" aria-label="Fluency: Waveform flows">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./fluency.svg" alt="">
+    <span class="fx"><span class="wave"></span><span class="dot"></span></span>
+  </label>
+  <strong>Fluency</strong>
+  <small>Waveform flows</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="grammar" aria-label="Grammar: Error → correction">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./grammar.svg" alt="">
+    <span class="fx"><span class="xmark"></span><span class="checkmark"></span></span>
+  </label>
+  <strong>Grammar</strong>
+  <small>Error → correction</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="vocab" aria-label="Vocabulary: New words pop">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./vocab.svg" alt="">
+    <span class="fx"><span class="bubble b1">+</span><span class="bubble b2">W</span><span class="bubble b3">+</span></span>
+  </label>
+  <strong>Vocabulary</strong>
+  <small>New words pop</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="mock-test" aria-label="Mock Test: Answers tick off">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./mock-test.svg" alt="">
+    <span class="fx"><span class="tick t1"></span><span class="tick t2"></span><span class="tick t3"></span></span>
+  </label>
+  <strong>Mock Test</strong>
+  <small>Answers tick off</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="progress" aria-label="Progress: Bars grow">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./progress.svg" alt="">
+    <span class="fx"><span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span><span class="bar b4"></span><span class="wave"></span></span>
+  </label>
+  <strong>Progress</strong>
+  <small>Bars grow</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="teacher-feedback" aria-label="Teacher Feedback: Feedback appears">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./teacher-feedback.svg" alt="">
+    <span class="fx"><span class="feedback"></span><span class="checkmark"></span></span>
+  </label>
+  <strong>Teacher Feedback</strong>
+  <small>Feedback appears</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="ai-score" aria-label="AI Score: Scan → scored">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./ai-score.svg" alt="">
+    <span class="fx"><span class="scan"></span><span class="checkmark"></span></span>
+  </label>
+  <strong>AI Score</strong>
+  <small>Scan → scored</small>
+</article>
+<article class="demo-card">
+  <span class="state"><span class="ready">TAP</span><span class="active">ACTIVE</span></span>
+  <label class="ipt-action-emoji" data-emoji="celebrate" aria-label="Celebrate: Confetti burst">
+    <input class="ipt-action-toggle" type="checkbox">
+    <img src="./celebrate.svg" alt="">
+    <span class="fx"><span class="confetti c1"></span><span class="confetti c2"></span><span class="confetti c3"></span><span class="confetti c4"></span></span>
+  </label>
+  <strong>Celebrate</strong>
+  <small>Confetti burst</small>
+</article></section>
+  <p class="footer">Portal integration uses the same components with <code>.is-active</code> for application-controlled states; the checkboxes here exist only to make this demo work without JavaScript.</p>
+</main>
+</body>
+</html>

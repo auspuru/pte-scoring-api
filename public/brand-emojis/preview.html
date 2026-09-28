@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IPT Brisbane · Liquid Glass Emoji Preview</title>
+<link rel="stylesheet" href="/ipt-tokens.css">
+<link rel="stylesheet" href="./emoji-glass.css">
+<style>
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{
+  margin:0;min-height:100vh;color:#18202a;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 8% 5%,rgba(45,108,165,.22),transparent 28rem),
+    radial-gradient(circle at 91% 16%,rgba(197,48,48,.14),transparent 24rem),
+    linear-gradient(145deg,#f7fbff 0%,#edf3f8 48%,#e8eef5 100%);
+  background-attachment:fixed;
+}
+.blob{position:fixed;width:28rem;height:28rem;border-radius:50%;filter:blur(62px);opacity:.32;pointer-events:none;z-index:-1}
+.blob.one{top:-10rem;left:-8rem;background:#5a9bd0;animation:drift 16s ease-in-out infinite alternate}
+.blob.two{right:-10rem;top:26%;background:#d94a4a;animation:drift 20s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate3d(3rem,2rem,0) scale(1.1)}}
+.wrap{max-width:1180px;margin:auto;padding:56px 24px 72px}
+.hero{
+  position:relative;overflow:hidden;padding:28px 30px;border:1px solid rgba(255,255,255,.76);
+  border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.58),rgba(255,255,255,.22)),rgba(255,255,255,.48);
+  box-shadow:0 28px 72px rgba(23,59,99,.13),inset 0 1px 0 rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
+  margin-bottom:24px;
+}
+h1{margin:0;color:#173b63;font-size:clamp(30px,4vw,48px);letter-spacing:-.045em}
+.sub{margin:10px 0 0;color:#566476;max-width:760px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.74);color:#205080;font-weight:650;font-size:12px;backdrop-filter:blur(12px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px}
+.card{
+  position:relative;display:grid;place-items:center;min-height:192px;padding:22px 14px 16px;
+  border:1px solid rgba(255,255,255,.70);border-radius:26px;
+  background:linear-gradient(145deg,rgba(255,255,255,.48),rgba(255,255,255,.16)),rgba(255,255,255,.42);
+  box-shadow:0 18px 46px rgba(23,59,99,.10),inset 0 1px 0 rgba(255,255,255,.86);
+  -webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);
+}
+.card button{border:0;font:inherit;cursor:pointer}
+.name{margin-top:14px;color:#173b63;font-weight:760;font-size:14px}
+.code{margin-top:4px;color:#c53030;font:600 11px ui-monospace,SFMono-Regular,Menlo,monospace}
+.note{margin-top:24px;color:#6c7888;font-size:13px;line-height:1.6}
+@media(max-width:560px){
+  .wrap{padding:28px 14px 48px}.hero{padding:22px 20px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .card{min-height:164px;padding:16px 8px}.ipt-emoji{--emoji-size:76px}
+}
+@media(prefers-reduced-motion:reduce){.blob{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="blob one"></div><div class="blob two"></div>
+<main class="wrap">
+<section class="hero">
+  <h1>IPT Brisbane · Liquid Glass Emoji System</h1>
+  <p class="sub">Portal-ready glass reactions with pointer-follow highlights, spring lift, tap compression, optional shimmer/pulse/float states, dark-mode compatibility and reduced-motion support.</p>
+  <div class="chips"><span class="chip">iPhone-style glass</span><span class="chip">IPT blue + red</span><span class="chip">Touch feedback</span><span class="chip">Reduced motion</span></div>
+</section>
+<section class="grid">
+<article class="card"><button class="ipt-emoji ipt-emoji--float" aria-label="IPT"><img src="ipt.svg" alt=""></button><div class="name">IPT</div><div class="code">:ipt:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--shimmer" aria-label="PTE AI"><img src="pte-ai.svg" alt=""></button><div class="name">PTE AI</div><div class="code">:pte_ai:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--celebrate" aria-label="Score 90"><img src="score-90.svg" alt=""></button><div class="name">Score 90</div><div class="code">:score90:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--blue" aria-label="SWT"><img src="swt.svg" alt=""></button><div class="name">SWT</div><div class="code">:swt:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--red" aria-label="Essay"><img src="essay.svg" alt=""></button><div class="name">Essay</div><div class="code">:essay:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--pulse" aria-label="Speaking"><img src="speaking.svg" alt=""></button><div class="name">Speaking</div><div class="code">:speaking:</div></article>
+<article class="card"><button class="ipt-emoji" aria-label="Reading"><img src="reading.svg" alt=""></button><div class="name">Reading</div><div class="code">:reading:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--float" aria-label="Listening"><img src="listening.svg" alt=""></button><div class="name">Listening</div><div class="code">:listening:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--pulse" aria-label="Pronunciation"><img src="pronunciation.svg" alt=""></button><div class="name">Pronunciation</div><div class="code">:pronunciation:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--shimmer" aria-label="Fluency"><img src="fluency.svg" alt=""></button><div class="name">Fluency</div><div class="code">:fluency:</div></article>
+<article class="card"><button class="ipt-emoji" aria-label="Grammar"><img src="grammar.svg" alt=""></button><div class="name">Grammar</div><div class="code">:grammar:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--float" aria-label="Vocabulary"><img src="vocab.svg" alt=""></button><div class="name">Vocabulary</div><div class="code">:vocab:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--blue" aria-label="Mock Test"><img src="mock-test.svg" alt=""></button><div class="name">Mock Test</div><div class="code">:mock_test:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--shimmer" data-emoji-state="active" aria-label="Progress"><img src="progress.svg" alt=""></button><div class="name">Progress</div><div class="code">:progress:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--red" aria-label="Teacher Feedback"><img src="teacher-feedback.svg" alt=""></button><div class="name">Teacher Feedback</div><div class="code">:teacher_feedback:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--pulse" data-emoji-state="success" aria-label="AI Score"><img src="ai-score.svg" alt=""></button><div class="name">AI Score</div><div class="code">:ai_score:</div></article>
+<article class="card"><button class="ipt-emoji ipt-emoji--celebrate" aria-label="Celebrate"><img src="celebrate.svg" alt=""></button><div class="name">Celebrate</div><div class="code">:celebrate:</div></article>
+</section>
+<p class="note">Animation is intentionally state-based: the default glass tile only reacts to hover/tap, while float, pulse, shimmer and celebration motion can be applied where they add meaning.</p>
+</main>
+<script src="./emoji-glass.js"></script>
+</body>
+</html>

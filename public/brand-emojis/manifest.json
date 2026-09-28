@@ -1,0 +1,129 @@
+{
+  "name": "IPT Brisbane PTE Liquid Glass Emoji System",
+  "version": 3,
+  "style": "iPhone-inspired liquid glass with semantic interactions",
+  "palette": {
+    "blue900": "#173B63",
+    "blue700": "#205080",
+    "blue100": "#E9F2FA",
+    "red600": "#C53030",
+    "red100": "#FBE9EA",
+    "ink": "#18202A",
+    "white": "#FFFFFF"
+  },
+  "size": "128x128",
+  "presentation": {
+    "css": "emoji-glass.css",
+    "js": "emoji-glass.js",
+    "interactionCss": "emoji-interactions.css",
+    "animatedPreview": "preview.html",
+    "interactivePreview": "interactive-preview.html",
+    "supportsDarkMode": true,
+    "supportsReducedMotion": true,
+    "coreInteractionRequiresJavaScript": false
+  },
+  "items": [
+    {
+      "name": "ipt",
+      "file": "ipt.svg",
+      "meaning": "IPT Brisbane brand",
+      "interaction": "brand spark"
+    },
+    {
+      "name": "pte-ai",
+      "file": "pte-ai.svg",
+      "meaning": "PTE AI practice",
+      "interaction": "AI scan"
+    },
+    {
+      "name": "score-90",
+      "file": "score-90.svg",
+      "meaning": "Top PTE score / high achievement",
+      "interaction": "achievement confetti burst"
+    },
+    {
+      "name": "swt",
+      "file": "swt.svg",
+      "meaning": "Summarize Written Text",
+      "interaction": "source text collapses into summary"
+    },
+    {
+      "name": "essay",
+      "file": "essay.svg",
+      "meaning": "Essay practice",
+      "interaction": "pencil writes"
+    },
+    {
+      "name": "speaking",
+      "file": "speaking.svg",
+      "meaning": "Speaking practice",
+      "interaction": "recording light and sound waves"
+    },
+    {
+      "name": "reading",
+      "file": "reading.svg",
+      "meaning": "Reading practice",
+      "interaction": "page flip"
+    },
+    {
+      "name": "listening",
+      "file": "listening.svg",
+      "meaning": "Listening practice",
+      "interaction": "expanding audio signal"
+    },
+    {
+      "name": "pronunciation",
+      "file": "pronunciation.svg",
+      "meaning": "Pronunciation score",
+      "interaction": "pronunciation sound waves"
+    },
+    {
+      "name": "fluency",
+      "file": "fluency.svg",
+      "meaning": "Oral fluency score",
+      "interaction": "waveform flow"
+    },
+    {
+      "name": "grammar",
+      "file": "grammar.svg",
+      "meaning": "Grammar feedback",
+      "interaction": "error changes to correction"
+    },
+    {
+      "name": "vocab",
+      "file": "vocab.svg",
+      "meaning": "Vocabulary feedback",
+      "interaction": "new-word bubbles"
+    },
+    {
+      "name": "mock-test",
+      "file": "mock-test.svg",
+      "meaning": "Mock test",
+      "interaction": "answers tick off sequentially"
+    },
+    {
+      "name": "progress",
+      "file": "progress.svg",
+      "meaning": "Student progress",
+      "interaction": "bars rise with trend line"
+    },
+    {
+      "name": "teacher-feedback",
+      "file": "teacher-feedback.svg",
+      "meaning": "Teacher feedback",
+      "interaction": "feedback bubble appears"
+    },
+    {
+      "name": "ai-score",
+      "file": "ai-score.svg",
+      "meaning": "AI scoring complete",
+      "interaction": "AI scan resolves to completion check"
+    },
+    {
+      "name": "celebrate",
+      "file": "celebrate.svg",
+      "meaning": "Achievement / congratulations",
+      "interaction": "confetti burst"
+    }
+  ]
+}
