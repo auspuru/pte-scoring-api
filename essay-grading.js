@@ -5,6 +5,29 @@ const { assessEssay } = require('./essay-assessment-service');
 
 function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
+  const assessmentCache = new Map(), assessmentPending = new Map();
+
+  async function getAssessment(question, essay) {
+    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
+    const hit = assessmentCache.get(key);
+    if (hit && hit.expires > Date.now()) return structuredClone(hit.assessment);
+    if (hit) assessmentCache.delete(key);
+
+    if (!assessmentPending.has(key)) {
+      const task = (async () => {
+        const assessed = await assessEssay(question, essay, call, { onAttemptError });
+        assessmentCache.set(key, {
+          assessment: structuredClone(assessed.assessment),
+          expires: Date.now() + 20 * 60 * 1000
+        });
+        while (assessmentCache.size > 100) assessmentCache.delete(assessmentCache.keys().next().value);
+        return assessed.assessment;
+      })();
+      assessmentPending.set(key, task);
+      task.finally(() => assessmentPending.delete(key)).catch(() => {});
+    }
+    return structuredClone(await assessmentPending.get(key));
+  }
 
   async function prepareSample(question, essay, assessment, sampleBand) {
     if (assessment.scoreGate?.status === 'zero_form') {
@@ -56,13 +79,7 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
 
     if (!pending.has(key)) {
       const task = (async () => {
-        let assessment;
-        if (saved) {
-          assessment = saved;
-        } else {
-          const assessed = await assessEssay(question, essay, call, { onAttemptError });
-          assessment = assessed.assessment;
-        }
+        const assessment = saved || await getAssessment(question, essay);
         const sample = await prepareSample(question, essay, assessment, sampleBand);
         const result = { ...assessment, ...sample };
         cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
