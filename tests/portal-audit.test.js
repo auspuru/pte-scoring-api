@@ -78,6 +78,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/iptShellReady/);
   assert.match(portalShell,/portal-insights\.css\?v=20260928-insights/);
   assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-vocab-library/);
+  assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
