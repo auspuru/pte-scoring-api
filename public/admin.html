@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PTE Admin Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&display=swap" rel="stylesheet">
 <style>
 :root {
   /* Default Obsidian Dark Theme */
@@ -383,6 +380,7 @@ tr:hover td { background: var(--surface-dim); }
 }
 .user-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.user-controls .search-input{width:180px}.btn-danger{color:var(--red);border-color:rgba(239,68,68,.3)}.btn-danger:disabled{opacity:.45;cursor:not-allowed}
 </style>
+<link rel="stylesheet" href="/admin-liquid-glass.css?v=20260928-admin-a11y">
 </head>
 <body>
 <script>
@@ -398,27 +396,39 @@ tr:hover td { background: var(--surface-dim); }
   }
 })();
 </script>
-<div class="ambient-glow-blob" style="top: -10%; left: -10%; width: 45vw; height: 45vw; background: rgba(99, 102, 241, 0.12);"></div>
-<div class="ambient-glow-blob" style="bottom: -10%; right: -10%; width: 55vw; height: 55vw; background: rgba(20, 184, 166, 0.1);"></div>
-<div class="ambient-glow-blob" style="top: 25%; right: 10%; width: 35vw; height: 35vw; background: rgba(139, 92, 246, 0.08);"></div>
+<div class="ambient-glow-blob admin-glow admin-glow-a" aria-hidden="true"></div>
+<div class="ambient-glow-blob admin-glow admin-glow-b" aria-hidden="true"></div>
+<div class="ambient-glow-blob admin-glow admin-glow-c" aria-hidden="true"></div>
 
 <div class="auth-card" id="authCard">
-  <button class="theme-toggle" onclick="toggleTheme()" style="position: absolute; top: 20px; right: 20px;" title="Toggle theme">☀️</button>
-  <h2>Admin Login</h2>
-  <div class="auth-error" id="authError"></div>
-  <input type="password" id="adminKeyInput" placeholder="Admin key" onkeydown="if(event.key==='Enter')adminLogin()">
+  <button class="theme-toggle" onclick="toggleTheme()" style="position: absolute; top: 20px; right: 20px;" title="Toggle theme" aria-label="Toggle theme">☀️</button>
+  <div class="admin-brand-lockup">
+    <img class="admin-brand-logo" src="/assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="IELTS and PTE Tutorial Brisbane logo" width="54" height="54">
+    <div class="admin-brand-copy">
+      <div class="admin-brand-eyebrow">IPT Brisbane</div>
+      <h2>Admin sign in</h2>
+    </div>
+  </div>
+  <p class="admin-auth-copy">Authorized staff only. Use the server-configured admin key to continue.</p>
+  <div class="auth-error" id="authError" role="alert"></div>
+  <label class="admin-field-label" for="adminKeyInput">Admin key</label>
+  <input type="password" id="adminKeyInput" placeholder="Enter admin key" autocomplete="current-password" aria-describedby="authError" onkeydown="if(event.key==='Enter')adminLogin()">
   <button onclick="adminLogin()">Sign In</button>
 </div>
 
 <div class="container dashboard" id="dashboard">
   <div class="top-bar">
-    <div>
-      <h1>Admin Dashboard</h1>
-      <div class="subtitle">PTE SWT Practice Portal — User Management</div>
-      <div class="admin-source" id="adminSource">Connecting…</div>
+    <div class="admin-brand-lockup">
+      <img class="admin-brand-logo" src="/assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="" width="54" height="54" aria-hidden="true">
+      <div class="admin-brand-copy">
+        <div class="admin-brand-eyebrow">IPT Brisbane · Staff</div>
+        <h1>Admin Dashboard</h1>
+        <div class="subtitle">Student records, access controls and learning support.</div>
+        <div class="admin-source" id="adminSource">Connecting…</div>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+    <div class="admin-top-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">☀️</button>
       <button class="btn-sm" onclick="loadUsers()">Refresh</button>
       <button class="btn-sm" onclick="adminLogout()">Sign Out</button>
     </div>
@@ -439,12 +449,14 @@ tr:hover td { background: var(--surface-dim); }
     <div class="table-card">
       <div class="table-header">
         <h3>Users</h3>
-        <div class="user-controls"><input type="text" class="search-input" id="userSearch" placeholder="Search by name..." oninput="filterUsers(this.value)"><select class="search-input" id="userSort" onchange="sortUsers(this.value)" aria-label="Sort users"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="name-asc">Name A–Z</option><option value="name-desc">Name Z–A</option></select><button class="btn-sm btn-danger" id="bulkDeleteBtn" onclick="deleteSelectedUsers()" disabled>Delete selected</button></div>
+        <div class="user-controls"><input type="search" class="search-input" id="userSearch" placeholder="Search by name..." aria-label="Search users" oninput="filterUsers(this.value)"><select class="search-input" id="userSort" onchange="sortUsers(this.value)" aria-label="Sort users"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="name-asc">Name A–Z</option><option value="name-desc">Name Z–A</option></select><button class="btn-sm btn-danger" id="bulkDeleteBtn" onclick="deleteSelectedUsers()" disabled>Delete selected</button></div>
       </div>
-      <table>
-        <thead><tr><th><input type="checkbox" onchange="toggleAllUsers(this.checked)" aria-label="Select all users"></th><th>User</th><th>Created</th><th>Last Login</th><th>SWT</th><th>Reading</th><th>Avg Reading</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="usersBody"></tbody>
-      </table>
+      <div class="admin-table-scroll" tabindex="0" aria-label="User records table">
+        <table>
+          <thead><tr><th><input type="checkbox" onchange="toggleAllUsers(this.checked)" aria-label="Select all users"></th><th>User</th><th>Created</th><th>Last Login</th><th>SWT</th><th>Reading</th><th>Avg Reading</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -568,7 +580,7 @@ tr:hover td { background: var(--surface-dim); }
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
 const API = window.location.origin;
@@ -641,8 +653,8 @@ function renderUsers(users){
   updateBulkDeleteState();
 }
 function userList(){const q=(document.getElementById('userSearch')?.value||'').toLowerCase(),o=document.getElementById('userSort')?.value||'newest';const a=allUsers.filter(u=>(u.username||'').toLowerCase().includes(q));return a.sort((x,y)=>o.startsWith('name')?((x.username||'').localeCompare(y.username||'')*(o==='name-desc'?-1:1)):((((Date.parse(y.createdAt)||0)-(Date.parse(x.createdAt)||0)))*(o==='oldest'?-1:1)));}
-function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}
-async function deleteSelectedUsers(){const s=[...document.querySelectorAll('.user-select:checked')].map(e=>e.value);if(!s.length||!confirm('Delete '+s.length+' selected user(s) and all their data permanently?')||!confirm('This cannot be undone. Continue?'))return;const r=await fetch(API+'/api/admin/delete-users',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({usernames:s})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success){toast(d.error||'Bulk delete failed');return;}toast('Deleted '+(d.deleted||[]).length+' user(s)');loadUsers();}
+function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select:not(:disabled)').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked:not(:disabled)').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}
+async function deleteSelectedUsers(){const s=[...document.querySelectorAll('.user-select:checked:not(:disabled)')].map(e=>e.value);if(!s.length||!confirm('Delete '+s.length+' selected user(s) and all their data permanently?')||!confirm('This cannot be undone. Continue?'))return;const r=await fetch(API+'/api/admin/delete-users',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({usernames:s})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.success){toast(d.error||'Bulk delete failed');return;}toast('Deleted '+(d.deleted||[]).length+' user(s)');loadUsers();}
 
 function showResetModal(username){
   document.getElementById('resetUser').textContent=username;
@@ -763,11 +775,15 @@ function viewUser(username){
 let allPassages = [];
 
 function switchTab(name) {
-  document.getElementById('tabUsers').classList.toggle('active', name === 'users');
-  document.getElementById('tabPassages').classList.toggle('active', name === 'passages');
-  document.getElementById('panelUsers').classList.toggle('active', name === 'users');
-  document.getElementById('panelPassages').classList.toggle('active', name === 'passages');
-  if (name === 'passages' && allPassages.length === 0) loadPassages();
+  const tabUsers = document.getElementById('tabUsers');
+  const tabPassages = document.getElementById('tabPassages');
+  const panelUsers = document.getElementById('panelUsers');
+  const panelPassages = document.getElementById('panelPassages');
+  if (tabUsers) tabUsers.classList.toggle('active', name === 'users');
+  if (tabPassages) tabPassages.classList.toggle('active', name === 'passages');
+  if (panelUsers) panelUsers.classList.toggle('active', name === 'users');
+  if (panelPassages) panelPassages.classList.toggle('active', name === 'passages');
+  if (name === 'passages' && panelPassages && allPassages.length === 0) loadPassages();
 }
 
 async function loadPassages() {
