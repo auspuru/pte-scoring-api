@@ -1,0 +1,264 @@
+/* IPT Brisbane liquid-glass emoji system.
+   Designed to sit on top of public/ipt-tokens.css but includes fallbacks. */
+
+.ipt-emoji {
+  --emoji-blue: var(--ipt-blue-700, #205080);
+  --emoji-red: var(--ipt-red-600, #c53030);
+  --emoji-size: 88px;
+  --emoji-glass-x: 32%;
+  --emoji-glass-y: 18%;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--emoji-size);
+  height: var(--emoji-size);
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 26px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.54), rgba(255,255,255,.10) 46%, rgba(255,255,255,.20)),
+    rgba(255,255,255,.52);
+  box-shadow:
+    0 18px 42px rgba(23,59,99,.14),
+    0 3px 10px rgba(23,59,99,.08),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    inset 0 -1px 0 rgba(18,51,79,.08);
+  -webkit-backdrop-filter: blur(22px) saturate(175%) contrast(103%);
+  backdrop-filter: blur(22px) saturate(175%) contrast(103%);
+  transform: translate3d(0,0,0) scale(1);
+  transform-origin: center;
+  transition:
+    transform var(--ipt-motion-spring, 460ms) var(--ipt-spring, cubic-bezier(.22,1.15,.3,1)),
+    box-shadow var(--ipt-motion-standard, 260ms) ease,
+    border-color var(--ipt-motion-standard, 260ms) ease,
+    background-color var(--ipt-motion-standard, 260ms) ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ipt-emoji::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      72px circle at var(--emoji-glass-x) var(--emoji-glass-y),
+      rgba(255,255,255,.92),
+      rgba(255,255,255,.34) 26%,
+      transparent 62%
+    ),
+    linear-gradient(180deg, rgba(255,255,255,.30), transparent 42%);
+  mix-blend-mode: screen;
+  opacity: .78;
+  transition: opacity 180ms ease;
+}
+
+.ipt-emoji::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 8px;
+  border-radius: 20px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 82%, color-mix(in srgb, var(--emoji-red) 16%, transparent), transparent 42%),
+    radial-gradient(circle at 20% 18%, color-mix(in srgb, var(--emoji-blue) 18%, transparent), transparent 46%);
+  opacity: .88;
+}
+
+.ipt-emoji > img,
+.ipt-emoji > svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 8px 12px rgba(23,59,99,.13))
+    saturate(.98);
+  transition:
+    transform var(--ipt-motion-spring, 460ms) var(--ipt-spring, cubic-bezier(.22,1.15,.3,1)),
+    filter var(--ipt-motion-standard, 260ms) ease;
+}
+
+.ipt-emoji:hover {
+  transform: translate3d(0,-5px,0) scale(1.045);
+  border-color: rgba(255,255,255,.94);
+  box-shadow:
+    0 24px 52px rgba(23,59,99,.18),
+    0 7px 16px rgba(23,59,99,.10),
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(18,51,79,.10);
+}
+
+.ipt-emoji:hover > img,
+.ipt-emoji:hover > svg {
+  transform: scale(1.035);
+  filter:
+    drop-shadow(0 10px 14px rgba(23,59,99,.17))
+    saturate(1.06);
+}
+
+.ipt-emoji:active,
+.ipt-emoji.is-pressed {
+  transform: translate3d(0,-1px,0) scale(.965);
+  transition-duration: 120ms;
+}
+
+.ipt-emoji:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--emoji-blue) 38%, white);
+  outline-offset: 4px;
+}
+
+.ipt-emoji--sm { --emoji-size: 52px; padding: 8px; border-radius: 17px; }
+.ipt-emoji--lg { --emoji-size: 112px; padding: 15px; border-radius: 32px; }
+
+.ipt-emoji--blue::after {
+  background:
+    radial-gradient(circle at 75% 82%, rgba(45,108,165,.18), transparent 44%),
+    radial-gradient(circle at 18% 15%, rgba(107,185,238,.20), transparent 48%);
+}
+
+.ipt-emoji--red::after {
+  background:
+    radial-gradient(circle at 78% 82%, rgba(197,48,48,.20), transparent 44%),
+    radial-gradient(circle at 18% 15%, rgba(255,255,255,.42), transparent 46%);
+}
+
+.ipt-emoji--success {
+  --emoji-blue: #16805f;
+  --emoji-red: #6fd6b3;
+}
+
+.ipt-emoji--float {
+  animation: iptEmojiFloat 4.8s ease-in-out infinite;
+}
+
+.ipt-emoji--pulse {
+  animation: iptEmojiPulse 2.6s ease-in-out infinite;
+}
+
+.ipt-emoji--shimmer::before {
+  background:
+    linear-gradient(
+      118deg,
+      transparent 18%,
+      rgba(255,255,255,.20) 34%,
+      rgba(255,255,255,.95) 49%,
+      rgba(255,255,255,.20) 64%,
+      transparent 82%
+    );
+  transform: translateX(-135%);
+  animation: iptEmojiShimmer 3.8s ease-in-out infinite;
+  opacity: .72;
+}
+
+.ipt-emoji--celebrate {
+  animation: iptEmojiFloat 4.2s ease-in-out infinite, iptEmojiGlow 2.8s ease-in-out infinite;
+}
+
+.ipt-emoji[data-emoji-state="active"] {
+  box-shadow:
+    0 22px 48px rgba(32,80,128,.18),
+    0 0 0 1px rgba(45,108,165,.12),
+    0 0 28px rgba(45,108,165,.13),
+    inset 0 1px 0 rgba(255,255,255,.96);
+}
+
+.ipt-emoji[data-emoji-state="success"] {
+  --emoji-blue: #16805f;
+  --emoji-red: #6fd6b3;
+  box-shadow:
+    0 22px 48px rgba(22,128,95,.14),
+    0 0 30px rgba(111,214,179,.12),
+    inset 0 1px 0 rgba(255,255,255,.96);
+}
+
+body.dark .ipt-emoji,
+.dark .ipt-emoji {
+  border-color: rgba(255,255,255,.15);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.025) 48%, rgba(255,255,255,.06)),
+    rgba(19,30,42,.56);
+  box-shadow:
+    0 22px 50px rgba(0,0,0,.28),
+    0 4px 12px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(0,0,0,.28);
+}
+
+body.dark .ipt-emoji::before,
+.dark .ipt-emoji::before {
+  background:
+    radial-gradient(
+      72px circle at var(--emoji-glass-x) var(--emoji-glass-y),
+      rgba(255,255,255,.27),
+      rgba(255,255,255,.08) 30%,
+      transparent 64%
+    ),
+    linear-gradient(180deg, rgba(255,255,255,.09), transparent 42%);
+}
+
+@keyframes iptEmojiFloat {
+  0%,100% { transform: translate3d(0,0,0) rotate(0deg); }
+  50% { transform: translate3d(0,-6px,0) rotate(.35deg); }
+}
+
+@keyframes iptEmojiPulse {
+  0%,100% {
+    box-shadow:
+      0 18px 42px rgba(23,59,99,.14),
+      0 3px 10px rgba(23,59,99,.08),
+      inset 0 1px 0 rgba(255,255,255,.92);
+  }
+  50% {
+    box-shadow:
+      0 22px 52px rgba(23,59,99,.19),
+      0 0 28px rgba(45,108,165,.15),
+      inset 0 1px 0 rgba(255,255,255,1);
+  }
+}
+
+@keyframes iptEmojiShimmer {
+  0%,18% { transform: translateX(-135%); }
+  55%,100% { transform: translateX(135%); }
+}
+
+@keyframes iptEmojiGlow {
+  0%,100% { filter: saturate(1); }
+  50% { filter: saturate(1.12) brightness(1.025); }
+}
+
+/* Disable idle animation when the tab/card is not visible. */
+.ipt-emoji.is-paused {
+  animation-play-state: paused !important;
+}
+.ipt-emoji.is-paused::before {
+  animation-play-state: paused !important;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .ipt-emoji:hover {
+    transform: translate3d(0,0,0) scale(1);
+  }
+  .ipt-emoji:hover > img,
+  .ipt-emoji:hover > svg {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ipt-emoji,
+  .ipt-emoji::before,
+  .ipt-emoji > img,
+  .ipt-emoji > svg {
+    animation: none !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
