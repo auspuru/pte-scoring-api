@@ -110,6 +110,17 @@ test('Top Coherence and Linguistic marks require exact supporting evidence', () 
   assert.throws(() => policy.normalizeResult(coherence, essay), { code: 'development_evidence' });
 });
 
+test('Zero-Form server results remain valid in the browser and do not call the model', async () => {
+  const short = Array(100).fill('word').join(' ') + '.';
+  let calls = 0;
+  const grader = createEssayGrader(async () => { calls++; throw new Error('Model must not be called for Form 0'); });
+  const result = await grader.grade(question, short);
+  assert.equal(calls, 0);
+  assert.equal(result.scoreGate.status, 'zero_form');
+  assert.equal(result.scores.total, 0);
+  assert.deepEqual(policy.normalizeResult(result, short), result);
+});
+
 test('Style refinements are separate from actual grammar and never disguised as errors', () => {
   const raw = good();
   raw.errors = [{ type: 'style', phrase: 'has become increasingly important', correction: 'has gained importance', explanation: 'A shorter option.' }];
@@ -250,6 +261,11 @@ test('The renderer allows change markers but escapes model-supplied HTML and scr
   assert(result.includes('<span class="diff-ins">clearer</span>'));
   assert(!result.includes('<img')); assert(!result.includes('<script>'));
   assert(result.includes('&lt;img'));
+});
+
+test('Essay Practice requires 120 words before requesting a score', () => {
+  assert.match(uiSource, /countWords\(essay\) < 120/);
+  assert.match(uiSource, /at least 120 words before scoring/);
 });
 
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
