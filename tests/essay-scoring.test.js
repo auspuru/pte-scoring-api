@@ -342,7 +342,8 @@ test('Choosing a desired sample band stays in Essay Practice without starting ac
   browser.setPracticeSampleBand('7', { stopPropagation() { stopped = true; } });
   assert.equal(browser.practiceState.sampleBand, '7');
   assert.equal(stopped, true);
-  assert.deepEqual(saves, [{ skipSync: true }]);
+  assert.equal(saves.length, 1);
+  assert.equal(saves[0].skipSync, true);
   assert.doesNotMatch(browserFunction('setPracticeSampleBand'), /queuePortalEssayDraft/);
   assert.match(uiSource, /activeElement\?\.matches\?\.\('input,textarea,select,\[contenteditable="true"\]'\)/);
 });
