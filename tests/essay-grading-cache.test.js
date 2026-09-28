@@ -12,9 +12,10 @@ const essay = [
 ].join('\n\n');
 
 const primary = {
-  scores: { content: 5, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 5, coherence: 5 },
+  scores: { content: 5, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 5, coherence: 5 },
   feedback: {
     content: 'Relevant and developed.',
+    form: 'Valid length and prose form.',
     spelling: 'Accurate.',
     grammar: 'Accurate.',
     vocabulary: 'Appropriate.',
