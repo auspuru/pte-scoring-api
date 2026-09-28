@@ -1,6 +1,7 @@
 {
-  "name": "IPT Brisbane PTE Scoring Emoji Pack",
-  "version": 1,
+  "name": "IPT Brisbane PTE Liquid Glass Emoji System",
+  "version": 2,
+  "style": "iPhone-inspired liquid glass",
   "palette": {
     "blue900": "#173B63",
     "blue700": "#205080",
@@ -11,6 +12,13 @@
     "white": "#FFFFFF"
   },
   "size": "128x128",
+  "presentation": {
+    "css": "emoji-glass.css",
+    "js": "emoji-glass.js",
+    "supportsDarkMode": true,
+    "supportsReducedMotion": true,
+    "animations": ["float", "pulse", "shimmer", "celebrate", "press", "pointer-highlight"]
+  },
   "items": [
     {"name":"ipt","file":"ipt.svg","meaning":"IPT Brisbane brand"},
     {"name":"pte-ai","file":"pte-ai.svg","meaning":"PTE AI practice"},
