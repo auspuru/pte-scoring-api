@@ -10422,11 +10422,21 @@ function importData() {
 let toastTimer;
 function toast(msg, isError) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.toggle('error', !!isError);
-  t.classList.add('show');
+  if (!t) return;
+  // A normal notification must never inherit the sticky PDF/progress state.
+  if (typeof progressToastVisible !== 'undefined') progressToastVisible = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+  const text = String(msg || '').trim();
+  t.textContent = text;
+  t.classList.toggle('error', !!isError);
+  t.classList.toggle('long', text.length > 180);
+  t.classList.add('show');
+  const dismiss = () => {
+    t.classList.remove('show', 'long');
+    // Clear stale text after the exit animation so it cannot reappear.
+    setTimeout(() => { if (!t.classList.contains('show')) t.textContent = ''; }, 300);
+  };
+  toastTimer = setTimeout(dismiss, 4200);
 }
 
 // ============================================================
@@ -14208,7 +14218,14 @@ async function retryPracticeSample() {
     await save;
     if (!sameOwner()) return;
     renderPracticeHistory();
-    toast(sample.sampleStatus === 'ready' ? 'Your Band 9 sample is ready.' : sample.sampleNote, sample.sampleStatus === 'unavailable');
+    toast(
+      sample.sampleStatus === 'ready'
+        ? 'Your Band 9 sample is ready.'
+        : sample.sampleStatus === 'needs-ideas'
+          ? 'Add the missing personal/task detail shown in your results to generate the Band 9 sample.'
+          : 'The sample could not be prepared. Your score is still saved.',
+      sample.sampleStatus === 'unavailable'
+    );
   } catch (error) {
     if (sameOwner()) toast(error.message || 'The sample could not be prepared. Your score is still saved.', true);
   } finally {
