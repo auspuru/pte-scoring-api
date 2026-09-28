@@ -4,6 +4,7 @@ const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const essayPolicy = require('./public/essay-scoring');
+const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20260925-user-sst30-hdmaster3';
@@ -117,7 +118,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
                 assessmentType: 'Unified essay practice assessment',
                 maxima: { ...essayPolicy.MAXIMA },
                 total: Number(unified.scores?.total || 0),
-                maximum: 26,
+                maximum: ESSAY_MAXIMUM,
                 gated: unified.scoreGate?.status && unified.scoreGate.status !== 'valid',
                 reasons: unified.scoreGate?.reason ? [unified.scoreGate.reason] : []
               };
