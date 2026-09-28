@@ -305,6 +305,34 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   assert.equal(failures, 2, 'A failed assessment is retried, not converted into a fabricated local score.');
 });
 
+test('A malformed independent review cannot erase a validated primary essay score', async () => {
+  let reviewCalls = 0;
+  const failures = [];
+  const grader = createEssayGrader(async prompt => {
+    if (/Independently review ONLY/.test(prompt)) {
+      reviewCalls++;
+      return {
+        scores: { content: 6, linguistic: 6, coherence: 6 },
+        promptCoverage: [{ requirement: 'Positive and negative effects', status: 'mostly addressed', evidence: 'mass media supports learning', nextStep: '' }],
+        scoringEvidence: {
+          linguisticExamples: ['mass media supports learning', 'Schools can respond by teaching students'],
+          developmentEvidence: ['News reports help students understand events', 'Advertisements often connect expensive products']
+        },
+        rationale: {}
+      };
+    }
+    return good();
+  }, { onAttemptError: detail => failures.push(detail) });
+
+  const result = await grader.grade(question, essay);
+  assert.equal(reviewCalls, 2);
+  assert.equal(result.scores.total, 26);
+  assert.equal(result.subjectiveReview.source, 'primary-only');
+  assert.equal(result.subjectiveReview.status, 'independent-review-unavailable');
+  assert.equal(result.sampleKind, 'full-essay');
+  assert.equal(failures.filter(item => item.stage === 'subjective-review').length, 2);
+});
+
 test('Material disagreement in subjective traits is resolved before the final score is returned', async () => {
   let resolverSeen = false;
   const grader = createEssayGrader(async prompt => {
