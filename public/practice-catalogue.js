@@ -177,7 +177,7 @@
         host.innerHTML = '<p role="alert">' + esc(error.message) + '</p><button type="button" class="portal-button" data-retry-catalogue>Retry</button>';
         host.onclick = e => { if (e.target.closest('[data-retry-catalogue]')) openMocks(options); }; return;
       }
-      host.innerHTML = '<div class="catalogue-heading"><h2>Mock Tests</h2></div>'
+      host.innerHTML = '<div class="catalogue-heading"><span class="mock-catalogue-shell-kicker">Timed practice</span><h2>Mock Tests</h2><p>Choose a practice or sectional mock, continue an unfinished attempt, or review your saved test history.</p></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span></div>'
         + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button></div>'

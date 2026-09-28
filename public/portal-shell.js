@@ -59,7 +59,7 @@
   }
 
   function installPressPhysics() {
-    const selector = '.nav-item, .portal-button, .tb-text-btn, .portal-menu-toggle, .user-badge, .login-submit, .home-skill-card, .practice-banner button';
+    const selector = '.nav-item, .portal-button, .tb-text-btn, .portal-menu-toggle, .user-badge, .login-submit, .home-skill-card, .practice-banner button, .catalogue-modes button, .catalogue-saved button';
     document.addEventListener('pointerdown', event => {
       const control = event.target.closest(selector);
       if (!control || control.disabled || !canAnimate()) return;
