@@ -364,19 +364,33 @@ ${JSON.stringify({ question, essay, promptCoverage: assessment.promptCoverage, c
       sampleKind: raw.sampleStatus === 'ready' ? 'full-essay' : raw.sampleStatus };
   }
   function normalizeResult(raw, essay) {
-    // Form=0 responses are intentionally short-circuited before semantic
-    // assessment. Accept that already-normalized server result in the browser
-    // while still verifying the deterministic Form gate and zeroed scores.
-    if (raw && raw.scoring_version === VERSION && raw.scoreGate?.status === 'zero_form') {
+    // Hard-gated server results are already normalized. Re-running them through
+    // trait-level validation would misread the forced zero Spelling/Grammar
+    // values as unsupported language deductions. Verify the gate itself and
+    // accept the canonical zeroed result without rescoring individual traits.
+    if (raw && raw.scoring_version === VERSION && ['zero_form', 'zero_content'].includes(raw.scoreGate?.status)) {
       const form = formFor(essay);
-      if (form.score !== 0 || !raw.scores || Number(raw.scores.total) !== 0
-        || Object.keys(MAXIMA).some(key => Number(raw.scores[key]) !== 0)) {
-        fail('zero_form_mismatch', 'A zero-Form server result must match the deterministic Form check and contain only zero score points.');
+      const gate = raw.scoreGate.status;
+      const allZero = raw.scores && Number(raw.scores.total) === 0
+        && Object.keys(MAXIMA).every(key => Number(raw.scores[key]) === 0);
+      if (!allZero) {
+        fail('hard_gate_mismatch', 'A hard-gated server result must contain only zero score points.');
       }
+      if (gate === 'zero_form' && form.score !== 0) {
+        fail('zero_form_mismatch', 'A zero-Form server result must match the deterministic Form check.');
+      }
+      if (gate === 'zero_content' && (form.score === 0 || Number(raw.diagnosticScores?.content) !== 0)) {
+        fail('zero_content_mismatch', 'A zero-Content server result must have valid Form and diagnostic Content 0.');
+      }
+      const reason = gate === 'zero_form'
+        ? form.feedback
+        : 'Content is 0, so no score points are awarded for the essay.';
       const assessment = {
         ...raw,
-        scoreGate: { status: 'zero_form', cap: 0, reason: form.feedback },
-        feedback: { ...(raw.feedback || {}), form: form.feedback },
+        scoreGate: { status: gate, cap: 0, reason },
+        feedback: gate === 'zero_form'
+          ? { ...(raw.feedback || {}), form: form.feedback }
+          : { ...(raw.feedback || {}) },
         wordCount: form.count,
         scoring_version: VERSION
       };
