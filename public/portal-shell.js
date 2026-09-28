@@ -91,11 +91,15 @@
       });
     };
 
+    const lastAnimation = new WeakMap();
     const observer = new MutationObserver(records => {
       for (const record of records) {
-        if (record.target.classList && record.target.classList.contains('pane')) {
-          animatePane(record.target);
-        }
+        if (!record.target.classList || !record.target.classList.contains('pane')) continue;
+        const now = performance.now();
+        const previous = lastAnimation.get(record.target) || 0;
+        if (now - previous < 80) continue;
+        lastAnimation.set(record.target, now);
+        animatePane(record.target);
       }
     });
 
