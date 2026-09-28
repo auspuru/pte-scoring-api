@@ -1,0 +1,34 @@
+{
+  "name": "PTE Scoring API Brand Emojis",
+  "version": 1,
+  "size": "128x128",
+  "palette": {
+    "blue950": "#12334F",
+    "blue900": "#173B63",
+    "blue700": "#205080",
+    "blue600": "#2D6CA5",
+    "blue100": "#E9F2FA",
+    "red600": "#C53030",
+    "red100": "#FBE9EA",
+    "ink": "#18202A",
+    "surface": "#FFFFFF"
+  },
+  "items": [
+    {"name":"pte-ai","file":"pte-ai.svg","meaning":"PTE AI product identity"},
+    {"name":"score-90","file":"score-90.svg","meaning":"Top PTE score"},
+    {"name":"ai-score","file":"ai-score.svg","meaning":"AI assessment"},
+    {"name":"speaking","file":"speaking.svg","meaning":"Speaking skill"},
+    {"name":"writing","file":"writing.svg","meaning":"Writing skill"},
+    {"name":"reading","file":"reading.svg","meaning":"Reading skill"},
+    {"name":"listening","file":"listening.svg","meaning":"Listening skill"},
+    {"name":"fluency","file":"fluency.svg","meaning":"Oral fluency"},
+    {"name":"pronunciation","file":"pronunciation.svg","meaning":"Pronunciation"},
+    {"name":"grammar","file":"grammar.svg","meaning":"Grammar"},
+    {"name":"vocabulary","file":"vocabulary.svg","meaning":"Vocabulary"},
+    {"name":"content","file":"content.svg","meaning":"Content quality"},
+    {"name":"target","file":"target.svg","meaning":"Score target"},
+    {"name":"practice","file":"practice.svg","meaning":"Practice"},
+    {"name":"progress","file":"progress.svg","meaning":"Learner progress"},
+    {"name":"achievement","file":"achievement.svg","meaning":"Achievement / result"}
+  ]
+}
