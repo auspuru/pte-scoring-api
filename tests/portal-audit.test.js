@@ -71,6 +71,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(css,/min-height:44px/);
   assert.match(tokensCss,/--ipt-blue-700:\s*#205080/);
   assert.match(tokensCss,/--ipt-red-600:\s*#c53030/i);
+  assert.match(workspaceCss,/#portalSidebar \.nav-group-secondary:not\(:has\(\.nav-item\)\) \{ display: none; \}/,'removed admin navigation must not leave an empty sidebar separator');
   assert.match(liquidCss,/backdrop-filter:\s*blur\(22px\)/);
   assert.match(liquidCss,/\.topbar\s*\{\s*overflow:\s*hidden;\s*height:\s*auto;/,'glass topbar must grow instead of clipping wrapped controls');
   assert.match(liquidCss,/#portalSidebar\s*\{\s*overflow-y:\s*auto;/,'short viewports must keep sidebar navigation scrollable');
