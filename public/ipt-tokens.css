@@ -1,0 +1,99 @@
+/* IPT Brisbane presentation tokens.
+   The brand palette is derived from the existing IPT Brisbane logo asset.
+   Loaded after legacy styles so the migration remains additive and reversible. */
+
+:root,
+body.light-mode {
+  --ipt-blue-950: #12334f;
+  --ipt-blue-900: #173b63;
+  --ipt-blue-800: #1b4777;
+  --ipt-blue-700: #205080;
+  --ipt-blue-600: #2d6ca5;
+  --ipt-blue-500: #3f7fb8;
+  --ipt-blue-100: #e9f2fa;
+
+  --ipt-red-700: #ad252a;
+  --ipt-red-600: #c53030;
+  --ipt-red-500: #d94a4a;
+  --ipt-red-100: #fbe9ea;
+
+  --ipt-ink: #18202a;
+  --ipt-ink-soft: #566476;
+  --ipt-ink-muted: #6c7888;
+  --ipt-page: #edf3f8;
+  --ipt-surface: #ffffff;
+  --ipt-surface-soft: #f7f9fc;
+  --ipt-line: rgba(31, 59, 91, 0.14);
+  --ipt-line-strong: rgba(31, 59, 91, 0.22);
+
+  --ipt-glass-nav: rgba(249, 252, 255, 0.70);
+  --ipt-glass-control: rgba(255, 255, 255, 0.62);
+  --ipt-glass-edge: rgba(18, 51, 79, 0.13);
+  --ipt-glass-highlight: rgba(255, 255, 255, 0.88);
+  --ipt-glass-shadow: 0 24px 64px rgba(23, 59, 99, 0.13), 0 3px 14px rgba(23, 59, 99, 0.08);
+  --ipt-card-shadow: 0 10px 30px rgba(23, 59, 99, 0.07), 0 1px 3px rgba(23, 59, 99, 0.05);
+
+  --ipt-radius-sm: 12px;
+  --ipt-radius-md: 18px;
+  --ipt-radius-lg: 24px;
+  --ipt-radius-xl: 30px;
+  --ipt-radius-pill: 999px;
+
+  --ipt-motion-fast: 160ms;
+  --ipt-motion-standard: 260ms;
+  --ipt-motion-spring: 460ms;
+  --ipt-ease: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --ipt-spring: cubic-bezier(0.22, 1.15, 0.3, 1);
+
+  /* Compatibility bridge for the existing portal styles. */
+  --bg: var(--ipt-page);
+  --bg-card: var(--ipt-surface);
+  --bg-hover: #eef4f9;
+  --ink: var(--ipt-ink);
+  --ink-soft: var(--ipt-ink-soft);
+  --ink-mute: var(--ipt-ink-muted);
+  --accent: var(--ipt-blue-700);
+  --accent-hover: var(--ipt-blue-900);
+  --accent-soft: var(--ipt-blue-100);
+  --line: #d6e0ea;
+  --line-soft: #e3e9ef;
+  --good: #16805f;
+  --shadow: var(--ipt-card-shadow);
+  --shadow-lg: var(--ipt-glass-shadow);
+  --radius: var(--ipt-radius-sm);
+  --radius-lg: var(--ipt-radius-md);
+}
+
+body.dark {
+  --ipt-ink: #f3f6fa;
+  --ipt-ink-soft: #bcc7d3;
+  --ipt-ink-muted: #99a7b7;
+  --ipt-page: #09111b;
+  --ipt-surface: #131e2a;
+  --ipt-surface-soft: #182535;
+  --ipt-line: rgba(255, 255, 255, 0.11);
+  --ipt-line-strong: rgba(255, 255, 255, 0.17);
+
+  --ipt-glass-nav: rgba(15, 26, 39, 0.72);
+  --ipt-glass-control: rgba(24, 37, 51, 0.64);
+  --ipt-glass-edge: rgba(0, 0, 0, 0.30);
+  --ipt-glass-highlight: rgba(255, 255, 255, 0.14);
+  --ipt-glass-shadow: 0 28px 72px rgba(0, 0, 0, 0.34), 0 3px 16px rgba(0, 0, 0, 0.20);
+  --ipt-card-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+
+  --bg: var(--ipt-page);
+  --bg-card: var(--ipt-surface);
+  --bg-hover: #1c2a3b;
+  --ink: var(--ipt-ink);
+  --ink-soft: var(--ipt-ink-soft);
+  --ink-mute: var(--ipt-ink-muted);
+  --accent: #6bb9ee;
+  --accent-hover: #9dd3f5;
+  --accent-soft: rgba(45, 108, 165, 0.22);
+  --line: #354458;
+  --line-soft: #28374a;
+  --good: #6fd6b3;
+  --shadow: var(--ipt-card-shadow);
+  --shadow-lg: var(--ipt-glass-shadow);
+  color-scheme: dark;
+}
