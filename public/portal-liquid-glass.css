@@ -458,8 +458,8 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
 }
 
 @media (max-width: 900px) {
-  .topbar { margin-right: 0; }
-  .portal-corner-brand small { display: none; }
+  .topbar { margin-right: 0; flex-wrap: wrap; }
+  .portal-corner-brand { display: none; }
 }
 
 @media (max-width: 640px) {
