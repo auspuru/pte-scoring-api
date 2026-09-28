@@ -76,16 +76,16 @@
     let score = count >= 200 && count <= 300 ? 2 : count >= 120 && count <= 380 ? 1 : 0;
     const reasons = [];
     if (count < 120 || count > 380) reasons.push(`${count} words is outside the 120–380 allowed range.`);
-    const letters = text.replace(/[^\\p{L}]/gu, '');
+    const letters = text.replace(/[^\p{L}]/gu, '');
     if (letters && letters === letters.toUpperCase() && letters !== letters.toLowerCase()) {
       reasons.push('The response is written entirely in capital letters.');
     }
     if (count && !/[.!?;:,]/.test(text)) reasons.push('The response contains no punctuation.');
-    const nonEmptyLines = text.split(/\\n/).map(line => line.trim()).filter(Boolean);
-    if (nonEmptyLines.length >= 2 && nonEmptyLines.every(line => /^(?:[-*•]|\\d+[.)])\\s/.test(line))) {
+    const nonEmptyLines = text.split(/\n/).map(line => line.trim()).filter(Boolean);
+    if (nonEmptyLines.length >= 2 && nonEmptyLines.every(line => /^(?:[-*•]|\d+[.)])\s/.test(line))) {
       reasons.push('The response is written only as bullet points or a list instead of connected prose.');
     }
-    const sentences = text.split(/[.!?]+/).map(sentence => sentence.trim()).filter(sentence => /[\\p{L}\\p{N}]/u.test(sentence));
+    const sentences = text.split(/[.!?]+/).map(sentence => sentence.trim()).filter(sentence => /[\p{L}\p{N}]/u.test(sentence));
     if (sentences.length >= 4 && sentences.every(sentence => words(sentence) <= 5)) {
       reasons.push('The response is composed only of very short sentences.');
     }
