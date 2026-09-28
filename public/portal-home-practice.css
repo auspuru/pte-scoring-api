@@ -514,6 +514,22 @@ body.dark #practiceHubPane .catalogue-heading h2 { color: var(--ipt-ink); }
 
 .practice-banner button:hover .practice-task-arrow { transform: translateX(2px); }
 
+@media (hover: hover) and (pointer: fine) {
+  body.ipt-glass-motion .home-skill-card[data-ipt-tilt] {
+    transform:
+      perspective(900px)
+      rotateX(var(--ipt-tilt-x, 0deg))
+      rotateY(var(--ipt-tilt-y, 0deg))
+      translateY(var(--ipt-lift, 0px));
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  body.ipt-glass-motion .home-skill-card[data-ipt-tilt]:hover {
+    --ipt-lift: -3px;
+  }
+}
+
 @media (max-width: 1200px) {
   .home-skill-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
