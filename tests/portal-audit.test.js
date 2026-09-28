@@ -76,6 +76,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(liquidCss,/@media \(max-width: 640px\)[\s\S]*?\.app-shell\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/,'mobile Liquid Glass shell collapses to one column');
   assert.match(liquidCss,/#portalSidebar \.nav-group-label\s*\{[^}]*font-size:\s*12px/,'sidebar group labels stay at or above 12px');
   assert.match(liquidCss,/@media \(max-width: 640px\)[\s\S]*?#portalSidebar\s*\{[^}]*position:\s*fixed/,'mobile sidebar remains fixed off-canvas');
+  assert.match(homePracticeCss,/@media \(max-width: 640px\)[\s\S]*?#dashboardPane \.challenge-word-box\{[^}]*flex-direction:column/,'Home challenge controls stack on mobile');
+  assert.match(homePracticeCss,/#dashboardPane \.vocab-try-row\{[^}]*flex-direction:column/,'Home vocabulary input stacks on mobile');
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
