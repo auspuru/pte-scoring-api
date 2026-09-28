@@ -3,6 +3,7 @@ const VERSION = 'exam-practice-2026-09-23.3';
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
+const { assessEssay } = require('./essay-assessment-service');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
   sst: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 },
@@ -122,57 +123,17 @@ function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
     strengths:['Your response was scored immediately by the local fallback engine.'],improvements:['Use Retry assessment when available for richer semantic and language feedback.'],errors:[]};
 }
 async function gradeUnifiedEssay(q, text, call) {
-  const form = essayPolicy.formFor(text);
-  if (!form.score) {
-    const scores = Object.fromEntries(Object.keys(essayPolicy.MAXIMA).map(key => [key, 0]));
-    scores.total = 0;
-    return {
-      version: essayPolicy.VERSION,
-      assessmentType: 'AI practice assessment',
-      scores,
-      diagnosticScores: { content: 0, form: 0, spelling: 0, grammar: 0, vocabulary: 0, linguistic: 0, coherence: 0 },
-      maxima: essayPolicy.MAXIMA,
-      total: 0,
-      maximum: 26,
-      wordCount: form.count,
-      gated: true,
-      reasons: form.reasons || [form.feedback],
-      scoreGate: { status: 'zero_form', cap: 0, reason: form.feedback },
-      feedback: { form: form.feedback },
-      strengths: [],
-      improvements: form.reasons || [form.feedback],
-      errors: [],
-      promptCoverage: [],
-      scoringEvidence: { linguisticExamples: [], developmentEvidence: [], vocabularyExamples: [] },
-      scoring_version: essayPolicy.VERSION
-    };
-  }
-
-  let lastError;
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || lastError.message || 'Return complete, internally consistent JSON with exact essay quotations.')
-        : '';
-      const raw = await call(essayPolicy.buildPrompt(q.text, text) + retry);
-      const result = essayPolicy.normalizeAssessment(raw, text);
-      return {
-        ...result,
-        version: essayPolicy.VERSION,
-        assessmentType: 'AI practice assessment',
-        maxima: essayPolicy.MAXIMA,
-        total: result.scores.total,
-        maximum: 26,
-        gated: result.scoreGate?.status !== 'valid',
-        reasons: result.scoreGate?.reason ? [result.scoreGate.reason] : []
-      };
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  const error = new Error('The essay assessment could not be completed consistently. Please retry.');
-  error.cause = lastError;
-  throw error;
+  const { assessment } = await assessEssay(q.text, text, call);
+  return {
+    ...assessment,
+    version: essayPolicy.VERSION,
+    assessmentType: 'AI practice assessment',
+    maxima: essayPolicy.MAXIMA,
+    total: assessment.scores.total,
+    maximum: 26,
+    gated: assessment.scoreGate?.status !== 'valid',
+    reasons: assessment.scoreGate?.reason ? [assessment.scoreGate.reason] : []
+  };
 }
 
 async function grade(q, text, call) {
