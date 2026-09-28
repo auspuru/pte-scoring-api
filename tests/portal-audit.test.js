@@ -81,7 +81,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
-  assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 31000,'first-load Liquid Glass presentation CSS stays within 31 KB');
+  assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
   const catalogue=read('public/practice-catalogue.js');
   assert.doesNotMatch(catalogue,/Tests per page/);
