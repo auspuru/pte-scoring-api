@@ -10,6 +10,9 @@ test('portal accessibility and delivery audit stays clean',()=>{
   const html=read('public/index.html');
   const css=read('public/index.css');
   const workspaceCss=read('public/portal-workspace.css');
+  const tokensCss=read('public/ipt-tokens.css');
+  const liquidCss=read('public/portal-liquid-glass.css');
+  const portalShell=read('public/portal-shell.js');
   const portal=read('public/index.js');
   const reading=read('public/reading-practice.js');
   const lab=read('public/writing-lab-client.js');
@@ -33,6 +36,12 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
   assert(html.indexOf('auth-boot.js')<html.indexOf('index.min.js'));
+  assert.match(html,/\/ipt-tokens\\.css/);
+  assert.match(html,/\/portal-liquid-glass\\.css/);
+  assert.match(html,/\/portal-shell\\.js/);
+  assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
+  assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
+  assert.doesNotMatch(html,/data:image\//i,'production HTML must not embed a Base64 logo');
 
   for(const [name,source] of [['portal',portal],['reading',reading],['writing lab',lab]]){
     assert.doesNotMatch(source,/\bprompt\s*\(/,name+' must not use prompt()');
@@ -41,7 +50,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.doesNotMatch(source,/#4f46e5|#5a51da|#6366f1|rgba\(99,\s*102,\s*241/i,name+' must not reintroduce the legacy indigo palette');
   }
 
-  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss]]){
+  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss]]){
     const sizes=[...source.matchAll(/@media\s*\((?:max|min)-width:\s*([0-9.]+)px\)/g)].map(m=>Number(m[1]));
     assert(sizes.every(n=>[640,900,1200].includes(n)),name+' uses only the three portal breakpoints');
     assert.doesNotMatch(source,/font-size:\s*(?:[0-9]|1[01](?:\.\d+)?)px/,name+' must not use sub-12px text');
