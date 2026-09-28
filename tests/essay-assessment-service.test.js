@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const policy = require('../public/essay-scoring');
-const { needsResolver, normalizeReview } = require('../essay-assessment-service');
+const { needsResolver, normalizeReview, callAndNormalizeResolver } = require('../essay-assessment-service');
 
 test('resolver is required when full Content disagrees with near-full Content', () => {
   const primary = { diagnosticScores: { content: 6, linguistic: 6, coherence: 6 } };
@@ -61,4 +61,34 @@ test('duplicate evidence cannot satisfy primary full-mark evidence requirement',
     overallVerdict: 'Strong response.'
   };
   assert.throws(() => policy.normalizeAssessment(raw, essay), /incomplete/);
+});
+
+
+test('resolver validation retries once before falling back', async () => {
+  const essay = 'Public transport improves access and reduces congestion for many commuters.';
+  const primary = {
+    diagnosticScores: { content: 5, linguistic: 5, coherence: 5 },
+    promptCoverage: [{ requirement: 'address transport', status: 'addressed', evidence: 'Public transport improves access', nextStep: '' }],
+    scoringEvidence: { linguisticExamples: [], developmentEvidence: [] }
+  };
+  const review = {
+    scores: { content: 3, linguistic: 5, coherence: 5 },
+    promptCoverage: [{ requirement: 'address transport', status: 'partial', evidence: 'Public transport improves access', nextStep: 'Develop the answer.' }],
+    scoringEvidence: { linguisticExamples: [], developmentEvidence: [] },
+    rationale: {}
+  };
+  let calls = 0;
+  const result = await callAndNormalizeResolver('Discuss public transport.', essay, primary, review, async () => {
+    calls += 1;
+    if (calls === 1) return {};
+    return {
+      scores: { content: 5, linguistic: 5, coherence: 5 },
+      promptCoverage: [{ requirement: 'address transport', status: 'addressed', evidence: 'Public transport improves access', nextStep: '' }],
+      scoringEvidence: { linguisticExamples: [], developmentEvidence: [] },
+      rationale: {}
+    };
+  }, () => {});
+
+  assert.equal(calls, 2);
+  assert.equal(result.scores.content, 5);
 });
