@@ -500,8 +500,8 @@ body.dark .fc-word { color: var(--ipt-ink) !important; }
 }
 
 #libraryPane .layout {
-  height: calc(100dvh - 112px) !important;
-  min-height: 560px;
+  height: 100% !important;
+  min-height: 0;
   grid-template-columns: clamp(220px,18vw,258px) minmax(0,1.12fr) minmax(300px,.92fr) !important;
   overflow: hidden;
   border: 1px solid var(--ipt-line);
@@ -859,7 +859,6 @@ body.dark #libraryPane .preview-pane {
 
   #libraryPane .layout {
     grid-template-columns: 232px minmax(0,1fr) !important;
-    min-height: 0;
   }
 
   #libraryPane .preview-pane {
@@ -900,8 +899,6 @@ body.dark #libraryPane .preview-pane {
 
   #libraryPane .layout {
     grid-template-columns: minmax(0,1fr) !important;
-    height: calc(100dvh - 118px) !important;
-    min-height: 0;
   }
 
   #libraryPane .lib {
