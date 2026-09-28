@@ -393,7 +393,7 @@ body.dark #portalSidebar .brand-sub { color: #ff9ba0; }
 
 /* Four task launchers fit without narrowing the writing tools. */
 @media (min-width: 640px) { .portal-task-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-#portalSidebar .nav-group-secondary:has(#nav-admin[style*="display:none"]) { display: none; }
+#portalSidebar .nav-group-secondary:not(:has(.nav-item)) { display: none; }
 
 /* Quiet branding stays in the header, clear of the student's work. */
 .portal-corner-brand { display: flex; align-items: center; gap: 9px; margin-left: 10px; padding-left: 16px; border-left: 1px solid var(--line-soft); color: var(--ink-soft); flex-shrink: 0; }
