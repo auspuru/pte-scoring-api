@@ -13,7 +13,7 @@
     },
     {
       key: 'vocab-library',
-      href: '/portal-vocab-library.css?v=20260928-vocab-library',
+      href: '/portal-vocab-library.css?v=20260928-layoutfix1',
       sections: new Set(['vocab', 'library'])
     }
   ];
