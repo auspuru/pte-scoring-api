@@ -43,6 +43,51 @@ test('Elapsed clocks do not reset on refresh, and future prompts/samples stay hi
   reconcile(a,1200100);assert.equal(a.index,2);assert.equal(a.deadline,2400000);
   reconcile(a,2400001);assert.equal(a.status,'submitted');assert.equal(a.completed.filter(Boolean).length,3);
 });
+test('Writing Mock essays use the shared essay grader',async t=>{
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'writing-shared-essay-'));
+  const app=express();app.use(express.json());
+  let sharedCalls=0;
+  const essayGrader={
+    grade:async(questionText,answer)=>{
+      sharedCalls++;
+      assert.equal(questionText,bank.mocks[0].questions[2].text);
+      assert.match(answer,/minimum age/i);
+      return {
+        scoring_version:'test-shared-essay',
+        scores:{content:5,form:2,grammar:2,vocabulary:2,spelling:2,linguistic:4,coherence:4,total:21},
+        scoreGate:{status:'valid',cap:26,reason:''},
+        feedback:{content:'Shared grader result.'},
+        promptCoverage:[],scoringEvidence:{linguisticExamples:[],developmentEvidence:[],vocabularyExamples:[]},
+        errors:[],improvements:[],strengths:[],wordCount:220
+      };
+    }
+  };
+  const {store}=installWritingLab(app,{directory:dir,verifyToken:t=>t==='tester'?'tester':null,getAccount:async()=>({}),
+    callModel:async()=>{throw Error('Old mock essay scorer must not be called');},essayGrader});
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
+  const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
+  const headers={'Content-Type':'application/json','x-session-token':'tester'};
+  const id=randomUUID();
+  let response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:'writing-mock-1'})});
+  assert.equal(response.status,200);
+  await store.update('tester',id,a=>{
+    a.status='submitted';
+    a.completed=a.questions.map(()=>Date.now());
+    a.answers[2]='I believe the minimum age for driving should be eighteen because maturity and road awareness develop with experience. My own experience supports a careful minimum age. '+Array(190).fill('reason').join(' ');
+    a.results=a.questions.map(()=>null);
+    return a;
+  });
+  response=await fetch(base+'/attempts/'+id+'/score/2',{method:'POST',headers,body:'{}'});
+  assert.equal(response.status,200);
+  const result=await response.json();
+  assert.equal(sharedCalls,1);
+  assert.equal(result.total,21);
+  assert.equal(result.maximum,26);
+  assert.equal(result.version,'test-shared-essay');
+  assert.equal(result.assessmentType,'Unified essay practice assessment');
+});
+
 test('Original content has correct task counts, lengths and usable reference answers',()=>{
   assert.equal(bank.spoken.length,15);assert.equal(bank.mocks.length,2);
   for(const q of bank.spoken) {assert(policy.wordCount(q.text)>=175);assert.equal(policy.formFor('sst',q.sample).score,2);}
