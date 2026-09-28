@@ -33,6 +33,9 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
   const swt = (predictionSwtPairs[index] || predictionSwtPairs[index % predictionSwtPairs.length]).map(clone);
+  // Prime-step offsets (7 for SST, 3 for WFD) spread prediction-bank items across
+  // mocks without clustering. If either bank size changes, verify that a mock
+  // still does not repeat the same source question.
   const sst = clone(predictions.sst[(index * 7 + 2) % predictions.sst.length]);
   const wfd = [0, 13, 26].map(offset => {
     const q = clone(predictions.wfd[(index * 3 + offset) % predictions.wfd.length]);
