@@ -57,7 +57,7 @@ function standardModelResponse(prompt, primary = good()) {
 
 test('Essay word-count boundaries are deterministic and independent of model counting', () => {
   for (const [count, expected] of [[119,0],[120,1],[199,1],[200,2],[280,2],[300,2],[301,1],[380,1],[381,0]]) {
-    const result = policy.formFor(Array(count).fill('word').join(' '));
+    const result = policy.formFor(Array(count).fill('word').join(' ') + '.');
     assert.equal(result.count, count); assert.equal(result.score, expected);
     if (expected === 1) assert.match(result.feedback, /within the 120–380 allowed range/);
   }
@@ -66,6 +66,18 @@ test('Essay word-count boundaries are deterministic and independent of model cou
   assert.equal(result.scores.form, 2);
   assert.equal(result.wordCount, policy.words(essay));
   assert(!result.feedback.form.includes('90 words'));
+
+  const allCaps = policy.formFor((Array(220).fill('WORD').join(' ') + '.'));
+  assert.equal(allCaps.score, 0);
+  assert.match(allCaps.feedback, /capital letters/i);
+
+  const noPunctuation = policy.formFor(Array(220).fill('word').join(' '));
+  assert.equal(noPunctuation.score, 0);
+  assert.match(noPunctuation.feedback, /no punctuation/i);
+
+  const bullets = policy.formFor(Array.from({ length: 40 }, (_, i) => '- point ' + i + ' explains the issue clearly').join('\n'));
+  assert.equal(bullets.score, 0);
+  assert.match(bullets.feedback, /bullet points|list/i);
 });
 
 test('Style refinements are separate from actual grammar and never disguised as errors', () => {
@@ -139,6 +151,7 @@ test('Minor learner grammar gets coherent feedback and survives server and brows
   const text = essay.replace('mass media supports learning', 'mass media support learning');
   const raw = good(); raw.scores.grammar = 1;
   raw.promptCoverage[0].evidence = 'mass media support learning';
+  raw.scoringEvidence.linguisticExamples[0] = 'mass media support learning';
   raw.sampleSourceIdeas[0] = 'mass media support learning';
   raw.errors = [{ type: 'grammar', phrase: 'mass media support learning', correction: 'mass media supports learning',
     impact: 'meaning', explanation: 'The singular subject requires the verb supports.' }];
