@@ -206,10 +206,17 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     const evidenceQuotes = {};
     for (const [key, items] of Object.entries(raw.scoringEvidence)) {
       if (!Array.isArray(items)) continue;
-      evidenceQuotes[key] = items.map(item => exactQuote(essay, item, true)).filter(Boolean);
-      if (items.some(item => clean(item)) && evidenceQuotes[key].length !== items.filter(item => clean(item)).length) {
+      const normalized = items.map(item => exactQuote(essay, item, true)).filter(Boolean);
+      if (items.some(item => clean(item)) && normalized.length !== items.filter(item => clean(item)).length) {
         fail('scoring_quote', 'Every scoringEvidence example must be a short contiguous quotation from the original essay.');
       }
+      const seen = new Set();
+      evidenceQuotes[key] = normalized.filter(item => {
+        const quoteKey = clean(item).replace(/\s+/g, ' ').toLowerCase();
+        if (!quoteKey || seen.has(quoteKey)) return false;
+        seen.add(quoteKey);
+        return true;
+      });
     }
 
     const optional = Array.isArray(raw.optionalRefinements) ? [...raw.optionalRefinements] : [];
