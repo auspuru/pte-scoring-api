@@ -393,5 +393,5 @@ ${JSON.stringify({ question, essay, promptCoverage: assessment.promptCoverage, c
     return { percent, level, matchedWords, totalWords: answer.length, ngram, thresholds: { medium, high } };
   }
 
-  return { VERSION, MAXIMA, words, formFor, taskFocusNote, buildPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
+  return { VERSION, MAXIMA, words, formFor, taskFocusNote, exactQuote, buildPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
 });
