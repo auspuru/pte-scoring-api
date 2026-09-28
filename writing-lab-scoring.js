@@ -2,6 +2,7 @@
 const VERSION = 'exam-practice-2026-09-23.3';
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
+const essayPolicy = require('./public/essay-scoring');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
   sst: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 },
@@ -15,6 +16,10 @@ function sentenceCount(text) {
   return normal.split(/[.!?]+(?:["'”’)]*)\s*|\n\s*\n/).filter(x => /[\p{L}\p{N}]/u.test(x)).length;
 }
 function formFor(type, text) {
+  if (type === 'essay') {
+    const form = essayPolicy.formFor(text);
+    return { count: form.count, score: form.score, reasons: form.reasons || [], feedback: form.feedback };
+  }
   const count = wordCount(text), reasons = [];
   const letters = text.replace(/[^\p{L}]/gu, '');
   if (!count) reasons.push('No response was submitted.');
@@ -116,7 +121,62 @@ function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
     feedback:Object.fromEntries(Object.keys(maxima).map(k=>[k,k==='content'?'Local estimate based on coverage of the supplied task ideas and prompt.':k==='form'?lang.form.count+' words. Form requirements satisfied.':'Local rule-based estimate; AI feedback can refine this when available.'])),
     strengths:['Your response was scored immediately by the local fallback engine.'],improvements:['Use Retry assessment when available for richer semantic and language feedback.'],errors:[]};
 }
+async function gradeUnifiedEssay(q, text, call) {
+  const form = essayPolicy.formFor(text);
+  if (!form.score) {
+    const scores = Object.fromEntries(Object.keys(essayPolicy.MAXIMA).map(key => [key, 0]));
+    scores.total = 0;
+    return {
+      version: essayPolicy.VERSION,
+      assessmentType: 'AI practice assessment',
+      scores,
+      diagnosticScores: { content: 0, form: 0, spelling: 0, grammar: 0, vocabulary: 0, linguistic: 0, coherence: 0 },
+      maxima: essayPolicy.MAXIMA,
+      total: 0,
+      maximum: 26,
+      wordCount: form.count,
+      gated: true,
+      reasons: form.reasons || [form.feedback],
+      scoreGate: { status: 'zero_form', cap: 0, reason: form.feedback },
+      feedback: { form: form.feedback },
+      strengths: [],
+      improvements: form.reasons || [form.feedback],
+      errors: [],
+      promptCoverage: [],
+      scoringEvidence: { linguisticExamples: [], developmentEvidence: [], vocabularyExamples: [] },
+      scoring_version: essayPolicy.VERSION
+    };
+  }
+
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const retry = lastError
+        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || lastError.message || 'Return complete, internally consistent JSON with exact essay quotations.')
+        : '';
+      const raw = await call(essayPolicy.buildPrompt(q.text, text) + retry);
+      const result = essayPolicy.normalizeAssessment(raw, text);
+      return {
+        ...result,
+        version: essayPolicy.VERSION,
+        assessmentType: 'AI practice assessment',
+        maxima: essayPolicy.MAXIMA,
+        total: result.scores.total,
+        maximum: 26,
+        gated: result.scoreGate?.status !== 'valid',
+        reasons: result.scoreGate?.reason ? [result.scoreGate.reason] : []
+      };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  const error = new Error('The essay assessment could not be completed consistently. Please retry.');
+  error.cause = lastError;
+  throw error;
+}
+
 async function grade(q, text, call) {
+  if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
   if (q.type === 'wfd') return gradeDictation(q, text);
   const form = formFor(q.type, text);
   if (!form.score) return zeroResult(q.type, text, form.reasons);
@@ -125,9 +185,6 @@ async function grade(q, text, call) {
     try { return normalize(q, text, await call(buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : ''))); }
     catch (e) { error = e; }
   }
-  // Keep the attempt scoreable when the external model is unavailable.
-  // The local result is deliberately conservative and is clearly labelled;
-  // a later Retry can still replace it with richer AI assessment.
   return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
 }
 function gradeDictation(q, text) {
@@ -155,4 +212,4 @@ function gradeDictation(q, text) {
     strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
     wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeDictation, localGrade, localContentScore };
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore };
