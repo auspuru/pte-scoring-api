@@ -9,6 +9,7 @@ const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => s
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20260925-user-sst30-hdmaster3';
+const MAX_ASSESSMENT_QUEUE = 500;
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
@@ -100,6 +101,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const key = uid + ':' + a.id + ':' + index;
     if (pending.has(key)) return pending.get(key);
     const task = new Promise((resolve, reject) => {
+      if (queue.length >= MAX_ASSESSMENT_QUEUE) {
+        console.warn('[writing-lab] assessment queue full', { queued: queue.length, limit: MAX_ASSESSMENT_QUEUE });
+        reject(bad('Assessment queue full. Please retry shortly.', 503));
+        return;
+      }
       queue.push(async () => {
         try {
           // Reload after waiting in the queue: a review request may have saved it.
