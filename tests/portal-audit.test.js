@@ -81,7 +81,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(liquidCss,/#portalSidebar\s*\{\s*overflow-y:\s*auto;/,'short viewports must keep sidebar navigation scrollable');
   assert.match(liquidCss,/\.modal\s*\{\s*overflow-y:\s*auto;/,'glass modals must keep their vertical scroll');
   assert.match(liquidCss,/\.topbar\s*\{\s*overflow:\s*hidden;\s*height:\s*auto;/,'glass topbar must grow instead of clipping wrapped controls');
-  assert.match(liquidCss,/@media\s*\(max-width:\s*900px\)[\s\S]*?\.topbar\s*\{[^}]*flex-wrap:\s*wrap;/,'tablet topbar must wrap instead of clipping controls');
+  assert.match(liquidCss,/@media\s*\(max-width:\s*900px\)[\s\S]*?\.topbar\s*\{[^}]*flex-wrap:\s*wrap\b/,'tablet topbar must wrap instead of clipping controls');
   assert.match(liquidCss,/transform:\s*translateX\(calc\(-100% - 16px\)\)/,'closed mobile drawer must clear its glass margin completely');
   assert.match(vocabLibraryCss,/#libraryPane \.layout\s*\{\s*height:\s*100% !important;\s*min-height:\s*0;/,'library layout must follow the remaining portal canvas height');
   assert.match(vocabLibraryCss,/grid-template-columns:\s*clamp\(220px,18vw,258px\) minmax\(0,1\.12fr\) minmax\(300px,\.92fr\)/,'library columns must shrink without horizontal overflow');
