@@ -17,6 +17,7 @@ test('Each available individual task has exactly one primary home and a working 
   const all = catalogue.groups.flatMap(g => g.tasks);
   assert.equal(new Set(all.map(t => t.route)).size, all.length);
   all.forEach(t => assert(routes[t.route], t.route));
+  assert.deepEqual(catalogue.groups.find(g => g.id === 'speaking').tasks.map(t => t.route), ['speaking-ra','speaking-rs','speaking-di','speaking-rl','speaking-sgd','speaking-rts']);
   assert.deepEqual(catalogue.groups.find(g => g.id === 'writing').tasks.map(t => t.route), ['swt', 'practice']);
   assert.deepEqual(catalogue.groups.find(g => g.id === 'listening').tasks.map(t => t.route), ['spoken-text', 'listening-hcs', 'listening-hiw', 'dictation']);
   assert(!all.some(t => /mock/.test(t.route)));
@@ -97,12 +98,15 @@ function harness() {
 
 test('Practice shows task counts and last attempts while routes remain direct', async () => {
   const h = harness(); await h.controller.openPractice();
+  assert.match(h.practice.innerHTML, /Speaking Practice/); assert.match(h.practice.innerHTML, /Read Aloud/);
+  assert.match(h.practice.innerHTML, /Practice available/);
   assert.match(h.practice.innerHTML, /Writing Practice/); assert.match(h.practice.innerHTML, /Reading Practice/); assert.match(h.practice.innerHTML, /Listening Practice/);
   assert.match(h.practice.innerHTML, /18 questions/); assert.match(h.practice.innerHTML, /30 questions/); assert.match(h.practice.innerHTML, /36 questions/);
   assert.match(h.practice.innerHTML, /Last attempt/); assert.match(h.practice.innerHTML, /Not attempted yet/);
   assert.doesNotMatch(h.practice.innerHTML, /Start Exam|data-mock-id/);
+  h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'speaking-ra' } }) } });
   h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'dictation' } }) } });
-  assert.deepEqual(h.navigations, [['dictation']]); assert.equal(h.calls.length, 2); assert.equal(h.starts.length, 0);
+  assert.deepEqual(h.navigations, [['speaking-ra'],['dictation']]); assert.equal(h.calls.length, 2); assert.equal(h.starts.length, 0);
 });
 
 test('Mock tabs, filtering and launch show labels and timing without content descriptions', async () => {
@@ -149,6 +153,9 @@ test('Portal markup removes redundant navigation and embedded catalogues', () =>
   assert.equal((html.match(/id="nav-mock-tests"/g) || []).length, 1);
   assert.doesNotMatch(html, /id="(?:testCentrePane|nav-test-centre|nav-writing-mocks|nav-sst|nav-reading|nav-swt|nav-practice)"/);
   assert.match(html, /practice-catalogue\.js/);
+  assert.match(html, /portal-home-practice\.css/);
+  assert.match(html, /class="home-skill-grid"/);
+  for (const route of ['speaking-ra','practice','reading-dropdown','spoken-text']) assert.match(html,new RegExp("switchSection\\('"+route+"'\\)"));
   assert.doesNotMatch(html, /<script[^>]+reading-practice\.js/);
   const portalClient = fs.readFileSync(require.resolve('../public/index.js'), 'utf8');
   assert.match(portalClient, /ensureReadingRuntimeLoaded/);

@@ -59,7 +59,7 @@
   }
 
   function installPressPhysics() {
-    const selector = '.nav-item, .portal-button, .tb-text-btn, .portal-menu-toggle, .user-badge, .login-submit';
+    const selector = '.nav-item, .portal-button, .tb-text-btn, .portal-menu-toggle, .user-badge, .login-submit, .home-skill-card, .practice-banner button';
     document.addEventListener('pointerdown', event => {
       const control = event.target.closest(selector);
       if (!control || control.disabled || !canAnimate()) return;
@@ -109,7 +109,7 @@
   }
 
   function installCardTilt() {
-    const cards = [...document.querySelectorAll('#dashboardPane .portal-task')];
+    const cards = [...document.querySelectorAll('#dashboardPane .portal-task, #dashboardPane .home-skill-card')];
     cards.forEach(card => {
       card.dataset.iptTilt = '1';
       card.addEventListener('pointermove', event => {
