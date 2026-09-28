@@ -174,6 +174,42 @@
     return span;
   }
 
+
+  const sidebarEmojis = {
+    'nav-dashboard': ['ipt', 'Home'],
+    'nav-practice-hub': ['pte-ai', 'Practice'],
+    'nav-mock-tests': ['mock-test', 'Mock Tests'],
+    'nav-next-steps': ['teacher-feedback', 'From your teacher'],
+    'nav-progress': ['progress', 'My Progress'],
+    'nav-vocab': ['vocab', 'Vocabulary'],
+    'nav-library': ['essay', 'Essay library'],
+    'nav-admin': ['pte-ai', 'Admin Panel']
+  };
+
+  function decorateSidebarNav() {
+    Object.entries(sidebarEmojis).forEach(([buttonId, config]) => {
+      const button = document.getElementById(buttonId);
+      if (!button) return;
+      let icon = button.querySelector('.nav-icon');
+      if (!icon) {
+        icon = document.createElement('span');
+        icon.className = 'nav-icon';
+        button.prepend(icon);
+      }
+      if (icon.dataset.brandEmoji === config[0]) return;
+      icon.className = 'nav-icon portal-nav-emoji ipt-action-emoji';
+      icon.dataset.brandEmoji = config[0];
+      setMarkup(icon, config[0], config[1]);
+      icon.setAttribute('aria-hidden', 'true');
+      button.addEventListener('pointerdown', () => activate(icon, 720));
+    });
+  }
+
+  function syncSidebarEmoji() {
+    const active = document.querySelector('.sidebar-menu .nav-item.active .portal-nav-emoji');
+    if (active) activate(active, 650);
+  }
+
   function decorateHomeCards() {
     document.querySelectorAll('.home-skill-card:not([data-emoji-ready])').forEach(card => {
       const text = card.textContent || '';
@@ -204,6 +240,7 @@
   function onMutation() {
     window.clearTimeout(mutationTimer);
     mutationTimer = window.setTimeout(() => {
+      decorateSidebarNav();
       decorateHomeCards();
       decorateSemanticLabels(document.getElementById('portalContent') || document);
       syncSemanticState();
@@ -212,6 +249,8 @@
 
   function start() {
     syncContext(true);
+    decorateSidebarNav();
+    syncSidebarEmoji();
     decorateHomeCards();
     decorateSemanticLabels(document.getElementById('portalContent') || document);
 
@@ -220,7 +259,7 @@
       for (const m of mutations) {
         if (m.type === 'attributes' && m.target === document.body && m.attributeName === 'data-section') routeChanged = true;
       }
-      if (routeChanged) syncContext(true);
+      if (routeChanged) { syncContext(true); syncSidebarEmoji(); }
       onMutation();
     }).observe(document.body, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:['data-section','hidden','class']});
 
