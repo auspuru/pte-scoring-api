@@ -4,7 +4,7 @@
   else root.EssayScoring = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
-  const VERSION = 'essay-1.4';
+  const VERSION = 'essay-unified-2.0';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const words = text => clean(text).split(/\s+/).filter(Boolean).length;
@@ -71,12 +71,29 @@
     return false;
   }
   function formFor(essay) {
-    const count = words(essay);
-    const score = count >= 200 && count <= 300 ? 2 : count >= 120 && count <= 380 ? 1 : 0;
+    const text = clean(essay);
+    const count = words(text);
+    let score = count >= 200 && count <= 300 ? 2 : count >= 120 && count <= 380 ? 1 : 0;
+    const reasons = [];
+    if (count < 120 || count > 380) reasons.push(`${count} words is outside the 120–380 allowed range.`);
+    const letters = text.replace(/[^\\p{L}]/gu, '');
+    if (letters && letters === letters.toUpperCase() && letters !== letters.toLowerCase()) {
+      reasons.push('The response is written entirely in capital letters.');
+    }
+    if (count && !/[.!?;:,]/.test(text)) reasons.push('The response contains no punctuation.');
+    const nonEmptyLines = text.split(/\\n/).map(line => line.trim()).filter(Boolean);
+    if (nonEmptyLines.length >= 2 && nonEmptyLines.every(line => /^(?:[-*•]|\\d+[.)])\\s/.test(line))) {
+      reasons.push('The response is written only as bullet points or a list instead of connected prose.');
+    }
+    const sentences = text.split(/[.!?]+/).map(sentence => sentence.trim()).filter(sentence => /[\\p{L}\\p{N}]/u.test(sentence));
+    if (sentences.length >= 4 && sentences.every(sentence => words(sentence) <= 5)) {
+      reasons.push('The response is composed only of very short sentences.');
+    }
+    if (reasons.length) score = 0;
     const feedback = score === 2 ? `${count} words: within the 200–300 target. Full Form marks.`
       : score === 1 ? `${count} words: within the 120–380 allowed range, earning 1/2 for Form. Aim for 200–300 words for full Form marks.`
-      : `${count} words: outside the 120–380 allowed range, so Form is 0/2. Aim for 200–300 words.`;
-    return { count, score, feedback };
+      : `Form is 0/2. ${reasons.join(' ')}`;
+    return { count, score, feedback, reasons };
   }
   const SAMPLE_GUIDANCE = `BAND 9 SAMPLE USING THE STUDENT'S OWN IDEAS:
 After assessing the ORIGINAL essay, write a complete Band 9-style sampleResponse of 200–300 words in exactly four paragraphs: introduction, two developed body paragraphs and conclusion. Aim for 230–270 words. Separate paragraphs with a blank line. Use plain text only: no title, headings, bullet points, HTML or change markers.
@@ -96,13 +113,13 @@ Assess the question's actual requirements first. Require a personal opinion only
 ${focusGuidance}
 
 Use INTEGER scores only:
-- content 0–6: 6 fully answers the prompt with relevant, developed ideas and supporting explanation/examples; 4–5 mostly answers it with some weak development; 2–3 partial or thin answer; 0–1 off-topic or very limited. Do not reward generic paragraphs merely because they contain topic words. Do not deduct solely for omitting your preferred example or taking a defensible different position.
-- form 0–2: supplied word count is ${form.count}, yielding exactly ${form.score}/2. Use this number; do not recount. 200–300 = 2, 120–199 or 301–380 = 1, outside 120–380 = 0. Form measures length only; do not zero other traits merely because Form is low.
-- spelling 0–2: 2 when spelling is accurate or minor slips leave the meaning unchanged; 1 for 1–3 distinct spelling errors that change or obscure meaning; 0 for 4+ meaning-changing spelling errors. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors; repeated identical errors appear once.
+- content 0–6: judge whether the response answers EVERY actual requirement in the prompt, remains relevant, and develops its main ideas with reasons, explanation and/or examples. 6 = every requested part is addressed and meaningfully developed; 4–5 = mostly complete/relevant with weaker development; 2–3 = partial, thin or noticeably incomplete; 1 = minimal recoverable relevance; 0 = does not meaningfully answer the task. Do not reward topic-keyword overlap or generic prepared paragraphs.
+- form 0–2: deterministic Form is already ${form.score}/2 from the response itself. Use this exact score; do not recount or override it. Form can be 0 for invalid length or invalid presentation such as all capitals, no punctuation, list-only prose or only very short sentences. If Form is 0, the official essay score is 0.
+- spelling 0–2: 2 = no spelling errors; 1 = exactly one spelling error; 0 = more than one spelling error. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors.
 - grammar 0–2: 2 when meaning is clear and unchanged, including a few minor grammar slips; 1 for one or two actual grammar errors that change or obscure meaning; 0 for 3+ distinct meaning-changing errors that block meaning. Count actual grammar, not stylistic preferences. A more elegant synonym, a shorter sentence, or another valid connector is optional advice.
 - vocabulary 0–2: 2 appropriate, precise, varied wording; 1 adequate with some repetition or imprecision; 0 very limited or frequently wrong. A simple correct word is not an error; do not invent a compulsory synonym quota.
-- linguistic 0–6: assess useful sentence variety and control (simple, compound and complex); 6 varied/confident, 4–5 some variety, 2–3 limited, 0–1 very repetitive or broken. Complex language is not required in every sentence.
-- coherence 0–6: assess clear paragraphs and understandable connections; 6 clear and smooth, 4–5 mostly organised, 2–3 weak connections, 0–1 confused. Penalise a genuinely missing connection, not failure to use a preferred connector template.
+- linguistic 0–6: judge the range and control of expression across the essay, including sentence patterns, precision and flexibility. 6 requires convincing evidence of varied, controlled expression; 4–5 shows useful but less consistent range; 2–3 is restricted or repetitive; 0–1 is very limited or difficult to follow.
+- coherence 0–6: judge development, structure and coherence together: logical progression, paragraph purpose, development of claims, sequencing and effective connections. Do not award 6 merely for four paragraphs or frequent linking words. 6 requires clearly developed and logically connected ideas; 4–5 is mostly organised/developed; 2–3 has weak development or connections; 0–1 is confused or disconnected.
 
 TAUGHT STRUCTURE:
 IPT teaches phrases such as 'The topic of ... has become increasingly important', 'Its significance lies in its influence on', 'This essay will examine', 'To begin with', 'On the other hand', 'This can be illustrated by' and 'To conclude'. These are valid scaffolding when filled with relevant ideas. Neither award marks nor deduct marks just for recognising a template. Do not claim database matching, plagiarism, AI authorship, or a three-phrase detection threshold. Flag generic filler only when you can quote it and explain how it fails this question; the issue is undeveloped or irrelevant content, not memorisation itself.
@@ -110,7 +127,8 @@ IPT teaches phrases such as 'The topic of ... has become increasingly important'
 FEEDBACK:
 Use plain English, addressed to the student. Give each trait one or two short sentences (maximum 40 words) that match its score. Every reduced trait must explain why and offer a practical action. Provide up to three priorities in improvements, ordered by impact; do not leave this empty when marks are lost. Quote short exact phrases from the essay; never invent errors.
 List actual spelling and grammar mistakes comprehensively in errors. Separate optional style, vocabulary and phrasing suggestions into optionalRefinements; they are not grammar errors and do not themselves lower any score. A small grammar correction can be shown even with full Grammar marks under this rubric. Tense, agreement, article and verb-form mistakes are grammar, not spelling. For impact meaning, explain specifically what the reader would misunderstand; simply describing a grammar rule is not evidence of changed meaning. If meaning is preserved, use impact minor and do not deduct Grammar or Spelling marks.
-For promptCoverage, identify the actual requested parts and mark addressed, partial or missing. For addressed/partial items, evidence must be a SHORT contiguous exact excerpt from the essay (ideally 3–10 words), not a paraphrase. For partial/missing items, nextStep must say exactly what needs adding or developing.
+For promptCoverage, first break the question into its ACTUAL requested parts. Treat each explicit requirement separately: opinion/degree of agreement, both sides of a comparison, advantages and disadvantages, causes and solutions, a named choice/item, requested reasons, requested example/personal experience, or any other explicit instruction. Do not invent requirements. Mark each part addressed, partial or missing. For addressed/partial items, evidence must be a SHORT contiguous exact excerpt from the essay (ideally 3–10 words), not a paraphrase. For partial/missing items, nextStep must say exactly what needs adding or developing.
+For scoringEvidence, quote SHORT contiguous exact excerpts from the essay. linguisticExamples should show the sentence/expression range that justifies the Linguistic score. developmentEvidence should show how claims are explained, supported and logically connected. A 6/6 in Linguistic or Coherence requires at least two valid examples. vocabularyExamples should show the wording that supports the Vocabulary score. Do not invent evidence.
 
 ${SAMPLE_GUIDANCE}
 
@@ -118,6 +136,7 @@ Return only complete JSON with ALL of these fields:
 {
  "scores":{"content":6,"form":${form.score},"spelling":2,"grammar":2,"vocabulary":2,"linguistic":6,"coherence":6},
  "promptCoverage":[{"requirement":"a part requested in the question","status":"addressed","evidence":"short exact essay phrase","nextStep":""}],
+ "scoringEvidence":{"linguisticExamples":["short exact essay phrase"],"developmentEvidence":["short exact essay phrase"],"vocabularyExamples":["short exact essay phrase"]},
  "feedback":{"content":"...","form":"${form.feedback}","spelling":"...","grammar":"...","vocabulary":"...","linguistic":"...","coherence":"..."},
  "errors":[{"type":"grammar","phrase":"exact essay phrase","correction":"corrected phrase","impact":"minor","explanation":"actual rule and light correction"}],
  "optionalRefinements":[{"phrase":"exact essay phrase","correction":"alternative phrasing","explanation":"optional improvement"}],
