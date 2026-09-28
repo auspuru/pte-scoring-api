@@ -104,8 +104,9 @@ function normalizeReview(raw, essay) {
 }
 
 function needsResolver(primary, review) {
-  if ((primary.scores.content === 0) !== (review.scores.content === 0)) return true;
-  return SUBJECTIVE.some(key => Math.abs(Number(primary.scores[key]) - Number(review.scores[key])) > 1);
+  const primaryScores = primary.diagnosticScores || primary.scores;
+  if ((primaryScores.content === 0) !== (review.scores.content === 0)) return true;
+  return SUBJECTIVE.some(key => Math.abs(Number(primaryScores[key]) - Number(review.scores[key])) > 1);
 }
 
 function buildResolverPrompt(question, essay, primary, review) {
@@ -120,7 +121,7 @@ Hard rule: Content 0 means the response does not meaningfully answer the task. C
 A 6/6 Linguistic or Coherence score requires at least two short exact essay quotations supporting it.
 
 PRIMARY REVIEW:
-${JSON.stringify({ scores: { content: primary.scores.content, linguistic: primary.scores.linguistic, coherence: primary.scores.coherence }, promptCoverage: primary.promptCoverage, scoringEvidence: primary.scoringEvidence })}
+${JSON.stringify({ scores: { content: (primary.diagnosticScores || primary.scores).content, linguistic: (primary.diagnosticScores || primary.scores).linguistic, coherence: (primary.diagnosticScores || primary.scores).coherence }, promptCoverage: primary.promptCoverage, scoringEvidence: primary.scoringEvidence })}
 
 INDEPENDENT REVIEW:
 ${JSON.stringify(review)}
