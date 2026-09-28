@@ -61,7 +61,10 @@ test('duplicate evidence cannot satisfy primary full-mark evidence requirement',
     templateNote: '',
     overallVerdict: 'Strong response.'
   };
-  assert.throws(() => policy.normalizeAssessment(raw, essay), /6\/6 Linguistic score requires at least two exact essay examples/);
+  assert.throws(
+    () => policy.normalizeAssessment(raw, essay),
+    error => error && error.code === 'linguistic_evidence'
+  );
 });
 
 
