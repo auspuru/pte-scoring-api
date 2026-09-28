@@ -73,6 +73,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(tokensCss,/--ipt-red-600:\s*#c53030/i);
   assert.match(liquidCss,/backdrop-filter:\s*blur\(22px\)/);
   assert.match(liquidCss,/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(liquidCss,/@media \(max-width: 640px\)[\s\S]*?\.app-shell\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)/,'mobile Liquid Glass shell collapses to one column');
+  assert.match(liquidCss,/#portalSidebar \.nav-group-label\s*\{[^}]*font-size:\s*12px/,'sidebar group labels stay at or above 12px');
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
