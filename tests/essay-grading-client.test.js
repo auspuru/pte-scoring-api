@@ -16,6 +16,11 @@ function result() {
   return policy.normalizeResult({ scores: { ...policy.MAXIMA },
     feedback: Object.fromEntries(Object.keys(policy.MAXIMA).map(key => [key, 'Clear and relevant.'])),
     errors: [], promptCoverage: [{ requirement: 'Both effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }],
+    scoringEvidence: {
+      linguisticExamples: ['mass media supports learning', 'Schools can respond by teaching students'],
+      developmentEvidence: ['News reports help students understand events', 'Advertisements often connect expensive products'],
+      vocabularyExamples: ['critical reading']
+    },
     sampleStatus: 'ready', sampleResponse: essay, sampleSourceIdeas: ['mass media supports learning'] }, essay);
 }
 function harness() {
