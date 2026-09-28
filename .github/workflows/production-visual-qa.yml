@@ -1,5 +1,5 @@
 name: Production Visual QA
-# rerun after mobile sidebar flow fix f2e2370
+# final production QA after 251fab25 recovery
 
 on:
   push:
