@@ -187,21 +187,23 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
   let calls = 0;
-  const grader = createEssayGrader(async () => ++calls === 1 ? {} : good());
+  const grader = createEssayGrader(async prompt => {
+    calls++;
+    if (calls === 1) return {};
+    return standardModelResponse(prompt);
+  });
   const [a, b] = await Promise.all([grader.grade(question, essay), grader.grade(question, essay)]);
-  assert.equal(calls, 2); assert.equal(a.scores.total, 26); assert.deepEqual(a, b);
+  assert.equal(calls, 3); // failed primary + valid primary + independent subjective review
+  assert.equal(a.scores.total, 26);
+  assert.deepEqual(a, b);
   a.scores.content = 0;
   assert.equal((await grader.grade(question, essay)).scores.content, 6);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
+
   let failures = 0;
   const broken = createEssayGrader(async () => { failures++; throw new Error('provider failed'); });
-  const local = await broken.grade(question, essay);
-  assert.equal(local.scoringMode, 'local');
-  assert.equal(local.sampleKind, 'unavailable');
-  assert(Number.isInteger(local.scores.total));
-  const cachedLocal = await broken.grade(question, essay);
-  assert.deepEqual(cachedLocal, local);
-  assert.equal(failures, 4,'Unavailable local samples deliberately allow a later AI retry.');
+  await assert.rejects(() => broken.grade(question, essay));
+  assert.equal(failures, 2, 'A failed assessment is retried, not converted into a fabricated local score.');
 });
 
 test('Full-score essays retain a complete sample and sample changes never alter original scores', () => {
@@ -235,15 +237,22 @@ test('Incomplete, excerpt-only, ungrounded or marked-up samples are retried inst
     const raw = good(); change(raw);
     assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
   }
-  let calls = 0;
+  let primaryCalls = 0;
+  let sampleCalls = 0;
   const grader = createEssayGrader(async prompt => {
+    if (/Independently review ONLY/.test(prompt)) return goodReview();
+    if (/do not rescore or change the assessment/.test(prompt)) {
+      sampleCalls++;
+      return sampleOnly();
+    }
+    primaryCalls++;
     const raw = good();
-    if (++calls === 1) raw.sampleResponse = 'Too short.';
-    else assert.match(prompt, /VALIDATION RETRY:[\s\S]*200–300 words/);
+    raw.sampleResponse = 'Too short.';
     return raw;
   });
   const result = await grader.grade(question, essay);
-  assert.equal(calls, 2);
+  assert.equal(primaryCalls, 1);
+  assert.equal(sampleCalls, 1);
   assert.equal(result.sampleResponse, essay);
 });
 
