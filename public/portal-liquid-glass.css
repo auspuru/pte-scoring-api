@@ -474,9 +474,6 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
     border-radius: 24px;
   }
 
-  .portal-menu-open #portalSidebar {
-    transform: translateX(0);
-  }
 
   .topbar {
     margin: 8px 8px 0;
