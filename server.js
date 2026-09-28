@@ -5996,6 +5996,7 @@ require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  essayGrader,
   callModel: async prompt => {
     if (!anthropic) throw new Error('Speaking content assessment is not configured.');
     const response = await anthropic.messages.create({model:CLAUDE_MODEL,temperature:0,max_tokens:3200,messages:[{role:'user',content:prompt}]},{timeout:60000,maxRetries:0});
