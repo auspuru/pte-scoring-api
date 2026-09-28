@@ -11,3 +11,23 @@
 .home-skill-card>.portal-mini-emoji + .home-skill-mark{display:none}
 @media(max-width:760px){.portal-emoji-context-wrap{margin-left:auto}.portal-emoji-context-label{display:none}.portal-emoji-context{width:44px;height:44px;border-radius:15px}}
 @media(max-width:520px){.portal-emoji-context-wrap{position:absolute;right:58px;top:9px}.portal-emoji-context{width:38px;height:38px;padding:5px;border-radius:13px}.portal-mini-emoji{width:28px;height:28px}}
+
+
+.portal-nav-emoji{
+  width:34px;height:34px;min-width:34px;padding:3px;border-radius:11px;
+  flex:0 0 34px;margin-right:10px;font-size:0;line-height:0;
+  box-shadow:0 7px 18px rgba(23,59,99,.10),inset 0 1px 0 rgba(255,255,255,.94);
+  border-color:rgba(255,255,255,.70);
+}
+.portal-nav-emoji>img{width:100%;height:100%;object-fit:contain}
+.portal-nav-emoji::after{inset:2px;border-radius:8px}
+.portal-nav-emoji .fx{transform:scale(.42);transform-origin:center}
+.sidebar-menu .nav-item.active .portal-nav-emoji{
+  transform:scale(1.04);
+  box-shadow:0 9px 22px rgba(23,59,99,.16),0 0 0 1px rgba(45,108,165,.10),inset 0 1px 0 #fff
+}
+.sidebar-menu .nav-item:active .portal-nav-emoji{transform:scale(.92)}
+@media(max-width:760px){
+  .portal-nav-emoji{width:36px;height:36px;min-width:36px;border-radius:12px;margin-right:11px}
+  .portal-nav-emoji::after{border-radius:9px}
+}
