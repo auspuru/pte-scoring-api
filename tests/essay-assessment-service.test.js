@@ -34,11 +34,12 @@ test('duplicate evidence cannot satisfy two-example review requirement', () => {
 });
 
 test('duplicate evidence cannot satisfy primary full-mark evidence requirement', () => {
-  const essay = 'Mass media supports learning because it gives students useful information and encourages discussion.';
+  const essay = Array(20).fill('Mass media supports learning because it gives students useful information and encourages discussion.').join(' ');
   const raw = {
-    scores: { content: 6, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 },
+    scores: { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 },
     feedback: {
       content: 'Complete.',
+      form: 'Valid length and prose form.',
       spelling: 'Accurate.',
       grammar: 'Accurate.',
       vocabulary: 'Appropriate.',
@@ -60,7 +61,7 @@ test('duplicate evidence cannot satisfy primary full-mark evidence requirement',
     templateNote: '',
     overallVerdict: 'Strong response.'
   };
-  assert.throws(() => policy.normalizeAssessment(raw, essay), /incomplete/);
+  assert.throws(() => policy.normalizeAssessment(raw, essay), /6\/6 Linguistic score requires at least two exact essay examples/);
 });
 
 
