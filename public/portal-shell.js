@@ -24,6 +24,7 @@
     link.rel = 'stylesheet';
     link.href = definition.href;
     link.dataset.iptLazyStyle = definition.key;
+    link.addEventListener('error', () => link.remove(), { once: true });
 
     const ownIndex = lazyStyles.indexOf(definition);
     const nextLoaded = lazyStyles.slice(ownIndex + 1)
