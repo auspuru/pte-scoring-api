@@ -1,10 +1,10 @@
-# IPT Brisbane — PTE Scoring Emoji Pack
+# IPT Brisbane — Liquid Glass PTE Emoji System
 
-Custom 128×128 SVG emoji/reaction assets for the PTE scoring portal.
+Custom 128×128 SVG reactions plus a portal-ready iPhone-style liquid-glass presentation layer for the PTE scoring portal.
 
 ## Brand source
 
-This pack follows the brand tokens already defined in `public/ipt-tokens.css`:
+This system follows the portal tokens already defined in `public/ipt-tokens.css`:
 
 - IPT Blue 900: `#173B63`
 - IPT Blue 700: `#205080`
@@ -13,28 +13,52 @@ This pack follows the brand tokens already defined in `public/ipt-tokens.css`:
 - Ink: `#18202A`
 - White: `#FFFFFF`
 
-The shapes are deliberately simple and high-contrast so they remain readable at small sizes.
+## Files
+
+- Individual SVGs — portable static emoji assets
+- `emoji-glass.css` — reusable liquid-glass wrapper and animation system
+- `emoji-glass.js` — pointer-follow specular highlight, press state and off-screen animation pausing
+- `preview.html` — animated showcase
+- `preview.svg` — static GitHub/mobile contact sheet
+- `manifest.json` — pack metadata
+
+## Portal integration
+
+Load the glass layer after the existing IPT tokens:
+
+```html
+<link rel="stylesheet" href="/ipt-tokens.css">
+<link rel="stylesheet" href="/brand-emojis/emoji-glass.css">
+<script src="/brand-emojis/emoji-glass.js" defer></script>
+```
+
+Then wrap any asset:
+
+```html
+<button class="ipt-emoji ipt-emoji--shimmer" aria-label="AI score complete">
+  <img src="/brand-emojis/ai-score.svg" alt="">
+</button>
+```
+
+### Animation classes
+
+- `ipt-emoji--float` — slow vertical drift
+- `ipt-emoji--pulse` — subtle depth/glow pulse
+- `ipt-emoji--shimmer` — moving glass reflection
+- `ipt-emoji--celebrate` — float + glow for achievements
+- `data-emoji-state="active"` — stronger active treatment
+- `data-emoji-state="success"` — success tint
+
+The base `ipt-emoji` class already includes hover lift and tap compression, so continuous motion is optional.
+
+## Accessibility and performance
+
+- `prefers-reduced-motion: reduce` disables animation.
+- Pointer-follow reflection only runs on fine pointers.
+- `IntersectionObserver` pauses idle animations while assets are off screen.
+- Motion uses transforms/shadows rather than layout-changing properties.
+- Dark mode is supported through `body.dark` and `.dark`.
 
 ## Included reactions
 
-| Emoji | Suggested shortcode | Intended use |
-|---|---|---|
-| ![IPT](./ipt.svg) | `:ipt:` | IPT Brisbane |
-| ![PTE AI](./pte-ai.svg) | `:pte_ai:` | PTE AI practice |
-| ![Score 90](./score-90.svg) | `:score90:` | Excellent score |
-| ![SWT](./swt.svg) | `:swt:` | Summarize Written Text |
-| ![Essay](./essay.svg) | `:essay:` | Essay practice |
-| ![Speaking](./speaking.svg) | `:speaking:` | Speaking |
-| ![Reading](./reading.svg) | `:reading:` | Reading |
-| ![Listening](./listening.svg) | `:listening:` | Listening |
-| ![Pronunciation](./pronunciation.svg) | `:pronunciation:` | Pronunciation feedback |
-| ![Fluency](./fluency.svg) | `:fluency:` | Oral fluency feedback |
-| ![Grammar](./grammar.svg) | `:grammar:` | Grammar feedback |
-| ![Vocabulary](./vocab.svg) | `:vocab:` | Vocabulary feedback |
-| ![Mock test](./mock-test.svg) | `:mock_test:` | Mock tests |
-| ![Progress](./progress.svg) | `:progress:` | Student progress |
-| ![Teacher feedback](./teacher-feedback.svg) | `:teacher_feedback:` | Teacher comments |
-| ![AI score](./ai-score.svg) | `:ai_score:` | AI scoring complete |
-| ![Celebrate](./celebrate.svg) | `:celebrate:` | Achievement |
-
-Open `preview.html` in a browser to view the whole set.
+IPT, PTE AI, Score 90, SWT, Essay, Speaking, Reading, Listening, Pronunciation, Fluency, Grammar, Vocabulary, Mock Test, Progress, Teacher Feedback, AI Score and Celebrate.
