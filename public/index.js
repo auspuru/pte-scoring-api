@@ -14037,10 +14037,10 @@ function updateSubmitBtnState() {
   const btn = document.getElementById('practiceSubmitBtn');
   if (btn) {
     const ready = practiceState.questionText.trim().length >= 10 &&
-                  countWords(practiceState.essayText) >= 50;
+                  countWords(practiceState.essayText) >= 120;
     btn.disabled = !ready;
-    if (countWords(practiceState.essayText) < 50) {
-      btn.innerHTML = '🤖 Write at least 50 words to score';
+    if (countWords(practiceState.essayText) < 120) {
+      btn.innerHTML = '🤖 Write at least 120 words to score';
     } else if (practiceState.questionText.trim().length < 10) {
       btn.innerHTML = '🤖 Pick or write a question first';
     } else {
@@ -14117,7 +14117,11 @@ async function submitPracticeEssay() {
   startLoadingMessages();
   try {
     const res = await fetch(API_URL + '/api/essay/grade', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
+      },
       body: JSON.stringify({ question, essay })
     });
     const data = await res.json();
