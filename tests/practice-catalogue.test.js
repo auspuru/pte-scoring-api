@@ -111,6 +111,8 @@ test('Practice shows task counts and last attempts while routes remain direct', 
 
 test('Mock tabs, filtering and launch show labels and timing without content descriptions', async () => {
   const h = harness(); await h.controller.openMocks();
+  assert.match(h.mocks.innerHTML,/Timed practice/);
+  assert.match(h.mocks.innerHTML,/continue an unfinished attempt/i);
   const board = () => h.nodes.get('catalogue-board').innerHTML;
   assert.doesNotMatch(board(),/mock-catalogue-description|mock-catalogue-scope|Includes:/);
   assert.match(board(),/In progress|Done|New/);
