@@ -1,5 +1,6 @@
 'use strict';
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
@@ -173,7 +174,6 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       next();
     } catch (_) { res.status(503).json({error:'Your account could not be checked. Please retry.'}); }
   });
-  const rateLimit = require('express-rate-limit');
   router.post('/attempts', rateLimit({windowMs:600000,max:120,keyGenerator:req=>req.labUser,standardHeaders:true,legacyHeaders:false,
     message:{error:'Please wait before starting another attempt.'}}));
   router.post('/attempts/:id/score/:index', rateLimit({windowMs:60000,max:20,standardHeaders:true,legacyHeaders:false,
