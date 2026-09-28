@@ -122,8 +122,13 @@ test('Prediction mocks preserve essays and use only September 2026 prediction ta
       assert(q.id.startsWith('pred26-'),q.id+' must come from the prediction bank');
       assert(allowed[q.type].has(q.id),q.id+' is not in the current prediction bank');
       if(q.predictionSource.contentStatus==='verbatim-user-provided'){
-        assert.equal(q.predictionSource.provider,'User supplied prediction transcript');
-        assert.equal(q.predictionSource.week,'25 September 2026');
+        if(q.type==='wfd'){
+          assert.equal(q.predictionSource.provider,'User supplied WFD predictions');
+          assert.equal(q.predictionSource.week,'28 September 2026');
+        } else {
+          assert.equal(q.predictionSource.provider,'User supplied prediction transcript');
+          assert.equal(q.predictionSource.week,'25 September 2026');
+        }
       } else {
         assert.equal(q.predictionSource.provider,'PTE Nepal');
         assert.equal(q.predictionSource.week,'21-27 September 2026');
@@ -180,9 +185,14 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
   const before=JSON.stringify(bank),catalog=await request('/catalog');
   assert.equal(catalog.spoken.length,30);assert.equal(catalog.spoken[0].id,predictions.sst[0].id);assert.equal(catalog.spoken[12].id,predictions.sst[12].id);assert.equal(catalog.spoken[13].id,predictions.sst[13].id);
-  assert.equal(catalog.dictation.length,56);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,56);
+  const previous=[...new Map([...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation].map(q=>[q.id,q])).values()];
+  assert.equal(catalog.dictation.length,89);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,89);
+  assert.deepEqual(catalog.dictation.slice(0,33).map(q=>q.id),predictions.wfd.slice(0,33).map(q=>q.id));
+  assert(catalog.dictation.slice(0,33).every(q=>q.prediction===true));
+  assert.equal(catalog.dictation[33].id,previous[0].id);
+  assert.equal(catalog.dictation[33].prediction,false);
   for(const q of catalog.dictation) {assert(q.audioUrl.includes(q.id));assert.equal(q.text,undefined);assert.equal(q.sample,undefined);}
-  const q=bank.mocks[0].questions.find(q=>q.type==='wfd'),id=randomUUID();
+  const q=predictions.wfd[0],id=randomUUID();
   const ready=await request('/attempts',{id,testId:q.id});
   assert.equal(ready.kind,'wfd');assert.equal(ready.status,'ready');assert.equal(ready.deadline,null);assert.equal(ready.questions.length,1);
   assert.equal(ready.questions[0].text,'');assert.equal(ready.questions[0].timeGroup,undefined);
