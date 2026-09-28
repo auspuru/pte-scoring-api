@@ -172,82 +172,159 @@ ${JSON.stringify({ question, essay, promptCoverage: assessment.promptCoverage, c
       if (!Number.isInteger(n) || n < 0 || n > max || !clean(raw.feedback[key])) fail('trait_' + key, 'Return an integer score in range and feedback for ' + key + '.');
       scores[key] = n;
     }
-    if (!Array.isArray(raw.errors) || !Array.isArray(raw.promptCoverage) || !raw.promptCoverage.length) fail('assessment_evidence', 'Return errors and a nonempty promptCoverage array.');
+    if (!Array.isArray(raw.errors) || !Array.isArray(raw.promptCoverage) || !raw.promptCoverage.length) {
+      fail('assessment_evidence', 'Return errors and a nonempty promptCoverage array.');
+    }
+    if (!raw.scoringEvidence || !Array.isArray(raw.scoringEvidence.linguisticExamples)
+      || !Array.isArray(raw.scoringEvidence.developmentEvidence)
+      || !Array.isArray(raw.scoringEvidence.vocabularyExamples)) {
+      fail('scoring_evidence', 'Return scoringEvidence with linguisticExamples, developmentEvidence and vocabularyExamples arrays.');
+    }
+
+    const evidenceQuotes = {};
+    for (const [key, items] of Object.entries(raw.scoringEvidence)) {
+      if (!Array.isArray(items)) continue;
+      evidenceQuotes[key] = items.map(item => exactQuote(essay, item, true)).filter(Boolean);
+      if (items.some(item => clean(item)) && evidenceQuotes[key].length !== items.filter(item => clean(item)).length) {
+        fail('scoring_quote', 'Every scoringEvidence example must be a short contiguous quotation from the original essay.');
+      }
+    }
+
     const optional = Array.isArray(raw.optionalRefinements) ? [...raw.optionalRefinements] : [];
     const errors = [];
     for (const originalItem of raw.errors) {
       const phrase = originalItem && exactQuote(essay, originalItem.phrase);
-      if (!phrase || !clean(originalItem.correction) || !clean(originalItem.explanation)) fail('error_quote', 'Every error must quote one exact original phrase, with a correction and explanation.');
+      if (!phrase || !clean(originalItem.correction) || !clean(originalItem.explanation)) {
+        fail('error_quote', 'Every error must quote one exact original phrase, with a correction and explanation.');
+      }
       const item = { ...originalItem, phrase };
       if (['style', 'vocabulary', 'phrasing'].includes(item.type) || item.optional === true) {
-        optional.push(item); continue;
+        optional.push(item);
+        continue;
       }
-      if (!['grammar', 'spelling'].includes(item.type) || !['minor', 'meaning'].includes(item.impact)) fail('error_type', 'Use spelling or grammar for type, and minor or meaning for impact.');
-      // A model occasionally labels an obvious typo as meaning-changing while
-      // giving no explanation of a semantic effect. Treat that as the harmless
-      // slip it describes; a real deduction must explain what the reader would
-      // misunderstand.
+      if (!['grammar', 'spelling'].includes(item.type) || !['minor', 'meaning'].includes(item.impact)) {
+        fail('error_type', 'Use spelling or grammar for type, and minor or meaning for impact.');
+      }
+
+      if (item.type === 'spelling') {
+        if (!errors.some(e => e.type === 'spelling' && e.phrase.toLowerCase() === item.phrase.toLowerCase())) {
+          errors.push({ ...item, impact: item.impact || 'minor' });
+        }
+        continue;
+      }
+
+      // Grammar handling is intentionally unchanged for this release:
+      // only a grammar issue with supported meaning impact changes the score.
       const impact = item.impact === 'meaning' && !meaningEvidence(item.explanation)
         ? 'minor' : item.impact;
-      // A minor, meaning-preserving slip is useful coaching but cannot lower a
-      // trait score; keep it out of the scored error list and show it under
-      // optional refinements instead.
-      if (impact === 'minor') { optional.push({ ...item, impact, optional: true }); continue; }
-      if (!errors.some(e => e.type === item.type && e.phrase.toLowerCase() === item.phrase.toLowerCase())) errors.push({ ...item, impact });
+      if (impact === 'minor') {
+        optional.push({ ...item, impact, optional: true });
+        continue;
+      }
+      if (!errors.some(e => e.type === 'grammar' && e.phrase.toLowerCase() === item.phrase.toLowerCase())) {
+        errors.push({ ...item, impact });
+      }
     }
+
     const promptCoverage = raw.promptCoverage.map(item => {
-      if (!item || !clean(item.requirement) || !['addressed', 'partial', 'missing'].includes(item.status)) fail('coverage_fields', 'Each coverage item needs a requirement and an addressed, partial or missing status.');
+      if (!item || !clean(item.requirement) || !['addressed', 'partial', 'missing'].includes(item.status)) {
+        fail('coverage_fields', 'Each coverage item needs a requirement and an addressed, partial or missing status.');
+      }
       const evidence = exactQuote(essay, item.evidence, true);
-      if (item.status !== 'missing' && !evidence) fail('coverage_quote', 'Copy a short contiguous 3–10 word quotation from the original essay for each addressed or partial requirement. Do not paraphrase or join sentences.');
-      if (item.status !== 'addressed' && !clean(item.nextStep)) fail('coverage_action', 'Give a specific nextStep for every partial or missing requirement.');
+      if (item.status !== 'missing' && !evidence) {
+        fail('coverage_quote', 'Copy a short contiguous quotation from the original essay for each addressed or partial requirement.');
+      }
+      if (item.status !== 'addressed' && !clean(item.nextStep)) {
+        fail('coverage_action', 'Give a specific nextStep for every partial or missing requirement.');
+      }
       return { ...item, evidence };
     });
-    // Do not silently rescue a score that contradicts its assessment. Ask for
-    // a complete consistent review before showing or saving a graded attempt.
-    if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) fail('content_coverage', 'Full Content marks require every requested part to be addressed.');
-    if (scores.content > 1 && promptCoverage.every(item => item.status === 'missing')) fail('content_missing', 'When every prompt requirement is missing, Content must be 0 or 1.');
+
+    if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
+      fail('content_coverage', 'Full Content marks require every requested part to be addressed.');
+    }
+    if (scores.content > 1 && promptCoverage.every(item => item.status === 'missing')) {
+      fail('content_missing', 'When every prompt requirement is missing, Content must be 0 or 1.');
+    }
+    if (scores.linguistic === 6 && evidenceQuotes.linguisticExamples.length < 2) {
+      fail('linguistic_evidence', 'A 6/6 Linguistic score requires at least two exact essay examples showing genuinely varied, controlled expression.');
+    }
+    if (scores.coherence === 6 && evidenceQuotes.developmentEvidence.length < 2) {
+      fail('development_evidence', 'A 6/6 Development, Structure and Coherence score requires at least two exact essay examples showing developed and logically connected ideas.');
+    }
+
     const spellingErrors = errors.filter(e => e.type === 'spelling');
     const grammarErrors = errors.filter(e => e.type === 'grammar');
-    const spelling = spellingErrors.length === 0 ? 2 : spellingErrors.length <= 3 ? 1 : 0;
+    const spelling = spellingErrors.length === 0 ? 2 : spellingErrors.length === 1 ? 1 : 0;
     const grammar = grammarErrors.length === 0 ? 2 : grammarErrors.length <= 2 ? 1 : 0;
-    // If the model supplied quoted surface slips but proposed a lower score,
-    // correct that score deterministically; a lower score with no supporting
-    // evidence is still incomplete and must be retried.
-    const rawSpellingEvidence = raw.errors.some(item => item && item.type === 'spelling');
+
     const rawGrammarEvidence = raw.errors.some(item => item && item.type === 'grammar');
-    if ((scores.spelling !== spelling && !rawSpellingEvidence)
-      || (scores.grammar !== grammar && !rawGrammarEvidence)) fail('language_evidence', 'A reduced Grammar or Spelling score requires exact quoted errors explaining the changed or obscured meaning. If meaning is clear, award 2 and mark slips minor.');
+    if (scores.grammar !== grammar && !rawGrammarEvidence) {
+      fail('grammar_evidence', 'A reduced Grammar score requires quoted grammar evidence. Keep the existing Grammar policy unchanged.');
+    }
     scores.spelling = spelling;
     scores.grammar = grammar;
+
     const form = formFor(essay);
     scores.form = form.score;
-    scores.total = Object.values(scores).reduce((sum, n) => sum + n, 0);
-    const feedback = { ...raw.feedback, form: form.feedback };
-    for (const [key, issues] of [['grammar', grammarErrors], ['spelling', spellingErrors]]) {
-      if (scores[key] === raw.scores[key]) continue;
-      const label = key === 'grammar' ? 'Grammar' : 'Spelling';
-      feedback[key] = scores[key] === 2
-        ? 'Full ' + label + ' marks: the quoted slips do not show a change in meaning. Review the wording corrections below.'
-        : issues.length + ' distinct ' + key + ' error' + (issues.length === 1 ? '' : 's') + ' change or obscure meaning. Review the quoted corrections below.';
+
+    const diagnosticScores = { ...scores };
+    const hardGate = form.score === 0 || scores.content === 0;
+    if (hardGate) {
+      for (const key of Object.keys(scores)) scores[key] = 0;
     }
+    scores.total = Object.values(scores).reduce((sum, n) => sum + n, 0);
+
+    const feedback = { ...raw.feedback, form: form.feedback };
+    if (spelling !== raw.scores.spelling) {
+      feedback.spelling = spelling === 2
+        ? 'Full Spelling marks: no spelling errors were identified.'
+        : spelling === 1
+          ? 'One spelling error was identified. Correct the quoted word below.'
+          : spellingErrors.length + ' spelling errors were identified. Review the quoted corrections below.';
+    }
+    if (grammar !== raw.scores.grammar) {
+      feedback.grammar = grammar === 2
+        ? 'Full Grammar marks under the current practice rule: the quoted slips do not show a supported change in meaning.'
+        : grammarErrors.length + ' grammar issue' + (grammarErrors.length === 1 ? '' : 's') + ' with supported meaning impact were identified.';
+    }
+
+    const gateReason = form.score === 0
+      ? form.feedback
+      : scores.content === 0
+        ? 'Content is 0, so no score points are awarded for the essay.'
+        : '';
+    const scoreGate = hardGate
+      ? { status: form.score === 0 ? 'zero_form' : 'zero_content', cap: 0, reason: gateReason }
+      : { status: 'valid', cap: 26, reason: '' };
+
     const priorities = (Array.isArray(raw.improvements) ? raw.improvements : []).map(clean).filter(Boolean);
     if (!priorities.length && scores.total < 26) {
       priorities.push(...promptCoverage.filter(item => item.status !== 'addressed').map(item => item.nextStep));
-      for (const key of ['content', 'coherence', 'grammar', 'form', 'spelling', 'vocabulary', 'linguistic']) {
-        if (scores[key] < MAXIMA[key] && priorities.length < 3) priorities.push(feedback[key]);
+      for (const key of ['content', 'coherence', 'form', 'spelling', 'vocabulary', 'linguistic', 'grammar']) {
+        if (diagnosticScores[key] < MAXIMA[key] && priorities.length < 3) priorities.push(feedback[key]);
       }
     }
+
     const optionalRefinements = optional.filter(item => item && quoteExists(essay, item.phrase) && clean(item.correction))
       .filter((item, index, all) => all.findIndex(other => other.phrase === item.phrase && other.correction === item.correction) === index)
       .map(item => ({ phrase: item.phrase, correction: item.correction, explanation: clean(item.explanation), affects_score: false }));
     const templateEvidence = (Array.isArray(raw.templateEvidence) ? raw.templateEvidence : []).filter(phrase => quoteExists(essay, phrase));
     const templateDetector = raw.templateDetector === 'flag' && !templateEvidence.length ? 'ok'
       : ['good', 'ok', 'flag'].includes(raw.templateDetector) ? raw.templateDetector : 'ok';
-    return { ...raw, scores, feedback, errors, promptCoverage, optionalRefinements,
-      improvements: scores.total === 26 ? [] : [...new Set(priorities)].slice(0, 3),
+
+    const overallVerdict = hardGate
+      ? (form.score === 0
+        ? 'Form is 0, so the official practice score for this essay is 0/26. The diagnostic feedback can still be used for improvement.'
+        : 'Content is 0, so the official practice score for this essay is 0/26. No other trait points are counted.')
+      : clean(raw.overallVerdict);
+
+    return { ...raw, scores, diagnosticScores, scoreGate, feedback, errors, promptCoverage,
+      scoringEvidence: evidenceQuotes, optionalRefinements,
+      improvements: scores.total === 26 ? [] : [...new Set(priorities)].filter(Boolean).slice(0, 3),
       strengths: (Array.isArray(raw.strengths) ? raw.strengths : []).map(clean).filter(Boolean).slice(0, 3),
       spellingErrors: spellingErrors.map(e => e.phrase), grammarIssues: grammarErrors.map(e => e.phrase),
-      templateDetector, templateEvidence,
+      templateDetector, templateEvidence, overallVerdict,
       templateNote: templateDetector === 'ok' && raw.templateDetector === 'flag'
         ? 'Focus on how clearly your ideas answer the question; familiar structure phrases are acceptable.' : clean(raw.templateNote),
       wordCount: form.count, scoring_version: VERSION };
