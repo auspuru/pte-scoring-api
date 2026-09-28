@@ -6,7 +6,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const policy = require('../public/essay-scoring');
 const sync = require('../essay-attempt-sync');
-const { createEssayGrader } = require('../essay-grading');
+const { createEssayGrader, essayResultForClient } = require('../essay-grading');
 const { question, essay } = require('./essay-fixtures');
 const uiSource = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
 const htmlSource = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
@@ -108,6 +108,26 @@ test('Top Coherence and Linguistic marks require exact supporting evidence', () 
   const coherence = good();
   coherence.scoringEvidence.developmentEvidence = [];
   assert.throws(() => policy.normalizeResult(coherence, essay), { code: 'development_evidence' });
+});
+
+test('Zero-Content API adapts safely for stale and current clients', () => {
+  const raw = good();
+  raw.scores.content = 0;
+  raw.promptCoverage = [{ requirement: 'Positive and negative effects', status: 'missing', evidence: '', nextStep: 'Answer the media question directly.' }];
+  raw.sampleStatus = 'needs-ideas'; raw.sampleResponse = ''; raw.sampleSourceIdeas = []; raw.sampleNote = 'Add relevant ideas.';
+  const canonical = policy.normalizeResult(raw, essay);
+
+  const current = essayResultForClient(canonical, policy.VERSION);
+  assert.deepEqual(current, canonical);
+  for (const key of Object.keys(policy.MAXIMA)) assert.equal(current.scores[key], 0);
+
+  const legacy = essayResultForClient(canonical, '');
+  assert.equal(legacy.compatibility, 'legacy-zero-content-input');
+  assert.equal(legacy.scores.content, 0);
+  assert.equal(legacy.scores.spelling, canonical.diagnosticScores.spelling);
+  assert.equal(legacy.scores.grammar, canonical.diagnosticScores.grammar);
+  assert.equal(legacy.scores.total, 0);
+  assert.equal(policy.normalizeResult(legacy, essay).scores.total, 0);
 });
 
 test('Zero-Content server results remain valid in the browser after the hard gate zeros language traits', () => {
@@ -287,6 +307,13 @@ test('The renderer allows change markers but escapes model-supplied HTML and scr
 test('Essay Practice requires 120 words before requesting a score', () => {
   assert.match(uiSource, /countWords\(essay\) < 120/);
   assert.match(uiSource, /at least 120 words before scoring/);
+});
+
+test('Essay UI enables scoring only from 120 words and sends the scorer version', () => {
+  assert.match(uiSource, /countWords\(practiceState\.essayText\) >= 120/);
+  assert.match(uiSource, /Write at least 120 words to score/);
+  assert.match(uiSource, /X-Essay-Scoring-Version/);
+  assert.match(uiSource, /EssayScoring\.VERSION/);
 });
 
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
