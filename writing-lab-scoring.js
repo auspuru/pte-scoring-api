@@ -118,7 +118,6 @@ function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
   if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason};
   const scores={content:localContentScore(q,text),form:lang.form.score,grammar:lang.grammar,vocabulary:lang.vocabulary};
   if(maxima.spelling!=null)scores.spelling=lang.spelling;
-  if(q.type==='essay'){scores.linguistic=Math.min(maxima.linguistic,wordCount(text)>=200?5:4);scores.coherence=Math.min(maxima.coherence,(String(text).match(/[.!?]/g)||[]).length>=4?5:4);}
   const total=Object.values(scores).reduce((a,b)=>a+b,0),maximum=Object.values(maxima).reduce((a,b)=>a+b,0);
   return {version:VERSION,assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,scores,maxima,total,maximum,wordCount:lang.form.count,gated:false,reasons:[],
     feedback:Object.fromEntries(Object.keys(maxima).map(k=>[k,k==='content'?'Local estimate based on coverage of the supplied task ideas and prompt.':k==='form'?lang.form.count+' words. Form requirements satisfied.':'Local rule-based estimate; AI feedback can refine this when available.'])),
