@@ -141,8 +141,10 @@ function applySubjectiveDecision(assessment, decision, source) {
   const diagnosticScores = { ...(assessment.diagnosticScores || assessment.scores) };
   for (const key of SUBJECTIVE) diagnosticScores[key] = decision.scores[key];
 
+  const formZero = diagnosticScores.form === 0;
+  const contentZero = diagnosticScores.content === 0;
+  const hardGate = formZero || contentZero;
   const scores = { ...diagnosticScores };
-  const hardGate = scores.form === 0 || scores.content === 0;
   if (hardGate) {
     for (const key of Object.keys(policy.MAXIMA)) scores[key] = 0;
   }
@@ -150,30 +152,55 @@ function applySubjectiveDecision(assessment, decision, source) {
 
   const scoreGate = hardGate
     ? {
-        status: scores.form === 0 ? 'zero_form' : 'zero_content',
+        status: formZero ? 'zero_form' : 'zero_content',
         cap: 0,
-        reason: scores.form === 0
+        reason: formZero
           ? assessment.feedback?.form || 'Form is 0, so no score points are awarded.'
           : 'Content is 0, so no score points are awarded for the essay.'
       }
     : { status: 'valid', cap: 26, reason: '' };
+
+  const feedback = { ...(assessment.feedback || {}) };
+  for (const key of SUBJECTIVE) {
+    if (decision.rationale && String(decision.rationale[key] || '').trim()) {
+      feedback[key] = String(decision.rationale[key]).trim();
+    }
+  }
+  const nextSteps = decision.promptCoverage.filter(item => item.status !== 'addressed').map(item => item.nextStep).filter(Boolean);
+  const traitSteps = SUBJECTIVE.filter(key => diagnosticScores[key] < policy.MAXIMA[key]).map(key => feedback[key]).filter(Boolean);
+  const improvements = hardGate
+    ? [...new Set([...nextSteps, ...traitSteps, ...(assessment.improvements || [])])].slice(0, 3)
+    : [...new Set([...(assessment.improvements || []), ...nextSteps, ...traitSteps])].slice(0, 3);
+
+  let overallVerdict = assessment.overallVerdict;
+  if (hardGate) {
+    overallVerdict = formZero
+      ? 'Form is 0, so the official practice score for this essay is 0/26. The diagnostic feedback can still be used for improvement.'
+      : 'Content is 0, so the official practice score for this essay is 0/26. No other trait points are counted.';
+  } else if (source === 'resolver') {
+    overallVerdict = scores.total >= 22
+      ? 'Strong response overall. The final score reflects an independent review of task fulfilment, development and language range.'
+      : scores.total >= 17
+        ? 'Good response overall, with some areas still limiting the practice score.'
+        : scores.total >= 10
+          ? 'A workable response, but important weaknesses still limit the practice score.'
+          : 'This response needs substantial improvement, especially in directly answering and developing the task.';
+  }
 
   return {
     ...assessment,
     scores,
     diagnosticScores,
     scoreGate,
+    feedback,
+    improvements,
     promptCoverage: decision.promptCoverage,
     scoringEvidence: {
       ...(assessment.scoringEvidence || {}),
       linguisticExamples: decision.scoringEvidence.linguisticExamples,
       developmentEvidence: decision.scoringEvidence.developmentEvidence
     },
-    overallVerdict: hardGate
-      ? (scores.form === 0
-          ? 'Form is 0, so the official practice score for this essay is 0/26. The diagnostic feedback can still be used for improvement.'
-          : 'Content is 0, so the official practice score for this essay is 0/26. No other trait points are counted.')
-      : assessment.overallVerdict,
+    overallVerdict,
     subjectiveReview: {
       source,
       primary: {
