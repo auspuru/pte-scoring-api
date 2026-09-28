@@ -110,6 +110,20 @@ test('Top Coherence and Linguistic marks require exact supporting evidence', () 
   assert.throws(() => policy.normalizeResult(coherence, essay), { code: 'development_evidence' });
 });
 
+test('Zero-Content server results remain valid in the browser after the hard gate zeros language traits', () => {
+  const raw = good();
+  raw.scores.content = 0;
+  raw.promptCoverage = [{ requirement: 'Positive and negative effects', status: 'missing', evidence: '', nextStep: 'Answer the media question directly.' }];
+  raw.sampleStatus = 'needs-ideas'; raw.sampleResponse = ''; raw.sampleSourceIdeas = []; raw.sampleNote = 'Add relevant ideas.';
+  const server = policy.normalizeResult(raw, essay);
+  assert.equal(server.scoreGate.status, 'zero_content');
+  assert.equal(server.diagnosticScores.content, 0);
+  assert.equal(server.diagnosticScores.spelling, 2);
+  assert.equal(server.diagnosticScores.grammar, 2);
+  for (const key of Object.keys(policy.MAXIMA)) assert.equal(server.scores[key], 0);
+  assert.deepEqual(policy.normalizeResult(server, essay), server);
+});
+
 test('Zero-Form server results remain valid in the browser and do not call the model', async () => {
   const short = Array(100).fill('word').join(' ') + '.';
   let calls = 0;
