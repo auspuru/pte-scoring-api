@@ -425,8 +425,9 @@ body.dark .fc-word { color: var(--ipt-ink) !important; }
 }
 
 .flashcard-back {
+  overflow-y: auto;
   align-items: stretch !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   text-align: left !important;
 }
 
