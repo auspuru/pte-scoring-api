@@ -332,6 +332,12 @@ test('Expanded dictation bank starts all 56 questions and retains the earliest a
 });
 
 
+test('legacy local fallback cannot score essays',()=>{
+  const q={type:'essay',text:'Should public transport receive more funding than roads?'};
+  assert.throws(()=>policy.localGrade(q,'A valid essay response.',{reason:'model offline'}),/unified essay engine/i);
+  assert.throws(()=>policy.localContentScore(q,'A valid essay response.'),/unified essay engine/i);
+});
+
 test('local Writing fallback returns a usable score when the external model is unavailable',async()=>{
   const swt={type:'swt',text:'Cities can reduce heat by planting trees and protecting green spaces.',keyPoints:['Cities can reduce heat','planting trees','protecting green spaces']};
   const answer='Cities can reduce heat by planting trees and protecting green spaces.';
