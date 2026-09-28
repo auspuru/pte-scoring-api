@@ -341,6 +341,25 @@ body.dark .today-plan-action.primary {
   padding: 20px !important;
 }
 
+/* Home teacher-assignment teaser stays in the first-load Home layer. */
+.next-step-dashboard {
+  border-color: rgba(197,48,48,.14) !important;
+  border-radius: var(--ipt-radius-md) !important;
+  background:
+    linear-gradient(135deg, rgba(197,48,48,.065), rgba(45,108,165,.045)) !important;
+}
+
+.next-step-dashboard-list > button {
+  border-color: var(--ipt-line) !important;
+  border-radius: 12px !important;
+  background: var(--ipt-surface) !important;
+}
+
+.next-step-dashboard-list strong,
+.next-step-dashboard-list small {
+  font-size: 12px !important;
+}
+
 /* ---------- Practice catalogue ---------- */
 #practiceHubPane {
   padding-top: 30px;
