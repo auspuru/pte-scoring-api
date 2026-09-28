@@ -12668,7 +12668,7 @@ function setPortalLibraryView(view) {
 function savePortalEssayDraft() {
   clearTimeout(portalDraftTimer);
   if (!currentUserId || practiceState.view !== 'write') return;
-  const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
+  const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
   if (savePortalEssayDraft.owner === currentUserId && savePortalEssayDraft.signature === signature) return;
   const saved = !!portalDraftStore?.write(currentUserId, practiceState);
   if (saved) {
@@ -12698,13 +12698,13 @@ function restorePortalEssayDraft(resetSession = false) {
   portalDraftRevision = draft?.updatedAt || 0;
   if (draft && (draft.essayText.trim() || draft.questionText.trim())) {
     // Copy only fields produced by our draft schema, never arbitrary storage keys.
-    for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt']) {
+    for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt']) {
       practiceState[key] = draft[key];
     }
     practiceState.view = 'write';
   }
   savePortalEssayDraft.owner = currentUserId;
-  savePortalEssayDraft.signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
+  savePortalEssayDraft.signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
   practiceRevision = null;
   document.getElementById('practiceContent').replaceChildren();
   if (resetSession) {
@@ -13142,6 +13142,7 @@ function emptyPracticeState() { return {
   questionTitle: '',
   questionText: '',
   essayText: '',
+  sampleBand: '9',          // target level for the learning sample; scoring itself is unchanged
   currentAttempt: null,      // the in-memory attempt object (post-scoring)
   viewingAttemptId: null,    // ID of the history attempt being viewed
   expandedQuestions: {},     // accordion expand state mapping questionKey -> boolean
@@ -13187,7 +13188,7 @@ function archivePracticeDraftForUndo(message='Previous draft archived') {
   try{localStorage.setItem('ipt_essay_draft_archive_v1:'+encodeURIComponent(currentUserId),JSON.stringify({savedAt:Date.now(),draft:snapshot}));}catch(_){}
   window.portalUndoToast?.(message,()=>{
     stopPracticeTimer();practiceState=emptyPracticeState();
-    for(const key of ['essayText','questionText','questionTitle','selectedQuestionId','questionSource','writeStep','timerEnabled','timerStartedAt']) if(snapshot[key]!==undefined)practiceState[key]=snapshot[key];
+    for(const key of ['essayText','questionText','questionTitle','selectedQuestionId','questionSource','writeStep','sampleBand','timerEnabled','timerStartedAt']) if(snapshot[key]!==undefined)practiceState[key]=snapshot[key];
     practiceState.view='write';portalDraftStore?.write(currentUserId,practiceState);renderPracticeMain();updatePortalResume();queueSync();document.getElementById('practiceEssayInput')?.focus();
   });
   return true;
@@ -13727,6 +13728,16 @@ function writeView() {
           </div>
         </div>
 
+        <div class="practice-sample-band" style="margin-top:20px; padding:16px 18px; background:var(--bg-list); border:1px solid var(--line-soft); border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+          <div style="min-width:220px; flex:1;">
+            <label for="practiceSampleBand" style="display:block; font-size:13px; font-weight:700; color:var(--ink); margin-bottom:4px;">Desired sample response band</label>
+            <div style="font-size:12px; line-height:1.5; color:var(--ink-soft);">Choose the level for the model answer shown after scoring. This choice does not change your essay score.</div>
+          </div>
+          <select id="practiceSampleBand" class="field-input" aria-label="Desired sample response band" onchange="setPracticeSampleBand(this.value)" style="width:auto; min-width:130px;">
+            ${['6','7','8','9'].map(b => '<option value="' + b + '" ' + (practiceSampleBand(practiceState.sampleBand) === b ? 'selected' : '') + '>Band ' + b + '</option>').join('')}
+          </select>
+        </div>
+
         <div class="simulator-actions" style="margin-top: 28px; border-top: 1px solid var(--line-soft); padding-top: 20px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
           <button class="practice-back-btn" onclick="resetPracticeSetup()" style="border: 1px solid var(--line-soft); color: var(--ink-soft); background: transparent; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);">
             ← Change Topic / Reset
@@ -14043,6 +14054,21 @@ function countWords(text) {
   return text.split(/\s+/).length;
 }
 
+function practiceSampleBand(value) {
+  if (window.EssayScoring?.normalizeSampleBand) return EssayScoring.normalizeSampleBand(value);
+  const match = String(value == null ? '9' : value).match(/[6789]/);
+  return match ? match[0] : '9';
+}
+
+function practiceSampleBandLabel(value) {
+  return 'Band ' + practiceSampleBand(value);
+}
+
+function setPracticeSampleBand(value) {
+  practiceState.sampleBand = practiceSampleBand(value);
+  queuePortalEssayDraft();
+}
+
 function updateSubmitBtnState() {
   const btn = document.getElementById('practiceSubmitBtn');
   if (btn) {
@@ -14071,7 +14097,7 @@ function loadingView() {
       <img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109">
       <div class="practice-loading-icon" aria-hidden="true"></div>
       <div class="practice-loading-text" role="status" aria-live="polite">Checking your response…</div>
-      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback and a Band 9 sample using your own ideas will appear here.</div>
+      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback and a ${practiceSampleBandLabel(practiceState.sampleBand)} sample using your own ideas will appear here.</div>
     </div>
   `;
 }
@@ -14079,10 +14105,11 @@ function loadingView() {
 // Keep the branded assessment status visible while cycling supporting copy.
 let practiceLoadingTimer = null;
 function startLoadingMessages() {
+  const sampleLabel = practiceSampleBandLabel(practiceState.sampleBand);
   const messages = [
     'Your original essay is being assessed.',
     'Your feedback will cover content, structure and language.',
-    'Your Band 9 sample will build on your own ideas.',
+    'Your ' + sampleLabel + ' sample will build on your own ideas.',
     'Your results will appear as soon as they are ready.'
   ];
   let i = 0;
@@ -14109,6 +14136,8 @@ async function submitPracticeEssay() {
   const essay = practiceState.essayText.trim();
   if (!question) { toast('Please pick or write a question first', true); return; }
   if (countWords(essay) < 120) { toast('Please write at least 120 words before scoring', true); return; }
+  const sampleBand = practiceSampleBand(practiceState.sampleBand);
+  practiceState.sampleBand = sampleBand;
   const templateOverlap = getPracticeTemplateOverlap(essay);
   if (templateOverlap.level === 'high') {
     toast('High template overlap (' + templateOverlap.percent + '%). Your essay will still be assessed, but replace memorised wording with question-specific reasoning before the exam.', true);
@@ -14132,7 +14161,7 @@ async function submitPracticeEssay() {
         'Content-Type': 'application/json',
         'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
       },
-      body: JSON.stringify({ question, essay })
+      body: JSON.stringify({ question, essay, sampleBand })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'The assessment could not be completed. Please try again.');
@@ -14140,7 +14169,7 @@ async function submitPracticeEssay() {
     const attempt = {
       ...result,
       id: 'pr_' + Date.now() + Math.random().toString(36).slice(2, 8),
-      date: Date.now(), questionId, questionTitle, questionText: question, essayText: essay,
+      date: Date.now(), questionId, questionTitle, questionText: question, essayText: essay, sampleBand,
       ...(elapsedMsAtSubmit !== null ? { elapsedMs: elapsedMsAtSubmit } : {})
     };
 
@@ -14199,13 +14228,17 @@ async function retryPracticeSample() {
   practiceSamplePendingId = attempt.id;
   renderPracticeMain();
   try {
+    const sampleBand = practiceSampleBand(attempt.sampleBand);
     const res = await fetch(API_URL + '/api/essay/grade', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText })
+      method: 'POST', headers: {
+        'Content-Type': 'application/json',
+        'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
+      },
+      body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText, sampleBand })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'The sample could not be prepared. Please try again.');
-    const sample = EssayScoring.normalizeSample(data, attempt.essayText, attempt);
+    const sample = EssayScoring.normalizeSample(data, attempt.essayText, attempt, { sampleBand });
     if (!sameOwner()) return;
     const current = getPracticeHistory().find(item => item.id === attempt.id);
     if (!current) return;
@@ -14218,11 +14251,12 @@ async function retryPracticeSample() {
     await save;
     if (!sameOwner()) return;
     renderPracticeHistory();
+    const sampleLabel = practiceSampleBandLabel(sample.sampleBand);
     toast(
       sample.sampleStatus === 'ready'
-        ? 'Your Band 9 sample is ready.'
+        ? 'Your ' + sampleLabel + ' sample is ready.'
         : sample.sampleStatus === 'needs-ideas'
-          ? 'Add the missing personal/task detail shown in your results to generate the Band 9 sample.'
+          ? 'Add the missing personal/task detail shown in your results to generate the ' + sampleLabel + ' sample.'
           : 'The sample could not be prepared. Your score is still saved.',
       sample.sampleStatus === 'unavailable'
     );
@@ -14235,17 +14269,18 @@ async function retryPracticeSample() {
 }
 
 function renderPracticeSample(a) {
+  const sampleLabel = practiceSampleBandLabel(a.sampleBand);
   if (a.sampleKind === 'unavailable') {
     const pending = practiceSamplePendingId === a.id;
     return `<div class="practice-grammar-section" style="margin-top:20px;">
-      <div class="practice-grammar-title">Band 9 sample · Your ideas</div>
+      <div class="practice-grammar-title">${sampleLabel} sample · Your ideas</div>
       <p style="font-size:13px; line-height:1.6; color:var(--ink-soft);">${escapeHtml(a.sampleNote || '')}</p>
       <button class="admin-btn" onclick="retryPracticeSample()" ${pending ? 'disabled' : ''}>${pending ? 'Preparing your sample…' : 'Retry sample'}</button>
     </div>`;
   }
   if (a.sampleKind === 'needs-ideas') {
     return `<div class="practice-grammar-section" style="margin-top:20px;">
-      <div class="practice-grammar-title">Add ideas for your Band 9 sample</div>
+      <div class="practice-grammar-title">Add ideas for your ${sampleLabel} sample</div>
       <p style="font-size:13px; line-height:1.6; color:var(--ink-soft);">${escapeHtml(a.sampleNote || '')}</p>
     </div>`;
   }
@@ -14255,7 +14290,7 @@ function renderPracticeSample(a) {
     <div class="practice-grammar-section" style="margin-top:20px;">
       <div class="practice-grammar-header" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center;">
         <div style="flex:1; min-width:200px;">
-          <div class="practice-grammar-title">${fullEssay ? 'Band 9 sample · Your ideas' : 'Example revision'}</div>
+          <div class="practice-grammar-title">${fullEssay ? '${sampleLabel} sample · Your ideas' : 'Example revision'}</div>
           <div style="font-size:12px; color:var(--ink-soft); line-height:1.5; font-weight:normal;">
             ${fullEssay
               ? 'A complete essay using your ideas and viewpoint, with stronger language and structure. ' + EssayScoring.words(a.sampleResponse) + ' words. '
@@ -14279,8 +14314,6 @@ function resultsView() {
   const a = practiceState.currentAttempt;
   if (!a) return welcomeView();
   const total = a.scores?.total || 0;
-  const pct = total / PRACTICE_MAX_TOTAL;
-  const band = pct >= 0.85 ? 'high' : (pct >= 0.6 ? 'mid' : 'low');
 
   // Form check banner
   let formBanner = '';
@@ -14407,10 +14440,6 @@ function resultsView() {
   ` : '';
 
   // Verdict line
-  const verdictDefault = total >= 22 ? 'Excellent work — top-band level.'
-    : total >= 17 ? 'Good effort. With a few tweaks you can push higher.'
-    : total >= 10 ? 'Decent start. Focus on the "What to work on next" tips.'
-    : 'Plenty of room to grow. Read through the per-category notes below.';
   const contentScore = Number(a.scores?.content) || 0;
   const verdict = contentScore <= 1 ? 'Focus on answering the question with relevant ideas.'
     : contentScore <= 3 ? 'Develop your answer to the question more fully.'
@@ -14420,9 +14449,6 @@ function resultsView() {
   const optionalItems = (a.optionalRefinements || []).map(item => '<li><p>“' + escapeHtml(item.phrase) +
     '” → “' + escapeHtml(item.correction) + '”</p><p>' + escapeHtml(item.explanation || '') + '</p></li>').join('');
   const optionalSection = optionalItems ? '<details class="essay-feedback-details essay-optional"><summary>Optional refinements</summary><ul>' + optionalItems + '</ul></details>' : '';
-  const previousVersion = a.scoring_version !== EssayScoring.VERSION
-    ? '' : '';
-
   // Grammar & Spelling inline-error section
   const grammarSection = renderGrammarSpellingSection(a);
 
@@ -14452,7 +14478,6 @@ function resultsView() {
       </div>
 
       ${pteDashboardHtml}
-      ${previousVersion}
       ${formBanner}
       ${templateBanner}
       ${taskFocusSection}
@@ -14500,6 +14525,7 @@ function reattemptPractice() {
     if (match) practiceState.selectedQuestionId = match.id;
   }
   practiceState.essayText = '';
+  practiceState.sampleBand = practiceSampleBand(a.sampleBand);
   practiceRevision = null;
   practiceState.viewingAttemptId = null;
   practiceState.currentAttempt = null;
@@ -14519,6 +14545,7 @@ function revisePracticeEssay() {
   practiceState.questionSource = a.questionId ? 'library' : 'custom';
   practiceState.selectedQuestionId = a.questionId || null;
   practiceState.essayText = text;
+  practiceState.sampleBand = practiceSampleBand(a.sampleBand);
   practiceState.view = 'write';
   practiceState.writeStep = 2;
   practiceState.promptExpanded = true;
