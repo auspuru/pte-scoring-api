@@ -78,7 +78,7 @@
 <link rel="stylesheet" href="/student-progress.css?v=1">
 <link rel="stylesheet" href="/interventions.css?v=4">
 <link rel="stylesheet" href="/ipt-tokens.css?v=20260928-liquid-foundation">
-<link rel="stylesheet" href="/portal-liquid-glass.css?v=20260928-liquid-foundation">
+<link rel="stylesheet" href="/portal-liquid-glass.css?v=20260928-liquid-foundation">\n<link rel="stylesheet" href="/portal-home-practice.css?v=20260928-home-practice">
 </head>
 <body>
 
@@ -299,6 +299,40 @@
         </section>
 
         </section>
+
+        <section class="home-skill-section" aria-labelledby="homeSkillTitle">
+          <div class="home-section-heading">
+            <div>
+              <span class="portal-eyebrow">Quick practice</span>
+              <h3 id="homeSkillTitle">Choose a skill</h3>
+              <p>Jump directly into an existing practice task.</p>
+            </div>
+            <button type="button" class="portal-button" onclick="switchSection('practice-hub')">See all tasks</button>
+          </div>
+          <div class="home-skill-grid">
+            <button type="button" class="home-skill-card speaking" onclick="switchSection('speaking-ra')">
+              <span class="home-skill-mark" aria-hidden="true">SP</span>
+              <span><strong>Speaking</strong><small>Start with Read Aloud</small></span>
+              <span class="home-skill-arrow" aria-hidden="true">→</span>
+            </button>
+            <button type="button" class="home-skill-card writing" onclick="switchSection('practice')">
+              <span class="home-skill-mark" aria-hidden="true">WR</span>
+              <span><strong>Writing</strong><small>Open essay practice</small></span>
+              <span class="home-skill-arrow" aria-hidden="true">→</span>
+            </button>
+            <button type="button" class="home-skill-card reading" onclick="switchSection('reading-dropdown')">
+              <span class="home-skill-mark" aria-hidden="true">RD</span>
+              <span><strong>Reading</strong><small>Start Reading Blanks</small></span>
+              <span class="home-skill-arrow" aria-hidden="true">→</span>
+            </button>
+            <button type="button" class="home-skill-card listening" onclick="switchSection('spoken-text')">
+              <span class="home-skill-mark" aria-hidden="true">LS</span>
+              <span><strong>Listening</strong><small>Start Summarise Spoken Text</small></span>
+              <span class="home-skill-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </section>
+
         <div class="portal-task-grid" aria-label="Choose your study mode">
           <button type="button" class="portal-task portal-task-swt" onclick="switchSection('practice-hub')">
             <span class="portal-task-top"><span class="portal-glyph" data-glyph="menu_book" aria-hidden="true"></span><span>Individual questions</span></span>
