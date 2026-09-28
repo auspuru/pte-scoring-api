@@ -134,3 +134,104 @@
 @media (hover:hover) and (pointer:fine){.ipt-action-emoji:hover{transform:translateY(-4px) scale(1.025)}}
 @media (prefers-reduced-motion:reduce){.ipt-action-emoji,.ipt-action-emoji *{transition-duration:.01ms!important;animation:none!important}}
 body.dark .ipt-action-emoji,.dark .ipt-action-emoji{border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.025)),rgba(19,30,42,.64);box-shadow:0 22px 50px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.13)}
+
+
+/* CSS-only activation for self-contained demos and no-JS surfaces. */
+.ipt-action-toggle{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.ipt-action-emoji:has(>.ipt-action-toggle:checked){box-shadow:0 24px 58px rgba(23,59,99,.21),0 0 30px rgba(45,108,165,.14),inset 0 1px 0 #fff}
+.ipt-action-emoji:has(>.ipt-action-toggle:checked)>img{transform:scale(1.04)}
+
+/* IPT Brisbane interactive liquid-glass emoji components.
+   Core interaction is class/state driven and does not require JavaScript.
+   Use :has(>.ipt-action-toggle:checked) in the portal or a checked input in the demo. */
+
+.ipt-action-emoji{
+  --blue:#173B63;--blue2:#205080;--blue3:#2D6CA5;--red:#C53030;--green:#16805F;
+  position:relative;display:inline-grid;place-items:center;width:92px;height:92px;padding:11px;
+  border:1px solid rgba(255,255,255,.82);border-radius:27px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(145deg,rgba(255,255,255,.66),rgba(255,255,255,.10) 48%,rgba(255,255,255,.27)),rgba(255,255,255,.52);
+  box-shadow:0 18px 42px rgba(23,59,99,.16),0 3px 12px rgba(23,59,99,.08),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(18,51,79,.08);
+  -webkit-backdrop-filter:blur(22px) saturate(185%);backdrop-filter:blur(22px) saturate(185%);
+  transform:translateZ(0);transition:transform .2s cubic-bezier(.22,1,.3,1),box-shadow .25s ease;
+  -webkit-tap-highlight-color:transparent
+}
+
+.ipt-action-emoji:has(>.ipt-action-toggle:checked){box-shadow:0 24px 58px rgba(23,59,99,.21),0 0 30px rgba(45,108,165,.14),inset 0 1px 0 #fff}
+
+.ipt-action-emoji:has(>.ipt-action-toggle:checked)>img{transform:scale(1.04)}
+
+[data-emoji="ipt"]:has(>.ipt-action-toggle:checked) .spark{opacity:1;transform:rotate(180deg) scale(1.35)}
+
+[data-emoji="ipt"]:has(>.ipt-action-toggle:checked)>img{transform:scale(1.12)}
+
+[data-emoji="pte-ai"]:has(>.ipt-action-toggle:checked) .scan,[data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .scan{opacity:1;transform:translateY(50px)}
+
+[data-emoji="pte-ai"]:has(>.ipt-action-toggle:checked) .dot{opacity:1;transform:scale(1.35)}
+
+[data-emoji="score-90"]:has(>.ipt-action-toggle:checked) .c1,[data-emoji="celebrate"]:has(>.ipt-action-toggle:checked) .c1{opacity:1;transform:translate(-13px,-20px) rotate(160deg)}
+
+[data-emoji="score-90"]:has(>.ipt-action-toggle:checked) .c2,[data-emoji="celebrate"]:has(>.ipt-action-toggle:checked) .c2{opacity:1;transform:translate(14px,-18px) rotate(220deg)}
+
+[data-emoji="score-90"]:has(>.ipt-action-toggle:checked) .c3,[data-emoji="celebrate"]:has(>.ipt-action-toggle:checked) .c3{opacity:1;transform:translate(-13px,17px) rotate(250deg)}
+
+[data-emoji="score-90"]:has(>.ipt-action-toggle:checked) .c4,[data-emoji="celebrate"]:has(>.ipt-action-toggle:checked) .c4{opacity:1;transform:translate(14px,16px) rotate(180deg)}
+
+[data-emoji="score-90"]:has(>.ipt-action-toggle:checked)>img,[data-emoji="celebrate"]:has(>.ipt-action-toggle:checked)>img{transform:scale(1.15) rotate(2deg)}
+
+[data-emoji="swt"]:has(>.ipt-action-toggle:checked) .l1,[data-emoji="swt"]:has(>.ipt-action-toggle:checked) .l2,[data-emoji="swt"]:has(>.ipt-action-toggle:checked) .l3{opacity:0;transform:translateY(14px) scaleX(.3)}
+
+[data-emoji="swt"]:has(>.ipt-action-toggle:checked) .out{opacity:1;width:42px}
+
+[data-emoji="essay"]:has(>.ipt-action-toggle:checked) .pencil{transform:rotate(-43deg) translate(10px,-12px)}
+
+[data-emoji="essay"]:has(>.ipt-action-toggle:checked) .wave{width:45px}
+
+[data-emoji="speaking"]:has(>.ipt-action-toggle:checked) .dot{opacity:1;transform:scale(1.4);animation:iptRecord 850ms ease-in-out infinite alternate}
+
+[data-emoji="speaking"]:has(>.ipt-action-toggle:checked) .ring{opacity:.8;transform:translate(-50%,-50%) scale(1)}
+
+[data-emoji="reading"]:has(>.ipt-action-toggle:checked) .page{transform:perspective(120px) rotateY(-72deg);opacity:.5}
+
+[data-emoji="listening"]:has(>.ipt-action-toggle:checked) .ring,[data-emoji="pronunciation"]:has(>.ipt-action-toggle:checked) .ring{opacity:.7;transform:translate(-50%,-50%) scale(1)}
+
+[data-emoji="listening"]:has(>.ipt-action-toggle:checked) .r2,[data-emoji="pronunciation"]:has(>.ipt-action-toggle:checked) .r2{transition-delay:.08s}
+
+[data-emoji="listening"]:has(>.ipt-action-toggle:checked) .r3,[data-emoji="pronunciation"]:has(>.ipt-action-toggle:checked) .r3{transition-delay:.16s}
+
+[data-emoji="fluency"]:has(>.ipt-action-toggle:checked) .wave{transform:scaleX(1)}
+
+[data-emoji="fluency"]:has(>.ipt-action-toggle:checked) .dot{transform:translateX(49px)}
+
+[data-emoji="grammar"]:has(>.ipt-action-toggle:checked) .xmark{opacity:0;transform:rotate(90deg) scale(.4)}
+
+[data-emoji="grammar"]:has(>.ipt-action-toggle:checked) .checkmark,[data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .checkmark{opacity:1;transform:rotate(45deg) scale(1)}
+
+[data-emoji="vocab"]:has(>.ipt-action-toggle:checked) .bubble{opacity:1;transform:translateY(-8px) scale(1)}
+
+[data-emoji="vocab"]:has(>.ipt-action-toggle:checked) .b2{transition-delay:.08s}
+
+[data-emoji="vocab"]:has(>.ipt-action-toggle:checked) .b3{transition-delay:.16s}
+
+[data-emoji="mock-test"]:has(>.ipt-action-toggle:checked) .tick{opacity:1;transform:rotate(45deg) scale(.7)}
+
+[data-emoji="mock-test"]:has(>.ipt-action-toggle:checked) .t2{transition-delay:.1s}
+
+[data-emoji="mock-test"]:has(>.ipt-action-toggle:checked) .t3{transition-delay:.2s}
+
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .bar{transform:scaleY(1)}
+
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .b2{transition-delay:.08s}
+
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .b3{transition-delay:.16s}
+
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .b4{transition-delay:.24s}
+
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .wave{transform:rotate(-27deg) scaleX(1);transition-delay:.2s}
+
+[data-emoji="teacher-feedback"]:has(>.ipt-action-toggle:checked) .feedback{opacity:1;transform:translateY(0) scale(1)}
+
+[data-emoji="teacher-feedback"]:has(>.ipt-action-toggle:checked) .checkmark{opacity:1;transform:rotate(45deg) scale(1);transition-delay:.18s}
+
+[data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .scan{opacity:0;transform:translateY(48px)}
+
+[data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .checkmark{opacity:1;transform:rotate(45deg) scale(.85);transition-delay:.22s}
