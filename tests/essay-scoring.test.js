@@ -125,6 +125,17 @@ test('Prompt requires an opinion only when the question asks and avoids template
   assert.match(prompt, /optionalRefinements/);
 });
 
+test('Age-restriction prompt explains that one example is sufficient', () => {
+  const ageQuestion = 'Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.';
+  const note = policy.taskFocusNote(ageQuestion);
+  assert.match(note, /one example/i);
+  assert.match(note, /other activities listed are optional/i);
+  assert.equal(policy.taskFocusNote('Give an example and explain your opinion about education.'), '');
+  const prompt = policy.buildPrompt(ageQuestion, essay);
+  assert.match(prompt, /Treat one developed example as sufficient coverage/);
+  assert.match(prompt, /Do not require the student to discuss every activity listed/);
+});
+
 test('The renderer allows change markers but escapes model-supplied HTML and scripts', () => {
   const result = policy.renderExcerpt('A <span class="diff-ins">clearer</span> idea <img src=x onerror="bad()"><script>bad()</script>');
   assert(result.includes('<span class="diff-ins">clearer</span>'));
@@ -135,9 +146,10 @@ test('The renderer allows change markers but escapes model-supplied HTML and scr
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
   assert.match(uiSource, /\/api\/essay\/grade/);
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
+  assert.match(uiSource, /EssayScoring\.taskFocusNote/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.7/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.8/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {

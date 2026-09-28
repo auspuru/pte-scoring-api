@@ -14378,6 +14378,13 @@ function resultsView() {
     </div>
   ` : '';
 
+  const taskFocus = EssayScoring.taskFocusNote?.(a.questionText) || '';
+  const taskFocusSection = taskFocus ? `
+    <div class="practice-task-focus-note" role="note">
+      <strong>Task focus:</strong> ${escapeHtml(taskFocus)}
+    </div>
+  ` : '';
+
   // Verdict line
   const verdictDefault = total >= 22 ? 'Excellent work — top-band level.'
     : total >= 17 ? 'Good effort. With a few tweaks you can push higher.'
@@ -14427,6 +14434,7 @@ function resultsView() {
       ${previousVersion}
       ${formBanner}
       ${templateBanner}
+      ${taskFocusSection}
 
       ${summaryRow}
 

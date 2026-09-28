@@ -3467,6 +3467,8 @@ body.dark .login-config-warning { color: #fcd34d; }
 .practice-results .essay-optional li { margin: 14px 0; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
 .practice-results .essay-optional p { margin: 4px 0; }
 .practice-results .essay-saved-note { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin: 12px 0 20px; }
+.practice-task-focus-note { margin: 14px 0 20px; padding: 12px 16px; border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; background: var(--accent-soft); color: var(--ink); font-size: 13px; line-height: 1.55; }
+.practice-task-focus-note strong { color: var(--accent); }
 .practice-results .practice-fb-card-body { font-size: 15px; line-height: 1.7; }
 .practice-fb-card {
   background: var(--bg);
