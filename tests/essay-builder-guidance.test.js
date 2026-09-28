@@ -29,4 +29,6 @@ test('Age Restrictions guidance requires one developed activity, minimum age and
 test('climate-study guidance does not invent a solutions requirement', () => {
   assert.doesNotMatch(source, /Give concrete examples and practical solutions for YOUR area only/);
   assert.match(source, /Do not invent a requirement to propose solutions/);
+  assert.doesNotMatch(source, /examples\/solutions/);
+  assert.match(source, /Examples &amp; research angles/);
 });
