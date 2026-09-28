@@ -10,10 +10,13 @@ const { validateWritingAudio, inspectMp3 } = require('../scripts/validate-writin
 const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
 const userSst = require('../content/user-sst-predictions');
+const userWfd = require('../content/user-wfd-predictions');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
 const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
 const bundledQuestions = questions.filter(q => q.audioMode !== 'runtime-neural');
 const runtimeQuestions = questions.filter(q => q.audioMode === 'runtime-neural');
+const runtimeSstQuestions = runtimeQuestions.filter(q => q.type === 'sst');
+const runtimeWfdQuestions = runtimeQuestions.filter(q => q.type === 'wfd');
 
 test('Every current lecture and dictation has a verified recording with the correct content and duration', () => {
   assert.equal(validateWritingAudio(), 126);
@@ -60,12 +63,14 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
 
 
 test('User SST predictions preserve verbatim source text while audio adds varied human delivery and restrained distractors', async t => {
-  assert.equal(runtimeQuestions.length, 13);
+  assert.equal(runtimeSstQuestions.length, 13);
+  assert.equal(runtimeWfdQuestions.length, 33);
+  assert.equal(runtimeQuestions.length, 46);
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-neural-audio-'));
   t.after(() => fs.rm(cache, { recursive: true, force: true }));
   const seen=[];
   const narration=createNarration(cache,async input=>{seen.push(input);return Buffer.alloc(2000,7);});
-  const q=runtimeQuestions[0];
+  const q=runtimeSstQuestions[0];
   await narration.get(q.id);
   assert.equal(seen.length,1);
   assert.equal(seen[0].input,q.narrationText);
@@ -79,7 +84,7 @@ test('User SST predictions preserve verbatim source text while audio adds varied
   assert.match(seen[0].input,/\n\n/);
 
   const ambienceTypes=new Set();
-  for (const [index,item] of runtimeQuestions.entries()) {
+  for (const [index,item] of runtimeSstQuestions.entries()) {
     const edits=userSst.deliveryEdits[index] || [];
     assert(edits.length>=2 && edits.length<=4,item.id+' should have two to four natural delivery edits');
     let restored=item.narrationText;
@@ -97,7 +102,26 @@ test('User SST predictions preserve verbatim source text while audio adds varied
   assert(ambienceTypes.has('room'));
   assert(ambienceTypes.has('clock'));
   assert(ambienceTypes.has('paper'));
-  assert(runtimeQuestions.some(item=>item.audioAmbience.length===0),'some lectures should stay acoustically clean');
+  assert(runtimeSstQuestions.some(item=>item.audioAmbience.length===0),'some lectures should stay acoustically clean');
+});
+
+
+test('User WFD predictions keep exact text and use runtime neural narration', async t => {
+  assert.deepEqual(runtimeWfdQuestions.map(q=>q.text), userWfd.sentences);
+  const cache=await fs.mkdtemp(path.join(os.tmpdir(),'runtime-wfd-audio-'));
+  t.after(()=>fs.rm(cache,{recursive:true,force:true}));
+  const seen=[];
+  const narration=createNarration(cache,async input=>{seen.push(input);return Buffer.alloc(2000,7);});
+  const q=runtimeWfdQuestions[1];
+  await narration.get(q.id);
+  assert.equal(seen.length,1);
+  assert.equal(seen[0].input,q.narrationText);
+  assert.equal(seen[0].model,'tts-1-hd');
+  assert.equal(seen[0].response_format,'wav');
+  assert.equal(seen[0].speed,0.95);
+  assert.equal(seen[0].requireNeural,true);
+  assert.equal(q.text,userWfd.sentences[1]);
+  assert(q.narrationText.endsWith('.'));
 });
 
 test('A cache processing upgrade reuses the paid recording instead of calling the provider again', async t => {
