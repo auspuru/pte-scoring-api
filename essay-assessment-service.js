@@ -3,6 +3,13 @@
 const policy = require('./public/essay-scoring');
 
 const SUBJECTIVE = ['content', 'linguistic', 'coherence'];
+const MAXIMUM = Object.values(policy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
+// Preserve the current 26-point verdict bands proportionally if the rubric maxima change.
+const VERDICT_THRESHOLDS = Object.freeze({
+  strong: Math.ceil(MAXIMUM * 22 / 26),
+  good: Math.ceil(MAXIMUM * 17 / 26),
+  workable: Math.ceil(MAXIMUM * 10 / 26)
+});
 
 function buildReviewPrompt(question, essay) {
   const form = policy.formFor(essay);
@@ -75,10 +82,19 @@ function normalizeReview(raw, essay) {
     return { ...item, requirement, status, evidence };
   });
 
-  const linguisticExamples = (raw.scoringEvidence.linguisticExamples || [])
-    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean);
-  const developmentEvidence = (raw.scoringEvidence.developmentEvidence || [])
-    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean);
+  const distinctQuotes = items => {
+    const seen = new Set();
+    return items.filter(item => {
+      const key = String(item || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+  const linguisticExamples = distinctQuotes((raw.scoringEvidence.linguisticExamples || [])
+    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean));
+  const developmentEvidence = distinctQuotes((raw.scoringEvidence.developmentEvidence || [])
+    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean));
 
   if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
     const error = new Error('Full Content review conflicts with prompt coverage.');
@@ -111,7 +127,13 @@ function normalizeReview(raw, essay) {
 
 function needsResolver(primary, review) {
   const primaryScores = primary.diagnosticScores || primary.scores;
-  if ((primaryScores.content === 0) !== (review.scores.content === 0)) return true;
+  const primaryContent = Number(primaryScores.content);
+  const reviewContent = Number(review.scores.content);
+  if ((primaryContent === 0) !== (reviewContent === 0)) return true;
+  // Full Content is a semantic boundary: 6 means every explicit prompt
+  // requirement is addressed. A 6-vs-lower disagreement must be resolved
+  // even when the numerical gap is only one point.
+  if ((primaryContent === policy.MAXIMA.content) !== (reviewContent === policy.MAXIMA.content)) return true;
   return SUBJECTIVE.some(key => Math.abs(Number(primaryScores[key]) - Number(review.scores[key])) > 1);
 }
 
@@ -165,7 +187,7 @@ function applySubjectiveDecision(assessment, decision, source) {
           ? assessment.feedback?.form || 'Form is 0, so no score points are awarded.'
           : 'Content is 0, so no score points are awarded for the essay.'
       }
-    : { status: 'valid', cap: 26, reason: '' };
+    : { status: 'valid', cap: MAXIMUM, reason: '' };
 
   const feedback = { ...(assessment.feedback || {}) };
   for (const key of SUBJECTIVE) {
@@ -182,14 +204,14 @@ function applySubjectiveDecision(assessment, decision, source) {
   let overallVerdict = assessment.overallVerdict;
   if (hardGate) {
     overallVerdict = formZero
-      ? 'Form is 0, so the official practice score for this essay is 0/26. The diagnostic feedback can still be used for improvement.'
-      : 'Content is 0, so the official practice score for this essay is 0/26. No other trait points are counted.';
+      ? `Form is 0, so the official practice score for this essay is 0/${MAXIMUM}. The diagnostic feedback can still be used for improvement.`
+      : `Content is 0, so the official practice score for this essay is 0/${MAXIMUM}. No other trait points are counted.`;
   } else if (source === 'resolver') {
-    overallVerdict = scores.total >= 22
+    overallVerdict = scores.total >= VERDICT_THRESHOLDS.strong
       ? 'Strong response overall. The final score reflects an independent review of task fulfilment, development and language range.'
-      : scores.total >= 17
+      : scores.total >= VERDICT_THRESHOLDS.good
         ? 'Good response overall, with some areas still limiting the practice score.'
-        : scores.total >= 10
+        : scores.total >= VERDICT_THRESHOLDS.workable
           ? 'A workable response, but important weaknesses still limit the practice score.'
           : 'This response needs substantial improvement, especially in directly answering and developing the task.';
   }
@@ -240,7 +262,7 @@ function zeroFormAssessment(essay) {
     templateDetector: 'ok',
     templateEvidence: [],
     templateNote: '',
-    overallVerdict: 'Form is 0, so the official practice score for this essay is 0/26.',
+    overallVerdict: `Form is 0, so the official practice score for this essay is 0/${MAXIMUM}.`,
     wordCount: form.count,
     scoring_version: policy.VERSION
   };
@@ -277,6 +299,23 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError) {
     }
   }
   throw lastError || new Error('Essay subjective review unavailable.');
+}
+
+async function callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const retry = lastError
+        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
+        : '';
+      const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry);
+      return normalizeReview(raw, essay);
+    } catch (error) {
+      lastError = error;
+      onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+    }
+  }
+  throw lastError || new Error('Essay subjective resolver unavailable.');
 }
 
 async function assessEssay(question, essay, call, { onAttemptError = () => {} } = {}) {
@@ -326,14 +365,12 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   }
 
   try {
-    const resolverRaw = await call(buildResolverPrompt(question, essay, primary, review));
-    const resolved = normalizeReview(resolverRaw, essay);
+    const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError);
     return {
       assessment: applySubjectiveDecision(primary, resolved, 'resolver'),
       primaryRaw
     };
   } catch (error) {
-    onAttemptError({ stage: 'subjective-resolver', attempt: 1, code: error.code || error.name || 'unknown' });
     const fallback = {
       ...primary,
       subjectiveReview: {
@@ -353,9 +390,12 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
 
 module.exports = {
   SUBJECTIVE,
+  MAXIMUM,
+  VERDICT_THRESHOLDS,
   buildReviewPrompt,
   normalizeReview,
   buildResolverPrompt,
+  callAndNormalizeResolver,
   needsResolver,
   applySubjectiveDecision,
   assessEssay

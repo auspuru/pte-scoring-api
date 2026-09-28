@@ -1,12 +1,15 @@
 'use strict';
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
 const essayPolicy = require('./public/essay-scoring');
+const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20260925-user-sst30-hdmaster3';
+const MAX_ASSESSMENT_QUEUE = 500;
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
   if (items.length < 2) return [];
@@ -30,6 +33,9 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   const number = Number.isInteger(essay.predictionNumber) ? essay.predictionNumber : index + 1;
   const id = 'writing-prediction-mock-' + String(number).padStart(2, '0');
   const swt = (predictionSwtPairs[index] || predictionSwtPairs[index % predictionSwtPairs.length]).map(clone);
+  // Prime-step offsets (7 for SST, 3 for WFD) spread prediction-bank items across
+  // mocks without clustering. If either bank size changes, verify that a mock
+  // still does not repeat the same source question.
   const sst = clone(predictions.sst[(index * 7 + 2) % predictions.sst.length]);
   const wfd = [0, 13, 26].map(offset => {
     const q = clone(predictions.wfd[(index * 3 + offset) % predictions.wfd.length]);
@@ -98,6 +104,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const key = uid + ':' + a.id + ':' + index;
     if (pending.has(key)) return pending.get(key);
     const task = new Promise((resolve, reject) => {
+      if (queue.length >= MAX_ASSESSMENT_QUEUE) {
+        console.warn('[writing-lab] assessment queue full', { queued: queue.length, limit: MAX_ASSESSMENT_QUEUE });
+        reject(bad('Assessment queue full. Please retry shortly.', 503));
+        return;
+      }
       queue.push(async () => {
         try {
           // Reload after waiting in the queue: a review request may have saved it.
@@ -117,7 +128,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
                 assessmentType: 'Unified essay practice assessment',
                 maxima: { ...essayPolicy.MAXIMA },
                 total: Number(unified.scores?.total || 0),
-                maximum: 26,
+                maximum: ESSAY_MAXIMUM,
                 gated: unified.scoreGate?.status && unified.scoreGate.status !== 'valid',
                 reasons: unified.scoreGate?.reason ? [unified.scoreGate.reason] : []
               };
@@ -135,7 +146,13 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         finally { pending.delete(key); }
       });
     });
-    pending.set(key, task); drain();
+    pending.set(key, task);
+    // Also clean up tasks rejected before they ever enter the worker queue
+    // (for example when the bounded queue is full).
+    task.finally(() => {
+      if (pending.get(key) === task) pending.delete(key);
+    }).catch(() => {});
+    drain();
     return task;
   }
   function assessSubmitted(uid, a) {
@@ -172,7 +189,6 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       next();
     } catch (_) { res.status(503).json({error:'Your account could not be checked. Please retry.'}); }
   });
-  const rateLimit = require('express-rate-limit');
   router.post('/attempts', rateLimit({windowMs:600000,max:120,keyGenerator:req=>req.labUser,standardHeaders:true,legacyHeaders:false,
     message:{error:'Please wait before starting another attempt.'}}));
   router.post('/attempts/:id/score/:index', rateLimit({windowMs:60000,max:20,standardHeaders:true,legacyHeaders:false,
