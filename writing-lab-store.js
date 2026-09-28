@@ -57,10 +57,26 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
   async function list(uid) {
     await initialise();
     if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : 'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table === 'speaking_lab_attempts' ? 50 : 250}`, [uid])).rows.map(r => r.data);
+    const dir = folder(uid), limit = table === 'speaking_lab_attempts' ? 50 : 250;
     let files;
-    try { files = await fs.readdir(folder(uid)); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
-    const entries = await Promise.all(files.filter(f => f.endsWith('.json')).map(f => fs.readFile(path.join(folder(uid),f),'utf8').then(JSON.parse)));
-    return entries.sort((a,b) => b.startedAt-a.startedAt).slice(0,table === 'speaking_lab_attempts' ? 50 : 250);
+    try { files = await fs.readdir(dir); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
+    // Match the PostgreSQL path's "most recently updated" semantics without
+    // reading every JSON payload into memory. Stat metadata is cheap; only the
+    // newest bounded set is parsed.
+    const metadata = (await Promise.all(files.filter(f => f.endsWith('.json')).map(async file => {
+      try {
+        const stat = await fs.stat(path.join(dir, file));
+        return { file, mtimeMs: stat.mtimeMs };
+      } catch (e) {
+        if (e.code === 'ENOENT') return null;
+        throw e;
+      }
+    }))).filter(Boolean).sort((a,b) => b.mtimeMs-a.mtimeMs).slice(0,limit);
+    const entries = await Promise.all(metadata.map(async ({ file }) => {
+      try { return JSON.parse(await fs.readFile(path.join(dir,file),'utf8')); }
+      catch (e) { if (e.code === 'ENOENT') return null; throw e; }
+    }));
+    return entries.filter(Boolean);
   }
   return { update, list };
 }
