@@ -62,3 +62,47 @@ The base `ipt-emoji` class already includes hover lift and tap compression, so c
 ## Included reactions
 
 IPT, PTE AI, Score 90, SWT, Essay, Speaking, Reading, Listening, Pronunciation, Fluency, Grammar, Vocabulary, Mock Test, Progress, Teacher Feedback, AI Score and Celebrate.
+
+
+## Semantic interaction layer
+
+The pack now also includes `emoji-interactions.css` and `interactive-preview.html`.
+
+Each emoji has a task-specific interaction rather than generic looping motion:
+
+- IPT — brand spark
+- PTE AI — AI scan
+- Score 90 — achievement burst
+- SWT — source lines collapse into a summary
+- Essay — pencil writes
+- Speaking — recording light and sound waves
+- Reading — page flip
+- Listening — expanding audio signal
+- Pronunciation — pronunciation waves
+- Fluency — waveform flow
+- Grammar — error changes into a correction
+- Vocabulary — new-word bubbles
+- Mock Test — answers tick off sequentially
+- Progress — bars rise with a trend line
+- Teacher Feedback — feedback bubble appears
+- AI Score — scan resolves to a completion check
+- Celebrate — confetti burst
+
+### Triggering interactions in the portal
+
+The production-friendly state is `.is-active`:
+
+```html
+<span class="ipt-action-emoji is-active" data-emoji="progress">
+  <img src="/brand-emojis/progress.svg" alt="">
+  <span class="fx">
+    <span class="bar b1"></span>
+    <span class="bar b2"></span>
+    <span class="bar b3"></span>
+    <span class="bar b4"></span>
+    <span class="wave"></span>
+  </span>
+</span>
+```
+
+The interactive preview uses a hidden checkbox inside each component so tapping works without JavaScript. In the real application, toggle `.is-active` when the corresponding real state/event occurs.
