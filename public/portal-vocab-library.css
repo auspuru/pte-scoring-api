@@ -899,6 +899,7 @@ body.dark #libraryPane .preview-pane {
   #libraryPane .layout {
     grid-template-columns: minmax(0,1fr) !important;
     height: calc(100dvh - 118px) !important;
+    min-height: 0;
   }
 
   #libraryPane .lib {
