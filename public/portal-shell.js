@@ -4,6 +4,47 @@
   const finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)');
   const canAnimate = () => !(reduceMotion && reduceMotion.matches);
 
+
+  const lazyStyles = [
+    {
+      key: 'insights',
+      href: '/portal-insights.css?v=20260928-insights',
+      sections: new Set(['mock-tests', 'writing-mocks', 'next-steps', 'progress'])
+    },
+    {
+      key: 'vocab-library',
+      href: '/portal-vocab-library.css?v=20260928-vocab-library',
+      sections: new Set(['vocab', 'library'])
+    }
+  ];
+
+  function ensureLazyStyle(definition) {
+    if (!definition || document.querySelector('link[data-ipt-lazy-style="' + definition.key + '"]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = definition.href;
+    link.dataset.iptLazyStyle = definition.key;
+
+    const ownIndex = lazyStyles.indexOf(definition);
+    const nextLoaded = lazyStyles.slice(ownIndex + 1)
+      .map(item => document.querySelector('link[data-ipt-lazy-style="' + item.key + '"]'))
+      .find(Boolean);
+    if (nextLoaded) document.head.insertBefore(link, nextLoaded);
+    else document.head.appendChild(link);
+  }
+
+  function loadSectionStyles(section = document.body.dataset.section || '') {
+    lazyStyles.filter(item => item.sections.has(section)).forEach(ensureLazyStyle);
+  }
+
+  function installSectionStyleLoader() {
+    loadSectionStyles();
+    new MutationObserver(() => loadSectionStyles()).observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-section']
+    });
+  }
+
   function setMotionClass() {
     document.body.classList.toggle('ipt-glass-motion', canAnimate() && (!finePointer || finePointer.matches));
   }
@@ -130,6 +171,7 @@
   function start() {
     document.body.dataset.iptShellReady = 'true';
     setMotionClass();
+    installSectionStyleLoader();
     installGlassSurfaces();
     installNavIndicator();
     installPressPhysics();
