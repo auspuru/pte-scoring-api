@@ -588,8 +588,8 @@ body.dark #practiceHubPane .catalogue-heading h2 { color: var(--ipt-ink); }
 
   #dashboardPane .challenge-word-box{align-items:flex-start;flex-direction:column;gap:10px}
   #dashboardPane .challenge-word-box .u-inline-013{width:100%;flex-wrap:wrap}
-  #dashboardPane .vocab-try-row{align-items:stretch;flex-direction:column}
-  #dashboardPane .vocab-try-row input,#dashboardPane .vocab-try-check{box-sizing:border-box;width:100%;min-width:0}
+  #dashboardPane .vocab-try-row{flex-direction:column}
+  #dashboardPane .vocab-try-row input,#dashboardPane .vocab-try-check{width:100%}
 
   .home-skill-grid { grid-template-columns: minmax(0,1fr); }
   .home-skill-card { min-height: 88px; }
