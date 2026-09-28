@@ -3,6 +3,7 @@ const VERSION = 'exam-practice-2026-09-23.3';
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
+const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const { assessEssay } = require('./essay-assessment-service');
 const MAXIMA = {
   swt: { content: 4, form: 1, grammar: 2, vocabulary: 2 },
@@ -131,7 +132,7 @@ async function gradeUnifiedEssay(q, text, call) {
     assessmentType: 'AI practice assessment',
     maxima: essayPolicy.MAXIMA,
     total: assessment.scores.total,
-    maximum: 26,
+    maximum: ESSAY_MAXIMUM,
     gated: assessment.scoreGate?.status !== 'valid',
     reasons: assessment.scoreGate?.reason ? [assessment.scoreGate.reason] : []
   };
