@@ -54,3 +54,25 @@ test('admin presentation uses IPT branding without changing authorization',()=>{
   assert.match(server,/req\.headers\['x-admin-key'\]/);
   assert.match(server,/if \(key !== ADMIN_KEY\) return res\.status\(403\)/);
 });
+
+
+test('admin bulk deletion protects progress-only records',()=>{
+  const html=fs.readFileSync(path.join(root,'public','admin.html'),'utf8');
+  const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
+
+  assert.match(html,/\.user-select:not\(:disabled\)/);
+  assert.equal((html.match(/\.user-select:checked:not\(:disabled\)/g)||[]).length,2);
+  assert.match(server,/SELECT username FROM accounts WHERE username = ANY\(\$1::text\[\]\) FOR UPDATE/);
+  assert.match(server,/const accountIds = existing\.rows\.map\(row => row\.username\)/);
+  assert.match(server,/DELETE FROM user_data WHERE username = ANY\(\$1::text\[\]\)'\, \[accountIds\]/);
+  assert.match(server,/DELETE FROM accounts WHERE username = ANY\(\$1::text\[\]\) RETURNING username'\, \[accountIds\]/);
+  assert.doesNotMatch(server,/DELETE FROM user_data WHERE username = ANY\(\$1::text\[\]\)'\, \[ids\]/);
+});
+
+test('admin tab switching tolerates removed optional passage tabs',()=>{
+  const html=fs.readFileSync(path.join(root,'public','admin.html'),'utf8');
+  assert.match(html,/const tabPassages = document\.getElementById\('tabPassages'\)/);
+  assert.match(html,/if \(tabPassages\) tabPassages\.classList\.toggle/);
+  assert.match(html,/if \(panelPassages\) panelPassages\.classList\.toggle/);
+  assert.match(html,/name === 'passages' && panelPassages && allPassages\.length === 0/);
+});
