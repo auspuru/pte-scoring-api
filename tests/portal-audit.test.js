@@ -87,6 +87,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(vocabLibraryCss,/grid-template-columns:\s*clamp\(220px,18vw,258px\) minmax\(0,1\.12fr\) minmax\(300px,\.92fr\)/,'library columns must shrink without horizontal overflow');
   assert.match(vocabLibraryCss,/@media\s*\(max-width:\s*1200px\)[\s\S]*?#libraryPane \.layout\s*\{\s*flex:\s*1;\s*height:\s*auto !important;\s*min-height:\s*0;/,'responsive library toolbar must not add height on top of a full-height workspace');
   assert.match(vocabLibraryCss,/\.flashcard-back\s*\{\s*overflow-y:\s*auto;[\s\S]*?justify-content:\s*flex-start !important;/,'long flashcard backs must scroll from the top');
+  assert.match(homePracticeCss,/@media \(max-width: 640px\)[\s\S]*?#dashboardPane \.challenge-word-box\{[^}]*flex-direction:column/,'Home challenge controls stack on mobile');
+  assert.match(homePracticeCss,/#dashboardPane \.vocab-try-row\{[^}]*flex-direction:column/,'Home vocabulary input stacks on mobile');
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
