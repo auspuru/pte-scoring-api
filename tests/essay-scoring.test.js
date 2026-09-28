@@ -274,7 +274,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.taskFocusNote/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\\.js\\?v=20\\.4\\.9-unified/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.9-unified/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
