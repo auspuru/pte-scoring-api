@@ -533,7 +533,7 @@ function receiveAccountProgress(remote, initial = false) {
   if (userProfile) userProfile.vocabProgress = merged.vocabProgress;
   if (!initial) {
     window.ReadingPractice?.receiveProgress?.(merged.readingProgress, currentUserId);
-    const editing = document.activeElement?.matches?.('input,textarea,[contenteditable="true"]');
+    const editing = document.activeElement?.matches?.('input,textarea,select,[contenteditable="true"]');
     if (!editing) {
       if (!currentId || !getCurrent()) currentId = essays[0]?.id || null;
       renderList(); loadCurrent(); renderPreview();
@@ -12665,7 +12665,7 @@ function setPortalLibraryView(view) {
   });
 }
 
-function savePortalEssayDraft() {
+function savePortalEssayDraft(options = {}) {
   clearTimeout(portalDraftTimer);
   if (!currentUserId || practiceState.view !== 'write') return;
   const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
@@ -12681,7 +12681,7 @@ function savePortalEssayDraft() {
     status.textContent = saved ? 'Draft saved on this device' : 'Draft is open here. Device saving is unavailable.';
     status.dataset.state = saved ? 'saved' : 'error';
   }
-  if (typeof queueSync === 'function') queueSync();
+  if (!options.skipSync && typeof queueSync === 'function') queueSync();
 }
 
 function queuePortalEssayDraft() {
@@ -13733,7 +13733,7 @@ function writeView() {
             <label for="practiceSampleBand" style="display:block; font-size:13px; font-weight:700; color:var(--ink); margin-bottom:4px;">Desired sample response band</label>
             <div style="font-size:12px; line-height:1.5; color:var(--ink-soft);">Choose the level for the model answer shown after scoring. This choice does not change your essay score.</div>
           </div>
-          <select id="practiceSampleBand" class="field-input" aria-label="Desired sample response band" onchange="setPracticeSampleBand(this.value)" style="width:auto; min-width:130px;">
+          <select id="practiceSampleBand" class="field-input" aria-label="Desired sample response band" onchange="setPracticeSampleBand(this.value, event)" style="width:auto; min-width:130px;">
             ${['6','7','8','9'].map(b => '<option value="' + b + '" ' + (practiceSampleBand(practiceState.sampleBand) === b ? 'selected' : '') + '>Band ' + b + '</option>').join('')}
           </select>
         </div>
@@ -14064,9 +14064,13 @@ function practiceSampleBandLabel(value) {
   return 'Band ' + practiceSampleBand(value);
 }
 
-function setPracticeSampleBand(value) {
+function setPracticeSampleBand(value, event) {
+  event?.stopPropagation?.();
   practiceState.sampleBand = practiceSampleBand(value);
-  queuePortalEssayDraft();
+  // Persist the preference locally without starting account sync while the
+  // native select control is open. A sync response can otherwise repaint the
+  // workspace and make the Essay Practice tab appear to close.
+  savePortalEssayDraft({ skipSync: true });
 }
 
 function updateSubmitBtnState() {
