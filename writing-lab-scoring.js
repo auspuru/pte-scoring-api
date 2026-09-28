@@ -96,7 +96,7 @@ function normalize(q, text, raw) {
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
 }
 function localContentScore(q, text) {
-  if (q.type === 'essay') return localEngine.essay(q.text, text, { formScore: formFor('essay', text).score }).scores.content;
+  if (q.type === 'essay') throw new Error('Essay scoring is available only through the unified essay engine.');
   return localEngine.summaryContent(q.keyPoints || [], text, 4).score;
 }
 function localLanguage(q, text) {
@@ -111,6 +111,7 @@ function localLanguage(q, text) {
   return {form,grammar,vocabulary,spelling};
 }
 function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
+  if(q.type==='essay') throw new Error('Essay scoring is available only through the unified essay engine.');
   if(q.type==='wfd') return gradeDictation(q,text);
   const maxima=MAXIMA[q.type], lang=localLanguage(q,text);
   if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason};
