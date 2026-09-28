@@ -6010,6 +6010,7 @@ require('./writing-lab').installWritingLab(app, {
   directory: path.join(DATA_DIR, 'writing-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  essayGrader,
   callModel: async prompt => {
     if (!anthropic) throw new Error('Writing assessment is not configured.');
     const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
