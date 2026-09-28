@@ -164,7 +164,9 @@
           questionTitle: typeof value.questionTitle === 'string' ? value.questionTitle : '',
           selectedQuestionId: typeof value.selectedQuestionId === 'string' || typeof value.selectedQuestionId === 'number' ? value.selectedQuestionId : null,
           questionSource: value.questionSource === 'custom' ? 'custom' : 'library',
-          writeStep: value.writeStep === 2 ? 2 : 1, timerEnabled: value.timerEnabled === true,
+          writeStep: value.writeStep === 2 ? 2 : 1,
+          sampleBand: ['6', '7', '8', '9'].includes(String(value.sampleBand)) ? String(value.sampleBand) : '9',
+          timerEnabled: value.timerEnabled === true,
           timerStartedAt: Number.isFinite(value.timerStartedAt) && value.timerStartedAt > 0 ? value.timerStartedAt : null,
           updatedAt: Number.isFinite(value.updatedAt) ? value.updatedAt : 0
         };
@@ -177,7 +179,9 @@
           version: 1, essayText: String(state.essayText || ''), questionText: String(state.questionText || ''),
           questionTitle: String(state.questionTitle || ''), selectedQuestionId: state.selectedQuestionId || null,
           questionSource: state.questionSource === 'custom' ? 'custom' : 'library',
-          writeStep: state.writeStep === 2 ? 2 : 1, timerEnabled: !!state.timerEnabled,
+          writeStep: state.writeStep === 2 ? 2 : 1,
+          sampleBand: ['6', '7', '8', '9'].includes(String(state.sampleBand)) ? String(state.sampleBand) : '9',
+          timerEnabled: !!state.timerEnabled,
           timerStartedAt: Number.isFinite(state.timerStartedAt) ? state.timerStartedAt : null,
           updatedAt: Date.now()
         };
