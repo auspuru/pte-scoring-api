@@ -5,9 +5,6 @@ builder = "NIXPACKS"
 startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-# Allow active saves/audio streams to finish before Railway sends SIGKILL.
-# The application has its own 55-second shutdown deadline.
-drainingSeconds = "60"
 
 [[volumes]]
 mount = "/app/data"
