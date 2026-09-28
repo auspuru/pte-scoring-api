@@ -167,7 +167,7 @@ function storage() {
   const values = new Map();
   return { values, getItem: key => values.get(key) || null, setItem: (key, val) => values.set(key, val), removeItem: key => values.delete(key) };
 }
-const draft = { view: 'write', writeStep: 2, essayText: 'A response with meaningful progress.', questionText: 'Discuss the benefits of public transport.', questionTitle: 'Transport', questionSource: 'custom', timerEnabled: true, timerStartedAt: 12345 };
+const draft = { view: 'write', writeStep: 2, essayText: 'A response with meaningful progress.', questionText: 'Discuss the benefits of public transport.', questionTitle: 'Transport', questionSource: 'custom', sampleBand: '7', timerEnabled: true, timerStartedAt: 12345 };
 
 test('Unsubmitted essays recover after a new session and never appear in another account', () => {
   const local = storage();
@@ -175,6 +175,7 @@ test('Unsubmitted essays recover after a new session and never appear in another
   const nextSession = createDraftStore(local);
   assert.equal(nextSession.read('student@example.com').essayText, draft.essayText);
   assert.equal(nextSession.read('student@example.com').questionText, draft.questionText);
+  assert.equal(nextSession.read('student@example.com').sampleBand, '7');
   assert.equal(nextSession.read('student@example.com').timerStartedAt, 12345);
   assert.equal(nextSession.read('another-student'), null);
   assert.equal(nextSession.write('', draft), false);
@@ -193,8 +194,9 @@ test('Unavailable, malformed and older draft storage cannot crash the editor or 
   const key = [...local.values.keys()][0];
   local.setItem(key, '{broken'); assert.equal(store.read('student'), null);
   local.setItem(key, JSON.stringify({ version: 0, essayText: 'old' })); assert.equal(store.read('student'), null);
-  local.setItem(key, JSON.stringify({ version: 1, ...draft, writeStep: 500, timerStartedAt: 'bad', questionTitle: {} }));
+  local.setItem(key, JSON.stringify({ version: 1, ...draft, writeStep: 500, sampleBand: '12', timerStartedAt: 'bad', questionTitle: {} }));
   assert.equal(store.read('student').writeStep, 1);
+  assert.equal(store.read('student').sampleBand, '9');
   assert.equal(store.read('student').timerStartedAt, null);
   assert.equal(store.read('student').questionTitle, '');
 });
