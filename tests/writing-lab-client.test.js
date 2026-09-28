@@ -360,12 +360,22 @@ test('SST Back and Next preserve drafts and resume existing neighbouring attempt
   assert.equal(h.nodes.get('answer').value,'Saved second response');
   assert(!h.requests.some(r=>r.url.endsWith('/attempts')&&r.opts.method==='POST'));
 });
-test('Dictation catalogue pages stay compact and expose all 56 numbered questions',async()=>{
- const h=harness(),dictation=[...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation];
+test('Dictation catalogue puts 33 labelled predictions before the previous 56 questions',async()=>{
+ const h=harness();
+ const previous=[...new Map([...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation].map(q=>[q.id,q])).values()];
+ const predictionRows=predictions.wfd.slice(0,33).map(q=>({id:q.id,minutes:q.minutes,prediction:true}));
+ const dictation=[...predictionRows,...previous.map(q=>({id:q.id,minutes:q.minutes,prediction:false}))];
  h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation});await h.hooks.hub('wfd');
- assert.equal((h.nodes.get('lab').innerHTML.match(/data-start=/g)||[]).length,12);assert.match(h.nodes.get('lab').innerHTML,/Question 1</);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/estimate|scoring|raw marks|How the/);
- await h.nodes.get('lab').events.click({target:{closest:()=>({disabled:false,dataset:{libraryPage:'4'}})}});
- assert.equal((h.nodes.get('lab').innerHTML.match(/data-start=/g)||[]).length,8);assert.match(h.nodes.get('lab').innerHTML,/Question 56</);assert.match(h.nodes.get('lab').innerHTML,/wfd-practice-50/);
+ let html=h.nodes.get('lab').innerHTML;
+ assert.equal((html.match(/data-start=/g)||[]).length,12);assert.match(html,/Question 1</);assert.equal((html.match(/>Prediction</g)||[]).length,12);
+ assert.match(html,/pred26-user-wfd-01/);assert.doesNotMatch(html,/estimate|scoring|raw marks|How the/);
+ await h.nodes.get('lab').events.click({target:{closest:()=>({disabled:false,dataset:{libraryPage:'2'}})}});
+ html=h.nodes.get('lab').innerHTML;
+ assert.equal((html.match(/data-start=/g)||[]).length,12);assert.match(html,/Question 33</);assert.equal((html.match(/>Prediction</g)||[]).length,9);
+ assert.match(html,new RegExp(previous[0].id));
+ await h.nodes.get('lab').events.click({target:{closest:()=>({disabled:false,dataset:{libraryPage:'7'}})}});
+ html=h.nodes.get('lab').innerHTML;
+ assert.equal((html.match(/data-start=/g)||[]).length,5);assert.match(html,/Question 89</);assert.doesNotMatch(html,/>Prediction</);
 });
 
 
