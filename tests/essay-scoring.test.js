@@ -144,6 +144,39 @@ test('A content deduction always has a next step, even if the model omitted impr
   assert.throws(() => policy.normalizeResult(raw, essay), /incomplete/);
 });
 
+test('Content zero hard-gates the complete essay to zero', () => {
+  const raw = good();
+  raw.scores.content = 0;
+  raw.promptCoverage = [{
+    requirement: 'Positive and negative effects',
+    status: 'missing',
+    evidence: '',
+    nextStep: 'Answer the actual essay question.'
+  }];
+  raw.sampleStatus = 'needs-ideas';
+  raw.sampleResponse = '';
+  raw.sampleSourceIdeas = [];
+  raw.sampleNote = 'Add relevant ideas that answer the question.';
+  const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.scoreGate.status, 'zero_content');
+  assert.equal(result.scores.total, 0);
+  for (const key of Object.keys(policy.MAXIMA)) assert.equal(result.scores[key], 0);
+  assert.equal(result.diagnosticScores.form, 2);
+});
+
+test('Incomplete relevant coverage reduces Content without an invented total-score cap', () => {
+  const raw = good();
+  raw.scores.content = 4;
+  raw.promptCoverage = [
+    { requirement: 'Positive effect', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' },
+    { requirement: 'Negative effect', status: 'partial', evidence: 'unrealistic expectations', nextStep: 'Develop the negative effect further.' }
+  ];
+  const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.scoreGate.status, 'valid');
+  assert.equal(result.scores.content, 4);
+  assert.equal(result.scores.total, 24);
+});
+
 test('Stitched coverage evidence is repaired to a real excerpt without admitting fabricated evidence', () => {
   const raw = good();
   raw.promptCoverage[0].evidence = 'Advertisements often connect expensive products with happiness or popularity, which may lead teenagers to compare themselves with carefully selected images. Schools can respond by teaching students to distinguish evidence from opinion and recognise commercial messages.';
