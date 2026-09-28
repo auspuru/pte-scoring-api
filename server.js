@@ -13,7 +13,7 @@ const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { studentPassage } = require('./swt-reference');
-const { createEssayGrader } = require('./essay-grading');
+const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
 const { createEssayGenerationReviewer } = require('./essay-generation-review');
 
@@ -235,7 +235,10 @@ app.post('/api/essay/grade', async (req, res) => {
     || typeof essay !== 'string' || !essay.trim() || essay.length > 20000) {
     return res.status(400).json({ error: 'Provide an essay question and response within the size limits.' });
   }
-  try { res.json(await essayGrader.grade(question, essay)); }
+  try {
+    const result = await essayGrader.grade(question, essay);
+    res.json(essayResultForClient(result, req.get('x-essay-scoring-version') || ''));
+  }
   catch (error) {
     console.error('[essay-grade] assessment failed:', error && error.message ? error.message : error);
     res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' });
