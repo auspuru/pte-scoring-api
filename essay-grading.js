@@ -18,7 +18,7 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
       };
     }
 
-    const primaryStillMatches = primaryRaw
+    const primaryStillMatches = primaryRaw && primaryRaw.sampleStatus
       && (assessment.subjectiveReview?.source === 'agreement' || !assessment.subjectiveReview)
       && assessment.scoreGate?.status !== 'zero_content';
 
