@@ -1,0 +1,33 @@
+{
+  "name": "IPT Brisbane PTE Scoring Emoji Pack",
+  "version": 1,
+  "palette": {
+    "blue900": "#173B63",
+    "blue700": "#205080",
+    "blue100": "#E9F2FA",
+    "red600": "#C53030",
+    "red100": "#FBE9EA",
+    "ink": "#18202A",
+    "white": "#FFFFFF"
+  },
+  "size": "128x128",
+  "items": [
+    {"name":"ipt","file":"ipt.svg","meaning":"IPT Brisbane brand"},
+    {"name":"pte-ai","file":"pte-ai.svg","meaning":"PTE AI practice"},
+    {"name":"score-90","file":"score-90.svg","meaning":"Top PTE score / high achievement"},
+    {"name":"swt","file":"swt.svg","meaning":"Summarize Written Text"},
+    {"name":"essay","file":"essay.svg","meaning":"Essay practice"},
+    {"name":"speaking","file":"speaking.svg","meaning":"Speaking practice"},
+    {"name":"reading","file":"reading.svg","meaning":"Reading practice"},
+    {"name":"listening","file":"listening.svg","meaning":"Listening practice"},
+    {"name":"pronunciation","file":"pronunciation.svg","meaning":"Pronunciation score"},
+    {"name":"fluency","file":"fluency.svg","meaning":"Oral fluency score"},
+    {"name":"grammar","file":"grammar.svg","meaning":"Grammar feedback"},
+    {"name":"vocab","file":"vocab.svg","meaning":"Vocabulary feedback"},
+    {"name":"mock-test","file":"mock-test.svg","meaning":"Mock test"},
+    {"name":"progress","file":"progress.svg","meaning":"Student progress"},
+    {"name":"teacher-feedback","file":"teacher-feedback.svg","meaning":"Teacher feedback"},
+    {"name":"ai-score","file":"ai-score.svg","meaning":"AI scoring complete"},
+    {"name":"celebrate","file":"celebrate.svg","meaning":"Achievement / congratulations"}
+  ]
+}
