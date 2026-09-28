@@ -72,6 +72,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(tokensCss,/--ipt-blue-700:\s*#205080/);
   assert.match(tokensCss,/--ipt-red-600:\s*#c53030/i);
   assert.match(liquidCss,/backdrop-filter:\s*blur\(22px\)/);
+  assert.match(liquidCss,/\.topbar\s*\{\s*overflow:\s*hidden;\s*height:\s*auto;/,'glass topbar must grow instead of clipping wrapped controls');
+  assert.match(liquidCss,/#portalSidebar\s*\{\s*overflow-y:\s*auto;/,'short viewports must keep sidebar navigation scrollable');
+  assert.match(liquidCss,/\.modal\s*\{\s*overflow-y:\s*auto;/,'glass modals must keep their vertical scroll');
+  assert.match(liquidCss,/\.app-shell\s*\{\s*grid-template-columns:\s*94px minmax\(0, 1fr\);\s*\}/,'tablet layout must use the collapsed navigation width');
+  assert.match(liquidCss,/\.app-shell\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\);\s*padding-right:\s*0;\s*\}/,'phone layout must not reserve an off-canvas sidebar track');
+  assert.match(vocabLibraryCss,/height:\s*calc\(100dvh - 118px\) !important;\s*min-height:\s*0;/,'library layout must fit short tablet viewports');
+  assert.match(vocabLibraryCss,/\.flashcard-back\s*\{\s*overflow-y:\s*auto;[\s\S]*?justify-content:\s*flex-start !important;/,'long flashcard backs must scroll from the top');
   assert.match(liquidCss,/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
