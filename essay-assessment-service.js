@@ -111,7 +111,13 @@ function normalizeReview(raw, essay) {
 
 function needsResolver(primary, review) {
   const primaryScores = primary.diagnosticScores || primary.scores;
-  if ((primaryScores.content === 0) !== (review.scores.content === 0)) return true;
+  const primaryContent = Number(primaryScores.content);
+  const reviewContent = Number(review.scores.content);
+  if ((primaryContent === 0) !== (reviewContent === 0)) return true;
+  // Full Content is a semantic boundary: 6 means every explicit prompt
+  // requirement is addressed. A 6-vs-lower disagreement must be resolved
+  // even when the numerical gap is only one point.
+  if ((primaryContent === policy.MAXIMA.content) !== (reviewContent === policy.MAXIMA.content)) return true;
   return SUBJECTIVE.some(key => Math.abs(Number(primaryScores[key]) - Number(review.scores[key])) > 1);
 }
 
