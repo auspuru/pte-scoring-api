@@ -247,7 +247,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError) {
       const retry = lastError
         ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact short essay quotations and internally consistent scores.')
         : '';
-      const raw = await call(policy.buildPrompt(question, essay) + retry);
+      const raw = await call(policy.buildAssessmentPrompt(question, essay) + retry);
       return { assessment: policy.normalizeAssessment(raw, essay), raw };
     } catch (error) {
       lastError = error;
