@@ -3,6 +3,7 @@ const express = require('express');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const report = require('./public/writing-lab-report');
+const essayPolicy = require('./public/essay-scoring');
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20260925-user-sst30-hdmaster3';
@@ -78,7 +79,7 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
@@ -103,7 +104,25 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
             return value;
           });
           if (!current.completed[index]) throw bad('Submit this answer first.', 409);
-          const result = current.results[index] || await scoring.grade(current.questions[index], current.answers[index], callModel);
+          let result = current.results[index];
+          if (!result) {
+            const question = current.questions[index];
+            if (question.type === 'essay' && essayGrader) {
+              const unified = await essayGrader.grade(question.text, current.answers[index]);
+              result = {
+                ...unified,
+                version: unified.scoring_version || essayPolicy.VERSION,
+                assessmentType: 'Unified essay practice assessment',
+                maxima: { ...essayPolicy.MAXIMA },
+                total: Number(unified.scores?.total || 0),
+                maximum: 26,
+                gated: unified.scoreGate?.status && unified.scoreGate.status !== 'valid',
+                reasons: unified.scoreGate?.reason ? [unified.scoreGate.reason] : []
+              };
+            } else {
+              result = await scoring.grade(question, current.answers[index], callModel);
+            }
+          }
           const updated = await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
             value.results[index] ||= result;
