@@ -146,7 +146,13 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         finally { pending.delete(key); }
       });
     });
-    pending.set(key, task); drain();
+    pending.set(key, task);
+    // Also clean up tasks rejected before they ever enter the worker queue
+    // (for example when the bounded queue is full).
+    task.finally(() => {
+      if (pending.get(key) === task) pending.delete(key);
+    }).catch(() => {});
+    drain();
     return task;
   }
   function assessSubmitted(uid, a) {
