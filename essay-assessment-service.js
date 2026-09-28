@@ -294,6 +294,23 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError) {
   throw lastError || new Error('Essay subjective review unavailable.');
 }
 
+async function callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError) {
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const retry = lastError
+        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
+        : '';
+      const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry);
+      return normalizeReview(raw, essay);
+    } catch (error) {
+      lastError = error;
+      onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+    }
+  }
+  throw lastError || new Error('Essay subjective resolver unavailable.');
+}
+
 async function assessEssay(question, essay, call, { onAttemptError = () => {} } = {}) {
   question = String(question || '').trim();
   essay = String(essay || '').trim();
@@ -341,14 +358,12 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   }
 
   try {
-    const resolverRaw = await call(buildResolverPrompt(question, essay, primary, review));
-    const resolved = normalizeReview(resolverRaw, essay);
+    const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError);
     return {
       assessment: applySubjectiveDecision(primary, resolved, 'resolver'),
       primaryRaw
     };
   } catch (error) {
-    onAttemptError({ stage: 'subjective-resolver', attempt: 1, code: error.code || error.name || 'unknown' });
     const fallback = {
       ...primary,
       subjectiveReview: {
@@ -371,6 +386,7 @@ module.exports = {
   buildReviewPrompt,
   normalizeReview,
   buildResolverPrompt,
+  callAndNormalizeResolver,
   needsResolver,
   applySubjectiveDecision,
   assessEssay
