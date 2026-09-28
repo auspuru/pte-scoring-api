@@ -45,14 +45,12 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(html,/\/ipt-tokens\.css/);
   assert.match(html,/\/portal-liquid-glass\.css/);
   assert.match(html,/\/portal-home-practice\.css/);
-  assert.match(html,/\/portal-insights\.css/);
-  assert.match(html,/\/portal-vocab-library\.css/);
+  assert.doesNotMatch(html,/<link[^>]+portal-insights\.css/,'Insights CSS stays off the first-load path');
+  assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
   assert.match(html,/\/portal-shell\.js/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
   assert(html.indexOf('/portal-liquid-glass.css') < html.indexOf('/portal-home-practice.css'),'Home and Practice styles load after the shell');
-  assert(html.indexOf('/portal-home-practice.css') < html.indexOf('/portal-insights.css'),'Mock Teacher Progress styles load after Home and Practice');
-  assert(html.indexOf('/portal-insights.css') < html.indexOf('/portal-vocab-library.css'),'Vocabulary and Library styles load after insights');
   assert.doesNotMatch(html,/data:image\//i,'production HTML must not embed a Base64 logo');
 
   for(const [name,source] of [['portal',portal],['reading',reading],['writing lab',lab]]){
@@ -78,6 +76,12 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
+  assert.match(portalShell,/portal-insights\.css\?v=20260928-insights/);
+  assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-vocab-library/);
+  assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
+  assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
+  assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
+  assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 31000,'first-load Liquid Glass presentation CSS stays within 31 KB');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
   const catalogue=read('public/practice-catalogue.js');
   assert.doesNotMatch(catalogue,/Tests per page/);
