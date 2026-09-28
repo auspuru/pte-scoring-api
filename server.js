@@ -1647,12 +1647,19 @@ const AuthAPI = {
       const client = await pgPool.connect();
       try {
         await client.query('BEGIN');
-        await client.query('DELETE FROM user_data WHERE username = ANY($1::text[])', [ids]);
-        const result = await client.query(
-          'DELETE FROM accounts WHERE username = ANY($1::text[]) RETURNING username', [ids]
+        const existing = await client.query(
+          'SELECT username FROM accounts WHERE username = ANY($1::text[]) FOR UPDATE', [ids]
         );
+        const accountIds = existing.rows.map(row => row.username);
+        let deleted = [];
+        if (accountIds.length) {
+          await client.query('DELETE FROM user_data WHERE username = ANY($1::text[])', [accountIds]);
+          const result = await client.query(
+            'DELETE FROM accounts WHERE username = ANY($1::text[]) RETURNING username', [accountIds]
+          );
+          deleted = result.rows.map(row => row.username);
+        }
         await client.query('COMMIT');
-        const deleted = result.rows.map(row => row.username);
         return { success: true, deleted, notFound: ids.filter(id => !deleted.includes(id)) };
       } catch (e) {
         await client.query('ROLLBACK').catch(() => {});
