@@ -75,10 +75,19 @@ function normalizeReview(raw, essay) {
     return { ...item, requirement, status, evidence };
   });
 
-  const linguisticExamples = (raw.scoringEvidence.linguisticExamples || [])
-    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean);
-  const developmentEvidence = (raw.scoringEvidence.developmentEvidence || [])
-    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean);
+  const distinctQuotes = items => {
+    const seen = new Set();
+    return items.filter(item => {
+      const key = String(item || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+  const linguisticExamples = distinctQuotes((raw.scoringEvidence.linguisticExamples || [])
+    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean));
+  const developmentEvidence = distinctQuotes((raw.scoringEvidence.developmentEvidence || [])
+    .map(item => policy.exactQuote(essay, item, true)).filter(Boolean));
 
   if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
     const error = new Error('Full Content review conflicts with prompt coverage.');
