@@ -1,5 +1,5 @@
 name: Production Visual QA
-# final production QA after 251fab25 recovery
+# admin coverage expansion after 251fab25 recovery
 
 on:
   push:
