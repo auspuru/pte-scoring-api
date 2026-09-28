@@ -59,12 +59,21 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
     essay = String(essay || '').trim();
     const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
     const hit = cache.get(key);
-    if (hit && hit.expires > Date.now()) return structuredClone(hit.result);
-    cache.delete(key);
+    const saved = hit && hit.expires > Date.now() ? structuredClone(hit.result) : null;
+    if (saved && (saved.sampleStatus !== 'unavailable' || saved.scoreGate?.status === 'zero_form')) return saved;
+    if (!saved) cache.delete(key);
 
     if (!pending.has(key)) {
       const task = (async () => {
-        const { assessment, primaryRaw } = await assessEssay(question, essay, call, { onAttemptError });
+        let assessment, primaryRaw;
+        if (saved) {
+          assessment = saved;
+          primaryRaw = null;
+        } else {
+          const assessed = await assessEssay(question, essay, call, { onAttemptError });
+          assessment = assessed.assessment;
+          primaryRaw = assessed.primaryRaw;
+        }
         const sample = await prepareSample(question, essay, assessment, primaryRaw);
         const result = { ...assessment, ...sample };
         cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
