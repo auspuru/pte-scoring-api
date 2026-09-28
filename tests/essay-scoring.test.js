@@ -237,6 +237,13 @@ test('Minor learner grammar gets coherent feedback and survives server and brows
   assert.deepEqual(policy.normalizeResult(result, text), result);
 });
 
+test('Shared assessment prompt does not generate the learning sample', () => {
+  const prompt = policy.buildAssessmentPrompt(question, essay);
+  assert.match(prompt, /Do not generate or rewrite a sample essay/);
+  assert.doesNotMatch(prompt, /"sampleStatus"/);
+  assert.doesNotMatch(prompt, /complete 200–300-word essay in four paragraphs/);
+});
+
 test('Prompt requires an opinion only when the question asks and avoids template-count rules', () => {
   const prompt = policy.buildPrompt(question, essay);
   assert.match(prompt, /personal opinion only if the question requests one/);
@@ -285,12 +292,12 @@ test('Incomplete model output gets one retry; only validated assessments are cac
     return standardModelResponse(prompt);
   });
   const [a, b] = await Promise.all([grader.grade(question, essay), grader.grade(question, essay)]);
-  assert.equal(calls, 3); // failed primary + valid primary + independent subjective review
+  assert.equal(calls, 4); // failed primary + valid primary + independent review + separate learning sample
   assert.equal(a.scores.total, 26);
   assert.deepEqual(a, b);
   a.scores.content = 0;
   assert.equal((await grader.grade(question, essay)).scores.content, 6);
-  assert.equal(calls, 3);
+  assert.equal(calls, 4);
 
   let failures = 0;
   const broken = createEssayGrader(async () => { failures++; throw new Error('provider failed'); });
