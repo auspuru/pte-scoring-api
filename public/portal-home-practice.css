@@ -1,7 +1,3 @@
-/* IPT Brisbane Home + Practice presentation slice.
-   Uses existing live IDs/routes/data; no scoring or task engine logic lives here. */
-
-/* ---------- Home ---------- */
 #dashboardPane {
   max-width: 1500px;
   padding-top: 28px;
@@ -339,6 +335,25 @@ body.dark .today-plan-action.primary {
 
 .portal-progress-content {
   padding: 20px !important;
+}
+
+/* Home teacher-assignment teaser stays in the first-load Home layer. */
+.next-step-dashboard {
+  border-color: rgba(197,48,48,.14) !important;
+  border-radius: var(--ipt-radius-md) !important;
+  background:
+    linear-gradient(135deg, rgba(197,48,48,.065), rgba(45,108,165,.045)) !important;
+}
+
+.next-step-dashboard-list > button {
+  border-color: var(--ipt-line) !important;
+  border-radius: 12px !important;
+  background: var(--ipt-surface) !important;
+}
+
+.next-step-dashboard-list strong,
+.next-step-dashboard-list small {
+  font-size: 12px !important;
 }
 
 /* ---------- Practice catalogue ---------- */

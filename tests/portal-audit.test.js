@@ -14,6 +14,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   const liquidCss=read('public/portal-liquid-glass.css');
   const homePracticeCss=read('public/portal-home-practice.css');
   const insightsCss=read('public/portal-insights.css');
+  const vocabLibraryCss=read('public/portal-vocab-library.css');
   const portalShell=read('public/portal-shell.js');
   const portal=read('public/index.js');
   const reading=read('public/reading-practice.js');
@@ -29,6 +30,9 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(html,/writing-lab-client\.js/);
   assert.doesNotMatch(lab,/<h1\b/,'Writing Lab uses the application page title instead of nested H1s');
   assert.doesNotMatch(portal,/<h1 class="essay-title">/,'Essay preview must not add a second application H1');
+  assert.match(portal,/function renderVocabFlashcardContainer\(\)/,'use the existing vocabulary flashcard flow');
+  assert.match(portal,/function toggleFlashcardFlip\(\)/,'preserve the existing flashcard flip state');
+  assert.match(portal,/function handleFlashcardAction\(gotIt\)/,'preserve saved vocabulary review actions');
   for(const [id,label] of [['f_intro','Introduction'],['f_bp1','Body paragraph 1'],['f_bp2','Body paragraph 2'],['f_concl','Conclusion']]) {
     assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
   }
@@ -41,12 +45,12 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(html,/\/ipt-tokens\.css/);
   assert.match(html,/\/portal-liquid-glass\.css/);
   assert.match(html,/\/portal-home-practice\.css/);
-  assert.match(html,/\/portal-insights\.css/);
+  assert.doesNotMatch(html,/<link[^>]+portal-insights\.css/,'Insights CSS stays off the first-load path');
+  assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
   assert.match(html,/\/portal-shell\.js/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
   assert(html.indexOf('/portal-liquid-glass.css') < html.indexOf('/portal-home-practice.css'),'Home and Practice styles load after the shell');
-  assert(html.indexOf('/portal-home-practice.css') < html.indexOf('/portal-insights.css'),'Mock Teacher Progress styles load after Home and Practice');
   assert.doesNotMatch(html,/data:image\//i,'production HTML must not embed a Base64 logo');
 
   for(const [name,source] of [['portal',portal],['reading',reading],['writing lab',lab]]){
@@ -56,7 +60,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.doesNotMatch(source,/#4f46e5|#5a51da|#6366f1|rgba\(99,\s*102,\s*241/i,name+' must not reintroduce the legacy indigo palette');
   }
 
-  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss]]){
+  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss],['portal-vocab-library.css',vocabLibraryCss]]){
     const sizes=[...source.matchAll(/@media\s*\((?:max|min)-width:\s*([0-9.]+)px\)/g)].map(m=>Number(m[1]));
     assert(sizes.every(n=>[640,900,1200].includes(n)),name+' uses only the three portal breakpoints');
     assert.doesNotMatch(source,/font-size:\s*(?:[0-9]|1[01](?:\.\d+)?)px/,name+' must not use sub-12px text');
@@ -72,6 +76,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
+  assert.match(portalShell,/portal-insights\.css\?v=20260928-insights/);
+  assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-vocab-library/);
+  assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
+  assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
+  assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
+  assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
+  assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
   const catalogue=read('public/practice-catalogue.js');
   assert.doesNotMatch(catalogue,/Tests per page/);
