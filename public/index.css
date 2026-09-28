@@ -2249,16 +2249,22 @@ body.dark .vocab-word-compare {
   transform: translateX(-50%) translateY(80px);
   background: var(--ink);
   color: var(--bg-card);
-  padding: 12px 24px;
-  border-radius: 100px;
+  padding: 12px 20px;
+  border-radius: 14px;
   font-size: 13.5px;
   font-weight: 600;
+  line-height: 1.45;
   z-index: 2000;
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: var(--shadow-lg);
-  max-width: 90%;
+  width: max-content;
+  max-width: min(520px, calc(100vw - 32px));
+  max-height: min(32vh, 220px);
+  overflow: auto;
   text-align: center;
+  overflow-wrap: anywhere;
 }
+.toast.long { max-width: min(440px, calc(100vw - 32px)); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .toast.error { background: #ef4444; color: #fff; }
 .spinner {
