@@ -221,12 +221,12 @@ const QUESTION_TYPE_TEMPLATES = {
   },
 
   single_best_option_focus: {
-    bp1Role: "why the chosen area matters most",
-    bp2Role: "examples and practical solutions for that area",
-    intro: `The topic of [paraphrased topic] has become increasingly important in recent years and has attracted different opinions. This is a very broad topic, so this essay will focus on one area: [chosen focus area]. This essay will explain why this area matters and give examples and practical solutions for it.`,
-    bp1: `To begin with, [chosen focus area] is an important area because [reason 1]. For example, [insert a simple everyday example related to it]. Additionally, [reason 2] also shows why this area needs attention. For example, [insert a simple everyday example related to it].`,
-    bp2: `On the other hand, there are practical ways to deal with [chosen focus area]. One useful step is to [example or solution 1]. For example, [insert a short everyday example of how it helps]. Furthermore, another helpful step is to [example or solution 2]. For example, [insert a short everyday example of how it helps].`,
-    concl: `In conclusion, [chosen focus area rephrased] is the area that deserves the most attention. Therefore, [restate the strongest example or solution] is the best way forward because [short reason].`
+    bp1Role: "why the chosen area matters",
+    bp2Role: "examples, affected groups, research questions or likely findings",
+    intro: `The topic of [paraphrased topic] has become increasingly important. If I were assigned to study it, I would focus on one area: [chosen focus area]. This essay will explain why this area matters and support the choice with examples.`,
+    bp1: `To begin with, [chosen focus area] is important because [reason 1]. For example, [insert a simple relevant example]. Additionally, [reason 2] shows why this area deserves careful study. For example, [insert another relevant example].`,
+    bp2: `A useful study could examine [research question, affected group or practical situation 1]. For example, [insert a concrete example]. It could also investigate [research question, affected group or practical situation 2], which would help explain [why this evidence matters].`,
+    concl: `In conclusion, I would focus on [chosen focus area] because [strongest reason]. The examples above show why this area deserves focused study.`
   },
 
   discuss_both_views: {
@@ -323,6 +323,7 @@ const QUESTION_TYPE_TEMPLATES = {
 /* Relation/legacy variants that share a skeleton. */
 const TYPE_TEMPLATE_ALIASES = {
   advantages_disadvantages_opinion: "advantages_disadvantages",
+  advantages_disadvantages_scope: "advantages_disadvantages",
   causes_solutions: "problem_solution",
   problems_solutions: "problem_solution",
   cause_solution: "problem_solution",
@@ -1656,18 +1657,18 @@ const SEED_TOPICS = [
   { title: "Compulsory Foreign Language Learning", question: "Some people think learning a foreign language at school should be compulsory. To what extent do you agree with it? Use your experience or examples to support your viewpoint.", explanation: "Evaluate whether foreign language learning should be compulsory in schools.", type: "agree_disagree" },
   { title: "The Most Pressing Global Problem", question: "In today's world, different government and international organisations are confronting many global problems. What is the most pressing problem among them and give solutions?", explanation: "Select one global problem as most pressing and justify your choice with practical solutions.", type: "single_best_option" },
   { title: "Medical Technology and Life Expectancy", question: "The medical technology can increase the average life expectancy. Do you think it is a curse or a blessing?", explanation: "Determine whether increasing life expectancy through medical technology is beneficial or harmful.", type: "blessing_curse" },
-  { title: "Parental Legal Responsibility", question: "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.", explanation: "Evaluate whether parents should bear legal responsibility for their children's behaviour.", type: "policy_recommendation" },
+  { title: "Parental Legal Responsibility", question: "Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.", explanation: "Evaluate whether parents should bear legal responsibility for their children's behaviour.", type: "opinion" },
   { title: "Building Design and Daily Life", question: "Do you think the design of buildings affects, positively or negatively, where people live and work?", explanation: "Evaluate how building design influences living and working environments.", type: "positive_negative_impact" },
   { title: "Mass Media Influence on Young People", question: "The mass media, such as TV, radio and newspapers, have an influence on people, particularly on younger generations. It plays a pivotal role in shaping the opinions of people, especially teenagers and young people. To what extent do you agree with this? Please give examples.", explanation: "Evaluate the extent to which mass media shapes the opinions of teenagers and young people.", type: "agree_disagree" },
   { title: "Modern Inventions and Their Impact", question: "In our technological world, the number of new inventions has been evolving on a daily basis. Please describe a new invention and determine whether it brings beneficial or detrimental impact to society.", explanation: "Describe a modern invention and evaluate whether its societal impact is positive or negative.", type: "positive_negative_impact" },
   { title: "Workers in Decision-Making", question: "In some companies, employers involve workers in decision-making process about products and services. What are the advantages and disadvantages of such a policy?", explanation: "Examine the benefits and drawbacks of involving employees in company decision-making.", type: "advantages_disadvantages" },
   { title: "Age Restrictions", question: "Age restrictions are placed on many activities. It is believed that people should not do things until they reach the right ages, such as getting married, driving, voting, buying certain products, and doing particular things. Give an example, state which minimum age you think it should be and share your own experience.", explanation: "Evaluate age restrictions on activities and justify an appropriate minimum age with personal experience.", type: "example_specific" },
   { title: "Responsibility for Tackling Climate Change", question: "Climate change is a concerning global issue. Who should take the responsibilities, governments, big companies or individuals?", explanation: "Evaluate who bears primary responsibility for addressing climate change.", type: "responsibility" },
-  { title: "Laws and Human Behaviour", question: "Some people think human behaviours can be limited by laws, and others think laws have little effect. What is your opinion?", explanation: "Evaluate whether laws effectively control human behaviour.", type: "discuss_both_views" },
+  { title: "Laws and Human Behaviour", question: "Some people think human behaviours can be limited by laws, and others think laws have little effect. What is your opinion?", explanation: "Evaluate whether laws effectively control human behaviour.", type: "opinion" },
   { title: "Shopping Malls Replacing Small Shops", question: "Large shopping malls are replacing small shops. What is your opinion on this? Do you think this is a good or bad change?", explanation: "Evaluate whether the replacement of small shops by large shopping malls is positive or negative.", type: "positive_negative_impact" },
-  { title: "Youth Unemployment and Shorter Working Week", question: "Unemployment among young people is a serious problem. One solution has been suggested is to shorten the working week. What do you think are the advantages and disadvantages? Do you think this policy should apply to just young workers or the whole workforce?", explanation: "Evaluate shortening the working week to address youth unemployment.", type: "advantages_disadvantages" },
+  { title: "Youth Unemployment and Shorter Working Week", question: "Unemployment among young people is a serious problem. One solution has been suggested is to shorten the working week. What do you think are the advantages and disadvantages? Do you think this policy should apply to just young workers or the whole workforce?", explanation: "Evaluate shortening the working week to address youth unemployment.", type: "advantages_disadvantages_scope" },
   { title: "Fewer Working Hours in the Future", question: "\"In the future, people will work fewer hours at their jobs than they do now.\" Do you agree with the statement? Please support your opinion with your own experience.", explanation: "Evaluate whether future working hours will decrease compared to present levels.", type: "agree_disagree" },
-  { title: "Maximum Wage for High-Paying Jobs", question: "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?", explanation: "Evaluate whether maximum wage caps should be applied to high-paying jobs.", type: "policy_recommendation" },
+  { title: "Maximum Wage for High-Paying Jobs", question: "Some people say there should be a maximum wage for high-paying jobs. Do you support that? Can you give your point of view or your own experience?", explanation: "Evaluate whether maximum wage caps should be applied to high-paying jobs.", type: "opinion" },
   { title: "Famous People and the Right to Privacy", question: "People who are famous entertainers or sportspeople should give up the right to privacy, because this is the price of fame. To what extent do you agree/disagree with this point of view? Give your opinion with your experiences.", explanation: "Evaluate whether celebrities should sacrifice privacy as the price of fame.", type: "agree_disagree" },
   { title: "Studying Climate Change", question: "Imagine you have been assigned on the study of climate change. Which area of climate change will you focus on and why? Use examples.", explanation: "Choose a specific area of climate change to study and justify your choice with examples.", type: "single_best_option", secondaryFeatures: ["focus_area"] },
   { title: "Work-Life Balance", question: "Nowadays, it is increasingly more difficult to maintain the right balance between work and the other aspects of one's life, such as leisure pursuits with family members. How important do you think this balance is? What are the reasons that make some people think that this is hard to achieve?", explanation: "Explore the importance of work-life balance and reasons why it is difficult to maintain.", type: "importance_reasons" },
@@ -1677,8 +1678,8 @@ const SEED_TOPICS = [
   { title: "City vs Countryside Living", question: "Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.", explanation: "Compare city and countryside living and justify personal preference.", type: "two_option_preference" },
   { title: "Growing Up in the 21st Century", question: "It is harder for children to grow up in the 21st century than it was in the past. How far do you agree with this statement? Give your opinions.", explanation: "Evaluate whether growing up today is more difficult than in previous generations.", type: "agree_disagree" },
   { title: "Historic Buildings vs Modern Housing", question: "Many countries spend large amounts of money on the restoration of historic buildings instead of on modern housing. To what extent do you agree or disagree with this analysis? What are advantages and disadvantages of this? Support your writing with your experience or examples.", explanation: "Evaluate whether governments should prioritise historic building restoration over modern housing.", type: "advantages_disadvantages_opinion" },
-  { title: "Communication Methods in Modern Society", question: "The means of communicating in society today has changed markedly over the last ten years. In your opinion, what are the positive and negative impacts of this change?", explanation: "Evaluate the positive and negative impacts of modern communication technology changes over the last decade.", type: "positive_negative_impact" },
-  { title: "The Value of Humanities", question: "Some say that in today's world the value of humanities has been eclipsed by the necessity of preparing for specific wealth-producing careers, such as medicine. Discuss whether you think there is a role in today's changing world for study of the humanities.", explanation: "Evaluate whether study of the humanities still has a role in today's wealth-focused world.", type: "discuss_both_views", badge: "Pearson Mock Test v2" }
+  { title: "Communication Methods in Modern Society", question: "The means of communicating in society today has changed markedly over the last ten years. In your opinion, what are the positive and negative impacts of this change?", explanation: "Evaluate the positive and negative impacts of modern communication technology changes over the last decade.", type: "advantages_disadvantages" },
+  { title: "The Value of Humanities", question: "Some say that in today's world the value of humanities has been eclipsed by the necessity of preparing for specific wealth-producing careers, such as medicine. Discuss whether you think there is a role in today's changing world for study of the humanities.", explanation: "Evaluate whether study of the humanities still has a role in today's wealth-focused world.", type: "opinion", badge: "Pearson Mock Test v2" }
 ];
 
 const VOCAB_LEVELS = [
@@ -1747,16 +1748,33 @@ const QUESTION_TYPES = {
     displayName: "Advantages / disadvantages + opinion",
     stanceRequired: true,
     stanceType: "advantages_disadvantages_opinion",
-    stanceOptions: ["advantages outweigh disadvantages", "disadvantages outweigh advantages", "balanced benefits and drawbacks"],
+    stanceOptions: ["advantages are stronger", "disadvantages are stronger", "balanced benefits and drawbacks"],
     leftLabel: "Advantages",
     rightLabel: "Disadvantages",
     bp1Role: "advantages",
     bp2Role: "disadvantages",
-    conclusionRole: "final opinion",
-    detect: "Do the advantages outweigh the disadvantages?",
+    conclusionRole: "clear opinion",
+    detect: "Discuss advantages and disadvantages and give your opinion",
     validationRules: [
       "Must discuss both sides (advantages in BP1, disadvantages in BP2)",
-      "Conclusion must state a clear opinion on whether advantages outweigh disadvantages"
+      "Conclusion must state a clear opinion; a balanced conclusion is valid unless the prompt explicitly asks which side outweighs the other"
+    ]
+  },
+  advantages_disadvantages_scope: {
+    id: "advantages_disadvantages_scope",
+    displayName: "Advantages / disadvantages + scope choice",
+    stanceRequired: true,
+    stanceType: "workforce_scope",
+    stanceOptions: ["apply to young workers only", "apply to the whole workforce"],
+    leftLabel: "Advantages",
+    rightLabel: "Disadvantages",
+    bp1Role: "advantages",
+    bp2Role: "disadvantages",
+    conclusionRole: "state who the policy should apply to",
+    detect: "Discuss advantages and disadvantages, then choose the policy scope",
+    validationRules: [
+      "Must discuss both advantages and disadvantages",
+      "Must answer whether the policy should apply only to young workers or to the whole workforce"
     ]
   },
   problem_solution: {
@@ -2246,12 +2264,20 @@ const TYPE_EXPLANATIONS = {
     trap: 'Do NOT argue for one side only, and do NOT turn it into problems + solutions. BOTH sides must appear.'
   },
   advantages_disadvantages_opinion: {
-    ask: 'The question asks if the good points are BIGGER than the bad points (or the other way around). Your job: show both sides AND give a clear winner at the end.',
-    intro: 'Say the topic in your own words and state your verdict early (e.g. "I believe the advantages are stronger").',
-    bp1: 'Give advantage 1 and advantage 2, each with a simple everyday example.',
-    bp2: 'Give disadvantage 1 and disadvantage 2, each with a simple everyday example.',
-    concl: 'Give your clear verdict: which side wins and WHY, in one or two short sentences.',
-    trap: 'You must cover both sides, but you must NOT sit in the middle at the end. The conclusion must pick a winner.'
+    ask: 'The question asks you to discuss the advantages AND disadvantages and then give your own opinion. Your opinion may favour one side or be balanced unless the question explicitly asks which side outweighs the other.',
+    intro: 'Say the topic in your own words and give a brief overall position that matches the exact question.',
+    bp1: 'Explain the main advantages with reasons and relevant examples.',
+    bp2: 'Explain the main disadvantages with reasons and relevant examples.',
+    concl: 'Give your own clear conclusion. A balanced conclusion is valid when the prompt allows it.',
+    trap: 'Do not invent an “outweigh” requirement. Cover both sides and answer the opinion wording that is actually in the question.'
+  },
+  advantages_disadvantages_scope: {
+    ask: 'This question has TWO jobs: discuss the advantages and disadvantages of a shorter working week, then decide whether the policy should apply only to young workers or to the whole workforce.',
+    intro: 'Introduce the proposed shorter working week and signal that you will examine both sides before stating who should be covered.',
+    bp1: 'Explain the main advantages of the policy with relevant examples.',
+    bp2: 'Explain the main disadvantages of the policy with relevant examples, then make clear whether it should cover young workers only or the whole workforce.',
+    concl: 'Summarise the main trade-off and clearly repeat your chosen policy scope.',
+    trap: 'Do not stop after listing advantages and disadvantages. The final scope question—young workers only or the whole workforce—must also be answered.'
   },
   problem_solution: {
     ask: 'The question asks two things: what PROBLEMS does the topic create, and what SOLUTIONS can fix them. Your job: name real problems, then give practical fixes that match those exact problems.',
@@ -2412,15 +2438,26 @@ function buildQuestionExplanationHtml(e, activeType, typeCfg) {
   const feats = (e && e.secondaryFeatures) || [];
   let ex = TYPE_EXPLANATIONS[activeType];
 
+  if (String(e?.title || '').trim() === 'Age Restrictions') {
+    ex = {
+      ask: 'Choose ONE activity affected by an age restriction, state the minimum age you think is appropriate, explain why, and connect your own experience to that choice.',
+      intro: 'Name the activity and state your proposed minimum age clearly.',
+      bp1: 'Explain the main reasons for that minimum age, using a relevant example if useful.',
+      bp2: 'Describe your own experience and explain how it supports your chosen age restriction.',
+      concl: 'Restate the activity and minimum age, then summarise your strongest reason.',
+      trap: 'You do not need to discuss every activity listed in the question. One well-developed example is enough.'
+    };
+  }
+
   // Sub-variant overrides for single_best_option.
   if (activeType === 'single_best_option' && feats.includes('focus_area')) {
     ex = {
-      ask: 'The topic is very big, so the question asks you to choose ONE focus area and write only about it. Your job: pick one area and prove it deserves the attention.',
-      intro: 'Name the big topic, then say clearly which ONE area you will focus on (e.g. "This essay will focus on food waste").',
-      bp1: 'Explain why YOUR area matters — two reasons, each with a simple everyday example.',
-      bp2: 'Give concrete examples and practical solutions for YOUR area only.',
-      concl: 'Repeat your chosen area as the clear answer, plus your best solution.',
-      trap: 'Do NOT write about the whole big topic, and do NOT compare all the areas. ONE area, fully developed.'
+      ask: 'The question asks you to choose ONE area of climate change to study, explain why you would focus on it, and support your choice with examples.',
+      intro: 'Name the specific area you would study and state why it deserves attention.',
+      bp1: 'Explain the main reasons for choosing that area and why the research matters.',
+      bp2: 'Develop your choice with concrete examples, affected groups, research questions or likely findings. Solutions are optional unless you use them only as supporting examples.',
+      concl: 'Restate the chosen area and the strongest reason for studying it.',
+      trap: 'Do not invent a requirement to propose solutions. The required tasks are: choose an area, explain why, and use examples.'
     };
   } else if (activeType === 'single_best_option' && feats.includes('solution_required')) {
     ex = {
@@ -3094,8 +3131,8 @@ function buildStructuredEssayPlan(e) {
     selected_ideas: {
       reasons: e.selectedReasonIds || [],
       examples: e.selectedExampleIds || [],
-      advantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedReasonIds || []) : [],
-      disadvantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' ? (e.selectedExampleIds || []) : [],
+      advantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' || qType === 'advantages_disadvantages_scope' ? (e.selectedReasonIds || []) : [],
+      disadvantages: qType === 'advantages_disadvantages' || qType === 'advantages_disadvantages_opinion' || qType === 'advantages_disadvantages_scope' ? (e.selectedExampleIds || []) : [],
       problems: qType === 'problem_solution' || qType === 'problem_effect' ? (e.selectedReasonIds || []) : [],
       solutions: ['problem_solution', 'cause_solution', 'single_best_option', 'opinion_alternatives'].includes(qType) ? (e.selectedSolutionIds || []) : [],
       causes: qType === 'cause_solution' || qType === 'cause_effect' ? (e.selectedReasonIds || []) : [],
@@ -9086,6 +9123,7 @@ async function freestyleSuggestIdeas() {
     problem_effect: 'causes_effects',
     advantages_disadvantages: 'advantages_disadvantages',
     advantages_disadvantages_opinion: 'advantages_disadvantages',
+    advantages_disadvantages_scope: 'advantages_disadvantages',
     agree_disagree: 'agree_disagree',
     opinion: 'agree_disagree',
     discuss_both_views: 'discuss_both_views',
@@ -9594,8 +9632,8 @@ The student has taken a clear position: "${sideLabel}".
     selected_ideas: {
       reasons: bp1Ideas,
       examples: bp2Ideas,
-      advantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp1Ideas : [],
-      disadvantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion') ? bp2Ideas : [],
+      advantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion' || fsDetectedQuestionType === 'advantages_disadvantages_scope') ? bp1Ideas : [],
+      disadvantages: (fsDetectedQuestionType === 'advantages_disadvantages' || fsDetectedQuestionType === 'advantages_disadvantages_opinion' || fsDetectedQuestionType === 'advantages_disadvantages_scope') ? bp2Ideas : [],
       problems: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'problem_effect') ? bp1Ideas : [],
       solutions: (fsDetectedQuestionType === 'problem_solution' || fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'single_best_option') ? bp2Ideas : [],
       causes: (fsDetectedQuestionType === 'cause_solution' || fsDetectedQuestionType === 'cause_effect') ? bp1Ideas : [],
