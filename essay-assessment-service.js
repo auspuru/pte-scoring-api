@@ -50,23 +50,29 @@ function normalizeReview(raw, essay) {
     scores[key] = n;
   }
   const promptCoverage = raw.promptCoverage.map(item => {
-    if (!item || !String(item.requirement || '').trim() || !['addressed','partial','missing'].includes(item.status)) {
+    const requirement = String(item?.requirement || '').trim();
+    let status = String(item?.status || '').trim().toLowerCase().replace(/[ _-]+/g, ' ');
+    if (status === 'fully addressed' || status === 'complete' || status === 'covered') status = 'addressed';
+    if (status === 'partially addressed' || status === 'partly addressed' || status === 'incomplete') status = 'partial';
+    if (status === 'not addressed' || status === 'not covered' || status === 'absent') status = 'missing';
+    if (!status && typeof item?.addressed === 'boolean') status = item.addressed ? 'addressed' : 'missing';
+    if (!requirement || !['addressed','partial','missing'].includes(status)) {
       const error = new Error('Invalid prompt coverage review.');
-      error.validationHint = 'Each requirement needs requirement, status, evidence and nextStep where incomplete.';
+      error.validationHint = 'Each requirement needs requirement and status exactly addressed, partial or missing; include evidence and nextStep where incomplete.';
       throw error;
     }
-    const evidence = item.status === 'missing' ? '' : policy.exactQuote(essay, item.evidence, true);
-    if (item.status !== 'missing' && !evidence) {
+    const evidence = status === 'missing' ? '' : policy.exactQuote(essay, item.evidence, true);
+    if (status !== 'missing' && !evidence) {
       const error = new Error('Invalid review coverage evidence.');
       error.validationHint = 'Use short contiguous quotations from the original essay.';
       throw error;
     }
-    if (item.status !== 'addressed' && !String(item.nextStep || '').trim()) {
+    if (status !== 'addressed' && !String(item.nextStep || '').trim()) {
       const error = new Error('Missing review next step.');
       error.validationHint = 'Give a specific nextStep for every partial or missing prompt requirement.';
       throw error;
     }
-    return { ...item, evidence };
+    return { ...item, requirement, status, evidence };
   });
 
   const linguisticExamples = (raw.scoringEvidence.linguisticExamples || [])
@@ -280,7 +286,27 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError);
-  const review = await callAndNormalizeReview(question, essay, call, onAttemptError);
+
+  let review;
+  try {
+    review = await callAndNormalizeReview(question, essay, call, onAttemptError);
+  } catch (error) {
+    // The independent review improves consistency, but a malformed secondary
+    // response must never discard an already validated primary assessment.
+    const fallback = {
+      ...primary,
+      subjectiveReview: {
+        source: 'primary-only',
+        status: 'independent-review-unavailable',
+        primary: {
+          content: primary.diagnosticScores?.content ?? primary.scores.content,
+          linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
+          coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
+        }
+      }
+    };
+    return { assessment: fallback, primaryRaw };
+  }
 
   if (!needsResolver(primary, review)) {
     const agreed = applySubjectiveDecision(primary, {
@@ -299,18 +325,30 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
     return { assessment: agreed, primaryRaw };
   }
 
-  let resolverRaw;
   try {
-    resolverRaw = await call(buildResolverPrompt(question, essay, primary, review));
+    const resolverRaw = await call(buildResolverPrompt(question, essay, primary, review));
+    const resolved = normalizeReview(resolverRaw, essay);
+    return {
+      assessment: applySubjectiveDecision(primary, resolved, 'resolver'),
+      primaryRaw
+    };
   } catch (error) {
     onAttemptError({ stage: 'subjective-resolver', attempt: 1, code: error.code || error.name || 'unknown' });
-    throw error;
+    const fallback = {
+      ...primary,
+      subjectiveReview: {
+        source: 'primary-only',
+        status: 'resolver-unavailable',
+        primary: {
+          content: primary.diagnosticScores?.content ?? primary.scores.content,
+          linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
+          coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
+        },
+        independent: review.scores
+      }
+    };
+    return { assessment: fallback, primaryRaw };
   }
-  const resolved = normalizeReview(resolverRaw, essay);
-  return {
-    assessment: applySubjectiveDecision(primary, resolved, 'resolver'),
-    primaryRaw
-  };
 }
 
 module.exports = {
