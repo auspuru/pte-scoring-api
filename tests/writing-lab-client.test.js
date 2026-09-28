@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 const report = require('../public/writing-lab-report');
 const bank = require('../content/writing-lab.json');
+const predictions = require('../content/writing-predictions-sep-2026');
 const { present } = require('../writing-lab');
 const { installWritingLab } = require('../writing-lab');
 const express = require('express');
