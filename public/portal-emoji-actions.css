@@ -1,0 +1,13 @@
+.portal-emoji-context-wrap{display:flex;align-items:center;gap:9px;margin-left:12px;min-width:0}
+.portal-emoji-context{width:50px;height:50px;padding:6px;border-radius:17px;flex:0 0 auto;cursor:pointer}
+.portal-emoji-context>img{width:100%;height:100%}
+.portal-emoji-context::after{inset:4px;border-radius:13px}
+.portal-emoji-context-label{max-width:110px;color:var(--ipt-ink-soft,#566476);font-size:11px;font-weight:750;line-height:1.15}
+.portal-mini-emoji{width:32px;height:32px;padding:4px;border-radius:11px;flex:0 0 auto;vertical-align:middle;box-shadow:0 8px 18px rgba(23,59,99,.10),inset 0 1px 0 rgba(255,255,255,.92)}
+.portal-mini-emoji>img{width:100%;height:100%}.portal-mini-emoji::after{inset:3px;border-radius:8px}
+.portal-mini-emoji .fx{transform:scale(.48);transform-origin:center}
+.portal-label-with-emoji{display:flex!important;align-items:center;gap:8px}
+.home-skill-card>.portal-mini-emoji{width:40px;height:40px;border-radius:13px;margin-right:2px}
+.home-skill-card>.portal-mini-emoji + .home-skill-mark{display:none}
+@media(max-width:760px){.portal-emoji-context-wrap{margin-left:auto}.portal-emoji-context-label{display:none}.portal-emoji-context{width:44px;height:44px;border-radius:15px}}
+@media(max-width:520px){.portal-emoji-context-wrap{position:absolute;right:58px;top:9px}.portal-emoji-context{width:38px;height:38px;padding:5px;border-radius:13px}.portal-mini-emoji{width:28px;height:28px}}
