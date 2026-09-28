@@ -6,6 +6,7 @@
 // prediction index for 21-27 September 2026; those portal-authored items remain
 // adaptations rather than copies of third-party passage text.
 const userSst = require('./user-sst-predictions');
+const userWfd = require('./user-wfd-predictions');
 
 const source = {
   provider: 'PTE Nepal',
@@ -424,22 +425,26 @@ const wfdSeeds = [
 
 const swt = swtSeeds.map(makeSwt);
 const sst = [...userSst.sst, ...sstSeeds.map(makeSst)];
-const wfd = wfdSeeds.map(([sourceId,label,text], index) => ({
-  id: 'pred26-wfd-' + String(index + 1).padStart(2, '0'),
-  type: 'wfd',
-  title: label,
-  minutes: 4,
-  timeGroup: 'dictation',
-  voice: ['nova', 'onyx', 'alloy', 'fable'][index % 4],
-  text,
-  sample: text,
-  predictionSource: { ...source, task:'wfd', sourceId, sourceTitle:label }
-}));
+const wfd = [
+  ...userWfd.wfd,
+  ...wfdSeeds.map(([sourceId,label,text], index) => ({
+    id: 'pred26-wfd-' + String(index + 1).padStart(2, '0'),
+    type: 'wfd',
+    title: label,
+    minutes: 4,
+    timeGroup: 'dictation',
+    voice: ['nova', 'onyx', 'alloy', 'fable'][index % 4],
+    text,
+    sample: text,
+    predictionSource: { ...source, task:'wfd', sourceId, sourceTitle:label }
+  }))
+];
 
 module.exports = {
   version: '2026-09-23.1',
   source,
   userSource: userSst.source,
+  userWfdSource: userWfd.source,
   swt,
   sst,
   wfd
