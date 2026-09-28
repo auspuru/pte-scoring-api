@@ -6,15 +6,16 @@ const { assessEssay } = require('./essay-assessment-service');
 function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
 
-  async function prepareSample(question, essay, assessment, primaryRaw) {
+  async function prepareSample(question, essay, assessment, sampleBand) {
     if (assessment.scoreGate?.status === 'zero_form') {
       return {
         sampleStatus: 'unavailable',
         sampleKind: 'unavailable',
         sampleResponse: '',
         sampleWordCount: 0,
+        sampleBand,
         sampleSourceIdeas: [],
-        sampleNote: 'Revise the response into valid essay form first; then rescore it for a Band 9-style sample.'
+        sampleNote: 'Revise the response into valid essay form first; then rescore it for a Band ' + sampleBand + '-style sample.'
       };
     }
 
@@ -24,8 +25,8 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
         const retry = lastError
           ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return a complete sample result consistent with the already-final assessment.')
           : '';
-        const raw = await call(policy.buildSamplePrompt(question, essay, assessment) + retry);
-        return policy.normalizeSample(raw, essay, assessment, { allowUnavailable: false });
+        const raw = await call(policy.buildSamplePrompt(question, essay, assessment, sampleBand) + retry);
+        return policy.normalizeSample(raw, essay, assessment, { allowUnavailable: false, sampleBand });
       } catch (error) {
         lastError = error;
         onAttemptError({ attempt: attempt + 1, stage: 'sample', code: error.code || error.name || 'unknown' });
@@ -37,15 +38,17 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
       sampleKind: 'unavailable',
       sampleResponse: '',
       sampleWordCount: 0,
+      sampleBand,
       sampleSourceIdeas: [],
-      sampleNote: 'Your score and feedback are ready. The learning sample could not be prepared consistently; retry it later.'
+      sampleNote: 'Your score and feedback are ready. The Band ' + sampleBand + ' learning sample could not be prepared consistently; retry it later.'
     };
   }
 
-  async function grade(question, essay) {
+  async function grade(question, essay, sampleBand = '9') {
     question = String(question || '').trim();
     essay = String(essay || '').trim();
-    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
+    sampleBand = policy.normalizeSampleBand(sampleBand);
+    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay, sampleBand])).digest('hex');
     const hit = cache.get(key);
     const saved = hit && hit.expires > Date.now() ? structuredClone(hit.result) : null;
     if (saved && (saved.sampleStatus !== 'unavailable' || saved.scoreGate?.status === 'zero_form')) return saved;
@@ -53,16 +56,14 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
 
     if (!pending.has(key)) {
       const task = (async () => {
-        let assessment, primaryRaw;
+        let assessment;
         if (saved) {
           assessment = saved;
-          primaryRaw = null;
         } else {
           const assessed = await assessEssay(question, essay, call, { onAttemptError });
           assessment = assessed.assessment;
-          primaryRaw = assessed.primaryRaw;
         }
-        const sample = await prepareSample(question, essay, assessment, primaryRaw);
+        const sample = await prepareSample(question, essay, assessment, sampleBand);
         const result = { ...assessment, ...sample };
         cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
         while (cache.size > 100) cache.delete(cache.keys().next().value);
