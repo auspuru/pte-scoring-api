@@ -1,6 +1,3 @@
-/* IPT Brisbane Liquid Glass portal foundation.
-   Glass is reserved for navigation and controls; study content remains readable and mostly opaque. */
-
 body {
   background:
     radial-gradient(circle at 8% 4%, rgba(45, 108, 165, 0.18), transparent 31rem),
@@ -251,6 +248,10 @@ body.dark #portalSidebar .nav-item:not(.active):hover {
 #portalSidebar .nav-item.active .nav-icon { transform: scale(1.07); }
 #portalSidebar .nav-group + .nav-group { border-top-color: rgba(32, 80, 128, .10); }
 
+#portalSidebar .nav-group-label {
+  font-size: 12px;
+}
+
 #portalSidebar .sidebar-footer { padding-top: 10px; }
 #portalSidebar .user-badge,
 #portalSidebar .sync-block { border-radius: 14px; }
@@ -463,7 +464,10 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
 }
 
 @media (max-width: 640px) {
-  .app-shell { padding-right: 0; }
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: 0;
+  }
   .main-body { padding-left: 0; }
 
   #portalSidebar {
