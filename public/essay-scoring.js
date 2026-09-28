@@ -356,13 +356,20 @@ ${JSON.stringify({ question, essay })}`;
     if (scores.coherence === 6 && evidenceQuotes.developmentEvidence.length < 2) {
       fail('development_evidence', 'A 6/6 Development, Structure and Coherence score requires at least two exact essay examples showing developed and logically connected ideas.');
     }
+    if (scores.vocabulary === 2 && evidenceQuotes.vocabularyExamples.length < 1) {
+      fail('vocabulary_evidence', 'Full Vocabulary marks require at least one exact essay example showing appropriate topic-specific wording.');
+    }
 
     const spellingErrors = errors.filter(e => e.type === 'spelling');
     const grammarErrors = errors.filter(e => e.type === 'grammar');
     const spelling = spellingErrors.length === 0 ? 2 : spellingErrors.length === 1 ? 1 : 0;
     const grammar = grammarErrors.length === 0 ? 2 : grammarErrors.length <= 2 ? 1 : 0;
 
+    const rawSpellingEvidence = raw.errors.some(item => item && item.type === 'spelling');
     const rawGrammarEvidence = raw.errors.some(item => item && item.type === 'grammar');
+    if (scores.spelling !== spelling && !rawSpellingEvidence) {
+      fail('spelling_evidence', 'A reduced Spelling score requires the actual misspelling quoted in errors.');
+    }
     if (scores.grammar !== grammar && !rawGrammarEvidence) {
       fail('grammar_evidence', 'A reduced Grammar score requires quoted grammar evidence. Keep the existing Grammar policy unchanged.');
     }
