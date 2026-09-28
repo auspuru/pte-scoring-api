@@ -329,6 +329,24 @@ test('Essay sample targeting supports Bands 6–9 without changing the scoring r
   assert.match(uiSource, /sampleBand: '9'/);
 });
 
+test('Choosing a desired sample band stays in Essay Practice without starting account sync', () => {
+  let stopped = false;
+  const saves = [];
+  const browser = {
+    window: { EssayScoring: policy }, EssayScoring: policy,
+    practiceState: { view: 'write', sampleBand: '9' },
+    savePortalEssayDraft: options => saves.push(options)
+  };
+  vm.createContext(browser);
+  vm.runInContext(browserFunction('practiceSampleBand') + '\n' + browserFunction('setPracticeSampleBand'), browser);
+  browser.setPracticeSampleBand('7', { stopPropagation() { stopped = true; } });
+  assert.equal(browser.practiceState.sampleBand, '7');
+  assert.equal(stopped, true);
+  assert.deepEqual(saves, [{ skipSync: true }]);
+  assert.doesNotMatch(browserFunction('setPracticeSampleBand'), /queuePortalEssayDraft/);
+  assert.match(uiSource, /activeElement\?\.matches\?\.\('input,textarea,select,\[contenteditable="true"\]'\)/);
+});
+
 test('Essay sample cache is separated by requested band', async () => {
   const samplePrompts = [];
   const grader = createEssayGrader(async prompt => {
@@ -355,7 +373,7 @@ test('Essay notifications are concise and always self-dismiss', () => {
   assert.match(uiSource, /practiceSampleBandLabel\(sample\.sampleBand\)/);
   assert.match(uiSource, /Add the missing personal\/task detail shown in your results/);
   assert.match(htmlSource, /index\.css\?v=20260928-toastfix/);
-  assert.match(htmlSource, /index\.min\.js\?v=20260928-band-samples/);
+  assert.match(htmlSource, /index\.min\.js\?v=20260928-band-selector-fix/);
 });
 
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
