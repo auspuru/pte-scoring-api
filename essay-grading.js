@@ -89,6 +89,7 @@ function essayResultForClient(result, clientVersion) {
   return {
     ...structuredClone(result),
     scores: { ...result.diagnosticScores, total: 0 },
+    scoring_version: String(result.scoring_version || policy.VERSION) + '-compat',
     compatibility: 'legacy-zero-content-input'
   };
 }
