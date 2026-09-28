@@ -32,7 +32,7 @@ test('prediction/original content exposes freshness and unique-bank metadata', (
   assert.deepEqual(stats.readingPrediction,{dropdown:30,wordbank:30});
   assert.equal(stats.writingPrediction.swt,18);
   assert.equal(stats.writingPrediction.sst,30);
-  assert.equal(stats.writingPrediction.wfd,36);
+  assert.equal(stats.writingPrediction.wfd,69);
   assert.equal(stats.patternOriginal.dropdown,12);
   assert.equal(stats.patternOriginal.wordbank,12);
 });
@@ -58,6 +58,19 @@ test('Writing audio load failures keep a visible retry path', () => {
   assert.match(client,/startButton\.disabled=false/);
 });
 
+
+test('user-supplied WFD predictions stay first, verbatim and neural-audio ready', () => {
+  const predictions=require('../content/writing-predictions-sep-2026');
+  const supplied=require('../content/user-wfd-predictions');
+  const first=predictions.wfd.slice(0,33);
+  assert.equal(first.length,33);
+  assert.deepEqual(first.map(q=>q.text),supplied.sentences);
+  assert(first.every(q=>q.id.startsWith('pred26-user-wfd-')));
+  assert(first.every(q=>q.predictionSource.contentStatus==='verbatim-user-provided'));
+  assert(first.every(q=>q.predictionSource.provider==='User supplied WFD predictions'));
+  assert(first.every(q=>q.audioMode==='runtime-neural'));
+  assert.equal(predictions.wfd.length,69);
+});
 
 test('user-supplied SST predictions stay first and verbatim-tagged', () => {
   const predictions=require('../content/writing-predictions-sep-2026');

@@ -53,7 +53,9 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
   };
 });
 const allMocks = [...bank.mocks, ...predictionMocks];
-const dictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
+const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.contentStatus === 'verbatim-user-provided');
+const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
+const dictation = [...userPredictionDictation, ...previousDictation];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -156,7 +158,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
-    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     mocks:allMocks.map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
