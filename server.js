@@ -231,12 +231,16 @@ const essayGrader = createEssayGrader(async prompt => {
 }, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)) });
 app.post('/api/essay/grade', async (req, res) => {
   const { question, essay } = req.body || {};
+  const requestedSampleBand = String(req.body?.sampleBand ?? '9').trim().toLowerCase().replace(/^band\s*/, '');
   if (typeof question !== 'string' || !question.trim() || question.length > 5000
     || typeof essay !== 'string' || !essay.trim() || essay.length > 20000) {
     return res.status(400).json({ error: 'Provide an essay question and response within the size limits.' });
   }
+  if (!['6', '7', '8', '9'].includes(requestedSampleBand)) {
+    return res.status(400).json({ error: 'Choose a sample band from 6, 7, 8 or 9.' });
+  }
   try {
-    const result = await essayGrader.grade(question, essay);
+    const result = await essayGrader.grade(question, essay, requestedSampleBand);
     res.json(essayResultForClient(result, req.get('x-essay-scoring-version') || ''));
   }
   catch (error) {
