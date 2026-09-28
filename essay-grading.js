@@ -1,59 +1,83 @@
 'use strict';
 const { createHash } = require('node:crypto');
 const policy = require('./public/essay-scoring');
-const localEngine = require('./local-scoring-engine');
+const { assessEssay } = require('./essay-assessment-service');
+
 function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
+
+  async function prepareSample(question, essay, assessment, primaryRaw) {
+    if (assessment.scoreGate?.status === 'zero_form') {
+      return {
+        sampleStatus: 'unavailable',
+        sampleKind: 'unavailable',
+        sampleResponse: '',
+        sampleWordCount: 0,
+        sampleSourceIdeas: [],
+        sampleNote: 'Revise the response into valid essay form first; then rescore it for a Band 9-style sample.'
+      };
+    }
+
+    const primaryStillMatches = primaryRaw
+      && (assessment.subjectiveReview?.source === 'agreement' || !assessment.subjectiveReview)
+      && assessment.scoreGate?.status !== 'zero_content';
+
+    if (primaryStillMatches) {
+      try {
+        return policy.normalizeSample(primaryRaw, essay, assessment, { allowUnavailable: false });
+      } catch (error) {
+        onAttemptError({ attempt: 1, stage: 'sample-from-primary', code: error.code || error.name || 'unknown' });
+      }
+    }
+
+    let lastError;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const retry = lastError
+          ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return a complete sample result consistent with the already-final assessment.')
+          : '';
+        const raw = await call(policy.buildSamplePrompt(question, essay, assessment) + retry);
+        return policy.normalizeSample(raw, essay, assessment, { allowUnavailable: false });
+      } catch (error) {
+        lastError = error;
+        onAttemptError({ attempt: attempt + 1, stage: 'sample', code: error.code || error.name || 'unknown' });
+      }
+    }
+
+    return {
+      sampleStatus: 'unavailable',
+      sampleKind: 'unavailable',
+      sampleResponse: '',
+      sampleWordCount: 0,
+      sampleSourceIdeas: [],
+      sampleNote: 'Your score and feedback are ready. The learning sample could not be prepared consistently; retry it later.'
+    };
+  }
+
   async function grade(question, essay) {
-    question = question.trim(); essay = essay.trim();
+    question = String(question || '').trim();
+    essay = String(essay || '').trim();
     const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
     const hit = cache.get(key);
-    const savedAssessment = hit && hit.expires > Date.now() ? hit.result : null;
-    if (savedAssessment && savedAssessment.sampleStatus !== 'unavailable') return structuredClone(savedAssessment);
-    // A local fallback is not a validated AI assessment. On a later retry,
-    // start the full AI assessment again rather than asking only for a sample.
-    const savedLocal = savedAssessment?.scoringMode === 'local' ? savedAssessment : null;
+    if (hit && hit.expires > Date.now()) return structuredClone(hit.result);
     cache.delete(key);
+
     if (!pending.has(key)) {
       const task = (async () => {
-        let assessment = savedLocal ? null : savedAssessment;
-        let lastError;
-        const remember = result => {
-          cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
-          while (cache.size > 100) cache.delete(cache.keys().next().value);
-          return result;
-        };
-        for (let attempt = 0; attempt < 2; attempt++) {
-          const stage = assessment ? 'sample' : 'assessment';
-          try {
-            const prompt = assessment ? policy.buildSamplePrompt(question, essay, assessment) : policy.buildPrompt(question, essay);
-            const retry = lastError ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON, all required fields and exact short original-essay quotations. Keep language scores consistent with meaning-changing error evidence.') : '';
-            const raw = await call(prompt + retry);
-            if (!assessment) assessment = policy.normalizeAssessment(raw, essay);
-            const sample = policy.normalizeSample(raw, essay, assessment, { allowUnavailable: false });
-            return remember({ ...assessment, ...sample });
-          } catch (error) {
-            lastError = error;
-            onAttemptError({ attempt: attempt + 1, stage: assessment ? 'sample' : stage,
-              code: error.code || error.name || 'unknown', status: error.status });
-          }
-        }
-        // A failed learning sample must not erase an already validated grade.
-        // Keep that assessment so a sample retry cannot change the student's score.
-        if (assessment) return remember({ ...assessment, sampleStatus: 'unavailable', sampleKind: 'unavailable',
-          sampleResponse: '', sampleWordCount: 0, sampleSourceIdeas: [],
-          sampleNote: 'Your score and feedback are ready. Your Band 9 sample could not be prepared yet. Retry the sample below.' });
-        if (savedLocal) return remember(savedLocal);
-        const local = localEngine.essay(question, essay, { formScore: policy.formFor(essay).score });
-        local.scoring_version = policy.VERSION + '+' + localEngine.VERSION;
-        local.fallbackReason = lastError?.message || 'External essay reviewer unavailable';
-        return remember(local);
+        const { assessment, primaryRaw } = await assessEssay(question, essay, call, { onAttemptError });
+        const sample = await prepareSample(question, essay, assessment, primaryRaw);
+        const result = { ...assessment, ...sample };
+        cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
+        while (cache.size > 100) cache.delete(cache.keys().next().value);
+        return result;
       })();
       pending.set(key, task);
       task.finally(() => pending.delete(key)).catch(() => {});
     }
     return structuredClone(await pending.get(key));
   }
+
   return { grade };
 }
+
 module.exports = { createEssayGrader };
