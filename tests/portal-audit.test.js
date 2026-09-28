@@ -81,6 +81,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(liquidCss,/transform:\s*translateX\(calc\(-100% - 16px\)\)/,'closed mobile drawer must clear its glass margin completely');
   assert.match(vocabLibraryCss,/#libraryPane \.layout\s*\{\s*height:\s*100% !important;\s*min-height:\s*0;/,'library layout must follow the remaining portal canvas height');
   assert.match(vocabLibraryCss,/grid-template-columns:\s*clamp\(220px,18vw,258px\) minmax\(0,1\.12fr\) minmax\(300px,\.92fr\)/,'library columns must shrink without horizontal overflow');
+  assert.match(vocabLibraryCss,/@media\s*\(max-width:\s*1200px\)[\s\S]*?#libraryPane \.layout\s*\{\s*flex:\s*1;\s*height:\s*auto !important;\s*min-height:\s*0;/,'responsive library toolbar must not add height on top of a full-height workspace');
   assert.match(vocabLibraryCss,/\.flashcard-back\s*\{\s*overflow-y:\s*auto;[\s\S]*?justify-content:\s*flex-start !important;/,'long flashcard backs must scroll from the top');
   assert.match(liquidCss,/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(portalShell,/MutationObserver/);
