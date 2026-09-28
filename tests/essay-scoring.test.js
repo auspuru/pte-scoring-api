@@ -256,45 +256,49 @@ test('Incomplete, excerpt-only, ungrounded or marked-up samples are retried inst
   assert.equal(result.sampleResponse, essay);
 });
 
-test('A failed sample preserves the grade and a sample-only retry cannot rescore it', async () => {
-  let calls = 0;
-  const failures = [];
+test('A failed sample preserves the grade and a later retry does not rescore it', async () => {
+  let assessmentCalls = 0;
+  let reviewCalls = 0;
+  let sampleCalls = 0;
   const grader = createEssayGrader(async prompt => {
-    calls++;
-    if (calls === 1) return { ...good(), sampleResponse: 'Too short.' };
-    assert.match(prompt, /do not rescore or change the assessment/);
-    if (calls === 2) {
-      assert.match(prompt, /VALIDATION RETRY: The sample must contain 200–300 words/);
-      throw new Error('Temporary provider failure');
+    if (/Independently review ONLY/.test(prompt)) {
+      reviewCalls++;
+      return goodReview();
     }
-    return { ...good(), scores: { ...policy.MAXIMA, content: 0 } };
-  }, { onAttemptError: detail => failures.push(detail) });
+    if (/do not rescore or change the assessment/.test(prompt)) {
+      sampleCalls++;
+      if (sampleCalls <= 2) throw new Error('Temporary sample provider failure');
+      return sampleOnly();
+    }
+    assessmentCalls++;
+    return { ...good(), sampleResponse: 'Too short.' };
+  });
+
   const partial = await grader.grade(question, essay);
   assert.equal(partial.scores.total, 26);
   assert.equal(partial.sampleKind, 'unavailable');
-  assert.equal(partial.sampleResponse, '');
-  assert.equal(failures[0].code, 'sample_length');
-  assert.deepEqual(policy.normalizeResult(partial, essay), partial);
+  assert.equal(assessmentCalls, 1);
+  assert.equal(reviewCalls, 1);
+
   const ready = await grader.grade(question, essay);
   assert.equal(ready.sampleKind, 'full-essay');
   assert.equal(ready.sampleResponse, essay);
   assert.deepEqual(ready.scores, partial.scores);
-  await grader.grade(question, essay);
-  assert.equal(calls, 3, 'The completed sample should be cached');
+  assert.equal(assessmentCalls, 1, 'A sample retry must not rescore the essay.');
+  assert.equal(reviewCalls, 1, 'A sample retry must not rerun the subjective review.');
 });
 
-test('Assessment validation failures fall back locally instead of fabricating AI feedback', async () => {
+test('Assessment validation failures return a retryable failure instead of a fabricated local score', async () => {
   let calls = 0;
   const grader = createEssayGrader(async prompt => {
-    if (++calls > 1) assert.match(prompt, /VALIDATION RETRY: Return an integer score in range and feedback for content/);
-    const raw = good(); delete raw.scores.content; return raw;
+    calls++;
+    if (calls > 1) assert.match(prompt, /VALIDATION RETRY:/);
+    const raw = good();
+    delete raw.scores.content;
+    return raw;
   });
-  const result = await grader.grade(question, essay);
+  await assert.rejects(() => grader.grade(question, essay));
   assert.equal(calls, 2);
-  assert.equal(result.scoringMode, 'local');
-  assert.equal(result.sampleKind, 'unavailable');
-  assert(Number.isInteger(result.scores.total));
-  assert.match(result.sampleNote, /local score is ready/i);
 });
 
 test('Missing ideas produce an honest next step and cannot suppress a full-score sample', () => {
