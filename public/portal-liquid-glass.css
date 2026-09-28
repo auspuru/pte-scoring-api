@@ -471,6 +471,7 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
   .main-body { padding-left: 0; }
 
   #portalSidebar {
+    position: fixed;
     width: min(300px, calc(100vw - 16px));
     height: calc(100dvh - 16px);
     margin: 8px;
