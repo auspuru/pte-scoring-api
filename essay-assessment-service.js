@@ -3,6 +3,13 @@
 const policy = require('./public/essay-scoring');
 
 const SUBJECTIVE = ['content', 'linguistic', 'coherence'];
+const MAXIMUM = Object.values(policy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
+// Preserve the current 26-point verdict bands proportionally if the rubric maxima change.
+const VERDICT_THRESHOLDS = Object.freeze({
+  strong: Math.ceil(MAXIMUM * 22 / 26),
+  good: Math.ceil(MAXIMUM * 17 / 26),
+  workable: Math.ceil(MAXIMUM * 10 / 26)
+});
 
 function buildReviewPrompt(question, essay) {
   const form = policy.formFor(essay);
@@ -180,7 +187,7 @@ function applySubjectiveDecision(assessment, decision, source) {
           ? assessment.feedback?.form || 'Form is 0, so no score points are awarded.'
           : 'Content is 0, so no score points are awarded for the essay.'
       }
-    : { status: 'valid', cap: 26, reason: '' };
+    : { status: 'valid', cap: MAXIMUM, reason: '' };
 
   const feedback = { ...(assessment.feedback || {}) };
   for (const key of SUBJECTIVE) {
@@ -197,14 +204,14 @@ function applySubjectiveDecision(assessment, decision, source) {
   let overallVerdict = assessment.overallVerdict;
   if (hardGate) {
     overallVerdict = formZero
-      ? 'Form is 0, so the official practice score for this essay is 0/26. The diagnostic feedback can still be used for improvement.'
-      : 'Content is 0, so the official practice score for this essay is 0/26. No other trait points are counted.';
+      ? `Form is 0, so the official practice score for this essay is 0/${MAXIMUM}. The diagnostic feedback can still be used for improvement.`
+      : `Content is 0, so the official practice score for this essay is 0/${MAXIMUM}. No other trait points are counted.`;
   } else if (source === 'resolver') {
-    overallVerdict = scores.total >= 22
+    overallVerdict = scores.total >= VERDICT_THRESHOLDS.strong
       ? 'Strong response overall. The final score reflects an independent review of task fulfilment, development and language range.'
-      : scores.total >= 17
+      : scores.total >= VERDICT_THRESHOLDS.good
         ? 'Good response overall, with some areas still limiting the practice score.'
-        : scores.total >= 10
+        : scores.total >= VERDICT_THRESHOLDS.workable
           ? 'A workable response, but important weaknesses still limit the practice score.'
           : 'This response needs substantial improvement, especially in directly answering and developing the task.';
   }
@@ -255,7 +262,7 @@ function zeroFormAssessment(essay) {
     templateDetector: 'ok',
     templateEvidence: [],
     templateNote: '',
-    overallVerdict: 'Form is 0, so the official practice score for this essay is 0/26.',
+    overallVerdict: `Form is 0, so the official practice score for this essay is 0/${MAXIMUM}.`,
     wordCount: form.count,
     scoring_version: policy.VERSION
   };
@@ -383,6 +390,8 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
 
 module.exports = {
   SUBJECTIVE,
+  MAXIMUM,
+  VERDICT_THRESHOLDS,
   buildReviewPrompt,
   normalizeReview,
   buildResolverPrompt,
