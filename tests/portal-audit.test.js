@@ -83,10 +83,17 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
   assert.match(portalShell,/portal-insights\.css\?v=20260928-insights/);
-  assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-vocab-library/);
+  assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-layoutfix1/);
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
+  assert.match(html,/\/portal-shell\.js\?v=20260928-layoutfix1/,'layout shell cache-bust stays current');
+  assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix1/,'Liquid Glass cache-bust stays current');
+  assert.match(liquidCss,/@media\s*\(max-width:\s*640px\)[\s\S]*?\.app-shell\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\);\s*padding-right:\s*0;/,'mobile shell must not reserve a hidden sidebar column');
+  assert.match(liquidCss,/transform:\s*translateX\(calc\(-100% - 16px\)\)/,'margined mobile sidebar must move fully off canvas');
+  assert.match(liquidCss,/@media\s*\(max-width:\s*640px\)[\s\S]*?\.topbar\s*\{[\s\S]*?min-height:\s*76px/,'mobile topbar must retain room for wrapped controls');
+  assert.match(vocabLibraryCss,/grid-template-columns:\s*clamp\(220px,18vw,258px\)\s+minmax\(0,1\.12fr\)\s+minmax\(300px,\.92fr\)/,'desktop Library grid must shrink before its 1200px breakpoint');
+  assert.match(vocabLibraryCss,/@media\s*\(max-width:\s*1200px\)[\s\S]*?#libraryPane \.layout\s*\{[\s\S]*?min-height:\s*0;/,'Library must not force a 560px canvas on short tablet/laptop viewports');
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
   assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
