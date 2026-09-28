@@ -59,7 +59,6 @@ body > .ambient-glow-blob:nth-of-type(2) {
 .modal {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, .70);
   background:
     linear-gradient(145deg, rgba(255, 255, 255, .25), transparent 42%),
@@ -131,6 +130,7 @@ body.ipt-glass-motion .modal:hover::after {
 }
 
 #portalSidebar {
+  overflow-y:auto;
   height: calc(100dvh - 24px);
   margin: 12px 0 12px 12px;
   padding: 22px 12px 16px;
@@ -260,6 +260,8 @@ body.dark #portalSidebar .nav-item:not(.active):hover {
 .main-body { padding-left: 12px; }
 
 .topbar {
+  overflow:hidden;
+  height:auto;
   min-height: 74px;
   margin: 12px 0 0;
   padding: 12px 18px;
@@ -420,6 +422,7 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
 }
 
 .login-card {
+  overflow:hidden;
   border-radius: var(--ipt-radius-xl) !important;
 }
 
@@ -435,7 +438,7 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
   backdrop-filter: blur(5px);
 }
 
-.modal { border-radius: var(--ipt-radius-lg) !important; }
+.modal { overflow-y:auto; border-radius: var(--ipt-radius-lg) !important; }
 
 @media (hover: hover) and (pointer: fine) {
   body.ipt-glass-motion .portal-task[data-ipt-tilt] {
@@ -459,8 +462,8 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
 }
 
 @media (max-width: 900px) {
-  .topbar { margin-right: 0; }
-  .portal-corner-brand small { display: none; }
+  .topbar { margin-right:0; flex-wrap:wrap; }
+  .portal-corner-brand { display:none; }
 }
 
 @media (max-width: 640px) {
@@ -471,16 +474,18 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
   .main-body { padding-left: 0; }
 
   #portalSidebar {
-    position: fixed;
-    width: min(300px, calc(100vw - 16px));
-    height: calc(100dvh - 16px);
-    margin: 8px;
-    border-radius: 24px;
+    position:fixed;
+    width:min(300px,calc(100vw - 16px));
+    height:calc(100dvh - 16px);
+    margin:8px;
+    transform:translateX(calc(-100% - 16px));
+    border-radius:24px;
   }
+  .portal-menu-open #portalSidebar { transform:translateX(0); }
 
   .topbar {
     margin: 8px 8px 0;
-    min-height: 68px;
+    min-height:76px;
     border-radius: 18px;
   }
 
