@@ -1,5 +1,5 @@
 name: Production Visual QA
-# rerun after mobile shell fix 745c9d0
+# rerun after mobile sidebar flow fix f2e2370
 
 on:
   push:
