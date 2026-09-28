@@ -14098,7 +14098,7 @@ async function submitPracticeEssay() {
   const question = practiceState.questionText.trim();
   const essay = practiceState.essayText.trim();
   if (!question) { toast('Please pick or write a question first', true); return; }
-  if (countWords(essay) < 50) { toast('Please write at least 50 words before scoring', true); return; }
+  if (countWords(essay) < 120) { toast('Please write at least 120 words before scoring', true); return; }
   const templateOverlap = getPracticeTemplateOverlap(essay);
   if (templateOverlap.level === 'high') {
     toast('High template overlap (' + templateOverlap.percent + '%). Your essay will still be assessed, but replace memorised wording with question-specific reasoning before the exam.', true);
