@@ -80,6 +80,36 @@ test('Essay word-count boundaries are deterministic and independent of model cou
   assert.match(bullets.feedback, /bullet points|list/i);
 });
 
+test('Content zero hard-stops every trait and structural Form failures score zero', () => {
+  const raw = good();
+  raw.scores.content = 0;
+  raw.promptCoverage = [{ requirement: 'Positive and negative effects', status: 'missing', evidence: '', nextStep: 'Answer the media question directly.' }];
+  raw.sampleStatus = 'needs-ideas'; raw.sampleResponse = ''; raw.sampleSourceIdeas = []; raw.sampleNote = 'Add relevant ideas.';
+  const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.scoreGate.status, 'zero_content');
+  assert.equal(result.scores.total, 0);
+  for (const key of Object.keys(policy.MAXIMA)) assert.equal(result.scores[key], 0);
+  assert.equal(result.diagnosticScores.form, 2);
+
+  const allCaps = Array(220).fill('WORD').join(' ') + '.';
+  assert.equal(policy.formFor(allCaps).score, 0);
+  assert.match(policy.formFor(allCaps).feedback, /capital/i);
+
+  const noPunctuation = Array(220).fill('word').join(' ');
+  assert.equal(policy.formFor(noPunctuation).score, 0);
+  assert.match(policy.formFor(noPunctuation).feedback, /punctuation/i);
+});
+
+test('Top Coherence and Linguistic marks require exact supporting evidence', () => {
+  const linguistic = good();
+  linguistic.scoringEvidence.linguisticExamples = [];
+  assert.throws(() => policy.normalizeResult(linguistic, essay), { code: 'linguistic_evidence' });
+
+  const coherence = good();
+  coherence.scoringEvidence.developmentEvidence = [];
+  assert.throws(() => policy.normalizeResult(coherence, essay), { code: 'development_evidence' });
+});
+
 test('Style refinements are separate from actual grammar and never disguised as errors', () => {
   const raw = good();
   raw.errors = [{ type: 'style', phrase: 'has become increasingly important', correction: 'has gained importance', explanation: 'A shorter option.' }];
@@ -217,6 +247,42 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   const broken = createEssayGrader(async () => { failures++; throw new Error('provider failed'); });
   await assert.rejects(() => broken.grade(question, essay));
   assert.equal(failures, 2, 'A failed assessment is retried, not converted into a fabricated local score.');
+});
+
+test('Material disagreement in subjective traits is resolved before the final score is returned', async () => {
+  let resolverSeen = false;
+  const grader = createEssayGrader(async prompt => {
+    if (/Resolve a disagreement/.test(prompt)) {
+      resolverSeen = true;
+      return goodReview({
+        scores: { content: 4, linguistic: 5, coherence: 5 },
+        promptCoverage: [{ requirement: 'Positive and negative effects', status: 'partial', evidence: 'mass media supports learning', nextStep: 'Develop the negative effects more fully.' }],
+        scoringEvidence: {
+          linguisticExamples: ['mass media supports learning'],
+          developmentEvidence: ['News reports help students understand events']
+        }
+      });
+    }
+    if (/Independently review ONLY/.test(prompt)) {
+      return goodReview({
+        scores: { content: 3, linguistic: 4, coherence: 4 },
+        promptCoverage: [{ requirement: 'Positive and negative effects', status: 'partial', evidence: 'mass media supports learning', nextStep: 'Develop the negative effects more fully.' }],
+        scoringEvidence: {
+          linguisticExamples: ['mass media supports learning'],
+          developmentEvidence: ['News reports help students understand events']
+        }
+      });
+    }
+    if (/do not rescore or change the assessment/.test(prompt)) return sampleOnly();
+    return good();
+  });
+  const result = await grader.grade(question, essay);
+  assert.equal(resolverSeen, true);
+  assert.equal(result.subjectiveReview.source, 'resolver');
+  assert.equal(result.diagnosticScores.content, 4);
+  assert.equal(result.diagnosticScores.linguistic, 5);
+  assert.equal(result.diagnosticScores.coherence, 5);
+  assert.equal(result.scores.total, 22);
 });
 
 test('Full-score essays retain a complete sample and sample changes never alter original scores', () => {
