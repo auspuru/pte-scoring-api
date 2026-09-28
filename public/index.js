@@ -14290,7 +14290,7 @@ function renderPracticeSample(a) {
     <div class="practice-grammar-section" style="margin-top:20px;">
       <div class="practice-grammar-header" style="display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center;">
         <div style="flex:1; min-width:200px;">
-          <div class="practice-grammar-title">${fullEssay ? '${sampleLabel} sample · Your ideas' : 'Example revision'}</div>
+          <div class="practice-grammar-title">${fullEssay ? sampleLabel + ' sample · Your ideas' : 'Example revision'}</div>
           <div style="font-size:12px; color:var(--ink-soft); line-height:1.5; font-weight:normal;">
             ${fullEssay
               ? 'A complete essay using your ideas and viewpoint, with stronger language and structure. ' + EssayScoring.words(a.sampleResponse) + ' words. '
