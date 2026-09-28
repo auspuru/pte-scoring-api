@@ -316,6 +316,16 @@ test('Essay UI enables scoring only from 120 words and sends the scorer version'
   assert.match(uiSource, /EssayScoring\.VERSION/);
 });
 
+test('Essay notifications are concise and always self-dismiss', () => {
+  assert.match(uiSource, /t\.classList\.toggle\('long', text\.length > 180\)/);
+  assert.match(uiSource, /toastTimer = setTimeout\(dismiss, 4200\)/);
+  assert.match(uiSource, /if \(!t\.classList\.contains\('show'\)\) t\.textContent = ''/);
+  assert.doesNotMatch(uiSource, /toast\(sample\.sampleStatus === 'ready' \? 'Your Band 9 sample is ready\.' : sample\.sampleNote/);
+  assert.match(uiSource, /Add the missing personal\/task detail shown in your results/);
+  assert.match(htmlSource, /index\.css\?v=20260928-toastfix/);
+  assert.match(htmlSource, /index\.min\.js\?v=20260928-toastfix/);
+});
+
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
   assert.match(uiSource, /\/api\/essay\/grade/);
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
