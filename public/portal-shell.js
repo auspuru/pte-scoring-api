@@ -128,6 +128,7 @@
   }
 
   function start() {
+    document.body.dataset.iptShellReady = 'true';
     setMotionClass();
     installGlassSurfaces();
     installNavIndicator();
