@@ -36,9 +36,9 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
   assert(html.indexOf('auth-boot.js')<html.indexOf('index.min.js'));
-  assert.match(html,/\/ipt-tokens\\.css/);
-  assert.match(html,/\/portal-liquid-glass\\.css/);
-  assert.match(html,/\/portal-shell\\.js/);
+  assert.match(html,/\/ipt-tokens\.css/);
+  assert.match(html,/\/portal-liquid-glass\.css/);
+  assert.match(html,/\/portal-shell\.js/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
   assert.doesNotMatch(html,/data:image\//i,'production HTML must not embed a Base64 logo');
@@ -59,6 +59,14 @@ test('portal accessibility and delivery audit stays clean',()=>{
 
   assert.match(css,/--ink-mute:\s*#526174/);
   assert.match(css,/min-height:44px/);
+  assert.match(tokensCss,/--ipt-blue-700:\s*#205080/);
+  assert.match(tokensCss,/--ipt-red-600:\s*#c53030/i);
+  assert.match(liquidCss,/backdrop-filter:\s*blur\(22px\)/);
+  assert.match(liquidCss,/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(portalShell,/MutationObserver/);
+  assert.match(portalShell,/ipt-nav-indicator/);
+  assert.match(portalShell,/iptShellReady/);
+  assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
   const catalogue=read('public/practice-catalogue.js');
   assert.doesNotMatch(catalogue,/Tests per page/);
   assert.match(catalogue,/Integrated Reading & Listening Sectional Mock/);
