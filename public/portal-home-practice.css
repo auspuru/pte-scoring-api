@@ -178,7 +178,6 @@ body.dark .today-plan-action.primary {
   background: var(--ipt-surface) !important;
 }
 
-/* Quick skill launchers use only existing task routes. */
 .home-skill-section {
   margin: 0 0 20px;
   padding: 22px;
@@ -289,7 +288,6 @@ body.dark .today-plan-action.primary {
 
 .home-skill-card:hover .home-skill-arrow { transform: translateX(3px); }
 
-/* The two broad study-mode cards remain solid content surfaces. */
 #dashboardPane .portal-task-grid {
   gap: 14px;
   margin-bottom: 20px;
@@ -337,7 +335,6 @@ body.dark .today-plan-action.primary {
   padding: 20px !important;
 }
 
-/* Home teacher-assignment teaser stays in the first-load Home layer. */
 .next-step-dashboard {
   border-color: rgba(197,48,48,.14) !important;
   border-radius: var(--ipt-radius-md) !important;
@@ -356,7 +353,6 @@ body.dark .today-plan-action.primary {
   font-size: 12px !important;
 }
 
-/* ---------- Practice catalogue ---------- */
 #practiceHubPane {
   padding-top: 30px;
 }
@@ -589,6 +585,11 @@ body.dark #practiceHubPane .catalogue-heading h2 { color: var(--ipt-ink); }
     align-items: flex-start;
     flex-direction: column;
   }
+
+  #dashboardPane .challenge-word-box{align-items:flex-start;flex-direction:column;gap:10px}
+  #dashboardPane .challenge-word-box .u-inline-013{width:100%;flex-wrap:wrap}
+  #dashboardPane .vocab-try-row{align-items:stretch;flex-direction:column}
+  #dashboardPane .vocab-try-row input,#dashboardPane .vocab-try-check{box-sizing:border-box;width:100%;min-width:0}
 
   .home-skill-grid { grid-template-columns: minmax(0,1fr); }
   .home-skill-card { min-height: 88px; }
