@@ -22,7 +22,9 @@ const surfaces = [
   { name:'teacher', route:'next-steps' },
   { name:'progress', route:'progress' },
   { name:'vocabulary', route:'vocab' },
-  { name:'library', route:'library' }
+  { name:'library', route:'library' },
+  { name:'admin-login', pagePath:'admin', login:true },
+  { name:'admin-dashboard', pagePath:'admin', adminDashboard:true }
 ];
 
 const routePanes = {
@@ -188,14 +190,32 @@ async function auditViewport(page, surface) {
 
         let response;
         try {
-          response = await page.goto(BASE_URL, { waitUntil:'domcontentloaded', timeout:45000 });
+          const targetUrl = new URL(surface.pagePath || '', BASE_URL).href;
+          response = await page.goto(targetUrl, { waitUntil:'domcontentloaded', timeout:45000 });
           await sleep(2500);
         } catch (error) {
           report.fatal.push({viewport:vp.name,surface:surface.name,error:String(error.message||error)});
         }
 
         let prep = null;
-        if (!surface.login) {
+        if (surface.adminDashboard) {
+          try {
+            prep = await page.evaluate(() => {
+              const auth = document.getElementById('authCard');
+              const dashboard = document.getElementById('dashboard');
+              if (auth) auth.style.setProperty('display','none','important');
+              if (dashboard) dashboard.style.setProperty('display','block','important');
+              return {
+                title:document.title,
+                authExists:!!auth,
+                dashboardExists:!!dashboard
+              };
+            });
+            await sleep(1200);
+          } catch (error) {
+            prep = { errors:[String(error.message||error)] };
+          }
+        } else if (!surface.login) {
           try {
             prep = await prepareShell(page, surface.route);
             await sleep(1600);
