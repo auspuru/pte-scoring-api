@@ -29,8 +29,10 @@ function harness() {
   const ctx = {
     EssayScoring: policy, API_URL: '', currentUserId: 'student', sessionToken: 'session-a',
     practiceSubmissionPending: false, practiceSamplePendingId: null, practiceHistoryDeleted: [], practiceRevision: null,
-    practiceState: { view: 'write', essayText: essay, questionText: question, selectedQuestionId: 'q', questionTitle: 'Media' },
+    practiceState: { view: 'write', essayText: essay, questionText: question, selectedQuestionId: 'q', questionTitle: 'Media', sampleBand: '7' },
     document: { getElementById: () => null }, countWords: policy.words,
+    practiceSampleBand: value => policy.normalizeSampleBand(value),
+    practiceSampleBandLabel: value => 'Band ' + policy.normalizeSampleBand(value),
     getPracticeTemplateOverlap: () => ({ level:'low', percent:0, matchedWords:0, totalWords:policy.words(essay) }),
     canonicalClientUserId: sync.canonicalUserId, mergePracticeHistoryClient: sync.mergeHistory,
     savePortalEssayDraft() {}, stopPracticeTimer() {}, getPracticeElapsedMs: () => null,
@@ -60,6 +62,8 @@ test('Essay score renders while cloud saving is still pending', async () => {
   await until(() => h.saves.length === 1);
   assert.equal(h.ctx.practiceState.view, 'results');
   assert.equal(h.ctx.practiceState.currentAttempt.scores.total, 26);
+  assert.equal(h.ctx.practiceState.currentAttempt.sampleBand, '7');
+  assert.equal(JSON.parse(h.requests[0].options.body).sampleBand, '7');
   assert.equal(h.quota(), 1);
   h.saves[0].finish(); await submitted;
   assert.equal(h.ctx.practiceSubmissionPending, false);
@@ -76,13 +80,15 @@ test('An actual grading failure restores the unchanged essay without consuming q
 
 test('Retrying a sample updates the same attempt without changing scores or quota', async () => {
   const h = harness();
-  const attempt = { ...result(), id: 'attempt', date: 1, questionText: question, essayText: essay,
+  const attempt = { ...result(), id: 'attempt', date: 1, questionText: question, essayText: essay, sampleBand: '6',
     sampleKind: 'unavailable', sampleStatus: 'unavailable', sampleResponse: '' };
   h.setHistory([attempt]); h.ctx.practiceState.currentAttempt = attempt; h.ctx.practiceState.view = 'results';
   const retry = h.ctx.retryPracticeSample();
-  h.requests[0].reply({ ...result(), scores: { total: 0 } });
+  assert.equal(JSON.parse(h.requests[0].options.body).sampleBand, '6');
+  h.requests[0].reply({ ...result(), scores: { total: 0 }, sampleBand: '6' });
   await until(() => h.saves.length === 1);
   assert.equal(h.ctx.practiceState.currentAttempt.sampleKind, 'full-essay');
+  assert.equal(h.ctx.practiceState.currentAttempt.sampleBand, '6');
   assert.equal(h.ctx.practiceState.currentAttempt.scores.total, 26);
   assert.equal(h.history().length, 1); assert.equal(h.history()[0].id, 'attempt');
   assert.equal(h.quota(), 0);
