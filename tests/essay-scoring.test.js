@@ -316,14 +316,46 @@ test('Essay UI enables scoring only from 120 words and sends the scorer version'
   assert.match(uiSource, /EssayScoring\.VERSION/);
 });
 
+test('Essay sample targeting supports Bands 6–9 without changing the scoring rubric', () => {
+  const assessment = policy.normalizeAssessment(good(), essay);
+  for (const band of ['6', '7', '8', '9']) {
+    assert.equal(policy.normalizeSampleBand('Band ' + band), band);
+    const prompt = policy.buildSamplePrompt(question, essay, assessment, band);
+    assert.match(prompt, new RegExp('BAND ' + band + ' SAMPLE'));
+    assert.match(prompt, new RegExp('selected Band ' + band + ' target'));
+  }
+  assert.match(uiSource, /Desired sample response band/);
+  assert.match(uiSource, /JSON\.stringify\(\{ question, essay, sampleBand \}\)/);
+  assert.match(uiSource, /sampleBand: '9'/);
+});
+
+test('Essay sample cache is separated by requested band', async () => {
+  const samplePrompts = [];
+  const grader = createEssayGrader(async prompt => {
+    if (/do not rescore or change the assessment/.test(prompt)) {
+      samplePrompts.push(prompt);
+      return sampleOnly();
+    }
+    return standardModelResponse(prompt);
+  });
+  const six = await grader.grade(question, essay, '6');
+  const eight = await grader.grade(question, essay, '8');
+  assert.equal(six.sampleBand, '6');
+  assert.equal(eight.sampleBand, '8');
+  assert.equal(samplePrompts.length, 2);
+  assert.match(samplePrompts[0], /BAND 6 SAMPLE/);
+  assert.match(samplePrompts[1], /BAND 8 SAMPLE/);
+});
+
 test('Essay notifications are concise and always self-dismiss', () => {
   assert.match(uiSource, /t\.classList\.toggle\('long', text\.length > 180\)/);
   assert.match(uiSource, /toastTimer = setTimeout\(dismiss, 4200\)/);
   assert.match(uiSource, /if \(!t\.classList\.contains\('show'\)\) t\.textContent = ''/);
-  assert.doesNotMatch(uiSource, /toast\(sample\.sampleStatus === 'ready' \? 'Your Band 9 sample is ready\.' : sample\.sampleNote/);
+  assert.doesNotMatch(uiSource, /Your Band 9 sample is ready\./);
+  assert.match(uiSource, /practiceSampleBandLabel\(sample\.sampleBand\)/);
   assert.match(uiSource, /Add the missing personal\/task detail shown in your results/);
   assert.match(htmlSource, /index\.css\?v=20260928-toastfix/);
-  assert.match(htmlSource, /index\.min\.js\?v=20260928-toastfix/);
+  assert.match(htmlSource, /index\.min\.js\?v=20260928-band-samples/);
 });
 
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
@@ -332,7 +364,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.taskFocusNote/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20\.4\.10-zero-content/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20260928-band-samples/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
