@@ -331,14 +331,14 @@ test('Fifty additional dictations have distinct sentences and exact sample answe
  assert.equal(new Set([...existing,...bank.dictation].map(q=>q.text)).size,56);
  for(const q of bank.dictation){assert.equal(q.type,'wfd');assert.equal(q.sample,q.text);assert(q.text.split(/\s+/).length>=10);const result=await policy.grade(q,q.sample,()=>{throw Error('No model required');});assert.equal(result.total,result.maximum);}
 });
-test('Expanded dictation bank starts all 56 questions and retains the earliest attempt',async t=>{
+test('Expanded dictation bank starts all 89 questions and retains the earliest attempt',async t=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dictation-expanded-')),app=express();app.use(express.json());
  installWritingLab(app,{directory:dir,verifyToken:token=>token==='tester'?'tester':null,getAccount:async()=>({}),callModel:()=>{throw Error('No model required');}});
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab',headers={'Content-Type':'application/json','x-session-token':'tester'};
  const catalog=await (await fetch(base+'/catalog')).json();let first;
  for(const q of catalog.dictation){const id=randomUUID();first ||= id;const response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:q.id})});assert.equal(response.status,200);const a=await response.json();assert.equal(a.questions[0].text,'');assert.equal(a.questions[0].sample,undefined);assert.equal(a.status,'ready');}
- const history=await (await fetch(base+'/attempts',{headers})).json();assert.equal(history.length,56);assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='wfd-practice-50'));
+ const history=await (await fetch(base+'/attempts',{headers})).json();assert.equal(history.length,89);assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='pred26-user-wfd-01'));assert(history.some(a=>a.testId==='wfd-practice-50'));
 });
 
 
