@@ -591,7 +591,8 @@ test('Saved samples keep their paragraphs and copy as plain text; legacy excerpt
   const result = policy.normalizeResult(good(), essay);
   const stored = JSON.parse(JSON.stringify({ ...result, id: 'sample-attempt', date: 1, essayText: essay }));
   const restored = sync.mergeHistory([], [stored], [])[0];
-  const browser = { EssayScoring: policy, practiceSamplePendingId: null };
+  const browser = { EssayScoring: policy, practiceSamplePendingId: null,
+    practiceSampleBandLabel: value => 'Band ' + policy.normalizeSampleBand(value) };
   vm.createContext(browser);
   vm.runInContext(['escapeHtml', 'renderPracticeSample', 'getCleanSampleResponse'].map(browserFunction).join('\n'), browser);
   const html = browser.renderPracticeSample(restored);
