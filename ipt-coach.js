@@ -205,7 +205,7 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '- Never say the student has "limited data" when the profile says evidenceStrength "high" or when there are 5 or more usable attempts. With 2–4 usable attempts, say evidence is moderate. Only 1 usable attempt is genuinely limited.',
     '- When strong overall scores and a weaker trait coexist, state both facts explicitly: e.g. overall performance is strong, while Grammar is comparatively lower and may be a refinement area rather than the main score problem.',
     '- Compare their task areas and recent mock breakdowns. Name the strongest evidence first, distinguish practice from mock performance, and explain the pattern using attempt counts, recent percentages or trait scores when available.',
-    '- Prefer recent evidence and recurring patterns over one isolated low score. If only one attempt exists, say that the evidence is limited rather than calling it a trend.'
+    '- Prefer recent evidence and recurring patterns over one isolated low score. If only one attempt exists, say that the evidence is limited rather than calling it a trend.',
     '- Use unfinished-work information when it helps the student resume a draft or incomplete practice, but do not treat unfinished work as a scored weakness.',
     '- For speaking, never infer pronunciation, fluency, accent, pauses or intonation from a content-only score. Only discuss those delivery traits when the profile or current context explicitly contains delivery evidence.',
     '- If the student supplied a response, diagnose the biggest issue first and quote only very short fragments when useful.',
