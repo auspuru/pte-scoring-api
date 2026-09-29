@@ -32,3 +32,22 @@ test('IPT coach keeps only the most recent eight chat messages',()=>{
   assert.equal(cleaned[0].text,'message 4');
   assert.equal(cleaned.at(-1).text,'message 11');
 });
+
+
+test('IPT coach uses saved student performance without asking for known portal facts',()=>{
+  const prompt=coach.buildPrompt({
+    task:'portal',
+    message:'Where are my marks slipping?',
+    studentProfile:{
+      weakestAreas:[{task:'swt',label:'Summarize Written Text',attempts:4,averagePct:58,latestPct:55,trend:'declining'}],
+      recentMocks:[{title:'Writing Mock 2',engine:'writing',percent:63,breakdown:[{task:'Essay Writing',percent:72},{task:'Summarize Written Text',percent:49}]}],
+      unfinished:[{kind:'Essay draft',title:'Communication Methods in Modern Society'}]
+    }
+  });
+  assert.match(prompt,/STUDENT PERFORMANCE PROFILE/i);
+  assert.match(prompt,/Summarize Written Text/);
+  assert.match(prompt,/Writing Mock 2/);
+  assert.match(prompt,/Communication Methods in Modern Society/);
+  assert.match(prompt,/Do not ask the student which task/i);
+  assert.match(prompt,/distinguish practice from mock performance/i);
+});
