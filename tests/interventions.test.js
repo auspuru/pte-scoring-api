@@ -333,3 +333,42 @@ test('page-aware AI assistant can use generic portal context without forcing a P
   assert.match(promptSeen,/Current PTE screen/);
   assert.match(promptSeen,/My Progress/);
 });
+
+
+test('AI assistant automatically feeds saved practice and mock progress into coaching context',async t=>{
+  let promptSeen='';
+  const now=Date.now();
+  const h=await harness({
+    getProgress:async()=>({
+      history:{
+        1:[
+          {timestamp:new Date(now-86400000*2).toISOString(),trait_scores:{content:1,form:1,grammar:1,vocabulary:1}},
+          {timestamp:new Date(now-86400000).toISOString(),trait_scores:{content:2,form:1,grammar:1,vocabulary:1}}
+        ]
+      },
+      readingProgress:{
+        history:[{
+          id:'reading-mock-1',name:'Reading Sectional Mock',done:true,
+          startedAt:now-7200000,finishedAt:now-3600000,
+          rows:[{type:'mcsa',earned:1,possible:4},{type:'reorder',earned:2,possible:4}]
+        }]
+      },
+      essayDraft:{title:'Communication Methods in Modern Society',updatedAt:new Date(now-1800000).toISOString()}
+    }),
+    callCoachModel:async prompt=>{promptSeen=prompt;return 'Your recurring weakness is SWT content selection, and the reading mock also shows room to improve.';}
+  });
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'portal',
+    message:'Where are my marks slipping?',
+    screenContext:'Current portal page: Home'
+  }});
+  assert.equal(response.status,200);
+  assert.equal(response.data.personalized,true);
+  assert.match(promptSeen,/STUDENT PERFORMANCE PROFILE/i);
+  assert.match(promptSeen,/Summarize Written Text/);
+  assert.match(promptSeen,/Reading Sectional Mock/);
+  assert.match(promptSeen,/Reading Single Answer/);
+  assert.match(promptSeen,/Communication Methods in Modern Society/);
+  assert.match(promptSeen,/"source":"mock"/);
+});
