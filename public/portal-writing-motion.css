@@ -1,0 +1,790 @@
+/* Writing practice presentation and motion layer.
+   Loaded only for Essay and SWT routes. Speaking is intentionally excluded. */
+
+body[data-section="practice"],
+body[data-section="swt"] {
+  --writing-accent: var(--ipt-blue-600, #2d6ca5);
+  --writing-accent-deep: var(--ipt-blue-900, #173b63);
+  --writing-warm: var(--ipt-red-600, #c53030);
+  --writing-surface: var(--ipt-surface, #fff);
+  --writing-soft: var(--ipt-surface-soft, #f7f9fc);
+  --writing-line: var(--ipt-line, rgba(31,59,91,.14));
+  --writing-shadow: 0 18px 42px rgba(23,59,99,.09), 0 2px 8px rgba(23,59,99,.05);
+}
+
+/* ---------------- Cursor ---------------- */
+
+.ipt-writing-cursor-dot,
+.ipt-writing-cursor-halo {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10020;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity, width, height;
+  transition:
+    opacity 140ms ease,
+    width 180ms cubic-bezier(.22,.8,.2,1),
+    height 180ms cubic-bezier(.22,.8,.2,1),
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.ipt-writing-cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--writing-accent, #2d6ca5);
+  box-shadow: 0 0 0 3px rgba(45,108,165,.12);
+}
+
+.ipt-writing-cursor-halo {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: 1px solid rgba(45,108,165,.34);
+  border-radius: 50%;
+  background: rgba(255,255,255,.17);
+  box-shadow:
+    0 8px 22px rgba(23,59,99,.10),
+    inset 0 1px 0 rgba(255,255,255,.72);
+  -webkit-backdrop-filter: blur(5px) saturate(150%);
+  backdrop-filter: blur(5px) saturate(150%);
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-dot,
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo {
+  opacity: 1;
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-action {
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border-color: rgba(45,108,165,.45);
+  background: rgba(45,108,165,.10);
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-primary {
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border-color: rgba(197,48,48,.38);
+  background: rgba(45,108,165,.12);
+  box-shadow:
+    0 10px 28px rgba(32,80,128,.16),
+    inset 0 1px 0 rgba(255,255,255,.78);
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-down {
+  width: 27px;
+  height: 27px;
+  margin: -13.5px 0 0 -13.5px;
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-dot.is-disabled,
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-disabled {
+  opacity: .32;
+}
+
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-dot.is-text,
+body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-text {
+  opacity: 0;
+}
+
+@media (hover:hover) and (pointer:fine) {
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen,
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane {
+    cursor: none;
+  }
+
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(
+    button,
+    a,
+    [role="button"],
+    .practice-question-item,
+    .practice-history-item,
+    .practice-history-group-header,
+    summary
+  ),
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane :where(
+    button,
+    a,
+    [role="button"],
+    summary,
+    label
+  ) {
+    cursor: none;
+  }
+
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(
+    input:not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    [contenteditable="true"]
+  ),
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane :where(
+    input:not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    [contenteditable="true"]
+  ) {
+    cursor: text;
+  }
+
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(select,input[type="checkbox"],input[type="radio"]),
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane :where(select,input[type="checkbox"],input[type="radio"]) {
+    cursor: auto;
+  }
+}
+
+/* ---------------- Essay workspace ---------------- */
+
+body[data-section="practice"] #practiceScreen {
+  background: transparent;
+}
+
+body[data-section="practice"] #practiceScreen .practice-topbar {
+  position: sticky;
+  top: 12px;
+  z-index: 8;
+  margin: 12px 12px 0;
+  min-height: 64px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.74);
+  border-radius: 19px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.30), transparent 46%),
+    var(--ipt-glass-nav, rgba(249,252,255,.70));
+  box-shadow:
+    0 16px 34px rgba(23,59,99,.10),
+    inset 0 1px 0 rgba(255,255,255,.80);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
+}
+
+body.dark[data-section="practice"] #practiceScreen .practice-topbar {
+  border-color: rgba(255,255,255,.10);
+}
+
+body[data-section="practice"] #practiceScreen .portal-toolbar-note {
+  color: var(--ipt-ink-soft, #566476);
+  font-size: 13px;
+}
+
+body[data-section="practice"] #practiceScreen .practice-sync-status {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid var(--writing-line);
+  border-radius: 999px;
+  background: var(--writing-soft);
+  color: var(--ipt-ink-soft, #566476);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+body[data-section="practice"] #practiceScreen .practice-body {
+  gap: 12px;
+  padding: 12px;
+}
+
+body[data-section="practice"] #practiceScreen .practice-sidebar {
+  width: 258px;
+  flex: 0 0 258px;
+  margin: 0;
+  padding: 16px 12px;
+  border: 1px solid var(--writing-line);
+  border-radius: 20px;
+  background: var(--writing-surface);
+  box-shadow: var(--writing-shadow);
+}
+
+body[data-section="practice"] #practiceScreen .practice-sidebar-title {
+  color: var(--ipt-blue-950, #12334f);
+  font-size: 15px;
+  font-weight: 740;
+  letter-spacing: -.02em;
+}
+
+body[data-section="practice"] #practiceScreen .practice-sidebar-count {
+  min-width: 28px;
+  min-height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(45,108,165,.10);
+  color: var(--writing-accent-deep);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+body[data-section="practice"] #practiceScreen .practice-new-btn {
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(145deg, var(--writing-accent), var(--writing-accent-deep));
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(32,80,128,.17);
+}
+
+body[data-section="practice"] #practiceScreen .practice-history-group {
+  border-color: var(--writing-line) !important;
+  border-radius: 13px !important;
+  background: var(--writing-surface) !important;
+  box-shadow: none !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-history-group-header {
+  min-height: 48px;
+  background: var(--writing-soft) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-history-item {
+  min-height: 58px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  transition:
+    transform 180ms cubic-bezier(.22,.8,.2,1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+body[data-section="practice"] #practiceScreen .practice-history-item:hover {
+  transform: translateX(2px);
+  border-color: rgba(45,108,165,.18);
+  background: rgba(45,108,165,.055);
+}
+
+body[data-section="practice"] #practiceScreen .practice-main {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--writing-line);
+  border-radius: 22px;
+  background: var(--writing-soft);
+  box-shadow: var(--writing-shadow);
+}
+
+body[data-section="practice"] #practiceScreen .practice-content {
+  max-width: 1040px;
+}
+
+body[data-section="practice"] #practiceScreen .practice-welcome {
+  position: relative;
+  overflow: hidden;
+  max-width: 780px;
+  min-height: 310px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 28px auto;
+  padding: 46px;
+  border: 1px solid var(--writing-line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(197,48,48,.10), transparent 15rem),
+    radial-gradient(circle at 85% 100%, rgba(45,108,165,.13), transparent 18rem),
+    var(--writing-surface);
+  box-shadow: var(--writing-shadow);
+}
+
+body[data-section="practice"] #practiceScreen .practice-welcome::after {
+  content: "WR";
+  position: absolute;
+  right: 34px;
+  top: 34px;
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(45,108,165,.17);
+  border-radius: 18px;
+  background: rgba(45,108,165,.08);
+  color: var(--writing-accent-deep);
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+body[data-section="practice"] #practiceScreen .practice-welcome h2 {
+  margin: 0 0 9px;
+  color: var(--ipt-blue-950, #12334f);
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+body.dark[data-section="practice"] #practiceScreen .practice-welcome h2,
+body.dark[data-section="practice"] #practiceScreen .practice-sidebar-title {
+  color: var(--ipt-ink, #f3f6fa);
+}
+
+body[data-section="practice"] #practiceScreen .practice-welcome p {
+  margin-bottom: 24px;
+  color: var(--ipt-ink-soft, #566476);
+  font-size: 15px;
+}
+
+body[data-section="practice"] #practiceScreen .practice-welcome-cta {
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 13px;
+  background: linear-gradient(145deg, var(--writing-accent), var(--writing-accent-deep));
+  color: #fff;
+  font-weight: 720;
+  box-shadow: 0 10px 22px rgba(32,80,128,.18);
+}
+
+body[data-section="practice"] #practiceScreen .practice-step {
+  padding: 28px 30px !important;
+  border: 1px solid var(--writing-line) !important;
+  border-radius: 22px !important;
+  background: var(--writing-surface) !important;
+  box-shadow: var(--writing-shadow) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-step-header {
+  margin-bottom: 20px !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-step-title {
+  color: var(--ipt-ink, #18202a);
+  font-family: var(--sans) !important;
+  font-size: 22px !important;
+  letter-spacing: -.03em;
+}
+
+body[data-section="practice"] #practiceScreen .practice-step-num {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(145deg, var(--writing-accent), var(--writing-accent-deep)) !important;
+  box-shadow: 0 7px 16px rgba(32,80,128,.16);
+}
+
+body[data-section="practice"] #practiceScreen .practice-step-aux {
+  color: var(--ipt-ink-soft, #566476) !important;
+  font-family: var(--sans) !important;
+  font-style: normal !important;
+  font-size: 12px !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-source-tabs {
+  gap: 5px !important;
+  padding: 5px !important;
+  border: 1px solid var(--writing-line) !important;
+  border-radius: 14px !important;
+  background: var(--writing-soft) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-source-tab {
+  min-height: 42px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--ipt-ink-soft, #566476);
+  font-size: 13px;
+  font-weight: 650;
+  transition:
+    transform 170ms cubic-bezier(.22,.8,.2,1),
+    background-color 170ms ease,
+    border-color 170ms ease,
+    color 170ms ease;
+}
+
+body[data-section="practice"] #practiceScreen .practice-source-tab.active {
+  border-color: rgba(45,108,165,.16);
+  background: var(--writing-surface);
+  color: var(--writing-accent-deep);
+  box-shadow: 0 5px 15px rgba(23,59,99,.07);
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-search,
+body[data-section="practice"] #practiceScreen .practice-custom-input {
+  min-height: 46px;
+  border: 1px solid var(--writing-line);
+  border-radius: 13px;
+  background: var(--writing-soft);
+  color: var(--ipt-ink, #18202a);
+  font-size: 14px;
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-search:focus,
+body[data-section="practice"] #practiceScreen .practice-custom-input:focus,
+body[data-section="practice"] #practiceScreen #practiceEssayInput:focus {
+  border-color: var(--writing-accent) !important;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(45,108,165,.10) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-picker {
+  display: grid;
+  gap: 7px;
+  max-height: 330px;
+  padding: 8px 2px;
+  overflow: auto;
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-item {
+  padding: 14px 15px;
+  border: 1px solid var(--writing-line);
+  border-radius: 13px;
+  background: var(--writing-surface);
+  transition:
+    transform 180ms cubic-bezier(.22,.8,.2,1),
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(45,108,165,.26);
+  box-shadow: 0 8px 18px rgba(23,59,99,.06);
+}
+
+body[data-section="practice"] #practiceScreen .practice-question-item.selected {
+  border-color: rgba(45,108,165,.34);
+  background: rgba(45,108,165,.07);
+}
+
+body[data-section="practice"] #practiceScreen .practice-selected-question {
+  border-color: rgba(45,108,165,.16);
+  border-radius: 13px;
+  background: rgba(45,108,165,.055);
+}
+
+body[data-section="practice"] #practiceScreen .practice-setup-actions {
+  border-top-color: var(--writing-line) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-action-btn.primary,
+body[data-section="practice"] #practiceScreen #practiceSubmitBtn {
+  min-height: 46px;
+  border-radius: 13px !important;
+  background: linear-gradient(145deg, var(--writing-accent), var(--writing-accent-deep)) !important;
+  box-shadow: 0 9px 22px rgba(32,80,128,.20) !important;
+  transition:
+    transform 160ms cubic-bezier(.22,.8,.2,1),
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+body[data-section="practice"] #practiceScreen .practice-action-btn.primary:hover,
+body[data-section="practice"] #practiceScreen #practiceSubmitBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(32,80,128,.24) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-action-btn.primary:active,
+body[data-section="practice"] #practiceScreen #practiceSubmitBtn:active {
+  transform: scale(.975);
+}
+
+body[data-section="practice"] #practiceScreen .simulator-mode {
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+body[data-section="practice"] #practiceScreen .simulator-header {
+  padding-bottom: 4px;
+}
+
+body[data-section="practice"] #practiceScreen .simulator-topic-title {
+  color: var(--ipt-blue-950, #12334f) !important;
+  font-family: var(--sans) !important;
+  font-size: 20px !important;
+  letter-spacing: -.025em;
+}
+
+body.dark[data-section="practice"] #practiceScreen .simulator-topic-title {
+  color: var(--ipt-ink, #f3f6fa) !important;
+}
+
+body[data-section="practice"] #practiceScreen .simulator-toggle-prompt-btn {
+  min-height: 40px;
+  border-color: var(--writing-line) !important;
+  border-radius: 12px !important;
+  background: var(--writing-soft) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-prompt-collapsible {
+  border-color: var(--writing-line) !important;
+  border-radius: 13px !important;
+  background: var(--writing-soft) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-textarea-container {
+  overflow: hidden;
+  border: 1px solid var(--writing-line) !important;
+  border-radius: 17px !important;
+  background: var(--writing-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 8px 26px rgba(23,59,99,.055);
+}
+
+body[data-section="practice"] #practiceScreen #practiceEssayInput {
+  min-height: 390px;
+  padding: 22px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--writing-surface) !important;
+  color: var(--ipt-ink, #18202a) !important;
+  font-family: var(--sans) !important;
+  font-size: 16px !important;
+  line-height: 1.72 !important;
+  box-shadow: none !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-timer-bar {
+  min-height: 38px;
+  border-color: var(--writing-line) !important;
+  border-radius: 12px !important;
+  background: var(--writing-soft) !important;
+}
+
+body[data-section="practice"] #practiceScreen .practice-progress-wrap,
+body[data-section="practice"] #practiceScreen .practice-template-overlap {
+  border-color: var(--writing-line) !important;
+  border-radius: 13px;
+  background: var(--writing-soft);
+}
+
+body[data-section="practice"] #practiceScreen #essayQuestionNav .speaking-actions {
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid var(--writing-line);
+  border-radius: 15px;
+  background: var(--writing-surface);
+}
+
+body[data-section="practice"] #practiceScreen #essayQuestionNav .btn {
+  min-height: 42px;
+  border: 1px solid var(--writing-line);
+  border-radius: 11px;
+  background: var(--writing-soft);
+  color: var(--writing-accent-deep);
+}
+
+/* Results remain information-dense and opaque. */
+body[data-section="practice"] #practiceScreen .pte-dashboard,
+body[data-section="practice"] #practiceScreen .practice-fb-card,
+body[data-section="practice"] #practiceScreen .practice-summary-col,
+body[data-section="practice"] #practiceScreen .practice-result-card,
+body[data-section="practice"] #practiceScreen .essay-feedback-details {
+  border-color: var(--writing-line) !important;
+  border-radius: 17px !important;
+  background: var(--writing-surface) !important;
+  box-shadow: var(--writing-shadow);
+}
+
+body[data-section="practice"] #practiceScreen .practice-score-circle.total {
+  border-color: rgba(45,108,165,.18);
+  background:
+    radial-gradient(circle, rgba(45,108,165,.12), transparent 68%),
+    var(--writing-soft);
+  color: var(--writing-accent-deep);
+}
+
+/* ---------------- SWT workspace ---------------- */
+
+body[data-section="swt"] #swtPane {
+  padding-top: 26px;
+}
+
+body[data-section="swt"] #swtPane .swt-heading {
+  margin-bottom: 20px;
+}
+
+body[data-section="swt"] #swtPane .swt-heading h2 {
+  color: var(--ipt-blue-950, #12334f);
+  font-size: clamp(30px, 3.5vw, 42px);
+  letter-spacing: -.045em;
+}
+
+body.dark[data-section="swt"] #swtPane .swt-heading h2 {
+  color: var(--ipt-ink, #f3f6fa);
+}
+
+body[data-section="swt"] #swtPane .swt-requirements {
+  gap: 7px;
+}
+
+body[data-section="swt"] #swtPane .swt-requirements li {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border: 1px solid var(--writing-line);
+  border-radius: 999px;
+  background: var(--writing-soft);
+  color: var(--ipt-ink-soft, #566476);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+body[data-section="swt"] #swtPane .card,
+body[data-section="swt"] #swtPane .passage-pane,
+body[data-section="swt"] #swtPane .write-pane {
+  border-color: var(--writing-line) !important;
+  border-radius: 20px !important;
+  background: var(--writing-surface) !important;
+  box-shadow: var(--writing-shadow) !important;
+}
+
+body[data-section="swt"] #swtPane .passage-body {
+  color: var(--ipt-ink, #18202a);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.78;
+}
+
+body[data-section="swt"] #swtPane .write-tabs {
+  border-bottom-color: var(--writing-line);
+}
+
+body[data-section="swt"] #swtPane .write-tab.active {
+  border-bottom-color: var(--writing-accent);
+  color: var(--writing-accent-deep);
+}
+
+body[data-section="swt"] #swtPane textarea.summary-input,
+body[data-section="swt"] #swtPane textarea.scratch-input {
+  min-height: 250px;
+  border-color: var(--writing-line);
+  border-radius: 15px;
+  background: var(--writing-soft);
+  color: var(--ipt-ink, #18202a);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  box-shadow: inset 0 1px 3px rgba(23,59,99,.055);
+}
+
+body[data-section="swt"] #swtPane textarea.summary-input:focus,
+body[data-section="swt"] #swtPane textarea.scratch-input:focus {
+  border-color: var(--writing-accent);
+  background: var(--writing-surface);
+  box-shadow: 0 0 0 4px rgba(45,108,165,.10);
+}
+
+body[data-section="swt"] #swtPane .word-meter .meter-fill {
+  background: linear-gradient(90deg, var(--writing-accent), #16805f);
+  box-shadow: none;
+}
+
+body[data-section="swt"] #swtPane .health-panel {
+  border-color: var(--writing-line);
+  border-radius: 14px;
+  background: var(--writing-soft);
+}
+
+body[data-section="swt"] #swtPane .write-actions button {
+  min-height: 44px;
+  border-radius: 12px;
+}
+
+/* ---------------- Motion ---------------- */
+
+body[data-section="practice"] #practiceContent[data-ipt-writing-view] > :first-child,
+body[data-section="swt"] #swtPane .swt-sub-screen.active {
+  transform-origin: 50% 20%;
+}
+
+@media (max-width: 900px) {
+  body[data-section="practice"] #practiceScreen .practice-main {
+    padding: 18px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-step {
+    padding: 24px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-section="practice"] #practiceScreen .practice-topbar {
+    position: relative;
+    top: auto;
+    margin: 8px 8px 0;
+    border-radius: 16px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-body {
+    padding: 8px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-main {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-step {
+    padding: 20px 16px !important;
+    border-radius: 18px !important;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-welcome {
+    min-height: 270px;
+    margin: 10px auto;
+    padding: 28px 22px 96px;
+    border-radius: 20px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-welcome::after {
+    top: auto;
+    right: auto;
+    left: 22px;
+    bottom: 24px;
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-welcome h2 {
+    font-size: 34px;
+  }
+
+  body[data-section="practice"] #practiceScreen #practiceEssayInput {
+    min-height: 330px;
+    padding: 17px !important;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-setup-actions,
+  body[data-section="practice"] #practiceScreen .simulator-header,
+  body[data-section="practice"] #practiceScreen .simulator-timer-row {
+    align-items: stretch !important;
+    flex-direction: column;
+  }
+
+  body[data-section="practice"] #practiceScreen .practice-action-btn.primary,
+  body[data-section="practice"] #practiceScreen #practiceSubmitBtn,
+  body[data-section="practice"] #practiceScreen .simulator-toggle-prompt-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body[data-section="swt"] #swtPane {
+    padding-top: 18px;
+  }
+
+  body[data-section="swt"] #swtPane .practice-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (hover:none), (pointer:coarse) {
+  .ipt-writing-cursor-dot,
+  .ipt-writing-cursor-halo {
+    display: none !important;
+  }
+
+  body[data-section="practice"] #practiceScreen *,
+  body[data-section="swt"] #swtPane * {
+    scroll-behavior: auto !important;
+  }
+}

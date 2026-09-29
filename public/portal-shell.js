@@ -7,6 +7,11 @@
 
   const lazyStyles = [
     {
+      key: 'writing-motion',
+      href: '/portal-writing-motion.css?v=20260929-writing-motion',
+      sections: new Set(['practice', 'swt'])
+    },
+    {
       key: 'insights',
       href: '/portal-insights.css?v=20260928-insights',
       sections: new Set(['mock-tests', 'writing-mocks', 'next-steps', 'progress'])
