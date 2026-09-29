@@ -202,7 +202,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
-        total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90 });
+        total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
+        byType:summary.byType });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
