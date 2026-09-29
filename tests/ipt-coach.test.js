@@ -51,3 +51,18 @@ test('IPT coach uses saved student performance without asking for known portal f
   assert.match(prompt,/Do not ask the student which task/i);
   assert.match(prompt,/distinguish practice from mock performance/i);
 });
+
+
+test('IPT coach keeps SST separate from Retell Lecture and speaking delivery',()=>{
+  const prompt=coach.buildPrompt({
+    task:'sst',
+    message:'How can I improve my Summarize Spoken Text?',
+    studentProfile:{areas:[{task:'sst',label:'Summarize Spoken Text',attempts:3,averagePct:68}]}
+  });
+  assert.match(prompt,/MODALITY: Listening \+ Writing/i);
+  assert.match(prompt,/TYPES a written summary/i);
+  assert.match(prompt,/50–70 word written summary/i);
+  assert.match(prompt,/Never describe SST as a speaking task/i);
+  assert.match(prompt,/Retell Lecture is a different task/i);
+  assert.match(prompt,/final response is spoken/i);
+});
