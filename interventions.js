@@ -677,6 +677,7 @@ function installInterventions(app, options = {}) {
       const task = SELF_HELP_TASKS.has(req.body?.task) ? req.body.task : '';
       if (!task) return res.status(400).json({error:'Choose a supported PTE task or General Speaking.'});
       const problem = clean(req.body?.problem, 4000);
+      const screenContext = clean(req.body?.screenContext, 12000);
       const all = await evidence(req.interventionUser);
       const scripted = betaAdvice(task, problem, all);
       let coachReply = '', coachSource = 'scripted';
@@ -686,10 +687,17 @@ function installInterventions(app, options = {}) {
             task,
             message: problem || 'How should I improve at this task?',
             history: req.body?.history,
-            latestScore: scripted.latestScore
+            latestScore: scripted.latestScore,
+            screenContext
           });
-          coachReply = clean(await callCoachModel(prompt), 6000);
-          if (coachReply) coachSource = 'claude';
+          const modelResult = await callCoachModel(prompt);
+          if (modelResult && typeof modelResult === 'object') {
+            coachReply = clean(modelResult.text, 6000);
+            if (coachReply) coachSource = clean(modelResult.source, 40) || 'ai';
+          } else {
+            coachReply = clean(modelResult, 6000);
+            if (coachReply) coachSource = 'claude';
+          }
         } catch (_) {
           // The scripted recommendations below remain available when Claude is unavailable.
         }
