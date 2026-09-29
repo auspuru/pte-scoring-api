@@ -64,6 +64,12 @@ test('Transcription uploads audio only, never the reference text, and fails clea
   assert.equal(text,'The words actually spoken.');
   await assert.rejects(transcribeRecording(recording,{apiKey:'test-only',fetch:async()=>({ok:false,json:async()=>({})})}),/recording is saved/);
 });
+test('Azure delivery accepts the regional endpoint shown by the portal and normalises it to Speech STT',()=>{
+  const env={AZURE_SPEECH_KEY:'test',AZURE_SPEECH_ENDPOINT:'https://australiaeast.api.cognitive.microsoft.com/'};
+  assert.equal(delivery.endpointFromEnv(env),'https://australiaeast.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1');
+  const summary=delivery.configurationSummary(env);assert.equal(summary.configured,true);assert.equal(summary.endpointHost,'australiaeast.stt.speech.microsoft.com');assert.equal(summary.locale,'en-AU');
+});
+
 test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5 practice scores',async()=>{
   const raw={Duration:250000000,NBest:[{PronunciationAssessment:{AccuracyScore:86,FluencyScore:82,ProsodyScore:78,PronScore:84},Words:[
     {Word:'environmental',PronunciationAssessment:{AccuracyScore:61,ErrorType:'Mispronunciation'}},
@@ -73,11 +79,11 @@ test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5
   const combined=delivery.aggregate([{...parsed,weight:25}]);
   assert.equal(combined.pronunciation.score,4);assert.equal(combined.pronunciation.maximum,5);assert.equal(combined.fluency.score,4);assert.equal(combined.pronunciation.words.length,1);
   let sent;
-  const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The words actually spoken.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',request:async(url,args)=>{
+  const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The words actually spoken.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',locale:'en-AU',request:async(url,args)=>{
     sent={url,args};return {ok:true,json:async()=>raw};
   }});
   const config=JSON.parse(Buffer.from(sent.args.headers['Pronunciation-Assessment'],'base64').toString('utf8'));
-  assert.equal(config.ReferenceText,'The words actually spoken.');assert.equal(config.Dimension,'Comprehensive');assert.equal(config.EnableProsodyAssessment,'True');assert.equal(assessed.prosody,78);
+  assert.equal(config.ReferenceText,'The words actually spoken.');assert.equal(config.Dimension,'Comprehensive');assert.equal(config.EnableProsodyAssessment,'True');assert.match(sent.url,/language=en-AU/);assert.equal(assessed.prosody,78);
 });
 
 test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifier',()=>{

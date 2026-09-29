@@ -13,9 +13,12 @@ const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
 
 function endpointFromEnv(env=process.env) {
   const configured=String(env.AZURE_SPEECH_ENDPOINT||'').trim().replace(/\/+$/,'');
-  if(configured) return configured.includes('/stt/speech/recognition/')
-    ? configured
-    : configured+'/stt/speech/recognition/conversation/cognitiveservices/v1';
+  if(configured) {
+    const regional=configured.match(/^https:\/\/([a-z0-9-]+)\.api\.cognitive\.microsoft\.com$/i);
+    if(regional)return 'https://'+regional[1]+'.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1';
+    if(configured.includes('/speech/recognition/')||configured.includes('/stt/speech/recognition/'))return configured;
+    return configured+'/stt/speech/recognition/conversation/cognitiveservices/v1';
+  }
   const resource=String(env.AZURE_SPEECH_RESOURCE||'').trim();
   if(resource&&!/^[a-zA-Z0-9-]+$/.test(resource)) return '';
   return resource ? 'https://'+resource+'.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1' : '';
@@ -23,6 +26,19 @@ function endpointFromEnv(env=process.env) {
 
 function isConfigured(env=process.env) {
   return !!(String(env.AZURE_SPEECH_KEY||'').trim() && endpointFromEnv(env));
+}
+
+function configurationSummary(env=process.env) {
+  const endpoint=endpointFromEnv(env);
+  let endpointHost='';
+  try{endpointHost=endpoint?new URL(endpoint).host:'';}catch{}
+  return {
+    configured:isConfigured(env),
+    hasKey:!!String(env.AZURE_SPEECH_KEY||'').trim(),
+    hasEndpoint:!!String(env.AZURE_SPEECH_ENDPOINT||env.AZURE_SPEECH_RESOURCE||'').trim(),
+    endpointHost,
+    locale:String(env.AZURE_SPEECH_LOCALE||'en-AU').trim()||'en-AU'
+  };
 }
 
 function band5(raw) {
@@ -122,7 +138,7 @@ async function splitToWav(recording,{directory,ffmpeg='ffmpeg'}={}) {
   }
 }
 
-async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),request=fetch}={}) {
+async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',request=fetch}={}) {
   if(!apiKey||!endpoint)throw Error('Azure Speech pronunciation assessment is not configured.');
   const config={
     ReferenceText:String(reference||'').trim(),
@@ -132,7 +148,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
     EnableProsodyAssessment:'True'
   };
   if(!config.ReferenceText)throw Error('No spoken words were available for delivery assessment.');
-  const url=endpoint+(endpoint.includes('?')?'&':'?')+'language=en-US&format=detailed';
+  const url=endpoint+(endpoint.includes('?')?'&':'?')+'language='+encodeURIComponent(String(locale||'en-AU'))+'&format=detailed';
   const response=await request(url,{
     method:'POST',
     headers:{
@@ -146,7 +162,9 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
   });
   if(!response.ok){
     console.warn('[speaking-delivery-provider]',JSON.stringify({status:response.status}));
-    throw Error('Audio delivery assessment is temporarily unavailable.');
+    const error=Error('Audio delivery assessment is temporarily unavailable.');
+    error.providerStatus=response.status;
+    throw error;
   }
   const json=await response.json();
   if(json?.RecognitionStatus&&json.RecognitionStatus!=='Success')throw Error('Azure Speech could not assess this audio.');
@@ -159,6 +177,7 @@ async function assessRecording(recording,{
   apiKey=process.env.AZURE_SPEECH_KEY,
   endpoint=endpointFromEnv(),
   request=fetch,
+  locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',
   ffmpeg='ffmpeg',
   directory
 }={}) {
@@ -177,11 +196,11 @@ async function assessRecording(recording,{
       reference=confirmedWords.slice(fallbackCursor,fallbackCursor+take).join(' ');fallbackCursor+=take;
     }
     if(!reference)continue;
-    const assessed=await azureAssess(wav,reference,{apiKey,endpoint,request});
+    const assessed=await azureAssess(wav,reference,{apiKey,endpoint,locale,request});
     assessed.weight=wavSeconds(wav)||1;
     results.push(assessed);
   }
   return aggregate(results);
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,band5,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
+module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
