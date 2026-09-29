@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Progress"><rect x="7" y="7" width="114" height="114" rx="28" fill="#E9F2FA" stroke="#173B63" stroke-width="6"/><path d="M29 94V74M49 94V60M69 94V48M89 94V34" stroke="#205080" stroke-width="11" stroke-linecap="round"/><path d="M28 44 49 51 68 37 92 24" fill="none" stroke="#C53030" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="m84 24 10-2-3 10" fill="none" stroke="#C53030" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Progress">
+  <rect x="7" y="7" width="114" height="114" rx="28" fill="#F7FBFF" stroke="#173B63" stroke-width="6"/>
+  <path d="M25 101h78" stroke="#173B63" stroke-width="5" stroke-linecap="round" opacity=".22"/>
+  <rect x="27" y="76" width="14" height="25" rx="7" fill="#BBD6EA"/>
+  <rect x="48" y="62" width="14" height="39" rx="7" fill="#78ADD2"/>
+  <rect x="69" y="48" width="14" height="53" rx="7" fill="#2D6CA5"/>
+  <rect x="90" y="31" width="14" height="70" rx="7" fill="#173B63"/>
+  <path d="M28 57 49 61 70 45 96 25" fill="none" stroke="#C53030" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m87 25 11-2-3 11" fill="none" stroke="#C53030" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="28" cy="57" r="4" fill="#C53030"/>
+  <circle cx="49" cy="61" r="4" fill="#C53030"/>
+  <circle cx="70" cy="45" r="4" fill="#C53030"/>
+</svg>
