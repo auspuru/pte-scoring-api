@@ -50,7 +50,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/<link[^>]+portal-insights\.css/,'Insights CSS stays off the first-load path');
   assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
   assert.doesNotMatch(html,/<link[^>]+portal-writing-motion\.css/,'Writing motion CSS stays off the first-load path');
-  assert.match(html,/\/portal-writing-motion\.js\?v=20260929-writing-motion/);
+  assert.match(html,/\/portal-writing-motion\.js\?v=20260929-native-cursor/);
   assert.match(html,/\/portal-shell\.js\?v=20260928-layoutfix-final/);
   assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix-final/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
@@ -93,11 +93,11 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(vocabLibraryCss,/\.flashcard-back\s*\{\s*overflow-y:\s*auto;[\s\S]*?justify-content:\s*flex-start !important;/,'long flashcard backs must scroll from the top');
   assert.match(homePracticeCss,/@media \(max-width: 640px\)[\s\S]*?#dashboardPane \.challenge-word-box\{[^}]*flex-direction:column/,'Home challenge controls stack on mobile');
   assert.match(homePracticeCss,/#dashboardPane \.vocab-try-row\{[^}]*flex-direction:column/,'Home vocabulary input stacks on mobile');
-  assert.match(portalShell,/portal-writing-motion\.css\?v=20260929-writing-motion/);
+  assert.match(portalShell,/portal-writing-motion\.css\?v=20260929-native-cursor/);
   assert.match(portalShell,/new Set\(\['practice', 'swt'\]\)/,'Writing presentation is restricted to Essay and SWT routes');
   assert.match(writingMotion,/new Set\(\['practice', 'swt'\]\)/);
   assert.match(writingMotion,/prefers-reduced-motion: reduce/);
-  assert.match(writingMotion,/hover: hover\) and \(pointer: fine/);
+  assert.doesNotMatch(writingMotion,/pointermove|clientX|clientY|ipt-writing-cursor/,'Writing motion must not track the pointer or replace the native cursor');
   assert.doesNotMatch(writingMotion,/speakingPane|speaking-[a-z]+/i,'Writing motion helper must not target Speaking');
   assert.doesNotMatch(writingMotionCss,/#speakingPane|data-section="speaking/i,'Writing motion CSS must not target Speaking routes');
   assert.match(portalShell,/MutationObserver/);
