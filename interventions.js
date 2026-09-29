@@ -6,6 +6,7 @@ const PLAN_STATUSES = new Set(['not_started','in_progress','ready_for_review','m
 const ITEM_KINDS = new Set(['video','question','practice','instruction','practice_set','message','swt_selection_trainer']);
 const speakingBank = require('./content/speaking-bank');
 const readingBank = require('./public/reading-bank.json');
+const iptCoach = require('./ipt-coach');
 const PRIORITIES = new Set(['high','normal','low']);
 
 function canonical(value) { return String(value || '').trim().toLowerCase(); }
@@ -181,7 +182,7 @@ function createStore(pool, directory) {
 }
 
 function installInterventions(app, options = {}) {
-  const { pool = null, directory, verifyToken, getAccount, getProgress, getPassages, getPassage, requireAdmin } = options;
+  const { pool = null, directory, verifyToken, getAccount, getProgress, getPassages, getPassage, requireAdmin, callCoachModel } = options;
   if (!directory || typeof verifyToken !== 'function' || typeof getAccount !== 'function' || typeof requireAdmin !== 'function') {
     throw new Error('Interventions require directory, verifyToken, getAccount and requireAdmin.');
   }
@@ -675,9 +676,25 @@ function installInterventions(app, options = {}) {
     try {
       const task = SELF_HELP_TASKS.has(req.body?.task) ? req.body.task : '';
       if (!task) return res.status(400).json({error:'Choose a supported PTE task or General Speaking.'});
-      const problem = clean(req.body?.problem, 1000);
+      const problem = clean(req.body?.problem, 4000);
       const all = await evidence(req.interventionUser);
-      res.json(betaAdvice(task, problem, all));
+      const scripted = betaAdvice(task, problem, all);
+      let coachReply = '', coachSource = 'scripted';
+      if (typeof callCoachModel === 'function') {
+        try {
+          const prompt = iptCoach.buildPrompt({
+            task,
+            message: problem || 'How should I improve at this task?',
+            history: req.body?.history,
+            latestScore: scripted.latestScore
+          });
+          coachReply = clean(await callCoachModel(prompt), 6000);
+          if (coachReply) coachSource = 'claude';
+        } catch (_) {
+          // The scripted recommendations below remain available when Claude is unavailable.
+        }
+      }
+      res.json({...scripted,coachReply,coachSource});
     } catch (e) { sendError(res,e); }
   });
 
