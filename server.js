@@ -4115,6 +4115,20 @@ const swtJudgmentService = createJudgmentService({
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
 });
 
+// Reference text must be readable independently of AI verification. The UI uses
+// this endpoint to display the authored model answer immediately, then runs the
+// POST verifier separately for the status note.
+app.get('/api/swt/sample/:id', async (req, res) => {
+  try {
+    const stored = await PassageAPI.getById(req.params.id);
+    if (!stored) return res.status(404).json({ error: 'Passage not found', sample: '' });
+    const p = studentPassage(stored);
+    res.json({ sample: p.sampleResponse || '', sampleNotes: p.sampleNotes || '', scoring_version: POLICY_VERSION });
+  } catch (e) {
+    res.status(503).json({ error: 'Reference unavailable', sample: '' });
+  }
+});
+
 // Reference answers use exactly the same form gate, semantic judge and scoring
 // policy as student submissions. A label is earned, never inferred from origin.
 app.post('/api/swt/sample/:id', async (req, res) => {
