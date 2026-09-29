@@ -201,6 +201,28 @@ async function auditViewport(page, surface) {
           failedRequests.push({url:req.url(),error:failure && failure.errorText || 'failed'});
         });
 
+        if (surface.cursorCheck && vp.name === 'desktop') {
+          await page.evaluateOnNewDocument(() => {
+            const nativeMatchMedia = window.matchMedia.bind(window);
+            window.matchMedia = query => {
+              const normalized = String(query || '').replace(/\s+/g,'');
+              if (normalized === '(hover:hover)and(pointer:fine)') {
+                return {
+                  matches:true,
+                  media:query,
+                  onchange:null,
+                  addListener(){},
+                  removeListener(){},
+                  addEventListener(){},
+                  removeEventListener(){},
+                  dispatchEvent(){ return true; }
+                };
+              }
+              return nativeMatchMedia(query);
+            };
+          });
+        }
+
         let response;
         try {
           const targetUrl = new URL(surface.pagePath || '', BASE_URL).href;
@@ -239,6 +261,10 @@ async function auditViewport(page, surface) {
                     if (typeof window.startNewPractice === 'function') window.startNewPractice();
                     else if (typeof startNewPractice === 'function') startNewPractice();
                   }
+                  if (state === 'swt') {
+                    if (typeof window.setSwtPracticeMode === 'function') window.setSwtPracticeMode('summary');
+                    else if (typeof setSwtPracticeMode === 'function') setSwtPracticeMode('summary');
+                  }
                   if (state === 'editor') {
                     if (typeof window.setQuestionSource === 'function') window.setQuestionSource('custom');
                     else if (typeof setQuestionSource === 'function') setQuestionSource('custom');
@@ -256,7 +282,11 @@ async function auditViewport(page, surface) {
                   section: document.body.dataset.section || '',
                   practiceView: document.getElementById('practiceContent')?.dataset.view || '',
                   editorPresent: !!document.getElementById('practiceEssayInput'),
-                  writingStyleReady: !!document.querySelector('link[data-ipt-lazy-style="writing-motion"]')?.sheet
+                  writingStyleReady: !!document.querySelector('link[data-ipt-lazy-style="writing-motion"]')?.sheet,
+                  swtWriteVisible: state === 'swt' ? (() => {
+                    const pane = document.getElementById('swtWritePane');
+                    return !!pane && !pane.hidden && getComputedStyle(pane).display !== 'none';
+                  })() : null
                 };
               }, surface.writingState);
               prep = { ...prep, writingPrep };
