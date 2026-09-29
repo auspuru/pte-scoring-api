@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const seeds = require('../passages.json');
-const { studentPassage, buildStudyGuide, phraseFromIdea } = require('../swt-reference');
+const { studentPassage, buildStudyGuide, phraseFromIdea, fallbackSample } = require('../swt-reference');
 const { POLICY_VERSION, applyScoringPolicy } = require('../swt-scoring-policy');
 const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
 const functionSource = name => {
@@ -34,6 +34,34 @@ test('Admin changes to either the source or the sample are preserved', () => {
   const newSource = { ...p, text: 'A revised source passage that no longer matches the original.' };
   assert.equal(studentPassage(newSource).sampleResponse, p.sampleResponse);
   assert.equal(studentPassage(newSource).sampleRevision, undefined);
+});
+
+test('Blank SWT samples are restored from reviewed bundled references', () => {
+  const standard = structuredClone(seeds.find(p => p.id === 1));
+  standard.sampleResponse = '';
+  standard.sampleNotes = '';
+  const standardResult = studentPassage(standard);
+  assert.equal(standardResult.sampleResponse, seeds.find(p => p.id === 1).sampleResponse);
+
+  const legacy = { id: 22, title: 'Esports', text: 'Legacy production passage text.', keyElements: { what: 'Esports can support student engagement.' }, sampleResponse: '' };
+  const legacyResult = studentPassage(legacy);
+  assert.match(legacyResult.sampleResponse, /esports programmes/i);
+  assert.equal(legacyResult.sampleRevision, POLICY_VERSION);
+
+  const advanced = require('../content/swt-advanced.json')[0];
+  const advancedResult = studentPassage({ ...advanced, id: 44, sampleResponse: '' });
+  assert.equal(advancedResult.sampleResponse, advanced.sampleResponse);
+});
+
+test('Runtime fallback never overwrites authored samples or mismatched passages', () => {
+  const authored = { id: 22, title: 'Esports', text: 'Teacher-edited text.', keyElements: {}, sampleResponse: 'Teacher-authored sample answer.' };
+  assert.equal(studentPassage(authored).sampleResponse, authored.sampleResponse);
+  assert.equal(fallbackSample({ ...authored, sampleResponse: '' , title: 'Different title' }), null);
+
+  const standard = structuredClone(seeds.find(p => p.id === 1));
+  standard.sampleResponse = '';
+  standard.text += ' Teacher-edited source.';
+  assert.equal(fallbackSample(standard), null);
 });
 
 test('Key phrases are short exact source excerpts, not highlighted sentences or completeness checklists', () => {
