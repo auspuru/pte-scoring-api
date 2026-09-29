@@ -39,11 +39,14 @@
 }
 .personal-ai-mascot-art{
   position:absolute;
-  inset:-6px;
+  inset:-8px;
+  width:calc(100% + 16px);
+  height:calc(100% + 16px);
   display:block;
-  background:center/contain no-repeat url("/assets/personal-ai-assistant.webp?v=2");
+  object-fit:contain;
+  pointer-events:none;
   transform:translateZ(0);
-  filter:saturate(1.06) contrast(1.02) drop-shadow(0 9px 18px rgba(23,59,99,.18));
+  filter:saturate(1.04) contrast(1.02) drop-shadow(0 9px 18px rgba(23,59,99,.18));
   transition:transform .25s cubic-bezier(.22,1,.3,1),filter .25s ease;
 }
 .personal-ai-launcher:hover .personal-ai-mascot-art{transform:scale(1.055) rotate(-1deg);filter:saturate(1.08) brightness(1.03)}
@@ -117,4 +120,11 @@ body.dark .personal-ai-panel h3,.dark .personal-ai-panel h3{color:#eaf4ff}
   letter-spacing:.04em;
   border:1px solid rgba(255,255,255,.72);
   box-shadow:0 6px 14px rgba(23,59,99,.22),inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+.personal-ai-launcher:focus{outline:none}
+.personal-ai-launcher:focus-visible{
+  outline:3px solid rgba(45,108,165,.34);
+  outline-offset:4px;
+  border-radius:30px;
 }
