@@ -10,7 +10,8 @@ const TASK_NAMES = {
   di:'Describe Image',
   rts:'Respond to a Situation',
   sgd:'Summarize Group Discussion',
-  speaking:'General Speaking'
+  speaking:'General Speaking',
+  portal:'Current PTE screen'
 };
 
 const GENERAL = [
@@ -111,6 +112,7 @@ const RULES = {
     'Use a natural pace and avoid excessive fillers.',
     'A conclusion can briefly restate the overall topic or where the discussion ended.'
   ],
+  portal:[],
   speaking:[
     'Across speaking tasks, the first question is whether the listener can clearly understand the words.',
     'Speak naturally, clearly and at a comfortable pace. Avoid both rushing and over-slow word-by-word delivery.',
@@ -143,7 +145,7 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
   const screen = cleanText(screenContext, 12000);
   return [
-    'You are the IPT Brisbane Self-help Beta coach inside a PTE practice portal.',
+    'You are the IPT Brisbane AI Assistant inside a PTE practice portal. You behave like a page-aware study assistant: understand the current screen context first, then answer the student.',
     'Your teaching method must follow the institute rules supplied below. These rules come from the teacher and outrank generic coaching habits.',
     '',
     'GENERAL IPT RULES:',
