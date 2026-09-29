@@ -23,8 +23,12 @@ This is **independent practice feedback**, not Pearson's official scoring engine
 Content remains scored separately from delivery. No overall /90 score is generated.
 When Azure Speech pronunciation assessment is configured, the saved recording can
 also receive pronunciation and oral-fluency practice estimates on a 0–5 scale plus
-0–100 acoustic detail. Those delivery scores come from the audio, never from the
-confirmed transcript alone, and are labelled as practice estimates. Without Azure
+0–100 diagnostic detail. Those delivery scores come from the audio, never from the
+confirmed transcript alone, and are labelled as practice estimates. Pronunciation
+uses pronunciation accuracy plus prosody when available; oral fluency uses Azure's
+fluency signal plus prosody when available. The portal uses a conservative mapping
+from Azure's 0–100 signals to the six Pearson-style descriptor levels rather than
+treating Azure percentages as Pearson marks. Without Azure
 configuration or during a provider outage, content feedback still completes and
 delivery remains available for teacher review. Existing admin impersonation can
 access a student's saved speaking attempts with its normal scope.
@@ -46,9 +50,10 @@ Selecting a question is the user action that starts the exam-style flow. The bro
 requests microphone permission, audio prompts play automatically where required,
 the preparation countdown runs automatically, and the microphone opens when the
 countdown finishes. During preparation the only normal learner control is
-**Skip preparation**. There is no manual Stop, upload, transcript editing or question
-navigation during the timed attempt. Recording stops at the response limit, saves
-under the authenticated attempt and proceeds automatically to assessment. Technical
+**Skip preparation**. During recording, **Submit response** is available so a learner
+who has finished can end the recording early; otherwise recording stops at the
+response limit. There is no upload, transcript editing or question navigation during
+the timed attempt. The saved recording proceeds automatically to assessment. Technical
 failures expose only the recovery action needed for that failure. Leaving or hiding
 the page releases capture. Response recordings have no public URL. Reattempting
 creates a fresh UUID, preserving prior audio, words and feedback.
@@ -93,7 +98,8 @@ practice allocation; official RA response time varies. Other preparation/respons
 limits: RS 0/15 seconds; DI 25/40; RL 10/40; SGD 10/120; RTS 10/40.
 The standalone Speaking practice now follows an exam-style interaction: prompt/audio
 progression, preparation and recording advance automatically; preparation can be
-skipped; the response is recorded once and submitted automatically. It remains a
+skipped; the response is recorded once and can be submitted early when the learner
+has finished, otherwise it is submitted automatically at the response limit. It remains a
 practice simulation rather than Pearson software: scoring is independent, RA uses a
 fixed 40-second practice response allocation, and a three-second silence cutoff is
 not currently enforced.
