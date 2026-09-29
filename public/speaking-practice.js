@@ -71,7 +71,7 @@
       if(owner&&owner!==user)reset();owner=user;activeType=type;visible=true;host=doc.getElementById('speakingPane');
       const ticket=++serial;
       try{
-        catalog ||= await api('/catalog');if(!valid(ticket,user)||!visible)return;
+        catalog=await api('/catalog');if(!valid(ticket,user)||!visible)return;
         if(!catalog.types[type])return;
         if(questionId){
           const target=catalog.questions.find(q=>String(q.id)===String(questionId)&&q.type===type);
