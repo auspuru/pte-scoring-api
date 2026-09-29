@@ -287,7 +287,7 @@ function installInterventions(app, options = {}) {
         if (plan.source!=='student' || !['SWT-01','CP-01','CP-02'].includes(plan.moduleCode)
             || (plan.items||[]).some(i=>i.kind==='swt_selection_trainer') || !contentIntent.test(plan.reason||'')) continue;
         const next = await store.update(username, plan.id, current => sanitizePlan({
-          ...current,moduleCode:trainerModule.code,title:trainerModule.title+' · Self-help Beta',area:trainerModule.area,task:trainerModule.task,
+          ...current,moduleCode:trainerModule.code,title:trainerModule.title+' · IPT Assistant Beta',area:trainerModule.area,task:trainerModule.task,
           weakness:trainerModule.weakness,items:trainerModule.items,status:'in_progress'
         },current));
         changed.set(plan.id,next);
@@ -712,7 +712,7 @@ function installInterventions(app, options = {}) {
       if (existing.filter(active).length >= 3) return res.status(409).json({error:'You already have 3 active focus areas. Finish one before adding another.'});
       const plan = sanitizePlan({
         moduleCode:module.code, source:'student', area:module.area, task:TASK_NAME[selectedTask] || module.task, weakness:module.weakness,
-        title:module.title + ' · Self-help Beta',
+        title:module.title + ' · IPT Assistant Beta',
         reason:problem ? 'You asked for help with: ' + problem : module.reason,
         priority:'normal', items:module.items || [], notificationUnread:false, status:'not_started'
       }, null, true);
