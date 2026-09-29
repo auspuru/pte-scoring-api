@@ -158,7 +158,6 @@
   }
 
   function start() {
-    ensureCursor();
     document.addEventListener('pointermove', onPointerMove, { passive: true });
     document.addEventListener('pointerdown', () => pressCursor(true), { passive: true });
     document.addEventListener('pointerup', () => pressCursor(false), { passive: true });
