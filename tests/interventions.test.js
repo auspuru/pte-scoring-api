@@ -223,3 +223,44 @@ test('standalone SWT Practice highlight mode uses the hidden trainer key without
   assert(Array.isArray(checked.data.result.targetRanges));
   assert(Array.isArray(checked.data.result.missedIdeas));
 });
+
+
+test('Self-help Beta covers speaking tasks with IPT task-specific modules',async t=>{
+  const h=await harness();
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const cases=[
+    ['ra','I speak too fast and do not pause at commas','RA-01'],
+    ['rs','I forget difficult sentences and remember only a few words','MEM-01'],
+    ['rl','My notes are fragmented and I miss the main idea','RL-01'],
+    ['di','I do not know which trends and key features to describe','CP-04'],
+    ['rts','I do not know how to greet the person or make the request','REG-01'],
+    ['sgd','I mix the speakers and my notes are fragmented','NT-03'],
+    ['speaking','My pronunciation and fluency are weak and I sound mechanical','PR-01']
+  ];
+  for(const [task,problem,moduleCode] of cases){
+    const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task,problem}});
+    assert.equal(advice.status,200,task);
+    assert.equal(advice.data.beta,true,task);
+    assert(advice.data.suggestions.some(x=>x.moduleCode===moduleCode),task+' should suggest '+moduleCode);
+  }
+});
+
+test('General Speaking Beta plan contains the ordered pronunciation and fluency playlist',async t=>{
+  const h=await harness();
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const result=await call(h.base,'/api/interventions/self-plan',{method:'POST',token:'alice',body:{
+    moduleCode:'PR-01',task:'speaking',problem:'I want to improve pronunciation and fluency'
+  }});
+  assert.equal(result.status,200);
+  const plan=result.data.plan;
+  assert.equal(plan.task,'General Speaking');
+  const videos=plan.items.filter(x=>x.kind==='video');
+  assert.equal(videos.length,4);
+  assert.match(videos[0].title,/Shadowing/);
+  assert.match(videos[0].url,/N20jOJDYyYA/);
+  assert.match(videos[1].url,/GkGdNoLaQE8/);
+  assert.match(videos[2].url,/I0EGFlffmcY/);
+  assert.match(videos[3].url,/xzHFc7DWwHM/);
+  assert(plan.items.some(x=>/Daily speaking routine/i.test(x.title)));
+  assert(plan.items.some(x=>/Natural English/i.test(x.title)));
+});
