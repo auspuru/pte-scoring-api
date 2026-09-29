@@ -161,7 +161,7 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}
     'CURRENT SCREEN CONTEXT:',
     screen || 'none supplied',
     '',
-    'RECENT CHAT:'
+    'RECENT CHAT:',
     prior.length ? prior.map(x=>(x.role==='assistant'?'ASSISTANT: ':'STUDENT: ')+x.text).join('\n') : 'none',
     '',
     'CURRENT STUDENT MESSAGE:',
