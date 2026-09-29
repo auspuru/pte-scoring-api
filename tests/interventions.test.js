@@ -95,7 +95,7 @@ test('self-help Beta uses recent SWT trait scores and can create a student plan'
   const plan=await call(h.base,'/api/interventions/self-plan',{method:'POST',token:'alice',body:{moduleCode:'SWT-01',problem:'How should I attempt SWT?'}});
   assert.equal(plan.status,200);
   assert.equal(plan.data.plan.source,'student');
-  assert.match(plan.data.plan.title,/Self-help Beta/);
+  assert.match(plan.data.plan.title,/IPT Assistant Beta/);
 });
 
 test('SWT Beta routes important-line questions to the highlight trainer first',async t=>{
@@ -164,7 +164,7 @@ test('an older generic CP-01 self-help card upgrades automatically to the SWT tr
   t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
   const created=await call(h.base,'/api/admin/interventions/alice',{method:'POST',admin:'teacher',body:{
     source:'student',moduleCode:'CP-01',area:'Writing / Speaking / Listening',task:'SWT, RL, SGD, SST',
-    title:'Content Picking — Main Idea · Self-help Beta',reason:'You asked for help with: how to improve content?',
+    title:'Content Picking — Main Idea · IPT Assistant Beta',reason:'You asked for help with: how to improve content?',
     items:[{kind:'practice',title:'Main idea drill',description:'For 5 passages or audios, identify only the central idea.'}]
   }});
   assert.equal(created.status,200);
@@ -226,7 +226,7 @@ test('standalone SWT Practice highlight mode uses the hidden trainer key without
 });
 
 
-test('Self-help Beta covers speaking tasks with IPT task-specific modules',async t=>{
+test('IPT Assistant Beta covers speaking tasks with IPT task-specific modules',async t=>{
   const h=await harness();
   t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
   const cases=[
@@ -267,7 +267,7 @@ test('General Speaking Beta plan contains the ordered pronunciation and fluency 
 });
 
 
-test('Self-help Beta returns Claude IPT coaching alongside scripted plan suggestions',async t=>{
+test('IPT Assistant Beta returns Claude IPT coaching alongside scripted plan suggestions',async t=>{
   let promptSeen='';
   const h=await harness({callCoachModel:async prompt=>{promptSeen=prompt;return 'Your main issue is speaker tracking. Keep separate S1, S2 and S3 notes, then report each speaker in third person.';}});
   t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
@@ -286,7 +286,7 @@ test('Self-help Beta returns Claude IPT coaching alongside scripted plan suggest
   assert.match(promptSeen,/I keep mixing speaker one and speaker two/i);
 });
 
-test('Self-help Beta keeps scripted recommendations when Claude coaching is unavailable',async t=>{
+test('IPT Assistant Beta keeps scripted recommendations when Claude coaching is unavailable',async t=>{
   const h=await harness({callCoachModel:async()=>{throw Error('provider unavailable');}});
   t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
   const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{
