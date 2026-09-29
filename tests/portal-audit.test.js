@@ -122,7 +122,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(interventionsClient,/Recommended next step/,'assistant should turn advice into a clear action');
   assert.match(interventionsClient,/formatCoachText/,'assistant replies should render readable structured text instead of raw markdown markers');
   assert.match(interventionsClient,/ensureAssistantPresentation/,'assistant must load its presentation layer even when the cached shell is stale');
-  assert.match(interventionsClient,/portal-insights\\.css\\?v=20260929-assistant-ux2/,'assistant fallback stylesheet should use the current cache-busted asset');
+  assert.match(interventionsClient,/portal-insights\.css\?v=20260929-assistant-ux2/,'assistant fallback stylesheet should use the current cache-busted asset');
   assert.match(interventionsClient,/ask the IPT Assistant below/i,'empty state should point students to the assistant, not a beta helper');
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
   assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
