@@ -48,6 +48,29 @@ test('My Progress derives a weakest area only from comparable saved native resul
   assert.equal(model.areas.find(a => a.name === 'Summarise Spoken Text').count, 2);
 });
 
+
+test('My Progress includes normal Reading practice results in task trends', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading: { history: [
+      { id: 'practice-1', practiceUid: 'dropdown:1', done: true, earned: 1, possible: 4, startedAt: 1, finishedAt: 10 },
+      { id: 'mock-1', done: true, earned: 10, possible: 10, percent: 100, startedAt: 15, finishedAt: 15 },
+      { id: 'practice-2', practiceUid: 'dropdown:2', done: true, earned: 3, possible: 4, startedAt: 2, finishedAt: 20 }
+    ] },
+    swt: {},
+    essays: []
+  }, []);
+  const reading = model.areas.find(a => a.name === 'Reading practice');
+  assert.equal(reading.count, 2, 'normal practice attempts should feed Reading trends');
+  assert.equal(reading.trend.label, 'Improving');
+  assert.equal(reading.trend.delta, 50);
+  assert.equal(model.complete, 1, 'mock history remains separate from individual practice trends');
+});
+
 test('writing lab presents estimate scores without native mark totals', () => {
   assert.match(writingClient, /<h2>Practice estimate<\/h2>/);
   assert.match(writingClient, /summary\.score90/);
