@@ -123,6 +123,8 @@ const EXTERNAL_SPELLCHECK_ENABLED = process.env.DISABLE_EXTERNAL_SPELLCHECK !== 
 // upgrade is a one-line change instead of hunting hardcoded strings.
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 const CLAUDE_COACH_MODEL = process.env.CLAUDE_COACH_MODEL || CLAUDE_MODEL;
+const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || '').trim();
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
 
 // H2 (v19.17): optional rate limiting. express-rate-limit is loaded lazily;
 // if it isn't installed the server still runs (just without the limiter), and
@@ -223,6 +225,27 @@ if (rateLimit) {
 let anthropic = null;
 if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+}
+
+async function callGeminiCoach(prompt) {
+  if (!GEMINI_API_KEY) throw new Error('Gemini is not configured.');
+  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(GEMINI_MODEL) + ':generateContent', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-goog-api-key':GEMINI_API_KEY
+    },
+    body:JSON.stringify({
+      contents:[{role:'user',parts:[{text:String(prompt || '')}]}],
+      generationConfig:{temperature:0.2,maxOutputTokens:1800}
+    }),
+    signal:AbortSignal.timeout(45000)
+  });
+  const data = await response.json().catch(()=>({}));
+  if (!response.ok) throw new Error(data?.error?.message || 'Gemini request failed.');
+  const text = (data?.candidates?.[0]?.content?.parts || []).map(part=>part?.text || '').join('\n').trim();
+  if (!text) throw new Error(data?.promptFeedback?.blockReason ? 'Gemini blocked this request.' : 'Gemini returned an empty response.');
+  return text;
 }
 
 const essayGrader = createEssayGrader(async prompt => {
@@ -6107,6 +6130,9 @@ require('./interventions').installInterventions(app, {
     return p ? studentPassage(p) : null;
   },
   callCoachModel: async prompt => {
+    if (GEMINI_API_KEY) {
+      return { text:await callGeminiCoach(prompt), source:'gemini' };
+    }
     if (!anthropic) throw new Error('IPT coaching assistant is not configured.');
     const response = await anthropic.messages.create({
       model: CLAUDE_COACH_MODEL,
@@ -6115,7 +6141,7 @@ require('./interventions').installInterventions(app, {
       messages: [{ role:'user', content:prompt }]
     }, { timeout:45000, maxRetries:0 });
     if (response.stop_reason === 'max_tokens') throw new Error('Incomplete coaching response.');
-    return response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').trim();
+    return { text:response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').trim(), source:'claude-fallback' };
   },
   requireAdmin
 });
