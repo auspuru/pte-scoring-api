@@ -698,6 +698,28 @@ function installInterventions(app, options = {}) {
     } catch (e) { sendError(res,e); }
   });
 
+  app.post('/api/interventions/screen-help', student, async (req,res) => {
+    try {
+      const task = SELF_HELP_TASKS.has(req.body?.task) ? req.body.task : 'portal';
+      const message = clean(req.body?.message, 4000) || 'Give me feedback on what is currently shown on this screen.';
+      const screenContext = clean(req.body?.screenContext, 12000);
+      if (!screenContext) return res.status(400).json({error:'There is no readable practice content on this screen yet.'});
+      if (typeof callCoachModel !== 'function') return res.status(503).json({error:'The AI Assistant is temporarily unavailable.'});
+      const all = await evidence(req.interventionUser);
+      const score = task === 'portal' ? null : latestScore(task, all);
+      const prompt = iptCoach.buildPrompt({
+        task,
+        message,
+        history:req.body?.history,
+        latestScore:score,
+        screenContext
+      });
+      const reply = clean(await callCoachModel(prompt), 6000);
+      if (!reply) return res.status(502).json({error:'The AI Assistant returned an empty response.'});
+      res.json({reply,task,taskName:TASK_NAME[task] || 'Current PTE screen'});
+    } catch (e) { sendError(res,e); }
+  });
+
   app.post('/api/interventions/self-plan', student, async (req,res) => {
     try {
       let code = clean(req.body?.moduleCode,60);
