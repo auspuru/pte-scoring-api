@@ -15797,6 +15797,16 @@ function renderSwtKeyPhrases(passage){
       escapeHtml(guide.connection) + '</p>' : '');
 }
 
+async function fetchSwtSampleText(passage){
+  const local = String(passage?.sampleResponse || '').trim();
+  try {
+    const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id), { cache: 'no-store' });
+    const result = await response.json();
+    if (response.ok && String(result.sample || '').trim()) return String(result.sample).trim();
+  } catch (error) { /* fall back to the passage copy below */ }
+  return local;
+}
+
 async function checkSwtSample(passage){
   const key = JSON.stringify([passage.id, passage.text, passage.sampleResponse]);
   const cached = swtSampleChecks.get(key);
@@ -15810,12 +15820,13 @@ async function checkSwtSample(passage){
       const result = await response.json();
       if (!response.ok || !['verified', 'needs_revision'].includes(result.status)) {
         swtSampleChecks.delete(key);
-        return { status: 'unavailable', note: result.note || 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+        return { status: 'unavailable', sample: result.sample || passage.sampleResponse || '',
+          note: result.note || 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
       }
-      return result;
+      return { ...result, sample: result.sample || passage.sampleResponse || '' };
     } catch (error) {
       swtSampleChecks.delete(key);
-      return { status: 'unavailable', note: 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+      return { status: 'unavailable', sample: passage.sampleResponse || '', note: 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
     } finally {
       clearTimeout(timer);
     }
@@ -15827,12 +15838,17 @@ async function checkSwtSample(passage){
 async function refreshSwtSample(passage){
   const note = document.getElementById('sampleAnswerNotes');
   if (!note) return;
-  note.textContent = 'Checking sample…';
+  note.textContent = 'Loading sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
-  const result = await checkSwtSample(passage);
+  const sampleText = await fetchSwtSampleText(passage);
   if (swtResultPassage !== passage) return;
   const sample = document.getElementById('sampleAnswerText');
+  if (sample) sample.textContent = sampleText || '(No sample answer authored for this passage yet.)';
+  note.textContent = sampleText ? 'Checking this sample against the current rubric…' : 'No sample answer is authored for this passage yet.';
+  if (!sampleText) { note.dataset.status = 'unavailable'; note.setAttribute('aria-busy', 'false'); return; }
+  const result = await checkSwtSample({ ...passage, sampleResponse: sampleText });
+  if (swtResultPassage !== passage) return;
   if (sample && result.sample) sample.textContent = result.sample;
   note.textContent = result.note;
   note.dataset.status = result.status;
@@ -16282,17 +16298,17 @@ function applyVocabSwap(original, replacement){
 
 async function showSample(){
   const p = passages.find(x => x.id === currentPassageId);
-  if(!p || !p.sampleResponse){ toast('No sample available for this passage.'); return; }
+  if(!p){ toast('Passage not loaded.'); return; }
   const passageId = currentPassageId;
-  toast('Checking the sample…');
-  const result = await checkSwtSample(p);
+  const sampleText = await fetchSwtSampleText(p);
   if (currentPassageId !== passageId) return;
+  if(!sampleText){ toast('No sample available for this passage.'); return; }
   const summaryInputEl = document.getElementById('summaryInput');
-  if (summaryInputEl) summaryInputEl.value = result.sample || p.sampleResponse;
+  if (summaryInputEl) summaryInputEl.value = sampleText;
   showSwtScreen('swtPracticeScreen');
   switchWriteTab('write');
   onSummaryInput();
-  toast(result.status === 'verified' ? 'Checked sample loaded — assessed with the same rubric.' : 'Example loaded — it is not verified as full-mark.');
+  toast('Sample answer loaded.');
 }
 
 function backToPractice(){

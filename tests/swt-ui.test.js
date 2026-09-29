@@ -59,19 +59,29 @@ test('Async sample checks cannot replace the next passage’s sample after navig
   const old = { id: 8 }, current = { id: 9 };
   const note = { textContent: '', dataset: {}, setAttribute() {} };
   const sample = { textContent: 'Current passage sample' };
-  let finish;
+  let finishSample;
   const context = { swtResultPassage: old,
     document: { getElementById: id => id === 'sampleAnswerNotes' ? note : sample },
-    checkSwtSample: () => new Promise(resolve => { finish = resolve; }) };
+    fetchSwtSampleText: () => new Promise(resolve => { finishSample = resolve; }),
+    checkSwtSample: async () => ({ status: 'verified', sample: 'Old checked sample', note: 'Old note' }) };
   vm.createContext(context);
   vm.runInContext(functionSource('refreshSwtSample', true), context);
   const pending = context.refreshSwtSample(old);
   context.swtResultPassage = current;
   note.textContent = 'Current passage note';
-  finish({ status: 'verified', sample: 'Old sample', note: 'Old note' });
+  finishSample('Old sample');
   await pending;
   assert.equal(sample.textContent, 'Current passage sample');
   assert.equal(note.textContent, 'Current passage note');
+});
+
+test('Sample display is independent of verification availability', () => {
+  const check = functionSource('checkSwtSample', true);
+  const refresh = functionSource('refreshSwtSample', true);
+  assert.match(check, /sample:\s*result\.sample \|\| passage\.sampleResponse/);
+  assert.match(check, /sample:\s*passage\.sampleResponse/);
+  assert.match(refresh, /await fetchSwtSampleText\(passage\)/);
+  assert.match(refresh, /sample\.textContent = sampleText/);
 });
 
 test('Score cards size independently and phrase cards stack on narrow screens', () => {
