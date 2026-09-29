@@ -12,7 +12,7 @@ test('Speaking practice is deferred until a speaking route is opened', () => {
 
   assert.equal(html.includes('speaking-practice.js'), false);
   assert.match(js, /function ensureSpeakingRuntimeLoaded\(\)/);
-  assert.match(js, /speaking-practice\.js\?v=20260923-nextsteps/);
+  assert.match(js, /speaking-practice\.js\?v=20260929-delivery-v3/);
   assert.match(js, /Preparing Speaking practice/);
   assert.match(js, /data-speaking-load-retry/);
 });
