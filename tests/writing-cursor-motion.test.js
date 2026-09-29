@@ -13,7 +13,8 @@ test('Writing cursor is progressive enhancement and excludes Speaking',()=>{
   assert.match(js,/hover: hover\) and \(pointer: fine/);
   assert.match(js,/pointermove/);
   assert.match(js,/requestAnimationFrame/);
-  assert.match(js,/\.ipt-writing-cursor-enabled/);
+  assert.doesNotMatch(js,/function start\(\) \{\s*ensureCursor\(\)/,'cursor nodes are created only after an active Writing pointer move');
+  assert.match(js,/ipt-writing-cursor-enabled/);
   assert.doesNotMatch(js,/speakingPane|speaking-[a-z]+/i);
 });
 
