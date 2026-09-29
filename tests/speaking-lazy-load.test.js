@@ -25,6 +25,6 @@ test('Speaking deferred-load failure can retry without losing the requested ques
 
 test('Speaking styles and portal bundle are cache-busted with the delivery UI release', () => {
   const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
-  assert.match(html, /speaking-practice\.css\?v=3/);
+  assert.match(html, /speaking-practice\.css\?v=4/);
   assert.match(html, /index\.min\.js\?v=20260929-speaking-exam-flow-v5/);
 });
