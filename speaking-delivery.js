@@ -162,7 +162,9 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
   });
   if(!response.ok){
     console.warn('[speaking-delivery-provider]',JSON.stringify({status:response.status}));
-    throw Error('Audio delivery assessment is temporarily unavailable.');
+    const error=Error('Audio delivery assessment is temporarily unavailable.');
+    error.providerStatus=response.status;
+    throw error;
   }
   const json=await response.json();
   if(json?.RecognitionStatus&&json.RecognitionStatus!=='Success')throw Error('Azure Speech could not assess this audio.');
