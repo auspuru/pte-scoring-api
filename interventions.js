@@ -578,6 +578,7 @@ function installInterventions(app, options = {}) {
     unfinished.sort((a,b)=>when(b.at)-when(a.at));
     return {
       generatedAt:new Date().toISOString(),
+      filterPolicy:{unattemptedExcluded:true,extremeLowExcluded:true,excludedAtOrBelowPct:Math.round(PROFILE_MIN_RATIO*100)},
       totals:{practiceResults:points.filter(p=>p.source==='practice').length,mockTaskResults:points.filter(p=>p.source==='mock').length,completedMocks:recentMocks.length},
       weakestAreas:weakest,
       strongestAreas:strongest,
