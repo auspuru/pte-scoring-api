@@ -373,3 +373,32 @@ test('AI assistant automatically feeds saved practice and mock progress into coa
   assert.match(promptSeen,/"mockAttempts":1/);
   assert.match(promptSeen,/"recentMocks":\[\{"title":"Reading Sectional Mock"/);
 });
+
+
+test('SST coach rejects Retell Lecture-style feedback and regenerates a written-task answer',async t=>{
+  let calls=0, correctionPrompt='';
+  const h=await harness({callCoachModel:async prompt=>{
+    calls++;
+    if(calls===1) return 'SST is a speaking task. Speak naturally and continuously, and focus on fluency and pauses.';
+    correctionPrompt=prompt;
+    return 'Summarize Spoken Text is a Listening and Writing task. Listen for the main topic and key support, then type a connected 50–70 word written summary.';
+  }});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'sst',
+    message:'How should I improve this?',
+    screenContext:'Current portal page: Summarise spoken text\nPortal section: spoken-text\nVisible page content: Listen to the audio and write your summary.'
+  }});
+  assert.equal(response.status,200);
+  assert.equal(calls,2);
+  assert.match(correctionPrompt,/CRITICAL TASK CORRECTION/);
+  assert.match(response.data.reply,/Listening and Writing/i);
+  assert.match(response.data.reply,/50–70 word written summary/i);
+  assert.doesNotMatch(response.data.reply,/speaking task|fluency|pauses/i);
+});
+
+test('student profile numeric parser does not convert missing scores into false zero percent',()=>{
+  const source=require('node:fs').readFileSync(require.resolve('../interventions'),'utf8');
+  assert.match(source,/if\(value===null\|\|value===undefined\|\|value===''/);
+  assert.doesNotMatch(source,/const profileNumber = value => \{\s*const n=Number\(value\)/);
+});
