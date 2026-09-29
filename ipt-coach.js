@@ -10,7 +10,8 @@ const TASK_NAMES = {
   di:'Describe Image',
   rts:'Respond to a Situation',
   sgd:'Summarize Group Discussion',
-  speaking:'General Speaking'
+  speaking:'General Speaking',
+  portal:'Current PTE screen'
 };
 
 const GENERAL = [
@@ -111,6 +112,7 @@ const RULES = {
     'Use a natural pace and avoid excessive fillers.',
     'A conclusion can briefly restate the overall topic or where the discussion ended.'
   ],
+  portal:[],
   speaking:[
     'Across speaking tasks, the first question is whether the listener can clearly understand the words.',
     'Speak naturally, clearly and at a comfortable pace. Avoid both rushing and over-slow word-by-word delivery.',
@@ -136,13 +138,14 @@ function cleanHistory(history) {
   }).filter(Boolean);
 }
 
-function buildPrompt({task,message,history=[],latestScore=null}) {
+function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}) {
   const name = TASK_NAMES[task] || 'PTE practice';
   const taskRules = RULES[task] || [];
   const prior = cleanHistory(history);
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
+  const screen = cleanText(screenContext, 12000);
   return [
-    'You are the IPT Brisbane Self-help Beta coach inside a PTE practice portal.',
+    'You are the IPT Brisbane AI Assistant inside a PTE practice portal. Behave like a page-aware study assistant: understand the current screen context first, then answer the student.',
     'Your teaching method must follow the institute rules supplied below. These rules come from the teacher and outrank generic coaching habits.',
     '',
     'GENERAL IPT RULES:',
@@ -155,6 +158,9 @@ function buildPrompt({task,message,history=[],latestScore=null}) {
     'LATEST PORTAL RESULT:',
     score,
     '',
+    'CURRENT SCREEN CONTEXT:',
+    screen || 'none supplied',
+    '',
     'RECENT CHAT:',
     prior.length ? prior.map(x=>(x.role==='assistant'?'ASSISTANT: ':'STUDENT: ')+x.text).join('\n') : 'none',
     '',
@@ -164,6 +170,7 @@ function buildPrompt({task,message,history=[],latestScore=null}) {
     'RESPONSE INSTRUCTIONS:',
     '- Answer the current question directly and conversationally.',
     '- Prefer 2–5 compact paragraphs. Use at most one short list if it materially helps.',
+    '- Treat CURRENT SCREEN CONTEXT as evidence from the student portal. Use the visible task, question, student response, score or feedback shown there when relevant. Do not invent content that is not present. If the student asks for feedback on the screen, analyse that context directly.',
     '- If the student supplied a response, diagnose the biggest issue first and quote only very short fragments when useful.',
     '- Give a concrete next action the student can do now.',
     '- Do not claim a score guarantee.',

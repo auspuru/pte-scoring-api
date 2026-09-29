@@ -297,3 +297,39 @@ test('IPT Assistant Beta keeps scripted recommendations when Claude coaching is 
   assert.equal(advice.data.coachReply,'');
   assert(advice.data.suggestions.some(x=>x.moduleCode==='REG-01'));
 });
+
+
+test('page-aware AI assistant grounds feedback in current screen context',async t=>{
+  let promptSeen='';
+  const h=await harness({callCoachModel:async prompt=>{promptSeen=prompt;return 'Your response misses the second half of the sentence. Focus on capturing more correct content.';}});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'rs',
+    message:'What am I doing wrong here?',
+    screenContext:'Current portal page: Repeat Sentence\nVisible question: Climate change affects coastal cities.\nStudent response: Climate change affects.',
+    history:[]
+  }});
+  assert.equal(response.status,200);
+  assert.equal(response.data.screenAware,true);
+  assert.equal(response.data.task,'rs');
+  assert.match(response.data.reply,/second half/i);
+  assert.match(promptSeen,/CURRENT SCREEN CONTEXT:/);
+  assert.match(promptSeen,/Climate change affects coastal cities/);
+  assert.match(promptSeen,/Student response: Climate change affects/);
+  assert.match(promptSeen,/Repeat Sentence/);
+});
+
+test('page-aware AI assistant can use generic portal context without forcing a PTE task',async t=>{
+  let promptSeen='';
+  const h=await harness({callCoachModel:async prompt=>{promptSeen=prompt;return 'This page shows your recent study progress.';}});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'portal',
+    message:'What am I looking at?',
+    screenContext:'Current portal page: My Progress\nVisible page content: Recent practice and scores.'
+  }});
+  assert.equal(response.status,200);
+  assert.equal(response.data.task,'portal');
+  assert.match(promptSeen,/Current PTE screen/);
+  assert.match(promptSeen,/My Progress/);
+});

@@ -698,6 +698,35 @@ function installInterventions(app, options = {}) {
     } catch (e) { sendError(res,e); }
   });
 
+  app.post('/api/interventions/screen-help', student, async (req,res) => {
+    try {
+      const requestedTask = clean(req.body?.task, 40);
+      const task = SELF_HELP_TASKS.has(requestedTask) ? requestedTask : 'portal';
+      const message = clean(req.body?.message, 4000);
+      const screenContext = clean(req.body?.screenContext, 12000);
+      if (!message) return res.status(400).json({error:'Ask the AI Assistant a question.'});
+      if (!screenContext) return res.status(400).json({error:'The current page context is unavailable.'});
+      if (typeof callCoachModel !== 'function') return res.status(503).json({error:'The AI Assistant is unavailable right now.'});
+      let score = null;
+      if (task !== 'portal') {
+        const all = await evidence(req.interventionUser);
+        score = latestScore(task, all);
+      }
+      const prompt = iptCoach.buildPrompt({
+        task,
+        message,
+        history:req.body?.history,
+        latestScore:score,
+        screenContext
+      });
+      const modelResult = await callCoachModel(prompt);
+      const reply = clean(modelResult && typeof modelResult === 'object' ? modelResult.text : modelResult, 6000);
+      const source = clean(modelResult && typeof modelResult === 'object' ? modelResult.source : 'ai', 40) || 'ai';
+      if (!reply) return res.status(503).json({error:'The AI Assistant could not produce a response.'});
+      res.json({reply,source,task,screenAware:true});
+    } catch (e) { sendError(res,e); }
+  });
+
   app.post('/api/interventions/self-plan', student, async (req,res) => {
     try {
       let code = clean(req.body?.moduleCode,60);
