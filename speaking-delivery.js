@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-09-29.2';
+const VERSION = 'azure-delivery-2026-09-29.3';
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
@@ -44,12 +44,22 @@ function configurationSummary(env=process.env) {
 function band5(raw) {
   const value=Number(raw);
   if(!Number.isFinite(value)) return null;
-  if(value>=90)return 5;
-  if(value>=80)return 4;
-  if(value>=65)return 3;
-  if(value>=50)return 2;
-  if(value>=30)return 1;
+  // Conservative practice calibration. Azure's 0-100 acoustic scale is not
+  // Pearson's proprietary 0-5 trait scale, so high bands require stronger evidence.
+  if(value>=94)return 5;
+  if(value>=84)return 4;
+  if(value>=72)return 3;
+  if(value>=58)return 2;
+  if(value>=40)return 1;
   return 0;
+}
+
+function descriptor(kind,score) {
+  if(!Number.isInteger(score)||score<0||score>5)return '';
+  const labels=kind==='fluency'
+    ? ['Disfluent','Limited','Intermediate','Good','Advanced','Highly proficient']
+    : ['Non-English','Intrusive','Intermediate','Good','Advanced','Highly proficient'];
+  return labels[score];
 }
 
 function round1(value) {
@@ -76,9 +86,11 @@ function deliveryEvidence(question,transcript,durationSeconds) {
   const reference=scripted?tokens(question?.text):[],matched=scripted?lcsLength(reference,spoken):null;
   const coverage=scripted&&reference.length?matched/reference.length:null;
   let sufficient=true;
-  if(type==='ra')sufficient=durationSeconds>=8&&spoken.length>=12&&coverage>=0.35;
-  else if(type==='rs')sufficient=durationSeconds>=1.5&&spoken.length>=3&&coverage>=0.35;
-  else sufficient=durationSeconds>=4&&spoken.length>=6;
+  // Delivery traits need enough continuous speech to be meaningful.
+  // These are portal safeguards, not official Pearson cut-offs.
+  if(type==='ra')sufficient=durationSeconds>=10&&spoken.length>=18&&coverage>=0.50;
+  else if(type==='rs')sufficient=durationSeconds>=2&&spoken.length>=4&&coverage>=0.50;
+  else sufficient=durationSeconds>=6&&spoken.length>=12;
   return {
     sufficient,
     durationSeconds:round1(durationSeconds),
@@ -126,14 +138,19 @@ function aggregate(chunks,{evidence}={}) {
     return round1(rows.reduce((sum,item)=>sum+item[key]*weight(item),0)/total);
   };
   const accuracy=average('accuracy'),fluency=average('fluency'),prosody=average('prosody'),completeness=average('completeness');
+  // Pearson's Pronunciation and Oral Fluency are distinct traits. Keep them
+  // separate instead of using Azure PronScore, which also mixes completeness.
+  const pronunciationRaw=Number.isFinite(accuracy)
+    ? round1(Number.isFinite(prosody)?accuracy*0.85+prosody*0.15:accuracy)
+    : null;
+  const fluencyRaw=Number.isFinite(fluency)
+    ? round1(Number.isFinite(prosody)?fluency*0.80+prosody*0.20:fluency)
+    : null;
   const issues=[];
   for(const item of usable)for(const word of item.words||[]) {
     if(word.errorType!=='None'||(Number.isFinite(word.accuracy)&&word.accuracy<70))issues.push(word);
   }
   const weakest=[...new Map(issues.sort((a,b)=>(a.accuracy??101)-(b.accuracy??101)).map(item=>[item.word.toLowerCase(),item])).values()].slice(0,8);
-  const pronunciationRaw=Number.isFinite(accuracy)
-    ? round1(Number.isFinite(prosody)?accuracy*0.8+prosody*0.2:accuracy)
-    : null;
   const enough=evidence?.sufficient!==false;
   const evidenceText=evidence&&!enough
     ? (Number.isFinite(evidence.coverage)
@@ -144,9 +161,14 @@ function aggregate(chunks,{evidence}={}) {
     deliveryVersion:VERSION,
     pronunciation:{
       score:enough?band5(pronunciationRaw):null,maximum:5,raw:pronunciationRaw,
+      descriptor:enough?descriptor('pronunciation',band5(pronunciationRaw)):'',
       accuracy,prosody,completeness,words:weakest
     },
-    fluency:{score:enough?band5(fluency):null,maximum:5,raw:fluency},
+    fluency:{
+      score:enough?band5(fluencyRaw):null,maximum:5,raw:fluencyRaw,
+      descriptor:enough?descriptor('fluency',band5(fluencyRaw)):'',
+      acousticFluency:fluency,prosody
+    },
     deliveryEvidence:evidence||null,
     deliveryStatus:enough?'Audio assessed — PTE-style practice estimate':'Not enough speech for a reliable pronunciation or oral-fluency estimate. '+evidenceText,
     deliveryAssessment:enough
@@ -249,4 +271,4 @@ async function assessRecording(recording,{
   return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds)});
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
+module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
