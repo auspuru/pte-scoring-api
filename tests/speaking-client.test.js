@@ -53,6 +53,7 @@ test('Read Aloud opens directly in timed preparation with Skip preparation as th
   assert.equal(h.nodes.get('speaking-record').hidden,true);
   assert.equal(h.nodes.get('speaking-assess-retry').hidden,true);
   assert.equal(h.nodes.get('speaking-upload-retry').hidden,true);
+  assert.equal(h.nodes.get('speaking-finish').hidden,true);
   assert.doesNotMatch(h.host.innerHTML,/Stop recording|Confirm what you said|Audio file under 3 MB|Save transcript/);
   assert.doesNotMatch(h.host.innerHTML,/My questions/);
   await h.click({speakingAction:'skip'});assert.equal(h.recorders[0].state,'recording');
@@ -60,6 +61,15 @@ test('Read Aloud opens directly in timed preparation with Skip preparation as th
   h.tick(40001);await flush();
   assert.equal(h.recorders[0].state,'inactive');assert.equal([...h.attempts.values()][0].status,'submitted');
   assert.match(h.host.innerHTML,/Your result/);assert.match(h.host.innerHTML,/Sample response/);assert.match(h.host.innerHTML,/My questions/);
+});
+
+test('Submit response ends recording early, saves the audio and starts scoring immediately',async()=>{
+  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'skip'});
+  assert.equal(h.recorders[0].state,'recording');assert.equal(h.nodes.get('speaking-finish').hidden,false);
+  h.tick(12000);await h.click({speakingAction:'finish'});await flush();
+  assert.equal(h.recorders[0].state,'inactive');assert.equal([...h.attempts.values()][0].status,'submitted');
+  assert(h.requests.some(r=>r.url.endsWith('/recording')&&r.body));assert(h.requests.some(r=>r.url.endsWith('/submit')));
+  assert.match(h.host.innerHTML,/Your result/);
 });
 
 test('Preparation expiry opens the microphone automatically without a second click',async()=>{
