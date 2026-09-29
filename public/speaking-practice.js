@@ -131,8 +131,8 @@
         ? '<section class="speaking-card speaking-exam-panel">'
           +'<div class="speaking-exam-status"><div><span class="speaking-kicker">Exam mode</span><span id="speaking-phase" role="status"></span></div><strong id="speaking-clock"></strong></div>'
           +'<div id="speaking-level-panel" class="speaking-exam-mic" hidden><meter id="speaking-level" min="0" max="100" value="0"></meter><p id="speaking-mic-status" role="status">Microphone connected</p></div>'
-          +'<div class="speaking-exam-actions"><button class="portal-button primary" data-speaking-action="skip" id="speaking-skip" hidden>Skip preparation</button><button class="portal-button primary" data-speaking-action="record" id="speaking-record" hidden>Retry microphone</button><button class="portal-button primary" data-speaking-action="submit" id="speaking-assess-retry" hidden>Retry assessment</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving response</button></div>'
-          +'<p class="speaking-exam-note">The microphone opens automatically when preparation ends. Recording stops automatically at the response limit.</p>'
+          +'<div class="speaking-exam-actions"><button class="portal-button primary" data-speaking-action="skip" id="speaking-skip" hidden>Skip preparation</button><button class="portal-button primary" data-speaking-action="finish" id="speaking-finish" hidden>Submit response</button><button class="portal-button primary" data-speaking-action="record" id="speaking-record" hidden>Retry microphone</button><button class="portal-button primary" data-speaking-action="submit" id="speaking-assess-retry" hidden>Retry assessment</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving response</button></div>'
+          +'<p class="speaking-exam-note">The microphone opens automatically when preparation ends. Recording stops at the response limit, or you can submit once you are finished.</p>'
           +'</section>'
         : '';
       const review=submitted
@@ -161,8 +161,8 @@
       const pronunciationReady=!!(pronunciationCurrent&&pronunciationCurrent.score!==null&&pronunciationCurrent.score!==undefined&&Number.isFinite(Number(pronunciationCurrent.score)));
       const fluencyReady=!!(fluencyCurrent&&fluencyCurrent.score!==null&&fluencyCurrent.score!==undefined&&Number.isFinite(Number(fluencyCurrent.score)));
       const deliveryReady=pronunciationReady&&fluencyReady;
-      const pronunciationDetail=deliveryReady&&Number.isFinite(Number(pronunciationCurrent.raw))?esc(Math.round(Number(pronunciationCurrent.raw)))+'/100 acoustic score':'';
-      const fluencyDetail=deliveryReady&&Number.isFinite(Number(fluencyCurrent.raw))?esc(Math.round(Number(fluencyCurrent.raw)))+'/100 acoustic score':'';
+      const pronunciationDetail=deliveryReady&&Number.isFinite(Number(pronunciationCurrent.raw))?(pronunciationCurrent.descriptor?esc(pronunciationCurrent.descriptor)+' · ':'')+esc(Math.round(Number(pronunciationCurrent.raw)))+'/100 calibrated signal':'';
+      const fluencyDetail=deliveryReady&&Number.isFinite(Number(fluencyCurrent.raw))?(fluencyCurrent.descriptor?esc(fluencyCurrent.descriptor)+' · ':'')+esc(Math.round(Number(fluencyCurrent.raw)))+'/100 calibrated signal':'';
       const evidence=r.deliveryEvidence||{};
       const evidenceNote=evidence.coverage!==null&&evidence.coverage!==undefined&&Number.isFinite(Number(evidence.coverage))
         ? '<div class="speaking-delivery-summary"><span>Matched <strong>'+esc(evidence.matchedWords)+' / '+esc(evidence.referenceWords)+' words</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>'
@@ -198,9 +198,10 @@
         +'<p class="speaking-result-disclaimer">'+esc(r.deliveryAssessment||'Content and delivery scores are independent practice estimates and are not Pearson scores.')+'</p>';
     }
     function refreshControls() {
-      const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
+      const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),finish=doc.getElementById('speaking-finish'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
       const levelPanel=doc.getElementById('speaking-level-panel');if(levelPanel)levelPanel.hidden=!stream;
       if(skip)skip.hidden=phase!=='preparing';
+      if(finish){finish.hidden=phase!=='recording';finish.disabled=busy;}
       if(retrySave)retrySave.hidden=!(uploadBlob&&!attempt?.recording&&!busy);
       if(retryAssess)retryAssess.hidden=!(attempt?.recording&&attempt?.status!=='submitted'&&phase==='error'&&!uploadBlob&&!busy);
       if(retryMic){
@@ -325,7 +326,9 @@
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
       if(action==='record')return begin();
-      if(action==='skip')return record();if(action==='upload-retry')return uploadRecording();if(action==='submit')return submit();
+      if(action==='skip')return record();
+      if(action==='finish'){if(recorder?.state==='recording'){phase='saving';message('Submitting your response…');refreshControls();recorder.stop();}return;}
+      if(action==='upload-retry')return uploadRecording();if(action==='submit')return submit();
       if(action==='list'){if(['permission','listening','preparing','recording','saving'].includes(phase)||busy||uploadBlob){message('Finish and save the recording before opening your question list.');return;}try{await saveTranscript();attempt=null;releasePlayback();await library();}catch(e){message(e.message);}return;}
       if(action==='save'){try{await saveTranscript();message('Transcript saved to your account.');}catch(e){message(e.message);}return;}
       if(action==='transcribe'){if(busy)return;if(doc.getElementById('speaking-transcript')?.value.trim()){message('Your transcript already contains words. Review them, or clear and save it before transcribing.');return;}busy=true;refreshControls();message('Transcribing. Please keep the words you actually said.');const id=attempt.id,user=owner;try{await saveTranscript();const a=await api('/attempts/'+id+'/transcribe',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();message('Check the transcript against your recording before assessment.');}}catch(e){message(e.message);}finally{busy=false;refreshControls();}}
