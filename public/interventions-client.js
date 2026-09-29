@@ -289,8 +289,7 @@
       const host=doc.getElementById('nextStepsPane');if(!host)return;
       const current=active().slice(0,3),completed=plans.filter(p=>p.status==='mastered');
       host.innerHTML='<div class="next-steps-shell"><div class="next-steps-heading"><div><p class="portal-eyebrow">Your current focus</p><h2>My Next Steps</h2><p>Work through assigned actions. Exact portal questions complete automatically after you submit a qualifying new attempt.</p></div><span class="next-step-count">'+current.length+' active</span></div>'
-        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally, or ask the IPT Assistant below to build a focused study path.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
-        +helpPanel()
+        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally. For help with the page you are working on, open the floating AI Assistant.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
         +(completed.length?'<details class="next-step-history"><summary>Completed plans <span>'+completed.length+'</span></summary><div class="next-step-plan-list completed">'+completed.slice(0,12).map(card).join('')+'</div></details>':'')+'</div>';
       host.onclick=handleClick;
       host.oninput=e=>{if(e.target.matches?.('[data-beta-problem]'))helpProblem=e.target.value;};
