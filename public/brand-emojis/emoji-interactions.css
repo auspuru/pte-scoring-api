@@ -235,3 +235,129 @@ body.dark .ipt-action-emoji,.dark .ipt-action-emoji{border-color:rgba(255,255,25
 [data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .scan{opacity:0;transform:translateY(48px)}
 
 [data-emoji="ai-score"]:has(>.ipt-action-toggle:checked) .checkmark{opacity:1;transform:rotate(45deg) scale(.85);transition-delay:.22s}
+
+
+/* === 2026-09 cursor + IPT + progress polish === */
+.ipt-action-emoji{
+  --cursor-x:28%;
+  --cursor-y:18%;
+  --cursor-tilt-x:0deg;
+  --cursor-tilt-y:0deg;
+}
+.ipt-action-emoji::before{
+  background:
+    radial-gradient(92px circle at var(--cursor-x) var(--cursor-y),
+      rgba(255,255,255,1),
+      rgba(255,255,255,.44) 24%,
+      rgba(255,255,255,.14) 45%,
+      transparent 68%);
+  transition:opacity .18s ease,background .18s ease;
+}
+
+/* IPT brand activation: halo + upward energy */
+[data-emoji="ipt"] .brand-halo{
+  position:absolute;left:50%;top:50%;width:54px;height:54px;border:3px solid rgba(45,108,165,.52);
+  border-radius:50%;transform:translate(-50%,-50%) scale(.58);opacity:0;
+  box-shadow:0 0 0 4px rgba(197,48,48,.07);
+}
+[data-emoji="ipt"] .brand-ray{
+  position:absolute;left:50%;bottom:14px;width:4px;height:22px;border-radius:99px;
+  background:linear-gradient(180deg,rgba(197,48,48,.05),rgba(197,48,48,.9));
+  transform:translateX(-50%) scaleY(.15);transform-origin:center bottom;opacity:0;
+}
+[data-emoji="ipt"].is-active .brand-halo{
+  animation:iptBrandHalo .82s cubic-bezier(.18,.9,.3,1) both;
+}
+[data-emoji="ipt"].is-active .brand-ray{
+  animation:iptBrandRay .72s .08s cubic-bezier(.18,.9,.3,1) both;
+}
+[data-emoji="ipt"].is-active>img{
+  animation:iptBrandLift .82s cubic-bezier(.18,1.25,.3,1) both;
+}
+@keyframes iptBrandHalo{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}
+  42%{opacity:.95;transform:translate(-50%,-50%) scale(1.05)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.34)}
+}
+@keyframes iptBrandRay{
+  0%{opacity:0;transform:translateX(-50%) scaleY(.15)}
+  45%{opacity:.9;transform:translateX(-50%) scaleY(1)}
+  100%{opacity:0;transform:translateX(-50%) translateY(-18px) scaleY(.6)}
+}
+@keyframes iptBrandLift{
+  0%{transform:translateY(2px) scale(.94)}
+  48%{transform:translateY(-4px) scale(1.12)}
+  100%{transform:translateY(0) scale(1.04)}
+}
+
+/* Progress: spring bars, drawn trend, arrow head, completion badge */
+[data-emoji="progress"] .bar{
+  opacity:.38;
+  transform:translateY(8px) scaleY(.06);
+  transition:
+    transform .72s cubic-bezier(.18,1.35,.3,1),
+    opacity .38s ease,
+    background .38s ease;
+}
+[data-emoji="progress"] .b1{background:#8BBBDD}
+[data-emoji="progress"] .b2{background:#5B96C2}
+[data-emoji="progress"] .b3{background:#2D6CA5}
+[data-emoji="progress"] .b4{background:#173B63}
+[data-emoji="progress"] .wave{
+  transition:transform .72s .28s cubic-bezier(.18,1,.3,1),opacity .35s ease;
+  opacity:.3;
+}
+[data-emoji="progress"] .progress-arrow{
+  position:absolute;left:61px;top:15px;width:0;height:0;
+  border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:11px solid var(--red);
+  transform:rotate(44deg) scale(.2);opacity:0;
+  transition:transform .42s .62s cubic-bezier(.18,1.45,.3,1),opacity .25s .62s ease;
+}
+[data-emoji="progress"] .progress-badge{
+  position:absolute;right:8px;top:8px;min-width:23px;height:23px;padding:0 5px;
+  display:grid;place-items:center;border-radius:999px;background:#16805F;color:#fff;
+  font:900 11px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  box-shadow:0 5px 14px rgba(22,128,95,.26);
+  transform:translateY(-5px) scale(.3);opacity:0;
+  transition:transform .45s .72s cubic-bezier(.18,1.45,.3,1),opacity .3s .72s ease;
+}
+[data-emoji="progress"].is-active .bar{opacity:1;transform:translateY(0) scaleY(1)}
+[data-emoji="progress"].is-active .b2{transition-delay:.09s}
+[data-emoji="progress"].is-active .b3{transition-delay:.18s}
+[data-emoji="progress"].is-active .b4{transition-delay:.27s}
+[data-emoji="progress"].is-active .wave{opacity:1;transform:rotate(-27deg) scaleX(1)}
+[data-emoji="progress"].is-active .progress-arrow{opacity:1;transform:rotate(44deg) scale(1)}
+[data-emoji="progress"].is-active .progress-badge{opacity:1;transform:translateY(0) scale(1)}
+
+/* CSS-only demo parity for the new progress states. */
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .progress-arrow{opacity:1;transform:rotate(44deg) scale(1)}
+[data-emoji="progress"]:has(>.ipt-action-toggle:checked) .progress-badge{opacity:1;transform:translateY(0) scale(1)}
+
+/* Desktop/fine-pointer magnetic glass response. Mobile remains untouched. */
+@media (hover:hover) and (pointer:fine){
+  .ipt-action-emoji.is-cursor-active{
+    transform:
+      perspective(480px)
+      rotateX(var(--cursor-tilt-x))
+      rotateY(var(--cursor-tilt-y))
+      translateY(-3px)
+      scale(1.028);
+    box-shadow:
+      0 24px 50px rgba(23,59,99,.18),
+      0 8px 18px rgba(23,59,99,.09),
+      inset 0 1px 0 rgba(255,255,255,1);
+  }
+  .sidebar-menu .nav-item .portal-nav-emoji.is-cursor-active{
+    transform:
+      perspective(420px)
+      rotateX(var(--cursor-tilt-x))
+      rotateY(var(--cursor-tilt-y))
+      translateY(-2px)
+      scale(1.055);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  [data-emoji="ipt"].is-active>img,
+  [data-emoji="ipt"].is-active .brand-halo,
+  [data-emoji="ipt"].is-active .brand-ray{animation:none!important}
+}
