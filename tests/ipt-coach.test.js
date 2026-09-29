@@ -32,3 +32,17 @@ test('IPT coach keeps only the most recent eight chat messages',()=>{
   assert.equal(cleaned[0].text,'message 4');
   assert.equal(cleaned.at(-1).text,'message 11');
 });
+
+
+test('IPT coach resolves student references from the current visible screen',()=>{
+  const prompt=coach.buildPrompt({
+    task:'portal',
+    message:'What is wrong with this answer?',
+    screenContext:'PAGE TITLE: Repeat Sentence\nVISIBLE STUDENT INPUTS:\nTranscript: renewable energy is becoming cheaper'
+  });
+  assert.match(prompt,/CURRENT SCREEN CONTEXT:/);
+  assert.match(prompt,/Repeat Sentence/);
+  assert.match(prompt,/renewable energy is becoming cheaper/);
+  assert.match(prompt,/resolve that reference from CURRENT SCREEN CONTEXT/);
+  assert.match(prompt,/page-aware study side panel/i);
+});
