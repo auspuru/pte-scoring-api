@@ -370,5 +370,6 @@ test('AI assistant automatically feeds saved practice and mock progress into coa
   assert.match(promptSeen,/Reading Sectional Mock/);
   assert.match(promptSeen,/Reading Single Answer/);
   assert.match(promptSeen,/Communication Methods in Modern Society/);
-  assert.match(promptSeen,/"source":"mock"/);
+  assert.match(promptSeen,/"mockAttempts":1/);
+  assert.match(promptSeen,/"recentMocks":\[\{"title":"Reading Sectional Mock"/);
 });
