@@ -215,6 +215,7 @@ if (rateLimit) {
   app.use('/api/essay/grade', gradeLimiter);
   app.use('/api/spellcheck', gradeLimiter);
   app.use('/api/interventions/help', gradeLimiter);
+  app.use('/api/interventions/screen-help', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
   app.use('/api/auth/email-reset', authLimiter);
