@@ -68,7 +68,7 @@
 <script src="practice-catalogue.js?v=20260924-wrapup" defer></script>
 <script src="portal-workspace.js?v=20260929-assistant-unify" defer></script>
 <script src="/portal-emoji-actions.js?v=5" defer></script>
-<script src="/personal-ai-assistant.js?v=2" defer></script>
+<script src="/personal-ai-assistant.js?v=3" defer></script>
 <script src="/portal-shell.js?v=20260929-assistant-unify" defer></script>
 <script src="/portal-writing-motion.js?v=20260929-native-cursor" defer></script>
 <script src="/pte-estimate-display.js?v=1" defer></script>
@@ -76,7 +76,7 @@
 <script src="/interventions-client.js?v=6" defer></script>
 <script src="/writing-lab-report.js?v=2" defer></script>
 <script src="/writing-lab-client.js?v=20260928-wfd-predictions" defer></script>
-<script src="index.min.js?v=20260929-swt-sample-panel" defer></script>
+<script src="index.min.js?v=20260929-swt-sample-display" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/student-progress.css?v=1">
 <link rel="stylesheet" href="/interventions.css?v=4">
@@ -85,7 +85,7 @@
 <link rel="stylesheet" href="/portal-home-practice.css?v=20260928-home-practice">
 <link rel="stylesheet" href="/brand-emojis/emoji-interactions.css?v=4">
 <link rel="stylesheet" href="/portal-emoji-actions.css?v=3">
-<link rel="stylesheet" href="/personal-ai-assistant.css?v=2">
+<link rel="stylesheet" href="/personal-ai-assistant.css?v=3">
 </head>
 <body>
 
@@ -640,7 +640,7 @@
             <p class="swt-help">Read your summary against the original, or compare it with a checked sample.</p>
             <div class="side-by-side">
               <div class="sbs-col"><h3 class="sbs-head">Original passage</h3><div class="annotated-text" id="annotatedPassage"></div></div>
-              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" hidden><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
+              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission"></div><div class="annotated-feedback" id="annotatedFeedback"></div></div><div class="u-inline-005" id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample"><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
             </div>
           </section>
           <details class="card swt-details" aria-labelledby="swtTraitsHeading"><summary id="swtTraitsHeading">Score breakdown</summary><div class="trait-breakdown" id="traitBreakdown"></div></details>
