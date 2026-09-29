@@ -16050,8 +16050,8 @@ function switchSbsView(view){
   const tSum = document.getElementById('sbsTabSummary');
   const tSam = document.getElementById('sbsTabSample');
   if(!vSum || !vSam || !tSum || !tSam) return;
-  vSum.style.display = isSample ? 'none' : '';
-  vSam.style.display = isSample ? '' : 'none';
+  vSum.hidden = isSample;
+  vSam.hidden = !isSample;
   tSum.classList.toggle('active', !isSample);
   tSam.classList.toggle('active', isSample);
   tSum.setAttribute('aria-selected', String(!isSample));
