@@ -36,7 +36,7 @@
     return '';
   }
   function formatCoachText(value){
-    const escaped=esc(value).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    const escaped=esc(value).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>');
     const lines=escaped.split(/\r?\n/).map(x=>x.trim());
     let html='',list=[];
     const flush=()=>{if(list.length){html+='<ul>'+list.map(x=>'<li>'+x+'</li>').join('')+'</ul>';list=[];}};
@@ -49,7 +49,19 @@
     }
     flush();return html||'<p></p>';
   }
+  function ensureAssistantPresentation(doc){
+    if(!doc?.head)return;
+    const href='/portal-insights.css?v=20260929-assistant-ux2';
+    const current=[...doc.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href);
+    if(current)return;
+    const link=doc.createElement('link');
+    link.rel='stylesheet';
+    link.href=href;
+    link.dataset.iptAssistantStyle='1';
+    doc.head.appendChild(link);
+  }
   function create({document:doc,identity,navigate,launch}){
+    ensureAssistantPresentation(doc);
     let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpNotice='',helpBusy=false,trainer=null;
     function auth(){
       const value=identity?.()||{};
