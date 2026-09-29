@@ -109,10 +109,11 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
-  assert.match(html,/\/personal-ai-assistant\.js\?v=2/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=3/);
   assert.match(html,/\/interventions-client\.js\?v=6/);
   assert.match(personalAssistant,/switchSection\('next-steps'\)/,'assistant mascot should open the single IPT Assistant experience');
   assert.match(personalAssistant,/\[data-beta-problem\]/,'assistant mascot should focus the existing IPT Assistant input');
+  assert.match(personalAssistant,/aria-label="Open IPT Assistant" title="Open IPT Assistant"/,'assistant mascot must be directly accessible to signed-in students');
   assert.doesNotMatch(personalAssistant,/Coming Soon|personalAiPanel/,'assistant mascot must not present a second assistant panel');
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
   assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
