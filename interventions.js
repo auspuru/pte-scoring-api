@@ -397,6 +397,193 @@ function installInterventions(app, options = {}) {
     }
     return null;
   }
+
+  const PROFILE_LABEL = {
+    swt:'Summarize Written Text',essay:'Essay Writing',sst:'Summarize Spoken Text',wfd:'Write From Dictation',
+    ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarize Group Discussion',rts:'Respond to a Situation',
+    dropdown:'Reading Blanks (Dropdown)',mcma:'Reading Multiple Answers',reorder:'Reorder Paragraphs',
+    wordbank:'Reading Blanks (Drag & Drop)',mcsa:'Reading Single Answer',hcs:'Highlight Correct Summary',hiw:'Highlight Incorrect Words'
+  };
+  const PROFILE_MAX = {
+    swt:{content:4,form:1,grammar:2,vocabulary:2},
+    essay:{content:6,form:2,grammar:2,vocabulary:2,spelling:2,linguistic:6,coherence:6},
+    sst:{content:4,form:2,grammar:2,vocabulary:2,spelling:2}
+  };
+  const profileNumber = value => {
+    const n=Number(value);
+    return Number.isFinite(n)?n:null;
+  };
+  const profileRatio = (value,maximum) => {
+    const v=profileNumber(value),m=profileNumber(maximum);
+    return v!==null&&m!==null&&m>0?Math.max(0,Math.min(1,v/m)):null;
+  };
+  function studentProfile(all) {
+    const points=[],recentMocks=[],unfinished=[],traitValues=new Map();
+    const addTrait=(task,key,value,maximum,at)=>{
+      const ratio=profileRatio(value,maximum);
+      if(ratio===null)return;
+      const id=task+':'+key, list=traitValues.get(id)||[];
+      list.push({ratio,at:when(at)});
+      traitValues.set(id,list);
+    };
+    const addPoint=(task,value,at,source='practice',detail=null)=>{
+      if(!task)return;
+      const ratio=profileNumber(value);
+      if(ratio===null)return;
+      points.push({task,label:PROFILE_LABEL[task]||task,value:Math.max(0,Math.min(1,ratio)),at:when(at),source,detail:detail||undefined});
+    };
+    const progress=all.progress||{};
+
+    for(const attempts of Object.values(progress.history||{})) for(const a of (attempts||[])) {
+      const traits=a?.trait_scores||{}, maxima=PROFILE_MAX.swt;
+      const vals=Object.keys(maxima).map(k=>profileNumber(traits[k]));
+      let ratio=null;
+      if(vals.every(v=>v!==null)) ratio=vals.reduce((n,v)=>n+v,0)/Object.values(maxima).reduce((n,v)=>n+v,0);
+      else ratio=profileRatio(a?.overall_score,90);
+      addPoint('swt',ratio,a?.timestamp,'practice',{traits});
+      for(const [k,max] of Object.entries(maxima)) addTrait('swt',k,traits[k],max,a?.timestamp);
+    }
+
+    for(const a of (Array.isArray(progress.practiceHistory)?progress.practiceHistory:[])) {
+      const scores=a?.scores||{};
+      let ratio=profileRatio(scores.total,26);
+      if(ratio===null) {
+        const keys=Object.keys(PROFILE_MAX.essay), vals=keys.map(k=>profileNumber(scores[k]));
+        if(vals.every(v=>v!==null)) ratio=vals.reduce((n,v)=>n+v,0)/Object.values(PROFILE_MAX.essay).reduce((n,v)=>n+v,0);
+      }
+      addPoint('essay',ratio,a?.date||a?.updatedAt,'practice',{scores});
+      for(const [k,max] of Object.entries(PROFILE_MAX.essay)) addTrait('essay',k,scores[k],max,a?.date||a?.updatedAt);
+    }
+
+    const reading=progress.readingProgress||{};
+    for(const [uid,result] of Object.entries(reading.practiceResults||{})) {
+      const task=readingTypeByUid.get(String(uid))||clean(result?.type,40);
+      const ratio=profileRatio(result?.earned??result?.total,result?.gradedPossible??result?.possible??result?.maximum);
+      addPoint(task,ratio,result?.finishedAt,'practice');
+    }
+    const readingSessions=[...(Array.isArray(reading.history)?reading.history:[]),reading.session,...(Array.isArray(reading.drafts)?reading.drafts:[])].filter(Boolean);
+    const seenReading=new Set();
+    for(const session of readingSessions) {
+      if(seenReading.has(session.id))continue;seenReading.add(session.id);
+      if(!session.done) {
+        unfinished.push({kind:session.practiceUid?'Reading practice':'Reading mock',title:clean(session.name||'Reading session',160),at:session.updatedAt||session.startedAt||null});
+        continue;
+      }
+      if(session.practiceUid)continue;
+      const breakdown=[];
+      for(const row of (Array.isArray(session.rows)?session.rows:[])) {
+        const task=clean(row?.type,40), ratio=profileRatio(row?.earned,row?.gradedPossible??row?.possible);
+        if(ratio!==null) {
+          addPoint(task,ratio,session.finishedAt||session.startedAt,'mock');
+          breakdown.push({task:PROFILE_LABEL[task]||task,percent:Math.round(ratio*100)});
+        }
+      }
+      const totalRatio=profileRatio(session.earned??session.total,session.possible??session.maximum);
+      recentMocks.push({
+        title:clean(session.name||'Reading mock',160),engine:'reading',at:session.finishedAt||session.startedAt||null,
+        percent:totalRatio===null?(Number.isFinite(Number(session.percent))?Math.round(Number(session.percent)):null):Math.round(totalRatio*100),
+        breakdown
+      });
+    }
+
+    for(const a of (Array.isArray(all.speaking)?all.speaking:[])) {
+      const task=clean(a?.type,40)||speakingTypeByQuestion.get(String(a?.questionId))||'speaking';
+      if(a?.status!=='submitted'||!a?.result) {
+        unfinished.push({kind:'Speaking practice',title:PROFILE_LABEL[task]||clean(a?.title,120)||'Speaking practice',at:a?._updatedAt||a?.startedAt||null});
+        continue;
+      }
+      const ratio=profileRatio(a.result.total,a.result.maximum);
+      addPoint(task,ratio,a._updatedAt||a.startedAt,'practice',{contentOnly:true});
+    }
+
+    for(const a of (Array.isArray(all.writing)?all.writing:[])) {
+      const kind=clean(a?.kind||a?.questions?.[0]?.type,40);
+      if(kind==='mock') {
+        if(a?.status!=='submitted') {
+          unfinished.push({kind:'Writing mock',title:clean(a?.title||'Writing mock',160),at:a?._updatedAt||a?.startedAt||null});
+          continue;
+        }
+        const breakdown=[];
+        for(const group of (Array.isArray(a.byType)?a.byType:[])) {
+          if(group?.marked!==group?.count)continue;
+          const ratio=profileRatio(group.total,group.maximum);
+          if(ratio===null)continue;
+          addPoint(clean(group.type,40),ratio,a.finishedAt||a._updatedAt||a.startedAt,'mock');
+          breakdown.push({task:PROFILE_LABEL[group.type]||group.type,percent:Math.round(ratio*100)});
+        }
+        recentMocks.push({
+          title:clean(a.title||'Writing mock',160),engine:'writing',at:a.finishedAt||a._updatedAt||a.startedAt||null,
+          percent:profileRatio(a.total,a.maximum)===null?null:Math.round(profileRatio(a.total,a.maximum)*100),
+          score90:Number.isFinite(Number(a.score90))?Number(a.score90):null,
+          breakdown
+        });
+        continue;
+      }
+      if(a?.status!=='submitted') {
+        unfinished.push({kind:'Writing practice',title:clean(a?.title||(kind==='sst'?'Summarize Spoken Text':kind==='wfd'?'Write From Dictation':'Writing practice'),160),at:a?._updatedAt||a?.startedAt||null});
+        continue;
+      }
+      if(['sst','wfd'].includes(kind)) {
+        addPoint(kind,profileRatio(a.total,a.maximum),a.finishedAt||a._updatedAt||a.startedAt,'practice');
+        for(const r of (Array.isArray(a.results)?a.results:[])) {
+          const maxima=r?.maxima||PROFILE_MAX[kind]||{};
+          for(const [k,max] of Object.entries(maxima)) addTrait(kind,k,r?.scores?.[k],max,a.finishedAt||a._updatedAt||a.startedAt);
+        }
+      }
+    }
+
+    if(progress.essayDraft && typeof progress.essayDraft==='object') unfinished.push({
+      kind:'Essay draft',title:clean(progress.essayDraft.title||progress.essayDraft.prompt||'Essay draft',160),at:progress.essayDraft.updatedAt||null
+    });
+
+    const byTask=new Map();
+    for(const p of points) {
+      if(!byTask.has(p.task))byTask.set(p.task,[]);
+      byTask.get(p.task).push(p);
+    }
+    const areas=[...byTask.entries()].map(([task,list])=>{
+      list.sort((a,b)=>a.at-b.at);
+      const values=list.map(x=>x.value), recent=values.slice(-5);
+      const avg=values.reduce((n,v)=>n+v,0)/values.length;
+      const delta=recent.length>1?recent.at(-1)-recent[0]:null;
+      return {
+        task,label:PROFILE_LABEL[task]||task,attempts:list.length,
+        practiceAttempts:list.filter(x=>x.source==='practice').length,
+        mockAttempts:list.filter(x=>x.source==='mock').length,
+        averagePct:Math.round(avg*100),latestPct:Math.round(values.at(-1)*100),
+        trend:delta===null?'not enough data':Math.abs(delta)<.02?'stable':delta>0?'improving':'declining',
+        trendPct:delta===null?null:Math.round(delta*100),
+        lastAt:list.at(-1)?.at||0
+      };
+    }).sort((a,b)=>b.lastAt-a.lastAt);
+
+    const recurring=areas.filter(a=>a.attempts>=2);
+    const weakest=recurring.slice().sort((a,b)=>a.averagePct-b.averagePct).slice(0,3);
+    const strongest=recurring.slice().sort((a,b)=>b.averagePct-a.averagePct).slice(0,3);
+    const traits=[...traitValues.entries()].map(([id,list])=>{
+      list.sort((a,b)=>a.at-b.at);
+      const [task,key]=id.split(':');
+      const recent=list.slice(-5),avg=recent.reduce((n,x)=>n+x.ratio,0)/recent.length;
+      return {task:PROFILE_LABEL[task]||task,trait:TRAIT_LABEL[key]||key,attempts:list.length,averagePct:Math.round(avg*100),latestPct:Math.round(list.at(-1).ratio*100)};
+    }).filter(x=>x.attempts>=1).sort((a,b)=>a.averagePct-b.averagePct).slice(0,6);
+
+    const recentPractice=points.filter(p=>p.source==='practice').sort((a,b)=>b.at-a.at).slice(0,10)
+      .map(p=>({task:p.label,percent:Math.round(p.value*100),at:p.at,detail:p.detail}));
+    recentMocks.sort((a,b)=>when(b.at)-when(a.at));
+    unfinished.sort((a,b)=>when(b.at)-when(a.at));
+    return {
+      generatedAt:new Date().toISOString(),
+      totals:{practiceResults:points.filter(p=>p.source==='practice').length,mockTaskResults:points.filter(p=>p.source==='mock').length,completedMocks:recentMocks.length},
+      weakestAreas:weakest,
+      strongestAreas:strongest,
+      traitWeaknesses:traits,
+      areas,
+      recentPractice,
+      recentMocks:recentMocks.slice(0,5),
+      unfinished:unfinished.slice(0,6)
+    };
+  }
+
   function betaAdvice(task, problem, all) {
     const text = clean(problem, 1000).toLowerCase();
     const score = latestScore(task, all);
@@ -679,6 +866,7 @@ function installInterventions(app, options = {}) {
       const problem = clean(req.body?.problem, 4000);
       const all = await evidence(req.interventionUser);
       const scripted = betaAdvice(task, problem, all);
+      const profile = studentProfile(all);
       let coachReply = '', coachSource = 'scripted';
       if (typeof callCoachModel === 'function') {
         try {
@@ -686,7 +874,8 @@ function installInterventions(app, options = {}) {
             task,
             message: problem || 'How should I improve at this task?',
             history: req.body?.history,
-            latestScore: scripted.latestScore
+            latestScore: scripted.latestScore,
+            studentProfile: profile
           });
           coachReply = clean(await callCoachModel(prompt), 6000);
           if (coachReply) coachSource = 'claude';
@@ -694,7 +883,7 @@ function installInterventions(app, options = {}) {
           // The scripted recommendations below remain available when Claude is unavailable.
         }
       }
-      res.json({...scripted,coachReply,coachSource});
+      res.json({...scripted,coachReply,coachSource,personalized:true});
     } catch (e) { sendError(res,e); }
   });
 
@@ -707,23 +896,22 @@ function installInterventions(app, options = {}) {
       if (!message) return res.status(400).json({error:'Ask the AI Assistant a question.'});
       if (!screenContext) return res.status(400).json({error:'The current page context is unavailable.'});
       if (typeof callCoachModel !== 'function') return res.status(503).json({error:'The AI Assistant is unavailable right now.'});
-      let score = null;
-      if (task !== 'portal') {
-        const all = await evidence(req.interventionUser);
-        score = latestScore(task, all);
-      }
+      const all = await evidence(req.interventionUser);
+      const score = task !== 'portal' ? latestScore(task, all) : null;
+      const profile = studentProfile(all);
       const prompt = iptCoach.buildPrompt({
         task,
         message,
         history:req.body?.history,
         latestScore:score,
-        screenContext
+        screenContext,
+        studentProfile:profile
       });
       const modelResult = await callCoachModel(prompt);
       const reply = clean(modelResult && typeof modelResult === 'object' ? modelResult.text : modelResult, 6000);
       const source = clean(modelResult && typeof modelResult === 'object' ? modelResult.source : 'ai', 40) || 'ai';
       if (!reply) return res.status(503).json({error:'The AI Assistant could not produce a response.'});
-      res.json({reply,source,task,screenAware:true});
+      res.json({reply,source,task,screenAware:true,personalized:true});
     } catch (e) { sendError(res,e); }
   });
 
