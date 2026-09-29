@@ -109,7 +109,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
-  assert.match(html,/\/personal-ai-assistant\.js\?v=3/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=4/);
   assert.match(html,/\/interventions-client\.js\?v=6/);
   assert.match(personalAssistant,/switchSection\('next-steps'\)/,'assistant mascot should open the single IPT Assistant experience');
   assert.match(personalAssistant,/\[data-beta-problem\]/,'assistant mascot should focus the existing IPT Assistant input');
