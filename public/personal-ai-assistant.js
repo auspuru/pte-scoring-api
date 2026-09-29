@@ -25,6 +25,9 @@
   let panel = null;
   let messages = [];
   let busy = false;
+  let activeContextKey = '';
+  let contextVersion = 0;
+  let requestController = null;
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -146,6 +149,52 @@
     return SECTION_TASK[currentSection()] || 'portal';
   }
 
+  function screenIdentity() {
+    const rootNode = currentPageRoot();
+    const identifiers = [];
+    const selectors = [
+      '[data-question-id]','[data-passage-id]','[data-practice-uid]',
+      '[data-attempt-id]','[data-test-id]','[data-item-id]'
+    ];
+    for (const selector of selectors) {
+      const node = rootNode.querySelector?.(selector);
+      if (!node || !visible(node)) continue;
+      const entry = [...(node.attributes || [])].find(attr => /^data-(?:question|passage|practice|attempt|test|item)-id$/.test(attr.name));
+      if (entry?.value) identifiers.push(entry.name + '=' + entry.value);
+    }
+    const heading = cleanText(rootNode.querySelector?.('h1,h2,h3,legend,[data-question-title]')?.textContent, 220);
+    const visibleText = cleanText(rootNode.innerText || rootNode.textContent, 900);
+    return [
+      currentSection(),
+      pageTitle(),
+      identifiers.join('|'),
+      heading,
+      visibleText.slice(0,650)
+    ].join('||');
+  }
+
+  function cancelRequest() {
+    if (requestController) requestController.abort();
+    requestController = null;
+  }
+
+  function refreshScreenContext(force = false) {
+    const nextKey = screenIdentity();
+    if (!activeContextKey) {
+      activeContextKey = nextKey;
+      return false;
+    }
+    if (!force && nextKey === activeContextKey) return false;
+    activeContextKey = nextKey;
+    contextVersion += 1;
+    cancelRequest();
+    if (busy) setBusy(false);
+    messages = [];
+    renderMessages();
+    updateContextBadge();
+    return true;
+  }
+
   function formatReply(value) {
     const safe = esc(value)
       .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
@@ -205,6 +254,7 @@
 
   async function ask(message) {
     const text = cleanText(message, 4000);
+    refreshScreenContext();
     if (!text || busy) return;
     const input = root?.querySelector('[data-ai-input]');
     const share = root?.querySelector('[data-ai-share]');
@@ -214,33 +264,54 @@
       renderMessages();
       return;
     }
+
+    const requestKey = activeContextKey || screenIdentity();
+    const requestVersion = contextVersion;
+    const requestTask = taskFromScreen();
+    const requestContext = screenContext(share?.checked !== false);
+    const requestHistory = messages.slice(-8);
+
     messages.push({role:'user',text});
     renderMessages();
     if (input) input.value = '';
     setBusy(true);
+
+    const controller = new AbortController();
+    requestController = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 50000);
     try {
       const response = await fetch('/api/interventions/screen-help', {
         method:'POST',
         cache:'no-store',
         headers:{'Content-Type':'application/json','x-session-token':token},
         body:JSON.stringify({
-          task:taskFromScreen(),
+          task:requestTask,
           message:text,
-          history:messages.slice(-9,-1),
-          screenContext:screenContext(share?.checked !== false)
+          history:requestHistory,
+          screenContext:requestContext
         }),
-        signal:AbortSignal.timeout(50000)
+        signal:controller.signal
       });
       const data = await response.json().catch(()=>({}));
+      if (requestVersion !== contextVersion || requestKey !== activeContextKey) return;
       if (!response.ok) throw new Error(data.error || 'The AI Assistant could not answer right now.');
       messages.push({role:'assistant',text:data.reply || 'I could not generate feedback for this screen.'});
     } catch (error) {
-      messages.push({role:'assistant',text:error.message || 'The AI Assistant could not answer right now.'});
+      if (requestVersion !== contextVersion || requestKey !== activeContextKey) return;
+      if (error?.name === 'AbortError') {
+        messages.push({role:'assistant',text:'That request took too long. Please try again on this screen.'});
+      } else {
+        messages.push({role:'assistant',text:error.message || 'The AI Assistant could not answer right now.'});
+      }
     } finally {
-      setBusy(false);
-      renderMessages();
-      updateContextBadge();
-      input?.focus();
+      window.clearTimeout(timeout);
+      if (requestController === controller) {
+        requestController = null;
+        setBusy(false);
+        renderMessages();
+        updateContextBadge();
+        input?.focus();
+      }
     }
   }
 
@@ -267,7 +338,11 @@
   }
 
   function newChat() {
+    cancelRequest();
+    contextVersion += 1;
+    activeContextKey = screenIdentity();
     messages = [];
+    if (busy) setBusy(false);
     renderMessages();
     updateContextBadge();
     root?.querySelector('[data-ai-input]')?.focus();
@@ -331,12 +406,14 @@
     });
 
     syncVisibility();
+    activeContextKey = screenIdentity();
     renderMessages();
     updateContextBadge();
 
     const shell = document.getElementById('appShell');
     const observer = new MutationObserver(() => {
       syncVisibility();
+      refreshScreenContext();
       if (root?.classList.contains('is-open')) updateContextBadge();
     });
     observer.observe(document.body,{attributes:true,attributeFilter:['data-section','class','style']});
