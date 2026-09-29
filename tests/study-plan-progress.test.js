@@ -49,7 +49,7 @@ test('My Progress derives a weakest area only from comparable saved native resul
 });
 
 
-test('My Progress trends use standalone practice across SWT, Reading, Speaking, Essay and Listening', () => {
+test('My Progress trends combine normal practice and matching mock task results', () => {
   const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
   const ctx = { globalThis: {} };
   ctx.globalThis = ctx;
@@ -58,7 +58,11 @@ test('My Progress trends use standalone practice across SWT, Reading, Speaking, 
   const model = ctx.StudentProgress.model({
     reading: { history: [
       { id:'reading-1', practiceUid:'dropdown:1', done:true, earned:1, possible:4, questions:[{type:'dropdown'}], startedAt:10, finishedAt:10 },
-      { id:'mock-reading', done:true, percent:100, earned:10, possible:10, questions:[{type:'dropdown'}], startedAt:15, finishedAt:15 },
+      { id:'mock-reading', done:true, percent:75, startedAt:15, finishedAt:15, rows:[
+        {type:'dropdown',earned:4,possible:4,gradedPossible:4,pending:0},
+        {type:'swt',earned:8,possible:9,gradedPossible:9,pending:0},
+        {type:'hiw',earned:3,possible:4,gradedPossible:4,pending:0}
+      ] },
       { id:'reading-2', practiceUid:'dropdown:2', done:true, earned:3, possible:4, questions:[{type:'dropdown'}], startedAt:20, finishedAt:20 },
       { id:'listening-1', practiceUid:'hiw:1', done:true, earned:2, possible:4, questions:[{type:'hiw'}], startedAt:25, finishedAt:25 }
     ] },
@@ -75,25 +79,37 @@ test('My Progress trends use standalone practice across SWT, Reading, Speaking, 
     { id:'sst-2', kind:'sst', status:'submitted', total:10, maximum:12, startedAt:40 },
     { id:'wfd-1', kind:'wfd', status:'submitted', total:4, maximum:10, startedAt:50 },
     { id:'wfd-2', kind:'wfd', status:'submitted', total:8, maximum:10, startedAt:60 },
-    { id:'mock-writing', kind:'mock', status:'submitted', total:40, maximum:50, startedAt:70, title:'Writing mock' }
+    { id:'mock-writing', kind:'mock', status:'submitted', total:76, maximum:86, startedAt:70, title:'Writing mock', byType:[
+      {type:'swt',count:2,marked:2,total:15,maximum:18},
+      {type:'essay',count:1,marked:1,total:22,maximum:26},
+      {type:'sst',count:1,marked:1,total:11,maximum:12},
+      {type:'wfd',count:3,marked:3,total:28,maximum:30}
+    ] }
   ], [
     { id:'ra-1', type:'ra', status:'submitted', startedAt:80, result:{total:2,maximum:3} },
     { id:'ra-2', type:'ra', status:'submitted', startedAt:90, result:{total:3,maximum:3} },
     { id:'rs-draft', type:'rs', status:'draft', startedAt:100, result:null }
   ]);
   const area = name => model.areas.find(a => a.name === name);
-  assert.equal(area('Summarise Written Text').count, 2);
-  assert.equal(area('Summarise Written Text').trend.label, 'Improving');
-  assert.equal(area('Reading Blanks (Dropdown)').count, 2);
-  assert.equal(area('Reading Blanks (Dropdown)').trend.delta, 50);
-  assert.equal(area('Highlight Incorrect Words').count, 1);
+  assert.equal(area('Summarise Written Text').count, 4);
+  assert.equal(area('Summarise Written Text').practiceCount, 2);
+  assert.equal(area('Summarise Written Text').mockCount, 2);
+  assert.equal(area('Write Essay').count, 3);
+  assert.equal(area('Write Essay').mockCount, 1);
+  assert.equal(area('Reading Blanks (Dropdown)').count, 3);
+  assert.equal(area('Reading Blanks (Dropdown)').practiceCount, 2);
+  assert.equal(area('Reading Blanks (Dropdown)').mockCount, 1);
+  assert.equal(area('Highlight Incorrect Words').count, 2);
+  assert.equal(area('Highlight Incorrect Words').mockCount, 1);
   assert.equal(area('Read Aloud').count, 2);
-  assert.equal(area('Summarise Spoken Text').count, 2);
-  assert.equal(area('Write From Dictation').count, 2);
-  assert.equal(model.practice, 13, 'standalone practice count must exclude mocks and drafts');
-  assert.equal(model.complete, 2, 'reading and writing mocks stay in the separate mock section');
-  assert.match(source, /\/api\/speaking\/attempts/);
-  assert.match(source, /Task trends use standalone practice results/);
+  assert.equal(area('Read Aloud').mockCount, 0);
+  assert.equal(area('Summarise Spoken Text').count, 3);
+  assert.equal(area('Write From Dictation').count, 3);
+  assert.equal(model.practice, 13, 'Practice attempts card remains standalone-practice activity');
+  assert.equal(model.complete, 2, 'Mocks remain reviewable in the separate mock section');
+  assert.match(source, /combine normal practice with matching per-task mock results/);
+  assert.match(source, /practiceCount/);
+  assert.match(source, /mockCount/);
 });
 
 test('writing lab presents estimate scores without native mark totals', () => {
