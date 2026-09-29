@@ -95,9 +95,10 @@
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id) {
-      if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted'||a.recording)await loadPlayback();else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
-      if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
+      if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false,shouldAssess=false;
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted')await loadPlayback();else if(a.recording)shouldAssess=true;else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(shouldAssess&&valid(ticket,user)&&attempt?.status==='draft'&&attempt.recording)await submit();
+      else if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
       if(!attempt?.recording||playbackUrl)return;const id=attempt.id,user=owner;
@@ -323,7 +324,7 @@
       const action=d.speakingAction;
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
-      if(action==='record')return begin();if(action==='stop'){if(recorder?.state==='recording')recorder.stop();return;}
+      if(action==='record')return begin();
       if(action==='skip')return record();if(action==='upload-retry')return uploadRecording();if(action==='submit')return submit();
       if(action==='list'){if(['permission','listening','preparing','recording','saving'].includes(phase)||busy||uploadBlob){message('Finish and save the recording before opening your question list.');return;}try{await saveTranscript();attempt=null;releasePlayback();await library();}catch(e){message(e.message);}return;}
       if(action==='save'){try{await saveTranscript();message('Transcript saved to your account.');}catch(e){message(e.message);}return;}
@@ -334,7 +335,7 @@
       if(!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(file.type.split(';')[0])||file.size>3*1024*1024){message('Choose a WebM, MP4, WAV or MP3 audio file under 3 MB.');return;}
       uploadBlob=file;await uploadRecording();
     }
-    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();clearAudio();if(['listening','preparing','permission'].includes(phase))phase='idle';message('Audio stopped while this tab was hidden.');refreshControls();}});
+    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','preparing','permission'].includes(phase);clearAudio();if(interrupted){phase='error';message('This timed attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
     env.addEventListener?.('beforeunload',()=>{cacheDraft();clearAudio();});
     return {open,leave,reset};
   }
