@@ -5,33 +5,49 @@
       "code": "PR-01",
       "area": "Speaking",
       "task": "All speaking tasks",
-      "weakness": "Pronunciation clarity",
-      "title": "Pronunciation Clarity",
-      "reason": "Improve how clearly individual words and sounds are produced.",
-      "checkpoint": "Complete the exercises and produce three clearly understandable speaking attempts.",
+      "weakness": "Pronunciation, fluency and natural delivery",
+      "title": "Pronunciation & Fluency — English Foundation",
+      "reason": "Build clear, understandable English speech before pushing harder on speaking content.",
+      "checkpoint": "Follow the playlist in order and complete the daily routine on at least 5 days.",
       "items": [
         {
           "kind": "video",
-          "title": "Pronunciation Exercise 1",
-          "url": "https://youtube.com/shorts/kpGv3_wRKO8?si=O0fp8ypTe9-qT2Qi",
-          "description": "Watch, imitate, then repeat the exercise.",
+          "title": "1. Shadowing — speak with the model",
+          "url": "https://www.youtube.com/watch?v=N20jOJDYyYA",
+          "description": "English with Lucy: learn the shadowing method, then copy the speaker's rhythm, phrasing and pronunciation.",
           "required": true
         },
         {
           "kind": "video",
-          "title": "Pronunciation Exercise 2",
-          "url": "https://youtu.be/S5f0FKhPax0?si=L113kYX-ybsm3Zqin",
-          "description": "Watch, repeat, record yourself and compare.",
+          "title": "2. Connected speech — linking and missing sounds",
+          "url": "https://www.youtube.com/watch?v=GkGdNoLaQE8",
+          "description": "BBC Learning English: practise how natural English links sounds and reduces them in connected speech.",
           "required": true
         },
         {
-          "kind": "practice_set",
-          "title": "Read Aloud clarity practice",
-          "description": "Complete 3 new Read Aloud attempts. Your progress updates automatically after each submitted response.",
-          "engine": "speaking",
-          "route": "speaking-ra",
-          "practiceType": "ra",
-          "minimumAttempts": 3,
+          "kind": "video",
+          "title": "3. Schwa — the most common English vowel sound",
+          "url": "https://www.youtube.com/watch?v=I0EGFlffmcY",
+          "description": "BBC Learning English: practise the schwa so unstressed syllables sound more natural and easier to produce.",
+          "required": true
+        },
+        {
+          "kind": "video",
+          "title": "4. Build fluency naturally at home",
+          "url": "https://www.youtube.com/watch?v=xzHFc7DWwHM",
+          "description": "English with Lucy: use shadowing, enjoyable input, repetition and regular English exposure to build fluency.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Daily speaking routine",
+          "description": "Do 10 minutes of shadowing, 5–10 minutes of clear speaking or Read Aloud, then record one short response and listen back. Check only: Can I understand every word? Is my pace natural? Am I pausing naturally? If yes, then push for more content.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Natural English every day",
+          "description": "Spend regular time with English you actually enjoy—movies, series, YouTube, podcasts, work conversations or reading. Do not pause every sentence or look up every word. Focus on understanding the general meaning and becoming comfortable with natural English. Start shorter if an hour feels heavy and build consistency.",
           "required": true
         }
       ]
@@ -219,14 +235,26 @@
       "area": "Speaking",
       "task": "Describe Image",
       "weakness": "Visual content selection",
-      "title": "Describe Image — Content Picking",
-      "reason": "Choose the most reportable features instead of trying to describe everything.",
-      "checkpoint": "Identify the topic and 3–4 important features in at least 4 out of 5 images within preparation time.",
+      "title": "Describe Image — Topic, Key Features & Trends",
+      "reason": "Identify what the image is about and report the strongest features instead of trying to describe everything.",
+      "checkpoint": "Complete 5 Describe Image attempts with a clear topic and several meaningful features delivered confidently.",
       "items": [
+        {
+          "kind": "instruction",
+          "title": "Use a flexible structure, not a fixed template",
+          "description": "Introduce the image type and topic, then report key features such as highest, lowest, major comparisons, increases or decreases. Mention the x- and y-axes only when useful. A separate conclusion is optional if the key content is already clear.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Prioritise the strongest features",
+          "description": "You cannot cover everything in the available time. Focus on the main topic, major trends and a few reportable features. Do not rush just to list every number.",
+          "required": true
+        },
         {
           "kind": "practice_set",
           "title": "Describe Image content practice",
-          "description": "Complete 5 new Describe Image attempts. Before speaking, identify the topic, overall pattern and only 3–4 reportable features.",
+          "description": "Complete 5 new Describe Image attempts. Before speaking, identify the image type, topic and 3–4 strongest features or trends.",
           "engine": "speaking",
           "route": "speaking-di",
           "practiceType": "di",
@@ -239,15 +267,21 @@
       "code": "NT-01",
       "area": "Speaking / Listening",
       "task": "RL, SGD, SST",
-      "weakness": "Notes are too long",
-      "title": "Note-Taking — Keywords",
-      "reason": "Capture useful content words without writing full sentences.",
-      "checkpoint": "Capture the main idea and important support without falling behind.",
+      "weakness": "Unhelpful or fragmented notes",
+      "title": "Note-Taking — Useful Meaning, Not Maximum Writing",
+      "reason": "Capture enough meaning to reconstruct important ideas without letting note-taking replace listening.",
+      "checkpoint": "Capture the main topic and important support while staying with the audio.",
       "items": [
         {
+          "kind": "instruction",
+          "title": "Choose note length based on your memory",
+          "description": "If you can reconstruct ideas from keywords, use short notes. If you rely heavily on notes, write longer meaningful phrases. Do not spend time writing filler or examples. Abbreviate easy words when useful, but make sure important phrases are complete enough to understand later.",
+          "required": true
+        },
+        {
           "kind": "practice_set",
-          "title": "Retell Lecture keyword-note practice",
-          "description": "Complete 5 new Retell Lecture attempts using keywords and symbols rather than full-sentence notes.",
+          "title": "Retell Lecture note-taking practice",
+          "description": "Complete 5 new Retell Lecture attempts. First understand the topic, then capture useful support without stopping to perfect every note.",
           "engine": "speaking",
           "route": "speaking-rl",
           "practiceType": "rl",
@@ -260,15 +294,27 @@
       "code": "NT-03",
       "area": "Speaking",
       "task": "Summarize Group Discussion",
-      "weakness": "Mixing up speakers",
-      "title": "SGD — Speaker Tracking",
-      "reason": "Track who said what and where speakers agree or disagree.",
-      "checkpoint": "Track all speakers correctly in at least 4 out of 5 discussions.",
+      "weakness": "Speaker tracking and connected content",
+      "title": "SGD — Speaker Tracking & Third-Person Summary",
+      "reason": "Capture the overall topic and each speaker's useful contribution without mixing speakers or reproducing every turn chronologically.",
+      "checkpoint": "Complete 5 discussions with clear S1/S2/S3 attribution and connected third-person reporting.",
       "items": [
+        {
+          "kind": "instruction",
+          "title": "Organise notes by speaker",
+          "description": "Keep separate S1 / S2 / S3 areas. Capture the overall topic and about 2–3 useful ideas from each speaker where available. Do not stop listening to perfect one note; capture keywords or short phrases and build complete sentences later.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Report in third person",
+          "description": "Group each speaker's ideas together instead of going back and forth in the original order. Use third person: 'he said', 'she mentioned', 'the second speaker explained'. If voices sound similar, distinguish speakers by their ideas.",
+          "required": true
+        },
         {
           "kind": "practice_set",
           "title": "SGD speaker-tracking practice",
-          "description": "Complete 5 new Summarize Group Discussion attempts using separate S1 / S2 / S3 note areas.",
+          "description": "Complete 5 new Summarize Group Discussion attempts. Avoid mixing speakers, fragmented sentences, excessive fillers and unreadable notes.",
           "engine": "speaking",
           "route": "speaking-sgd",
           "practiceType": "sgd",
@@ -406,16 +452,28 @@
     {
       "code": "MEM-01",
       "area": "Speaking / Listening",
-      "task": "RS, WFD",
-      "weakness": "Listening memory",
-      "title": "Listening Memory — Chunking",
-      "reason": "Retain meaning and word groups instead of trying to memorise isolated words.",
-      "checkpoint": "Substantially retain at least 4 out of 5 sentences.",
+      "task": "Repeat Sentence",
+      "weakness": "Listening memory and content capture",
+      "title": "Repeat Sentence — Capture More Correct Content",
+      "reason": "Reproduce as much correct content as possible and train on sentences that genuinely challenge your memory.",
+      "checkpoint": "Complete 5 challenging Repeat Sentence attempts and increase the amount of correct content you can reproduce.",
       "items": [
         {
+          "kind": "instruction",
+          "title": "Capture more, not random words",
+          "description": "Try to reproduce as much of the sentence as you can accurately. Do not give up early after a few words. More correct content is useful; extra guessed or unrelated words are not.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Practise difficult sentences",
+          "description": "Do not practise only easy Repeat Sentence items. Use longer or more difficult sentences regularly so memory, listening retention and sentence reconstruction improve.",
+          "required": true
+        },
+        {
           "kind": "practice_set",
-          "title": "Repeat Sentence memory practice",
-          "description": "Complete 5 new Repeat Sentence attempts, listening for meaning and word groups rather than isolated words.",
+          "title": "Repeat Sentence challenge set",
+          "description": "Complete 5 new Repeat Sentence attempts, prioritising difficult items and trying to reproduce more correct content on each attempt.",
           "engine": "speaking",
           "route": "speaking-rs",
           "practiceType": "rs",
@@ -449,10 +507,10 @@
       "code": "REG-01",
       "area": "Speaking",
       "task": "Respond to a Situation",
-      "weakness": "Register and functional language",
-      "title": "RTS — Register & Functional Language",
-      "reason": "Match your language to the audience, purpose and desired outcome.",
-      "checkpoint": "Produce appropriate responses in at least 4 out of 5 situations.",
+      "weakness": "Audience, purpose and natural response",
+      "title": "Respond to a Situation — Natural First-Person Response",
+      "reason": "Match the greeting and tone to the listener, turn the prompt into first person and complete the communication goal naturally.",
+      "checkpoint": "Complete 5 situations where the audience, reason, request and closing are all clear.",
       "items": [
         {
           "kind": "video",
@@ -469,9 +527,21 @@
           "required": true
         },
         {
+          "kind": "instruction",
+          "title": "Greeting → situation → request → closing",
+          "description": "Known person: use a natural greeting such as 'Hi [name]'. Unknown person: use a neutral polite greeting such as 'Hello' or 'Excuse me'. Group: use 'Hello everyone'. Then explain the situation in first person, add a realistic relevant detail, make the required request or suggestion, and close politely.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Do not repeat the prompt mechanically",
+          "description": "Convert the situation into natural speech. You may make vague details specific—for example, 'unforeseen circumstances' can become illness or an appointment—provided the detail is realistic, relevant and does not contradict the prompt.",
+          "required": true
+        },
+        {
           "kind": "practice_set",
           "title": "Respond to a Situation practice",
-          "description": "Complete 5 new Respond to a Situation attempts. Identify audience, purpose and desired outcome before you speak.",
+          "description": "Complete 5 new Respond to a Situation attempts. Before speaking, identify who you are talking to, what happened and exactly what you need to say or ask.",
           "engine": "speaking",
           "route": "speaking-rts",
           "practiceType": "rts",
@@ -503,27 +573,51 @@
       "code": "SWT-01",
       "area": "Writing",
       "task": "Summarize Written Text",
-      "weakness": "Form and concision",
-      "title": "SWT — How to Attempt & Form",
-      "reason": "Learn the complete SWT method. If your difficulty is choosing important lines or ideas, use SWT Content Selection — Highlight Trainer first.",
-      "checkpoint": "Complete 4 out of 5 SWT responses with relevant content, valid one-sentence form and controlled language.",
+      "weakness": "Task method, content selection and synthesis",
+      "title": "SWT — Main Idea, Support & Synthesis",
+      "reason": "Select the right ideas first, preserve their relationships and meaning, then connect them in one controlled sentence.",
+      "checkpoint": "Complete 4 out of 5 SWT responses with a clear main idea, relevant support, preserved meaning and valid form.",
       "items": [
         {
           "kind": "instruction",
-          "title": "Review SWT scoring",
-          "description": "Check your response against Content (4), Form (1), Grammar (2) and Vocabulary (2). SWT must remain one sentence and between 5–75 words.",
+          "title": "Review SWT form",
+          "description": "Keep SWT as one sentence and within 5–75 words. Do not force an artificial 60–65 word target; preserve important meaning while staying inside the valid form.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Identify the topic and what happens to it",
+          "description": "Scan the whole passage. Repeated keywords often reveal the main topic; then ask what the passage is actually saying about that topic. Use What, Why and How to find the important support and turning points.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Choose relevant support",
+          "description": "Keep ideas that directly explain the main topic, important turning points and the conclusion where one exists. Avoid examples, detailed explanations, repeated information and unnecessary dates or 'when' details.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "No rigid SWT template",
+          "description": "Use suitable wording from the passage when helpful. Connect 3–4 important ideas with accurate academic connectives such as moreover, furthermore, however, therefore, whereas, additionally, in addition or hence. Do not force beginning/middle/end selection or an artificial 60–65 word target.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Compress wording, not meaning",
+          "description": "If the response is too long, do not delete an important idea just to reduce words. Synthesize it with fewer words or connect it to another related idea while preserving the meaning.",
           "required": true
         },
         {
           "kind": "instruction",
           "title": "Use the Highlight Trainer for content selection",
-          "description": "If choosing important lines is difficult, complete the dedicated SWT Content Selection — Highlight Trainer before full SWT writing.",
+          "description": "If choosing important lines is difficult, complete the SWT Content Selection — Highlight Trainer before full SWT writing.",
           "required": true
         },
         {
           "kind": "practice_set",
           "title": "Full SWT application",
-          "description": "Complete 3 new SWT attempts after the method review. These submissions count automatically.",
+          "description": "Complete 3 new SWT attempts. Read the final sentence once for connection, relevance, preserved meaning and missing grammar components.",
           "engine": "swt",
           "route": "swt",
           "practiceType": "swt",
@@ -553,10 +647,10 @@
       "code": "SST-01",
       "area": "Listening / Writing",
       "task": "Summarize Spoken Text",
-      "weakness": "Task method and content selection",
-      "title": "SST — How to Attempt",
-      "reason": "Use an efficient listening, note-taking and summary method while meeting the task's scoring requirements.",
-      "checkpoint": "Complete 4 out of 5 SST attempts with relevant content, correct form and controlled language.",
+      "weakness": "Listening, note-taking and connected content",
+      "title": "SST — Understand First, Then Note",
+      "reason": "Understand the audio first, capture the topic, strong supporting ideas and conclusion, then turn notes into a connected summary.",
+      "checkpoint": "Complete 4 out of 5 SST attempts with a clear topic, relevant support, connected meaning and controlled spelling.",
       "items": [
         {
           "kind": "video",
@@ -567,14 +661,26 @@
         },
         {
           "kind": "instruction",
-          "title": "Review the SST note-taking method",
-          "description": "Listen for the topic and strongest supporting points; use keywords rather than full sentences in your notes.",
+          "title": "Listen before writing everything",
+          "description": "Do not automatically write from the first word. First identify the real topic. Ignore filler introductions, examples, repetition and minor detail. Aim for the main topic, about two important supporting ideas and the conclusion where it exists.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Use notes that work for you",
+          "description": "If you rely heavily on notes, write longer meaningful phrases. If your listening retention is stronger, shorter keywords and your own abbreviations are fine. Do not force a keyword-only strategy on every student. Complete important ideas and repair fragmented notes from memory before writing.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Flexible SST structure",
+          "description": "Use the IPT structure as a guide, not a rigid formula: 'The speaker discussed...' followed by suitable connectors such as Moreover, However, Firstly, Furthermore, Secondly, Additionally, Therefore, Lastly or In conclusion. Use 'and' or 'but' only when the ideas genuinely connect that way.",
           "required": true
         },
         {
           "kind": "practice_set",
           "title": "SST scored application",
-          "description": "Complete 3 new Summarize Spoken Text attempts. Progress updates automatically when each response is submitted.",
+          "description": "Complete 3 new Summarize Spoken Text attempts. Prioritise connected content first, then spelling and minor grammar refinements.",
           "engine": "writing-lab",
           "route": "spoken-text",
           "practiceType": "sst",
@@ -612,6 +718,66 @@
           "route": "practice",
           "practiceType": "essay",
           "minimumAttempts": 2,
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "RA-01",
+      "area": "Speaking",
+      "task": "Read Aloud",
+      "weakness": "Mechanical pace and pausing",
+      "title": "Read Aloud — Natural Pace & Pausing",
+      "reason": "Read clearly at a moderate pace and use punctuation to guide natural pauses.",
+      "checkpoint": "Complete 5 Read Aloud attempts without rushing, dragging or sounding word-by-word.",
+      "items": [
+        {
+          "kind": "instruction",
+          "title": "Use punctuation as your pause guide",
+          "description": "Do not speak too fast or too slowly. Read at a moderate pace. Take a short natural pause at commas and a clearer pause at sentence endings. Do not force dramatic intonation; if the listener can understand you easily, the delivery is working.",
+          "required": true
+        },
+        {
+          "kind": "practice_set",
+          "title": "Read Aloud pace practice",
+          "description": "Complete 5 new Read Aloud attempts. Focus on clear words, a moderate pace and natural pauses instead of maximum speed.",
+          "engine": "speaking",
+          "route": "speaking-ra",
+          "practiceType": "ra",
+          "minimumAttempts": 5,
+          "required": true
+        }
+      ]
+    },
+    {
+      "code": "RL-01",
+      "area": "Speaking / Listening",
+      "task": "Retell Lecture",
+      "weakness": "Content selection and connected retelling",
+      "title": "Retell Lecture — Main Idea to Conclusion",
+      "reason": "Capture the main topic, two strong supporting ideas and the conclusion, then retell them confidently.",
+      "checkpoint": "Complete 5 Retell Lecture attempts with a clear topic, relevant support and a connected ending.",
+      "items": [
+        {
+          "kind": "instruction",
+          "title": "Retell Lecture content structure",
+          "description": "Listen for the main topic, then capture about two important supporting ideas and the conclusion where one exists. Do not read disconnected notes aloud. Reconstruct incomplete notes from memory and connect them into meaningful ideas.",
+          "required": true
+        },
+        {
+          "kind": "instruction",
+          "title": "Flexible linking phrases",
+          "description": "Use phrases such as 'Moreover, he also discussed...', 'Furthermore, he talked about...', 'He also emphasized...' and 'In conclusion...' only when they fit. The content controls the response; the phrases only help organise it.",
+          "required": true
+        },
+        {
+          "kind": "practice_set",
+          "title": "Retell Lecture application",
+          "description": "Complete 5 new Retell Lecture attempts. Keep the response confident, connected and focused on the lecture's important content.",
+          "engine": "speaking",
+          "route": "speaking-rl",
+          "practiceType": "rl",
+          "minimumAttempts": 5,
           "required": true
         }
       ]

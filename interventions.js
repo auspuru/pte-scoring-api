@@ -356,7 +356,17 @@ function installInterventions(app, options = {}) {
   };
   const TRAIT_LABEL = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',
     linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
-  const TASK_MODULE = {swt:'SWT-01',sst:'SST-01',essay:'ESSAY-01'};
+  const TASK_MODULE = {
+    swt:'SWT-01',sst:'SST-01',essay:'ESSAY-01',
+    ra:'RA-01',rs:'MEM-01',rl:'RL-01',di:'CP-04',rts:'REG-01',sgd:'NT-03',
+    speaking:'PR-01'
+  };
+  const TASK_NAME = {
+    swt:'Summarize Written Text',sst:'Summarize Spoken Text',essay:'Essay Writing',
+    ra:'Read Aloud',rs:'Repeat Sentence',rl:'Retell Lecture',di:'Describe Image',
+    rts:'Respond to a Situation',sgd:'Summarize Group Discussion',speaking:'General Speaking'
+  };
+  const SELF_HELP_TASKS = new Set(Object.keys(TASK_MODULE));
   function latestScore(task, all) {
     if (task === 'swt') {
       const entries = Object.values(all.progress?.history || {}).flat().filter(Boolean)
@@ -376,6 +386,14 @@ function installInterventions(app, options = {}) {
       if (!a) return null;
       return { at:a.date || a.updatedAt, scores:a.scores || {}, maxima:TRAIT_MAX.essay };
     }
+    if (['ra','rs','rl','di','rts','sgd','speaking'].includes(task)) {
+      const entries = all.speaking.filter(a => a.status === 'submitted' && a.result
+          && (task === 'speaking' || speakingTypeByQuestion.get(String(a.questionId)) === task))
+        .sort((x,y)=>when(y._updatedAt || y.startedAt)-when(x._updatedAt || x.startedAt));
+      const a=entries[0],r=a?.result;
+      if(!a || !Number.isFinite(Number(r?.total)) || !Number.isFinite(Number(r?.maximum))) return null;
+      return { at:a._updatedAt || a.startedAt, scores:{content:Number(r.total)}, maxima:{content:Number(r.maximum)}, contentOnly:true };
+    }
     return null;
   }
   function betaAdvice(task, problem, all) {
@@ -386,46 +404,104 @@ function installInterventions(app, options = {}) {
       if (!moduleCode || suggestions.some(s => s.moduleCode === moduleCode)) return;
       suggestions.push({ moduleCode, title, reason, action });
     };
-    const taskName = task === 'swt' ? 'Summarize Written Text' : task === 'sst' ? 'Summarize Spoken Text' : 'Essay Writing';
+    const taskName = TASK_NAME[task] || 'PTE practice';
+    const methodIntent=/how|attempt|approach|structure|format|template|start|begin|method|strategy/.test(text) || !text;
+    const speakingIntent=/pronun|fluency|accent|clear|confidence|mechanical|hesitat|filler|intonation|pace|natural|speak/.test(text);
+    const noteIntent=/note|taking notes|keyword|remember|recall|listen/.test(text);
+    const contentIntent=/main idea|content|key point|supporting|idea|detail|turning point|conclusion|relevant|what to include/.test(text);
+
     const swtContentIntent = task === 'swt' && /important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important/.test(text);
     if (swtContentIntent) {
       push('SWT-CONTENT-01','SWT Content Selection — Highlight Trainer',
-        'Your question is about deciding what belongs in the summary, so practising full summaries is not the best first step.',
-        'Complete 10–15 existing-passage drills. Drag over only the important words and phrases; after each submission you will see missed ideas, why they matter, and the central phrases.');
+        'Your question is about deciding what belongs in the summary, so practise selecting the important information before writing full summaries.',
+        'Use the passage trainer to highlight the important words and phrases that carry the main topic, important support and turning points. Avoid examples, repeated information and unnecessary detail.');
     }
-    if ((/how|attempt|approach|structure|format|template|start|begin/.test(text) || !text) && !swtContentIntent) {
-      push(TASK_MODULE[task], taskName + ' — How to attempt', 'Start with the task method and scoring requirements before doing more questions.',
-        task==='swt'?'Review the SWT method before attempting full summaries.':'Review the task method, then apply it in targeted practice.');
+
+    if (task === 'speaking') {
+      push('PR-01','Pronunciation & Fluency — English Foundation',
+        'Start with clear, understandable and natural English speech before pushing harder on task content.',
+        'Follow the four-video playlist in order, then use the short daily routine: shadow, speak clearly, record yourself, and spend regular time with enjoyable natural English.');
+    } else if (task === 'ra') {
+      if (methodIntent || /fast|slow|pause|comma|punct|word.?by.?word/.test(text))
+        push('RA-01','Read Aloud — Natural Pace & Pausing','Your description points to pace, pausing or mechanical delivery.',
+          'Use a moderate pace, pause naturally at punctuation and focus on words being clearly understandable rather than speaking as fast as possible.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','Clear pronunciation and natural fluency support every Read Aloud response.',
+        'Use the English pronunciation/fluency playlist and daily shadowing routine alongside portal practice.');
+    } else if (task === 'rs') {
+      if (methodIntent || contentIntent || /memory|difficult|hard|forget|partial/.test(text))
+        push('MEM-01','Repeat Sentence — Capture More Correct Content','Your priority is to reproduce more of the sentence accurately.',
+          'Do not give up after a few words. Practise challenging sentences and aim to increase correct content without adding random guesses.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','If the words are hard to understand, improve delivery as well as recall.',
+        'Use the pronunciation/fluency playlist and record yourself so clarity improves without rushing.');
+    } else if (task === 'rl') {
+      if (methodIntent || contentIntent || noteIntent)
+        push('RL-01','Retell Lecture — Main Idea to Conclusion','Build the retell around the topic, important supporting ideas and the ending.',
+          'Capture the main topic, about two strong supporting ideas and the conclusion where one exists. Reconstruct fragmented notes into meaningful spoken ideas.');
+      if (noteIntent) push('NT-01','Note-Taking — Useful Meaning','Your notes should support listening rather than replace it.',
+        'Use short keywords if you can reconstruct ideas; use longer meaningful phrases if you depend heavily on your notes.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','Confident, understandable delivery matters after the content is selected.');
+    } else if (task === 'di') {
+      push('CP-04','Describe Image — Topic, Key Features & Trends',
+        contentIntent||methodIntent?'Focus on the image type, topic and strongest reportable features rather than trying to describe everything.':'Use a flexible image-description structure.',
+        'Introduce the image and topic, then cover the strongest features: highest/lowest, major comparisons or trends. Mention axes only when useful; a separate conclusion is optional.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','Keep the description clear, natural and confident rather than mechanical.');
+    } else if (task === 'rts') {
+      push('REG-01','Respond to a Situation — Natural First-Person Response',
+        'The response should match the listener and communication goal rather than repeat the prompt mechanically.',
+        'Choose an appropriate greeting, explain the situation in first person, add a realistic relevant detail, make the required request or suggestion, and close politely.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','Use natural pauses and clear speech so the response sounds like real communication.');
+    } else if (task === 'sgd') {
+      push('NT-03','SGD — Speaker Tracking & Third-Person Summary',
+        'Keep each speaker\'s ideas separate and report the discussion in third person.',
+        'Capture the overall topic and about 2–3 useful ideas per speaker where available. Group each speaker together rather than reproducing the original back-and-forth.');
+      if (noteIntent || /mix|speaker|handwriting|fragment/.test(text)) push('NT-01','Note-Taking — Useful Meaning','Keep listening and capture usable notes without stopping to perfect every phrase.',
+        'Use separate S1/S2/S3 areas, keep handwriting readable and turn keywords into complete ideas after the audio.');
+      if (speakingIntent) push('PR-01','Pronunciation & Fluency Foundation','Speak at a natural pace and avoid excessive fillers while reporting the speakers.');
+    } else if (task === 'sst') {
+      if (methodIntent || contentIntent || noteIntent) push('SST-01','SST — Understand First, Then Note',
+        'Low content often begins with listening or note-taking rather than sentence writing.',
+        'Listen for the topic, about two important supporting ideas and the conclusion. Use note length that matches your memory, then repair fragmented notes before writing.');
+    } else if (task === 'swt' && methodIntent && !swtContentIntent) {
+      push('SWT-01','SWT — Main Idea, Support & Synthesis','Use the IPT method instead of a fixed template.',
+        'Find the topic, ask What/Why/How, keep relevant support and turning points, preserve meaning, then connect the ideas. Compress wording rather than deleting an important idea.');
+    } else if (task === 'essay' && methodIntent) {
+      push('ESSAY-01','Essay Writing — Core Method','Use the existing essay scoring and Claude feedback to identify prompt coverage, development and organisation.',
+        'Analyse exactly what the prompt asks, plan relevant body ideas, write the response, then use the scored feedback for your next attempt.');
     }
-    if (/main idea|content|key point|idea|detail|note|listen|remember/.test(text) && !swtContentIntent) {
-      const contentModule=task==='sst'?'SST-01':task==='essay'?'ESSAY-01':'CP-01';
-      push(contentModule, 'Content selection', 'Your description points to selecting and organising the important information first.',
-        task==='sst'?'Review the SST note-taking method, then complete real SST attempts that sync automatically.'
-          :task==='essay'?'Review prompt relevance and idea development, then apply it in real Essay attempts.'
-          :'Practise identifying the central message before adding supporting information.');
+
+    if (['swt','sst','essay'].includes(task)) {
+      if (/grammar|sentence|connect|punct|run.?on/.test(text)) push('GR-01','Grammar and sentence building','Focus on accurate sentence construction and logical connections.');
+      if (/vocab|word|collocation|phrase/.test(text)) push('VOC-02','Vocabulary and collocations','Build useful word combinations and context-appropriate vocabulary.');
+      if (/spell/.test(text)) push('SP-02','Spelling accuracy','Use a personal error log and targeted retesting.');
     }
-    if (/grammar|sentence|connect|punct|run.?on/.test(text)) push('GR-01','Grammar and sentence building','Focus on accurate sentence construction and logical connections.');
-    if (/vocab|word|collocation|phrase/.test(text)) push('VOC-02','Vocabulary and collocations','Build useful word combinations and context-appropriate vocabulary.');
-    if (/spell/.test(text)) push('SP-02','Spelling accuracy','Use a personal error log and targeted retesting.');
-    if (/time|slow|finish/.test(text)) push('TIME-01','Timing and preparation','Practise the method untimed, then reduce preparation time gradually.');
+    if (/time|slow|finish/.test(text) && !['ra','speaking'].includes(task)) push('TIME-01','Timing and preparation','Practise the method untimed, then reduce preparation time gradually.');
+
     if (score) {
       const weak = Object.entries(score.scores || {}).filter(([k,v]) => Number.isFinite(Number(v)) && Number.isFinite(Number(score.maxima?.[k])))
         .map(([k,v]) => ({k,v:Number(v),max:Number(score.maxima[k]),ratio:Number(v)/Number(score.maxima[k])}))
         .filter(x=>x.ratio<0.8).sort((a,b)=>a.ratio-b.ratio);
       for (const t of weak.slice(0,3)) {
-        if (t.k === 'content') push(task === 'essay' ? 'ESSAY-01' : task === 'swt' ? 'SWT-CONTENT-01' : 'CP-01', TRAIT_LABEL[t.k], `Your most recent ${taskName} result was ${t.v}/${t.max} for ${TRAIT_LABEL[t.k]}. Work on this before adding harder practice.`,
-          task==='swt'?'Use the highlight trainer to practise selecting central phrases without writing a full summary.':'Target content selection before harder practice.');
-        else if (t.k === 'form') push(TASK_MODULE[task], TRAIT_LABEL[t.k], `Your most recent Form result was ${t.v}/${t.max}. Review the task format and word/sentence requirements.`);
+        if (t.k === 'content') {
+          const code = task === 'essay' ? 'ESSAY-01' : task === 'swt' ? 'SWT-CONTENT-01' : TASK_MODULE[task];
+          push(code, 'Content', `Your most recent ${taskName} content result was ${t.v}/${t.max}. Work on the task-specific content method before simply adding more practice.`,
+            task==='swt'?'Use the highlight trainer to practise selecting central phrases without writing a full summary.'
+              :task==='rs'?'Aim to reproduce more correct words from challenging sentences.'
+              :task==='sgd'?'Keep speaker attribution clear and turn notes into complete third-person ideas.'
+              :task==='rl'?'Build the retell around the topic, support and conclusion.'
+              :task==='di'?'Describe the topic and strongest features rather than listing everything.'
+              :task==='rts'?'Make sure the response actually completes the communication goal.'
+              :'Target the task-specific content method before harder practice.');
+        } else if (t.k === 'form') push(TASK_MODULE[task], TRAIT_LABEL[t.k], `Your most recent Form result was ${t.v}/${t.max}. Review the task format and word/sentence requirements.`);
         else if (t.k === 'grammar') push('GR-01', TRAIT_LABEL[t.k], `Your most recent Grammar result was ${t.v}/${t.max}. Prioritise sentence accuracy and control.`);
         else if (t.k === 'vocabulary') push('VOC-02', TRAIT_LABEL[t.k], `Your most recent Vocabulary result was ${t.v}/${t.max}. Practise precise wording and useful collocations.`);
         else if (t.k === 'spelling') push('SP-02', TRAIT_LABEL[t.k], `Your most recent Spelling result was ${t.v}/${t.max}. Target repeated spelling errors.`);
         else if (t.k === 'linguistic' || t.k === 'coherence') push('ESSAY-01', TRAIT_LABEL[t.k], `Your most recent ${TRAIT_LABEL[t.k]} result was ${t.v}/${t.max}. Strengthen development and organisation.`);
       }
     }
-    if (!suggestions.length) push(TASK_MODULE[task], taskName + ' — Core method', 'Review the task method, complete targeted practice, then compare your next score.');
+    if (!suggestions.length) push(TASK_MODULE[task], taskName + ' — Core method', 'Review the IPT task method, complete targeted practice, then compare your next result.');
     return {
       task, problem:clean(problem,1000), beta:true,
-      latestScore: score ? { at:score.at, scores:score.scores, maxima:score.maxima } : null,
+      latestScore: score ? { at:score.at, scores:score.scores, maxima:score.maxima, contentOnly:!!score.contentOnly } : null,
       suggestions:suggestions.slice(0,3)
     };
   }
@@ -597,8 +673,8 @@ function installInterventions(app, options = {}) {
 
   app.post('/api/interventions/help', student, async (req,res) => {
     try {
-      const task = ['swt','sst','essay'].includes(req.body?.task) ? req.body.task : '';
-      if (!task) return res.status(400).json({error:'Choose SWT, SST or Essay Writing.'});
+      const task = SELF_HELP_TASKS.has(req.body?.task) ? req.body.task : '';
+      if (!task) return res.status(400).json({error:'Choose a supported PTE task or General Speaking.'});
       const problem = clean(req.body?.problem, 1000);
       const all = await evidence(req.interventionUser);
       res.json(betaAdvice(task, problem, all));
@@ -608,7 +684,7 @@ function installInterventions(app, options = {}) {
   app.post('/api/interventions/self-plan', student, async (req,res) => {
     try {
       let code = clean(req.body?.moduleCode,60);
-      const selectedTask=['swt','sst','essay'].includes(req.body?.task)?req.body.task:'';
+      const selectedTask=SELF_HELP_TASKS.has(req.body?.task)?req.body.task:'';
       const problem = clean(req.body?.problem,1000);
       const contentIntent=/important|main idea|central|key (?:point|idea|line|sentence|phrase)|which (?:line|sentence)|select|highlight|content|too much detail|what to include|what is important|improve content/i;
       if(selectedTask==='swt' && ['CP-01','CP-02','SWT-01'].includes(code) && contentIntent.test(problem)) code='SWT-CONTENT-01';
@@ -618,7 +694,7 @@ function installInterventions(app, options = {}) {
       const existing = await store.list(req.interventionUser);
       if (existing.filter(active).length >= 3) return res.status(409).json({error:'You already have 3 active focus areas. Finish one before adding another.'});
       const plan = sanitizePlan({
-        moduleCode:module.code, source:'student', area:module.area, task:selectedTask==='swt'?'Summarize Written Text':selectedTask==='sst'?'Summarize Spoken Text':selectedTask==='essay'?'Essay Writing':module.task, weakness:module.weakness,
+        moduleCode:module.code, source:'student', area:module.area, task:TASK_NAME[selectedTask] || module.task, weakness:module.weakness,
         title:module.title + ' · Self-help Beta',
         reason:problem ? 'You asked for help with: ' + problem : module.reason,
         priority:'normal', items:module.items || [], notificationUnread:false, status:'not_started'
