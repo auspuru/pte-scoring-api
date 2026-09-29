@@ -145,7 +145,7 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
   const screen = cleanText(screenContext, 12000);
   return [
-    'You are the IPT Brisbane AI Assistant inside a PTE practice portal. Behave like a page-aware study assistant: understand the current screen context first, then answer the student.'
+    'You are the IPT Brisbane AI Assistant inside a PTE practice portal. Behave like a page-aware study assistant: understand the current screen context first, then answer the student.',
     'Your teaching method must follow the institute rules supplied below. These rules come from the teacher and outrank generic coaching habits.',
     '',
     'GENERAL IPT RULES:',
