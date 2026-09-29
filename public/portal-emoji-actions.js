@@ -52,6 +52,13 @@
   };
 
   const iconForText = [
+    // Exact PTE task names first so Progress / Task trends always receive
+    // the correct semantic emoji rather than relying on broad keywords.
+    [/highlight correct summary|highlight incorrect words|summari[sz]e spoken text|write from dictation/i, 'listening'],
+    [/read aloud|repeat sentence|describe image|retell lecture|summari[sz]e group discussion|respond to a situation/i, 'speaking'],
+    [/reading blanks|reading multiple answers|reorder paragraphs|reading single answer|drag\s*&\s*drop/i, 'reading'],
+    [/summari[sz]e written text|\bswt\b/i, 'swt'],
+    [/write essay|\bessay\b/i, 'essay'],
     [/\bgrammar\b/i, 'grammar'],
     [/\bpronunciation\b/i, 'pronunciation'],
     [/\bfluency\b/i, 'fluency'],
@@ -59,8 +66,6 @@
     [/teacher feedback|from your teacher/i, 'teacher-feedback'],
     [/my progress|progress/i, 'progress'],
     [/mock test/i, 'mock-test'],
-    [/summari[sz]e written text|\bswt\b/i, 'swt'],
-    [/\bessay\b/i, 'essay'],
     [/\bspeaking\b/i, 'speaking'],
     [/\breading\b/i, 'reading'],
     [/\blistening\b/i, 'listening'],
@@ -233,7 +238,9 @@
       if (!match) return;
       node.dataset.emojiReady = '1';
       node.classList.add('portal-label-with-emoji');
-      node.prepend(mini(match[1], text));
+      const icon = mini(match[1], text);
+      node.prepend(icon);
+      icon.addEventListener('pointerdown', () => activate(icon, match[1] === 'progress' ? 1150 : 760));
     });
   }
 
