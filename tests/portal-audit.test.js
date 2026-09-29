@@ -18,6 +18,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   const writingMotionCss=read('public/portal-writing-motion.css');
   const writingMotion=read('public/portal-writing-motion.js');
   const portalShell=read('public/portal-shell.js');
+  const personalAssistant=read('public/personal-ai-assistant.js');
   const portal=read('public/index.js');
   const reading=read('public/reading-practice.js');
   const lab=read('public/writing-lab-client.js');
@@ -39,7 +40,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
   }
   assert.match(html,/<button[^>]+practice-shortcut-link[^>]*>Practise this question/);
-  assert.match(html,/From your teacher/);
+  assert.match(html,/My Next Steps/);
   assert(html.indexOf('id="portalResume"') < html.indexOf('id="nextStepsDashboardCard"'));
   assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
@@ -51,7 +52,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
   assert.doesNotMatch(html,/<link[^>]+portal-writing-motion\.css/,'Writing motion CSS stays off the first-load path');
   assert.match(html,/\/portal-writing-motion\.js\?v=20260929-native-cursor/);
-  assert.match(html,/\/portal-shell\.js\?v=20260928-layoutfix-final/);
+  assert.match(html,/\/portal-shell\.js\?v=20260929-assistant-unify/);
   assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix-final/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
@@ -103,11 +104,16 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
-  assert.match(portalShell,/portal-insights\.css\?v=20260928-insights/);
+  assert.match(portalShell,/portal-insights\.css\?v=20260929-assistant-unify/);
   assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-layoutfix-final/);
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=2/);
+  assert.match(html,/\/interventions-client\.js\?v=6/);
+  assert.match(personalAssistant,/switchSection\('next-steps'\)/,'assistant mascot should open the single IPT Assistant experience');
+  assert.match(personalAssistant,/\[data-beta-problem\]/,'assistant mascot should focus the existing IPT Assistant input');
+  assert.doesNotMatch(personalAssistant,/Coming Soon|personalAiPanel/,'assistant mascot must not present a second assistant panel');
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
   assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
