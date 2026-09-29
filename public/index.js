@@ -12669,7 +12669,14 @@ function openStudentProgress() {
       : switchSection('writing-history',{labRequest:{attemptId:entry.id}}),
     loadLocal: async () => {
       const owner = currentUserId, token = sessionToken;
-      if (typeof resumeAccountSync === 'function') await resumeAccountSync();
+      // My Progress is an observation surface, so always pull the latest cloud
+      // snapshot when it opens or the user presses Refresh. This avoids the
+      // normal background-sync throttle hiding another device's recent work.
+      if (syncQueued || LocalStore.get(`pte_${canonicalClientUserId(owner)}_syncPending`)) {
+        if (typeof flushSync === 'function') await flushSync();
+      }
+      if (typeof refreshPracticeHistory === 'function') await refreshPracticeHistory({ force: true });
+      else if (typeof resumeAccountSync === 'function') await resumeAccountSync();
       if (owner !== currentUserId || token !== sessionToken) throw Error('Account changed.');
       let reading = {};
       try {
