@@ -122,6 +122,7 @@ const EXTERNAL_SPELLCHECK_ENABLED = process.env.DISABLE_EXTERNAL_SPELLCHECK !== 
 // L2 (v19.17): single source of truth for the grading model, so a model
 // upgrade is a one-line change instead of hunting hardcoded strings.
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+const CLAUDE_COACH_MODEL = process.env.CLAUDE_COACH_MODEL || CLAUDE_MODEL;
 
 // H2 (v19.17): optional rate limiting. express-rate-limit is loaded lazily;
 // if it isn't installed the server still runs (just without the limiter), and
@@ -213,6 +214,7 @@ if (rateLimit) {
   app.use('/api/swt/sample', gradeLimiter);
   app.use('/api/essay/grade', gradeLimiter);
   app.use('/api/spellcheck', gradeLimiter);
+  app.use('/api/interventions/help', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
   app.use('/api/auth/email-reset', authLimiter);
@@ -6089,6 +6091,17 @@ require('./interventions').installInterventions(app, {
   getPassage: async id => {
     const p = await PassageAPI.getById(id);
     return p ? studentPassage(p) : null;
+  },
+  callCoachModel: async prompt => {
+    if (!anthropic) throw new Error('IPT coaching assistant is not configured.');
+    const response = await anthropic.messages.create({
+      model: CLAUDE_COACH_MODEL,
+      temperature: 0.2,
+      max_tokens: 1600,
+      messages: [{ role:'user', content:prompt }]
+    }, { timeout:45000, maxRetries:0 });
+    if (response.stop_reason === 'max_tokens') throw new Error('Incomplete coaching response.');
+    return response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').trim();
   },
   requireAdmin
 });
