@@ -138,12 +138,15 @@ function cleanHistory(history) {
   }).filter(Boolean);
 }
 
-function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}) {
+function buildPrompt({task,message,history=[],latestScore=null,screenContext='',studentProfile=null}) {
   const name = TASK_NAMES[task] || 'PTE practice';
   const taskRules = RULES[task] || [];
   const prior = cleanHistory(history);
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
   const screen = cleanText(screenContext, 12000);
+  const profile = studentProfile && typeof studentProfile === 'object'
+    ? JSON.stringify(studentProfile).slice(0, 18000)
+    : 'none available';
   return [
     'You are the IPT Brisbane AI Assistant inside a PTE practice portal. Behave like a page-aware study assistant: understand the current screen context first, then answer the student.',
     'Your teaching method must follow the institute rules supplied below. These rules come from the teacher and outrank generic coaching habits.',
@@ -158,6 +161,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}
     'LATEST PORTAL RESULT:',
     score,
     '',
+    'STUDENT PERFORMANCE PROFILE (automatically refreshed from saved portal progress, practice and mock results):',
+    profile,
+    '',
     'CURRENT SCREEN CONTEXT:',
     screen || 'none supplied',
     '',
@@ -171,6 +177,12 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}
     '- Answer the current question directly and conversationally.',
     '- Prefer 2–5 compact paragraphs. Use at most one short list if it materially helps.',
     '- Treat CURRENT SCREEN CONTEXT as evidence from the student portal. Use the visible task, question, student response, score or feedback shown there when relevant. Do not invent content that is not present. If the student asks for feedback on the screen, analyse that context directly.',
+    '- Treat STUDENT PERFORMANCE PROFILE as saved evidence from this student’s own portal history. Use it proactively when the question is about progress, weak areas, marks, study priorities, recent performance or what to practise next.',
+    '- Do not ask the student which task, recent score or saved response they mean when the profile or current screen already answers that question. Do not ask them to repeat information already present in portal evidence.',
+    '- When the student asks where marks are slipping, compare their task areas and recent mock breakdowns. Name the strongest evidence first, distinguish practice from mock performance, and explain the pattern using attempt counts, recent percentages or trait scores when available.',
+    '- Prefer recent evidence and recurring patterns over one isolated low score. If only one attempt exists, say that the evidence is limited rather than calling it a trend.',
+    '- Use unfinished-work information when it helps the student resume a draft or incomplete practice, but do not treat unfinished work as a scored weakness.',
+    '- For speaking, never infer pronunciation, fluency, accent, pauses or intonation from a content-only score. Only discuss those delivery traits when the profile or current context explicitly contains delivery evidence.',
     '- If the student supplied a response, diagnose the biggest issue first and quote only very short fragments when useful.',
     '- Give a concrete next action the student can do now.',
     '- Do not claim a score guarantee.',
