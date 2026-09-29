@@ -36,7 +36,8 @@ function model(data,writing){
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
 
  const practiceReading=reading.filter(a=>a.practiceUid&&a.done);
- const readingScores=scoredSeries(practiceReading,a=>ratio(a.earned??a.total,a.maximum),a=>a.finishedAt||a.startedAt);
+ // Normal Reading practice exposes the task maximum as `possible`; keep `maximum` as a fallback for older snapshots.
+ const readingScores=scoredSeries(practiceReading,a=>ratio(a.earned??a.total,a.possible??a.maximum),a=>a.finishedAt||a.startedAt);
  const essayScores=scoredSeries(essays,a=>ratio(a?.scores?.total,26),a=>a.date);
  const sstRows=writing.filter(a=>a.kind==='sst'&&a.status==='submitted'),wfdRows=writing.filter(a=>a.kind==='wfd'&&a.status==='submitted');
  const sstScores=scoredSeries(sstRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
