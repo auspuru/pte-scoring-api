@@ -551,11 +551,17 @@ function installInterventions(app, options = {}) {
       const values=list.map(x=>x.value), recent=values.slice(-5);
       const avg=values.reduce((n,v)=>n+v,0)/values.length;
       const delta=recent.length>1?recent.at(-1)-recent[0]:null;
+      const averagePct=Math.round(avg*100),latestPct=Math.round(values.at(-1)*100);
+      const recentPcts=recent.map(v=>Math.round(v*100));
       return {
         task,label:PROFILE_LABEL[task]||task,attempts:list.length,
         practiceAttempts:list.filter(x=>x.source==='practice').length,
         mockAttempts:list.filter(x=>x.source==='mock').length,
-        averagePct:Math.round(avg*100),latestPct:Math.round(values.at(-1)*100),
+        averagePct,latestPct,
+        recentLowPct:recentPcts.length?Math.min(...recentPcts):null,
+        recentHighPct:recentPcts.length?Math.max(...recentPcts):null,
+        performanceBand:averagePct>=75?'strong':averagePct>=50?'developing':'weak',
+        evidenceStrength:list.length>=5?'high':list.length>=2?'moderate':'limited',
         trend:delta===null?'not enough data':Math.abs(delta)<.02?'stable':delta>0?'improving':'declining',
         trendPct:delta===null?null:Math.round(delta*100),
         lastAt:list.at(-1)?.at||0
@@ -565,11 +571,26 @@ function installInterventions(app, options = {}) {
     const recurring=areas.filter(a=>a.attempts>=2);
     const weakest=recurring.slice().sort((a,b)=>a.averagePct-b.averagePct).slice(0,3);
     const strongest=recurring.slice().sort((a,b)=>b.averagePct-a.averagePct).slice(0,3);
+    const areaByTask=new Map(areas.map(a=>[a.task,a]));
     const traits=[...traitValues.entries()].map(([id,list])=>{
       list.sort((a,b)=>a.at-b.at);
       const [task,key]=id.split(':');
       const recent=list.slice(-5),avg=recent.reduce((n,x)=>n+x.ratio,0)/recent.length;
-      return {task:PROFILE_LABEL[task]||task,trait:TRAIT_LABEL[key]||key,attempts:list.length,averagePct:Math.round(avg*100),latestPct:Math.round(list.at(-1).ratio*100)};
+      const averagePct=Math.round(avg*100),latestPct=Math.round(list.at(-1).ratio*100);
+      const area=areaByTask.get(task)||null;
+      const gapFromOverallPct=area?averagePct-area.averagePct:null;
+      let interpretation='monitor';
+      if(area?.performanceBand==='strong') interpretation='relative_improvement_area';
+      else if(area && averagePct<=area.averagePct-8) interpretation='possible_score_contributor';
+      else if(area) interpretation='not_primary_driver';
+      return {
+        task:PROFILE_LABEL[task]||task,taskCode:task,trait:TRAIT_LABEL[key]||key,
+        attempts:list.length,averagePct,latestPct,
+        taskAveragePct:area?.averagePct??null,taskLatestPct:area?.latestPct??null,
+        taskPerformanceBand:area?.performanceBand||'unknown',
+        taskEvidenceStrength:area?.evidenceStrength||'unknown',
+        gapFromOverallPct,interpretation
+      };
     }).filter(x=>x.attempts>=1).sort((a,b)=>a.averagePct-b.averagePct).slice(0,6);
 
     const recentPractice=points.filter(p=>p.source==='practice').sort((a,b)=>b.at-a.at).slice(0,10)
@@ -578,6 +599,12 @@ function installInterventions(app, options = {}) {
     unfinished.sort((a,b)=>when(b.at)-when(a.at));
     return {
       generatedAt:new Date().toISOString(),
+      interpretationPolicy:{
+        overallBeforeTraits:true,
+        strongTaskThresholdPct:75,
+        highEvidenceAttempts:5,
+        rule:'Use overall task performance to decide whether marks are materially slipping. Trait scores explain relative improvement areas and must not override a strong overall task pattern on their own.'
+      },
       filterPolicy:{unattemptedExcluded:true,extremeLowExcluded:true,excludedAtOrBelowPct:Math.round(PROFILE_MIN_RATIO*100)},
       totals:{practiceResults:points.filter(p=>p.source==='practice').length,mockTaskResults:points.filter(p=>p.source==='mock').length,completedMocks:recentMocks.length},
       weakestAreas:weakest,
