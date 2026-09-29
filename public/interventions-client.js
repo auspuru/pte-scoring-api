@@ -5,8 +5,52 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const statusLabel={not_started:'Not started',in_progress:'In progress',ready_for_review:'Ready for review',mastered:'Mastered',archived:'Archived'};
   const priorityLabel={high:'High priority',normal:'Current focus',low:'Lower priority'};
+  const helpTaskMeta={
+    swt:{label:'Summarize Written Text',placeholder:'e.g. I keep repeating ideas or I do not know which lines are important.',prompts:['I cannot identify the main idea','I include too many details','My summary feels disconnected']},
+    sst:{label:'Summarize Spoken Text',placeholder:'e.g. I miss the main idea or my notes become fragmented.',prompts:['My note-taking is weak','I miss the conclusion','My notes do not form complete ideas']},
+    essay:{label:'Essay Writing',placeholder:'e.g. My ideas are weak or I do not know how to develop my body paragraphs.',prompts:['My ideas are not developed','My structure feels weak','My grammar score is low']},
+    ra:{label:'Read Aloud',placeholder:'e.g. I speak too fast, pause badly or sound mechanical.',prompts:['I speak too fast','I sound mechanical','I struggle with difficult words']},
+    rs:{label:'Repeat Sentence',placeholder:'e.g. I forget the second half or can only repeat a few words.',prompts:['I forget most of the sentence','I only remember the beginning','Long sentences are difficult']},
+    rl:{label:'Retell Lecture',placeholder:'e.g. My notes are fragmented or I do not know which ideas to retell.',prompts:['I miss the main topic','My notes are fragmented','I do not know what to include']},
+    di:{label:'Describe Image',placeholder:'e.g. I do not know which features to describe first.',prompts:['I do not know what to mention','I list too many numbers','I struggle to describe trends']},
+    rts:{label:'Respond to a Situation',placeholder:'e.g. I do not know how to start or what tone to use.',prompts:['I do not know how to start','I am unsure about the tone','I miss part of the prompt']},
+    sgd:{label:'Summarize Group Discussion',placeholder:'e.g. I mix speakers or cannot capture enough ideas.',prompts:['I mix the speakers','I cannot take notes fast enough','My sentences are fragmented']},
+    speaking:{label:'General Speaking',placeholder:'e.g. My pronunciation is unclear or I hesitate too much.',prompts:['My pronunciation is unclear','I hesitate too much','I want better fluency']}
+  };
+  const helpTaskOrder=['swt','sst','essay','ra','rs','rl','di','rts','sgd','speaking'];
+  const taskLabel=code=>helpTaskMeta[code]?.label||code;
+  function inferHelpTask(message){
+    const text=String(message||'').toLowerCase();
+    const patterns=[
+      ['rs',/\brepeat\s+sentences?\b/],
+      ['ra',/\bread\s+aloud\b/],
+      ['rl',/\b(?:re\s*-?\s*tell|retell)\s+lecture\b/],
+      ['di',/\bdescribe\s+image\b|\bimage\s+description\b/],
+      ['rts',/\brespond\s+to\s+(?:a\s+)?situation\b|\bsituation\s+response\b/],
+      ['sgd',/\bgroup\s+discussion\b|\bsummar(?:ize|ise|y)\s+group\s+discussion\b/],
+      ['sst',/\bsummar(?:ize|ise|y)\s+spoken\s+text\b|\bspoken\s+text\b/],
+      ['swt',/\bsummar(?:ize|ise|y)\s+written\s+text\b|\bwritten\s+text\b/],
+      ['essay',/\bessay\b/]
+    ];
+    for(const [task,pattern] of patterns)if(pattern.test(text))return task;
+    if(/\bpronunciation\b|\bfluency\b|\baccent\b/.test(text))return 'speaking';
+    return '';
+  }
+  function formatCoachText(value){
+    const escaped=esc(value).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    const lines=escaped.split(/\r?\n/).map(x=>x.trim());
+    let html='',list=[];
+    const flush=()=>{if(list.length){html+='<ul>'+list.map(x=>'<li>'+x+'</li>').join('')+'</ul>';list=[];}};
+    for(const line of lines){
+      if(!line){flush();continue;}
+      const bullet=line.match(/^[-•]\s+(.+)/);
+      if(bullet){list.push(bullet[1]);continue;}
+      flush();html+='<p>'+line+'</p>';
+    }
+    flush();return html||'<p></p>';
+  }
   function create({document:doc,identity,navigate,launch}){
-    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpBusy=false,trainer=null;
+    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpNotice='',helpBusy=false,trainer=null;
     function auth(){
       const value=identity?.()||{};
       return {uid:String(value.uid||'').trim().toLowerCase(),token:value.token||''};
@@ -67,26 +111,34 @@
     function helpPanel(){
       const score=helpResult?.latestScore;
       const traitLabels={content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'Linguistic range',coherence:'Structure & coherence'};
-      const scoreHtml=score?'<div class="next-step-beta-score"><strong>'+(score.contentOnly?'Recent content-only practice result used':'Recent portal result used')+'</strong><div>'+Object.entries(score.scores||{}).filter(([k])=>!k.endsWith('_max')&&Number.isFinite(Number(score.maxima?.[k]))).map(([k,v])=>'<span>'+esc(traitLabels[k]||k.replaceAll('_',' '))+': '+esc(v)+'/'+esc(score.maxima[k])+'</span>').join('')+'</div>'+(score.contentOnly?'<small>Pronunciation and fluency are not inferred from transcript-only content scoring.</small>':'')+'</div>':'<p class="next-step-beta-muted">No recent scored attempt was found for this task, so the suggestions use your description and the IPT task method.</p>';
+      const scoreTraits=score?Object.entries(score.scores||{}).filter(([k])=>!k.endsWith('_max')&&Number.isFinite(Number(score.maxima?.[k]))):[];
+      const scoreHtml=score?'<aside class="ipt-assistant-context"><div><span class="ipt-assistant-context-kicker">Used for this advice</span><strong>'+esc(taskLabel(helpTask))+' · latest result</strong></div><div class="ipt-assistant-score-chips">'+scoreTraits.map(([k,v])=>'<span><b>'+esc(traitLabels[k]||k.replaceAll('_',' '))+'</b> '+esc(v)+'/'+esc(score.maxima[k])+'</span>').join('')+'</div>'+(score.contentOnly?'<small>Content only — pronunciation and fluency are not inferred from transcript scoring.</small>':'')+'</aside>':'';
       const suggestions=helpResult?.suggestions||[];
-      const chatHtml=helpHistory.length?'<div class="next-step-beta-chat">'+helpHistory.map(m=>'<div class="next-step-beta-message '+(m.role==='assistant'?'assistant':'user')+'"><span>'+(m.role==='assistant'?'IPT Assistant':'You')+'</span><p>'+esc(m.text).replace(/\\n/g,'<br>')+'</p></div>').join('')+'</div>':'';
-      const taskOptions=[
-        ['swt','Summarize Written Text'],['sst','Summarize Spoken Text'],['essay','Essay Writing'],
-        ['ra','Read Aloud'],['rs','Repeat Sentence'],['rl','Retell Lecture'],['di','Describe Image'],
-        ['rts','Respond to a Situation'],['sgd','Summarize Group Discussion'],['speaking','General Speaking — Pronunciation & Fluency']
-      ].map(([value,label])=>'<option value="'+value+'" '+(helpTask===value?'selected':'')+'>'+label+'</option>').join('');
-      return '<section class="next-step-beta"><div class="next-step-beta-head"><div><p class="portal-eyebrow">IPT Assistant · Beta</p><h3>Ask the IPT Assistant</h3><p>Choose a PTE task or General Speaking and explain what you are struggling with. The assistant uses your recent portal results when available and follows the IPT teaching methods built into this portal.</p></div><span>Beta</span></div>'
-        +chatHtml
-        +'<div class="next-step-beta-form"><label>Task<select data-beta-task>'+taskOptions+'</select></label><label>What do you want help with?<textarea data-beta-problem placeholder="e.g. I lose the main idea, mix speakers, pause too much, forget the sentence, or do not know what to include.">'+esc(helpProblem)+'</textarea></label><button type="button" class="portal-button primary" data-beta-help '+(helpBusy?'disabled':'')+'>'+(helpBusy?'Thinking…':helpHistory.length?'Ask follow-up':'Ask assistant')+'</button></div>'
-        +(helpResult?'<div class="next-step-beta-results">'+scoreHtml+(suggestions.length?suggestions.map(s=>'<article><div><strong>'+esc(s.title)+'</strong><p>'+esc(s.reason)+'</p>'+(s.action?'<p class="next-step-beta-action"><b>What you will do:</b> '+esc(s.action)+'</p>':'')+'</div><button type="button" class="portal-button" data-beta-add="'+esc(s.moduleCode)+'">'+(s.moduleCode==='SWT-CONTENT-01'?'Add highlight practice':s.moduleCode==='PR-01'?'Add playlist to My Next Steps':'Add to My Next Steps')+'</button></article>').join(''):'<p>No suggestion is available yet.</p>')+'</div>':'')
-        +'<p class="next-step-beta-disclaimer">These are IPT study recommendations and practice guidance, not an official Pearson diagnosis or score prediction.</p></section>';
+      const chatHtml=helpHistory.length?'<div class="ipt-assistant-chat" aria-live="polite">'+helpHistory.map(m=>'<article class="ipt-assistant-message '+(m.role==='assistant'?'assistant':'user')+'"><div class="ipt-assistant-message-label">'+(m.role==='assistant'?'IPT Assistant':'You')+'</div><div class="ipt-assistant-message-body">'+(m.role==='assistant'?formatCoachText(m.text):'<p>'+esc(m.text)+'</p>')+'</div></article>').join('')+'</div>':'<div class="ipt-assistant-welcome"><span aria-hidden="true">✦</span><div><strong>Tell me the problem, not just the score.</strong><p>I’ll identify the task, use your recent portal result when it helps, and give you one clear thing to fix first.</p></div></div>';
+      const taskOptions=helpTaskOrder.map(value=>'<option value="'+value+'" '+(helpTask===value?'selected':'')+'>'+esc(helpTaskMeta[value].label+(value==='speaking'?' — Pronunciation & Fluency':''))+'</option>').join('');
+      const meta=helpTaskMeta[helpTask]||helpTaskMeta.swt;
+      const promptChips=meta.prompts.map(p=>'<button type="button" class="ipt-assistant-prompt" data-beta-prompt="'+esc(p)+'">'+esc(p)+'</button>').join('');
+      const notice=helpNotice?'<div class="ipt-assistant-notice" role="status"><span aria-hidden="true">✓</span><p>'+esc(helpNotice)+'</p></div>':'';
+      const recommendationHtml=helpResult&&suggestions.length?'<section class="ipt-assistant-recommendations"><div class="ipt-assistant-section-head"><div><span>Recommended next step</span><h4>Turn the advice into practice</h4></div></div><div class="ipt-assistant-recommendation-list">'+suggestions.map((s,index)=>'<article class="ipt-assistant-recommendation '+(index===0?'primary':'')+'"><div class="ipt-assistant-recommendation-copy">'+(index===0?'<span class="ipt-assistant-best">Best next step</span>':'<span class="ipt-assistant-support">Also useful</span>')+'<strong>'+esc(s.title)+'</strong><p>'+esc(s.reason)+'</p>'+(s.action?'<div class="ipt-assistant-action"><b>Do this:</b> '+esc(s.action)+'</div>':'')+'</div><button type="button" class="portal-button '+(index===0?'primary':'')+'" data-beta-add="'+esc(s.moduleCode)+'">'+(s.moduleCode==='SWT-CONTENT-01'?'Add highlight practice':s.moduleCode==='PR-01'?'Add speaking plan':'Add to My Next Steps')+'</button></article>').join('')+'</div></section>':'';
+      return '<section class="next-step-beta ipt-assistant"><header class="ipt-assistant-head"><div><div class="ipt-assistant-title-row"><p class="portal-eyebrow">IPT Assistant</p><span class="ipt-assistant-beta">Beta</span></div><h3>Your PTE coach</h3><p>Ask naturally. I’ll use the IPT method and your portal history where it is relevant.</p></div><div class="ipt-assistant-task-pill">'+esc(taskLabel(helpTask))+'</div></header>'
+        +notice+chatHtml
+        +'<div class="ipt-assistant-composer"><div class="ipt-assistant-controls"><label><span>Task</span><select data-beta-task>'+taskOptions+'</select></label><span class="ipt-assistant-auto">Task auto-detect is on</span></div><label class="ipt-assistant-input"><span class="sr-only">What do you want help with?</span><textarea data-beta-problem placeholder="'+esc(meta.placeholder)+'">'+esc(helpProblem)+'</textarea><button type="button" class="portal-button primary" data-beta-help '+(helpBusy?'disabled':'')+'>'+(helpBusy?'Thinking…':helpHistory.length?'Send':'Ask Assistant')+'</button></label><div class="ipt-assistant-prompts"><span>Try asking:</span>'+promptChips+'</div></div>'
+        +scoreHtml+recommendationHtml
+        +'<p class="next-step-beta-disclaimer">IPT study guidance, not an official Pearson diagnosis or score prediction.</p></section>';
     }
     async function requestHelp(){
       const message=String(helpProblem||'').trim();
       if(!message){notify('Tell the IPT Assistant what you are struggling with.',true);return;}
+      const inferred=inferHelpTask(message);
+      let requestTask=helpTask;
+      if(inferred&&inferred!==helpTask){
+        const previous=taskLabel(helpTask);
+        helpTask=inferred;requestTask=inferred;helpResult=null;helpHistory=[];
+        helpNotice='Switched from '+previous+' to '+taskLabel(inferred)+' because your message clearly mentions that task.';
+      }else helpNotice='';
       helpBusy=true;render();
       try{
-        const data=await api('/help',{task:helpTask,problem:message,history:helpHistory.slice(-8)});
+        const data=await api('/help',{task:requestTask,problem:message,history:helpHistory.slice(-8)});
         helpResult=data;helpPlanProblem=message;
         const fallback=data.coachReply || data.suggestions?.[0]?.action || data.suggestions?.[0]?.reason || 'Use the suggested practice below as your next step.';
         helpHistory=[...helpHistory,{role:'user',text:message},{role:'assistant',text:fallback}].slice(-10);
@@ -225,12 +277,12 @@
       const host=doc.getElementById('nextStepsPane');if(!host)return;
       const current=active().slice(0,3),completed=plans.filter(p=>p.status==='mastered');
       host.innerHTML='<div class="next-steps-shell"><div class="next-steps-heading"><div><p class="portal-eyebrow">Your current focus</p><h2>My Next Steps</h2><p>Work through assigned actions. Exact portal questions complete automatically after you submit a qualifying new attempt.</p></div><span class="next-step-count">'+current.length+' active</span></div>'
-        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally, or use the Beta helper below to choose a focused study path.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
+        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally, or ask the IPT Assistant below to build a focused study path.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
         +helpPanel()
         +(completed.length?'<details class="next-step-history"><summary>Completed plans <span>'+completed.length+'</span></summary><div class="next-step-plan-list completed">'+completed.slice(0,12).map(card).join('')+'</div></details>':'')+'</div>';
       host.onclick=handleClick;
       host.oninput=e=>{if(e.target.matches?.('[data-beta-problem]'))helpProblem=e.target.value;};
-      host.onchange=e=>{if(e.target.matches?.('[data-beta-task]')){helpTask=e.target.value;helpProblem='';helpPlanProblem='';helpResult=null;helpHistory=[];render();} };
+      host.onchange=e=>{if(e.target.matches?.('[data-beta-task]')){helpTask=e.target.value;helpProblem='';helpPlanProblem='';helpResult=null;helpHistory=[];helpNotice='';render();} };
     }
     function renderDashboard(){
       const host=doc.getElementById('nextStepsDashboardCard');if(!host)return;
@@ -259,6 +311,14 @@
         const planEl=practiceSetButton.closest('[data-plan-id]'),itemEl=practiceSetButton.closest('[data-item-id]');
         const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);
         if(plan&&item){await action(plan.id,item.id,'start');navigate(item.route||'practice-hub');}
+        return;
+      }
+      const quick=e.target.closest('[data-beta-prompt]');
+      if(quick){
+        helpProblem=quick.dataset.betaPrompt||'';
+        render();
+        const field=doc.querySelector('[data-beta-problem]');
+        field?.focus();field?.setSelectionRange?.(field.value.length,field.value.length);
         return;
       }
       const help=e.target.closest('[data-beta-help]');if(help){await requestHelp();return;}
