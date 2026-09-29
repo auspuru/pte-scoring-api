@@ -32,7 +32,7 @@
   };
 
   const effects = {
-    ipt: '<span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>',
+    ipt: '<span class="brand-halo"></span><span class="brand-ray"></span><span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span>',
     'pte-ai': '<span class="scan"></span><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>',
     'score-90': '<span class="confetti c1"></span><span class="confetti c2"></span><span class="confetti c3"></span><span class="confetti c4"></span>',
     swt: '<span class="summary-line l1"></span><span class="summary-line l2"></span><span class="summary-line l3"></span><span class="summary-line out"></span>',
@@ -45,7 +45,7 @@
     grammar: '<span class="xmark"></span><span class="checkmark"></span>',
     vocab: '<span class="bubble b1">+</span><span class="bubble b2">W</span><span class="bubble b3">+</span>',
     'mock-test': '<span class="tick t1"></span><span class="tick t2"></span><span class="tick t3"></span>',
-    progress: '<span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span><span class="bar b4"></span><span class="wave"></span>',
+    progress: '<span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span><span class="bar b4"></span><span class="wave"></span><span class="progress-arrow"></span><span class="progress-badge">✓</span>',
     'teacher-feedback': '<span class="feedback"></span><span class="checkmark"></span>',
     'ai-score': '<span class="scan"></span><span class="checkmark"></span>',
     celebrate: '<span class="confetti c1"></span><span class="confetti c2"></span><span class="confetti c3"></span><span class="confetti c4"></span>'
@@ -73,7 +73,7 @@
   let pulseTimer = 0;
   let mutationTimer = 0;
 
-  function asset(id) { return '/brand-emojis/' + id + '.svg'; }
+  function asset(id) { return '/brand-emojis/' + id + '.svg?v=4'; }
 
   function setMarkup(el, id, label) {
     el.dataset.emoji = id;
@@ -201,13 +201,13 @@
       icon.dataset.brandEmoji = config[0];
       setMarkup(icon, config[0], config[1]);
       icon.setAttribute('aria-hidden', 'true');
-      button.addEventListener('pointerdown', () => activate(icon, 720));
+      button.addEventListener('pointerdown', () => activate(icon, config[0] === 'progress' ? 1150 : 780));
     });
   }
 
   function syncSidebarEmoji() {
     const active = document.querySelector('.sidebar-menu .nav-item.active .portal-nav-emoji');
-    if (active) activate(active, 650);
+    if (active) activate(active, active.dataset.emoji === 'progress' ? 1150 : 760);
   }
 
   function decorateHomeCards() {
@@ -247,7 +247,57 @@
     }, 60);
   }
 
+
+  function setupCursorInteractions() {
+    const finePointer = window.matchMedia?.('(hover:hover) and (pointer:fine)').matches;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!finePointer || reduceMotion) return;
+
+    let current = null;
+
+    const reset = el => {
+      if (!el) return;
+      el.classList.remove('is-cursor-active');
+      el.style.setProperty('--cursor-x', '28%');
+      el.style.setProperty('--cursor-y', '18%');
+      el.style.setProperty('--cursor-tilt-x', '0deg');
+      el.style.setProperty('--cursor-tilt-y', '0deg');
+    };
+
+    document.addEventListener('pointermove', event => {
+      const target = event.target instanceof Element ? event.target.closest('.ipt-action-emoji') : null;
+      if (current && current !== target) reset(current);
+      if (!target) {
+        current = null;
+        return;
+      }
+
+      current = target;
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const px = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+      const py = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
+      const tiltY = ((px - 50) / 50) * 5.5;
+      const tiltX = ((50 - py) / 50) * 5.5;
+
+      target.classList.add('is-cursor-active');
+      target.style.setProperty('--cursor-x', px.toFixed(1) + '%');
+      target.style.setProperty('--cursor-y', py.toFixed(1) + '%');
+      target.style.setProperty('--cursor-tilt-x', tiltX.toFixed(2) + 'deg');
+      target.style.setProperty('--cursor-tilt-y', tiltY.toFixed(2) + 'deg');
+    }, {passive:true});
+
+    document.addEventListener('pointerout', event => {
+      const target = event.target instanceof Element ? event.target.closest('.ipt-action-emoji') : null;
+      if (!target) return;
+      if (event.relatedTarget instanceof Node && target.contains(event.relatedTarget)) return;
+      reset(target);
+      if (current === target) current = null;
+    }, true);
+  }
+
   function start() {
+    setupCursorInteractions();
     syncContext(true);
     decorateSidebarNav();
     syncSidebarEmoji();
