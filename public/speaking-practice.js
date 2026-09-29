@@ -136,22 +136,31 @@
     function feedback(r) {
       const list=items=>'<ul>'+items.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>';
       const scoreCard=(label,value,kind,detail='')=>{
-        const ready=value&&Number.isFinite(Number(value.score));
+        const ready=value&&value.score!==null&&value.score!==undefined&&Number.isFinite(Number(value.score));
         return '<article class="speaking-metric '+kind+(ready?' is-ready':' is-pending')+'"><span class="speaking-metric-label">'+esc(label)+'</span>'
           +(ready?'<div class="speaking-metric-value"><strong>'+esc(value.score)+'</strong><span>/ '+esc(value.maximum||5)+'</span></div>':'<div class="speaking-metric-value speaking-metric-pending">—</div>')
           +(detail?'<small>'+detail+'</small>':'')+'</article>';
       };
-      const pronunciationDetail=r.pronunciation&&Number.isFinite(Number(r.pronunciation.raw))?esc(Math.round(Number(r.pronunciation.raw)))+'/100 acoustic score':'';
-      const fluencyDetail=r.fluency&&Number.isFinite(Number(r.fluency.raw))?esc(Math.round(Number(r.fluency.raw)))+'/100 acoustic score':'';
-      const deliveryReady=!!(r.pronunciation&&r.fluency);
-      const deliveryStatus=deliveryReady
-        ? '<div class="speaking-delivery-summary">'
-          +(Number.isFinite(Number(r.pronunciation.accuracy))?'<span>Accuracy <strong>'+esc(Math.round(Number(r.pronunciation.accuracy)))+'/100</strong></span>':'')
-          +(Number.isFinite(Number(r.pronunciation.prosody))?'<span>Prosody <strong>'+esc(Math.round(Number(r.pronunciation.prosody)))+'/100</strong></span>':'')
-          +'</div>'
-          +(r.pronunciation.words?.length?'<div class="speaking-practice-words"><h4>Words to practise</h4><div class="speaking-word-diff">'+r.pronunciation.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
-        : '<div class="speaking-delivery-callout"><div><strong>Pronunciation and fluency not scored yet</strong><p>'+esc(r.deliveryStatus||'Audio delivery assessment is not available for this attempt.')+'</p></div>'
-          +(catalog.deliveryAssessmentAvailable?'<button class="portal-button" data-speaking-action="submit">Retry audio assessment</button>':'')+'</div>';
+      const staleDelivery=!!(catalog.deliveryVersion&&r.deliveryVersion&&catalog.deliveryVersion!==r.deliveryVersion);
+      const pronunciationCurrent=!staleDelivery?r.pronunciation:null,fluencyCurrent=!staleDelivery?r.fluency:null;
+      const pronunciationReady=!!(pronunciationCurrent&&pronunciationCurrent.score!==null&&pronunciationCurrent.score!==undefined&&Number.isFinite(Number(pronunciationCurrent.score)));
+      const fluencyReady=!!(fluencyCurrent&&fluencyCurrent.score!==null&&fluencyCurrent.score!==undefined&&Number.isFinite(Number(fluencyCurrent.score)));
+      const deliveryReady=pronunciationReady&&fluencyReady;
+      const pronunciationDetail=deliveryReady&&Number.isFinite(Number(pronunciationCurrent.raw))?esc(Math.round(Number(pronunciationCurrent.raw)))+'/100 acoustic score':'';
+      const fluencyDetail=deliveryReady&&Number.isFinite(Number(fluencyCurrent.raw))?esc(Math.round(Number(fluencyCurrent.raw)))+'/100 acoustic score':'';
+      const evidence=r.deliveryEvidence||{};
+      const evidenceNote=Number.isFinite(Number(evidence.coverage))
+        ? '<div class="speaking-delivery-summary"><span>Matched <strong>'+esc(evidence.matchedWords)+' / '+esc(evidence.referenceWords)+' words</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>'
+        : (Number.isFinite(Number(evidence.spokenWords))?'<div class="speaking-delivery-summary"><span>Spoken words <strong>'+esc(evidence.spokenWords)+'</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>':'');
+      const deliveryStatus=staleDelivery
+        ? '<div class="speaking-delivery-callout"><div><strong>Delivery scoring has been recalibrated</strong><p>Update this saved recording to use the current pronunciation and oral-fluency method.</p></div><button class="portal-button" data-speaking-action="submit">Update audio score</button></div>'
+        : deliveryReady
+          ? '<div class="speaking-delivery-summary">'
+            +(Number.isFinite(Number(pronunciationCurrent.accuracy))?'<span>Accuracy <strong>'+esc(Math.round(Number(pronunciationCurrent.accuracy)))+'/100</strong></span>':'')
+            +(Number.isFinite(Number(pronunciationCurrent.prosody))?'<span>Prosody <strong>'+esc(Math.round(Number(pronunciationCurrent.prosody)))+'/100</strong></span>':'')
+            +'</div>'
+            +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words to practise</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
+          : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>Not enough speech for a reliable delivery score</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
       const mistakes=r.changes?r.changes.filter(c=>c.kind!=='correct'):[];
       const comparison=r.changes
         ? '<div class="speaking-comparison"><h4>Word accuracy</h4>'
@@ -161,8 +170,8 @@
       return '<div class="speaking-result-head"><div><span class="speaking-kicker">Your result</span><h3>'+esc(r.overview)+'</h3></div><span class="speaking-result-label">Practice estimate</span></div>'
         +'<div class="speaking-metrics">'
           +scoreCard('Content',{score:r.total,maximum:r.maximum},'content')
-          +scoreCard('Pronunciation',r.pronunciation,'pronunciation',pronunciationDetail)
-          +scoreCard('Oral fluency',r.fluency,'fluency',fluencyDetail)
+          +scoreCard('Pronunciation',pronunciationCurrent,'pronunciation',pronunciationDetail)
+          +scoreCard('Oral fluency',fluencyCurrent,'fluency',fluencyDetail)
         +'</div>'
         +deliveryStatus
         +'<div class="speaking-feedback-grid">'
