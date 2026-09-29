@@ -346,7 +346,7 @@ body.dark .catalogue-modes button[aria-pressed="true"] {
 }
 
 /* =========================================================
-   From Your Teacher
+   My Next Steps
    ========================================================= */
 
 #nextStepsPane {
@@ -372,7 +372,7 @@ body.dark .catalogue-modes button[aria-pressed="true"] {
 }
 
 #nextStepsPane .next-steps-heading::after {
-  content: "HUMAN GUIDANCE";
+  content: "GUIDED PRACTICE";
   position: absolute;
   right: 24px;
   bottom: 18px;
@@ -565,7 +565,7 @@ body.dark .next-step-note {
   align-items: center;
 }
 
-/* Self-help remains distinct from human teacher guidance. */
+/* IPT Assistant remains visually distinct from assigned plan cards. */
 .next-step-beta {
   margin-top: 18px !important;
   border-color: var(--ipt-line) !important;
