@@ -66,3 +66,21 @@ test('IPT coach keeps SST separate from Retell Lecture and speaking delivery',()
   assert.match(prompt,/Retell Lecture is a different task/i);
   assert.match(prompt,/final response is spoken/i);
 });
+
+
+test('IPT coach prioritizes overall performance before trait weakness labels',()=>{
+  const prompt=coach.buildPrompt({
+    task:'sst',
+    message:'Where am I losing scores in SST?',
+    studentProfile:{
+      areas:[{task:'sst',label:'Summarize Spoken Text',attempts:24,averagePct:84,latestPct:83,recentLowPct:78,recentHighPct:100,performanceBand:'strong',evidenceStrength:'high',trend:'stable'}],
+      traitWeaknesses:[{task:'Summarize Spoken Text',taskCode:'sst',trait:'Grammar',attempts:24,averagePct:60,latestPct:50,taskAveragePct:84,taskLatestPct:83,taskPerformanceBand:'strong',taskEvidenceStrength:'high',interpretation:'relative_improvement_area'}]
+    }
+  });
+  assert.match(prompt,/OVERALL TASK PERFORMANCE first/i);
+  assert.match(prompt,/relative improvement area/i);
+  assert.match(prompt,/must not override a strong overall task pattern/i);
+  assert.match(prompt,/Never say the student has "limited data".*5 or more usable attempts/i);
+  assert.match(prompt,/"performanceBand":"strong"/);
+  assert.match(prompt,/"interpretation":"relative_improvement_area"/);
+});
