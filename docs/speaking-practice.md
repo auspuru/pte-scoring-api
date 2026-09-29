@@ -42,18 +42,25 @@ provider output fails visibly rather than displaying fabricated feedback.
 
 ## Recording, privacy and transcription
 
-Microphone use begins only after a user action and permission. The app records after
-the prompt/preparation stage and stops at the response limit. Leaving or hiding the
-page releases capture. Captured audio is saved under an authenticated attempt.
-Files are limited to 3 MB; response recordings have no public URL. Reattempting
+Selecting a question is the user action that starts the exam-style flow. The browser
+requests microphone permission, audio prompts play automatically where required,
+the preparation countdown runs automatically, and the microphone opens when the
+countdown finishes. During preparation the only normal learner control is
+**Skip preparation**. There is no manual Stop, upload, transcript editing or question
+navigation during the timed attempt. Recording stops at the response limit, saves
+under the authenticated attempt and proceeds automatically to assessment. Technical
+failures expose only the recovery action needed for that failure. Leaving or hiding
+the page releases capture. Response recordings have no public URL. Reattempting
 creates a fresh UUID, preserving prior audio, words and feedback.
 
 Automatic transcription uses the existing `OPENAI_API_KEY` if configured, with
 `OPENAI_TRANSCRIPTION_MODEL` optionally overriding `gpt-4o-mini-transcribe`.
-The student is told that transcription sends audio to OpenAI. No reference answer is
-supplied to transcription. Without configuration or during an outage, students can
-enter the exact words they spoke and still receive content feedback. They must review
-recognition errors before submitting.
+Before the learner selects a question, the catalogue discloses that the saved
+recording is automatically processed for transcription and practice scoring when
+those services are enabled. No reference answer is supplied to OpenAI transcription.
+The exam-style attempt does not expose an editable transcript before scoring; the
+transcript becomes available in the post-attempt review. Provider failures preserve
+the saved recording and offer a technical assessment retry.
 
 Optional delivery assessment uses Microsoft Azure Speech when both
 `AZURE_SPEECH_KEY` and either `AZURE_SPEECH_ENDPOINT` or `AZURE_SPEECH_RESOURCE`
@@ -84,9 +91,12 @@ Verified 15 September 2026 against:
 RA preparation uses 35 seconds and its response has a clearly labelled 40-second
 practice allocation; official RA response time varies. Other preparation/response
 limits: RS 0/15 seconds; DI 25/40; RL 10/40; SGD 10/120; RTS 10/40.
-This is individual practice, not an exact reproduction of every exam behaviour:
-it permits microphone/upload/manual-transcript fallbacks, an optional preparation
-skip, and does not enforce a three-second silence cutoff.
+The standalone Speaking practice now follows an exam-style interaction: prompt/audio
+progression, preparation and recording advance automatically; preparation can be
+skipped; the response is recorded once and submitted automatically. It remains a
+practice simulation rather than Pearson software: scoring is independent, RA uses a
+fixed 40-second practice response allocation, and a three-second silence cutoff is
+not currently enforced.
 
 Run `npm test` and `npm run validate:speaking`. To regenerate prompts, use the
 existing edge-tts workflow in `scripts/generate-speaking-audio.py` with

@@ -63,7 +63,8 @@
       visible=false;serial++;clearAudio();if(phase==='preparing'||phase==='listening')phase='idle';
     }
     function chrome(content) {
-      host.innerHTML='<div class="speaking-workspace"><button class="portal-button" data-speaking-action="practice">← Speaking Practice</button><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
+      const locked=!!(attempt&&attempt.status!=='submitted');
+      host.innerHTML='<div class="speaking-workspace">'+(locked?'':'<button class="portal-button" data-speaking-action="practice">← Speaking Practice</button>')+'<p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
       host.onclick=click;host.oninput=()=>cacheDraft();host.onchange=change;
     }
     async function open(type, questionId) {
@@ -85,16 +86,19 @@
     }
     async function library() {
       const type=activeType,ticket=serial,user=owner;
-      chrome('<p class="portal-eyebrow">Speaking Practice</p><h2>'+esc(catalog.types[type].name)+'</h2><div class="speaking-question-list">'+catalog.questions.filter(q=>q.type===type).map((q,i)=>'<article><div><span class="speaking-number">0'+(i+1)+'</span><h3>'+'Question '+(i+1)+'</h3></div><button class="portal-button primary" data-speaking-question="'+q.id+'">Practise →</button></article>').join('')+'</div><details class="speaking-card"><summary>My saved attempts</summary><div id="speaking-history">Loading…</div></details>');
+      chrome('<p class="portal-eyebrow">Speaking Practice</p><h2>'+esc(catalog.types[type].name)+'</h2><p class="speaking-footnote speaking-exam-disclosure">Exam-style mode: selecting a question starts the timed flow and requests microphone access. Your saved recording is automatically processed for transcription and practice scoring when those services are enabled.</p><div class="speaking-question-list">'+catalog.questions.filter(q=>q.type===type).map((q,i)=>'<article><div><span class="speaking-number">0'+(i+1)+'</span><h3>'+'Question '+(i+1)+'</h3></div><button class="portal-button primary" data-speaking-question="'+q.id+'">Practise →</button></article>').join('')+'</div><details class="speaking-card"><summary>My saved attempts</summary><div id="speaking-history">Loading…</div></details>');
       try{const history=await api('/attempts');if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.result?a.result.total+'/'+a.result.maximum+' content':a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
     async function start(questionId) {
-      if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;
-      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
+      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id) {
-      if(busy)return;busy=true;const ticket=serial,user=owner;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();await loadPlayback();}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false,shouldAssess=false;
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted')await loadPlayback();else if(a.recording)shouldAssess=true;else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(shouldAssess&&valid(ticket,user)&&attempt?.status==='draft'&&attempt.recording)await submit();
+      else if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
       if(!attempt?.recording||playbackUrl)return;const id=attempt.id,user=owner;
@@ -122,16 +126,27 @@
     }
     function render() {
       if(!attempt)return;const q=attempt.question,r=attempt.result,submitted=attempt.status==='submitted';
-      chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+(catalog.questions.filter(item=>item.type===q.type).findIndex(item=>item.id===q.id)+1)+'</h2></div><button class="portal-button" data-speaking-action="list">My questions</button></div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
-        +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<img class="speaking-image" src="'+q.imageUrl+'" alt="'+esc(q.title)+' — describe the visual and its labelled data">':'')
-        +(!submitted?'<section class="speaking-card"><div class="speaking-recorder"><span id="speaking-phase" role="status"></span><strong id="speaking-clock"></strong></div><div id="speaking-level-panel" hidden><label for="speaking-level">Microphone level</label><meter id="speaking-level" min="0" max="100" value="0"></meter><p id="speaking-mic-status" role="status">Microphone connected</p></div><div class="speaking-actions"><button class="portal-button primary" data-speaking-action="record" id="speaking-record">'+(q.audioUrl?'Play prompt & start practice':'Start practice')+'</button><button class="portal-button" data-speaking-action="stop" id="speaking-stop" hidden>Stop recording & review</button><button class="portal-button" data-speaking-action="skip" id="speaking-skip" hidden>Record now</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving recording</button></div><p class="speaking-footnote">Speak when recording starts. Leaving the page stops recording.</p><details><summary>Microphone unavailable? Upload a response</summary><label class="speaking-upload">Audio file under 3 MB<input type="file" id="speaking-file" accept="audio/webm,audio/mp4,audio/wav,audio/mpeg"></label></details></section>':'')
-        +'<div class="speaking-card speaking-recording-card"><div class="speaking-section-head"><div><span class="speaking-kicker">Recording</span><h3>Your response audio</h3></div>'+(submitted&&catalog.deliveryAssessmentAvailable?'<span class="speaking-provider-badge">Audio assessment enabled</span>':'')+'</div><div id="speaking-playback"></div>'+(catalog.deliveryAssessmentAvailable?'<p class="speaking-footnote">Your saved audio can be checked for pronunciation and oral fluency. Scores are independent practice estimates, not Pearson scores.</p>':'<p class="speaking-footnote">Pronunciation and oral fluency are currently available for teacher review only.</p>')+'</div>'
-        +(!submitted?'<section class="speaking-card"><div class="speaking-heading"><h3>Confirm what you said</h3><button class="portal-button" data-speaking-action="transcribe" id="speaking-transcribe">Transcribe recording</button></div><p class="speaking-footnote">Transcription uses OpenAI. Check the text against your recording before submitting.</p><label for="speaking-transcript">Your spoken words</label><textarea id="speaking-transcript" maxlength="6000" rows="6" placeholder="Review the automatic transcript, or enter the exact words you said.">'+esc(draftText(attempt))+'</textarea>'+(!catalog.transcriptionAvailable?'<p class="speaking-footnote">Type your spoken response below.</p>':'')+'<div class="speaking-actions"><button class="portal-button" data-speaking-action="save">Save transcript</button><button class="portal-button primary" data-speaking-action="submit">Submit</button></div></section>':'<section class="speaking-card speaking-result-card">'+(r?feedback(r):'<div class="speaking-empty-result"><span class="speaking-kicker">Assessment</span><h3>Feedback is pending</h3><p>Your response is saved. Retry the assessment when ready.</p><button class="portal-button primary" data-speaking-action="submit">Retry assessment</button></div>')+'</section>'
+      const number=catalog.questions.filter(item=>item.type===q.type).findIndex(item=>item.id===q.id)+1;
+      const examPanel=!submitted
+        ? '<section class="speaking-card speaking-exam-panel">'
+          +'<div class="speaking-exam-status"><div><span class="speaking-kicker">Exam mode</span><span id="speaking-phase" role="status"></span></div><strong id="speaking-clock"></strong></div>'
+          +'<div id="speaking-level-panel" class="speaking-exam-mic" hidden><meter id="speaking-level" min="0" max="100" value="0"></meter><p id="speaking-mic-status" role="status">Microphone connected</p></div>'
+          +'<div class="speaking-exam-actions"><button class="portal-button primary" data-speaking-action="skip" id="speaking-skip" hidden>Skip preparation</button><button class="portal-button primary" data-speaking-action="record" id="speaking-record" hidden>Retry microphone</button><button class="portal-button primary" data-speaking-action="submit" id="speaking-assess-retry" hidden>Retry assessment</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving response</button></div>'
+          +'<p class="speaking-exam-note">The microphone opens automatically when preparation ends. Recording stops automatically at the response limit.</p>'
+          +'</section>'
+        : '';
+      const review=submitted
+        ? '<div class="speaking-card speaking-recording-card"><div class="speaking-section-head"><div><span class="speaking-kicker">Recording</span><h3>Your response audio</h3></div>'+(catalog.deliveryAssessmentAvailable?'<span class="speaking-provider-badge">Audio assessment enabled</span>':'')+'</div><div id="speaking-playback"></div>'+(catalog.deliveryAssessmentAvailable?'<p class="speaking-footnote">Your saved audio can be checked for pronunciation and oral fluency. Scores are independent practice estimates, not Pearson scores.</p>':'<p class="speaking-footnote">Pronunciation and oral fluency are currently available for teacher review only.</p>')+'</div>'
+          +'<section class="speaking-card speaking-result-card">'+(r?feedback(r):'<div class="speaking-empty-result"><span class="speaking-kicker">Assessment</span><h3>Feedback is pending</h3><p>Your response is saved. Retry the assessment when ready.</p><button class="portal-button primary" data-speaking-action="submit">Retry assessment</button></div>')+'</section>'
           +'<details class="speaking-card speaking-collapsible"><summary><span><span class="speaking-kicker">Transcript</span><strong>Your response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(attempt.transcript||'No response supplied.')+'</p></details>'
           +'<details class="speaking-card speaking-collapsible speaking-sample"><summary><span><span class="speaking-kicker">Reference</span><strong>Sample response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(q.sample)+'</p>'+(q.reference&&!['ra','rts'].includes(q.type)?'<details class="speaking-inner-details"><summary>Prompt transcript</summary><p>'+esc(q.reference).replace(/\n/g,'<br>')+'</p></details>':'')+'</details>'
-          +'<div class="speaking-result-actions"><button class="portal-button primary" data-speaking-question="'+q.id+'">Reattempt this question</button><button class="portal-button" data-speaking-action="list">Back to my questions</button></div>')
-        +questionNavigation()+'');
-      mountPlayback();refreshControls();
+          +'<div class="speaking-result-actions"><button class="portal-button primary" data-speaking-question="'+q.id+'">Reattempt this question</button><button class="portal-button" data-speaking-action="list">Back to my questions</button></div>'
+          +questionNavigation()
+        : '';
+      chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+number+'</h2></div>'+(submitted?'<button class="portal-button" data-speaking-action="list">My questions</button>':'')+'</div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
+        +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<img class="speaking-image" src="'+q.imageUrl+'" alt="'+esc(q.title)+' — describe the visual and its labelled data">':'')
+        +examPanel+review);
+      if(submitted)mountPlayback();refreshControls();
     }
     function feedback(r) {
       const list=items=>'<ul>'+items.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>';
@@ -183,23 +198,34 @@
         +'<p class="speaking-result-disclaimer">'+esc(r.deliveryAssessment||'Content and delivery scores are independent practice estimates and are not Pearson scores.')+'</p>';
     }
     function refreshControls() {
-      const editor=doc.getElementById('speaking-transcript');if(editor)editor.readOnly=busy;
-      const button=doc.getElementById('speaking-record');if(!button)return;
-      if(attempt?.question.audioUrl&&!attempt.recording)button.textContent=stream?'Play prompt & start practice':'Enable microphone & start practice';
-      button.disabled=busy||!!attempt?.recording||!!uploadBlob||!['idle','error'].includes(phase);
+      const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
       const levelPanel=doc.getElementById('speaking-level-panel');if(levelPanel)levelPanel.hidden=!stream;
-      doc.getElementById('speaking-stop').hidden=phase!=='recording';doc.getElementById('speaking-skip').hidden=phase!=='preparing';
-      doc.getElementById('speaking-upload-retry').hidden=!(uploadBlob&&!attempt.recording&&!busy);
-      doc.getElementById('speaking-transcribe').disabled=busy||!attempt.recording||!!attempt.transcribed||!catalog.transcriptionAvailable;
-      doc.getElementById('speaking-file').disabled=busy||!!attempt.recording||!['idle','error'].includes(phase);
-      doc.getElementById('speaking-phase').textContent={idle:attempt.recording?'Recording saved':'Ready when you are',permission:'Allow microphone access to begin',listening:'Listen to the prompt',preparing:'Prepare your response',recording:'● Recording — speak now',saving:'Saving your recording',error:'Audio could not start — retry'}[phase]||'';
-      doc.getElementById('speaking-clock').textContent=['recording','preparing'].includes(phase)?time((deadline-now())/1000):'';
+      if(skip)skip.hidden=phase!=='preparing';
+      if(retrySave)retrySave.hidden=!(uploadBlob&&!attempt?.recording&&!busy);
+      if(retryAssess)retryAssess.hidden=!(attempt?.recording&&attempt?.status!=='submitted'&&phase==='error'&&!uploadBlob&&!busy);
+      if(retryMic){
+        const technicalRetry=phase==='error'&&!attempt?.recording&&!uploadBlob;
+        retryMic.hidden=!technicalRetry;
+        retryMic.textContent=stream&&attempt?.question.audioUrl?'Play prompt':'Retry microphone';
+        retryMic.disabled=busy;
+      }
+      const phaseNode=doc.getElementById('speaking-phase');
+      if(phaseNode)phaseNode.textContent={
+        idle:attempt?.recording?'Response saved':'Preparing attempt…',
+        permission:'Microphone check',
+        listening:'Listening',
+        preparing:'Preparation',
+        recording:'● Recording',
+        saving:'Submitting response',
+        error:attempt?.recording?'Assessment interrupted':'Attempt interrupted'
+      }[phase]||'';
+      const clock=doc.getElementById('speaking-clock');if(clock)clock.textContent=['recording','preparing'].includes(phase)?time((deadline-now())/1000):'';
     }
     function countdown(seconds,next) {deadline=now()+seconds*1000;env.clearInterval(clockId);refreshControls();clockId=env.setInterval(()=>{refreshControls();if(now()>=deadline){env.clearInterval(clockId);next();}},200);}
     function prepare(){if(!visible){clearAudio();phase='idle';return;}phase='preparing';if(attempt.question.preparation)countdown(attempt.question.preparation,record);else record();}
     function record() {
       env.clearInterval(clockId);if(!visible||doc.hidden||!stream){clearAudio();phase='idle';refreshControls();return;}
-      if(stream.getAudioTracks?.().some(track=>track.readyState==='ended')){clearAudio();phase='error';message('Microphone disconnected. Reconnect it and select Start practice again.');refreshControls();return;}
+      if(stream.getAudioTracks?.().some(track=>track.readyState==='ended')){clearAudio();phase='error';message('Microphone disconnected. Reconnect it, then use Retry microphone.');refreshControls();return;}
       const id=attempt.id,user=owner,chunks=[],capturedStream=stream;
       let activeRecorder;
       // Some browsers advertise a format that their recorder cannot initialise.
@@ -217,7 +243,7 @@
             if(owner!==user||identity()!==user)return;
             const type=(candidate.mimeType||chunks[0]?.type||mime||'audio/webm').split(';')[0];
             const captured=new env.Blob(chunks,{type});
-            if(captured.size<100){if(attempt?.id===id){phase='error';message('No audio was captured. Check microphone access and select Start practice to retry.');refreshControls();}return;}
+            if(captured.size<100){if(attempt?.id===id){phase='error';message('No audio was captured. Check microphone access, then use Retry microphone.');refreshControls();}return;}
             pendingUploads.set(id,captured);
             if(attempt?.id===id){uploadBlob=captured;phase='saving';releasePlayback();playbackUrl=env.URL.createObjectURL(captured);mountPlayback();refreshControls();}
             await uploadRecording(id,user,captured);
@@ -226,24 +252,24 @@
           candidate.start();activeRecorder=candidate;break;
         }catch{chunks.length=0;}
       }
-      if(!activeRecorder){clearAudio();phase='error';message('This browser could not start recording. Open the portal in Safari or Chrome, allow microphone access, and retry. You can also upload an audio response.');refreshControls();return;}
-      recorder=activeRecorder;phase='recording';message('Recording has started. Speak now. Your audio appears below when you stop.');countdown(attempt.question.seconds,()=>{if(activeRecorder.state==='recording')activeRecorder.stop();});
+      if(!activeRecorder){clearAudio();phase='error';message('This browser could not start recording. Open the portal in Safari or Chrome, allow microphone access, then use Retry microphone.');refreshControls();return;}
+      recorder=activeRecorder;phase='recording';message('Recording has started. Speak now. It will stop automatically when the response time ends.');countdown(attempt.question.seconds,()=>{if(activeRecorder.state==='recording')activeRecorder.stop();});
     }
     async function playPrompt(ticket,user) {
       phase='listening';promptAudio=new env.Audio(attempt.question.audioUrl);
       promptAudio.onended=()=>{if(valid(ticket,user)&&visible)prepare();};
       promptAudio.onerror=()=>{clearAudio();phase='error';message('The prompt recording could not load. Retry when ready.');refreshControls();};
       try {await promptAudio.play();refreshControls();}
-      catch(e){if(!valid(ticket,user))return;if(e.name==='NotAllowedError'){promptAudio.pause();phase='idle';message('Microphone ready. Tap Play prompt & start practice to allow audio playback.');refreshControls();}else{clearAudio();phase='error';message('The prompt could not play. Check your audio output and retry.');refreshControls();}}
+      catch(e){if(!valid(ticket,user))return;if(e.name==='NotAllowedError'){promptAudio.pause();phase='error';message('Your browser blocked automatic prompt audio. Use Play prompt once to continue this attempt.');refreshControls();}else{clearAudio();phase='error';message('The prompt could not play. Check your audio output and retry.');refreshControls();}}
     }
     async function begin() {
       if(busy||attempt.recording||uploadBlob||!['idle','error'].includes(phase))return;
-      if(!env.navigator.mediaDevices?.getUserMedia||!env.MediaRecorder){message('Microphone recording is unavailable in this browser. Open this HTTPS portal directly in Safari or Chrome, or upload your recorded response.');return;}
+      if(!env.navigator.mediaDevices?.getUserMedia||!env.MediaRecorder){phase='error';message('Microphone recording is unavailable in this browser. Open this HTTPS portal directly in Safari or Chrome.');refreshControls();return;}
       if(stream&&attempt.question.audioUrl){levelContext?.resume().catch(()=>{});return playPrompt(serial,owner);}
       try{const Context=env.AudioContext||env.webkitAudioContext;if(Context){levelContext ||= new Context();levelContext.resume().catch(()=>{});}}catch{}
       const ticket=serial,user=owner,capture=++captureGeneration;phase='permission';message('Allow microphone access when your browser asks.');refreshControls();
       const requestedAt=now();env.clearInterval(permissionTimer);
-      permissionTimer=env.setInterval(()=>{if(now()-requestedAt<20000)return;env.clearInterval(permissionTimer);if(capture!==captureGeneration)return;captureGeneration++;stopLevel();phase='error';message('Microphone access is still waiting. Allow the microphone in your browser’s site settings, then select Start practice again.');refreshControls();},500);
+      permissionTimer=env.setInterval(()=>{if(now()-requestedAt<20000)return;env.clearInterval(permissionTimer);if(capture!==captureGeneration)return;captureGeneration++;stopLevel();phase='error';message('Microphone access is still waiting. Allow the microphone in your browser’s site settings, then use Retry microphone.');refreshControls();},500);
       try{
         const mic=await env.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
         if(capture!==captureGeneration||!valid(ticket,user)||!visible||doc.hidden){mic.getTracks().forEach(t=>t.stop());if(capture===captureGeneration){phase='idle';refreshControls();}return;}
@@ -254,15 +280,24 @@
     }
     async function uploadRecording(id=attempt.id,user=owner,blob=uploadBlob) {
       if(owner!==user||identity()!==user)return;
-      if(!blob||blob.size<100){phase='idle';uploadBlob=null;message('No usable recording was captured. Please try again.');refreshControls();return;}
-      if(blob.size>3*1024*1024){message('Recording exceeds 3 MB. Download it for your teacher, then use a smaller upload.');phase='idle';refreshControls();return;}
-      pendingUploads.set(id,blob);busy=true;try{const a=await api('/attempts/'+id+'/recording',blob,true);if(owner!==user||identity()!==user)return;pendingUploads.delete(id);if(attempt?.id!==id)return;attempt=a;releasePlayback();playbackUrl=env.URL.createObjectURL(blob);uploadBlob=null;phase='idle';message(catalog.transcriptionAvailable?'Recording saved. Play it below to check your voice. Transcribe it or enter the exact words you said.':'Recording saved. Play it below to check your voice. Automatic transcription is unavailable; enter the exact words you said.');mountPlayback();
-        if(catalog.transcriptionAvailable&&!attempt.transcript.trim()&&!doc.getElementById('speaking-transcript')?.value.trim()){
-          message('Recording saved. Transcribing your response…');
-          try{const transcribed=await api('/attempts/'+id+'/transcribe',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=transcribed;render();message(attempt.transcript.trim()?'Recording saved. Review your words below, then select Submit for feedback.':'No speech was recognised. Listen to your recording and enter the words you said, or reattempt.');}}
-          catch(e){message('Recording saved. '+e.message+' Select Transcribe recording to retry.');}
-        }
-      }catch(e){phase='idle';message(e.message+' Keep this page open and select Retry saving recording.');}finally{busy=false;refreshControls();}
+      if(!blob||blob.size<100){phase='error';message('No usable recording was captured. Use Retry microphone.');refreshControls();return;}
+      if(blob.size>3*1024*1024){phase='error';message('The captured response is too large to save. Reattempt this question from the question list.');refreshControls();return;}
+      pendingUploads.set(id,blob);busy=true;phase='saving';message('Saving and checking your response…');refreshControls();
+      try{
+        const saved=await api('/attempts/'+id+'/recording',blob,true);
+        if(owner!==user||identity()!==user||attempt?.id!==id)return;
+        pendingUploads.delete(id);attempt=saved;releasePlayback();playbackUrl=env.URL.createObjectURL(blob);uploadBlob=null;
+        message('Checking your response…');
+        const assessed=await api('/attempts/'+id+'/submit',{});
+        if(owner!==user||identity()!==user||attempt?.id!==id)return;
+        attempt=assessed;phase='idle';notice='';render();
+        if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:assessed.questionId}}));
+      }catch(e){
+        if(attempt?.id!==id)return;
+        phase='error';
+        if(attempt?.recording){message(e.message+' Your recording is saved; use Retry assessment.');render();}
+        else message(e.message+' Your captured response is still on this page; use Retry saving response.');
+      }finally{busy=false;refreshControls();}
     }
     function saveTranscript() {
       const a=attempt,editor=doc.getElementById('speaking-transcript'),user=owner,text=editor?.value;
@@ -270,11 +305,17 @@
       const task=saveQueue.catch(()=>{}).then(async()=>{if(identity()!==user||owner!==user)return;if(a.transcript===text)return;const saved=await api('/attempts/'+a.id+'/transcript',{text,revision:a.revision});a.transcript=saved.transcript;a.revision=saved.revision;if(attempt?.id===a.id){attempt.transcript=saved.transcript;attempt.revision=saved.revision;}try{const local=JSON.parse(env.localStorage.getItem(localKey(a))||'null');if(local?.text===text)env.localStorage.removeItem(localKey(a));}catch{}});saveQueue=task;return task;
     }
     async function submit() {
-      if(busy||!attempt)return;if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('Finish recording and save your audio before checking content.');return;}
-      busy=true;refreshControls();const id=attempt.id,user=owner;message(attempt.transcript.trim()?'Checking your response…':'Transcribing your recording and checking your response…');
-      try{await saveTranscript();const a=await api('/attempts/'+id+'/submit',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;notice='';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}}
-      catch(e){message(e.message);try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}}
-      finally{busy=false;refreshControls();}
+      if(busy||!attempt)return;
+      if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
+      if(!attempt.recording){message('No saved recording is available for assessment.');return;}
+      busy=true;phase='saving';refreshControls();const id=attempt.id,user=owner;message('Checking your saved response…');
+      try{
+        const a=await api('/attempts/'+id+'/submit',{});
+        if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;phase='idle';notice='';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}
+      }catch(e){
+        phase='error';message(e.message+' Your recording is saved; use Retry assessment.');
+        try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}
+      }finally{busy=false;refreshControls();}
     }
     async function click(e) {
       const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
@@ -283,7 +324,7 @@
       const action=d.speakingAction;
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
-      if(action==='record')return begin();if(action==='stop'){if(recorder?.state==='recording')recorder.stop();return;}
+      if(action==='record')return begin();
       if(action==='skip')return record();if(action==='upload-retry')return uploadRecording();if(action==='submit')return submit();
       if(action==='list'){if(['permission','listening','preparing','recording','saving'].includes(phase)||busy||uploadBlob){message('Finish and save the recording before opening your question list.');return;}try{await saveTranscript();attempt=null;releasePlayback();await library();}catch(e){message(e.message);}return;}
       if(action==='save'){try{await saveTranscript();message('Transcript saved to your account.');}catch(e){message(e.message);}return;}
@@ -294,7 +335,7 @@
       if(!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(file.type.split(';')[0])||file.size>3*1024*1024){message('Choose a WebM, MP4, WAV or MP3 audio file under 3 MB.');return;}
       uploadBlob=file;await uploadRecording();
     }
-    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();clearAudio();if(['listening','preparing','permission'].includes(phase))phase='idle';message('Audio stopped while this tab was hidden.');refreshControls();}});
+    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','preparing','permission'].includes(phase);clearAudio();if(interrupted){phase='error';message('This timed attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
     env.addEventListener?.('beforeunload',()=>{cacheDraft();clearAudio();});
     return {open,leave,reset};
   }
