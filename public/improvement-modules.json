@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 4,
   "modules": [
     {
       "code": "PR-01",
@@ -513,6 +513,20 @@
       "checkpoint": "Complete 5 situations where the audience, reason, request and closing are all clear.",
       "items": [
         {
+          "kind": "video",
+          "title": "Respond to a Situation — Exercise 1",
+          "url": "https://youtube.com/shorts/p-LV9crN3ZA?si=ItIxKoiWXheCm4Gi",
+          "description": "Watch how the response identifies the audience, purpose and appropriate wording.",
+          "required": true
+        },
+        {
+          "kind": "video",
+          "title": "Respond to a Situation — Exercise 2",
+          "url": "https://youtube.com/shorts/QZB_XvsBsTU?si=rad0bCAzlYZGOBVa",
+          "description": "Watch, then apply the same audience-and-purpose thinking to a new situation.",
+          "required": true
+        },
+        {
           "kind": "instruction",
           "title": "Greeting → situation → request → closing",
           "description": "Known person: use a natural greeting such as 'Hi [name]'. Unknown person: use a neutral polite greeting such as 'Hello' or 'Excuse me'. Group: use 'Hello everyone'. Then explain the situation in first person, add a realistic relevant detail, make the required request or suggestion, and close politely.",
@@ -564,6 +578,12 @@
       "reason": "Select the right ideas first, preserve their relationships and meaning, then connect them in one controlled sentence.",
       "checkpoint": "Complete 4 out of 5 SWT responses with a clear main idea, relevant support, preserved meaning and valid form.",
       "items": [
+        {
+          "kind": "instruction",
+          "title": "Review SWT form",
+          "description": "Keep SWT as one sentence and within 5–75 words. Do not force an artificial 60–65 word target; preserve important meaning while staying inside the valid form.",
+          "required": true
+        },
         {
           "kind": "instruction",
           "title": "Identify the topic and what happens to it",
