@@ -14,6 +14,21 @@ const TASK_NAMES = {
   portal:'Current PTE screen'
 };
 
+const TASK_CONTRACT = {
+  sst:[
+    'MODALITY: Listening + Writing.',
+    'The student listens to an audio/lecture and TYPES a written summary. The final response is not spoken.',
+    'For this portal, SST form is a 50–70 word written summary; multiple complete sentences are allowed.',
+    'Never describe SST as a speaking task. Never tell an SST student to speak naturally, speak continuously, improve pronunciation, fluency, accent, intonation, pausing, oral delivery or microphone technique.',
+    'Retell Lecture is a different task: it also begins with listening and note-taking, but the final response is spoken. Shared listening/note-taking strategy does not make SST a speaking task.'
+  ],
+  rl:[
+    'MODALITY: Listening + Speaking.',
+    'The student listens to a lecture and then gives a spoken retell.',
+    'Do not confuse Retell Lecture with Summarize Spoken Text, whose final response is typed/written.'
+  ]
+};
+
 const GENERAL = [
   'Teach the IPT Brisbane method below, not generic internet advice.',
   'Be conversational, practical and concise. Diagnose one main issue and at most one secondary issue.',
@@ -141,6 +156,7 @@ function cleanHistory(history) {
 function buildPrompt({task,message,history=[],latestScore=null,screenContext='',studentProfile=null}) {
   const name = TASK_NAMES[task] || 'PTE practice';
   const taskRules = RULES[task] || [];
+  const taskContract = TASK_CONTRACT[task] || [];
   const prior = cleanHistory(history);
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
   const screen = cleanText(screenContext, 12000);
@@ -155,6 +171,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     ...GENERAL.map(x=>'- '+x),
     '',
     'TASK: '+name,
+    'TASK CONTRACT (non-negotiable):',
+    ...(taskContract.length ? taskContract.map(x=>'- '+x) : ['- Follow the task modality shown by the current portal screen.']),
+    '',
     'TASK-SPECIFIC IPT RULES:',
     ...taskRules.map(x=>'- '+x),
     '',
@@ -175,6 +194,7 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '',
     'RESPONSE INSTRUCTIONS:',
     '- Answer the current question directly and conversationally.',
+    '- Keep the named TASK and TASK CONTRACT authoritative even if recent chat, profile text or semantic similarity suggests another task. Never silently substitute a related PTE task.',
     '- Prefer 2–5 compact paragraphs. Use at most one short list if it materially helps.',
     '- Treat CURRENT SCREEN CONTEXT as evidence from the student portal. Use the visible task, question, student response, score or feedback shown there when relevant. Do not invent content that is not present. If the student asks for feedback on the screen, analyse that context directly.',
     '- Treat STUDENT PERFORMANCE PROFILE as saved evidence from this student’s own portal history. Use it proactively when the question is about progress, weak areas, marks, study priorities, recent performance or what to practise next.',
@@ -192,4 +212,4 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
   ].join('\n');
 }
 
-module.exports = { TASK_NAMES, RULES, GENERAL, buildPrompt, cleanHistory };
+module.exports = { TASK_NAMES, TASK_CONTRACT, RULES, GENERAL, buildPrompt, cleanHistory };
