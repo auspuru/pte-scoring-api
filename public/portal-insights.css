@@ -606,6 +606,45 @@ body.dark .next-step-note {
   background: var(--ipt-surface) !important;
 }
 
+.next-step-beta-chat {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 16px;
+}
+
+.next-step-beta-message {
+  max-width: min(760px, 92%);
+  padding: 11px 13px;
+  border: 1px solid var(--ipt-line);
+  border-radius: 14px;
+  background: var(--ipt-surface);
+}
+
+.next-step-beta-message.user {
+  justify-self: end;
+  background: rgba(45,108,165,.08);
+}
+
+.next-step-beta-message.assistant {
+  justify-self: start;
+}
+
+.next-step-beta-message > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ipt-ink-soft);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .02em;
+}
+
+.next-step-beta-message p {
+  margin: 0;
+  color: var(--ipt-ink);
+  font-size: 13px !important;
+  line-height: 1.55;
+}
+
 /* Dashboard teacher teaser inherits the same human-guidance identity. */
 .next-step-dashboard {
   border-color: rgba(197,48,48,.14) !important;
