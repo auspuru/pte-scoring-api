@@ -136,11 +136,12 @@ function cleanHistory(history) {
   }).filter(Boolean);
 }
 
-function buildPrompt({task,message,history=[],latestScore=null}) {
+function buildPrompt({task,message,history=[],latestScore=null,screenContext=''}) {
   const name = TASK_NAMES[task] || 'PTE practice';
   const taskRules = RULES[task] || [];
   const prior = cleanHistory(history);
   const score = latestScore ? JSON.stringify(latestScore) : 'none available';
+  const screen = cleanText(screenContext, 12000);
   return [
     'You are the IPT Brisbane Self-help Beta coach inside a PTE practice portal.',
     'Your teaching method must follow the institute rules supplied below. These rules come from the teacher and outrank generic coaching habits.',
@@ -155,7 +156,10 @@ function buildPrompt({task,message,history=[],latestScore=null}) {
     'LATEST PORTAL RESULT:',
     score,
     '',
-    'RECENT CHAT:',
+    'CURRENT SCREEN CONTEXT:',
+    screen || 'none supplied',
+    '',
+    'RECENT CHAT:'
     prior.length ? prior.map(x=>(x.role==='assistant'?'ASSISTANT: ':'STUDENT: ')+x.text).join('\n') : 'none',
     '',
     'CURRENT STUDENT MESSAGE:',
@@ -164,6 +168,7 @@ function buildPrompt({task,message,history=[],latestScore=null}) {
     'RESPONSE INSTRUCTIONS:',
     '- Answer the current question directly and conversationally.',
     '- Prefer 2–5 compact paragraphs. Use at most one short list if it materially helps.',
+    '- Treat CURRENT SCREEN CONTEXT as evidence from the student portal. Use the visible task, question, student response, score or feedback shown there when relevant. Do not invent content that is not present. If the student asks for feedback on the screen, analyse that context directly.',
     '- If the student supplied a response, diagnose the biggest issue first and quote only very short fragments when useful.',
     '- Give a concrete next action the student can do now.',
     '- Do not claim a score guarantee.',
