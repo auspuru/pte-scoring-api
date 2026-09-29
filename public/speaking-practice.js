@@ -63,7 +63,8 @@
       visible=false;serial++;clearAudio();if(phase==='preparing'||phase==='listening')phase='idle';
     }
     function chrome(content) {
-      host.innerHTML='<div class="speaking-workspace"><button class="portal-button" data-speaking-action="practice">← Speaking Practice</button><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
+      const locked=!!(attempt&&attempt.status!=='submitted');
+      host.innerHTML='<div class="speaking-workspace">'+(locked?'':'<button class="portal-button" data-speaking-action="practice">← Speaking Practice</button>')+'<p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
       host.onclick=click;host.oninput=()=>cacheDraft();host.onchange=change;
     }
     async function open(type, questionId) {
@@ -89,12 +90,14 @@
       try{const history=await api('/attempts');if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.result?a.result.total+'/'+a.result.maximum+' content':a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
     async function start(questionId) {
-      if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;
-      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
+      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id) {
-      if(busy)return;busy=true;const ticket=serial,user=owner;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();await loadPlayback();}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false;
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted'||a.recording)await loadPlayback();else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
       if(!attempt?.recording||playbackUrl)return;const id=attempt.id,user=owner;
