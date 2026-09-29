@@ -54,6 +54,21 @@ function model(data,writing,speaking=[]){
   di:{name:'Describe Image',route:'speaking-di'},rl:{name:'Retell Lecture',route:'speaking-rl'},
   sgd:{name:'Summarise Group Discussion',route:'speaking-sgd'},rts:{name:'Respond to a Situation',route:'speaking-rts'}
  };
+ const activePractice=[
+  ...reading.filter(a=>a.practiceUid&&!a.done).map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {
+    engine:'reading',id:a.id,title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',
+    at:a.updatedAt||a.startedAt,detail:'Question '+(Number(a.index||0)+1)+' of '+Math.max(1,a.questions?.length||1)
+  };}),
+  ...writing.filter(a=>a?.kind!=='mock'&&a?.status!=='submitted').map(a=>({
+    engine:'writing',id:a.id,title:a.title||(a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':'Writing practice'),
+    route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':'practice-hub',at:a.startedAt,
+    detail:(Number.isFinite(a.completed)&&Number.isFinite(a.questions)?a.completed+' of '+a.questions+' completed':'Saved response in progress')
+  })),
+  ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status!=='submitted').map(a=>({
+    engine:'speaking',id:a.id,title:speakingMeta[a.type]?.name||a.title||'Speaking practice',
+    route:speakingMeta[a.type]?.route||'practice-hub',at:a.startedAt,detail:'Saved response in progress'
+  }))
+ ].sort((a,b)=>stamp(b.at)-stamp(a.at));
  const readingTaskPoints=type=>completedReading.flatMap(a=>{
   const row=Array.isArray(a.rows)?a.rows.find(r=>r?.type===type):null;
   let value=null;
@@ -105,6 +120,7 @@ function model(data,writing,speaking=[]){
  ];
  const days=new Set([...groups.flatMap(g=>g.dates),...mocks.filter(a=>a.done).map(a=>a.at)].map(stamp).filter(Boolean).map(n=>new Date(n).toLocaleDateString('en-CA')));
  const recent=[
+  ...activePractice.map(a=>({title:a.title,route:a.route,at:a.at,result:'In progress · '+a.detail})),
   ...essays.map(a=>({title:a.questionTitle||'Write Essay',route:'practice',at:a.date||a.updatedAt,result:Number.isFinite(a?.scores?.total)?a.scores.total+'/26':null})),
   ...practiceReading.map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',at:a.finishedAt||a.startedAt,result:Number.isFinite(a.earned)&&Number.isFinite(a.possible)?a.earned+'/'+a.possible:null};}),
   ...submittedSpeaking.map(a=>({title:speakingMeta[a.type]?.name||a.title||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.startedAt,result:Number.isFinite(a.result?.total)&&Number.isFinite(a.result?.maximum)?a.result.total+'/'+a.result.maximum:null})),
@@ -112,7 +128,7 @@ function model(data,writing,speaking=[]){
   ...wfdRows.map(a=>({title:a.title||'Write From Dictation',route:'dictation',at:a.startedAt,result:Number.isFinite(a.total)?a.total+'/'+a.maximum:null})),
   ...swt.map(a=>({title:'Summarise Written Text',route:'swt',at:a.timestamp,result:Number.isFinite(a.overall_score)?a.overall_score+'/90 estimate':null}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at)).slice(0,8);
- return {mocks,groups,areas,weakest,recent,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.filter(a=>a.done).length,active:mocks.filter(a=>!a.done).length,days:days.size};
+ return {mocks,groups,areas,weakest,recent,activePractice,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.filter(a=>a.done).length,active:mocks.filter(a=>!a.done).length,days:days.size};
 }
 function create({document:doc,identity,loadLocal,navigate,review,fetch:get=fetch}){
  let serial=0,current=null,filter='all';
@@ -125,8 +141,9 @@ function create({document:doc,identity,loadLocal,navigate,review,fetch:get=fetch
    : '<section class="progress-focus"><div><span class="progress-caption">Suggested focus</span><h3>Build a reliable baseline</h3><p>Complete at least two scored attempts in a task type before a weakest area is suggested.</p></div><button class="portal-button primary" data-progress-route="practice-hub">Start practice</button></section>';
   host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your saved activity, recent trend and next useful action.</p></div><button class="portal-button" data-progress-refresh>Refresh</button></div>'+
   (error?'<p class="progress-notice" role="alert">'+esc(error)+' <button class="portal-button" data-progress-refresh>Retry</button></p>':'')+
-  '<div class="progress-stats">'+[['Practice attempts',m.practice],['Completed mocks',m.complete],['Mocks in progress',m.active],['Study days',m.days]].map(([label,n])=>'<div><strong>'+n+'</strong><span>'+label+'</span></div>').join('')+'</div>'+
-  '<p class="progress-caption">Based on saved activity'+(error?' currently available':'')+'. Task trends combine normal practice with matching per-task mock results; mock tests are also listed separately below. Cross-task percentages are comparison aids only.</p>'+focus+
+  '<div class="progress-stats">'+[['Practice attempts',m.practice],['Practice in progress',m.activePractice.length],['Completed mocks',m.complete],['Mocks in progress',m.active],['Study days',m.days]].map(([label,n])=>'<div><strong>'+n+'</strong><span>'+label+'</span></div>').join('')+'</div>'+
+  '<p class="progress-caption">Based on saved activity'+(error?' currently available':'')+'. In-progress practice is shown as soon as it reaches your account, while task trends use completed scored results. Task trends combine normal practice with matching per-task mock results; mock tests are also listed separately below. Cross-task percentages are comparison aids only.</p>'+focus+
+  (m.activePractice.length?'<section class="progress-section"><h3>Currently in progress</h3><div class="progress-activity">'+m.activePractice.map(a=>'<div><div><h4>'+esc(a.title)+'</h4><span class="progress-caption">'+date(a.at)+' · '+esc(a.detail)+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">Open</button></div>').join('')+'</div></section>':'')+
   '<section class="progress-section"><h3>Task trends</h3><div class="progress-activity">'+m.areas.map(a=>'<div><div><h4>'+esc(a.name)+'</h4><span class="progress-caption">'+(a.count?a.count+' scored result'+(a.count===1?'':'s')+' · '+a.practiceCount+' practice'+(a.mockCount?' + '+a.mockCount+' mock':'')+' · '+(a.trend?(a.trend.label+(a.trend.delta? ' '+(a.trend.delta>0?'+':'')+a.trend.delta+' pp':'')):'Need another result for a trend'):'No scored practice or mock results yet')+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">'+(a.count?'Practise again':'Start practice')+'</button></div>').join('')+'</div></section>'+
   '<section class="progress-section"><div class="progress-heading"><div><h3>Mock-test results</h3><p>Native marks are shown first; /90 values are secondary practice estimates.</p></div><label>Module<select id="progressFilter"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label></div>'+
   (list.length?'<div class="progress-results">'+list.map(a=>'<article class="progress-result"><div><span class="progress-caption">'+esc(a.engine==='reading'?'Reading':'Writing')+' · '+date(a.at)+'</span><h4>'+esc(a.title)+'</h4><span class="progress-caption">'+(!a.done?'In progress':a.pending?'Assessment pending':'Completed')+'</span></div><div class="progress-result-score"><strong>'+(!a.done||a.pending||!Number.isFinite(a.score)?'—':Math.round(a.score)+'<small>'+a.unit+'</small>')+'</strong><span class="progress-caption">'+esc(a.detail)+(Number.isFinite(a.estimate90)?' · '+a.estimate90+'/90 estimate':'')+'</span></div><button class="portal-button" data-progress-review="'+m.mocks.indexOf(a)+'">'+(a.done?'Review result':'Continue')+'</button></article>').join('')+'</div>':'<div class="progress-empty"><p>No '+(filter==='all'?'':filter+' ')+'mock tests saved yet.</p><button class="portal-button primary" data-progress-route="mock-tests">Browse mock tests</button></div>')+'</section>'+

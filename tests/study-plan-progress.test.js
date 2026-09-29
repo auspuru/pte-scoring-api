@@ -112,6 +112,47 @@ test('My Progress trends combine normal practice and matching mock task results'
   assert.match(source, /mockCount/);
 });
 
+test('My Progress exposes saved in-progress practice from another device', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading: {
+      session: {
+        id:'reading-live',
+        practiceUid:'dropdown:live',
+        done:false,
+        index:0,
+        questions:[{uid:'dropdown:live',type:'dropdown'}],
+        answers:{'dropdown:live':['']},
+        times:{},
+        startedAt:100,
+        updatedAt:200
+      },
+      history:[]
+    },
+    swt:{},
+    essays:[]
+  }, [
+    { id:'sst-live', kind:'sst', status:'active', title:'SST live', startedAt:300, completed:0, questions:1 }
+  ], [
+    { id:'ra-live', type:'ra', status:'draft', startedAt:400, result:null }
+  ]);
+  assert.equal(model.activePractice.length, 3);
+  assert.equal(model.activePractice[0].title, 'Read Aloud');
+  assert(model.recent.some(item => item.result && item.result.startsWith('In progress')));
+  assert.match(source, /Currently in progress/);
+  assert.match(source, /In-progress practice is shown as soon as it reaches your account/);
+});
+
+test('My Progress forces a fresh cloud pull instead of relying on the background throttle', () => {
+  assert.match(indexSource, /refreshPracticeHistory\(\{ force: true \}\)/);
+  assert.match(indexSource, /My Progress is an observation surface/);
+  assert.match(html, /student-progress\.js\?v=20260929-cross-device-live/);
+});
+
 test('writing lab presents estimate scores without native mark totals', () => {
   assert.match(writingClient, /<h2>Practice estimate<\/h2>/);
   assert.match(writingClient, /summary\.score90/);
