@@ -15,6 +15,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   const homePracticeCss=read('public/portal-home-practice.css');
   const insightsCss=read('public/portal-insights.css');
   const vocabLibraryCss=read('public/portal-vocab-library.css');
+  const writingMotionCss=read('public/portal-writing-motion.css');
+  const writingMotion=read('public/portal-writing-motion.js');
   const portalShell=read('public/portal-shell.js');
   const portal=read('public/index.js');
   const reading=read('public/reading-practice.js');
@@ -47,6 +49,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(html,/\/portal-home-practice\.css/);
   assert.doesNotMatch(html,/<link[^>]+portal-insights\.css/,'Insights CSS stays off the first-load path');
   assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
+  assert.doesNotMatch(html,/<link[^>]+portal-writing-motion\.css/,'Writing motion CSS stays off the first-load path');
+  assert.match(html,/\/portal-writing-motion\.js\?v=20260929-writing-motion/);
   assert.match(html,/\/portal-shell\.js\?v=20260928-layoutfix-final/);
   assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix-final/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
@@ -61,7 +65,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.doesNotMatch(source,/#4f46e5|#5a51da|#6366f1|rgba\(99,\s*102,\s*241/i,name+' must not reintroduce the legacy indigo palette');
   }
 
-  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss],['portal-vocab-library.css',vocabLibraryCss]]){
+  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss],['portal-vocab-library.css',vocabLibraryCss],['portal-writing-motion.css',writingMotionCss]]){
     const sizes=[...source.matchAll(/@media\s*\((?:max|min)-width:\s*([0-9.]+)px\)/g)].map(m=>Number(m[1]));
     assert(sizes.every(n=>[640,900,1200].includes(n)),name+' uses only the three portal breakpoints');
     assert.doesNotMatch(source,/font-size:\s*(?:[0-9]|1[01](?:\.\d+)?)px/,name+' must not use sub-12px text');
@@ -89,6 +93,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(vocabLibraryCss,/\.flashcard-back\s*\{\s*overflow-y:\s*auto;[\s\S]*?justify-content:\s*flex-start !important;/,'long flashcard backs must scroll from the top');
   assert.match(homePracticeCss,/@media \(max-width: 640px\)[\s\S]*?#dashboardPane \.challenge-word-box\{[^}]*flex-direction:column/,'Home challenge controls stack on mobile');
   assert.match(homePracticeCss,/#dashboardPane \.vocab-try-row\{[^}]*flex-direction:column/,'Home vocabulary input stacks on mobile');
+  assert.match(portalShell,/portal-writing-motion\.css\?v=20260929-writing-motion/);
+  assert.match(portalShell,/new Set\(\['practice', 'swt'\]\)/,'Writing presentation is restricted to Essay and SWT routes');
+  assert.match(writingMotion,/new Set\(\['practice', 'swt'\]\)/);
+  assert.match(writingMotion,/prefers-reduced-motion: reduce/);
+  assert.match(writingMotion,/hover: hover\) and \(pointer: fine/);
+  assert.doesNotMatch(writingMotion,/speakingPane|speaking-[a-z]+/i,'Writing motion helper must not target Speaking');
+  assert.doesNotMatch(writingMotionCss,/#speakingPane|data-section="speaking/i,'Writing motion CSS must not target Speaking routes');
   assert.match(portalShell,/MutationObserver/);
   assert.match(portalShell,/ipt-nav-indicator/);
   assert.match(portalShell,/iptShellReady/);
