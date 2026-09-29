@@ -402,3 +402,34 @@ test('student profile numeric parser does not convert missing scores into false 
   assert.match(source,/if\(value===null\|\|value===undefined\|\|value===''/);
   assert.doesNotMatch(source,/const profileNumber = value => \{\s*const n=Number\(value\)/);
 });
+
+
+test('AI profile skips unattempted and ultra-low outlier questions from coaching trends',async t=>{
+  let promptSeen='';
+  const now=Date.now();
+  const h=await harness({
+    getProgress:async()=>({
+      readingProgress:{
+        practiceResults:{
+          blank:{type:'mcsa',earned:0,possible:4,finishedAt:now-3000},
+          extreme:{type:'mcsa',earned:0.2,possible:4,finishedAt:now-2000},
+          real:{type:'mcsa',earned:1,possible:4,finishedAt:now-1000}
+        }
+      }
+    }),
+    callCoachModel:async prompt=>{promptSeen=prompt;return 'Your usable Reading Single Answer result is 25%.';}
+  });
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'portal',
+    message:'Where are my marks slipping?',
+    screenContext:'Current portal page: My Progress'
+  }});
+  assert.equal(response.status,200);
+  assert.match(promptSeen,/"filterPolicy":\{"unattemptedExcluded":true,"extremeLowExcluded":true,"excludedAtOrBelowPct":5\}/);
+  assert.match(promptSeen,/"label":"Reading Single Answer","attempts":1/);
+  assert.match(promptSeen,/"averagePct":25/);
+  assert.match(promptSeen,/"recentPractice":\[\{"task":"Reading Single Answer","percent":25/);
+  assert.doesNotMatch(promptSeen,/"percent":0/);
+  assert.doesNotMatch(promptSeen,/"percent":5/);
+});
