@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
-const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
+const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store');
 test('There are five original questions for each supported Speaking task, with samples and verified audio',()=>{
   assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:30,recordings:20});
@@ -64,13 +64,30 @@ test('Transcription uploads audio only, never the reference text, and fails clea
   assert.equal(text,'The words actually spoken.');
   await assert.rejects(transcribeRecording(recording,{apiKey:'test-only',fetch:async()=>({ok:false,json:async()=>({})})}),/recording is saved/);
 });
+test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5 practice scores',async()=>{
+  const raw={Duration:250000000,NBest:[{PronunciationAssessment:{AccuracyScore:86,FluencyScore:82,ProsodyScore:78,PronScore:84},Words:[
+    {Word:'environmental',PronunciationAssessment:{AccuracyScore:61,ErrorType:'Mispronunciation'}},
+    {Word:'research',PronunciationAssessment:{AccuracyScore:91,ErrorType:'None'}}
+  ]}]};
+  const parsed=delivery.extractAssessment(raw);assert.equal(parsed.accuracy,86);assert.equal(parsed.fluency,82);assert.equal(parsed.words[0].word,'environmental');
+  const combined=delivery.aggregate([{...parsed,weight:25}]);
+  assert.equal(combined.pronunciation.score,4);assert.equal(combined.pronunciation.maximum,5);assert.equal(combined.fluency.score,4);assert.equal(combined.pronunciation.words.length,1);
+  let sent;
+  const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The words actually spoken.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',request:async(url,args)=>{
+    sent={url,args};return {ok:true,json:async()=>raw};
+  }});
+  const config=JSON.parse(Buffer.from(sent.args.headers['Pronunciation-Assessment'],'base64').toString('utf8'));
+  assert.equal(config.ReferenceText,'The words actually spoken.');assert.equal(config.Dimension,'Comprehensive');assert.equal(config.EnableProsodyAssessment,'True');assert.equal(assessed.prosody,78);
+});
+
 test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifier',()=>{
   assert.throws(()=>createStore(null,'/unused',{table:'accounts'}),/Invalid attempt table/);
 });
 test('Speaking API preserves private recordings, transcript revisions, samples, reattempts and score retries',async t=>{
-  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-test-')),app=require('express')();app.use(require('express').json());let failModel=false;
-  const {store}=installSpeakingLab(app,{directory,verifyToken:t=>['alice','bob'].includes(t)?t:null,getAccount:async()=>({}),transcriptionAvailable:true,
-    transcribe:async()=>bank.questions[0].text,callModel:async prompt=>{if(failModel)throw Error('offline');const data=JSON.parse(prompt.split('DATA=')[1]);return modelResult({facts:data.facts},data.student);}});
+  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-test-')),app=require('express')();app.use(require('express').json());let failModel=false,failDelivery=false;
+  const deliveryResult={pronunciation:{score:4,maximum:5,raw:84,accuracy:86,prosody:78,words:[{word:'environmental',accuracy:61,errorType:'Mispronunciation'}]},fluency:{score:4,maximum:5,raw:82},deliveryStatus:'Audio assessed — PTE-style practice estimate',deliveryAssessment:'Independent practice estimate from the saved recording; not Pearson scoring.',deliveryProvider:'azure-speech-pronunciation'};
+  const {store}=installSpeakingLab(app,{directory,verifyToken:t=>['alice','bob'].includes(t)?t:null,getAccount:async()=>({}),transcriptionAvailable:true,deliveryAssessmentAvailable:true,
+    transcribe:async()=>bank.questions[0].text,assessDelivery:async()=>{if(failDelivery)throw Error('azure offline');return deliveryResult;},callModel:async prompt=>{if(failModel)throw Error('offline');const data=JSON.parse(prompt.split('DATA=')[1]);return modelResult({facts:data.facts},data.student);}});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
@@ -86,14 +103,15 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   assert.equal((await fetch(base+'/api/speaking/attempts/'+id+'/recording',{headers:{'x-session-token':'bob'}})).status,404);
   a=(await request('/attempts/'+id+'/transcribe',{})).body;assert.equal(a.transcript,q.text);
   assert.equal((await request('/attempts/'+id+'/transcript',{text:'old text',revision:0})).status,409);
-  a=(await request('/attempts/'+id+'/submit',{})).body;assert.equal(a.result.total,a.result.maximum);assert.equal(a.question.sample,q.sample);
+  a=(await request('/attempts/'+id+'/submit',{})).body;assert.equal(a.result.total,a.result.maximum);assert.equal(a.question.sample,q.sample);assert.equal(a.result.pronunciation.score,4);assert.equal(a.result.fluency.score,4);
   assert.equal((await request('/attempts/'+id+'/transcript',{text:'changed',revision:a.revision})).status,409);
   const retry=(await request('/attempts',{id:crypto.randomUUID(),questionId:q.id})).body;assert.equal(retry.transcript,'');assert.equal(retry.recording,null);
   assert.equal((await request('/attempts/'+retry.id+'/submit',{})).status,400);
   assert.equal((await request('/attempts/'+retry.id)).body.status,'draft');
   await request('/attempts/'+retry.id+'/recording',Buffer.alloc(200,5),'alice',true);
-  const fromAudio=await request('/attempts/'+retry.id+'/submit',{});
-  assert.equal(fromAudio.status,200);assert.equal(fromAudio.body.transcript,q.text);assert.equal(fromAudio.body.result.total,fromAudio.body.result.maximum);
+  failDelivery=true;let fromAudio=await request('/attempts/'+retry.id+'/submit',{});
+  assert.equal(fromAudio.status,200);assert.equal(fromAudio.body.transcript,q.text);assert.equal(fromAudio.body.result.total,fromAudio.body.result.maximum);assert.equal(fromAudio.body.result.pronunciation,null);assert.match(fromAudio.body.result.deliveryStatus,/temporarily unavailable/);
+  failDelivery=false;fromAudio=await request('/attempts/'+retry.id+'/submit',{});assert.equal(fromAudio.body.result.pronunciation.score,4);assert.equal(fromAudio.body.result.fluency.score,4);
   assert.equal((await request('/attempts')).body.length,2);assert.equal((await store.list('bob')).length,0);
   const di=bank.questions.find(q=>q.type==='di'),other=crypto.randomUUID();
   await request('/attempts',{id:other,questionId:di.id});await request('/attempts/'+other+'/transcript',{text:di.sample,revision:0});

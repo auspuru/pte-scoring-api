@@ -19,10 +19,15 @@ until submission for RS, RL and SGD.
 
 ## Assessment boundary
 
-This is **content-only practice feedback**, not Pearson's official scoring engine.
-No overall /90 score, pronunciation score or fluency score is inferred from text.
-The recording can be replayed or downloaded for teacher review. Existing admin
-impersonation can access a student's saved speaking attempts with its normal scope.
+This is **independent practice feedback**, not Pearson's official scoring engine.
+Content remains scored separately from delivery. No overall /90 score is generated.
+When Azure Speech pronunciation assessment is configured, the saved recording can
+also receive pronunciation and oral-fluency practice estimates on a 0–5 scale plus
+0–100 acoustic detail. Those delivery scores come from the audio, never from the
+confirmed transcript alone, and are labelled as practice estimates. Without Azure
+configuration or during a provider outage, content feedback still completes and
+delivery remains available for teacher review. Existing admin impersonation can
+access a student's saved speaking attempts with its normal scope.
 
 RA uses word edit distance: omissions, replacements and insertions each reduce
 content credit; the maximum equals the reference word count. RS provides a /3
@@ -45,11 +50,22 @@ creates a fresh UUID, preserving prior audio, words and feedback.
 
 Automatic transcription uses the existing `OPENAI_API_KEY` if configured, with
 `OPENAI_TRANSCRIPTION_MODEL` optionally overriding `gpt-4o-mini-transcribe`.
-The student explicitly chooses transcription after a disclosure that audio is sent
-to OpenAI. No reference answer is supplied to transcription. Without configuration
-or during an outage, students can enter the exact words they spoke and still receive
-content feedback. They must review recognition errors before submitting. Transcribed
-or edited text is never treated as a reliable measurement of vocal delivery.
+The student is told that transcription sends audio to OpenAI. No reference answer is
+supplied to transcription. Without configuration or during an outage, students can
+enter the exact words they spoke and still receive content feedback. They must review
+recognition errors before submitting.
+
+Optional delivery assessment uses Microsoft Azure Speech when both
+`AZURE_SPEECH_KEY` and either `AZURE_SPEECH_ENDPOINT` or `AZURE_SPEECH_RESOURCE`
+are configured. The UI discloses before submission that the saved recording will be
+sent to Azure for pronunciation and oral-fluency practice feedback. Audio is converted
+with ffmpeg to 16 kHz mono PCM WAV and split into segments of at most 28 seconds to
+stay within the short-audio pronunciation-assessment limit. Each segment is assessed
+with Comprehensive HundredMark pronunciation assessment and prosody enabled. The
+confirmed transcript is used directly for a single segment; longer recordings use
+segment transcription when available and fall back to sequential slices of the
+confirmed transcript. Provider failures never remove a successfully generated
+content result.
 
 Transcripts use optimistic revisions; submitted transcripts are locked. Failed
 assessments can retry without losing the recording or reference sample. Speaking
@@ -88,7 +104,8 @@ formatting (curly/straight quotation marks and whitespace) resolves to the exact
 original student text, while changed or invented words remain rejected.
 All 30 questions, 20 prompt recordings, 17 public assets and the 13 existing writing
 recordings passed validation. Real model checks on DI, RL, SGD and RTS sample
-responses returned valid content feedback; delivery scoring remains manual.
+responses returned valid content feedback. Automated delivery scoring is optional
+and remains clearly separated from Pearson scoring.
 
 Recording, private replay, revision conflicts, account isolation, reattempts and
 failed-assessment retries were verified through isolated API and client tests.

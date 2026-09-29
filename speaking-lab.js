@@ -1,6 +1,6 @@
 'use strict';
 const express=require('express'),path=require('node:path'),fs=require('node:fs/promises'),crypto=require('node:crypto');
-const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring');
+const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring'),delivery=require('./speaking-delivery');
 const {createStore}=require('./writing-lab-store');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type);
@@ -42,11 +42,11 @@ async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,
   const data=await response.json();if(typeof data.text!=='string'||data.text.length>6000)throw fail('The transcript could not be read. Enter your spoken words manually.',503);
   return data.text;
 }
-function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,transcriptionAvailable=!!process.env.OPENAI_API_KEY}) {
+function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,transcriptionAvailable=!!process.env.OPENAI_API_KEY,assessDelivery=delivery.assessRecording,deliveryAssessmentAvailable=delivery.isConfigured()}) {
   const store=createStore(pool,directory,{table:'speaking_lab_attempts'}),router=express.Router();
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>{res.set('Cache-Control','no-store');res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved work is safe; please retry.'});});
   const get=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Attempt not found.',404);return a;});
-  router.get('/catalog',(_,res)=>res.json({version:bank.version,source:bank.source,transcriptionAvailable,deliveryAssessment:'teacher',types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation}))}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.version,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation}))}));
   router.use(async(req,res,next)=>{try{const uid=verifyToken(req.headers['x-session-token']||'');const account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.speakingUser=uid;res.set('Cache-Control','no-store');next();}catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}});
   const limiter=require('express-rate-limit')({windowMs:600000,max:40,keyGenerator:req=>req.speakingUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking action.'}});
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,startedAt:a.startedAt,result:a.result?{total:a.result.total,maximum:a.result.maximum}:null})));}));
@@ -75,9 +75,22 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
       if(!a.transcript?.trim())throw fail('No spoken words were recognised. Review your recording and enter what you said, or record a new attempt.');
     }a.status='submitted';return a;});
     a=await store.update(req.speakingUser,req.params.id,async a=>{
+      const q=bank.questions.find(q=>q.id===a.questionId);
       if(!a.result || a.result.scoringMode==='local') {
-        const next=await scoring.grade(bank.questions.find(q=>q.id===a.questionId),a.transcript,callModel);
+        const next=await scoring.grade(q,a.transcript,callModel);
         if(!a.result || next.scoringMode!=='local') a.result=next;
+      }
+      if(a.result&&a.recording&&a.result.pronunciation==null&&deliveryAssessmentAvailable) {
+        try {
+          const assessed=await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe});
+          if(assessed)a.result={...a.result,...assessed};
+        } catch(error) {
+          const code=String(error?.code||error?.name||'delivery_error').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80);
+          console.warn('[speaking-delivery]',JSON.stringify({code}));
+          a.result={...a.result,deliveryStatus:'Audio delivery assessment temporarily unavailable'};
+        }
+      } else if(a.result&&a.result.pronunciation==null&&!deliveryAssessmentAvailable) {
+        a.result={...a.result,deliveryStatus:'Teacher review — automated audio assessment not configured'};
       }
       return a;
     });res.json(present(a));
