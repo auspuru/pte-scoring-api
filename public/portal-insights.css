@@ -914,7 +914,7 @@ body.dark .next-step-note {
   display: block;
   margin-bottom: 3px;
   color: var(--ipt-ink-soft);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .045em;
@@ -938,7 +938,7 @@ body.dark .next-step-note {
   border-radius: 999px;
   background: var(--ipt-surface);
   color: var(--ipt-ink-soft);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ipt-assistant-score-chips b {
@@ -948,7 +948,7 @@ body.dark .next-step-note {
 .ipt-assistant-context small {
   grid-column: 1 / -1;
   color: var(--ipt-ink-soft);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ipt-assistant-recommendations {
@@ -959,7 +959,7 @@ body.dark .next-step-note {
 
 .ipt-assistant-section-head span {
   color: var(--ipt-blue-700);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .055em;
@@ -1000,7 +1000,7 @@ body.dark .next-step-note {
   display: block;
   margin-bottom: 4px;
   color: var(--ipt-blue-700);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .045em;
@@ -1033,7 +1033,7 @@ body.dark .next-step-note {
 .next-step-beta.ipt-assistant > .next-step-beta-disclaimer {
   margin: 16px 26px 22px;
   color: var(--ipt-ink-soft);
-  font-size: 11px !important;
+  font-size: 12px !important;
 }
 
 body.dark .ipt-assistant-message.user .ipt-assistant-message-body {
