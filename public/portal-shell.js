@@ -13,7 +13,7 @@
     },
     {
       key: 'insights',
-      href: '/portal-insights.css?v=20260929-assistant-unify',
+      href: '/portal-insights.css?v=20260929-assistant-ux',
       sections: new Set(['mock-tests', 'writing-mocks', 'next-steps', 'progress'])
     },
     {
