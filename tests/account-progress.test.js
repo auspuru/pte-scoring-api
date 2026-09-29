@@ -197,6 +197,34 @@ test('Opening reading with no current session still downloads and uploads cloud 
   assert.equal(browser.ctx.syncQueued, false);
 });
 
+test('Client sync sends a compact progress delta instead of retransmitting Reading passages', async () => {
+  const store = backend(), browser = device(store);
+  const large = { ...session('large'),
+    questions: Array.from({ length: 30 }, (_, i) => ({ ...q, uid: 'q' + i, passage: 'A long passage. '.repeat(200) })),
+    answers: {}, times: {} };
+  await store.setUserData('student', { readingProgress: P.packReading({ session: large, history: [], drafts: [], practiceResults: {} }) });
+  assert.equal(await browser.ctx.refreshPracticeHistory({ force: true }), true);
+
+  const before = P.unpackReading(browser.ctx.localAccountProgress().readingProgress);
+  const after = clone(before);
+  after.session.answers.q0 = ['answer'];
+  after.session.times.q0 = 100;
+  const stamped = P.stampReading(after, before, 9000);
+  browser.values.set('ipt_reading_v1:student', JSON.stringify(P.packReading(stamped)));
+
+  browser.ctx.queueSync();
+  assert.equal(await browser.ctx.flushSync(), true, browser.errors.join('\n'));
+  const request = browser.requests.filter(r => r.options.method === 'POST').at(-1);
+  assert(request);
+  const body = JSON.parse(request.options.body);
+  assert.equal(body.readingProgress.version, 3);
+  assert(!request.options.body.includes('A long passage'));
+  assert(Buffer.byteLength(request.options.body) < 8000);
+
+  const cloud = P.unpackReading((await store.getUserData('student')).readingProgress);
+  assert.deepEqual(cloud.session.answers.q0, ['answer']);
+});
+
 test('Reading history can refresh without an active session or losing saved results', async () => {
   const store = backend(), browser = device(store);
   const completed = { ...session('finished'), done: true, finishedAt: 5000, answers: { 'test:q1': ['answer'] } };
