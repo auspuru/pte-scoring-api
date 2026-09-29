@@ -23,6 +23,10 @@ const surfaces = [
   { name:'progress', route:'progress' },
   { name:'vocabulary', route:'vocab' },
   { name:'library', route:'library' },
+  { name:'essay-welcome', route:'practice', writingState:'welcome', cursorCheck:true },
+  { name:'essay-setup', route:'practice', writingState:'setup', cursorCheck:true },
+  { name:'essay-editor', route:'practice', writingState:'editor', cursorCheck:true },
+  { name:'swt-writing', route:'swt', writingState:'swt', cursorCheck:true },
   { name:'admin-login', pagePath:'admin', login:true },
   { name:'admin-dashboard', pagePath:'admin', adminDashboard:true }
 ];
@@ -34,7 +38,9 @@ const routePanes = {
   'next-steps':'nextStepsPane',
   progress:'progressPane',
   vocab:'vocabScreen',
-  library:'libraryPane'
+  library:'libraryPane',
+  practice:'practiceScreen',
+  swt:'swtPane'
 };
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -152,7 +158,14 @@ async function auditViewport(page, surface) {
         href:link.getAttribute('href'),
         sheetReady:!!link.sheet
       })),
-      shellReady:document.body.dataset.iptShellReady || null
+      shellReady:document.body.dataset.iptShellReady || null,
+      writingCursor:{
+        enabled:document.body.classList.contains('ipt-writing-cursor-enabled'),
+        dot:!!document.querySelector('.ipt-writing-cursor-dot'),
+        halo:!!document.querySelector('.ipt-writing-cursor-halo'),
+        haloOpacity:document.querySelector('.ipt-writing-cursor-halo') ? getComputedStyle(document.querySelector('.ipt-writing-cursor-halo')).opacity : null,
+        writingStyleReady:!!document.querySelector('link[data-ipt-lazy-style="writing-motion"]')?.sheet
+      }
     };
   }, surface);
 }
@@ -218,7 +231,51 @@ async function auditViewport(page, surface) {
         } else if (!surface.login) {
           try {
             prep = await prepareShell(page, surface.route);
+            if (surface.writingState) {
+              const writingPrep = await page.evaluate(async state => {
+                const errors = [];
+                try {
+                  if (state === 'setup' || state === 'editor') {
+                    if (typeof window.startNewPractice === 'function') window.startNewPractice();
+                    else if (typeof startNewPractice === 'function') startNewPractice();
+                  }
+                  if (state === 'editor') {
+                    if (typeof window.setQuestionSource === 'function') window.setQuestionSource('custom');
+                    else if (typeof setQuestionSource === 'function') setQuestionSource('custom');
+                    if (typeof window.onCustomPromptInput === 'function') window.onCustomPromptInput('Some people believe universities should focus on practical skills for employment. To what extent do you agree or disagree?');
+                    else if (typeof onCustomPromptInput === 'function') onCustomPromptInput('Some people believe universities should focus on practical skills for employment. To what extent do you agree or disagree?');
+                    if (typeof window.startExamSimulator === 'function') window.startExamSimulator();
+                    else if (typeof startExamSimulator === 'function') startExamSimulator();
+                  }
+                } catch (error) {
+                  errors.push(String(error && error.message || error));
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return {
+                  errors,
+                  section: document.body.dataset.section || '',
+                  practiceView: document.getElementById('practiceContent')?.dataset.view || '',
+                  editorPresent: !!document.getElementById('practiceEssayInput'),
+                  writingStyleReady: !!document.querySelector('link[data-ipt-lazy-style="writing-motion"]')?.sheet
+                };
+              }, surface.writingState);
+              prep = { ...prep, writingPrep };
+            }
             await sleep(1600);
+            if (surface.cursorCheck && vp.name === 'desktop') {
+              const point = await page.evaluate(() => {
+                const target = document.querySelector(
+                  '#practiceScreen .practice-welcome-cta, #practiceScreen .practice-source-tab, #practiceScreen .simulator-toggle-prompt-btn, #swtPane button:not([disabled])'
+                );
+                if (!target) return null;
+                const rect = target.getBoundingClientRect();
+                return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+              });
+              if (point) {
+                await page.mouse.move(point.x, point.y, { steps: 5 });
+                await sleep(450);
+              }
+            }
           } catch (error) {
             prep = { errors:[String(error.message||error)] };
           }
