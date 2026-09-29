@@ -149,7 +149,7 @@
       const pronunciationDetail=deliveryReady&&Number.isFinite(Number(pronunciationCurrent.raw))?esc(Math.round(Number(pronunciationCurrent.raw)))+'/100 acoustic score':'';
       const fluencyDetail=deliveryReady&&Number.isFinite(Number(fluencyCurrent.raw))?esc(Math.round(Number(fluencyCurrent.raw)))+'/100 acoustic score':'';
       const evidence=r.deliveryEvidence||{};
-      const evidenceNote=Number.isFinite(Number(evidence.coverage))
+      const evidenceNote=evidence.coverage!==null&&evidence.coverage!==undefined&&Number.isFinite(Number(evidence.coverage))
         ? '<div class="speaking-delivery-summary"><span>Matched <strong>'+esc(evidence.matchedWords)+' / '+esc(evidence.referenceWords)+' words</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>'
         : (Number.isFinite(Number(evidence.spokenWords))?'<div class="speaking-delivery-summary"><span>Spoken words <strong>'+esc(evidence.spokenWords)+'</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>':'');
       const deliveryStatus=staleDelivery
