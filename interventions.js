@@ -922,7 +922,7 @@ function installInterventions(app, options = {}) {
       const correction=[
         prompt,
         '',
-        'CRITICAL COACHING CORRECTION:',
+        'CRITICAL TASK CORRECTION — COACHING EVIDENCE:',
         task==='sst'
           ? 'Keep SST as Listening + Writing: the student listens and TYPES a 50–70 word written summary.'
           : 'Keep the named task contract unchanged.',
