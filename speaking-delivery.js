@@ -7,7 +7,7 @@ const { promisify } = require('node:util');
 const run = promisify(execFile);
 
 const VERSION = 'azure-delivery-2026-09-29.1';
-const CHUNK_SECONDS = 25;
+const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
 
@@ -155,6 +155,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
 
 async function assessRecording(recording,{
   transcribe,
+  transcript='',
   apiKey=process.env.AZURE_SPEECH_KEY,
   endpoint=endpointFromEnv(),
   request=fetch,
@@ -163,11 +164,18 @@ async function assessRecording(recording,{
 }={}) {
   if(!recording?.data||!recording?.mime)throw Error('A saved recording is required for delivery assessment.');
   if(!apiKey||!endpoint)return null;
-  if(typeof transcribe!=='function')throw Error('A transcription function is required for delivery assessment.');
-  const chunks=await splitToWav(recording,{directory,ffmpeg});
-  const results=[];
-  for(const wav of chunks){
-    const reference=String(await transcribe({mime:WAV_MIME,data:wav.toString('base64')})).trim();
+  const chunks=await splitToWav(recording,{directory,ffmpeg}),confirmed=String(transcript||'').trim(),confirmedWords=confirmed.split(/\\s+/u).filter(Boolean);
+  const results=[];let fallbackCursor=0;
+  for(let i=0;i<chunks.length;i++){
+    const wav=chunks[i];let reference='';
+    if(chunks.length===1&&confirmed)reference=confirmed;
+    else if(typeof transcribe==='function'){
+      try{reference=String(await transcribe({mime:WAV_MIME,data:wav.toString('base64')})).trim();}catch{}
+    }
+    if(!reference&&confirmedWords.length){
+      const remaining=confirmedWords.length-fallbackCursor,parts=chunks.length-i,take=Math.max(1,Math.ceil(remaining/parts));
+      reference=confirmedWords.slice(fallbackCursor,fallbackCursor+take).join(' ');fallbackCursor+=take;
+    }
     if(!reference)continue;
     const assessed=await azureAssess(wav,reference,{apiKey,endpoint,request});
     assessed.weight=wavSeconds(wav)||1;
