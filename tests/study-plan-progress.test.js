@@ -48,6 +48,54 @@ test('My Progress derives a weakest area only from comparable saved native resul
   assert.equal(model.areas.find(a => a.name === 'Summarise Spoken Text').count, 2);
 });
 
+
+test('My Progress trends use standalone practice across SWT, Reading, Speaking, Essay and Listening', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading: { history: [
+      { id:'reading-1', practiceUid:'dropdown:1', done:true, earned:1, possible:4, questions:[{type:'dropdown'}], startedAt:10, finishedAt:10 },
+      { id:'mock-reading', done:true, percent:100, earned:10, possible:10, questions:[{type:'dropdown'}], startedAt:15, finishedAt:15 },
+      { id:'reading-2', practiceUid:'dropdown:2', done:true, earned:3, possible:4, questions:[{type:'dropdown'}], startedAt:20, finishedAt:20 },
+      { id:'listening-1', practiceUid:'hiw:1', done:true, earned:2, possible:4, questions:[{type:'hiw'}], startedAt:25, finishedAt:25 }
+    ] },
+    swt: {
+      1: [{ timestamp:1, overall_score:55, trait_scores:{content:1,form:1,grammar:1,vocabulary:2} }],
+      2: [{ timestamp:2, overall_score:88, trait_scores:{content:3,form:1,grammar:2,vocabulary:2} }]
+    },
+    essays: [
+      { date:3, scores:{total:13} },
+      { date:4, scores:{total:20} }
+    ]
+  }, [
+    { id:'sst-1', kind:'sst', status:'submitted', total:6, maximum:12, startedAt:30 },
+    { id:'sst-2', kind:'sst', status:'submitted', total:10, maximum:12, startedAt:40 },
+    { id:'wfd-1', kind:'wfd', status:'submitted', total:4, maximum:10, startedAt:50 },
+    { id:'wfd-2', kind:'wfd', status:'submitted', total:8, maximum:10, startedAt:60 },
+    { id:'mock-writing', kind:'mock', status:'submitted', total:40, maximum:50, startedAt:70, title:'Writing mock' }
+  ], [
+    { id:'ra-1', type:'ra', status:'submitted', startedAt:80, result:{total:2,maximum:3} },
+    { id:'ra-2', type:'ra', status:'submitted', startedAt:90, result:{total:3,maximum:3} },
+    { id:'rs-draft', type:'rs', status:'draft', startedAt:100, result:null }
+  ]);
+  const area = name => model.areas.find(a => a.name === name);
+  assert.equal(area('Summarise Written Text').count, 2);
+  assert.equal(area('Summarise Written Text').trend.label, 'Improving');
+  assert.equal(area('Reading Blanks (Dropdown)').count, 2);
+  assert.equal(area('Reading Blanks (Dropdown)').trend.delta, 50);
+  assert.equal(area('Highlight Incorrect Words').count, 1);
+  assert.equal(area('Read Aloud').count, 2);
+  assert.equal(area('Summarise Spoken Text').count, 2);
+  assert.equal(area('Write From Dictation').count, 2);
+  assert.equal(model.practice, 13, 'standalone practice count must exclude mocks and drafts');
+  assert.equal(model.complete, 2, 'reading and writing mocks stay in the separate mock section');
+  assert.match(source, /\/api\/speaking\/attempts/);
+  assert.match(source, /Task trends use standalone practice results/);
+});
+
 test('writing lab presents estimate scores without native mark totals', () => {
   assert.match(writingClient, /<h2>Practice estimate<\/h2>/);
   assert.match(writingClient, /summary\.score90/);
