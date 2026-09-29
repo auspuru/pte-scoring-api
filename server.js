@@ -13,7 +13,7 @@ const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPoli
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
-const { studentPassage } = require('./swt-reference');
+const { studentPassage, fallbackSample } = require('./swt-reference');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -1282,7 +1282,33 @@ function bundledSwtSampleReferences() {
 // unrelated model answer. Existing non-empty samples are always preserved.
 async function restoreMissingSwtSamples() {
   const current = await PassageAPI.readAll();
-  const { passages: repaired, updates } = repairMissingSwtSamples(current, bundledSwtSampleReferences());
+  const initial = repairMissingSwtSamples(current, bundledSwtSampleReferences());
+  const repaired = [...initial.passages];
+  const updatesById = new Map(initial.updates.map(update => [Number(update.id), update]));
+
+  // The live production database still contains legacy SWT rows that are no
+  // longer present in passages.json. Resolve reviewed fallback samples for
+  // those rows as well, without overwriting any non-empty database sample.
+  for (let i = 0; i < repaired.length; i++) {
+    const passage = repaired[i];
+    if (String(passage.sampleResponse || '').trim()) continue;
+    const fallback = fallbackSample(passage);
+    if (!fallback?.sampleResponse) continue;
+    repaired[i] = {
+      ...passage,
+      sampleResponse: fallback.sampleResponse,
+      sampleNotes: String(passage.sampleNotes || '').trim() || String(fallback.sampleNotes || '').trim()
+    };
+    updatesById.set(Number(passage.id), {
+      id: Number(passage.id) || 0,
+      title: String(passage.title || ''),
+      text: String(passage.text || ''),
+      sampleResponse: repaired[i].sampleResponse,
+      sampleNotes: repaired[i].sampleNotes
+    });
+  }
+
+  const updates = [...updatesById.values()];
   if (!updates.length) return 0;
 
   if (!USE_POSTGRES) {
