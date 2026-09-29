@@ -79,12 +79,23 @@ test('Short incomplete Read Aloud responses do not receive misleading pronunciat
   assert.match(result.deliveryStatus,/Not enough speech/);assert.equal(result.deliveryEvidence.spokenWords,4);
 });
 
+test('Delivery band calibration is deliberately stricter than raw Azure percentages',()=>{
+  assert.equal(delivery.band5(93),4);assert.equal(delivery.band5(94),5);
+  assert.equal(delivery.band5(83),3);assert.equal(delivery.band5(84),4);
+  assert.equal(delivery.descriptor('pronunciation',4),'Advanced');assert.equal(delivery.descriptor('fluency',3),'Good');
+});
+
+test('Open speaking tasks need enough speech before delivery bands are shown',()=>{
+  assert.equal(delivery.deliveryEvidence({type:'di'},'The chart shows prices rising quickly.',4.5).sufficient,false);
+  assert.equal(delivery.deliveryEvidence({type:'di'},'The chart shows prices rising quickly across all five categories during the year.',8).sufficient,true);
+});
+
 test('A sufficiently complete Read Aloud can receive delivery bands independently from content',()=>{
   const text='Urban parks provide shade absorb rainwater create habitats and improve city life for local residents throughout the year.';
   const evidence=delivery.deliveryEvidence({type:'ra',text},text,18);
   assert.equal(evidence.sufficient,true);assert.equal(evidence.coverage,100);
   const result=delivery.aggregate([{accuracy:86,fluency:82,prosody:78,weight:18,words:[]}],{evidence});
-  assert.equal(result.pronunciation.score,4);assert.equal(result.fluency.score,4);
+  assert.equal(result.pronunciation.score,4);assert.equal(result.pronunciation.descriptor,'Advanced');assert.equal(result.fluency.score,3);assert.equal(result.fluency.descriptor,'Good');
 });
 
 test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5 practice scores',async()=>{
@@ -94,7 +105,7 @@ test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5
   ]}]};
   const parsed=delivery.extractAssessment(raw);assert.equal(parsed.accuracy,86);assert.equal(parsed.fluency,82);assert.equal(parsed.words[0].word,'environmental');
   const combined=delivery.aggregate([{...parsed,weight:25}]);
-  assert.equal(combined.pronunciation.score,4);assert.equal(combined.pronunciation.maximum,5);assert.equal(combined.fluency.score,4);assert.equal(combined.pronunciation.words.length,1);
+  assert.equal(combined.pronunciation.score,4);assert.equal(combined.pronunciation.maximum,5);assert.equal(combined.pronunciation.descriptor,'Advanced');assert.equal(combined.fluency.score,3);assert.equal(combined.fluency.descriptor,'Good');assert.equal(combined.pronunciation.words.length,1);
   let sent;
   const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The full scripted reference.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',locale:'en-AU',scripted:true,request:async(url,args)=>{
     sent={url,args};return {ok:true,json:async()=>raw};
