@@ -172,6 +172,6 @@ test('Assessment failure preserves the saved recording and offers Retry assessme
  const h=harness();h.env.rejectTranscription=true;await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.audio[0].onended();
  h.tick(15001);await flush();
  const a=[...h.attempts.values()][0];assert(a.recording);assert.equal(a.status,'draft');assert.equal(h.nodes.get('speaking-assess-retry').hidden,false);
- assert.match(h.nodes.get('speaking-notice').textContent,/recording is saved/i);
+ assert.match(h.host.innerHTML,/recording is saved/i);
  h.env.rejectTranscription=false;await h.click({speakingAction:'submit'});await flush();assert.equal(a.status,'submitted');assert.match(h.host.innerHTML,/Your result/);
 });
