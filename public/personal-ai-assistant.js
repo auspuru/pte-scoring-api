@@ -11,7 +11,6 @@
 
   let root = null;
   let launcher = null;
-  let panel = null;
 
   function appIsVisible() {
     const shell = document.getElementById('appShell');
@@ -26,29 +25,31 @@
   }
 
   function syncVisibility() {
-    if (!root) return;
-    const show = shouldShow();
-    root.hidden = !show;
-    if (!show) {
-      root.classList.remove('is-open');
-      launcher?.setAttribute('aria-expanded', 'false');
-      panel?.setAttribute('aria-hidden', 'true');
-    }
+    if (root) root.hidden = !shouldShow();
   }
 
-  function togglePanel(force) {
-    if (!root || root.hidden) return;
-    const open = typeof force === 'boolean' ? force : !root.classList.contains('is-open');
-    root.classList.toggle('is-open', open);
-    launcher?.setAttribute('aria-expanded', String(open));
-    panel?.setAttribute('aria-hidden', String(!open));
-
-    if (open && launcher) {
-      launcher.classList.remove('is-waving');
-      void launcher.offsetWidth;
-      launcher.classList.add('is-waving');
-      window.setTimeout(() => launcher?.classList.remove('is-waving'), 900);
+  function focusAssistant(attempt = 0) {
+    const panel = document.querySelector('.next-step-beta');
+    const field = document.querySelector('[data-beta-problem]');
+    if (panel) {
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+      panel.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      window.setTimeout(() => field?.focus(), reduce ? 0 : 250);
+      return;
     }
+    if (attempt < 20) window.setTimeout(() => focusAssistant(attempt + 1), 100);
+  }
+
+  function openAssistant() {
+    if (!root || root.hidden) return;
+    launcher?.classList.remove('is-waving');
+    void launcher?.offsetWidth;
+    launcher?.classList.add('is-waving');
+    window.setTimeout(() => launcher?.classList.remove('is-waving'), 900);
+
+    if (typeof window.switchSection === 'function') window.switchSection('next-steps');
+    else window.location.hash = '#/next-steps';
+    window.setTimeout(() => focusAssistant(), 60);
   }
 
   function mount() {
@@ -57,18 +58,9 @@
     root = document.createElement('aside');
     root.id = 'personalAiAssistant';
     root.className = 'personal-ai-assistant';
-    root.setAttribute('aria-label', 'Personal AI Assistant');
+    root.setAttribute('aria-label', 'IPT Assistant shortcut');
     root.innerHTML = [
-      '<section class="personal-ai-panel" id="personalAiPanel" aria-hidden="true">',
-        '<div class="personal-ai-panel-head">',
-          '<div>',
-            '<h3>Personal AI Assistant</h3>',
-            '<p class="personal-ai-coming-soon">Coming Soon</p>',
-          '</div>',
-          '<button type="button" class="personal-ai-close" aria-label="Close assistant preview">×</button>',
-        '</div>',
-      '</section>',
-      '<button type="button" class="personal-ai-launcher" aria-label="Personal AI Assistant — Coming Soon" aria-controls="personalAiPanel" aria-expanded="false">',
+      '<button type="button" class="personal-ai-launcher" aria-label="Open IPT Assistant">',
         '<span class="personal-ai-mascot-art" aria-hidden="true"></span>',
         '<span class="personal-ai-dot" aria-hidden="true"></span>',
       '</button>'
@@ -76,22 +68,7 @@
 
     document.body.appendChild(root);
     launcher = root.querySelector('.personal-ai-launcher');
-    panel = root.querySelector('.personal-ai-panel');
-
-    launcher?.addEventListener('click', () => togglePanel());
-    root.querySelector('.personal-ai-close')?.addEventListener('click', () => togglePanel(false));
-
-    document.addEventListener('pointerdown', event => {
-      if (!root?.classList.contains('is-open')) return;
-      if (event.target instanceof Node && !root.contains(event.target)) togglePanel(false);
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && root?.classList.contains('is-open')) {
-        togglePanel(false);
-        launcher?.focus();
-      }
-    });
+    launcher?.addEventListener('click', openAssistant);
 
     syncVisibility();
 
