@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-09-29.1';
+const VERSION = 'azure-delivery-2026-09-29.2';
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
@@ -57,6 +57,36 @@ function round1(value) {
   return Number.isFinite(n)?Math.round(n*10)/10:null;
 }
 
+function tokens(text) {
+  return String(text||'').toLowerCase().normalize('NFKD').replace(/[^a-z0-9' ]+/g,' ').split(/\s+/).filter(Boolean);
+}
+
+function lcsLength(a,b) {
+  if(!a.length||!b.length)return 0;
+  let previous=new Uint16Array(b.length+1),current=new Uint16Array(b.length+1);
+  for(let i=1;i<=a.length;i++){
+    for(let j=1;j<=b.length;j++)current[j]=a[i-1]===b[j-1]?previous[j-1]+1:Math.max(previous[j],current[j-1]);
+    [previous,current]=[current,previous];current.fill(0);
+  }
+  return previous[b.length];
+}
+
+function deliveryEvidence(question,transcript,durationSeconds) {
+  const spoken=tokens(transcript),type=String(question?.type||''),scripted=['ra','rs'].includes(type);
+  const reference=scripted?tokens(question?.text):[],matched=scripted?lcsLength(reference,spoken):null;
+  const coverage=scripted&&reference.length?matched/reference.length:null;
+  let sufficient=true;
+  if(type==='ra')sufficient=durationSeconds>=8&&spoken.length>=12&&coverage>=0.35;
+  else if(type==='rs')sufficient=durationSeconds>=1.5&&spoken.length>=3&&coverage>=0.35;
+  else sufficient=durationSeconds>=4&&spoken.length>=6;
+  return {
+    sufficient,
+    durationSeconds:round1(durationSeconds),
+    spokenWords:spoken.length,
+    ...(scripted?{referenceWords:reference.length,matchedWords:matched,coverage:round1(coverage*100)}:{})
+  };
+}
+
 function wavSeconds(buffer) {
   if(!Buffer.isBuffer(buffer)||buffer.length<44)return 0;
   const rate=buffer.readUInt32LE(28);
@@ -85,7 +115,7 @@ function extractAssessment(json) {
   };
 }
 
-function aggregate(chunks) {
+function aggregate(chunks,{evidence}={}) {
   const usable=chunks.filter(item=>Number.isFinite(item?.fluency)||Number.isFinite(item?.accuracy));
   if(!usable.length) throw Error('Azure pronunciation assessment returned no usable delivery scores.');
   const weight=item=>item.weight>0?item.weight:1;
@@ -95,22 +125,33 @@ function aggregate(chunks) {
     const total=rows.reduce((sum,item)=>sum+weight(item),0);
     return round1(rows.reduce((sum,item)=>sum+item[key]*weight(item),0)/total);
   };
-  const accuracy=average('accuracy'),fluency=average('fluency'),prosody=average('prosody'),pronScore=average('pronScore');
+  const accuracy=average('accuracy'),fluency=average('fluency'),prosody=average('prosody'),completeness=average('completeness');
   const issues=[];
   for(const item of usable)for(const word of item.words||[]) {
     if(word.errorType!=='None'||(Number.isFinite(word.accuracy)&&word.accuracy<70))issues.push(word);
   }
   const weakest=[...new Map(issues.sort((a,b)=>(a.accuracy??101)-(b.accuracy??101)).map(item=>[item.word.toLowerCase(),item])).values()].slice(0,8);
-  const pronunciationRaw=Number.isFinite(pronScore)?pronScore:accuracy;
+  const pronunciationRaw=Number.isFinite(accuracy)
+    ? round1(Number.isFinite(prosody)?accuracy*0.8+prosody*0.2:accuracy)
+    : null;
+  const enough=evidence?.sufficient!==false;
+  const evidenceText=evidence&&!enough
+    ? (Number.isFinite(evidence.coverage)
+      ? 'Only '+evidence.matchedWords+' of '+evidence.referenceWords+' reference words were matched in '+evidence.durationSeconds+' seconds.'
+      : 'Only '+evidence.spokenWords+' words were available in '+evidence.durationSeconds+' seconds.')
+    : '';
   return {
     deliveryVersion:VERSION,
     pronunciation:{
-      score:band5(pronunciationRaw),maximum:5,raw:pronunciationRaw,
-      accuracy,prosody,words:weakest
+      score:enough?band5(pronunciationRaw):null,maximum:5,raw:pronunciationRaw,
+      accuracy,prosody,completeness,words:weakest
     },
-    fluency:{score:band5(fluency),maximum:5,raw:fluency},
-    deliveryStatus:'Audio assessed — PTE-style practice estimate',
-    deliveryAssessment:'Independent practice estimate from the saved recording; not Pearson scoring.',
+    fluency:{score:enough?band5(fluency):null,maximum:5,raw:fluency},
+    deliveryEvidence:evidence||null,
+    deliveryStatus:enough?'Audio assessed — PTE-style practice estimate':'Not enough speech for a reliable pronunciation or oral-fluency estimate. '+evidenceText,
+    deliveryAssessment:enough
+      ? 'Independent practice estimate from the saved recording; not Pearson scoring.'
+      : 'Delivery scores are withheld when the response is too short or too incomplete to support a reliable PTE-style estimate.',
     deliveryProvider:'azure-speech-pronunciation'
   };
 }
@@ -138,14 +179,15 @@ async function splitToWav(recording,{directory,ffmpeg='ffmpeg'}={}) {
   }
 }
 
-async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',request=fetch}={}) {
+async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',scripted=false,request=fetch}={}) {
   if(!apiKey||!endpoint)throw Error('Azure Speech pronunciation assessment is not configured.');
   const config={
     ReferenceText:String(reference||'').trim(),
     GradingSystem:'HundredMark',
     Granularity:'Word',
     Dimension:'Comprehensive',
-    EnableProsodyAssessment:'True'
+    EnableProsodyAssessment:'True',
+    ...(scripted?{EnableMiscue:true}:{})
   };
   if(!config.ReferenceText)throw Error('No spoken words were available for delivery assessment.');
   const url=endpoint+(endpoint.includes('?')?'&':'?')+'language='+encodeURIComponent(String(locale||'en-AU'))+'&format=detailed';
@@ -174,6 +216,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
 async function assessRecording(recording,{
   transcribe,
   transcript='',
+  question=null,
   apiKey=process.env.AZURE_SPEECH_KEY,
   endpoint=endpointFromEnv(),
   request=fetch,
@@ -183,11 +226,14 @@ async function assessRecording(recording,{
 }={}) {
   if(!recording?.data||!recording?.mime)throw Error('A saved recording is required for delivery assessment.');
   if(!apiKey||!endpoint)return null;
-  const chunks=await splitToWav(recording,{directory,ffmpeg}),confirmed=String(transcript||'').trim(),confirmedWords=confirmed.split(/\\s+/u).filter(Boolean);
-  const results=[];let fallbackCursor=0;
+  const chunks=await splitToWav(recording,{directory,ffmpeg}),confirmed=String(transcript||'').trim(),confirmedWords=tokens(confirmed);
+  const scriptedReference=['ra','rs'].includes(question?.type)?String(question?.text||'').trim():'';
+  const results=[];let fallbackCursor=0,totalSeconds=0;
   for(let i=0;i<chunks.length;i++){
-    const wav=chunks[i];let reference='';
-    if(chunks.length===1&&confirmed)reference=confirmed;
+    const wav=chunks[i];let reference='',scripted=false;
+    const seconds=wavSeconds(wav)||1;totalSeconds+=seconds;
+    if(chunks.length===1&&scriptedReference){reference=scriptedReference;scripted=true;}
+    else if(chunks.length===1&&confirmed)reference=confirmed;
     else if(typeof transcribe==='function'){
       try{reference=String(await transcribe({mime:WAV_MIME,data:wav.toString('base64')})).trim();}catch{}
     }
@@ -196,11 +242,11 @@ async function assessRecording(recording,{
       reference=confirmedWords.slice(fallbackCursor,fallbackCursor+take).join(' ');fallbackCursor+=take;
     }
     if(!reference)continue;
-    const assessed=await azureAssess(wav,reference,{apiKey,endpoint,locale,request});
-    assessed.weight=wavSeconds(wav)||1;
+    const assessed=await azureAssess(wav,reference,{apiKey,endpoint,locale,scripted,request});
+    assessed.weight=seconds;
     results.push(assessed);
   }
-  return aggregate(results);
+  return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds)});
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
+module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
