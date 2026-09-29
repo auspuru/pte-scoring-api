@@ -414,7 +414,7 @@ function installInterventions(app, options = {}) {
     if (swtContentIntent) {
       push('SWT-CONTENT-01','SWT Content Selection — Highlight Trainer',
         'Your question is about deciding what belongs in the summary, so practise selecting the important information before writing full summaries.',
-        'Use the passage trainer to find the main topic, important support and turning points. Avoid examples, repeated information and unnecessary detail.');
+        'Use the passage trainer to highlight the important words and phrases that carry the main topic, important support and turning points. Avoid examples, repeated information and unnecessary detail.');
     }
 
     if (task === 'speaking') {
