@@ -1,169 +1,208 @@
-/* Floating Personal AI Assistant teaser — exact user-selected mascot artwork. */
+/* Page-aware AI Assistant: Gemini-in-Chrome style side panel for the PTE portal. */
 .personal-ai-assistant{
   position:fixed;
   right:max(18px,env(safe-area-inset-right));
   bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));
-  z-index:180;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
+  z-index:220;
   pointer-events:none;
 }
 .personal-ai-assistant[hidden]{display:none!important}
-
 .personal-ai-launcher{
   position:relative;
-  width:166px;
-  height:152px;
+  width:104px;
+  height:98px;
   padding:0;
   border:0;
   background:transparent;
   cursor:pointer;
   pointer-events:auto;
-  transform-origin:56% 74%;
-  animation:personalAiFloat 4.2s ease-in-out infinite;
+  filter:drop-shadow(0 14px 22px rgba(23,59,99,.2));
+  transform-origin:70% 80%;
+  animation:personalAiFloat 4.1s ease-in-out infinite;
   -webkit-tap-highlight-color:transparent;
+}
+.personal-ai-launcher::before{
+  content:"";
+  position:absolute;
+  left:50%;top:49%;
+  width:70px;height:70px;
+  border-radius:50%;
+  border:1px solid rgba(107,185,238,.55);
+  box-shadow:0 0 22px rgba(45,108,165,.24);
+  transform:translate(-50%,-50%) scale(.84);
+  animation:personalAiOrbit 3.2s ease-in-out infinite;
+  pointer-events:none;
 }
 .personal-ai-mascot-art{
   position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
+  inset:-8px;
+  width:calc(100% + 16px);
+  height:calc(100% + 16px);
   display:block;
   object-fit:contain;
   pointer-events:none;
-  transform:translateZ(0);
-  filter:
-    saturate(1.03)
-    drop-shadow(0 13px 24px rgba(20,77,139,.22))
-    drop-shadow(0 0 13px rgba(0,204,255,.14));
-  transition:
-    transform .28s cubic-bezier(.22,1,.3,1),
-    filter .28s ease;
+  filter:saturate(1.04) contrast(1.02) drop-shadow(0 9px 18px rgba(23,59,99,.16));
+  transition:transform .25s cubic-bezier(.22,1,.3,1),filter .25s ease;
 }
-.personal-ai-launcher:hover .personal-ai-mascot-art{
-  transform:translateY(-3px) scale(1.035) rotate(-.6deg);
-  filter:
-    saturate(1.09)
-    brightness(1.035)
-    drop-shadow(0 16px 28px rgba(20,77,139,.26))
-    drop-shadow(0 0 19px rgba(0,210,255,.22));
+.personal-ai-launcher:hover .personal-ai-mascot-art{transform:scale(1.055) rotate(-1deg)}
+.personal-ai-launcher:active{animation:none;transform:scale(.94)}
+.personal-ai-launcher.is-waving .personal-ai-mascot-art{animation:personalAiHello .78s cubic-bezier(.18,1.3,.3,1)}
+.personal-ai-dot{
+  position:absolute;right:7px;top:9px;width:13px;height:13px;border-radius:50%;
+  background:#22c58b;border:2px solid #fff;box-shadow:0 0 0 4px rgba(34,197,139,.12),0 0 16px rgba(34,197,139,.44)
 }
-.personal-ai-launcher:active{
-  animation:none;
-  transform:scale(.94);
-}
-.personal-ai-launcher.is-waving .personal-ai-mascot-art{
-  animation:personalAiHello .82s cubic-bezier(.18,1.3,.3,1);
+.personal-ai-launcher::after{
+  content:"AI";
+  position:absolute;
+  right:4px;bottom:7px;
+  min-width:31px;height:24px;padding:0 8px;
+  display:grid;place-items:center;
+  border-radius:999px;
+  background:linear-gradient(135deg,#173B63,#2D6CA5);
+  color:#fff;
+  font:900 12px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.04em;
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 6px 14px rgba(23,59,99,.22);
 }
 .personal-ai-launcher:focus{outline:none}
-.personal-ai-launcher:focus-visible{
-  outline:3px solid rgba(45,108,165,.34);
-  outline-offset:4px;
-  border-radius:30px;
-}
+.personal-ai-launcher:focus-visible{outline:3px solid rgba(45,108,165,.34);outline-offset:4px;border-radius:30px}
 
 .personal-ai-panel{
-  width:min(310px,calc(100vw - 28px));
-  padding:15px 16px 14px;
-  border:1px solid rgba(255,255,255,.82);
+  position:fixed;
+  top:76px;
+  right:max(18px,env(safe-area-inset-right));
+  bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));
+  width:min(420px,calc(100vw - 28px));
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto auto;
+  overflow:hidden;
+  border:1px solid rgba(45,108,165,.18);
   border-radius:22px;
-  background:
-    linear-gradient(145deg,rgba(255,255,255,.86),rgba(245,250,255,.62)),
-    rgba(255,255,255,.62);
-  box-shadow:
-    0 22px 58px rgba(23,59,99,.18),
-    inset 0 1px 0 rgba(255,255,255,.98);
-  -webkit-backdrop-filter:blur(24px) saturate(185%);
-  backdrop-filter:blur(24px) saturate(185%);
+  background:rgba(250,252,255,.97);
+  box-shadow:0 28px 78px rgba(23,59,99,.24);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  backdrop-filter:blur(24px) saturate(160%);
   pointer-events:auto;
-  transform:translateY(10px) scale(.94);
-  transform-origin:100% 100%;
+  transform:translateX(calc(100% + 42px));
   opacity:0;
   visibility:hidden;
-  transition:
-    opacity .2s ease,
-    transform .28s cubic-bezier(.22,1.15,.3,1),
-    visibility .2s;
+  transition:transform .28s cubic-bezier(.22,1,.3,1),opacity .18s ease,visibility .18s;
 }
 .personal-ai-assistant.is-open .personal-ai-panel{
+  transform:translateX(0);
   opacity:1;
   visibility:visible;
-  transform:translateY(0) scale(1);
 }
+.personal-ai-assistant.is-open .personal-ai-launcher{opacity:0;pointer-events:none}
 .personal-ai-panel-head{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap:12px;
+  gap:14px;
+  padding:18px 18px 14px;
+  border-bottom:1px solid rgba(45,108,165,.12);
 }
-.personal-ai-panel h3{
-  margin:0;
-  color:#173B63;
-  font-size:15px;
-  letter-spacing:-.02em;
+.personal-ai-heading{display:grid;gap:4px;min-width:0}
+.personal-ai-kicker{color:#2D6CA5;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.personal-ai-heading strong{overflow:hidden;color:#173B63;font-size:17px;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.personal-ai-head-actions{display:flex;gap:7px}
+.personal-ai-icon-button{
+  width:34px;height:34px;border:1px solid rgba(23,59,99,.12);border-radius:11px;
+  background:#fff;color:#566476;font:700 20px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  cursor:pointer
 }
-.personal-ai-coming-soon{
-  margin:7px 0 0;
-  color:#C53030;
-  font-weight:850;
-  font-size:13px;
+.personal-ai-icon-button:hover{background:#f0f5fb;color:#173B63}
+.personal-ai-context-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 18px;
+  border-bottom:1px solid rgba(45,108,165,.10);
+  background:rgba(45,108,165,.035)
 }
-.personal-ai-close{
-  width:30px;
-  height:30px;
-  border:1px solid rgba(23,59,99,.10);
-  border-radius:10px;
-  background:rgba(255,255,255,.72);
-  color:#566476;
-  font-size:18px;
-  line-height:1;
-  cursor:pointer;
+.personal-ai-context-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  color:#34536f;font-size:12px;font-weight:750
 }
-
-@keyframes personalAiFloat{
-  0%,100%{transform:translate3d(0,0,0) rotate(-.45deg)}
-  50%{transform:translate3d(0,-8px,0) rotate(.45deg)}
+.personal-ai-context-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:#22c58b;box-shadow:0 0 0 3px rgba(34,197,139,.12)}
+.personal-ai-context-badge.is-off::before{background:#8a98a8;box-shadow:none}
+.personal-ai-share{display:flex;align-items:center;gap:6px;color:#637385;font-size:12px;white-space:nowrap}
+.personal-ai-share input{accent-color:#2D6CA5}
+.personal-ai-messages{
+  min-height:0;
+  overflow:auto;
+  padding:18px;
+  scroll-behavior:smooth;
 }
-@keyframes personalAiHello{
-  0%{transform:scale(1) rotate(0)}
-  30%{transform:scale(1.055) rotate(-2.6deg)}
-  62%{transform:scale(1.035) rotate(2deg)}
-  100%{transform:scale(1) rotate(0)}
+.personal-ai-welcome{
+  display:flex;gap:12px;padding:14px;border:1px solid rgba(45,108,165,.13);border-radius:16px;
+  background:linear-gradient(135deg,rgba(45,108,165,.06),rgba(45,108,165,.025))
 }
-
-body.dark .personal-ai-panel,
-.dark .personal-ai-panel{
-  border-color:rgba(255,255,255,.14);
-  background:
-    linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035)),
-    rgba(19,30,42,.86);
-  box-shadow:0 24px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.12);
+.personal-ai-spark{
+  display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:10px;
+  background:#e8f2fb;color:#1d5d91;font-size:16px;font-weight:800
 }
-body.dark .personal-ai-panel h3,
-.dark .personal-ai-panel h3{color:#eaf4ff}
-
-@media(max-width:600px){
-  .personal-ai-assistant{
-    right:max(8px,env(safe-area-inset-right));
-    bottom:max(10px,calc(env(safe-area-inset-bottom) + 6px));
-  }
-  .personal-ai-launcher{
-    width:126px;
-    height:115px;
-  }
-  .personal-ai-panel{
-    width:min(285px,calc(100vw - 20px));
-  }
+.personal-ai-welcome strong{color:#173B63;font-size:14px}
+.personal-ai-welcome p{margin:4px 0 0;color:#607083;font-size:13px;line-height:1.5}
+.personal-ai-quick{display:grid;gap:7px;margin-top:12px}
+.personal-ai-quick button{
+  width:100%;padding:10px 11px;border:1px solid rgba(45,108,165,.13);border-radius:12px;
+  background:#fff;color:#334e68;text-align:left;font:600 13px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  cursor:pointer
+}
+.personal-ai-quick button:hover{border-color:rgba(45,108,165,.3);background:#f7fbff}
+.personal-ai-message{display:grid;gap:5px;margin-bottom:15px}
+.personal-ai-message>span{color:#748397;font-size:12px;font-weight:750}
+.personal-ai-message>div{
+  max-width:94%;padding:12px 13px;border:1px solid rgba(45,108,165,.12);border-radius:15px 15px 15px 5px;
+  background:#f3f7fb;color:#25384a
+}
+.personal-ai-message.user{justify-items:end}
+.personal-ai-message.user>span{text-align:right}
+.personal-ai-message.user>div{border-radius:15px 15px 5px 15px;background:#e7f1fa}
+.personal-ai-message p{margin:0 0 8px;font-size:13px;line-height:1.58}
+.personal-ai-message p:last-child{margin-bottom:0}
+.personal-ai-message ul{margin:7px 0;padding-left:19px}
+.personal-ai-message li{margin:5px 0;font-size:13px;line-height:1.5}
+.personal-ai-composer{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;
+  padding:12px 14px;border-top:1px solid rgba(45,108,165,.12);background:#fff
+}
+.personal-ai-composer textarea{
+  width:100%;min-height:50px;max-height:130px;resize:vertical;padding:10px 11px;
+  border:1px solid rgba(45,108,165,.18);border-radius:13px;background:#fff;color:#243b53;
+  font:400 13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+.personal-ai-composer textarea:focus{outline:3px solid rgba(45,108,165,.11);border-color:rgba(45,108,165,.44)}
+.personal-ai-composer button{
+  min-width:70px;height:44px;border:0;border-radius:12px;background:#24669e;color:#fff;
+  font:750 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer
+}
+.personal-ai-composer button:disabled{opacity:.58;cursor:wait}
+.personal-ai-footnote{margin:0;padding:0 16px 13px;color:#7a8796;font-size:12px;line-height:1.4;background:#fff}
+body.dark .personal-ai-panel,.dark .personal-ai-panel{background:rgba(18,28,40,.97);border-color:rgba(255,255,255,.12)}
+body.dark .personal-ai-panel-head,.dark .personal-ai-panel-head,
+body.dark .personal-ai-context-row,.dark .personal-ai-context-row,
+body.dark .personal-ai-composer,.dark .personal-ai-composer,
+body.dark .personal-ai-footnote,.dark .personal-ai-footnote{background:rgba(18,28,40,.96);border-color:rgba(255,255,255,.10)}
+body.dark .personal-ai-heading strong,.dark .personal-ai-heading strong,
+body.dark .personal-ai-welcome strong,.dark .personal-ai-welcome strong{color:#edf6ff}
+body.dark .personal-ai-message>div,.dark .personal-ai-message>div,
+body.dark .personal-ai-welcome,.dark .personal-ai-welcome,
+body.dark .personal-ai-quick button,.dark .personal-ai-quick button,
+body.dark .personal-ai-composer textarea,.dark .personal-ai-composer textarea{background:#172638;color:#eaf2f9;border-color:rgba(255,255,255,.10)}
+body.dark .personal-ai-message.user>div,.dark .personal-ai-message.user>div{background:#203b55}
+@keyframes personalAiFloat{0%,100%{transform:translate3d(0,0,0) rotate(-.7deg)}50%{transform:translate3d(0,-7px,0) rotate(.7deg)}}
+@keyframes personalAiOrbit{0%,100%{opacity:.38;transform:translate(-50%,-50%) scale(.78)}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.08)}}
+@keyframes personalAiHello{0%{transform:scale(1) rotate(0)}35%{transform:scale(1.08) rotate(-4deg)}70%{transform:scale(1.04) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+@media(max-width:640px){
+  .personal-ai-assistant{right:max(10px,env(safe-area-inset-right));bottom:max(12px,calc(env(safe-area-inset-bottom) + 8px))}
+  .personal-ai-launcher{width:92px;height:86px}
+  .personal-ai-panel{top:10px;right:10px;bottom:10px;width:calc(100vw - 20px);border-radius:18px}
+  .personal-ai-context-row{align-items:flex-start;flex-direction:column}
+  .personal-ai-composer{grid-template-columns:minmax(0,1fr)}
+  .personal-ai-composer button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){
-  .personal-ai-launcher,
-  .personal-ai-launcher.is-waving .personal-ai-mascot-art{
-    animation:none!important;
-  }
-  .personal-ai-panel,
-  .personal-ai-mascot-art{
-    transition-duration:.01ms!important;
-  }
+  .personal-ai-launcher,.personal-ai-launcher::before,.personal-ai-launcher.is-waving .personal-ai-mascot-art{animation:none!important}
+  .personal-ai-panel,.personal-ai-mascot-art{transition-duration:.01ms!important}
 }
