@@ -297,3 +297,40 @@ test('IPT Assistant Beta keeps scripted recommendations when Claude coaching is 
   assert.equal(advice.data.coachReply,'');
   assert(advice.data.suggestions.some(x=>x.moduleCode==='REG-01'));
 });
+
+
+test('page-aware AI Assistant sends visible screen context to the coach',async t=>{
+  let promptSeen='';
+  const h=await harness({callCoachModel:async prompt=>{promptSeen=prompt;return 'Your response misses the main idea shown on this screen.';}});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const result=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'swt',
+    message:'Give me feedback on this.',
+    screenContext:'PAGE TITLE: Summarize Written Text\nVISIBLE STUDENT INPUTS:\nSummary: Solar panels are expensive.\nVISIBLE PAGE TEXT:\nThe passage explains falling solar costs and wider adoption.',
+    history:[]
+  }});
+  assert.equal(result.status,200);
+  assert.match(result.data.reply,/misses the main idea/i);
+  assert.equal(result.data.task,'swt');
+  assert.match(promptSeen,/CURRENT SCREEN CONTEXT:/);
+  assert.match(promptSeen,/Solar panels are expensive/);
+  assert.match(promptSeen,/falling solar costs/i);
+  assert.match(promptSeen,/Give me feedback on this/);
+});
+
+test('page-aware AI Assistant supports general portal screens without inventing a task',async t=>{
+  const h=await harness({callCoachModel:async prompt=>{
+    assert.match(prompt,/TASK: Current PTE screen/);
+    assert.match(prompt,/PAGE TITLE: Reading Practice/);
+    return 'Focus on the visible question first.';
+  }});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const result=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'portal',
+    message:'What should I focus on?',
+    screenContext:'PAGE TITLE: Reading Practice\nVISIBLE PAGE TEXT:\nChoose the best word for the blank.'
+  }});
+  assert.equal(result.status,200);
+  assert.equal(result.data.task,'portal');
+  assert.match(result.data.reply,/visible question/i);
+});
