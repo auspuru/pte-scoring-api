@@ -19,6 +19,7 @@ async function harness(options={}){
     getProgress:options.getProgress,
     getPassages:options.getPassages,
     getPassage:options.getPassage,
+    callCoachModel:options.callCoachModel,
     requireAdmin:(req,res,next)=>req.headers['x-admin-key']==='teacher'?next():res.status(403).json({error:'Invalid admin key'})
   });
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
@@ -263,4 +264,36 @@ test('General Speaking Beta plan contains the ordered pronunciation and fluency 
   assert.match(videos[3].url,/xzHFc7DWwHM/);
   assert(plan.items.some(x=>/Daily speaking routine/i.test(x.title)));
   assert(plan.items.some(x=>/Natural English/i.test(x.title)));
+});
+
+
+test('Self-help Beta returns Claude IPT coaching alongside scripted plan suggestions',async t=>{
+  let promptSeen='';
+  const h=await harness({callCoachModel:async prompt=>{promptSeen=prompt;return 'Your main issue is speaker tracking. Keep separate S1, S2 and S3 notes, then report each speaker in third person.';}});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{
+    task:'sgd',
+    problem:'I keep mixing speaker one and speaker two.',
+    history:[{role:'user',text:'I also stop taking notes.'},{role:'assistant',text:'Keep listening and capture keywords first.'}]
+  }});
+  assert.equal(advice.status,200);
+  assert.equal(advice.data.coachSource,'claude');
+  assert.match(advice.data.coachReply,/speaker tracking/i);
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='NT-03'));
+  assert.match(promptSeen,/Use third person/i);
+  assert.match(promptSeen,/Keep speaker ideas separate/i);
+  assert.match(promptSeen,/I also stop taking notes/i);
+  assert.match(promptSeen,/I keep mixing speaker one and speaker two/i);
+});
+
+test('Self-help Beta keeps scripted recommendations when Claude coaching is unavailable',async t=>{
+  const h=await harness({callCoachModel:async()=>{throw Error('provider unavailable');}});
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const advice=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{
+    task:'rts',problem:'I do not know how to start talking to my manager.'
+  }});
+  assert.equal(advice.status,200);
+  assert.equal(advice.data.coachSource,'scripted');
+  assert.equal(advice.data.coachReply,'');
+  assert(advice.data.suggestions.some(x=>x.moduleCode==='REG-01'));
 });
