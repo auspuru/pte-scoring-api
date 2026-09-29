@@ -116,7 +116,7 @@ function create({document:doc,identity,loadLocal,navigate,review,fetch:get=fetch
   '<section class="progress-section"><h3>Recent activity</h3>'+(m.recent.length?'<div class="progress-activity">'+m.recent.map(a=>'<div><div><h4>'+esc(a.title)+'</h4><span class="progress-caption">'+date(a.at)+(a.result?' · '+esc(a.result):'')+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">Open</button></div>').join('')+'</div>':'<div class="progress-empty"><p>Your recent practice will appear here.</p></div>')+'</section>'+
   '<section class="progress-section"><h3>Practice activity</h3><div class="progress-activity">'+m.groups.map(g=>'<div><div><h4>'+esc(g.name)+'</h4><span class="progress-caption">'+g.count+' saved attempt'+(g.count===1?'':'s')+(g.count?' · Latest '+date(Math.max(...g.dates.map(stamp))):'')+'</span></div><button class="portal-button" data-progress-route="'+g.route+'">'+(g.count?'Open practice':'Start practice')+'</button></div>').join('')+'</div></section>';
   doc.getElementById('progressFilter').value=filter;
-  doc.getElementById('progressFilter').onchange=e=>{filter=e.target.value;paint(local,writing,error);};
+  doc.getElementById('progressFilter').onchange=e=>{filter=e.target.value;paint(local,writing,speaking,error);};
  }
  async function open(){
   const ticket=++serial,owner=identity();if(!owner.uid||!owner.token)return;
