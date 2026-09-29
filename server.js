@@ -14,6 +14,7 @@ const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { studentPassage } = require('./swt-reference');
+const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
 const { createEssayGenerationReviewer } = require('./essay-generation-review');
@@ -1264,6 +1265,65 @@ async function seedAdvancedSwtPassages() {
     await client.query('ROLLBACK');
     throw error;
   } finally { client.release(); }
+}
+
+
+function bundledSwtSampleReferences() {
+  return [
+    ...require('./passages.json'),
+    ...require('./content/swt-advanced.json'),
+    ...require('./content/swt-advanced-revisions.json')
+  ];
+}
+
+// Restore samples that are missing from persisted canonical SWT passages.
+// A passage is eligible only when its title + full source text still match a
+// bundled reference exactly, so teacher-edited content is never paired with an
+// unrelated model answer. Existing non-empty samples are always preserved.
+async function restoreMissingSwtSamples() {
+  const current = await PassageAPI.readAll();
+  const { passages: repaired, updates } = repairMissingSwtSamples(current, bundledSwtSampleReferences());
+  if (!updates.length) return 0;
+
+  if (!USE_POSTGRES) {
+    await PassageAPI.writeAll(repaired);
+    return updates.length;
+  }
+
+  const client = await pgPool.connect();
+  let changed = 0;
+  try {
+    await client.query('BEGIN');
+    for (const update of updates) {
+      const result = await client.query(
+        `UPDATE passages
+            SET payload = payload || $1::jsonb, updated_at = NOW()
+          WHERE id = $2
+            AND payload->>'title' = $3
+            AND payload->>'text' = $4
+            AND BTRIM(COALESCE(payload->>'sampleResponse', '')) = ''`,
+        [
+          JSON.stringify({ sampleResponse: update.sampleResponse, sampleNotes: update.sampleNotes }),
+          update.id,
+          update.title,
+          update.text
+        ]
+      );
+      changed += result.rowCount || 0;
+    }
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  if (changed) {
+    PgPassageAPI._cache = null;
+    PgPassageAPI._cacheLoaded = false;
+  }
+  return changed;
 }
 
 
@@ -6122,6 +6182,11 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   try { await reviseSwtSamples(); } catch (e) { console.error('SWT sample revisions failed:', e.message); }
 
   try { await reviseAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT revisions failed:', e.message); }
+
+  try {
+    const restored = await restoreMissingSwtSamples();
+    if (restored) console.log(`Restored ${restored} missing SWT sample answer${restored === 1 ? '' : 's'}.`);
+  } catch (e) { console.error('SWT sample backfill failed:', e.message); }
 
   // Boot diagnostic — relevant whether or not Postgres is active.
   await captureBootSnapshot();
