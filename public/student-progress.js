@@ -13,30 +13,33 @@ function ratio(total,maximum){
  const t=numeric(total),m=numeric(maximum);
  return Number.isFinite(t)&&Number.isFinite(m)&&m>0?Math.max(0,Math.min(1,t/m)):null;
 }
-function scoredSeries(rows,score,when){
- return rows.map(row=>({value:score(row),at:stamp(when(row))}))
+function scoredPoints(rows,score,when,source='practice'){
+ return rows.map(row=>({value:score(row),at:stamp(when(row)),source}))
   .filter(item=>Number.isFinite(item.value))
-  .sort((a,b)=>a.at-b.at)
-  .map(item=>item.value);
+  .sort((a,b)=>a.at-b.at);
 }
-function trend(values){
- if(values.length<2)return null;
- const delta=(values.at(-1)-values[0])*100;
+const mergePoints=(...groups)=>groups.flat().filter(item=>Number.isFinite(item?.value)).sort((a,b)=>a.at-b.at);
+const values=points=>points.map(item=>item.value);
+function trend(series){
+ if(series.length<2)return null;
+ const delta=(series.at(-1)-series[0])*100;
  if(Math.abs(delta)<2)return {label:'Stable',delta:0};
  return {label:delta>0?'Improving':'Needs attention',delta:Math.round(delta)};
 }
 function model(data,writing,speaking=[]){
  const reading=readingRows(data.reading),swt=Object.values(data.swt||{}).flat().filter(Boolean),essays=data.essays||[];
  const submittedSpeaking=(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted'&&a.result);
+ const writingMocks=writing.filter(a=>a.kind==='mock');
  const mocks=[
   ...reading.filter(a=>!a.practiceUid).map(a=>({id:a.id,engine:'reading',title:a.name||'Reading mock',at:a.startedAt,done:!!a.done,pending:!!a.pending,
     score:a.done&&!a.pending&&Number.isFinite(a.percent)?Math.round(a.percent):null,unit:'%',detail:'Accuracy',estimate90:null,nativeTotal:null,nativeMaximum:null})),
-  ...writing.filter(a=>a.kind==='mock').map(a=>({id:a.id,engine:'writing',title:a.title,at:a.startedAt,done:a.status==='submitted',pending:a.status==='submitted'&&a.total==null,
+  ...writingMocks.map(a=>({id:a.id,engine:'writing',title:a.title,at:a.startedAt,done:a.status==='submitted',pending:a.status==='submitted'&&a.total==null,
     score:Number.isFinite(a.total)?a.total:null,unit:Number.isFinite(a.maximum)?'/'+a.maximum:'',detail:'Native practice marks',estimate90:Number.isFinite(a.score90)?a.score90:null,
     nativeTotal:a.total,nativeMaximum:a.maximum}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
 
  const practiceReading=reading.filter(a=>a.practiceUid&&a.done);
+ const completedReading=reading.filter(a=>a.done);
  const readingMeta={
   dropdown:{name:'Reading Blanks (Dropdown)',route:'reading-dropdown'},
   mcma:{name:'Reading Multiple Answers',route:'reading-mcma'},
@@ -51,31 +54,45 @@ function model(data,writing,speaking=[]){
   di:{name:'Describe Image',route:'speaking-di'},rl:{name:'Retell Lecture',route:'speaking-rl'},
   sgd:{name:'Summarise Group Discussion',route:'speaking-sgd'},rts:{name:'Respond to a Situation',route:'speaking-rts'}
  };
- const swtScores=scoredSeries(swt,a=>{
+ const readingTaskPoints=type=>completedReading.flatMap(a=>{
+  const row=Array.isArray(a.rows)?a.rows.find(r=>r?.type===type):null;
+  let value=null;
+  if(row && !row.pending) value=ratio(row.earned,row.gradedPossible??row.possible);
+  else if(!row && a.practiceUid && a.questions?.[0]?.type===type) value=ratio(a.earned??a.total,a.possible??a.maximum);
+  return Number.isFinite(value)?[{value,at:stamp(a.finishedAt||a.startedAt),source:a.practiceUid?'practice':'mock'}]:[];
+ }).sort((a,b)=>a.at-b.at);
+ const writingMockPoints=type=>writingMocks.flatMap(a=>{
+  if(a.status!=='submitted')return [];
+  const group=Array.isArray(a.byType)?a.byType.find(g=>g?.type===type):null;
+  if(!group || group.marked!==group.count)return [];
+  const value=ratio(group.total,group.maximum);
+  return Number.isFinite(value)?[{value,at:stamp(a.startedAt),source:'mock'}]:[];
+ }).sort((a,b)=>a.at-b.at);
+ const swtPracticePoints=scoredPoints(swt,a=>{
   const traits=a?.trait_scores||{},parts=['content','form','grammar','vocabulary'].map(k=>numeric(traits[k]));
   return parts.every(x=>Number.isFinite(x))?ratio(parts.reduce((n,x)=>n+x,0),9):ratio(a?.overall_score,90);
  },a=>a.timestamp);
- const essayScores=scoredSeries(essays,a=>ratio(a?.scores?.total,26),a=>a.date||a.updatedAt);
+ const essayPracticePoints=scoredPoints(essays,a=>ratio(a?.scores?.total,26),a=>a.date||a.updatedAt);
  const sstRows=writing.filter(a=>a.kind==='sst'&&a.status==='submitted'),wfdRows=writing.filter(a=>a.kind==='wfd'&&a.status==='submitted');
- const sstScores=scoredSeries(sstRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
- const wfdScores=scoredSeries(wfdRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
- const readingAreas=Object.entries(readingMeta).map(([type,meta])=>{
-  const rows=practiceReading.filter(a=>a.questions?.[0]?.type===type);
-  return {...meta,scores:scoredSeries(rows,a=>ratio(a.earned??a.total,a.possible??a.maximum),a=>a.finishedAt||a.startedAt),latest:rows.map(a=>a.finishedAt||a.startedAt)};
- });
+ const sstPracticePoints=scoredPoints(sstRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
+ const wfdPracticePoints=scoredPoints(wfdRows,a=>ratio(a.total,a.maximum),a=>a.startedAt);
  const speakingAreas=Object.entries(speakingMeta).map(([type,meta])=>{
   const rows=submittedSpeaking.filter(a=>a.type===type);
-  return {...meta,scores:scoredSeries(rows,a=>ratio(a.result?.total,a.result?.maximum),a=>a.startedAt),latest:rows.map(a=>a.startedAt)};
+  return {...meta,points:scoredPoints(rows,a=>ratio(a.result?.total,a.result?.maximum),a=>a.startedAt),latest:rows.map(a=>a.startedAt)};
  });
-
+ const readingAreas=Object.entries(readingMeta).map(([type,meta])=>({...meta,points:readingTaskPoints(type),
+  latest:completedReading.filter(a=>Array.isArray(a.rows)?a.rows.some(r=>r?.type===type):a.practiceUid&&a.questions?.[0]?.type===type).map(a=>a.finishedAt||a.startedAt)}));
  const areas=[
-  {name:'Summarise Written Text',route:'swt',scores:swtScores,latest:swt.map(a=>a.timestamp)},
-  {name:'Write Essay',route:'practice',scores:essayScores,latest:essays.map(a=>a.date||a.updatedAt)},
+  {name:'Summarise Written Text',route:'swt',points:mergePoints(swtPracticePoints,readingTaskPoints('swt'),writingMockPoints('swt')),latest:swt.map(a=>a.timestamp)},
+  {name:'Write Essay',route:'practice',points:mergePoints(essayPracticePoints,writingMockPoints('essay')),latest:essays.map(a=>a.date||a.updatedAt)},
   ...readingAreas,
   ...speakingAreas,
-  {name:'Summarise Spoken Text',route:'spoken-text',scores:sstScores,latest:sstRows.map(a=>a.startedAt)},
-  {name:'Write From Dictation',route:'dictation',scores:wfdScores,latest:wfdRows.map(a=>a.startedAt)}
- ].map(a=>({...a,count:a.scores.length,average:avg(a.scores),trend:trend(a.scores.slice(-5))}));
+  {name:'Summarise Spoken Text',route:'spoken-text',points:mergePoints(sstPracticePoints,writingMockPoints('sst')),latest:sstRows.map(a=>a.startedAt)},
+  {name:'Write From Dictation',route:'dictation',points:mergePoints(wfdPracticePoints,writingMockPoints('wfd')),latest:wfdRows.map(a=>a.startedAt)}
+ ].map(a=>{
+  const scores=values(a.points),practiceCount=a.points.filter(p=>p.source==='practice').length,mockCount=a.points.filter(p=>p.source==='mock').length;
+  return {...a,scores,count:scores.length,practiceCount,mockCount,average:avg(scores),trend:trend(scores.slice(-5))};
+ });
  const weakest=areas.filter(a=>a.count>=2&&Number.isFinite(a.average)).sort((a,b)=>a.average-b.average)[0]||null;
 
  const groups=[
@@ -104,13 +121,13 @@ function create({document:doc,identity,loadLocal,navigate,review,fetch:get=fetch
   const m=model(local,writing,speaking);current=m;
   const list=m.mocks.filter(a=>filter==='all'||a.engine===filter);
   const focus=m.weakest
-   ? '<section class="progress-focus"><div><span class="progress-caption">Suggested focus</span><h3>'+esc(m.weakest.name)+'</h3><p>Based on '+m.weakest.count+' saved standalone-practice results. Average comparison: '+Math.round(m.weakest.average*100)+'% of available task marks.</p></div><button class="portal-button primary" data-progress-route="'+m.weakest.route+'">Practise this</button></section>'
+   ? '<section class="progress-focus"><div><span class="progress-caption">Suggested focus</span><h3>'+esc(m.weakest.name)+'</h3><p>Based on '+m.weakest.count+' saved scored results from practice and mocks. Average comparison: '+Math.round(m.weakest.average*100)+'% of available task marks.</p></div><button class="portal-button primary" data-progress-route="'+m.weakest.route+'">Practise this</button></section>'
    : '<section class="progress-focus"><div><span class="progress-caption">Suggested focus</span><h3>Build a reliable baseline</h3><p>Complete at least two scored attempts in a task type before a weakest area is suggested.</p></div><button class="portal-button primary" data-progress-route="practice-hub">Start practice</button></section>';
   host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your saved activity, recent trend and next useful action.</p></div><button class="portal-button" data-progress-refresh>Refresh</button></div>'+
   (error?'<p class="progress-notice" role="alert">'+esc(error)+' <button class="portal-button" data-progress-refresh>Retry</button></p>':'')+
   '<div class="progress-stats">'+[['Practice attempts',m.practice],['Completed mocks',m.complete],['Mocks in progress',m.active],['Study days',m.days]].map(([label,n])=>'<div><strong>'+n+'</strong><span>'+label+'</span></div>').join('')+'</div>'+
-  '<p class="progress-caption">Based on saved activity'+(error?' currently available':'')+'. Task trends use standalone practice results; mock tests are listed separately below. Cross-task percentages are comparison aids only.</p>'+focus+
-  '<section class="progress-section"><h3>Task trends</h3><div class="progress-activity">'+m.areas.map(a=>'<div><div><h4>'+esc(a.name)+'</h4><span class="progress-caption">'+(a.count?a.count+' scored attempt'+(a.count===1?'':'s')+' · '+(a.trend?(a.trend.label+(a.trend.delta? ' '+(a.trend.delta>0?'+':'')+a.trend.delta+' pp':'')):'Need another result for a trend'):'No standalone scored practice results yet')+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">'+(a.count?'Practise again':'Start practice')+'</button></div>').join('')+'</div></section>'+
+  '<p class="progress-caption">Based on saved activity'+(error?' currently available':'')+'. Task trends combine normal practice with matching per-task mock results; mock tests are also listed separately below. Cross-task percentages are comparison aids only.</p>'+focus+
+  '<section class="progress-section"><h3>Task trends</h3><div class="progress-activity">'+m.areas.map(a=>'<div><div><h4>'+esc(a.name)+'</h4><span class="progress-caption">'+(a.count?a.count+' scored result'+(a.count===1?'':'s')+' · '+a.practiceCount+' practice'+(a.mockCount?' + '+a.mockCount+' mock':'')+' · '+(a.trend?(a.trend.label+(a.trend.delta? ' '+(a.trend.delta>0?'+':'')+a.trend.delta+' pp':'')):'Need another result for a trend'):'No scored practice or mock results yet')+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">'+(a.count?'Practise again':'Start practice')+'</button></div>').join('')+'</div></section>'+
   '<section class="progress-section"><div class="progress-heading"><div><h3>Mock-test results</h3><p>Native marks are shown first; /90 values are secondary practice estimates.</p></div><label>Module<select id="progressFilter"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label></div>'+
   (list.length?'<div class="progress-results">'+list.map(a=>'<article class="progress-result"><div><span class="progress-caption">'+esc(a.engine==='reading'?'Reading':'Writing')+' · '+date(a.at)+'</span><h4>'+esc(a.title)+'</h4><span class="progress-caption">'+(!a.done?'In progress':a.pending?'Assessment pending':'Completed')+'</span></div><div class="progress-result-score"><strong>'+(!a.done||a.pending||!Number.isFinite(a.score)?'—':Math.round(a.score)+'<small>'+a.unit+'</small>')+'</strong><span class="progress-caption">'+esc(a.detail)+(Number.isFinite(a.estimate90)?' · '+a.estimate90+'/90 estimate':'')+'</span></div><button class="portal-button" data-progress-review="'+m.mocks.indexOf(a)+'">'+(a.done?'Review result':'Continue')+'</button></article>').join('')+'</div>':'<div class="progress-empty"><p>No '+(filter==='all'?'':filter+' ')+'mock tests saved yet.</p><button class="portal-button primary" data-progress-route="mock-tests">Browse mock tests</button></div>')+'</section>'+
   '<section class="progress-section"><h3>Recent activity</h3>'+(m.recent.length?'<div class="progress-activity">'+m.recent.map(a=>'<div><div><h4>'+esc(a.title)+'</h4><span class="progress-caption">'+date(a.at)+(a.result?' · '+esc(a.result):'')+'</span></div><button class="portal-button" data-progress-route="'+a.route+'">Open</button></div>').join('')+'</div>':'<div class="progress-empty"><p>Your recent practice will appear here.</p></div>')+'</section>'+

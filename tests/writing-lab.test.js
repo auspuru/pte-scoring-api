@@ -319,6 +319,8 @@ test('Seven-question API saves separate playback and returns scores and history 
   assert.equal(finished.report.byType.find(g=>g.type==='wfd').score90,90);
   assert.equal(history[0].score90,finished.report.score90);
   assert.equal(history[0].maximum,finished.report.maximum);
+  assert.deepEqual(history[0].byType.map(g=>g.type),['swt','essay','sst','wfd']);
+  assert.equal(history[0].byType.find(g=>g.type==='wfd').total,finished.report.byType.find(g=>g.type==='wfd').total);
   assert.equal((await createStore(null,dir).list('tester'))[0].results[6].total,report.maximumFor(bank.mocks[0].questions[6]));
   // Existing snapshots are never extended by the new catalogue.
   const oldId=randomUUID();
