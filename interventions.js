@@ -873,7 +873,7 @@ function installInterventions(app, options = {}) {
   async function callValidatedCoach(task, prompt) {
     let result=await callCoachModel(prompt);
     let text=clean(result&&typeof result==='object'?result.text:result,6000);
-    let source=clean(result&&typeof result==='object'?result.source:'ai',40)||'ai';
+    let source=clean(result&&typeof result==='object'?result.source:'claude',40)||'claude';
     if(invalidCoachReply(task,text)) {
       const correction=[
         prompt,
@@ -885,7 +885,7 @@ function installInterventions(app, options = {}) {
       ].join('\n');
       result=await callCoachModel(correction);
       text=clean(result&&typeof result==='object'?result.text:result,6000);
-      source=clean(result&&typeof result==='object'?result.source:'ai',40)||'ai';
+      source=clean(result&&typeof result==='object'?result.source:'claude',40)||'claude';
     }
     if(invalidCoachReply(task,text)) {
       text='For Summarize Spoken Text, focus on the listening and the written summary: identify the main topic, capture the strongest supporting ideas, then type a connected 50–70 word summary. I do not have reliable task-specific scored evidence to justify speaking or delivery feedback here.';
