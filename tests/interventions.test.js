@@ -433,3 +433,36 @@ test('AI profile skips unattempted and ultra-low outlier questions from coaching
   assert.doesNotMatch(promptSeen,/"percent":0/);
   assert.doesNotMatch(promptSeen,/"percent":5/);
 });
+
+
+test('AI coach regenerates trait-first weakness claims when overall performance is strong',async t=>{
+  let calls=0, correctionPrompt='';
+  const now=Date.now();
+  const attempts=Array.from({length:24},(_,i)=>({
+    timestamp:new Date(now-(24-i)*60000).toISOString(),
+    trait_scores:{content:4,form:1,grammar:i===23?1:1.2,vocabulary:2}
+  }));
+  const h=await harness({
+    getProgress:async()=>({history:{1:attempts}}),
+    callCoachModel:async prompt=>{
+      calls++;
+      if(calls===1) return 'Grammar weakness is the main issue in this task. You only have limited data, so do more attempts.';
+      correctionPrompt=prompt;
+      return 'Your overall performance is strong across 24 usable attempts. Grammar is comparatively lower, so treat it as a relative improvement area rather than the main reason your marks are slipping.';
+    }
+  });
+  t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+  const response=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{
+    task:'swt',
+    message:'Where am I losing scores?',
+    screenContext:'Current portal page: Summarize Written Text'
+  }});
+  assert.equal(response.status,200);
+  assert.equal(calls,2);
+  assert.match(correctionPrompt,/CRITICAL COACHING CORRECTION/);
+  assert.match(correctionPrompt,/24 usable attempts/);
+  assert.match(correctionPrompt,/performanceBand=strong/);
+  assert.match(response.data.reply,/overall performance is strong/i);
+  assert.match(response.data.reply,/relative improvement area/i);
+  assert.doesNotMatch(response.data.reply,/limited data|main issue/i);
+});

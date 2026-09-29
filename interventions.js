@@ -551,11 +551,17 @@ function installInterventions(app, options = {}) {
       const values=list.map(x=>x.value), recent=values.slice(-5);
       const avg=values.reduce((n,v)=>n+v,0)/values.length;
       const delta=recent.length>1?recent.at(-1)-recent[0]:null;
+      const averagePct=Math.round(avg*100),latestPct=Math.round(values.at(-1)*100);
+      const recentPcts=recent.map(v=>Math.round(v*100));
       return {
         task,label:PROFILE_LABEL[task]||task,attempts:list.length,
         practiceAttempts:list.filter(x=>x.source==='practice').length,
         mockAttempts:list.filter(x=>x.source==='mock').length,
-        averagePct:Math.round(avg*100),latestPct:Math.round(values.at(-1)*100),
+        averagePct,latestPct,
+        recentLowPct:recentPcts.length?Math.min(...recentPcts):null,
+        recentHighPct:recentPcts.length?Math.max(...recentPcts):null,
+        performanceBand:averagePct>=75?'strong':averagePct>=50?'developing':'weak',
+        evidenceStrength:list.length>=5?'high':list.length>=2?'moderate':'limited',
         trend:delta===null?'not enough data':Math.abs(delta)<.02?'stable':delta>0?'improving':'declining',
         trendPct:delta===null?null:Math.round(delta*100),
         lastAt:list.at(-1)?.at||0
@@ -565,11 +571,26 @@ function installInterventions(app, options = {}) {
     const recurring=areas.filter(a=>a.attempts>=2);
     const weakest=recurring.slice().sort((a,b)=>a.averagePct-b.averagePct).slice(0,3);
     const strongest=recurring.slice().sort((a,b)=>b.averagePct-a.averagePct).slice(0,3);
+    const areaByTask=new Map(areas.map(a=>[a.task,a]));
     const traits=[...traitValues.entries()].map(([id,list])=>{
       list.sort((a,b)=>a.at-b.at);
       const [task,key]=id.split(':');
       const recent=list.slice(-5),avg=recent.reduce((n,x)=>n+x.ratio,0)/recent.length;
-      return {task:PROFILE_LABEL[task]||task,trait:TRAIT_LABEL[key]||key,attempts:list.length,averagePct:Math.round(avg*100),latestPct:Math.round(list.at(-1).ratio*100)};
+      const averagePct=Math.round(avg*100),latestPct=Math.round(list.at(-1).ratio*100);
+      const area=areaByTask.get(task)||null;
+      const gapFromOverallPct=area?averagePct-area.averagePct:null;
+      let interpretation='monitor';
+      if(area?.performanceBand==='strong') interpretation='relative_improvement_area';
+      else if(area && averagePct<=area.averagePct-8) interpretation='possible_score_contributor';
+      else if(area) interpretation='not_primary_driver';
+      return {
+        task:PROFILE_LABEL[task]||task,taskCode:task,trait:TRAIT_LABEL[key]||key,
+        attempts:list.length,averagePct,latestPct,
+        taskAveragePct:area?.averagePct??null,taskLatestPct:area?.latestPct??null,
+        taskPerformanceBand:area?.performanceBand||'unknown',
+        taskEvidenceStrength:area?.evidenceStrength||'unknown',
+        gapFromOverallPct,interpretation
+      };
     }).filter(x=>x.attempts>=1).sort((a,b)=>a.averagePct-b.averagePct).slice(0,6);
 
     const recentPractice=points.filter(p=>p.source==='practice').sort((a,b)=>b.at-a.at).slice(0,10)
@@ -578,6 +599,12 @@ function installInterventions(app, options = {}) {
     unfinished.sort((a,b)=>when(b.at)-when(a.at));
     return {
       generatedAt:new Date().toISOString(),
+      interpretationPolicy:{
+        overallBeforeTraits:true,
+        strongTaskThresholdPct:75,
+        highEvidenceAttempts:5,
+        rule:'Use overall task performance to decide whether marks are materially slipping. Trait scores explain relative improvement areas and must not override a strong overall task pattern on their own.'
+      },
       filterPolicy:{unattemptedExcluded:true,extremeLowExcluded:true,excludedAtOrBelowPct:Math.round(PROFILE_MIN_RATIO*100)},
       totals:{practiceResults:points.filter(p=>p.source==='practice').length,mockTaskResults:points.filter(p=>p.source==='mock').length,completedMocks:recentMocks.length},
       weakestAreas:weakest,
@@ -866,34 +893,59 @@ function installInterventions(app, options = {}) {
   });
 
 
-  function invalidCoachReply(task, reply) {
+  function invalidCoachReply(task, reply, profile=null) {
     const text=clean(reply,6000).toLowerCase();
     if(!text)return false;
-    if(task==='sst') {
-      return /\bspeaking task\b|\bspoken response\b|\boral (?:response|delivery)\b|\bspeak (?:naturally|continuously|clearly|confidently)\b|\bpronunciation\b|\bfluency\b|\bintonation\b|\bmicrophone\b|\bpaus(?:e|es|ing)\b/.test(text);
+    if(task==='sst' && /\bspeaking task\b|\bspoken response\b|\boral (?:response|delivery)\b|\bspeak (?:naturally|continuously|clearly|confidently)\b|\bpronunciation\b|\bfluency\b|\bintonation\b|\bmicrophone\b|\bpaus(?:e|es|ing)\b/.test(text)) return true;
+
+    const area=(profile?.areas||[]).find(x=>x?.task===task);
+    if(area?.evidenceStrength==='high' && (/\blimited (?:data|evidence)\b/.test(text) || /\bnot enough data\b/.test(text))) return true;
+
+    if(area?.performanceBand==='strong') {
+      const relative=(profile?.traitWeaknesses||[]).filter(x=>x?.taskCode===task && x?.interpretation==='relative_improvement_area');
+      for(const trait of relative) {
+        const name=clean(trait?.trait,80).toLowerCase();
+        if(!name)continue;
+        if(text.includes(name+' weakness') || text.includes('weakness in '+name) || text.includes('weakness is '+name)
+            || text.includes('main '+name+' weakness') || text.includes('primary '+name+' weakness')) return true;
+      }
     }
     return false;
   }
 
-  async function callValidatedCoach(task, prompt) {
+  async function callValidatedCoach(task, prompt, profile=null) {
     let result=await callCoachModel(prompt);
     let text=clean(result&&typeof result==='object'?result.text:result,6000);
     let source=clean(result&&typeof result==='object'?result.source:'claude',40)||'claude';
-    if(invalidCoachReply(task,text)) {
+    if(invalidCoachReply(task,text,profile)) {
+      const area=(profile?.areas||[]).find(x=>x?.task===task);
       const correction=[
         prompt,
         '',
-        'CRITICAL TASK CORRECTION:',
-        'Your previous draft confused Summarize Spoken Text with a speaking task.',
-        'Regenerate the answer from scratch. SST is Listening + Writing: the student listens, takes notes if useful, and TYPES a 50–70 word written summary.',
-        'Do not mention speaking delivery, pronunciation, fluency, intonation, pauses, oral delivery or microphone technique. Retell Lecture is the separate spoken task.'
+        'CRITICAL TASK CORRECTION — CRITICAL COACHING CORRECTION:',
+        task==='sst'
+          ? 'Keep SST as Listening + Writing: the student listens and TYPES a 50–70 word written summary.'
+          : 'Keep the named task contract unchanged.',
+        area
+          ? 'Reconcile overall task evidence first: '+area.attempts+' usable attempts, '+area.averagePct+'% average, '+area.latestPct+'% latest, performanceBand='+area.performanceBand+', evidenceStrength='+area.evidenceStrength+'.'
+          : 'Re-check the overall task evidence before discussing traits.',
+        'If overall task performance is strong, a lower trait is a relative improvement area, not automatically the main reason marks are being lost.',
+        'Do not call the evidence limited when there are 5 or more usable attempts.',
+        'Regenerate the answer from scratch using that hierarchy.'
       ].join('\n');
       result=await callCoachModel(correction);
       text=clean(result&&typeof result==='object'?result.text:result,6000);
       source=clean(result&&typeof result==='object'?result.source:'claude',40)||'claude';
     }
-    if(invalidCoachReply(task,text)) {
-      text='For Summarize Spoken Text, focus on the listening and the written summary: identify the main topic, capture the strongest supporting ideas, then type a connected 50–70 word summary. I do not have reliable task-specific scored evidence to justify speaking or delivery feedback here.';
+    if(invalidCoachReply(task,text,profile)) {
+      const area=(profile?.areas||[]).find(x=>x?.task===task);
+      if(area?.performanceBand==='strong') {
+        text='Your overall '+(area.label||'task')+' performance is strong across '+area.attempts+' usable attempts (about '+area.averagePct+'% average, latest '+area.latestPct+'%). A lower trait can still be worth polishing, but it should be treated as a relative improvement area rather than the main reason your marks are slipping.';
+      } else if(task==='sst') {
+        text='For Summarize Spoken Text, focus on the listening and the written summary: identify the main topic, capture the strongest supporting ideas, then type a connected 50–70 word summary.';
+      } else {
+        text='I can see a possible improvement area, but I should not label one trait as the main weakness without reconciling it with your overall task scores first.';
+      }
       source='guardrail';
     }
     return {text,source};
@@ -917,7 +969,7 @@ function installInterventions(app, options = {}) {
             latestScore: scripted.latestScore,
             studentProfile: profile
           });
-          const validated = await callValidatedCoach(task, prompt);
+          const validated = await callValidatedCoach(task, prompt, profile);
           coachReply = validated.text;
           if (coachReply) coachSource = validated.source || 'ai';
         } catch (_) {
@@ -948,7 +1000,7 @@ function installInterventions(app, options = {}) {
         screenContext,
         studentProfile:profile
       });
-      const validated = await callValidatedCoach(task, prompt);
+      const validated = await callValidatedCoach(task, prompt, profile);
       const reply = validated.text;
       const source = validated.source;
       if (!reply) return res.status(503).json({error:'The AI Assistant could not produce a response.'});
