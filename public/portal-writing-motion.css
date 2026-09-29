@@ -96,6 +96,11 @@ body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-text {
 }
 
 @media (hover:hover) and (pointer:fine) {
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen,
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane {
+    cursor: none;
+  }
+
   body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(
     button,
     a,
@@ -116,18 +121,21 @@ body.ipt-writing-cursor-enabled .ipt-writing-cursor-halo.is-text {
   }
 
   body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(
-    input,
+    input:not([type="checkbox"]):not([type="radio"]),
     textarea,
-    select,
     [contenteditable="true"]
   ),
   body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane :where(
-    input,
+    input:not([type="checkbox"]):not([type="radio"]),
     textarea,
-    select,
     [contenteditable="true"]
   ) {
     cursor: text;
+  }
+
+  body.ipt-writing-cursor-enabled[data-section="practice"] #practiceScreen :where(select,input[type="checkbox"],input[type="radio"]),
+  body.ipt-writing-cursor-enabled[data-section="swt"] #swtPane :where(select,input[type="checkbox"],input[type="radio"]) {
+    cursor: auto;
   }
 }
 
