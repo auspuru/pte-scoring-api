@@ -410,6 +410,7 @@ function installInterventions(app, options = {}) {
     sst:{content:4,form:2,grammar:2,vocabulary:2,spelling:2}
   };
   const profileNumber = value => {
+    if(value===null||value===undefined||value===''||typeof value==='boolean') return null;
     const n=Number(value);
     return Number.isFinite(n)?n:null;
   };
@@ -481,7 +482,7 @@ function installInterventions(app, options = {}) {
       const totalRatio=profileRatio(session.earned??session.total,session.possible??session.maximum);
       recentMocks.push({
         title:clean(session.name||'Reading mock',160),engine:'reading',at:session.finishedAt||session.startedAt||null,
-        percent:totalRatio===null?(Number.isFinite(Number(session.percent))?Math.round(Number(session.percent)):null):Math.round(totalRatio*100),
+        percent:totalRatio===null?(profileNumber(session.percent)===null?null:Math.round(profileNumber(session.percent))):Math.round(totalRatio*100),
         breakdown
       });
     }
@@ -514,7 +515,7 @@ function installInterventions(app, options = {}) {
         recentMocks.push({
           title:clean(a.title||'Writing mock',160),engine:'writing',at:a.finishedAt||a._updatedAt||a.startedAt||null,
           percent:profileRatio(a.total,a.maximum)===null?null:Math.round(profileRatio(a.total,a.maximum)*100),
-          score90:Number.isFinite(Number(a.score90))?Number(a.score90):null,
+          score90:profileNumber(a.score90),
           breakdown
         });
         continue;
@@ -859,6 +860,40 @@ function installInterventions(app, options = {}) {
     catch (e) { sendError(res,e); }
   });
 
+
+  function invalidCoachReply(task, reply) {
+    const text=clean(reply,6000).toLowerCase();
+    if(!text)return false;
+    if(task==='sst') {
+      return /\bspeaking task\b|\bspoken response\b|\boral (?:response|delivery)\b|\bspeak (?:naturally|continuously|clearly|confidently)\b|\bpronunciation\b|\bfluency\b|\bintonation\b|\bmicrophone\b|\bpaus(?:e|es|ing)\b/.test(text);
+    }
+    return false;
+  }
+
+  async function callValidatedCoach(task, prompt) {
+    let result=await callCoachModel(prompt);
+    let text=clean(result&&typeof result==='object'?result.text:result,6000);
+    let source=clean(result&&typeof result==='object'?result.source:'ai',40)||'ai';
+    if(invalidCoachReply(task,text)) {
+      const correction=[
+        prompt,
+        '',
+        'CRITICAL TASK CORRECTION:',
+        'Your previous draft confused Summarize Spoken Text with a speaking task.',
+        'Regenerate the answer from scratch. SST is Listening + Writing: the student listens, takes notes if useful, and TYPES a 50–70 word written summary.',
+        'Do not mention speaking delivery, pronunciation, fluency, intonation, pauses, oral delivery or microphone technique. Retell Lecture is the separate spoken task.'
+      ].join('\n');
+      result=await callCoachModel(correction);
+      text=clean(result&&typeof result==='object'?result.text:result,6000);
+      source=clean(result&&typeof result==='object'?result.source:'ai',40)||'ai';
+    }
+    if(invalidCoachReply(task,text)) {
+      text='For Summarize Spoken Text, focus on the listening and the written summary: identify the main topic, capture the strongest supporting ideas, then type a connected 50–70 word summary. I do not have reliable task-specific scored evidence to justify speaking or delivery feedback here.';
+      source='guardrail';
+    }
+    return {text,source};
+  }
+
   app.post('/api/interventions/help', student, async (req,res) => {
     try {
       const task = SELF_HELP_TASKS.has(req.body?.task) ? req.body.task : '';
@@ -877,8 +912,9 @@ function installInterventions(app, options = {}) {
             latestScore: scripted.latestScore,
             studentProfile: profile
           });
-          coachReply = clean(await callCoachModel(prompt), 6000);
-          if (coachReply) coachSource = 'claude';
+          const validated = await callValidatedCoach(task, prompt);
+          coachReply = validated.text;
+          if (coachReply) coachSource = validated.source || 'ai';
         } catch (_) {
           // The scripted recommendations below remain available when Claude is unavailable.
         }
@@ -907,9 +943,9 @@ function installInterventions(app, options = {}) {
         screenContext,
         studentProfile:profile
       });
-      const modelResult = await callCoachModel(prompt);
-      const reply = clean(modelResult && typeof modelResult === 'object' ? modelResult.text : modelResult, 6000);
-      const source = clean(modelResult && typeof modelResult === 'object' ? modelResult.source : 'ai', 40) || 'ai';
+      const validated = await callValidatedCoach(task, prompt);
+      const reply = validated.text;
+      const source = validated.source;
       if (!reply) return res.status(503).json({error:'The AI Assistant could not produce a response.'});
       res.json({reply,source,task,screenAware:true,personalized:true});
     } catch (e) { sendError(res,e); }
