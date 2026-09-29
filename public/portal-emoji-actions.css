@@ -31,3 +31,24 @@
   .portal-nav-emoji{width:36px;height:36px;min-width:36px;border-radius:12px;margin-right:11px}
   .portal-nav-emoji::after{border-radius:9px}
 }
+
+
+/* Progress task-trend emoji polish */
+.progress-activity h4.portal-label-with-emoji{
+  gap:10px;
+  min-height:34px;
+  line-height:1.25;
+}
+.progress-activity h4.portal-label-with-emoji>.portal-mini-emoji{
+  width:34px;height:34px;min-width:34px;padding:4px;border-radius:11px;
+  margin-left:-2px;
+}
+.progress-activity h4.portal-label-with-emoji>.portal-mini-emoji::after{
+  border-radius:8px;
+}
+@media(max-width:560px){
+  .progress-activity h4.portal-label-with-emoji{gap:8px;min-height:30px}
+  .progress-activity h4.portal-label-with-emoji>.portal-mini-emoji{
+    width:30px;height:30px;min-width:30px;border-radius:10px;
+  }
+}
