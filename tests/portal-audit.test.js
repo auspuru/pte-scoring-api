@@ -19,6 +19,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   const writingMotion=read('public/portal-writing-motion.js');
   const portalShell=read('public/portal-shell.js');
   const personalAssistant=read('public/personal-ai-assistant.js');
+  const personalAssistantCss=read('public/personal-ai-assistant.css');
   const interventionsClient=read('public/interventions-client.js');
   const portal=read('public/index.js');
   const reading=read('public/reading-practice.js');
@@ -67,7 +68,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.doesNotMatch(source,/#4f46e5|#5a51da|#6366f1|rgba\(99,\s*102,\s*241/i,name+' must not reintroduce the legacy indigo palette');
   }
 
-  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss],['portal-vocab-library.css',vocabLibraryCss],['portal-writing-motion.css',writingMotionCss]]){
+  for(const [name,source] of [['index.css',css],['portal-workspace.css',workspaceCss],['ipt-tokens.css',tokensCss],['portal-liquid-glass.css',liquidCss],['portal-home-practice.css',homePracticeCss],['portal-insights.css',insightsCss],['portal-vocab-library.css',vocabLibraryCss],['portal-writing-motion.css',writingMotionCss],['personal-ai-assistant.css',personalAssistantCss]]){
     const sizes=[...source.matchAll(/@media\s*\((?:max|min)-width:\s*([0-9.]+)px\)/g)].map(m=>Number(m[1]));
     assert(sizes.every(n=>[640,900,1200].includes(n)),name+' uses only the three portal breakpoints');
     assert.doesNotMatch(source,/font-size:\s*(?:[0-9]|1[01](?:\.\d+)?)px/,name+' must not use sub-12px text');
@@ -110,12 +111,16 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
-  assert.match(html,/\/personal-ai-assistant\.js\?v=4/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=6/);
+  assert.match(html,/\/personal-ai-assistant\.css\?v=6/);
   assert.match(html,/\/interventions-client\.js\?v=8/);
-  assert.match(personalAssistant,/switchSection\('next-steps'\)/,'assistant mascot should open the single IPT Assistant experience');
-  assert.match(personalAssistant,/\[data-beta-problem\]/,'assistant mascot should focus the existing IPT Assistant input');
-  assert.match(personalAssistant,/aria-label="Open IPT Assistant" title="Open IPT Assistant"/,'assistant mascot must be directly accessible to signed-in students');
-  assert.doesNotMatch(personalAssistant,/Coming Soon|personalAiPanel/,'assistant mascot must not present a second assistant panel');
+  assert.match(personalAssistant,/collectScreenContext/,'assistant should read the active portal screen');
+  assert.match(personalAssistant,/VISIBLE STUDENT INPUTS/,'assistant should include the student response shown on screen');
+  assert.match(personalAssistant,/\/api\/interventions\/screen-help/,'assistant should use the page-aware coaching endpoint');
+  assert.match(personalAssistant,/Reading this page/,'assistant should make page context visible to the student');
+  assert.match(personalAssistant,/aria-label="Open AI Assistant"/,'assistant mascot must be directly accessible to signed-in students');
+  assert.doesNotMatch(personalAssistant,/Coming Soon/i,'assistant must not show a Coming Soon state');
+  assert.doesNotMatch(personalAssistant,/switchSection\('next-steps'\)/,'assistant must stay on the current screen instead of navigating away');
   assert.match(interventionsClient,/function inferHelpTask\(message\)/,'assistant should infer explicit task names from student messages');
   assert.match(interventionsClient,/repeat\\s\+sentences\?/,'Repeat Sentence mismatch should be detectable');
   assert.match(interventionsClient,/Task auto-detect is on/,'student should understand that task mismatch is handled');
@@ -123,7 +128,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(interventionsClient,/formatCoachText/,'assistant replies should render readable structured text instead of raw markdown markers');
   assert.match(interventionsClient,/ensureAssistantPresentation/,'assistant must load its presentation layer even when the cached shell is stale');
   assert.match(interventionsClient,/portal-insights\.css\?v=20260929-assistant-ux2/,'assistant fallback stylesheet should use the current cache-busted asset');
-  assert.match(interventionsClient,/ask the IPT Assistant below/i,'empty state should point students to the assistant, not a beta helper');
+  assert.match(interventionsClient,/open the AI Assistant from the mascot/i,'empty state should point students to the page-aware mascot');
+  assert.doesNotMatch(interventionsClient,/\+helpPanel\(\)/,'My Next Steps should not render a duplicate assistant');
   assert(portalShell.indexOf("key: 'insights'") < portalShell.indexOf("key: 'vocab-library'"),'lazy stylesheet priority stays deterministic');
   assert(Buffer.byteLength(tokensCss)+Buffer.byteLength(liquidCss)+Buffer.byteLength(homePracticeCss) <= 29916,'first-load Liquid Glass presentation CSS stays within the 10% growth cap');
   assert.doesNotMatch(portalShell,/\bprompt\s*\(|\bconfirm\s*\(/);
