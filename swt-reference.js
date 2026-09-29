@@ -1,5 +1,8 @@
 'use strict';
 const seeds = require('./passages.json');
+const advanced = require('./content/swt-advanced.json');
+const advancedRevisions = require('./content/swt-advanced-revisions.json');
+const legacySampleRevisions = require('./content/swt-sample-revisions.json');
 const { POLICY_VERSION } = require('./swt-scoring-policy');
 const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
 const references = {
@@ -36,6 +39,52 @@ const references = {
 function matchedReference(passage) {
   const seed = seeds.find(p => p.id === Number(passage.id));
   return seed && normalize(seed.text) === normalize(passage.text) ? references[seed.id] : null;
+}
+
+function fallbackSample(passage) {
+  if (normalize(passage?.sampleResponse)) return null;
+
+  // Current standalone bank: require id + title + full passage text so a teacher
+  // edit can never inherit a stale model answer accidentally.
+  const seed = seeds.find(p => p.id === Number(passage?.id)
+    && normalize(p.title) === normalize(passage?.title)
+    && normalize(p.text) === normalize(passage?.text));
+  if (seed && normalize(seed.sampleResponse)) {
+    return { sampleResponse: normalize(seed.sampleResponse), sampleNotes: normalize(seed.sampleNotes) };
+  }
+
+  // Advanced rows receive dynamic database IDs, so identify them by canonical
+  // title + text. Prefer the revised bank when available.
+  const revisedAdvanced = advancedRevisions.find(p => normalize(p.title) === normalize(passage?.title)
+    && normalize(p.text) === normalize(passage?.text));
+  const advancedSeed = revisedAdvanced || advanced.find(p => normalize(p.title) === normalize(passage?.title)
+    && normalize(p.text) === normalize(passage?.text));
+  if (advancedSeed && normalize(advancedSeed.sampleResponse)) {
+    return { sampleResponse: normalize(advancedSeed.sampleResponse), sampleNotes: normalize(advancedSeed.sampleNotes) };
+  }
+
+  // Production still contains legacy SWT rows that pre-date passages.json.
+  // If this id/title belongs to the current standalone bank but the source text
+  // no longer matches, stop here rather than attaching an older legacy answer
+  // to a teacher-edited passage.
+  const currentIdentity = seeds.find(p => p.id === Number(passage?.id)
+    && normalize(p.title) === normalize(passage?.title));
+  if (currentIdentity) return null;
+
+  // Legacy revision entries are explicitly keyed by the original passage id +
+  // title. Only use them for rows that are not represented by the current
+  // canonical bank; an authored database sample always wins.
+  const legacy = legacySampleRevisions.find(p => Number(p.id) === Number(passage?.id)
+    && normalize(p.title) === normalize(passage?.title));
+  if (legacy && normalize(legacy.sampleResponse)) {
+    return {
+      sampleResponse: normalize(legacy.sampleResponse),
+      sampleNotes: 'Model answer restored from the reviewed SWT sample bank.',
+      sampleRevision: POLICY_VERSION
+    };
+  }
+
+  return null;
 }
 
 function phraseFromIdea(idea, source) {
@@ -80,11 +129,13 @@ function buildStudyGuide(passage) {
 function studentPassage(passage) {
   const reference = matchedReference(passage);
   const useRevision = reference && normalize(passage.sampleResponse) === normalize(reference.previous);
+  const fallback = fallbackSample(passage);
   return { ...passage,
+    ...(fallback || {}),
     ...(useRevision ? { sampleResponse: reference.sample,
       sampleNotes: 'The sample keeps the main message and important relationships without requiring every detail.',
       sampleRevision: POLICY_VERSION } : {}),
     studyGuide: buildStudyGuide(passage)
   };
 }
-module.exports = { studentPassage, buildStudyGuide, phraseFromIdea };
+module.exports = { studentPassage, buildStudyGuide, phraseFromIdea, fallbackSample };
