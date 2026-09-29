@@ -831,7 +831,7 @@ body.dark .next-step-note {
   content: "●";
   margin-right: 6px;
   color: var(--good);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .ipt-assistant-input {
