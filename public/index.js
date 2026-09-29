@@ -1152,7 +1152,7 @@ async function flushSyncDirect(options = {}) {
       userProfile.templates.band9TemplateVersion = userProfile.band9TemplateVersion || 0;
     }
     const accountProgress = typeof captureAccountProgress === 'function' ? captureAccountProgress() : null;
-    const payload = {
+    const fullPayload = {
       ...(accountProgress || {}),
       // SWT progress fields
       attempted: Array.from(attempted),
@@ -1174,6 +1174,12 @@ async function flushSyncDirect(options = {}) {
       vocabProgress: userProfile?.vocabProgress || {},
       templates: userProfile?.templates || { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' }
     };
+    // The account-progress layer has field clocks and patch support specifically
+    // so routine saves do not retransmit the student's entire accumulated
+    // Reading/SWT/essay history. Keeping this request small is also essential
+    // for pagehide/visibility keepalive saves, which browsers may drop when a
+    // request body grows beyond their keepalive budget.
+    const payload = accountSyncPayload(fullPayload);
 
     const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(syncUserId), {
       method: 'POST',
@@ -1210,7 +1216,7 @@ async function flushSyncDirect(options = {}) {
       updateDashboard();
     }
     offlineMode = false;
-    cachePracticeHistory(userProfile?.practiceHistory || payload.practiceHistory, practiceHistoryDeleted);
+    cachePracticeHistory(userProfile?.practiceHistory || fullPayload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
     LocalStore.set(`pte_${currentUserId}_currentId`, currentId);
     LocalStore.set(`pte_${syncUserId}_studyPlan`, userProfile?.studyPlan || {});
