@@ -1040,7 +1040,7 @@ body.dark .ipt-assistant-message.user .ipt-assistant-message-body {
   background: rgba(45,108,165,.18);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   .ipt-assistant-head {
     padding: 20px 18px 16px;
   }
