@@ -12,3 +12,7 @@
 @media(max-width:800px){.speaking-question-list{grid-template-columns:1fr}.speaking-card{padding:18px}.speaking-heading{align-items:flex-start}.speaking-prompt{font-size:18px}.speaking-question-list article{padding:18px}}
 
 #speaking-level-panel{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:8px}#speaking-level{display:block;width:100%;height:22px;margin-top:6px}#speaking-mic-status{font-size:14px;margin:8px 0 0}
+
+.speaking-delivery{margin:4px 0 24px;padding:18px;border:1px solid var(--line);border-radius:11px;background:var(--bg-hover)}
+.speaking-delivery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.speaking-score-delivery{display:grid;grid-template-columns:auto 1fr;align-items:center;margin:0;padding:14px;background:var(--bg-card);border:1px solid var(--line);border-radius:9px}.speaking-score-delivery strong{grid-row:1/3;font-size:34px}.speaking-score-delivery>small{font-size:11px;color:var(--ink-soft)}
+@media(max-width:640px){.speaking-delivery-grid{grid-template-columns:1fr}}
