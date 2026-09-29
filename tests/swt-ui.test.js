@@ -75,6 +75,16 @@ test('Async sample checks cannot replace the next passage’s sample after navig
   assert.equal(note.textContent, 'Current passage note');
 });
 
+test('Sample tab actually reveals its panel instead of leaving the static display-none class active', () => {
+  const toggle = functionSource('switchSbsView');
+  assert.match(toggle, /vSum\.hidden = isSample/);
+  assert.match(toggle, /vSam\.hidden = !isSample/);
+  assert.doesNotMatch(toggle, /style\.display/);
+  const panel = html.match(/<div id="sbsViewSample"[^>]*>/)?.[0] || '';
+  assert.match(panel, /\bhidden\b/);
+  assert.doesNotMatch(panel, /u-inline-005/);
+});
+
 test('Sample display is independent of verification availability', () => {
   const check = functionSource('checkSwtSample', true);
   const refresh = functionSource('refreshSwtSample', true);
