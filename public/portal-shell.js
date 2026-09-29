@@ -8,7 +8,7 @@
   const lazyStyles = [
     {
       key: 'writing-motion',
-      href: '/portal-writing-motion.css?v=20260929-writing-motion',
+      href: '/portal-writing-motion.css?v=20260929-native-cursor',
       sections: new Set(['practice', 'swt'])
     },
     {
