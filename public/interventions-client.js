@@ -6,7 +6,7 @@
   const statusLabel={not_started:'Not started',in_progress:'In progress',ready_for_review:'Ready for review',mastered:'Mastered',archived:'Archived'};
   const priorityLabel={high:'High priority',normal:'Current focus',low:'Lower priority'};
   function create({document:doc,identity,navigate,launch}){
-    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpResult=null,helpBusy=false,trainer=null;
+    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpBusy=false,trainer=null;
     function auth(){
       const value=identity?.()||{};
       return {uid:String(value.uid||'').trim().toLowerCase(),token:value.token||''};
@@ -69,25 +69,35 @@
       const traitLabels={content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'Linguistic range',coherence:'Structure & coherence'};
       const scoreHtml=score?'<div class="next-step-beta-score"><strong>'+(score.contentOnly?'Recent content-only practice result used':'Recent portal result used')+'</strong><div>'+Object.entries(score.scores||{}).filter(([k])=>!k.endsWith('_max')&&Number.isFinite(Number(score.maxima?.[k]))).map(([k,v])=>'<span>'+esc(traitLabels[k]||k.replaceAll('_',' '))+': '+esc(v)+'/'+esc(score.maxima[k])+'</span>').join('')+'</div>'+(score.contentOnly?'<small>Pronunciation and fluency are not inferred from transcript-only content scoring.</small>':'')+'</div>':'<p class="next-step-beta-muted">No recent scored attempt was found for this task, so the suggestions use your description and the IPT task method.</p>';
       const suggestions=helpResult?.suggestions||[];
+      const chatHtml=helpHistory.length?'<div class="next-step-beta-chat">'+helpHistory.map(m=>'<div class="next-step-beta-message '+(m.role==='assistant'?'assistant':'user')+'"><span>'+(m.role==='assistant'?'IPT Assistant':'You')+'</span><p>'+esc(m.text).replace(/\\n/g,'<br>')+'</p></div>').join('')+'</div>':'';
       const taskOptions=[
         ['swt','Summarize Written Text'],['sst','Summarize Spoken Text'],['essay','Essay Writing'],
         ['ra','Read Aloud'],['rs','Repeat Sentence'],['rl','Retell Lecture'],['di','Describe Image'],
         ['rts','Respond to a Situation'],['sgd','Summarize Group Discussion'],['speaking','General Speaking — Pronunciation & Fluency']
       ].map(([value,label])=>'<option value="'+value+'" '+(helpTask===value?'selected':'')+'>'+label+'</option>').join('');
-      return '<section class="next-step-beta"><div class="next-step-beta-head"><div><p class="portal-eyebrow">Self-help · Beta</p><h3>Tell us what you are struggling with</h3><p>Choose a PTE task or General Speaking and describe the problem. Suggestions use your recent portal results when available and the IPT teaching methods built into this practice portal.</p></div><span>Beta</span></div>'
-        +'<div class="next-step-beta-form"><label>Task<select data-beta-task>'+taskOptions+'</select></label><label>What is difficult?<textarea data-beta-problem placeholder="e.g. I lose the main idea, mix speakers, pause too much, forget the sentence, or do not know what to include.">'+esc(helpProblem)+'</textarea></label><button type="button" class="portal-button primary" data-beta-help '+(helpBusy?'disabled':'')+'>'+(helpBusy?'Checking…':'Get suggestions')+'</button></div>'
+      return '<section class="next-step-beta"><div class="next-step-beta-head"><div><p class="portal-eyebrow">Self-help · Beta</p><h3>Ask the IPT Assistant</h3><p>Choose a PTE task or General Speaking and explain what you are struggling with. The assistant uses your recent portal results when available and follows the IPT teaching methods built into this portal.</p></div><span>Beta</span></div>'
+        +chatHtml
+        +'<div class="next-step-beta-form"><label>Task<select data-beta-task>'+taskOptions+'</select></label><label>What do you want help with?<textarea data-beta-problem placeholder="e.g. I lose the main idea, mix speakers, pause too much, forget the sentence, or do not know what to include.">'+esc(helpProblem)+'</textarea></label><button type="button" class="portal-button primary" data-beta-help '+(helpBusy?'disabled':'')+'>'+(helpBusy?'Thinking…':helpHistory.length?'Ask follow-up':'Ask assistant')+'</button></div>'
         +(helpResult?'<div class="next-step-beta-results">'+scoreHtml+(suggestions.length?suggestions.map(s=>'<article><div><strong>'+esc(s.title)+'</strong><p>'+esc(s.reason)+'</p>'+(s.action?'<p class="next-step-beta-action"><b>What you will do:</b> '+esc(s.action)+'</p>':'')+'</div><button type="button" class="portal-button" data-beta-add="'+esc(s.moduleCode)+'">'+(s.moduleCode==='SWT-CONTENT-01'?'Add highlight practice':s.moduleCode==='PR-01'?'Add playlist to My Next Steps':'Add to My Next Steps')+'</button></article>').join(''):'<p>No suggestion is available yet.</p>')+'</div>':'')
         +'<p class="next-step-beta-disclaimer">These are IPT study recommendations and practice guidance, not an official Pearson diagnosis or score prediction.</p></section>';
     }
     async function requestHelp(){
+      const message=String(helpProblem||'').trim();
+      if(!message){notify('Tell the IPT Assistant what you are struggling with.',true);return;}
       helpBusy=true;render();
-      try{helpResult=await api('/help',{task:helpTask,problem:helpProblem});}
+      try{
+        const data=await api('/help',{task:helpTask,problem:message,history:helpHistory.slice(-8)});
+        helpResult=data;helpPlanProblem=message;
+        const fallback=data.coachReply || data.suggestions?.[0]?.action || data.suggestions?.[0]?.reason || 'Use the suggested practice below as your next step.';
+        helpHistory=[...helpHistory,{role:'user',text:message},{role:'assistant',text:fallback}].slice(-10);
+        helpProblem='';
+      }
       catch(e){notify(e.message,true);}
       finally{helpBusy=false;render();}
     }
     async function addSelfPlan(code){
       try{
-        const data=await api('/self-plan',{moduleCode:code,problem:helpProblem,task:helpTask});
+        const data=await api('/self-plan',{moduleCode:code,problem:helpPlanProblem||helpProblem,task:helpTask});
         plans.unshift(data.plan);helpResult=null;render();renderDashboard();notify('Added to My Next Steps.');
       }catch(e){notify(e.message,true);}
     }
@@ -220,7 +230,7 @@
         +(completed.length?'<details class="next-step-history"><summary>Completed plans <span>'+completed.length+'</span></summary><div class="next-step-plan-list completed">'+completed.slice(0,12).map(card).join('')+'</div></details>':'')+'</div>';
       host.onclick=handleClick;
       host.oninput=e=>{if(e.target.matches?.('[data-beta-problem]'))helpProblem=e.target.value;};
-      host.onchange=e=>{if(e.target.matches?.('[data-beta-task]')){helpTask=e.target.value;helpResult=null;} };
+      host.onchange=e=>{if(e.target.matches?.('[data-beta-task]')){helpTask=e.target.value;helpProblem='';helpPlanProblem='';helpResult=null;helpHistory=[];render();} };
     }
     function renderDashboard(){
       const host=doc.getElementById('nextStepsDashboardCard');if(!host)return;
