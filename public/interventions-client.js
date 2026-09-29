@@ -33,7 +33,6 @@
       ['essay',/\bessay\b/]
     ];
     for(const [task,pattern] of patterns)if(pattern.test(text))return task;
-    if(/\bpronunciation\b|\bfluency\b|\baccent\b/.test(text))return 'speaking';
     return '';
   }
   function formatCoachText(value){
@@ -43,9 +42,10 @@
     const flush=()=>{if(list.length){html+='<ul>'+list.map(x=>'<li>'+x+'</li>').join('')+'</ul>';list=[];}};
     for(const line of lines){
       if(!line){flush();continue;}
-      const bullet=line.match(/^[-•]\s+(.+)/);
+      const bullet=line.match(/^(?:[-•]|\d+[.)])\s+(.+)/);
       if(bullet){list.push(bullet[1]);continue;}
-      flush();html+='<p>'+line+'</p>';
+      const heading=line.match(/^#{1,4}\s+(.+)/);
+      flush();html+='<p>'+(heading?'<strong>'+heading[1]+'</strong>':line)+'</p>';
     }
     flush();return html||'<p></p>';
   }
