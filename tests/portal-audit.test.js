@@ -39,7 +39,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
   }
   assert.match(html,/<button[^>]+practice-shortcut-link[^>]*>Practise this question/);
-  assert.match(html,/From your teacher/);
+  assert.match(html,/My Next Steps/);
   assert(html.indexOf('id="portalResume"') < html.indexOf('id="nextStepsDashboardCard"'));
   assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
