@@ -1179,7 +1179,7 @@ async function flushSyncDirect(options = {}) {
     // Reading/SWT/essay history. Keeping this request small is also essential
     // for pagehide/visibility keepalive saves, which browsers may drop when a
     // request body grows beyond their keepalive budget.
-    const payload = accountSyncPayload(fullPayload);
+    const payload = typeof accountSyncPayload === 'function' ? accountSyncPayload(fullPayload) : fullPayload;
 
     const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(syncUserId), {
       method: 'POST',
