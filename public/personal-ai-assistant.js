@@ -65,7 +65,7 @@
         '</div>',
       '</section>',
       '<button type="button" class="personal-ai-launcher" aria-label="Personal AI Assistant — Coming Soon" aria-controls="personalAiPanel" aria-expanded="false">',
-        '<img class="personal-ai-mascot-art" src="/assets/personal-ai-assistant.png?v=5" alt="Personal AI Assistant — Coming Soon">',
+        '<img class="personal-ai-mascot-art" src="/assets/personal-ai-assistant-exact.webp?v=6" alt="Personal AI Assistant — Coming Soon">',
       '</button>'
     ].join('');
 
