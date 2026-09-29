@@ -60,7 +60,7 @@
     root.className = 'personal-ai-assistant';
     root.setAttribute('aria-label', 'IPT Assistant shortcut');
     root.innerHTML = [
-      '<button type="button" class="personal-ai-launcher" aria-label="Open IPT Assistant">',
+      '<button type="button" class="personal-ai-launcher" aria-label="Open IPT Assistant" title="Open IPT Assistant">',
         '<span class="personal-ai-mascot-art" aria-hidden="true"></span>',
         '<span class="personal-ai-dot" aria-hidden="true"></span>',
       '</button>'
