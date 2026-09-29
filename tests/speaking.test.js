@@ -70,6 +70,23 @@ test('Azure delivery accepts the regional endpoint shown by the portal and norma
   const summary=delivery.configurationSummary(env);assert.equal(summary.configured,true);assert.equal(summary.endpointHost,'australiaeast.stt.speech.microsoft.com');assert.equal(summary.locale,'en-AU');
 });
 
+test('Short incomplete Read Aloud responses do not receive misleading pronunciation or fluency bands',()=>{
+  const question={type:'ra',text:'Urban parks provide shade absorb rainwater create habitats and improve city life for local residents.'};
+  const evidence=delivery.deliveryEvidence(question,'Urban parks provide shade',3);
+  assert.equal(evidence.sufficient,false);assert(evidence.coverage<35);
+  const result=delivery.aggregate([{accuracy:89,fluency:100,prosody:81,pronScore:88,weight:3,words:[]}],{evidence});
+  assert.equal(result.pronunciation.score,null);assert.equal(result.fluency.score,null);
+  assert.match(result.deliveryStatus,/Not enough speech/);assert.equal(result.deliveryEvidence.spokenWords,4);
+});
+
+test('A sufficiently complete Read Aloud can receive delivery bands independently from content',()=>{
+  const text='Urban parks provide shade absorb rainwater create habitats and improve city life for local residents throughout the year.';
+  const evidence=delivery.deliveryEvidence({type:'ra',text},text,18);
+  assert.equal(evidence.sufficient,true);assert.equal(evidence.coverage,100);
+  const result=delivery.aggregate([{accuracy:86,fluency:82,prosody:78,weight:18,words:[]}],{evidence});
+  assert.equal(result.pronunciation.score,4);assert.equal(result.fluency.score,4);
+});
+
 test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5 practice scores',async()=>{
   const raw={Duration:250000000,NBest:[{PronunciationAssessment:{AccuracyScore:86,FluencyScore:82,ProsodyScore:78,PronScore:84},Words:[
     {Word:'environmental',PronunciationAssessment:{AccuracyScore:61,ErrorType:'Mispronunciation'}},
@@ -79,11 +96,11 @@ test('Audio delivery parses Azure pronunciation data and maps it to PTE-style /5
   const combined=delivery.aggregate([{...parsed,weight:25}]);
   assert.equal(combined.pronunciation.score,4);assert.equal(combined.pronunciation.maximum,5);assert.equal(combined.fluency.score,4);assert.equal(combined.pronunciation.words.length,1);
   let sent;
-  const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The words actually spoken.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',locale:'en-AU',request:async(url,args)=>{
+  const assessed=await delivery.azureAssess(Buffer.alloc(100), 'The full scripted reference.', {apiKey:'azure-test',endpoint:'https://example.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',locale:'en-AU',scripted:true,request:async(url,args)=>{
     sent={url,args};return {ok:true,json:async()=>raw};
   }});
   const config=JSON.parse(Buffer.from(sent.args.headers['Pronunciation-Assessment'],'base64').toString('utf8'));
-  assert.equal(config.ReferenceText,'The words actually spoken.');assert.equal(config.Dimension,'Comprehensive');assert.equal(config.EnableProsodyAssessment,'True');assert.match(sent.url,/language=en-AU/);assert.equal(assessed.prosody,78);
+  assert.equal(config.ReferenceText,'The full scripted reference.');assert.equal(config.Dimension,'Comprehensive');assert.equal(config.EnableProsodyAssessment,'True');assert.equal(config.EnableMiscue,true);assert.match(sent.url,/language=en-AU/);assert.equal(assessed.prosody,78);
 });
 
 test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifier',()=>{
@@ -91,7 +108,7 @@ test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifie
 });
 test('Speaking API preserves private recordings, transcript revisions, samples, reattempts and score retries',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-test-')),app=require('express')();app.use(require('express').json());let failModel=false,failDelivery=false;
-  const deliveryResult={pronunciation:{score:4,maximum:5,raw:84,accuracy:86,prosody:78,words:[{word:'environmental',accuracy:61,errorType:'Mispronunciation'}]},fluency:{score:4,maximum:5,raw:82},deliveryStatus:'Audio assessed — PTE-style practice estimate',deliveryAssessment:'Independent practice estimate from the saved recording; not Pearson scoring.',deliveryProvider:'azure-speech-pronunciation'};
+  const deliveryResult={deliveryVersion:delivery.VERSION,pronunciation:{score:4,maximum:5,raw:84,accuracy:86,prosody:78,words:[{word:'environmental',accuracy:61,errorType:'Mispronunciation'}]},fluency:{score:4,maximum:5,raw:82},deliveryStatus:'Audio assessed — PTE-style practice estimate',deliveryAssessment:'Independent practice estimate from the saved recording; not Pearson scoring.',deliveryProvider:'azure-speech-pronunciation'};
   const {store}=installSpeakingLab(app,{directory,verifyToken:t=>['alice','bob'].includes(t)?t:null,getAccount:async()=>({}),transcriptionAvailable:true,deliveryAssessmentAvailable:true,
     transcribe:async()=>bank.questions[0].text,assessDelivery:async()=>{if(failDelivery)throw Error('azure offline');return deliveryResult;},callModel:async prompt=>{if(failModel)throw Error('offline');const data=JSON.parse(prompt.split('DATA=')[1]);return modelResult({facts:data.facts},data.student);}});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
