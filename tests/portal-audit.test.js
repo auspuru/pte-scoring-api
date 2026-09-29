@@ -121,6 +121,11 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(personalAssistant,/Reading this page/,'assistant should disclose current-page context use');
   assert.match(personalAssistant,/Student-selected text/,'assistant should prioritise selected page text');
   assert.match(personalAssistant,/Use page context/,'students should control page-context sharing');
+  assert.match(personalAssistant,/function screenIdentity\(\)/,'assistant should identify the current visible screen separately from chat history');
+  assert.match(personalAssistant,/refreshScreenContext\(\)/,'assistant should refresh its context before every question');
+  assert.match(personalAssistant,/requestVersion !== contextVersion \|\| requestKey !== activeContextKey/,'assistant should ignore a reply generated for an older screen');
+  assert.match(personalAssistant,/requestController\.abort\(\)/,'assistant should cancel an in-flight reply when the screen changes');
+  assert.match(personalAssistant,/messages = \[\];/,'assistant should isolate chat history by visible screen');
   assert.match(interventionsClient,/function inferHelpTask\(message\)/,'assistant should infer explicit task names from student messages');
   assert.match(interventionsClient,/repeat\\s\+sentences\?/,'Repeat Sentence mismatch should be detectable');
   assert.match(interventionsClient,/Task auto-detect is on/,'student should understand that task mismatch is handled');
