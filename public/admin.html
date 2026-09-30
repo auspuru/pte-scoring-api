@@ -436,6 +436,7 @@ tr:hover td { background: var(--surface-dim); }
 
   <div class="tabs">
     <button class="tab active" id="tabUsers" onclick="switchTab('users')">Users</button>
+    <button class="tab" id="tabLearning" onclick="switchTab('learning')">AI Learning</button>
   </div>
 
   <div class="tab-panel active" id="panelUsers">
@@ -461,6 +462,29 @@ tr:hover td { background: var(--surface-dim); }
   </div>
 
 
+
+<div class="tab-panel" id="panelLearning">
+  <div class="table-card" style="padding:24px">
+    <h2>AI Learning</h2>
+    <p>Common questions and saved practice patterns help us refine teaching suggestions. Collection runs after progress saves and assistant questions, without extra AI calls.</p>
+    <p>Questions are grouped by topic; repeated questions from one student count once per topic per day. No chat text, names, responses or recordings are stored here. Feedback patterns show repeated missing points or transcript words. Trait patterns describe lower scores, not confirmed causes. Scores summarise saved history for students observed in the last 90 days.</p>
+    <button class="btn-sm" id="learningRefresh">Refresh insights</button>
+    <p id="learningStatus" role="status" aria-live="polite"></p>
+    <div id="learningInsights"></div>
+    <h3>Teaching guidance for the assistant</h3>
+    <p>Use these patterns to refine your advice. Enabled notes are included in relevant assistant answers; they do not change scoring.</p>
+    <form id="learningGuidanceForm">
+      <input type="hidden" id="learningGuidanceId">
+      <label for="learningTask">Task</label><select id="learningTask"></select>
+      <label for="learningTitle">Title</label><input id="learningTitle" maxlength="160" required>
+      <label for="learningAdvice">Reviewed teaching guidance</label><textarea id="learningAdvice" maxlength="1800" rows="5" required></textarea>
+      <label><input type="checkbox" id="learningEnabled" checked> Include in assistant answers</label>
+      <button class="btn-sm" type="submit">Save teaching guidance</button>
+      <button class="btn-sm" id="learningNew" type="button">New note</button>
+    </form>
+    <div id="learningGuidance"></div>
+  </div>
+</div>
 
 <!-- Reset Password Modal -->
 <div class="modal" id="resetModal" onclick="if(event.target===this)this.classList.remove('show')">
@@ -783,6 +807,9 @@ function switchTab(name) {
   if (tabPassages) tabPassages.classList.toggle('active', name === 'passages');
   if (panelUsers) panelUsers.classList.toggle('active', name === 'users');
   if (panelPassages) panelPassages.classList.toggle('active', name === 'passages');
+  document.getElementById('tabLearning')?.classList.toggle('active',name==='learning');
+  document.getElementById('panelLearning')?.classList.toggle('active',name==='learning');
+  if(name==='learning')window.AdminLearning?.load();
   if (name === 'passages' && panelPassages && allPassages.length === 0) loadPassages();
 }
 
@@ -1278,5 +1305,6 @@ document.addEventListener('DOMContentLoaded', updateThemeToggles);
 </script>
 <script src="/practice-catalogue.js?v=5"></script>
 <script src="/admin-interventions.js?v=3"></script>
+<script src="/admin-learning.js?v=1"></script>
 </body>
 </html>

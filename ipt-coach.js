@@ -167,7 +167,7 @@ function cleanHistory(history) {
   }).filter(Boolean);
 }
 
-function buildPrompt({task,message,history=[],latestScore=null,screenContext='',studentProfile=null}) {
+function buildPrompt({task,message,history=[],latestScore=null,screenContext='',studentProfile=null,cohortLearning=null}) {
   const name = TASK_NAMES[task] || 'PTE practice';
   const taskRules = RULES[task] || [];
   const taskContract = TASK_CONTRACT[task] || [];
@@ -199,6 +199,11 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '',
     'STUDENT PERFORMANCE PROFILE (automatically refreshed from saved portal progress, practice and mock results):',
     profile,
+    '',
+    'COHORT LEARNING AND TEACHER-REVIEWED GUIDANCE:',
+    cohortLearning ? JSON.stringify(cohortLearning).slice(0,26000) : 'none available',
+    'Cohort topics and score patterns are aggregate observations, not diagnoses of this student. Only mention a pattern when their own evidence supports it. Lower trait scores do not identify a specific mistake or its cause. Never infer pronunciation or fluency from text.',
+    'Use teacherGuidance as reviewed teaching advice relevant to the question. Keep the TASK CONTRACT, institute method and this student’s evidence authoritative. Never use cohort trends to change assessment scores or claim official Pearson rules.',
     '',
     'CURRENT SCREEN CONTEXT:',
     screen || 'none supplied',

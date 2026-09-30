@@ -466,3 +466,15 @@ test('AI coach regenerates trait-first weakness claims when overall performance 
   assert.match(response.data.reply,/relative improvement area/i);
   assert.doesNotMatch(response.data.reply,/limited data|main issue/i);
 });
+
+test('AI Learning is admin-only and reviewed guidance feeds both coaching endpoints',async t=>{
+ let seen='';const h=await harness({callCoachModel:async prompt=>{seen=prompt;return 'Start with the main topic, then connect an important support.';}});
+ t.after(async()=>{await new Promise(r=>h.server.close(r));await fs.rm(h.directory,{recursive:true,force:true});});
+ assert.equal((await call(h.base,'/api/admin/assistant-learning',{token:'alice'})).status,403);
+ assert.equal((await call(h.base,'/api/admin/assistant-learning/guidance',{method:'POST',token:'alice',body:{task:'swt',title:'test',advice:'test'}})).status,403);
+ const created=await call(h.base,'/api/admin/assistant-learning/guidance',{method:'POST',admin:'teacher',body:{task:'swt',title:'Main topic first',advice:'Teacher approved: explain the topic before picking support.'}});assert.equal(created.status,200);
+ let reply=await call(h.base,'/api/interventions/screen-help',{method:'POST',token:'alice',body:{task:'swt',message:'How do I select the main idea?',screenContext:'SWT practice screen'}});assert.equal(reply.status,200);assert.match(seen,/Teacher approved: explain the topic/);
+ reply=await call(h.base,'/api/interventions/help',{method:'POST',token:'alice',body:{task:'swt',problem:'What content should I include?'}});assert.equal(reply.status,200);assert.match(seen,/Teacher approved: explain the topic/);
+ const summary=await call(h.base,'/api/admin/assistant-learning',{admin:'teacher'});assert.equal(summary.status,200);assert.equal(summary.data.observedStudents,1);assert.equal(summary.data.topics.find(t=>t.task==='swt'&&t.topic==='Main ideas and content selection').studentDays,1);
+ assert(!JSON.stringify(summary.data).includes('alice'));assert(!JSON.stringify(summary.data).includes('How do I select'));
+});
