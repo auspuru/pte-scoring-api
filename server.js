@@ -6096,7 +6096,7 @@ function escapeHtmlServer(s) {
   return String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
-require('./interventions').installInterventions(app, {
+const interventionLearning = require('./interventions').installInterventions(app, {
   pool: pgPool,
   directory: path.join(DATA_DIR, 'interventions'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
@@ -6119,6 +6119,29 @@ require('./interventions').installInterventions(app, {
     return response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').trim();
   },
   requireAdmin
+});
+
+// Refresh aggregated learning after successful saves; coalesce frequent autosaves.
+const learningRefreshes=new Map();
+function scheduleLearningRefresh(uid) {
+  if(!uid||learningRefreshes.has(uid))return;
+  const timer=setTimeout(()=>{
+    learningRefreshes.delete(uid);
+    interventionLearning.observeStudent(uid).catch(()=>console.warn('[assistant-learning] Snapshot refresh unavailable.'));
+  },500);
+  timer.unref?.();learningRefreshes.set(uid,timer);
+}
+for(const method of ['setUserData','saveProgress']) {
+  const save=StorageAPI[method];
+  StorageAPI[method]=async function(uid,...args) {
+    const result=await save.call(this,uid,...args);scheduleLearningRefresh(uid);return result;
+  };
+}
+app.use(['/api/speaking/attempts','/api/writing-lab/attempts'],(req,res,next)=>{
+  if(req.method==='POST'&&(/\/submit$|\/answer$|\/score\/\d+$/.test(req.path)))res.once('finish',()=>{
+    if(res.statusCode<300)scheduleLearningRefresh(canonicalUserId(verifySessionToken(req.headers['x-session-token'])||verifyImpersonationToken(req.headers['x-session-token'])||''));
+  });
+  next();
 });
 
 require('./speaking-lab').installSpeakingLab(app, {

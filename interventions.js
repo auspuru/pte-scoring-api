@@ -187,6 +187,21 @@ function installInterventions(app, options = {}) {
     throw new Error('Interventions require directory, verifyToken, getAccount and requireAdmin.');
   }
   const store = createStore(pool, directory);
+  const learning = require('./assistant-learning').createLearningStore(pool, directory);
+  async function observeStudent(username) {
+    await learning.observe(username,studentProfile(await evidence(username)));
+  }
+  async function learningContext(username,profile,task,message) {
+    // A learning-store failure must never stop ordinary coaching.
+    try { await learning.observe(username,profile,{task,message});return await learning.context(task); }
+    catch (_) { return null; }
+  }
+  app.get('/api/admin/assistant-learning',requireAdmin,async(req,res)=>{
+    try {res.set('Cache-Control','no-store');res.json(await learning.summary());}catch(e){sendError(res,e);}
+  });
+  app.post('/api/admin/assistant-learning/guidance',requireAdmin,async(req,res)=>{
+    try {res.json({guidance:await learning.saveGuidance(req.body||{})});}catch(e){sendError(res,e);}
+  });
 
   async function student(req, res, next) {
     try {
@@ -249,6 +264,11 @@ function installInterventions(app, options = {}) {
         const { rows } = await pool.query("SELECT data, updated_at FROM writing_lab_attempts WHERE username=$1 ORDER BY updated_at DESC LIMIT 300", [username]);
         writing = rows.map(r => ({ ...(r.data || {}), _updatedAt:r.updated_at }));
       } catch (_) {}
+    }
+    else {
+      const {createStore:attemptStore}=require('./writing-lab-store');
+      speaking=await attemptStore(null,path.join(directory,'..','speaking-lab'),{table:'speaking_lab_attempts'}).list(username);
+      writing=await attemptStore(null,path.join(directory,'..','writing-lab')).list(username);
     }
     return { progress: progress || {}, speaking, writing };
   }
@@ -356,7 +376,7 @@ function installInterventions(app, options = {}) {
     essay:{content:6,form:2,grammar:2,vocabulary:2,spelling:2,linguistic:6,coherence:6}
   };
   const TRAIT_LABEL = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',
-    linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
+    linguistic:'General linguistic range',coherence:'Development, structure & coherence',pronunciation:'Pronunciation',fluency:'Oral fluency'};
   const TASK_MODULE = {
     swt:'SWT-01',sst:'SST-01',essay:'ESSAY-01',
     ra:'RA-01',rs:'MEM-01',rl:'RL-01',di:'CP-04',rts:'REG-01',sgd:'NT-03',
@@ -498,7 +518,13 @@ function installInterventions(app, options = {}) {
         continue;
       }
       const ratio=profileRatio(a.result.total,a.result.maximum);
-      addPoint(task,ratio,a._updatedAt||a.startedAt,'practice',{contentOnly:true});
+      const included=addPoint(task,ratio,a._updatedAt||a.startedAt,'practice',{contentOnly:true});
+      if(included) {
+        addTrait(task,'content',a.result.total,a.result.maximum,a._updatedAt||a.startedAt);
+        if(a.result.deliveryVersion===require('./speaking-delivery').VERSION) {
+          for(const key of ['pronunciation','fluency'])addTrait(task,key,a.result[key]?.score,a.result[key]?.maximum,a._updatedAt||a.startedAt);
+        }
+      }
     }
 
     for(const a of (Array.isArray(all.writing)?all.writing:[])) {
@@ -585,7 +611,7 @@ function installInterventions(app, options = {}) {
       else if(area) interpretation='not_primary_driver';
       return {
         task:PROFILE_LABEL[task]||task,taskCode:task,trait:TRAIT_LABEL[key]||key,
-        attempts:list.length,averagePct,latestPct,
+        attempts:list.length,lastAt:list.at(-1).at,belowBenchmarkAttempts:recent.filter(x=>x.ratio<.75).length,averagePct,latestPct,
         taskAveragePct:area?.averagePct??null,taskLatestPct:area?.latestPct??null,
         taskPerformanceBand:area?.performanceBand||'unknown',
         taskEvidenceStrength:area?.evidenceStrength||'unknown',
@@ -599,6 +625,7 @@ function installInterventions(app, options = {}) {
     unfinished.sort((a,b)=>when(b.at)-when(a.at));
     return {
       generatedAt:new Date().toISOString(),
+      learningMistakes:require('./assistant-learning').feedbackPatterns(all.speaking),
       interpretationPolicy:{
         overallBeforeTraits:true,
         strongTaskThresholdPct:75,
@@ -837,6 +864,7 @@ function installInterventions(app, options = {}) {
   app.get('/api/interventions', student, async (req, res) => {
     try {
       const plans = await reconcile(req.interventionUser);
+      await observeStudent(req.interventionUser).catch(()=>{});
       plans.sort((a,b) => Number(active(b))-Number(active(a)) || Date.parse(b.updatedAt||0)-Date.parse(a.updatedAt||0));
       res.set('Cache-Control','no-store'); res.json({ plans });
     } catch (e) { sendError(res,e); }
@@ -959,6 +987,7 @@ function installInterventions(app, options = {}) {
       const all = await evidence(req.interventionUser);
       const scripted = betaAdvice(task, problem, all);
       const profile = studentProfile(all);
+      const cohortLearning=await learningContext(req.interventionUser,profile,task,problem);
       let coachReply = '', coachSource = 'scripted';
       if (typeof callCoachModel === 'function') {
         try {
@@ -967,7 +996,8 @@ function installInterventions(app, options = {}) {
             message: problem || 'How should I improve at this task?',
             history: req.body?.history,
             latestScore: scripted.latestScore,
-            studentProfile: profile
+            studentProfile: profile,
+            cohortLearning
           });
           const validated = await callValidatedCoach(task, prompt, profile);
           coachReply = validated.text;
@@ -992,13 +1022,15 @@ function installInterventions(app, options = {}) {
       const all = await evidence(req.interventionUser);
       const score = task !== 'portal' ? latestScore(task, all) : null;
       const profile = studentProfile(all);
+      const cohortLearning=await learningContext(req.interventionUser,profile,task,message);
       const prompt = iptCoach.buildPrompt({
         task,
         message,
         history:req.body?.history,
         latestScore:score,
         screenContext,
-        studentProfile:profile
+        studentProfile:profile,
+        cohortLearning
       });
       const validated = await callValidatedCoach(task, prompt, profile);
       const reply = validated.text;
@@ -1061,7 +1093,7 @@ function installInterventions(app, options = {}) {
     } catch (e) { sendError(res,e); }
   });
 
-  return { store };
+  return { store, observeStudent };
 }
 
 module.exports = { installInterventions, createStore, sanitizePlan, sanitizeItem };
