@@ -182,6 +182,9 @@
             +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words worth practising</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
             +'</details>'
           : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>Not enough speech for a reliable delivery score</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
+      const contentFallback=r.scoringMode==='local'
+        ? '<div class="speaking-delivery-callout speaking-content-fallback"><div><strong>Content used the local fallback scorer</strong><p>The semantic reviewer could not complete this assessment, so this content score is a simpler estimate. You can retry the semantic review without re-recording.</p></div><button class="portal-button" data-speaking-action="submit">Retry content review</button></div>'
+        : '';
       const mistakes=r.changes?r.changes.filter(c=>c.kind!=='correct'):[];
       const comparison=r.changes
         ? '<div class="speaking-comparison"><h4>Word accuracy</h4>'
@@ -194,6 +197,7 @@
           +scoreCard('Pronunciation',pronunciationCurrent,'pronunciation',pronunciationDetail)
           +scoreCard('Oral fluency',fluencyCurrent,'fluency',fluencyDetail)
         +'</div>'
+        +contentFallback
         +deliveryStatus
         +'<div class="speaking-feedback-grid">'
           +(r.strengths.length?'<section><h4>Content strengths</h4>'+list(r.strengths)+'</section>':'')
