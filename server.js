@@ -833,16 +833,27 @@ const PgStorage = {
   async setUserData(userId, userData) {
     userId = canonicalUserId(userId);
     const incoming = (userData && typeof userData === 'object') ? userData : {};
+    const perfStart = Date.now(), perf = { fields: Object.keys(incoming).sort() };
+    let phase = Date.now();
     const client = await pgPool.connect();
+    perf.connectMs = Date.now() - phase;
     try {
       // Serialise full-profile writes so two devices cannot read the same old
       // snapshot and then overwrite each other's essay attempts.
+      phase = Date.now();
       await client.query('BEGIN');
+      perf.beginMs = Date.now() - phase;
+      phase = Date.now();
       await client.query(
         `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
          ON CONFLICT (username) DO NOTHING`, [userId]
       );
+      perf.ensureRowMs = Date.now() - phase;
+      phase = Date.now();
       const { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      perf.rowLockMs = Date.now() - phase;
+
+      phase = Date.now();
       const existing = rows[0]?.data || {};
       const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
       const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
@@ -863,15 +874,27 @@ const PgStorage = {
       Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
       u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
       const patch = postgresProgressPatch(incoming, u);
+      perf.mergeMs = Date.now() - phase;
+
       if (Object.keys(patch).length) {
+        phase = Date.now();
         await client.query(
           `UPDATE user_data SET data = data || $2::jsonb, updated_at = NOW() WHERE username = $1`,
           [userId, JSON.stringify(patch)]
         );
+        perf.writeMs = Date.now() - phase;
       }
+      phase = Date.now();
       await client.query('COMMIT');
-      return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
+      perf.commitMs = Date.now() - phase;
+
+      phase = Date.now();
+      const result = { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
         practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
+      perf.responseBuildMs = Date.now() - phase;
+      perf.totalMs = Date.now() - perfStart;
+      if (perf.totalMs >= 300) console.info('[account-sync-perf]', JSON.stringify(perf));
+      return result;
     } catch (e) {
       await client.query('ROLLBACK').catch(() => {});
       throw e;
