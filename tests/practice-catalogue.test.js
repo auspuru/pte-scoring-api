@@ -178,8 +178,8 @@ test('Original prediction-pattern FIB questions are exposed without copying the 
   for(const type of ['dropdown','wordbank']){
     const questions=libraries.find(l=>l.id===type).questions;
     const originals=questions.filter(q=>q.patternBased);
-    assert.equal(originals.length,12,type);
-    assert.equal(new Set(originals.map(q=>q.id)).size,12,type);
+    assert.equal(originals.length,24,type);
+    assert.equal(new Set(originals.map(q=>q.id)).size,24,type);
     originals.forEach(q=>{
       assert.equal(q.patternSource.kind,'original-pattern-derived');
       assert.equal(fibQuality.audit(q),true,q.id);
