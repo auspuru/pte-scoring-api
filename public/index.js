@@ -556,11 +556,17 @@ function receiveAccountProgress(remote, initial = false) {
 
 function accountSyncPayload(full) {
   const previous = accountCloudSnapshot.get(canonicalClientUserId(currentUserId)) || {};
-  const delta = window.AccountProgress.progressDelta(previous, full);
+  const out = { ...window.AccountProgress.progressDelta(previous, full) };
+  for (const key of ['email', 'templates', 'currentId', 'quotaUsed', 'quotaDate', 'studyPlan']) {
+    const next = key === 'studyPlan' ? (full[key] || {}) : full[key];
+    if (!window.AccountProgress.equal(previous[key], next)) out[key] = next;
+  }
   const oldAttempts = new Map((previous.practiceHistory || []).map(a => [String(a.id), a]));
-  return { ...delta, email: full.email, templates: full.templates, currentId: full.currentId, quotaUsed: full.quotaUsed, quotaDate: full.quotaDate, studyPlan: full.studyPlan || {},
-    practiceHistory: full.practiceHistory.filter(a => !window.AccountProgress.equal(a, oldAttempts.get(String(a.id)))),
-    practiceHistoryDeleted: full.practiceHistoryDeleted.filter(id => !(previous.practiceHistoryDeleted || []).includes(id)) };
+  const practiceHistory = (full.practiceHistory || []).filter(a => !window.AccountProgress.equal(a, oldAttempts.get(String(a.id))));
+  const practiceHistoryDeleted = (full.practiceHistoryDeleted || []).filter(id => !(previous.practiceHistoryDeleted || []).includes(id));
+  if (practiceHistory.length) out.practiceHistory = practiceHistory;
+  if (practiceHistoryDeleted.length) out.practiceHistoryDeleted = practiceHistoryDeleted;
+  return out;
 }
 
 function practiceHistoryCacheKey(uid = currentUserId) {
@@ -928,11 +934,16 @@ async function enterApp(uid) {
   hideLogin();
   portalWorkspace.activate('dashboard', { history: 'none', focus: false });
   
-  // Load local or pull from server
+  // Account data and the public SWT passage bank are independent. Loading
+  // them in parallel removes a full network round trip from sign-in.
+  const passagesPromise = loadPassages();
   const ok = await loadUserData(uid);
-  if (!ok) return;
+  if (!ok) {
+    await passagesPromise.catch(() => {});
+    return;
+  }
 
-  await loadPassages();
+  await passagesPromise;
   loadStoredData();
   if (typeof loadPassage === 'function') loadPassage(1);
   showSwtScreen('swtPracticeScreen');
@@ -947,7 +958,7 @@ async function enterApp(uid) {
   updateDashboard();
   restorePortalEssayDraft(true);
   portalWorkspace.start();
-  studentInterventionsController?.refresh({ showPopup: true });
+  scheduleInterventionRefresh({ showPopup: true });
   checkAIStatus();
   removeAdminPortalEntry();
 
@@ -1041,7 +1052,11 @@ async function loadUserData(uid) {
       LocalStore.set(`pte_${uid}_currentId`, currentId);
       LocalStore.set(`pte_${uid}_studyPlan`, userProfile.studyPlan || {});
       
-      // Seed first time if essays are empty
+      let backgroundPushNeeded = practiceNeedsPush;
+
+      // Seed first-time content locally and let the normal sync queue persist it
+      // after the dashboard is usable. Cloud durability remains unchanged; only
+      // the sign-in critical path stops waiting on a write.
       if (essays.length === 0) {
         const seeded = SEED_TOPICS.map((t, i) => ({
           id: 'seed_' + i,
@@ -1059,29 +1074,24 @@ async function loadUserData(uid) {
         essays = seeded;
         currentId = seeded[0].id;
         userProfile.templates = { band6: BAND6_TEMPLATE, band9: BAND9_TEMPLATE, custom: BAND9_TEMPLATE, default: 'band9' };
-        
-        // Sync the newly seeded profile to cloud
-        await flushSyncDirect();
-      } else {
-        const changed = syncSeedTopics();
-        if (changed) {
-          await flushSyncDirect();
-        }
+        backgroundPushNeeded = true;
+      } else if (syncSeedTopics()) {
+        backgroundPushNeeded = true;
       }
 
-      // Reset daily quota if it's a new day
+      // Daily housekeeping is also safe to persist just after sign-in.
       if (userProfile.quotaDate !== todayStamp()) {
         userProfile.quotaUsed = { essay: 0, idea: 0 };
         userProfile.quotaDate = todayStamp();
-        await flushSyncDirect();
+        backgroundPushNeeded = true;
       }
 
-      if (practiceNeedsPush || !window.AccountProgress.equal(window.AccountProgress.mergeProgress(d.data, {}), window.AccountProgress.mergeProgress(data, {}))) {
-        syncQueued = true;
-        await flushSyncDirect();
+      if (!window.AccountProgress.equal(window.AccountProgress.mergeProgress(d.data, {}), window.AccountProgress.mergeProgress(data, {}))) {
+        backgroundPushNeeded = true;
       }
+      if (backgroundPushNeeded) queueSync();
 
-      setSync(syncQueued ? 'error' : 'synced', syncQueued ? 'Saved on this device — waiting to sync' : 'Synced across devices');
+      setSync(syncQueued ? 'syncing' : 'synced', syncQueued ? 'Saving latest changes…' : 'Synced across devices');
       maybeOfferDraftRecovery();
       return true;
     }
@@ -1194,6 +1204,14 @@ async function flushSyncDirect(options = {}) {
     // for pagehide/visibility keepalive saves, which browsers may drop when a
     // request body grows beyond their keepalive budget.
     const payload = typeof accountSyncPayload === 'function' ? accountSyncPayload(fullPayload) : fullPayload;
+    if (!Object.keys(payload).length) {
+      LocalStore.set(`pte_${syncUserId}_syncPending`, false);
+      setSync('synced', 'Synced across devices');
+      lastSyncOk = true;
+      syncRetryCount = 0;
+      completed = true;
+      return true;
+    }
 
     const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(syncUserId), {
       method: 'POST',
@@ -1229,6 +1247,12 @@ async function flushSyncDirect(options = {}) {
       updatePracticeStats();
       updateDashboard();
     }
+    accountCloudSnapshot.set(syncUserId, structuredClone({
+      ...fullPayload,
+      ...(response.progress || {}),
+      practiceHistory: Array.isArray(response.practiceHistory) ? response.practiceHistory : fullPayload.practiceHistory,
+      practiceHistoryDeleted: Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : fullPayload.practiceHistoryDeleted
+    }));
     offlineMode = false;
     cachePracticeHistory(userProfile?.practiceHistory || fullPayload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
@@ -12391,6 +12415,10 @@ let portalDraftTimer = null;
 let portalDraftRevision = 0;
 let readingRuntimeLoadPromise = null;
 let speakingRuntimeLoadPromise = null;
+let writingLabRuntimeLoadPromise = null;
+let studentProgressRuntimeLoadPromise = null;
+let interventionsRuntimeLoadPromise = null;
+let interventionRefreshTimer = null;
 
 function loadDeferredScript(src, key) {
   const existing = document.querySelector('script[data-deferred-module="' + key + '"]');
@@ -12455,6 +12483,81 @@ function ensureSpeakingRuntimeLoaded() {
     });
 
   return speakingRuntimeLoadPromise;
+}
+
+function ensureWritingLabRuntimeLoaded() {
+  if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
+  if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-essay-next-steps', 'writing lab')
+    .then(() => {
+      if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
+      return window.WritingLab;
+    })
+    .catch(error => {
+      writingLabRuntimeLoadPromise = null;
+      throw error;
+    });
+  return writingLabRuntimeLoadPromise;
+}
+
+function ensureStudentProgressRuntimeLoaded() {
+  if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
+  if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=20260930-recent-writing', 'student progress')
+    .then(() => {
+      if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
+      return window.StudentProgress;
+    })
+    .catch(error => {
+      studentProgressRuntimeLoadPromise = null;
+      throw error;
+    });
+  return studentProgressRuntimeLoadPromise;
+}
+
+function ensureInterventionsRuntimeLoaded() {
+  if (window.StudentInterventions?.create) return Promise.resolve(window.StudentInterventions);
+  if (interventionsRuntimeLoadPromise) return interventionsRuntimeLoadPromise;
+  interventionsRuntimeLoadPromise = loadDeferredScript('/interventions-client.js?v=9', 'student interventions')
+    .then(() => {
+      if (!window.StudentInterventions?.create) throw new Error('Next Steps did not initialise.');
+      return window.StudentInterventions;
+    })
+    .catch(error => {
+      interventionsRuntimeLoadPromise = null;
+      throw error;
+    });
+  return interventionsRuntimeLoadPromise;
+}
+
+async function ensureStudentInterventionsController() {
+  if (studentInterventionsController) return studentInterventionsController;
+  const module = await ensureInterventionsRuntimeLoaded();
+  if (!studentInterventionsController) {
+    studentInterventionsController = module.create({
+      document,
+      identity: () => ({ uid: currentUserId, token: sessionToken }),
+      navigate: switchSection,
+      launch: launchAssignedQuestion
+    });
+  }
+  return studentInterventionsController;
+}
+
+function scheduleInterventionRefresh(options = {}) {
+  clearTimeout(interventionRefreshTimer);
+  const owner = canonicalClientUserId(currentUserId);
+  if (!owner || !sessionToken) return;
+  interventionRefreshTimer = setTimeout(() => {
+    const run = () => ensureStudentInterventionsController()
+      .then(controller => {
+        if (owner !== canonicalClientUserId(currentUserId) || !sessionToken) return;
+        if (portalWorkspace?.current() === 'dashboard') controller?.refresh(options);
+      })
+      .catch(() => {});
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(run, { timeout: 1200 });
+    else run();
+  }, options.showPopup ? 900 : 500);
 }
 
 let portalCatalogueProgressCache = { uid:'', at:0, value:null };
@@ -12556,12 +12659,8 @@ function initialisePortalWorkspace() {
     launchWriting: testId => switchSection('writing-run', { labRequest: { testId } }),
     getProgress: getPortalCatalogueProgress
   });
-  studentInterventionsController = window.StudentInterventions?.create({
-    document,
-    identity: () => ({ uid: currentUserId, token: sessionToken }),
-    navigate: switchSection,
-    launch: launchAssignedQuestion
-  }) || null;
+  // Progress, Writing Lab and Next Steps are loaded only when needed so the
+  // dashboard can become interactive without parsing feature-specific clients.
   // Writing Lab is mounted directly in this document; navigation uses switchSection().
   // Access to storage can be denied by browser privacy settings.
   try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
@@ -12575,8 +12674,8 @@ async function openWritingLab(tab = 'mocks', options = {}) {
   const nextTab = ['sst','wfd','mocks','history'].includes(tab) ? tab : 'mocks';
   const request = { tab: nextTab, ...options, requestId: crypto.randomUUID() };
   try {
-    if (!window.WritingLab?.open) throw Error('Writing practice is still loading. Please retry.');
-    await window.WritingLab.open(request);
+    const writingLab = await ensureWritingLabRuntimeLoaded();
+    await writingLab.open(request);
   } catch (error) {
     const host=document.getElementById('lab');
     if(host)host.innerHTML='<div class="hub"><h2>Writing practice could not load</h2><p>'+escapeHtml(error.message||'Please retry.')+'</p><button class="primary" type="button" data-writing-retry>Retry</button></div>';
@@ -12684,13 +12783,19 @@ function switchSection(section, options = {}) {
   }
 
   if (active === 'progress') openStudentProgress();
-  if (active === 'next-steps') studentInterventionsController?.open();
+  if (active === 'next-steps') {
+    const host = document.getElementById('nextStepsPane');
+    if (host && !host.children.length) host.innerHTML = '<div class="dash-card" role="status">Preparing My Next Steps…</div>';
+    ensureStudentInterventionsController()
+      .then(controller => { if (portalWorkspace.current() === active) controller?.open(); })
+      .catch(error => { if (portalWorkspace.current() === active) toast(error.message || 'My Next Steps could not load.', true); });
+  }
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if (activeRoute?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();
     updatePortalResume();
-    studentInterventionsController?.refresh({ showPopup: false });
+    scheduleInterventionRefresh({ showPopup: false });
   }
   // SWT's current passage, results tab and editor node stay intact.
 }
@@ -12699,10 +12804,10 @@ function switchSection(section, options = {}) {
 let studentProgressController;
 let studentInterventionsController = null;
 function openStudentProgress() {
-  if (!window.ReadingPractice) {
+  if (!window.StudentProgress || !window.ReadingPractice) {
     const pane = document.getElementById('progressPane');
     if (pane && !pane.children.length) pane.innerHTML = '<div class="dash-card" role="status">Preparing progress history…</div>';
-    return ensureReadingRuntimeLoaded()
+    return Promise.all([ensureStudentProgressRuntimeLoaded(), ensureReadingRuntimeLoaded()])
       .then(() => {
         if (portalWorkspace.current() === 'progress') return openStudentProgress();
       })
