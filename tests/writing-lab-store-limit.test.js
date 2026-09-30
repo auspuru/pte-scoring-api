@@ -34,3 +34,33 @@ test('filesystem list reads only the newest bounded attempt set', async () => {
     await fs.rm(directory, { recursive: true, force: true });
   }
 });
+
+test('Postgres updates use the row lock directly and reserve the advisory lock for first creation', async () => {
+  const id = '12345678-1234-4123-8123-123456789abc';
+  function harness(selectRows) {
+    const queries = [];
+    const client = {
+      async query(sql, params) {
+        queries.push(String(sql).replace(/\s+/g, ' ').trim());
+        if (/SELECT username, data FROM/.test(sql)) return { rows: selectRows.shift() || [] };
+        return { rows: [] };
+      },
+      release() {}
+    };
+    const pool = {
+      async query(sql) { queries.push(String(sql).replace(/\s+/g, ' ').trim()); return { rows: [] }; },
+      async connect() { return client; }
+    };
+    return { store:createStore(pool, '/unused'), queries };
+  }
+
+  const existing = harness([[{ username:'student', data:{ id, answer:'old' } }]]);
+  await existing.store.update('student', id, value => ({ ...value, answer:'new' }));
+  assert.equal(existing.queries.filter(q => /pg_advisory_xact_lock/.test(q)).length, 0);
+  assert.equal(existing.queries.filter(q => /FOR UPDATE/.test(q)).length, 1);
+
+  const creating = harness([[], []]);
+  await creating.store.update('student', id, () => ({ id, answer:'first' }));
+  assert.equal(creating.queries.filter(q => /pg_advisory_xact_lock/.test(q)).length, 1);
+  assert.equal(creating.queries.filter(q => /FOR UPDATE/.test(q)).length, 2);
+});
