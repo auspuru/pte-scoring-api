@@ -191,6 +191,12 @@ test('Compact sync responses echo only progress domains touched by the save', ()
   assert.equal(practice.progress, undefined);
 });
 
+test('Postgres pool keeps one private connection warm without increasing the pool maximum', () => {
+  assert.match(serverSource, /max:\s*10,\s*min:\s*1,\s*idleTimeoutMillis:\s*300000/);
+  assert.match(serverSource, /keepAlive:\s*true,\s*keepAliveInitialDelayMillis:\s*10000/);
+  assert.match(serverSource, /connectionTimeoutMillis:\s*10000/);
+});
+
 test('Railway Postgres prefers the private DATABASE_URL before the public TCP proxy', () => {
   assert.match(serverSource, /process\.env\.PGURL\s*\|\|\s*process\.env\.DATABASE_URL\s*\|\|\s*process\.env\.DATABASE_PUBLIC_URL/s);
   assert.match(serverSource, /process\.env\.DATABASE_URL \? 'DATABASE_URL'/);
