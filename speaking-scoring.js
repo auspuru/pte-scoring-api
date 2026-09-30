@@ -86,10 +86,12 @@ async function grade(q,text,callModel) {
   if(['ra','rs'].includes(q.type)) return exact(q,text);
   if(!tokens(text).length)return {...base(6),total:0,overview:'No spoken content was supplied for assessment.',strengths:[],improvements:['Record a response or enter the exact words you said, then reattempt.'],coverage:q.facts.map(point=>({point,status:'missing',evidence:'',feedback:'Include this relevant idea in your response.'}))};
   let lastError;
+  const basePrompt=prompt(q,text);
   for(let attempt=0;attempt<2;attempt++){
     try {
-      const suffix=attempt?'\nRETRY NOTE: Your previous assessment could not be validated. Return complete JSON only, quote STUDENT evidence exactly, and include every supplied fact once in order.':'';
-      return { ...normalize(q,text,await callModel(prompt(q,text)+suffix)), scoringMode:'ai' };
+      const retryNote='RETRY NOTE: Your previous assessment could not be validated. Return complete JSON only, quote STUDENT evidence exactly, and include every supplied fact once in order.';
+      const modelPrompt=attempt?basePrompt.replace('\nDATA=','\n'+retryNote+'\nDATA='):basePrompt;
+      return { ...normalize(q,text,await callModel(modelPrompt)), scoringMode:'ai' };
     } catch (error) {
       lastError=error;
     }
