@@ -519,9 +519,12 @@ function captureAccountProgress() {
   return progress;
 }
 
-function receiveAccountProgress(remote, initial = false) {
+function receiveAccountProgress(remote, initial = false, options = {}) {
   if (!currentUserId || !window.AccountProgress) return remote;
-  accountCloudSnapshot.set(canonicalClientUserId(currentUserId), remote);
+  // Full GET reconciliation replaces the cloud baseline. Compact POST responses
+  // are partial by design; replacing the baseline with one would make the next
+  // queued delta look like the student's entire profile changed.
+  if (!options.partial) accountCloudSnapshot.set(canonicalClientUserId(currentUserId), remote);
   if (userProfile && Number(remote?.studyPlan?.updatedAt || 0) > Number(userProfile.studyPlan?.updatedAt || 0)) {
     userProfile.studyPlan = remote.studyPlan;
     LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_studyPlan`, remote.studyPlan);
@@ -1237,7 +1240,7 @@ async function flushSyncDirect(options = {}) {
     if (!sameSession()) return false;
     if (response && response.success === false) throw new Error(response.error || 'Sync push rejected');
     if (response.progress && typeof receiveAccountProgress === 'function') receiveAccountProgress({ ...response.progress,
-      practiceHistory: response.practiceHistory, practiceHistoryDeleted: response.practiceHistoryDeleted });
+      practiceHistory: response.practiceHistory, practiceHistoryDeleted: response.practiceHistoryDeleted }, false, { partial: true });
     if (Array.isArray(response.practiceHistory)) {
       const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
       practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, practiceHistoryDeleted);
