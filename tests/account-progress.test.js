@@ -144,7 +144,7 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
   const start = serverSource.indexOf('function postgresProgressPatch(');
   const end = serverSource.indexOf('\n\n// ─── POSTGRES STORAGE ADAPTER', start);
   assert(start >= 0 && end > start);
-  const ctx = {};
+  const ctx = { AccountProgress: P };
   vm.createContext(ctx);
   vm.runInContext(serverSource.slice(start, end) + '\nthis.patch = postgresProgressPatch;', ctx);
 
