@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-09-29.3';
+const VERSION = 'azure-delivery-2026-09-30.4';
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
