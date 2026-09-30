@@ -213,7 +213,7 @@ test('My Progress does not relabel an already-scored SWT answer as an unfinished
 test('My Progress forces a fresh cloud pull instead of relying on the background throttle', () => {
   assert.match(indexSource, /refreshPracticeHistory\(\{ force: true \}\)/);
   assert.match(indexSource, /My Progress is an observation surface/);
-  assert.match(html, /student-progress\.js\?v=20260930-writing-drafts/);
+  assert.match(html, /student-progress\.js\?v=20260930-recent-writing/);
 });
 
 test('writing lab presents estimate scores without native mark totals', () => {
