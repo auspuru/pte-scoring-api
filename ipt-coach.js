@@ -56,6 +56,19 @@ const TASK_PRIORITY_FRAMEWORK = [
   'These are IPT teaching priorities, not a claim about official Pearson scoring weights.'
 ];
 
+const TARGET_AWARE_PRIORITY_FRAMEWORK = [
+  'Study priority depends on the student’s required score, not on maximising every task or every skill.',
+  'Use mock-test module performance as the main evidence for whether Reading, Writing, Listening or Speaking is already good enough for the student’s target.',
+  'If a module is already consistently meeting or comfortably exceeding the student’s stated target, move it from improvement priority to maintenance. Do not keep pushing a normally high-priority question type in that module just because it could still score higher.',
+  'For students working toward roughly Band 6–7 style requirements, Reading results around the required range can be sufficient; if Reading mocks are already reliably strong enough, redirect time to weaker priority modules and tasks.',
+  'For students whose stated IPT target can be met with about 70 in a module, a stable Reading performance around or above that level is normally sufficient for maintenance rather than intensive Reading Fill in the Blanks practice.',
+  'A single high mock is not enough to declare a module solved when recent results are inconsistent. Look for repeated results, recent range and trend before reducing practice.',
+  'If Reading is already sufficient, keep light maintenance practice and redirect the main session toward weaker high-priority tasks in Writing, Listening or Speaking.',
+  'If mock evidence shows Reading is below the student’s target or repeatedly losing substantial marks, then push Reading Fill in the Blanks and Reorder Paragraphs again because they are the IPT core reading tasks.',
+  'Do not chase low-priority Reading Multiple Choice questions when the student’s Reading module is already sufficient for the target.',
+  'These target thresholds are IPT coaching guidance based on the student’s stated requirement and mock performance, not an official Pearson score-conversion claim.'
+];
+
 const RULES = {
   swt:[
     'No rigid SWT template.',
@@ -187,6 +200,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     'IPT TASK PRIORITY FRAMEWORK:',
     ...TASK_PRIORITY_FRAMEWORK.map(x=>'- '+x),
     '',
+    'TARGET-AWARE PRIORITY FRAMEWORK:',
+    ...TARGET_AWARE_PRIORITY_FRAMEWORK.map(x=>'- '+x),
+    '',
     'TASK: '+name,
     'TASK CONTRACT (non-negotiable):',
     ...(taskContract.length ? taskContract.map(x=>'- '+x) : ['- Follow the task modality shown by the current portal screen.']),
@@ -222,7 +238,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '- Treat STUDENT PERFORMANCE PROFILE as saved evidence from this student’s own portal history. Use it proactively when the question is about progress, weak areas, marks, study priorities, recent performance or what to practise next.',
     '- Do not ask the student which task, recent score or saved response they mean when the profile or current screen already answers that question. Do not ask them to repeat information already present in portal evidence.',
     '- When the student asks where marks are slipping, evaluate OVERALL TASK PERFORMANCE first. Use task average, latest score, recent range, trend and attempt count before interpreting any individual trait.',
-    '- When the student asks what to practise or prioritise, apply the IPT TASK PRIORITY FRAMEWORK before ranking tasks by score. Do not call a secondary task the top priority merely because its percentage is lower.',
+    '- When the student asks what to practise or prioritise, first identify the student’s stated target if it is available in the current message or recent chat, then apply the TARGET-AWARE PRIORITY FRAMEWORK and IPT TASK PRIORITY FRAMEWORK before ranking tasks by score. Do not call a secondary task the top priority merely because its percentage is lower.',
+    '- Use recent mock module scores to decide whether a whole skill is already sufficient for the target. If Reading is consistently meeting the student’s requirement, treat Reading as maintenance even though Fill in the Blanks and Reorder Paragraphs are normally core tasks.',
+    '- Do not ask for a target score when the student has already stated it in recent chat. If no target is known, give priority advice from the available evidence without inventing a target.',
     '- The profile field weakestAreas is a raw performance view, not a study-priority ranking. Re-rank it using the IPT TASK PRIORITY FRAMEWORK.',
     '- If a core task is only moderately weaker while a secondary task is dramatically lower, normally prioritise the core task first unless the core task is already stable/strong or the student is explicitly targeting around 80+ overall.',
     '- A trait score must not override a strong overall task pattern on its own. If a task has performanceBand "strong" (75%+ average), describe a lower trait as a relative improvement area unless there is separate evidence that overall scores are declining or the trait is materially lowering recent totals.',
@@ -242,4 +260,4 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
   ].join('\n');
 }
 
-module.exports = { TASK_NAMES, TASK_CONTRACT, TASK_PRIORITY_FRAMEWORK, RULES, GENERAL, buildPrompt, cleanHistory };
+module.exports = { TASK_NAMES, TASK_CONTRACT, TASK_PRIORITY_FRAMEWORK, TARGET_AWARE_PRIORITY_FRAMEWORK, RULES, GENERAL, buildPrompt, cleanHistory };
