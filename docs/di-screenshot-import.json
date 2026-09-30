@@ -1,0 +1,841 @@
+[
+  {
+    "shot": "114524",
+    "id": 3000195,
+    "title": "Keyboard Hand Position",
+    "category": "other",
+    "box": [
+      48,
+      494,
+      470,
+      856
+    ],
+    "facts": [
+      "The illustration contrasts correct and incorrect hand positions at a keyboard.",
+      "The correct examples show straighter wrists, while the wrong examples show wrists bent upward or sideways."
+    ]
+  },
+  {
+    "shot": "114524",
+    "id": 3000186,
+    "title": "Average Rainfall",
+    "category": "bar",
+    "box": [
+      48,
+      985,
+      339,
+      1372
+    ],
+    "facts": [
+      "The chart compares average rainfall in inches in four cities.",
+      "New York has the highest rainfall at 47.25 inches, followed by Dallas at 33.70.",
+      "Honolulu records 22.02 inches, while Phoenix has the lowest at 7.66."
+    ]
+  },
+  {
+    "shot": "114446",
+    "id": 3000137,
+    "title": "India Land Use",
+    "category": "map",
+    "box": [
+      78,
+      65,
+      414,
+      486
+    ],
+    "facts": [
+      "The map shows different types of land use across India.",
+      "The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land.",
+      "The land-use patterns vary across the country."
+    ]
+  },
+  {
+    "shot": "114446",
+    "id": 3000134,
+    "title": "Earth\u2019s Structure",
+    "category": "other",
+    "box": [
+      78,
+      555,
+      420,
+      856
+    ],
+    "facts": [
+      "The diagram illustrates the internal structure of Earth.",
+      "The labelled layers include the crust, mantle, outer core and inner core.",
+      "An inset distinguishes oceanic and continental crust and identifies the upper and lower mantle."
+    ]
+  },
+  {
+    "shot": "114446",
+    "id": 3000125,
+    "title": "Bird Feeder",
+    "category": "photo",
+    "box": [
+      78,
+      954,
+      565,
+      1239
+    ],
+    "facts": [
+      "The photographs show two bird feeders made from plastic bottles.",
+      "The bottles contain seeds and have perches inserted through their sides.",
+      "One feeder is shown with a bird using its perch."
+    ]
+  },
+  {
+    "shot": "114352",
+    "id": 3000370,
+    "title": "Athletics Participation Survey",
+    "category": "line",
+    "box": [
+      62,
+      84,
+      566,
+      357
+    ],
+    "facts": [
+      "The line graph compares boys and girls participating in high school athletics from 1971 to 2010.",
+      "Boys remain above girls throughout the period.",
+      "Girls participation rises strongly, while boys participation falls after an early peak and then increases again.",
+      "By the end, both groups are at their highest or near-highest levels."
+    ]
+  },
+  {
+    "shot": "114352",
+    "id": 3000365,
+    "title": "Population Density",
+    "category": "map",
+    "box": [
+      62,
+      465,
+      566,
+      760
+    ],
+    "facts": [
+      "The world map shows geographical differences in population density.",
+      "Dense concentrations appear in parts of Asia and Europe.",
+      "Large areas of northern regions, deserts and central Australia are less densely populated."
+    ]
+  },
+  {
+    "shot": "114352",
+    "id": 3000354,
+    "title": "Trading Goods",
+    "category": "other",
+    "box": [
+      65,
+      865,
+      560,
+      1140
+    ],
+    "facts": [
+      "The diagram shows imports and exports associated with ancient Egypt.",
+      "Imports include timber, metals, ivory and animals from several regions.",
+      "Exports listed include linen, tools, beads, beer, weapons and oil."
+    ]
+  },
+  {
+    "shot": "114352",
+    "id": 3000349,
+    "title": "Earth\u2019s Climate Zones",
+    "category": "map",
+    "box": [
+      62,
+      1239,
+      566,
+      1614
+    ],
+    "facts": [
+      "The map divides the world into polar, temperate and tropical climate zones.",
+      "The tropical zone lies around the equator between approximately 30 degrees north and south.",
+      "Temperate zones lie farther from the equator, while polar zones are near the poles."
+    ]
+  },
+  {
+    "shot": "114344",
+    "id": 3000422,
+    "title": "International Student Funding",
+    "category": "table",
+    "box": [
+      70,
+      81,
+      519,
+      356
+    ],
+    "facts": [
+      "The table compares primary funding sources for international students in the United States in 2003/04 and 2013/14.",
+      "Personal and family funding remains the largest source, with its share decreasing from 67 to 65 percent.",
+      "The total number of students rises from 572509 to 886052.",
+      "Funding from current employers and foreign governments or universities shows particularly large percentage increases."
+    ]
+  },
+  {
+    "shot": "114344",
+    "id": 3000411,
+    "title": "Rainfall vs Temperature",
+    "category": "mixed",
+    "box": [
+      70,
+      457,
+      574,
+      714
+    ],
+    "facts": [
+      "The combined chart shows monthly rainfall as bars and temperature as a line.",
+      "Temperature rises to a midyear peak and then declines.",
+      "Rainfall generally increases towards an autumn peak before falling again."
+    ]
+  },
+  {
+    "shot": "114344",
+    "id": 3000392,
+    "title": "Australian Population Density",
+    "category": "map",
+    "box": [
+      70,
+      820,
+      456,
+      1145
+    ],
+    "facts": [
+      "The map shows the distribution of population across Australia.",
+      "Population is concentrated near the coast, especially in the east and southeast.",
+      "The interior has relatively few population dots, and major cities are labelled."
+    ]
+  },
+  {
+    "shot": "114344",
+    "id": 3000375,
+    "title": "Australian Population",
+    "category": "bar",
+    "box": [
+      72,
+      1247,
+      562,
+      1519
+    ],
+    "facts": [
+      "The horizontal bar chart compares populations of Australian states and territories in 2006.",
+      "New South Wales has the largest population, followed by Victoria and Queensland.",
+      "The Northern Territory has the smallest population, followed by the Australian Capital Territory and Tasmania."
+    ]
+  },
+  {
+    "shot": "114335",
+    "id": 3000481,
+    "title": "Population Doubling Time",
+    "category": "line",
+    "box": [
+      65,
+      79,
+      534,
+      420
+    ],
+    "facts": [
+      "The graph plots the years required for world population to double against the ending year.",
+      "The early doubling period takes 544 years, whereas later intervals become much shorter.",
+      "The overall trend is a sharp decline in doubling time."
+    ]
+  },
+  {
+    "shot": "114335",
+    "id": 3000469,
+    "title": "Quiz Process Flow",
+    "category": "process",
+    "box": [
+      65,
+      530,
+      520,
+      872
+    ],
+    "facts": [
+      "The flowchart begins with clicking to start a quiz and then opening Question 1.",
+      "Clicking false leads to a correct-answer slide, while clicking true leads to a wrong-answer slide.",
+      "Both routes proceed to Question 2."
+    ]
+  },
+  {
+    "shot": "114335",
+    "id": 3000461,
+    "title": "Pupil\u2013Teacher Ratio",
+    "category": "bar",
+    "box": [
+      65,
+      978,
+      567,
+      1279
+    ],
+    "facts": [
+      "The chart shows the distribution of pupil-to-teacher ratios in primary schools in January 1997.",
+      "The highest percentage occurs at a ratio of 24 pupils per teacher.",
+      "The smallest and largest ratio categories have lower percentages than the middle categories."
+    ]
+  },
+  {
+    "shot": "114335",
+    "id": 3000429,
+    "title": "Sitting Posture",
+    "category": "other",
+    "box": [
+      65,
+      1354,
+      488,
+      1692
+    ],
+    "facts": [
+      "The illustration compares correct and incorrect sitting posture at a desk.",
+      "The correct example shows a more upright position and supported feet.",
+      "The incorrect example shows the person leaning forward towards the screen."
+    ]
+  },
+  {
+    "shot": "114319",
+    "id": 3000579,
+    "title": "Drinking Habits",
+    "category": "bar",
+    "box": [
+      59,
+      62,
+      450,
+      333
+    ],
+    "facts": [
+      "The stacked bar chart compares drinking habits across age groups in the United States.",
+      "The categories are heavy, light, former and never drinkers.",
+      "Former drinkers form a larger share in older groups, while light drinkers generally form a smaller share."
+    ]
+  },
+  {
+    "shot": "114319",
+    "id": 3000561,
+    "title": "Closed-Loop Recycling",
+    "category": "process",
+    "box": [
+      59,
+      444,
+      532,
+      782
+    ],
+    "facts": [
+      "The diagram presents a closed-loop plastics supply chain.",
+      "The stages are collecting and recycling, sorting and shredding, moulding and manufacturing, assembling and shipping, and purchasing and using.",
+      "The circular arrows show that used products return to the recycling process."
+    ]
+  },
+  {
+    "shot": "114319",
+    "id": 3000560,
+    "title": "Homologies",
+    "category": "other",
+    "box": [
+      59,
+      887,
+      560,
+      1262
+    ],
+    "facts": [
+      "The diagram compares homologous structures in a human arm, seal forelimb, bird wing and bat wing.",
+      "The human example labels the hand, wrist, fingers, radius, ulna and humerus.",
+      "The limbs have different shapes and functions but share a related structural arrangement."
+    ]
+  },
+  {
+    "shot": "114319",
+    "id": 3000542,
+    "title": "Laboratory",
+    "category": "photo",
+    "box": [
+      60,
+      1337,
+      441,
+      1621
+    ],
+    "facts": [
+      "The photograph shows two people working in a laboratory.",
+      "They wear laboratory coats and protective glasses.",
+      "They are handling glass containers containing liquid."
+    ]
+  },
+  {
+    "shot": "114311",
+    "id": 3000589,
+    "title": "Climate Zones",
+    "category": "map",
+    "box": [
+      66,
+      76,
+      414,
+      455
+    ],
+    "facts": [
+      "The map shows climate zones across Australia based on temperature and humidity.",
+      "The north includes hot and humid areas, while the south includes temperate areas.",
+      "Cool temperate conditions are shown in the far southeast and Tasmania."
+    ]
+  },
+  {
+    "shot": "114311",
+    "id": 3000587,
+    "title": "US States",
+    "category": "bar",
+    "box": [
+      66,
+      522,
+      499,
+      793
+    ],
+    "facts": [
+      "The graphic compares five labelled places using horizontal pencil-shaped bars.",
+      "New Jersey has the largest displayed value at 50.680, followed by Chicago at 46.750.",
+      "Virginia has the smallest displayed value at 18.950.",
+      "The title says US States, although Chicago is included among the labels."
+    ]
+  },
+  {
+    "shot": "114311",
+    "id": 3000586,
+    "title": "Average Rainfall",
+    "category": "bar",
+    "box": [
+      68,
+      925,
+      466,
+      1151
+    ],
+    "facts": [
+      "The grouped bars compare rainfall in the United Kingdom, Japan and Australia across four seasons.",
+      "The United Kingdom is highest and Australia lowest in each season.",
+      "Rainfall is generally lower in winter than in spring or summer."
+    ]
+  },
+  {
+    "shot": "114311",
+    "id": 3000580,
+    "title": "Population Density",
+    "category": "map",
+    "box": [
+      68,
+      1279,
+      442,
+      1628
+    ],
+    "facts": [
+      "The map shows Australian population density in June 2010.",
+      "Density is highest in several coastal regions, particularly in the east and southeast.",
+      "Most of the interior has a low population density."
+    ]
+  },
+  {
+    "shot": "114300",
+    "id": 3000603,
+    "title": "Tree Structure",
+    "category": "other",
+    "box": [
+      43,
+      363,
+      325,
+      596
+    ],
+    "facts": [
+      "The diagram identifies the main parts of a tree.",
+      "Leaves, twigs and branches form the crown above the trunk.",
+      "Roots extend beneath the ground."
+    ]
+  },
+  {
+    "shot": "114300",
+    "id": 3000601,
+    "title": "Number of Bonds",
+    "category": "pie",
+    "box": [
+      43,
+      699,
+      400,
+      943
+    ],
+    "facts": [
+      "The pie chart shows the number of bonds listed at the end of 2012.",
+      "Corporate bonds dominate with 740, followed by government bonds with 147.",
+      "Local government bonds and SME private debts each have 44, while the remaining categories are much smaller."
+    ]
+  },
+  {
+    "shot": "114300",
+    "id": 3000594,
+    "title": "World Water Distribution",
+    "category": "pie",
+    "box": [
+      43,
+      1048,
+      425,
+      1330
+    ],
+    "facts": [
+      "The upper pie chart divides world water into 98 percent salt water and 2 percent fresh water.",
+      "The freshwater breakdown shows 87 percent ice, 12 percent groundwater and 1 percent rivers and lakes.",
+      "Most world water is saline, and most freshwater is stored as ice."
+    ]
+  },
+  {
+    "shot": "114235",
+    "id": 3000669,
+    "title": "World Water Distribution",
+    "category": "other",
+    "box": [
+      65,
+      426,
+      346,
+      733
+    ],
+    "facts": [
+      "The graphic divides global water into 97.5 percent salt water and 2.5 percent freshwater.",
+      "Most freshwater is in glaciers and permanent snow, followed by groundwater.",
+      "Only a small part is in other stores such as lakes, soil, rivers and living things."
+    ]
+  },
+  {
+    "shot": "114235",
+    "id": 3000665,
+    "title": "Lecture Hall",
+    "category": "photo",
+    "box": [
+      65,
+      843,
+      524,
+      1226
+    ],
+    "facts": [
+      "The illustration shows a lecture hall with rows of seats facing the front.",
+      "A central aisle leads towards a stage and a large presentation screen.",
+      "Windows and ceiling lights surround the room."
+    ]
+  },
+  {
+    "shot": "114235",
+    "id": 3000664,
+    "title": "Adults vs Teens",
+    "category": "bar",
+    "box": [
+      65,
+      1327,
+      552,
+      1614
+    ],
+    "facts": [
+      "The grouped bars compare adults and teenagers by the number of texts sent on a typical day.",
+      "Adults most commonly send 1 to 10 texts, at 51 percent.",
+      "Teenagers are more strongly represented in the 101-plus category, at 29 percent compared with 8 percent for adults.",
+      "Adults have a larger share in the no-text category."
+    ]
+  },
+  {
+    "shot": "114208",
+    "id": 3000708,
+    "title": "Garden Instructions",
+    "category": "photo",
+    "box": [
+      93,
+      83,
+      596,
+      411
+    ],
+    "facts": [
+      "The photograph shows a sign asking visitors to respect and enjoy historic gardens.",
+      "The symbols prohibit cycling, alcohol and a ball activity.",
+      "A person walking a dog is shown as permitted."
+    ]
+  },
+  {
+    "shot": "114208",
+    "id": 3000707,
+    "title": "Ice Thickness",
+    "category": "other",
+    "box": [
+      93,
+      513,
+      596,
+      806
+    ],
+    "facts": [
+      "The illustration presents minimum ice-thickness guidelines for new clear ice.",
+      "The labelled thicknesses increase from 4 inches for a person to 5\u20137 for a snowmobile, 8\u201312 for a car and 12\u201315 for a truck.",
+      "The heading states that ice is never 100 percent safe."
+    ]
+  },
+  {
+    "shot": "114208",
+    "id": 3000704,
+    "title": "Iron Age Hut",
+    "category": "other",
+    "box": [
+      93,
+      918,
+      596,
+      1196
+    ],
+    "facts": [
+      "The cross-section shows an Iron Age hut.",
+      "The roof is labelled with rafters and reed thatch.",
+      "The interior includes a seat and ashes, while the sides include a turf wall and ground level."
+    ]
+  },
+  {
+    "shot": "114208",
+    "id": 3000697,
+    "title": "Protective Equipment",
+    "category": "other",
+    "box": [
+      93,
+      1315,
+      481,
+      1687
+    ],
+    "facts": [
+      "The illustration shows a worker surrounded by personal protective equipment symbols.",
+      "These include a helmet, hearing protection, protective glasses, a mask, gloves and boots.",
+      "The image emphasises several forms of workplace protection."
+    ]
+  },
+  {
+    "shot": "114146",
+    "id": 3000742,
+    "title": "Weekly Household Spending",
+    "category": "other",
+    "box": [
+      65,
+      72,
+      570,
+      407
+    ],
+    "facts": [
+      "The infographic compares average weekly household expenditure in 2015\u20132016.",
+      "Housing is the largest displayed category at 164 euros, followed by transport at 124 and food at 123.",
+      "Education and training is one of the smallest categories at 18 euros."
+    ]
+  },
+  {
+    "shot": "114146",
+    "id": 3000739,
+    "title": "American Fast Food",
+    "category": "bar",
+    "box": [
+      65,
+      508,
+      570,
+      825
+    ],
+    "facts": [
+      "The grouped bar chart compares American fast-food dining frequency in July 2003, December 2006 and July 2013.",
+      "About once a week and once or twice a month are the largest frequency groups.",
+      "Every day and never are the smallest groups.",
+      "The once-or-twice-a-month category is highest in 2013."
+    ]
+  },
+  {
+    "shot": "114146",
+    "id": 3000726,
+    "title": "Plastic Bottle Recycling",
+    "category": "process",
+    "box": [
+      65,
+      939,
+      426,
+      1318
+    ],
+    "facts": [
+      "The diagram shows a cycle for recycling old plastic bottles.",
+      "Used bottles are collected and processed through a recycling facility.",
+      "New bottles are produced and can return to the cycle after use."
+    ]
+  },
+  {
+    "shot": "114120",
+    "id": 3001061,
+    "title": "Taxation by Countries",
+    "category": "bar",
+    "box": [
+      103,
+      535,
+      589,
+      732
+    ],
+    "facts": [
+      "The horizontal bar chart compares payroll and superannuation taxation by country.",
+      "Australia and Austria both show 16.6 percent at the top.",
+      "Denmark appears lower in the ranking, and a weighted average is also shown.",
+      "Several other country labels are not readable in the supplied image."
+    ]
+  },
+  {
+    "shot": "114120",
+    "id": 3000885,
+    "title": "Honey Production",
+    "category": "map",
+    "box": [
+      103,
+      812,
+      549,
+      1117
+    ],
+    "facts": [
+      "The map shows honey production as percentages of national production by state in Mexico.",
+      "Northern, central and southern zones are labelled.",
+      "Some southern and eastern states have higher shares than many northern states."
+    ]
+  },
+  {
+    "shot": "114120",
+    "id": 3000881,
+    "title": "2014 Diamond Production",
+    "category": "pie",
+    "box": [
+      104,
+      1206,
+      512,
+      1586
+    ],
+    "facts": [
+      "The pie chart compares diamond production by value in 2014.",
+      "Russia is largest at 26 percent, closely followed by Botswana at 25 percent.",
+      "Canada accounts for 14 percent, Angola 9 percent and South Africa 8 percent.",
+      "Other countries together contribute 18 percent."
+    ]
+  },
+  {
+    "shot": "114108",
+    "id": 3001369,
+    "title": "Influenced English",
+    "category": "pie",
+    "box": [
+      93,
+      80,
+      595,
+      455
+    ],
+    "facts": [
+      "The supplied image shows a three-dimensional pie chart with several slices.",
+      "There are three large slices and several smaller slices.",
+      "No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+    ]
+  },
+  {
+    "shot": "114108",
+    "id": 3001366,
+    "title": "Gender Social Activities",
+    "category": "bar",
+    "box": [
+      93,
+      560,
+      504,
+      948
+    ],
+    "facts": [
+      "The bars compare men and women participating in drama, painting, sculpture and language activities.",
+      "Women are higher in drama, painting and language, while men are higher in sculpture.",
+      "Language has the largest female count at 40, while painting has the largest male count at 25."
+    ]
+  },
+  {
+    "shot": "114108",
+    "id": 3001356,
+    "title": "Apple Life Cycle",
+    "category": "process",
+    "box": [
+      93,
+      1049,
+      595,
+      1358
+    ],
+    "facts": [
+      "The diagram shows a repeating apple life cycle.",
+      "The labelled stages are seeds, tree, bud, flower and fruit.",
+      "The fruit supplies seeds that begin the next cycle."
+    ]
+  },
+  {
+    "shot": "114120",
+    "id": 3001078,
+    "title": "Good and Bad Habits",
+    "category": "other",
+    "box": [
+      103,
+      35,
+      599,
+      420
+    ],
+    "facts": [
+      "The illustration contrasts food and lifestyle habits using two head silhouettes.",
+      "One side shows more processed foods, while the other shows fruit and vegetables.",
+      "Diet, exercise and sleep are presented as ways to change habits and boost brainpower."
+    ]
+  },
+  {
+    "shot": "114041",
+    "id": 3001409,
+    "title": "Television Viewing Time",
+    "category": "bar",
+    "box": [
+      136,
+      117,
+      460,
+      452
+    ],
+    "facts": [
+      "The histogram shows frequency by hours per day spent watching television.",
+      "The largest frequency is around 3 to 4 hours.",
+      "Very short viewing times and 6 to 7 hours are relatively uncommon."
+    ]
+  },
+  {
+    "shot": "114041",
+    "id": 3001403,
+    "title": "Foreign Language Motivation",
+    "category": "pie",
+    "box": [
+      136,
+      555,
+      449,
+      730
+    ],
+    "facts": [
+      "The chart shows reasons students choose to study foreign languages.",
+      "Personal interest or enjoyment is largest at 43 percent, followed by degree requirements at 24 percent.",
+      "Future career use accounts for 13 percent, while the other reasons have smaller shares."
+    ]
+  },
+  {
+    "shot": "114041",
+    "id": 3001398,
+    "title": "Australian Birth Trends",
+    "category": "bar",
+    "box": [
+      136,
+      831,
+      439,
+      1218
+    ],
+    "facts": [
+      "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023.",
+      "India shows the largest increase and the largest 2023 population among the countries displayed.",
+      "China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+    ]
+  },
+  {
+    "shot": "114041",
+    "id": 3001386,
+    "title": "Pet Household Owners",
+    "category": "pie",
+    "box": [
+      136,
+      1321,
+      638,
+      1657
+    ],
+    "facts": [
+      "The pie chart compares households owning different kinds of pets.",
+      "Dogs have the largest share at 45 percent, followed by cats at 29 percent.",
+      "Freshwater fish account for 8 percent and birds 6 percent, with the remaining pet categories smaller."
+    ]
+  }
+]

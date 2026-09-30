@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createController,time}=require('../public/speaking-practice'),bank=require('../content/speaking-bank'),{present}=require('../speaking-lab');
-function harness() {
+function harness({includePredictions=false}={}) {
   const nodes=new Map(),events={},intervals=new Map(),attempts=new Map(),requests=[],recorders=[],audio=[],storage=new Map();let seq=0,now=1000,stops=0,uid='alice';
   class Element {
     constructor(id){this.id=id;this.value='';this.dataset={};this.disabled=false;this.hidden=false;this.textContent='';nodes.set(id,this);}
@@ -24,7 +24,7 @@ function harness() {
   env.fetch=async(url,options={})=>{
     requests.push({url,body:options.body});const route=url.replace('/api/speaking',''),parts=route.split('/').filter(Boolean),body=typeof options.body==='string'?JSON.parse(options.body):options.body;
     const reply=(data,ok=true)=>({ok,json:async()=>data,blob:async()=>new Blob([Buffer.alloc(300)])});
-    if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:bank.questions,transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery'});
+    if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:includePredictions?bank.questions:bank.questions.filter(q=>!q.predictionSource),transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery'});
     if(route==='/attempts'&&!body)return reply([...attempts.values()].map(a=>({...a,title:bank.questions.find(q=>q.id===a.questionId).title,type:bank.questions.find(q=>q.id===a.questionId).type})));
     if(route==='/attempts'){const a={id:body.id,questionId:body.questionId,status:'draft',revision:0,transcript:'',startedAt:now};attempts.set(a.id,a);return reply(present(a));}
     const a=attempts.get(parts[1]);assert(a,route);
@@ -46,7 +46,7 @@ function harness() {
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
 
 test('Read Aloud opens directly in timed preparation with Skip preparation as the only normal control',async()=>{
-  const h=harness();await h.controller.open('ra');assert.equal((h.host.innerHTML.match(/data-speaking-question=/g)||[]).length,5);
+  const h=harness();await h.controller.open('ra');assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,5);
   await h.click({speakingQuestion:'ra-1'});
   assert.equal(h.nodes.get('speaking-phase').textContent,'Preparation');
   assert.equal(h.nodes.get('speaking-skip').hidden,false);
@@ -187,6 +187,73 @@ test('Assessment failure preserves the saved recording and offers Retry assessme
 });
 
 
+test('Image filters and search intersect without starting an attempt or requesting audio',async()=>{
+  const h=harness();await h.controller.open('di');
+  assert.match(h.host.innerHTML,/Line graph/);assert.match(h.host.innerHTML,/Random image \/ photograph/);
+  await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
+  assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-3/);
+  assert.doesNotMatch(h.nodes.get('speaking-library-list').innerHTML,/di-1/);
+  assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
+  h.host.oninput({target:{id:'speaking-search',value:'budget'}});
+  assert.match(h.nodes.get('speaking-library-list').innerHTML,/No questions match/);
+  await h.click({speakingAction:'clear-filters'});
+  assert.equal(h.nodes.get('speaking-match-count').textContent,'5 of 5 questions');
+  assert.equal(h.attempts.size,0);assert.equal(h.recorders.length,0);
+});
+
+test('Question filters survive task changes and are cleared when the account changes',async()=>{
+  const h=harness();await h.controller.open('di');
+  await h.host.onchange({target:{id:'speaking-image-category',value:'pie'}});
+  await h.controller.open('rts');assert.doesNotMatch(h.host.innerHTML,/id="speaking-image-category"/);
+  await h.controller.open('di');assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
+  h.user('bob');await h.controller.open('di');assert.equal(h.nodes.get('speaking-match-count').textContent,'5 of 5 questions');
+});
+
+test('Every catalogue page is reachable and search resets pagination',async()=>{
+  const h=harness(),fetch=h.env.fetch;
+  h.env.fetch=async(url,options)=>{if(url.endsWith('/catalog'))return {ok:true,json:async()=>({types:bank.types,questions:Array.from({length:45},(_,i)=>({id:'di-page-'+(i+1),type:'di',title:'Image '+(i+1),imageCategory:'line'}))})};return fetch(url,options);};
+  await h.controller.open('di');
+  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,20);
+  await h.click({speakingPage:'2'});
+  assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-page-45/);
+  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,5);
+  h.host.oninput({target:{id:'speaking-search',value:'di-page-1'}});
+  assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-page-1"/);
+  assert.equal(h.nodes.get('speaking-match-count').textContent,'11 of 45 questions');
+});
+
+test('Filtered result navigation stays within the selected image category',async()=>{
+  const h=harness();await h.controller.open('di');
+  await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
+  await h.click({speakingQuestion:'di-3'});await h.click({speakingAction:'skip'});h.tick(41000);await flush();
+  assert.match(h.host.innerHTML,/Question 1 of 1/);
+  await h.click({speakingMove:'1'});assert.equal(h.attempts.size,1);
+  await h.click({speakingAction:'list'});assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
+});
+
+test('Unknown visual kinds are never guessed to be photographs; aliases and source IDs are searchable',()=>{
+  const {imageCategory,filterQuestions}=require('../public/speaking-practice');
+  assert.equal(imageCategory({type:'di',visual:{kind:'new-format'}}),'unclassified');
+  assert.equal(imageCategory({type:'di',imageCategory:'constructor'}),'unclassified');
+  assert.equal(imageCategory({type:'di',imageCategory:'random image'}),'photo');
+  assert.equal(imageCategory({type:'di',imageCategory:'pie chart'}),'pie');
+  const rows=[{id:'di-import-1',type:'di',imageCategory:'process-chart',predictionSource:{sourceId:'321'}},{id:'ra-1',type:'ra',title:'321'}];
+  assert.deepEqual(filterQuestions(rows,'di',{search:'321',category:'process'}),[rows[0]]);
+});
+
+ test('Supplied weekly DI items intersect with chart filters and search and clear correctly',async()=>{
+ const h=harness({includePredictions:true});await h.controller.open('di');
+ await h.host.onchange({target:{id:'speaking-prediction',value:'weekly'}});
+ assert.equal(h.nodes.get('speaking-match-count').textContent,'49 of 54 questions');
+ await h.host.onchange({target:{id:'speaking-image-category',value:'photo'}});
+ assert.equal(h.nodes.get('speaking-match-count').textContent,'4 of 54 questions');
+ h.host.oninput({target:{id:'speaking-search',value:'3000125'}});
+ assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 54 questions');
+ assert.match(h.nodes.get('speaking-library-list').innerHTML,/Weekly Prediction/);
+ await h.click({speakingAction:'clear-filters'});
+ assert.equal(h.nodes.get('speaking-match-count').textContent,'54 of 54 questions');
+ assert.equal(h.attempts.size,0);
+ });
 test('Skipping preparation opens the next question without submitting an empty attempt',async()=>{
  const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-1'});
  await h.click({speakingMove:'1'});h.tick(1000);await flush();

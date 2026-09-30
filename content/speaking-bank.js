@@ -1,5 +1,5 @@
 'use strict';
-// Original teaching material; not recalled or licensed Pearson examination items.
+// Original teaching material plus separately attributed user-supplied prediction images.
 const types = {
   ra: { name: 'Read Aloud', preparation: 35, seconds: 40, instruction: 'Read the passage aloud exactly as written. Use the preparation time to notice punctuation and meaningful phrases.' },
   rs: { name: 'Repeat Sentence', preparation: 0, seconds: 15, instruction: 'Listen once, then repeat the sentence exactly. Keep the words in their original order.' },
@@ -24,6 +24,7 @@ add('rs', [
   { title: 'A room change', text: 'Tomorrow’s lecture has been moved to the larger room beside the main entrance.' },
   { title: 'Submitting a group report', text: 'Each group must submit one report and include the names of all members.' }
 ]);
+questions.push(...require('./di-user-predictions.json').map(q => ({type:'di',...types.di,...q})));
 add('di', [
   { title: 'Household electricity use', visual: { kind: 'bar', title: 'Household electricity use', subtitle: 'Share of annual consumption (%)', labels: ['Heating', 'Cooling', 'Appliances', 'Lighting'], values: [40, 25, 20, 15] },
     facts: ['The chart compares four uses of household electricity.', 'Heating is highest at 40%.', 'Cooling is 25%, appliances 20% and lighting 15%.', 'Heating and cooling together account for 65%, almost two thirds of use.'],
@@ -126,5 +127,5 @@ for (const q of questions) {
   if (q.turns) q.text = q.turns.map(([speaker, text]) => speaker + ': ' + text).join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
 }
-module.exports = { version: 1, types, questions,
+module.exports = { version: 2, types, questions,
   source: 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf' };
