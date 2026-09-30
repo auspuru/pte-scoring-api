@@ -33,8 +33,8 @@ test('prediction/original content exposes freshness and unique-bank metadata', (
   assert.equal(stats.writingPrediction.swt,18);
   assert.equal(stats.writingPrediction.sst,30);
   assert.equal(stats.writingPrediction.wfd,69);
-  assert.equal(stats.patternOriginal.dropdown,12);
-  assert.equal(stats.patternOriginal.wordbank,12);
+  assert.equal(stats.patternOriginal.dropdown,24);
+  assert.equal(stats.patternOriginal.wordbank,24);
 });
 
 test('student UIs label reused predictions as Revision instead of presenting them as new', () => {
@@ -80,4 +80,23 @@ test('user-supplied SST predictions stay first and verbatim-tagged', () => {
   assert(first.every(q=>q.predictionSource.contentStatus==='verbatim-user-provided'));
   assert(first.every(q=>q.audioMode==='runtime-neural'));
   assert.equal(predictions.sst.length,30);
+});
+
+ test('all Reading practice mocks use full-length FIB passages with intact blank keys', () => {
+  const tools=require('../public/reading-mock-tools');
+  const bank=require('../public/reading-bank.json');
+  for(let i=1;i<=15;i++){
+    const questions=tools.compose(bank,'reading-practice-mock-'+i).questions;
+    for(const type of ['dropdown','wordbank']){
+      const items=questions.filter(q=>q.type===type);
+      assert.equal(items.length,5);
+      for(const q of items){
+        const words=q.passage.trim().split(/\s+/).length;
+        assert(words >= (type==='dropdown'?100:60));
+        assert(words <= (type==='dropdown'?300:80));
+        assert.equal((q.passage.match(/\[\[\d+\]\]/g)||[]).length,q.answers.length);
+        assert(!q.predictionSource);
+      }
+    }
+  }
 });

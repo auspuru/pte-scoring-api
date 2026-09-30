@@ -29,12 +29,12 @@
     if (LANGUAGE_FIRST_FIB_EXCLUDE[q.type]?.has(String(q.id))) return false;
     return !TECHNICAL_FIB_TERMS.test([q.title,q.passage,q.answers,q.answer,q.options,q.wordBank].flat(Infinity).join(' '));
   }
-  function qualityFibPool(bank, type, offset = 0) {
+  function qualityFibPool(bank, type, offset = 0, minimumWords = 0) {
     const library = (bank.practiceLibraries || []).find(l => l.id === type)?.questions || [];
     const core = (bank.sets || []).flatMap(set => (set.questions || []).filter(q => q.type === type)
       .map(q => ({ ...q, uid: q.uid || set.id + ':' + q.id, reasoning: q.reasoning || set.reasoning?.[q.id] || {} })));
     const pattern = patternBank?.[type] || [];
-    const merged = [...pattern, ...library].filter(languageFirstFib).map(q => strengthenFib(q, 'practice:'+q.id));
+    const merged = [...pattern, ...library].filter(q => languageFirstFib(q) && String(q.passage || '').trim().split(/\s+/).length >= minimumWords).map(q => strengthenFib(q, 'practice:'+q.id));
     const seen = new Set(), unique = merged.filter(q => {
       const identity = String(q.passage || '').trim().replace(/\s+/g,' ').toLowerCase();
       if (!identity || seen.has(identity)) return false;
@@ -210,7 +210,7 @@
 
   // Reading Practice mocks mirror the current Reading section shape: all five
   // Reading task types, exam order and published task-count ranges. Prediction
-  // FIB items are retained, but they are no longer presented as FIB-only tests.
+  // FIB items use the full-length original language-first bank.
   function composeReadingPractice(bank, preset, preferred) {
     const syntheticNumber = practiceMockNumber(preset.id);
     const family = preset.family === 'sectional' ? 'sectional' : 'practice';
@@ -227,8 +227,7 @@
       let added = 0;
       const spec = readingFormat.tasks.find(task => task.type === type);
       const fib = ['dropdown','wordbank'].includes(type);
-      const predictionPool = fib && (syntheticNumber || preset.kind === 'reading-blanks') ? predictionFibPool(type,index*5) : [];
-      const quality = fib ? [...predictionPool, ...qualityFibPool(bank,type,index*5)] : [];
+      const quality = fib ? qualityFibPool(bank,type,index*5,type === 'dropdown' ? 100 : 60) : [];
       const sources = fib
         ? [{ id:'language-first-'+type, questions:quality }]
         : [preferred, ...rotated].filter(Boolean);

@@ -322,7 +322,7 @@
     const seen=seenBefore(q), src=prediction||pattern;
     const status=prediction?(seen?'Revision':'Unseen prediction'):(seen?'Revision':'Original IPT practice');
     const origin=prediction
-      ? [src.provider,src.week,src.contentStatus==='adapted'?'Adapted practice':src.contentStatus].filter(Boolean).join(' · ')
+      ? [src.week,src.contentStatus==='adapted'?'Adapted practice':src.contentStatus].filter(Boolean).join(' · ')
       : ['IPT Brisbane',src.kind==='original-pattern-derived'?'Pattern-derived original':src.contentStatus].filter(Boolean).join(' · ');
     const reviewed=src.lastReviewed||src.checkedAt;
     return [status,origin,reviewed?'Reviewed '+reviewed:''].filter(Boolean).join(' · ');
