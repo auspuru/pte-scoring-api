@@ -6192,12 +6192,18 @@ const interventionLearning = require('./interventions').installInterventions(app
 
 // Refresh aggregated learning after successful saves; coalesce frequent autosaves.
 const learningRefreshes=new Map();
+const LEARNING_REFRESH_DELAY_MS=5000;
 function scheduleLearningRefresh(uid) {
-  if(!uid||learningRefreshes.has(uid))return;
+  if(!uid)return;
+  const existing=learningRefreshes.get(uid);
+  if(existing)clearTimeout(existing);
+  // Learning snapshots are advisory analytics, not part of the durability path.
+  // Use a trailing debounce so a burst of autosaves causes one evidence scan
+  // after activity settles instead of repeatedly competing with live syncs.
   const timer=setTimeout(()=>{
     learningRefreshes.delete(uid);
     interventionLearning.observeStudent(uid).catch(()=>console.warn('[assistant-learning] Snapshot refresh unavailable.'));
-  },500);
+  },LEARNING_REFRESH_DELAY_MS);
   timer.unref?.();learningRefreshes.set(uid,timer);
 }
 for(const method of ['setUserData','saveProgress']) {
