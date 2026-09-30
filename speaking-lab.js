@@ -78,8 +78,8 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     a=await store.update(req.speakingUser,req.params.id,async a=>{
       const q=bank.questions.find(q=>q.id===a.questionId);
       if(!a.result || a.result.scoringMode==='local') {
-        const next=await scoring.grade(q,a.transcript,callModel);
-        if(!a.result || next.scoringMode!=='local') a.result=next;
+        const previous=a.result,next=await scoring.grade(q,a.transcript,callModel);
+        if(!previous || next.scoringMode!=='local'||next.version!==previous.version)a.result=next;
       }
       if(a.result&&a.recording&&deliveryAssessmentAvailable&&(a.result.pronunciation==null||a.result.deliveryVersion!==delivery.VERSION)) {
         try {
