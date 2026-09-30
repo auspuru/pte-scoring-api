@@ -80,7 +80,13 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
       const q=bank.questions.find(q=>q.id===a.questionId);
       if(!a.result || a.result.scoringMode==='local') {
         const previous=a.result,next=await scoring.grade(q,a.transcript,callModel);
-        if(!previous || next.scoringMode!=='local'||next.version!==previous.version)a.result=next;
+        if(!previous || next.scoringMode!=='local'||next.version!==previous.version) {
+          // Content retries must retain the independent assessment of the same audio.
+          const savedDelivery={};
+          for(const key of ['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider'])
+            if(previous&&Object.prototype.hasOwnProperty.call(previous,key))savedDelivery[key]=previous[key];
+          a.result={...next,...savedDelivery};
+        }
       }
       if(a.result&&a.recording&&deliveryAssessmentAvailable&&(a.result.pronunciation==null||a.result.deliveryVersion!==delivery.VERSION)) {
         try {

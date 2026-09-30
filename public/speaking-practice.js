@@ -208,8 +208,8 @@
         ? '<div class="speaking-delivery-callout"><div><strong>Delivery scoring has been recalibrated</strong><p>Update this saved recording to use the current pronunciation and oral-fluency method.</p></div><button class="portal-button" data-speaking-action="submit">Update audio score</button></div>'
         : deliveryReady
           ? '<div class="speaking-delivery-coaching">'
-              +'<section><span class="speaking-kicker">Pronunciation focus</span><h4>'+esc(pronunciationCurrent.descriptor||'Pronunciation')+'</h4><p>'+esc(pronunciationCurrent.coaching||'Keep your speech clear and make stressed syllables easy to hear.')+'</p></section>'
-              +'<section><span class="speaking-kicker">Fluency focus</span><h4>'+esc(fluencyCurrent.descriptor||'Oral fluency')+'</h4><p>'+esc(fluencyCurrent.coaching||'Keep a steady pace and group words into natural phrases.')+'</p></section>'
+              +'<section><span class="speaking-kicker">Pronunciation focus</span><h4>'+esc(pronunciationCurrent.descriptor||'Pronunciation')+'</h4><p>'+esc(pronunciationCurrent.coaching||'Keep your speech clear and make stressed syllables easy to hear.')+'</p><h4>Practise and check</h4><p>'+esc(pronunciationCurrent.words?.length?'Start with these flagged words: '+pronunciationCurrent.words.map(w=>w.word).join(', ')+'. Compare them with a dictionary recording, mark the stressed syllable, then say each word three times and use it in a sentence.':'Choose one sentence from your recording. Compare it with a clear model, mark the stressed syllables, and repeat it three times.')+' Listen back for clear vowels, audible word endings and emphasis on key words. A flagged word is a practice cue; check it against your recording before assuming an error.</p></section>'
+              +'<section><span class="speaking-kicker">Fluency focus</span><h4>'+esc(fluencyCurrent.descriptor||'Oral fluency')+'</h4><p>'+esc(fluencyCurrent.coaching||'Keep a steady pace and group words into natural phrases.')+'</p><h4>Try this next</h4><p>Choose a 20–30 second response. Mark / between ideas, speak each phrase in one smooth run, and pause at the marks. Record it twice; listen for fewer mid-phrase stops and restarts, keeping a comfortable pace.</p></section>'
             +'</div>'
             +'<details class="speaking-inner-details speaking-delivery-diagnostics"><summary>View delivery diagnostics</summary><div class="speaking-delivery-summary">'
               +(Number.isFinite(Number(pronunciationCurrent.accuracy))?'<span>Pronunciation accuracy <strong>'+esc(Math.round(Number(pronunciationCurrent.accuracy)))+'/100</strong></span>':'')
@@ -242,10 +242,21 @@
         +'</div>'
         +(r.coverage?'<details class="speaking-inner-details speaking-content-breakdown"><summary>View detailed content coverage</summary><div class="speaking-coverage">'+r.coverage.map(c=>'<article><span class="speaking-status '+c.status+'">'+esc(c.status)+'</span><h4>'+esc(c.point)+'</h4>'+(c.evidence?'<blockquote>“'+esc(c.evidence)+'”</blockquote>':'')+'<p>'+esc(c.feedback)+'</p></article>').join('')+'</div></details>':'')
         +comparison
+        +learningVideos()
         +'<p class="speaking-result-disclaimer">'+esc(r.deliveryAssessment||'Content and delivery scores are independent practice estimates and are not Pearson scores.')+'</p>';
+    }
+    function learningVideos() {
+      const videos=[
+        ['DDE0VhMDPIo','BBC Learning English — Word stress','Listen for the stressed syllable, then repeat five words in short sentences.'],
+        ['7tsljuK4f2E',"Rachel’s English — Linking consonants to vowels",'Copy five short phrases, joining words smoothly without rushing.'],
+        ['m3g51xfopIE',"Rachel’s English — Imitation exercises",'Use a 10–15 second clip: listen, imitate the rhythm, record yourself, and compare.'],
+        ['LDkvRFCm8No','BBC Learning English — Speaking more fluently','Watch the advice, then practise a one-minute everyday explanation twice.']
+      ];
+      return '<details class="speaking-inner-details"><summary>Improve everyday pronunciation and fluency — YouTube lessons</summary><p>General English lessons. Aim for clear, comfortable speech; you do not need to change your accent. Practise for 10 minutes daily.</p><ul>'+videos.map(([id,title,exercise])=>'<li><a href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener noreferrer">'+esc(title)+'</a><p>'+esc(exercise)+'</p></li>').join('')+'</ul></details>';
     }
     function refreshControls() {
       const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),finish=doc.getElementById('speaking-finish'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
+      for(const button of host?.querySelectorAll?.('[data-speaking-action="submit"]')||[])button.disabled=busy;
       const levelPanel=doc.getElementById('speaking-level-panel');if(levelPanel)levelPanel.hidden=!stream;
       if(skip)skip.hidden=phase!=='preparing'||attempt?.question.type==='rts';
       const respond=doc.getElementById('speaking-respond');
@@ -365,10 +376,11 @@
       if(busy||!attempt)return;
       if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
       if(!attempt.recording){message('No saved recording is available for assessment.');return;}
-      busy=true;phase='saving';refreshControls();const id=attempt.id,user=owner;message('Checking your saved response…');
+      const retryingContent=attempt.result?.scoringMode==='local';
+      busy=true;phase='saving';refreshControls();const id=attempt.id,user=owner;message(retryingContent?'Retrying content review…':'Checking your saved response…');
       try{
         const a=await api('/attempts/'+id+'/submit',{});
-        if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;phase='idle';notice='';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}
+        if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;phase='idle';notice=retryingContent?(a.result?.scoringMode==='local'?'Content review is still unavailable. Your saved response and audio feedback are retained. Please retry later.':'Content review completed. Your feedback has been updated.'):'';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}
       }catch(e){
         phase='error';message(e.message+' Your recording is saved; use Retry assessment.');
         try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}
