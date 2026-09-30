@@ -111,11 +111,13 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
-  assert.match(html,/\/personal-ai-assistant\.js\?v=7/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=8/);
   assert.match(html,/\/interventions-client\.js\?v=9/);
   assert.match(personalAssistant,/\/api\/interventions\/screen-help/,'assistant should answer from the current portal screen');
   assert.match(personalAssistant,/function screenContext\(usePage = true\)/,'assistant should collect current visible page context');
   assert.match(personalAssistant,/aria-label="Open AI Assistant" title="Open AI Assistant"/,'assistant mascot should open the current-page side panel');
+  assert.match(personalAssistant,/class="personal-ai-close-button"[^>]*data-ai-close[^>]*aria-label="Close AI Assistant"/,'assistant panel should expose a clear labelled close button');
+  assert.match(personalAssistant,/event\.key === 'Escape'.*closePanel\(\)/s,'Escape key should continue to close the assistant');
   assert.doesNotMatch(personalAssistant,/Coming Soon/,'assistant must not show a Coming Soon state');
   assert.doesNotMatch(personalAssistantCss,/Coming Soon/,'assistant presentation must not contain Coming Soon copy');
   assert.match(personalAssistant,/Reading this page/,'assistant should disclose current-page context use');
