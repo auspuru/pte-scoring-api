@@ -839,3 +839,15 @@ test('Every Reading and Listening question library supports Next and Back withou
   assert.equal(snapshot(h).session.id,id,library.id+' Back restores the first attempt');
  }
 });
+
+test('Reorder practice recovers null entries saved by the old empty-array arrow bug',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'reorder'});
+ const uid=h.host.innerHTML.match(/data-practice-uid="([^"]+)"/)[1];await h.click({practiceUid:uid});
+ const saved=snapshot(h),q=saved.session.questions[0];saved.session.answers[q.uid]=[null,null];
+ h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();
+ await h.ctx.ReadingPractice.open({libraryId:'reorder'});
+ assert.match(h.host.innerHTML,/data-reorder="0"/);
+ await h.click({reorder:'0',direction:'1'});
+ assert.equal(snapshot(h).session.answers[q.uid].length,q.items.length);
+ assert(snapshot(h).session.answers[q.uid].every(key=>q.items.some(item=>item.key===key)));
+});

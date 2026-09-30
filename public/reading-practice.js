@@ -455,7 +455,8 @@
     }
     if(q.type==='reorder') {
       if(exam.isExam(state.session)&&!state.session.done)return exam.reorderHTML(q,a,selectedParagraph);
-      const order=a.length?a:q.items.map(x=>x.key);
+      const valid=a.filter(key=>q.items.some(item=>item.key===key));
+      const order=valid.length===q.items.length?valid:q.items.map(x=>x.key);
       return `<ol class="reading-reorder">${order.map((key,i)=>`<li><p>${escape(q.items.find(x=>x.key===key).text)}</p><div><button class="portal-button" data-reorder="${i}" data-direction="-1" ${i===0?'disabled':''} aria-label="Move paragraph ${i+1} up">↑</button><button class="portal-button" data-reorder="${i}" data-direction="1" ${i===order.length-1?'disabled':''} aria-label="Move paragraph ${i+1} down">↓</button></div></li>`).join('')}</ol><p class="reading-note">Use the arrows to order the paragraphs. ${!a.length?'Move a paragraph to record your answer.':''}</p>`;
     }
     return `<div class="reading-multiple-choice ${q.passage?'reading-has-passage':''}">${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}<div class="reading-choice-options">${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${q.choiceIndices?.[i] ?? i}" ${a.includes(q.choiceIndices?.[i] ?? i)?'checked':''}>${escape(choice)}</label>`).join('')}</div></div>`;
@@ -792,7 +793,8 @@
     if(d.reorder!==undefined&&q.type==='reorder'){
       // Retry/cloud restore can leave an explicit empty array. Start from the
       // same visible order as questionHTML rather than swapping undefined entries.
-      const saved=s.answers[q.uid],a=saved?.length?[...saved]:q.items.map(x=>x.key);
+      const saved=(s.answers[q.uid]||[]).filter(key=>q.items.some(item=>item.key===key));
+      const a=saved.length===q.items.length?[...saved]:q.items.map(x=>x.key);
       const i=Number(d.reorder),direction=Number(d.direction),j=i+direction;
       if(!Number.isInteger(i)||![-1,1].includes(direction)||i<0||i>=a.length||j<0||j>=a.length)return;
       [a[i],a[j]]=[a[j],a[i]];s.answers[q.uid]=a;persist();return renderSession();
