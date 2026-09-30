@@ -26,8 +26,13 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
-        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [namespace + ':' + id]);
-        const { rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
+        let { rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
+        if (!rows.length) {
+          // Existing attempts are already serialized by FOR UPDATE. The advisory
+          // lock is only needed for the creation race, where no row exists yet.
+          await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [namespace + ':' + id]);
+          ({ rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]));
+        }
         if (rows.length && rows[0].username !== uid) throw Object.assign(Error('Attempt not found.'), { status: 404 });
         const value = await fn(rows[0]?.data || null);
         if (value) await client.query(`INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
