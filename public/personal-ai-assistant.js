@@ -363,7 +363,7 @@
           '</div>',
           '<div class="personal-ai-head-actions">',
             '<button type="button" class="personal-ai-icon-button" data-ai-new title="New chat" aria-label="Start new chat">↻</button>',
-            '<button type="button" class="personal-ai-icon-button" data-ai-close title="Close" aria-label="Close AI Assistant">×</button>',
+            '<button type="button" class="personal-ai-close-button" data-ai-close aria-label="Close AI Assistant"><span aria-hidden="true">×</span> Close</button>',
           '</div>',
         '</header>',
         '<div class="personal-ai-context-row">',
