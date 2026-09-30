@@ -387,7 +387,10 @@ if (USE_POSTGRES) {
   pgPool = new Pool({
     connectionString: DATABASE_URL,
     ssl: sslDisabled ? false : { rejectUnauthorized: false },
-    max: 10, idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000,
+    // Keep one already-created connection warm so intermittent student traffic
+    // does not repeatedly pay the SSL/Postgres handshake cost after 30s idle.
+    max: 10, min: 1, idleTimeoutMillis: 300000, connectionTimeoutMillis: 10000,
+    keepAlive: true, keepAliveInitialDelayMillis: 10000,
   });
   pgPool.on('error', (err) => { console.error('Postgres pool error:', err.message); });
   console.log(`🐘 Postgres pool created — SSL ${sslDisabled ? 'disabled (local)' : 'enabled'}, URL from ${DATABASE_URL_SOURCE}`);
