@@ -35,6 +35,22 @@ test('Meaning feedback validates every coverage item and rejects invented studen
   assert.throws(()=>scoring.normalize(q,q.sample,raw),/Unsupported/);
   assert.equal((await scoring.grade(q,'',()=>{throw Error('Must not call AI');})).total,0);
 });
+test('Describe Image does not require arithmetic that is not printed in the visual',()=>{
+  const q=bank.questions.find(q=>q.title==='Getting to campus');
+  assert(q);assert.equal(q.facts.some(f=>/400/.test(f)),false);assert.equal(/400/.test(q.sample),false);
+  const p=scoring.prompt(q,q.sample);assert.match(p,/Do NOT penalise a student for failing to calculate or mention a total/);assert.match(p,/response time is only 40 seconds/);
+});
+
+test('Delivery feedback includes actionable coaching and filters noisy numeric/function-word practice tokens',()=>{
+  const evidence={sufficient:true,durationSeconds:39,spokenWords:70};
+  const r=delivery.aggregate([{accuracy:95,fluency:86,prosody:69,weight:39,words:[
+    {word:'for',accuracy:4,errorType:'Mispronunciation'},{word:'120',accuracy:17,errorType:'Mispronunciation'},{word:'transport',accuracy:62,errorType:'Mispronunciation'}
+  ]}],{evidence});
+  assert.equal(r.pronunciation.score,4);assert.equal(r.fluency.score,3);
+  assert.match(r.pronunciation.coaching,/stress|emphasis/i);assert.match(r.fluency.coaching,/meaning groups|steady pace|pause/i);
+  assert.deepEqual(r.pronunciation.words.map(w=>w.word),['transport']);
+});
+
 test('Prompt transcripts, content keys and samples stay hidden until submission',()=>{
   for(const q of bank.questions) {
     const publicQ=question(q);assert.equal(publicQ.sample,undefined);assert.equal(publicQ.facts,undefined);assert.equal(publicQ.visual,undefined);
