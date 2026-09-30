@@ -36,7 +36,7 @@ function harness() {
   };
   ctx.getPracticeHistory = () => ctx.userProfile.practiceHistory;
   vm.createContext(ctx);
-  vm.runInContext(['flushSync', 'flushSyncDirect', 'refreshPracticeHistory'].map(fn).join('\n'), ctx);
+  vm.runInContext(['fetchAccountProgress', 'flushSync', 'flushSyncDirect', 'refreshPracticeHistory'].map(fn).join('\n'), ctx);
   return { ctx, requests, statuses, caches, timers, stored };
 }
 async function until(predicate) {
