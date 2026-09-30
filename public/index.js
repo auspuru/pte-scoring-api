@@ -1219,7 +1219,8 @@ async function flushSyncDirect(options = {}) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-session-token': syncToken
+        'x-session-token': syncToken,
+        'x-sync-response': 'delta'
       },
       keepalive: !!options.keepalive,
       signal: AbortSignal.timeout(20000),
