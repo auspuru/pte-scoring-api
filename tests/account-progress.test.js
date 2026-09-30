@@ -216,6 +216,16 @@ test('slow sync envelope diagnostics record only timing, byte size and compact m
   assert.doesNotMatch(serverSource, /\[sync-http-perf\][^\n]*req\.body/);
 });
 
+test('practice account status cache is short-lived, minimal and invalidated by account writes', () => {
+  assert.match(serverSource, /const PRACTICE_ACCOUNT_CACHE_TTL_MS = 5000/);
+  assert.match(serverSource, /SELECT username, blocked, role FROM accounts WHERE username = \$1/);
+  assert.match(serverSource, /practiceAccountCache\.set\(uid, \{ account, expiresAt: Date\.now\(\) \+ PRACTICE_ACCOUNT_CACHE_TTL_MS \}\)/);
+  assert.match(serverSource, /invalidatePracticeAccount\(acct\.username\)/);
+  assert.match(serverSource, /invalidatePracticeAccount\(uid\)/);
+  assert.match(serverSource, /practiceAccountCache\.clear\(\)/);
+  assert.doesNotMatch(serverSource, /practiceAccountCache\.set\([^\n]*passwordHash/);
+});
+
 test('slow practice account checks expose timing without logging account identifiers', () => {
   assert.match(serverSource, /async function getPracticeAccount\(uid\)/);
   assert.match(serverSource, /\[practice-auth-perf\]/);
