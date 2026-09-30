@@ -161,8 +161,8 @@
       const pronunciationReady=!!(pronunciationCurrent&&pronunciationCurrent.score!==null&&pronunciationCurrent.score!==undefined&&Number.isFinite(Number(pronunciationCurrent.score)));
       const fluencyReady=!!(fluencyCurrent&&fluencyCurrent.score!==null&&fluencyCurrent.score!==undefined&&Number.isFinite(Number(fluencyCurrent.score)));
       const deliveryReady=pronunciationReady&&fluencyReady;
-      const pronunciationDetail=deliveryReady&&Number.isFinite(Number(pronunciationCurrent.raw))?(pronunciationCurrent.descriptor?esc(pronunciationCurrent.descriptor)+' · ':'')+esc(Math.round(Number(pronunciationCurrent.raw)))+'/100 calibrated signal':'';
-      const fluencyDetail=deliveryReady&&Number.isFinite(Number(fluencyCurrent.raw))?(fluencyCurrent.descriptor?esc(fluencyCurrent.descriptor)+' · ':'')+esc(Math.round(Number(fluencyCurrent.raw)))+'/100 calibrated signal':'';
+      const pronunciationDetail=deliveryReady?(pronunciationCurrent.descriptor?esc(pronunciationCurrent.descriptor):'Audio assessed'):'';
+      const fluencyDetail=deliveryReady?(fluencyCurrent.descriptor?esc(fluencyCurrent.descriptor):'Audio assessed'):'';
       const evidence=r.deliveryEvidence||{};
       const evidenceNote=evidence.coverage!==null&&evidence.coverage!==undefined&&Number.isFinite(Number(evidence.coverage))
         ? '<div class="speaking-delivery-summary"><span>Matched <strong>'+esc(evidence.matchedWords)+' / '+esc(evidence.referenceWords)+' words</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>'
@@ -170,11 +170,17 @@
       const deliveryStatus=staleDelivery
         ? '<div class="speaking-delivery-callout"><div><strong>Delivery scoring has been recalibrated</strong><p>Update this saved recording to use the current pronunciation and oral-fluency method.</p></div><button class="portal-button" data-speaking-action="submit">Update audio score</button></div>'
         : deliveryReady
-          ? '<div class="speaking-delivery-summary">'
-            +(Number.isFinite(Number(pronunciationCurrent.accuracy))?'<span>Accuracy <strong>'+esc(Math.round(Number(pronunciationCurrent.accuracy)))+'/100</strong></span>':'')
-            +(Number.isFinite(Number(pronunciationCurrent.prosody))?'<span>Prosody <strong>'+esc(Math.round(Number(pronunciationCurrent.prosody)))+'/100</strong></span>':'')
+          ? '<div class="speaking-delivery-coaching">'
+              +'<section><span class="speaking-kicker">Pronunciation focus</span><h4>'+esc(pronunciationCurrent.descriptor||'Pronunciation')+'</h4><p>'+esc(pronunciationCurrent.coaching||'Keep your speech clear and make stressed syllables easy to hear.')+'</p></section>'
+              +'<section><span class="speaking-kicker">Fluency focus</span><h4>'+esc(fluencyCurrent.descriptor||'Oral fluency')+'</h4><p>'+esc(fluencyCurrent.coaching||'Keep a steady pace and group words into natural phrases.')+'</p></section>'
             +'</div>'
-            +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words to practise</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
+            +'<details class="speaking-inner-details speaking-delivery-diagnostics"><summary>View delivery diagnostics</summary><div class="speaking-delivery-summary">'
+              +(Number.isFinite(Number(pronunciationCurrent.accuracy))?'<span>Pronunciation accuracy <strong>'+esc(Math.round(Number(pronunciationCurrent.accuracy)))+'/100</strong></span>':'')
+              +(Number.isFinite(Number(pronunciationCurrent.prosody))?'<span>Prosody <strong>'+esc(Math.round(Number(pronunciationCurrent.prosody)))+'/100</strong></span>':'')
+              +(Number.isFinite(Number(fluencyCurrent.acousticFluency))?'<span>Acoustic fluency <strong>'+esc(Math.round(Number(fluencyCurrent.acousticFluency)))+'/100</strong></span>':'')
+            +'</div>'
+            +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words worth practising</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
+            +'</details>'
           : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>Not enough speech for a reliable delivery score</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
       const mistakes=r.changes?r.changes.filter(c=>c.kind!=='correct'):[];
       const comparison=r.changes
@@ -190,10 +196,10 @@
         +'</div>'
         +deliveryStatus
         +'<div class="speaking-feedback-grid">'
-          +(r.strengths.length?'<section><h4>What you did well</h4>'+list(r.strengths)+'</section>':'')
-          +(r.improvements.length?'<section><h4>Your next step</h4>'+list(r.improvements)+'</section>':'')
+          +(r.strengths.length?'<section><h4>Content strengths</h4>'+list(r.strengths)+'</section>':'')
+          +(r.improvements.length?'<section><h4>Highest-value content improvement</h4>'+list(r.improvements)+'</section>':'')
         +'</div>'
-        +(r.coverage?'<div class="speaking-coverage">'+r.coverage.map(c=>'<article><span class="speaking-status '+c.status+'">'+esc(c.status)+'</span><h4>'+esc(c.point)+'</h4>'+(c.evidence?'<blockquote>“'+esc(c.evidence)+'”</blockquote>':'')+'<p>'+esc(c.feedback)+'</p></article>').join('')+'</div>':'')
+        +(r.coverage?'<details class="speaking-inner-details speaking-content-breakdown"><summary>View detailed content coverage</summary><div class="speaking-coverage">'+r.coverage.map(c=>'<article><span class="speaking-status '+c.status+'">'+esc(c.status)+'</span><h4>'+esc(c.point)+'</h4>'+(c.evidence?'<blockquote>“'+esc(c.evidence)+'”</blockquote>':'')+'<p>'+esc(c.feedback)+'</p></article>').join('')+'</div></details>':'')
         +comparison
         +'<p class="speaking-result-disclaimer">'+esc(r.deliveryAssessment||'Content and delivery scores are independent practice estimates and are not Pearson scores.')+'</p>';
     }
