@@ -810,23 +810,6 @@ test('Reading sync rerenders preserve Recent results expansion and completed pra
  assert.match(source,/reading-next-action/);
 });
 
-test('Reorder practice arrows work after Retry saves an empty answer and reject invalid moves',async()=>{
- const h=client();await h.ctx.ReadingPractice.open({libraryId:'reorder'});
- const match=h.host.innerHTML.match(/data-practice-uid="([^"]+)"/);assert(match);
- await h.click({practiceUid:match[1]});
- await h.click({action:'retry-question'});
- let s=snapshot(h).session,q=s.questions[0],order=q.items.map(item=>item.key);
- assert.deepEqual(s.answers[q.uid],[]);
- await h.click({reorder:'0',direction:'1'});
- s=snapshot(h).session;
- const expected=[...order];[expected[0],expected[1]]=[expected[1],expected[0]];
- assert.deepEqual(s.answers[q.uid],expected);
- await h.click({reorder:'0',direction:'-1'});
- assert.deepEqual(snapshot(h).session.answers[q.uid],expected);
- await h.click({reorder:'1',direction:'-1'});
- assert.deepEqual(snapshot(h).session.answers[q.uid],order);
-});
-
 test('Every Reading and Listening question library supports Next and Back without losing the first attempt',async()=>{
  const libraries=require('../public/practice-catalogue').readingLibraries(bank);
  for(const library of libraries){
@@ -840,14 +823,16 @@ test('Every Reading and Listening question library supports Next and Back withou
  }
 });
 
-test('Reorder practice recovers null entries saved by the old empty-array arrow bug',async()=>{
+test('Reorder practice uses Source/Target panels and supports transfer, ordering and return',async()=>{
  const h=client();await h.ctx.ReadingPractice.open({libraryId:'reorder'});
  const uid=h.host.innerHTML.match(/data-practice-uid="([^"]+)"/)[1];await h.click({practiceUid:uid});
- const saved=snapshot(h),q=saved.session.questions[0];saved.session.answers[q.uid]=[null,null];
- h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();
- await h.ctx.ReadingPractice.open({libraryId:'reorder'});
- assert.match(h.host.innerHTML,/data-reorder="0"/);
- await h.click({reorder:'0',direction:'1'});
- assert.equal(snapshot(h).session.answers[q.uid].length,q.items.length);
- assert(snapshot(h).session.answers[q.uid].every(key=>q.items.some(item=>item.key===key)));
+ const q=snapshot(h).session.questions[0],keys=q.items.map(item=>item.key);
+ assert.match(h.host.innerHTML,/<h3>Source<\/h3>/);assert.match(h.host.innerHTML,/<h3>Target<\/h3>/);
+ await h.click({paragraph:keys[0],panel:'source'});await h.click({transfer:'target'});
+ await h.click({paragraph:keys[1],panel:'source'});await h.click({transfer:'target'});
+ assert.deepEqual(snapshot(h).session.answers[q.uid],keys.slice(0,2));
+ await h.click({orderStep:'-1'});assert.deepEqual(snapshot(h).session.answers[q.uid],[keys[1],keys[0]]);
+ await h.click({transfer:'source'});assert.deepEqual(snapshot(h).session.answers[q.uid],[keys[0]]);
+ await h.click({action:'retry-question'});assert.deepEqual(snapshot(h).session.answers[q.uid],[]);
+ assert.match(h.host.innerHTML,/Move paragraphs here/);
 });

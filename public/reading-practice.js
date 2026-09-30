@@ -453,12 +453,8 @@
       });
       return `<p class="reading-passage">${passage}</p>${q.type==='wordbank'?`<div class="reading-wordbank" data-word-return>${q.bank.map(w=>`<button type="button" draggable="true" data-word="${escape(w)}" class="portal-button" aria-pressed="${selectedWord===w}" ${a.includes(w)?'disabled':''}>${escape(w)}</button>`).join('')}</div><p class="reading-note">Drag words into or between blanks, or select a word and then a blank. Drag a filled word back here or select × to return it.</p>`:''}`;
     }
-    if(q.type==='reorder') {
-      if(exam.isExam(state.session)&&!state.session.done)return exam.reorderHTML(q,a,selectedParagraph);
-      const valid=a.filter(key=>q.items.some(item=>item.key===key));
-      const order=valid.length===q.items.length?valid:q.items.map(x=>x.key);
-      return `<ol class="reading-reorder">${order.map((key,i)=>`<li><p>${escape(q.items.find(x=>x.key===key).text)}</p><div><button class="portal-button" data-reorder="${i}" data-direction="-1" ${i===0?'disabled':''} aria-label="Move paragraph ${i+1} up">↑</button><button class="portal-button" data-reorder="${i}" data-direction="1" ${i===order.length-1?'disabled':''} aria-label="Move paragraph ${i+1} down">↓</button></div></li>`).join('')}</ol><p class="reading-note">Use the arrows to order the paragraphs. ${!a.length?'Move a paragraph to record your answer.':''}</p>`;
-    }
+    if(q.type==='reorder') return exam.reorderHTML(q,a,selectedParagraph);
+
     return `<div class="reading-multiple-choice ${q.passage?'reading-has-passage':''}">${q.passage?`<p class="reading-passage">${escape(q.passage)}</p>`:''}<div class="reading-choice-options">${q.prompt?`<h3>${escape(q.prompt)}</h3>`:''}${q.choices.map((choice,i)=>`<label class="reading-choice"><input type="${q.type==='mcma'?'checkbox':'radio'}" name="readingChoice" data-choice="${q.choiceIndices?.[i] ?? i}" ${a.includes(q.choiceIndices?.[i] ?? i)?'checked':''}>${escape(choice)}</label>`).join('')}</div></div>`;
   }
   function wordCount(text) { return String(text||'').trim().split(/\s+/).filter(Boolean).length; }
@@ -667,7 +663,7 @@
     target?.focus();
   }
   function transferParagraph(destination,position,key=selectedParagraph.key) {
-    if(!editable()||!exam.isExam(state.session))return;
+    if(!editable())return;
     const s=state.session,q=s.questions[s.index];if(q.type!=='reorder'||!q.items.some(item=>item.key===key))return;
     s.answers[q.uid]=exam.moveParagraph(q,s.answers[q.uid]||[],key,destination,position);
     selectedParagraph={key,panel:destination};persist();renderSession();focusParagraph();
@@ -710,7 +706,12 @@
         e.preventDefault();state.session.answers[q.uid]=[];persist();renderSession();return;
       }
     }
-    const b=e.target.closest('button');if(!b||b.disabled)return;
+    const b=e.target.closest('button');
+    if(!b){
+      if(state.session?.questions[state.session.index]?.type==='reorder'&&selectedParagraph.key){selectedParagraph={};renderSession();}
+      return;
+    }
+    if(b.disabled)return;
     const d=b.dataset,s=state.session;
     // Unlock Web Audio while a real click is active, before any async load or countdown.
     if(d.start||d.practiceUid||d.draft!==undefined||d.history!==undefined||d.question!==undefined||d.move!==undefined||['play','soundcheck','resume','exam-next','exam-confirm'].includes(d.action))speaker?.unlock();
@@ -767,7 +768,7 @@
       if(accepted)finish();return;
     }
     if(!editable())return;
-    if(testing&&q.type==='reorder'){
+    if(q.type==='reorder'){
       if(d.paragraph!==undefined){selectedParagraph={key:d.paragraph,panel:d.panel};renderSession();focusParagraph();return;}
       if(d.transfer!==undefined)return transferParagraph(d.transfer);
       if(d.orderStep!==undefined&&selectedParagraph.panel==='target'){
