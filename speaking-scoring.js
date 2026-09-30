@@ -85,13 +85,21 @@ function normalize(q,text,raw) {
 async function grade(q,text,callModel) {
   if(['ra','rs'].includes(q.type)) return exact(q,text);
   if(!tokens(text).length)return {...base(6),total:0,overview:'No spoken content was supplied for assessment.',strengths:[],improvements:['Record a response or enter the exact words you said, then reattempt.'],coverage:q.facts.map(point=>({point,status:'missing',evidence:'',feedback:'Include this relevant idea in your response.'}))};
-  try {
-    return { ...normalize(q,text,await callModel(prompt(q,text))), scoringMode:'ai' };
-  } catch (error) {
-    const local = localEngine.speaking(q,text);
-    local.source = require('./content/speaking-bank').source;
-    local.fallbackReason = error?.message || 'External content reviewer unavailable';
-    return local;
+  let lastError;
+  for(let attempt=0;attempt<2;attempt++){
+    try {
+      const suffix=attempt?'\nRETRY NOTE: Your previous assessment could not be validated. Return complete JSON only, quote STUDENT evidence exactly, and include every supplied fact once in order.':'';
+      return { ...normalize(q,text,await callModel(prompt(q,text)+suffix)), scoringMode:'ai' };
+    } catch (error) {
+      lastError=error;
+    }
   }
+  const reason=String(lastError?.message||'External content reviewer unavailable');
+  const category=/Unsupported assessment evidence|Incomplete content assessment/.test(reason)?'validation':'provider';
+  console.warn('[speaking-content-fallback]',JSON.stringify({type:q.type,category}));
+  const local = localEngine.speaking(q,text);
+  local.source = require('./content/speaking-bank').source;
+  local.fallbackReason = reason;
+  return local;
 }
 module.exports={tokens,align,repeatAlignment,exact,prompt,normalize,grade};
