@@ -28,3 +28,13 @@ test('Speaking styles and portal bundle are cache-busted with the delivery UI re
   assert.match(html, /speaking-practice\.css\?v=5/);
   assert.match(html, /index\.min\.js\?v=20260930-speaking-actionable-feedback-v7/);
 });
+
+
+test('Speaking question counts remain visible in the Practice hub while the runtime stays lazy', () => {
+  const js = fs.readFileSync(path.join(root, 'public', 'index.js'), 'utf8');
+  assert.match(js, /\/api\/speaking\/catalog/);
+  assert.match(js, /ra:'speaking-ra'.*rs:'speaking-rs'.*di:'speaking-di'.*rl:'speaking-rl'.*sgd:'speaking-sgd'.*rts:'speaking-rts'/s);
+  assert.match(js, /result\.practice\[route\]\.count=count/);
+  assert.match(js, /\/api\/speaking\/attempts/);
+  assert.match(js, /setLatestPracticeMeta\(result\.practice,route,practiceLastTime\(attempt\)\)/);
+});
