@@ -216,6 +216,15 @@ test('slow sync envelope diagnostics record only timing, byte size and compact m
   assert.doesNotMatch(serverSource, /\[sync-http-perf\][^\n]*req\.body/);
 });
 
+test('slow practice account checks expose timing without logging account identifiers', () => {
+  assert.match(serverSource, /async function getPracticeAccount\(uid\)/);
+  assert.match(serverSource, /\[practice-auth-perf\]/);
+  assert.match(serverSource, /totalMs/);
+  assert.match(serverSource, /backend: USE_POSTGRES \? 'postgres' : 'json'/);
+  assert.doesNotMatch(serverSource, /\[practice-auth-perf\][^\n]*uid/);
+  assert.match(serverSource, /getAccount: getPracticeAccount/);
+});
+
 test('slow account syncs expose database phase timing without logging account identifiers', () => {
   assert.match(serverSource, /\[account-sync-perf\]/);
   assert.match(serverSource, /connectMs/);

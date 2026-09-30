@@ -6229,7 +6229,7 @@ const interventionLearning = require('./interventions').installInterventions(app
   pool: pgPool,
   directory: path.join(DATA_DIR, 'interventions'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
-  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  getAccount: getPracticeAccount,
   getProgress: async uid => StorageAPI.getUserData(uid),
   getPassages: async () => (await PassageAPI.readAll()).map(studentPassage),
   getPassage: async id => {
@@ -6279,10 +6279,21 @@ app.use(['/api/speaking/attempts','/api/writing-lab/attempts'],(req,res,next)=>{
   next();
 });
 
+async function getPracticeAccount(uid) {
+  const started = Date.now();
+  const account = USE_POSTGRES ? await PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid];
+  const totalMs = Date.now() - started;
+  if (totalMs >= 300) console.info('[practice-auth-perf]', JSON.stringify({
+    totalMs,
+    backend: USE_POSTGRES ? 'postgres' : 'json'
+  }));
+  return account;
+}
+
 require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
-  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  getAccount: getPracticeAccount,
   essayGrader,
   callModel: async prompt => {
     if (!anthropic) throw new Error('Speaking content assessment is not configured.');
@@ -6296,7 +6307,7 @@ require('./writing-lab').installWritingLab(app, {
   pool: pgPool,
   directory: path.join(DATA_DIR, 'writing-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
-  getAccount: async uid => USE_POSTGRES ? PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid],
+  getAccount: getPracticeAccount,
   essayGrader,
   callModel: async prompt => {
     if (!anthropic) throw new Error('Writing assessment is not configured.');
