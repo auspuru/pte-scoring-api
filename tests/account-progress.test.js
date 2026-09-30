@@ -154,12 +154,25 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
     readingProgress:{version:2}, practiceHistory:[{id:'p1'}], practiceHistoryDeleted:[],
     email:'student@example.com', templates:{}, currentId:'e1', quotaUsed:{}, quotaDate:'2026-09-30', studyPlan:{updatedAt:5}
   };
-  const readingOnly = ctx.patch({ readingProgress:{version:3,patches:[]} }, merged);
+  const readingOnly = ctx.patch({ readingProgress:{version:3,patches:[]} }, merged, {});
   assert.deepEqual(Object.keys(readingOnly), ['readingProgress']);
-  const swt = ctx.patch({ summaries:{1:{text:'draft'}} }, merged);
+  const swt = ctx.patch({ summaries:{1:{text:'draft'}} }, merged, {});
   assert.deepEqual(Object.keys(swt).sort(), ['attempted','history','scores','scratch','stats','summaries'].sort());
-  const practice = ctx.patch({ practiceHistory:[{id:'p1'}] }, merged);
+  const practice = ctx.patch({ practiceHistory:[{id:'p1'}] }, merged, {});
   assert.deepEqual(Object.keys(practice).sort(), ['practiceHistory','practiceHistoryDeleted'].sort());
+
+  const unchangedFull = ctx.patch({
+    attempted:merged.attempted, history:merged.history, summaries:merged.summaries, scores:merged.scores,
+    essays:merged.essays, vocabProgress:merged.vocabProgress, readingProgress:merged.readingProgress,
+    practiceHistory:merged.practiceHistory, email:merged.email, templates:merged.templates,
+    currentId:merged.currentId, quotaUsed:merged.quotaUsed, quotaDate:merged.quotaDate, studyPlan:merged.studyPlan
+  }, merged, JSON.parse(JSON.stringify(merged)));
+  assert.deepEqual(unchangedFull, {});
+
+  const oneChanged = JSON.parse(JSON.stringify(merged));
+  oneChanged.quotaUsed = { essay: 1 };
+  const oneField = ctx.patch({ quotaUsed:{essay:1}, currentId:merged.currentId }, oneChanged, merged);
+  assert.deepEqual(Object.keys(oneField), ['quotaUsed']);
   assert.match(serverSource, /SET data = data \|\| \$2::jsonb/);
   assert.match(serverSource, /JSON\.stringify\(patch\)/);
 });
