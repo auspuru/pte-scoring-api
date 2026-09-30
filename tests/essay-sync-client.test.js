@@ -44,6 +44,12 @@ async function until(predicate) {
   assert(predicate(), 'Expected async state change');
 }
 
+test('Compact POST progress is marked partial so it cannot replace the full cloud baseline', () => {
+  assert.match(source, /function receiveAccountProgress\(remote, initial = false, options = \{\}\)/);
+  assert.match(source, /if \(!options\.partial\) accountCloudSnapshot\.set/);
+  assert.match(source, /receiveAccountProgress\(\{ \.\.\.response\.progress,[\s\S]*\}, false, \{ partial: true \}\)/);
+});
+
 test('An immediate attempt save waits for a second write if an older sync is in flight', async () => {
   const { ctx, requests, statuses } = harness();
   const first = ctx.flushSync();
