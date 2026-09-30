@@ -28,6 +28,13 @@ function trend(series){
 }
 function model(data,writing,speaking=[]){
  const reading=readingRows(data.reading),swt=Object.values(data.swt||{}).flat().filter(Boolean),essays=data.essays||[];
+ const swtDrafts=Object.entries(data.swtDrafts||{}).flatMap(([passageId,draft])=>{
+  const text=String(draft?.text||'').trim(),draftAt=stamp(draft?.timestamp);
+  const latestScored=Math.max(0,...((data.swt||{})[passageId]||[]).map(a=>stamp(a?.timestamp)));
+  return text&&draftAt>latestScored?[{passageId,draft,text,at:draftAt}]:[];
+ });
+ const essayDraft=data.essayDraft&&data.essayDraft.deleted!==true&&(String(data.essayDraft.essayText||'').trim()||String(data.essayDraft.questionText||'').trim())
+  ? data.essayDraft:null;
  const submittedSpeaking=(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted'&&a.result);
  const writingMocks=writing.filter(a=>a.kind==='mock');
  const mocks=[
@@ -55,6 +62,14 @@ function model(data,writing,speaking=[]){
   sgd:{name:'Summarise Group Discussion',route:'speaking-sgd'},rts:{name:'Respond to a Situation',route:'speaking-rts'}
  };
  const activePractice=[
+  ...swtDrafts.map(({passageId,text,at})=>({
+    engine:'swt',id:'swt-draft-'+passageId,title:'Summarise Written Text',route:'swt',at,
+    detail:'Passage '+passageId+' · '+text.split(/\s+/).filter(Boolean).length+' words saved'
+  })),
+  ...(essayDraft?[{
+    engine:'essay',id:'essay-draft',title:'Write Essay',route:'practice',at:essayDraft.updatedAt,
+    detail:(String(essayDraft.questionTitle||'').trim()||'Essay draft')+' · '+String(essayDraft.essayText||'').trim().split(/\s+/).filter(Boolean).length+' words saved'
+  }]:[]),
   ...reading.filter(a=>a.practiceUid&&!a.done).map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {
     engine:'reading',id:a.id,title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',
     at:a.updatedAt||a.startedAt,detail:'Question '+(Number(a.index||0)+1)+' of '+Math.max(1,a.questions?.length||1)
