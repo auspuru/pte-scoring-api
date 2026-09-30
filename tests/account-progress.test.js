@@ -167,7 +167,7 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
     practiceHistory:merged.practiceHistory, email:merged.email, templates:merged.templates,
     currentId:merged.currentId, quotaUsed:merged.quotaUsed, quotaDate:merged.quotaDate, studyPlan:merged.studyPlan
   }, merged, JSON.parse(JSON.stringify(merged)));
-  assert.deepEqual(unchangedFull, {});
+  assert.deepEqual(Object.keys(unchangedFull), []);
 
   const oneChanged = JSON.parse(JSON.stringify(merged));
   oneChanged.quotaUsed = { essay: 1 };
