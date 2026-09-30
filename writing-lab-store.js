@@ -23,21 +23,45 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     await initialise();
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw Object.assign(Error('Invalid attempt.'), { status: 400 });
     if (pool) {
+      const perfStart = Date.now(), perf = {};
+      const connectAt = Date.now();
       const client = await pool.connect();
+      perf.connectMs = Date.now() - connectAt;
       try {
+        let phase = Date.now();
         await client.query('BEGIN');
+        perf.beginMs = Date.now() - phase;
+
+        phase = Date.now();
         let { rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
+        perf.rowLockMs = Date.now() - phase;
+        perf.created = !rows.length;
         if (!rows.length) {
           // Existing attempts are already serialized by FOR UPDATE. The advisory
           // lock is only needed for the creation race, where no row exists yet.
+          phase = Date.now();
           await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [namespace + ':' + id]);
+          perf.advisoryMs = Date.now() - phase;
+          phase = Date.now();
           ({ rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]));
+          perf.recheckMs = Date.now() - phase;
         }
         if (rows.length && rows[0].username !== uid) throw Object.assign(Error('Attempt not found.'), { status: 404 });
+
+        phase = Date.now();
         const value = await fn(rows[0]?.data || null);
-        if (value) await client.query(`INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
-          ON CONFLICT(id) DO UPDATE SET data=EXCLUDED.data, updated_at=NOW()`, [id,uid,JSON.stringify(value)]);
+        perf.transformMs = Date.now() - phase;
+        if (value) {
+          phase = Date.now();
+          await client.query(`INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
+            ON CONFLICT(id) DO UPDATE SET data=EXCLUDED.data, updated_at=NOW()`, [id,uid,JSON.stringify(value)]);
+          perf.writeMs = Date.now() - phase;
+        }
+        phase = Date.now();
         await client.query('COMMIT');
+        perf.commitMs = Date.now() - phase;
+        perf.totalMs = Date.now() - perfStart;
+        if (perf.totalMs >= 300) console.info('[attempt-store-perf]', JSON.stringify({ namespace, ...perf }));
         return value;
       } catch (e) { await client.query('ROLLBACK').catch(() => {}); throw e; }
       finally { client.release(); }
