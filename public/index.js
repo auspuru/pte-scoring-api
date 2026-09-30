@@ -12298,6 +12298,15 @@ async function initApp() {
         if (d.success && d.username) {
           sessionStorage.setItem('pte_impersonate_token', impToken);
           sessionToken = impToken;
+
+          // The token is now safely held in sessionStorage for this tab. Remove
+          // it from the address bar/history so an 8-hour admin-view credential
+          // is not left in copied URLs, screenshots, browser history or referrers.
+          if (urlParams.has('impersonate')) {
+            const cleanUrl = new URL(window.location);
+            cleanUrl.searchParams.delete('impersonate');
+            window.history.replaceState({}, document.title, cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+          }
           
           const banner = document.getElementById('impersonateBanner');
           if (banner) banner.style.display = 'flex';
