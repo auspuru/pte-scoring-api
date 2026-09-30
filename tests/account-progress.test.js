@@ -208,6 +208,14 @@ test('Compact sync responses echo only progress domains touched by the save', ()
   assert.equal(practice.progress, undefined);
 });
 
+test('slow sync envelope diagnostics record only timing, byte size and compact mode', () => {
+  assert.match(serverSource, /\[sync-http-perf\]/);
+  assert.match(serverSource, /content-length/);
+  assert.match(serverSource, /contentLength/);
+  assert.match(serverSource, /compact:req\.headers\['x-sync-response'\]==='delta'/);
+  assert.doesNotMatch(serverSource, /\[sync-http-perf\][^\n]*req\.body/);
+});
+
 test('slow account syncs expose database phase timing without logging account identifiers', () => {
   assert.match(serverSource, /\[account-sync-perf\]/);
   assert.match(serverSource, /connectMs/);
