@@ -14,7 +14,7 @@ function fn(name) {
 }
 const a = (id, date = 1) => ({ id, date, essayText: 'Essay ' + id, scores: { total: 20 } });
 function harness() {
-  const requests = [], statuses = [], caches = [], timers = [];
+  const requests = [], statuses = [], caches = [], timers = [], stored = new Map();
   const ctx = {
     currentUserId: 'student', sessionToken: 'session-a', syncQueued: true, syncInFlight: null, syncInFlightSession: null,
     syncTimer: null, syncRetryCount: 0, SYNC_MAX_RETRIES: 3, lastSyncOk: true, offlineMode: false,
@@ -25,7 +25,7 @@ function harness() {
     console: { error() {} }, document: { visibilityState: 'visible', getElementById: () => null },
     canonicalClientUserId: sync.canonicalUserId, mergePracticeHistoryClient: sync.mergeHistory,
     mergePracticeDeletedClient: sync.mergeDeleted, todayStamp: () => '2026-09-09',
-    LocalStore: { get: () => ({}), set() {} }, safeLSRemove() {},
+    LocalStore: { get: key => stored.has(key) ? stored.get(key) : {}, set: (key, value) => stored.set(key, value) }, safeLSRemove() {},
     setSync: (...args) => statuses.push(args), cachePracticeHistory: (...args) => caches.push(args),
     renderPracticeHistory() {}, updatePracticeStats() {}, updateDashboard() {}, handleAuthExpired() {},
     setTimeout: callback => { timers.push(callback); return timers.length; }, clearTimeout() {},
@@ -37,7 +37,7 @@ function harness() {
   ctx.getPracticeHistory = () => ctx.userProfile.practiceHistory;
   vm.createContext(ctx);
   vm.runInContext(['flushSync', 'flushSyncDirect', 'refreshPracticeHistory'].map(fn).join('\n'), ctx);
-  return { ctx, requests, statuses, caches, timers };
+  return { ctx, requests, statuses, caches, timers, stored };
 }
 async function until(predicate) {
   for (let i = 0; i < 30 && !predicate(); i++) await new Promise(resolve => setImmediate(resolve));
@@ -126,4 +126,19 @@ test('The shared sync helper has an explicit executable-JavaScript route', () =>
   vm.runInNewContext(browserSource, browser);
   assert.equal(typeof browser.EssayAttemptSync.mergeHistory, 'function');
   assert.equal(browser.EssayAttemptSync.canonicalUserId(' Student '), 'student');
+});
+
+ test('A failed immediate save persists pending state and a stale timer does not resend a successful save', async () => {
+  const { ctx, requests, timers, stored } = harness();
+  ctx.syncQueued = false;
+  const first = ctx.flushSyncDirect();
+  requests[0].fail();
+  assert.equal(await first, false);
+  assert.equal(stored.get('pte_student_syncPending'), true);
+  const retry = ctx.flushSync();
+  requests[1].reply({ success: true });
+  assert.equal(await retry, true);
+  assert.equal(stored.get('pte_student_syncPending'), false);
+  timers.forEach(callback => callback());
+  assert.equal(requests.length, 2, 'An acknowledged save must not be sent again by its old retry timer');
 });

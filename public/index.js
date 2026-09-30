@@ -1231,11 +1231,12 @@ async function flushSyncDirect(options = {}) {
     if (!sameSession()) return false;
     console.error(err);
     syncQueued = true;
+    LocalStore.set(`pte_${syncUserId}_syncPending`, true);
     setSync('error', 'Saved on this device — waiting to sync');
     lastSyncOk = false;
     if (syncRetryCount < SYNC_MAX_RETRIES) {
       syncRetryCount++;
-      setTimeout(() => { if (sameSession()) { syncQueued = true; flushSync(); } }, 5000);
+      setTimeout(() => { if (sameSession() && syncQueued) flushSync(); }, 5000);
     } else {
       setSync('error', 'Offline changes waiting to sync');
     }
