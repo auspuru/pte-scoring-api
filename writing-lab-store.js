@@ -23,48 +23,83 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     await initialise();
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw Object.assign(Error('Invalid attempt.'), { status: 400 });
     if (pool) {
-      const perfStart = Date.now(), perf = {};
+      const perfStart = Date.now(), perf = { conflicts: 0 };
       const connectAt = Date.now();
       const client = await pool.connect();
       perf.connectMs = Date.now() - connectAt;
       try {
-        let phase = Date.now();
-        await client.query('BEGIN');
-        perf.beginMs = Date.now() - phase;
+        const maxAttempts = 4;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          let phase = Date.now();
+          const { rows } = await client.query(
+            `SELECT username, data, xmin::text AS version FROM ${table} WHERE id=$1`,
+            [id]
+          );
+          perf.readMs = (perf.readMs || 0) + (Date.now() - phase);
 
-        phase = Date.now();
-        let { rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
-        perf.rowLockMs = Date.now() - phase;
-        perf.created = !rows.length;
-        if (!rows.length) {
-          // Existing attempts are already serialized by FOR UPDATE. The advisory
-          // lock is only needed for the creation race, where no row exists yet.
-          phase = Date.now();
-          await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [namespace + ':' + id]);
-          perf.advisoryMs = Date.now() - phase;
-          phase = Date.now();
-          ({ rows } = await client.query(`SELECT username, data FROM ${table} WHERE id=$1 FOR UPDATE`, [id]));
-          perf.recheckMs = Date.now() - phase;
-        }
-        if (rows.length && rows[0].username !== uid) throw Object.assign(Error('Attempt not found.'), { status: 404 });
+          if (!rows.length) {
+            phase = Date.now();
+            const value = await fn(null);
+            perf.transformMs = (perf.transformMs || 0) + (Date.now() - phase);
+            if (!value) return value;
 
-        phase = Date.now();
-        const value = await fn(rows[0]?.data || null);
-        perf.transformMs = Date.now() - phase;
-        if (value) {
+            phase = Date.now();
+            const created = await client.query(
+              `INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
+               ON CONFLICT(id) DO NOTHING
+               RETURNING xmin::text AS version`,
+              [id, uid, JSON.stringify(value)]
+            );
+            perf.writeMs = (perf.writeMs || 0) + (Date.now() - phase);
+            if (created.rows.length) {
+              perf.created = true;
+              perf.attempts = attempt + 1;
+              perf.totalMs = Date.now() - perfStart;
+              if (perf.totalMs >= 300) console.info('[attempt-store-perf]', JSON.stringify({ namespace, ...perf }));
+              return value;
+            }
+            perf.conflicts++;
+            continue;
+          }
+
+          if (rows[0].username !== uid) throw Object.assign(Error('Attempt not found.'), { status: 404 });
+          const version = String(rows[0].version || '');
+          const beforeJson = JSON.stringify(rows[0].data);
+
           phase = Date.now();
-          await client.query(`INSERT INTO ${table}(id,username,data) VALUES($1,$2,$3)
-            ON CONFLICT(id) DO UPDATE SET data=EXCLUDED.data, updated_at=NOW()`, [id,uid,JSON.stringify(value)]);
-          perf.writeMs = Date.now() - phase;
+          const value = await fn(rows[0].data);
+          perf.transformMs = (perf.transformMs || 0) + (Date.now() - phase);
+          if (!value) return value;
+
+          const nextJson = JSON.stringify(value);
+          if (nextJson === beforeJson) {
+            perf.attempts = attempt + 1;
+            perf.totalMs = Date.now() - perfStart;
+            if (perf.totalMs >= 300) console.info('[attempt-store-perf]', JSON.stringify({ namespace, ...perf }));
+            return value;
+          }
+
+          phase = Date.now();
+          const updated = await client.query(
+            `UPDATE ${table}
+               SET data=$3, updated_at=NOW()
+               WHERE id=$1 AND username=$2 AND xmin::text=$4
+               RETURNING xmin::text AS version`,
+            [id, uid, nextJson, version]
+          );
+          perf.writeMs = (perf.writeMs || 0) + (Date.now() - phase);
+          if (updated.rows.length) {
+            perf.attempts = attempt + 1;
+            perf.totalMs = Date.now() - perfStart;
+            if (perf.totalMs >= 300) console.info('[attempt-store-perf]', JSON.stringify({ namespace, ...perf }));
+            return value;
+          }
+          perf.conflicts++;
         }
-        phase = Date.now();
-        await client.query('COMMIT');
-        perf.commitMs = Date.now() - phase;
-        perf.totalMs = Date.now() - perfStart;
-        if (perf.totalMs >= 300) console.info('[attempt-store-perf]', JSON.stringify({ namespace, ...perf }));
-        return value;
-      } catch (e) { await client.query('ROLLBACK').catch(() => {}); throw e; }
-      finally { client.release(); }
+        throw Object.assign(Error('Attempt changed while saving. Please retry.'), { status: 503 });
+      } finally {
+        client.release();
+      }
     }
     const key = uid + ':' + id, previous = locks.get(key) || Promise.resolve();
     const task = previous.catch(() => {}).then(async () => {

@@ -35,15 +35,16 @@ test('filesystem list reads only the newest bounded attempt set', async () => {
   }
 });
 
-test('Postgres updates use the row lock directly and reserve the advisory lock for first creation', async () => {
+test('Postgres attempt updates use optimistic row versions and retry conflicts safely', async () => {
   const id = '12345678-1234-4123-8123-123456789abc';
-  function harness(selectRows) {
+
+  function harness(respond) {
     const queries = [];
     const client = {
       async query(sql, params) {
-        queries.push(String(sql).replace(/\s+/g, ' ').trim());
-        if (/SELECT username, data FROM/.test(sql)) return { rows: selectRows.shift() || [] };
-        return { rows: [] };
+        const normalized = String(sql).replace(/\s+/g, ' ').trim();
+        queries.push(normalized);
+        return respond(normalized, params, queries.length);
       },
       release() {}
     };
@@ -54,24 +55,52 @@ test('Postgres updates use the row lock directly and reserve the advisory lock f
     return { store:createStore(pool, '/unused'), queries };
   }
 
-  const existing = harness([[{ username:'student', data:{ id, answer:'old' } }]]);
+  const existing = harness((sql) => {
+    if (/^SELECT username, data, xmin::text AS version/.test(sql)) {
+      return { rows:[{ username:'student', data:{ id, answer:'old' }, version:'10' }] };
+    }
+    if (/^UPDATE writing_lab_attempts/.test(sql)) return { rows:[{ version:'11' }] };
+    return { rows:[] };
+  });
   await existing.store.update('student', id, value => ({ ...value, answer:'new' }));
-  assert.equal(existing.queries.filter(q => /pg_advisory_xact_lock/.test(q)).length, 0);
-  assert.equal(existing.queries.filter(q => /FOR UPDATE/.test(q)).length, 1);
+  assert.equal(existing.queries.filter(q => /^SELECT username, data, xmin::text AS version/.test(q)).length, 1);
+  assert.equal(existing.queries.filter(q => /^UPDATE writing_lab_attempts/.test(q)).length, 1);
+  assert.equal(existing.queries.some(q => /BEGIN|COMMIT|FOR UPDATE|pg_advisory_xact_lock/.test(q)), false);
 
-  const creating = harness([[], []]);
+  const creating = harness((sql) => {
+    if (/^SELECT username, data, xmin::text AS version/.test(sql)) return { rows:[] };
+    if (/^INSERT INTO writing_lab_attempts/.test(sql)) return { rows:[{ version:'1' }] };
+    return { rows:[] };
+  });
   await creating.store.update('student', id, () => ({ id, answer:'first' }));
-  assert.equal(creating.queries.filter(q => /pg_advisory_xact_lock/.test(q)).length, 1);
-  assert.equal(creating.queries.filter(q => /FOR UPDATE/.test(q)).length, 2);
+  assert.equal(creating.queries.filter(q => /^SELECT username, data, xmin::text AS version/.test(q)).length, 1);
+  assert.equal(creating.queries.filter(q => /^INSERT INTO writing_lab_attempts/.test(q)).length, 1);
+
+  let reads = 0, writes = 0;
+  const conflict = harness((sql) => {
+    if (/^SELECT username, data, xmin::text AS version/.test(sql)) {
+      reads++;
+      return { rows:[{ username:'student', data:{ id, answer:reads === 1 ? 'old' : 'newer' }, version:String(reads) }] };
+    }
+    if (/^UPDATE writing_lab_attempts/.test(sql)) {
+      writes++;
+      return { rows:writes === 1 ? [] : [{ version:'3' }] };
+    }
+    return { rows:[] };
+  });
+  const saved = await conflict.store.update('student', id, value => ({ ...value, note:'mine' }));
+  assert.equal(reads, 2);
+  assert.equal(writes, 2);
+  assert.equal(saved.answer, 'newer');
+  assert.equal(saved.note, 'mine');
 });
 
-
-test('slow Postgres attempt updates expose phase timing without logging attempt data', () => {
+test('slow Postgres attempt updates expose optimistic retry timing without logging attempt data', () => {
   const source = require('node:fs').readFileSync(require.resolve('../writing-lab-store'), 'utf8');
   assert.match(source, /\[attempt-store-perf\]/);
   assert.match(source, /connectMs/);
-  assert.match(source, /rowLockMs/);
+  assert.match(source, /readMs/);
   assert.match(source, /writeMs/);
-  assert.match(source, /commitMs/);
+  assert.match(source, /conflicts/);
   assert.doesNotMatch(source, /JSON\.stringify\(\{ namespace, uid/);
 });
