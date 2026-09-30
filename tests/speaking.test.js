@@ -3,8 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('There are five original questions for each supported Speaking task, with samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:30,recordings:20});
-  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,30);
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:79,recordings:20});
+  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,79);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
 test('Read Aloud checks omissions, insertions and replacements without inventing a delivery score',()=>{
@@ -68,7 +68,7 @@ test('AI quotations tolerate typography differences but preserve the original st
 });
 test('Exact chart graphics have labels and values rather than generated-image guesses',()=>{
   const {render}=require('../speaking-visuals');
-  for(const q of bank.questions.filter(q=>q.visual)) {
+  for(const q of bank.questions.filter(q=>q.visual&&!q.imageUrl)) {
     const svg=render(q.visual);assert(svg.startsWith('<svg'));assert(svg.includes(q.visual.title));assert(!/NaN|undefined/.test(svg));
     if(q.visual.kind==='pie')q.visual.values.forEach(value=>assert(svg.includes(value+'%')));
   }
@@ -141,8 +141,8 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
-  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,30);
-  assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di').map(q=>q.imageCategory),['bar','pie','line','table','process']);
+  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,79);
+  assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
   assert.equal((await request('/attempts',undefined,'')).status,401);
   const id=crypto.randomUUID(),q=bank.questions[0];
@@ -216,4 +216,13 @@ test('Semantic Speaking tasks fall back to local content scoring when the review
     assert(result.total>=0&&result.total<=6);
     assert.equal(result.coverage.length,q.facts.length);
   }
+});
+
+test('Supplied image questions serve their real asset path and reveal reference content only after submission',()=>{
+ const {question}=require('../speaking-lab'),items=require('../content/di-user-predictions.json');
+ for(const item of items){const q=bank.questions.find(q=>q.id===item.id),before=question(q),after=question(q,true);
+ assert.equal(before.imageUrl,item.imageUrl);assert.equal(before.sample,undefined);
+ assert.equal(after.sample,item.sample);assert.deepEqual(after.facts,item.facts);
+ assert.equal(before.predictionSource.sourceId,item.predictionSource.sourceId);
+ }
 });

@@ -6,7 +6,11 @@ Describe Image can be filtered by bar chart, line graph, pie chart, process char
 
 Speaking lists support title/ID search, category counts, empty states, clear filters and 20-question pages. Filters persist within the current account's session, and Back/Next stays within the filtered set. No microphone or attempt is started by filtering.
 
-**No third-party questions or images have been imported by this change.** The existing practice items remain in place. The random-image category currently has no items.
+**49 complete Describe Image prediction images were imported from 14 user-uploaded screenshots.** Source IDs, weekly membership, image categories, authored reference facts and samples are recorded in `content/di-user-predictions.json`. Images are durable local assets and preserve embedded source credits and watermarks. The five original DI items remain available. Weekly Prediction and Original practice can be filtered separately. All 49 supplied labels are Prediction; no monthly membership or strongest tier was displayed.
+
+Incomplete items were withheld: Q42 Tomato Processing Cycle (#3000725), Q67 Household Energy Consumption (#3000591), Q115 Household Energy Consumption (#3000185), and Q127 Water Wheel (#3000114) have cut-off images. Adult BMI Chart, Types of Penguins and Graduation Lab have cut-off headers/IDs. Their content or identity was not guessed. Q31 Good and Bad Habits was completed by the overlapping screenshot. The supplied screenshots cover a subset of the public list, not all 127 advertised items.
+
+`docs/di-screenshot-import.json` records screenshot-to-item crop bounds for review. Samples and reference facts are authored teaching support, not answers published by the prediction provider. Several labels in Taxation by Countries and all labels/values in Influenced English are unreadable; samples avoid invented detail. Other tasks have not been imported.
 
 ## Source coverage
 
@@ -41,4 +45,4 @@ Before integrating each item:
 - Provide verified transcripts, durable audio assets and samples for SST; correct sentences and durable audio for WFD; aligned displayed/spoken text and mismatch indices for HIW.
 - Expand the speaking content validator's current fixed bank-size assumptions when actual new speaking items are added; validate audio manifests and source provenance before publication.
 
-This change is filter support and a documented import boundary, not a completed question import or production deployment.
+Describe Image screenshot import and filtering are implemented. Imports for the other tasks remain pending supplied material.
