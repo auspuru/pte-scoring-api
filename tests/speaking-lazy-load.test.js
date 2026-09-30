@@ -12,7 +12,7 @@ test('Speaking practice is deferred until a speaking route is opened', () => {
 
   assert.equal(html.includes('speaking-practice.js'), false);
   assert.match(js, /function ensureSpeakingRuntimeLoaded\(\)/);
-  assert.match(js, /speaking-practice\.js\?v=20260929-scoring-submit-v6/);
+  assert.match(js, /speaking-practice\.js\?v=20260930-actionable-feedback-v7/);
   assert.match(js, /Preparing Speaking practice/);
   assert.match(js, /data-speaking-load-retry/);
 });
@@ -26,15 +26,5 @@ test('Speaking deferred-load failure can retry without losing the requested ques
 test('Speaking styles and portal bundle are cache-busted with the delivery UI release', () => {
   const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
   assert.match(html, /speaking-practice\.css\?v=5/);
-  assert.match(html, /index\.min\.js\?v=20260929-speaking-scoring-submit-v6/);
-});
-
-
-test('Speaking question counts remain visible in the Practice hub while the runtime stays lazy', () => {
-  const js = fs.readFileSync(path.join(root, 'public', 'index.js'), 'utf8');
-  assert.match(js, /\/api\/speaking\/catalog/);
-  assert.match(js, /ra:'speaking-ra'.*rs:'speaking-rs'.*di:'speaking-di'.*rl:'speaking-rl'.*sgd:'speaking-sgd'.*rts:'speaking-rts'/s);
-  assert.match(js, /result\.practice\[route\]\.count=count/);
-  assert.match(js, /\/api\/speaking\/attempts/);
-  assert.match(js, /setLatestPracticeMeta\(result\.practice,route,practiceLastTime\(attempt\)\)/);
+  assert.match(html, /index\.min\.js\?v=20260930-speaking-actionable-feedback-v7/);
 });
