@@ -838,11 +838,23 @@ const PgStorage = {
       // Serialise full-profile writes so two devices cannot read the same old
       // snapshot and then overwrite each other's essay attempts.
       await client.query('BEGIN');
-      await client.query(
-        `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
-         ON CONFLICT (username) DO NOTHING`, [userId]
-      );
-      const { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      let { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      if (!rows.length) {
+        // Existing accounts need only the row lock above. First-time profiles
+        // take the creation lock so concurrent devices cannot race to initialise
+        // the same account. Recheck after the lock for rolling-deploy safety.
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', ['user_data:' + userId]);
+        ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
+        if (!rows.length) {
+          const created = await client.query(
+            `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
+             ON CONFLICT (username) DO NOTHING
+             RETURNING data`, [userId]
+          );
+          if (created.rows.length) rows = created.rows;
+          else ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
+        }
+      }
       const existing = rows[0]?.data || {};
       const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
       const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
