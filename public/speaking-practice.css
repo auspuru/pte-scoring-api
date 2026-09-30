@@ -49,3 +49,12 @@
 .speaking-delivery-diagnostics[open]>summary,.speaking-content-breakdown[open]>summary{margin-bottom:12px}
 .speaking-content-breakdown .speaking-coverage{margin-top:12px}
 @media(max-width:800px){.speaking-delivery-coaching{grid-template-columns:1fr}}
+
+/* Search and image categories stay outside the timed exam screen. */
+.speaking-library-filters{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:20px 0 12px}
+.speaking-library-filters label{display:flex;flex-direction:column;gap:6px;flex:1 1 220px;font-size:13px;font-weight:600;color:var(--ink)}
+.speaking-library-filters input,.speaking-library-filters select{width:100%;min-height:44px;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg-card);color:var(--ink);font:inherit}
+.speaking-library-filters :is(input,select,button):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.speaking-question-meta,#speaking-match-count{font-size:12px;color:var(--ink-soft)}
+.speaking-question-list h3{overflow-wrap:anywhere}
+@media(max-width:640px){.speaking-library-filters label{flex-basis:100%}.speaking-library-filters>button{width:100%}}

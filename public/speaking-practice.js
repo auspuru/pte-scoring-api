@@ -6,11 +6,25 @@
   'use strict';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const time=n=>{const seconds=Math.ceil(Math.max(0,n));return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');};
+  const imageCategories=Object.freeze({bar:'Bar chart',line:'Line graph',pie:'Pie chart',process:'Process chart',table:'Table',map:'Map',mixed:'Mixed charts',photo:'Random image / photograph',other:'Other diagram',unclassified:'Unclassified'});
+  function imageCategory(q) {
+    if(q.type!=='di')return '';
+    const raw=String(q.imageCategory||q.visual?.kind||'').trim().toLowerCase().replace(/[ _-]+/g,'');
+    const aliases={bar:'bar',barchart:'bar',bargraph:'bar',line:'line',linegraph:'line',linechart:'line',pie:'pie',piechart:'pie',process:'process',processchart:'process',flowchart:'process',table:'table',map:'map',mixed:'mixed',mixedcharts:'mixed',photo:'photo',photograph:'photo',photography:'photo',random:'photo',randomimage:'photo',picture:'photo',scene:'photo',other:'other',diagram:'other'};
+    return Object.prototype.hasOwnProperty.call(aliases,raw)?aliases[raw]:'unclassified';
+  }
+  function filterQuestions(questions,type,{search='',category='all'}={}) {
+    const query=String(search).trim().toLowerCase();
+    return questions.filter(q=>q.type===type&&(type!=='di'||category==='all'||imageCategory(q)===category)
+      &&(!query||[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ').toLowerCase().includes(query)));
+  }
   function createController(env,{getUserId=()=>env.currentUserId||''}={}) {
     const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map();
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
+    const libraryFilters=new Map(),pageSize=20;
+    const filters=()=>{if(!libraryFilters.has(activeType))libraryFilters.set(activeType,{search:'',category:'all',page:0});return libraryFilters.get(activeType);};
     const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};
     const identity=()=>String(getUserId()||'').trim().toLowerCase();
     const localKey=a=>'ipt-speaking:'+owner+':'+a.id;
@@ -55,7 +69,7 @@
     }
     function releasePlayback(){if(playbackUrl)env.URL.revokeObjectURL(playbackUrl);playbackUrl='';}
     function reset() {
-      cacheDraft();serial++;visible=false;owner='';attempt=null;activeType='';clearAudio();pendingUploads.clear();releasePlayback();uploadBlob=null;phase='idle';busy=false;
+      cacheDraft();serial++;visible=false;owner='';attempt=null;activeType='';libraryFilters.clear();clearAudio();pendingUploads.clear();releasePlayback();uploadBlob=null;phase='idle';busy=false;
       if(host)host.replaceChildren();
     }
     function leave() {
@@ -65,7 +79,7 @@
     function chrome(content) {
       const locked=!!(attempt&&attempt.status!=='submitted');
       host.innerHTML='<div class="speaking-workspace">'+(locked?'':'<button class="portal-button" data-speaking-action="practice">← Speaking Practice</button>')+'<p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+content+'</div>';
-      host.onclick=click;host.oninput=()=>cacheDraft();host.onchange=change;
+      host.onclick=click;host.oninput=e=>{if(e.target.id==='speaking-search'){filters().search=e.target.value;filters().page=0;renderLibraryList();}else cacheDraft();};host.onchange=change;
     }
     async function open(type, questionId) {
       const user=identity();if(!user)return;
@@ -84,9 +98,22 @@
         attempt=null;releasePlayback();phase='idle';await library();
       }catch(e){if(valid(ticket,user)){chrome('<h2>Speaking practice</h2><p>'+esc(e.message)+'</p><button class="portal-button" data-speaking-action="reload">Retry</button>');}}
     }
+    function renderLibraryList() {
+      const node=doc.getElementById('speaking-library-list');if(!node||attempt)return;
+      const f=filters(),all=catalog.questions.filter(q=>q.type===activeType),matches=filterQuestions(catalog.questions,activeType,f);
+      const pages=Math.max(1,Math.ceil(matches.length/pageSize));f.page=Math.max(0,Math.min(f.page,pages-1));
+      const count=doc.getElementById('speaking-match-count');if(count)count.textContent=matches.length+' of '+all.length+' questions';
+      node.innerHTML=matches.slice(f.page*pageSize,(f.page+1)*pageSize).map(q=>{
+        const number=all.findIndex(item=>item.id===q.id)+1,category=imageCategories[imageCategory(q)];
+        return '<article><div><span class="speaking-number">'+String(number).padStart(2,'0')+'</span><h3>'+esc(q.title||'Question '+number)+'</h3><p class="speaking-question-meta">'+esc(q.id)+(category?' · '+esc(category):'')+'</p></div><button class="portal-button primary" data-speaking-question="'+esc(q.id)+'">Practise →</button></article>';
+      }).join('')||'<p>No questions match these filters. Try another image type or clear the search.</p>';
+      const pager=doc.getElementById('speaking-library-pages');if(pager)pager.innerHTML=pages>1?'<button class="portal-button" data-speaking-page="'+(f.page-1)+'" '+(f.page===0?'disabled':'')+'>Previous page</button><span>Page '+(f.page+1)+' of '+pages+'</span><button class="portal-button" data-speaking-page="'+(f.page+1)+'" '+(f.page===pages-1?'disabled':'')+'>Next page</button>':'';
+    }
     async function library() {
-      const type=activeType,ticket=serial,user=owner;
-      chrome('<p class="portal-eyebrow">Speaking Practice</p><h2>'+esc(catalog.types[type].name)+'</h2><p class="speaking-footnote speaking-exam-disclosure">Exam-style mode: selecting a question starts the timed flow and requests microphone access. Your saved recording is automatically processed for transcription and practice scoring when those services are enabled.</p><div class="speaking-question-list">'+catalog.questions.filter(q=>q.type===type).map((q,i)=>'<article><div><span class="speaking-number">0'+(i+1)+'</span><h3>'+'Question '+(i+1)+'</h3></div><button class="portal-button primary" data-speaking-question="'+q.id+'">Practise →</button></article>').join('')+'</div><details class="speaking-card"><summary>My saved attempts</summary><div id="speaking-history">Loading…</div></details>');
+      const type=activeType,ticket=serial,user=owner,f=filters(),questions=catalog.questions.filter(q=>q.type===type);
+      const categorySelect=type==='di'?'<label>Image type<select id="speaking-image-category"><option value="all">All image types ('+questions.length+')</option>'+Object.entries(imageCategories).map(([key,label])=>'<option value="'+key+'" '+(f.category===key?'selected':'')+'>'+esc(label)+' ('+questions.filter(q=>imageCategory(q)===key).length+')</option>').join('')+'</select></label>':'';
+      chrome('<p class="portal-eyebrow">Speaking Practice</p><h2>'+esc(catalog.types[type].name)+'</h2><p class="speaking-footnote speaking-exam-disclosure">Exam-style mode: selecting a question starts the timed flow and requests microphone access. Your saved recording is automatically processed for transcription and practice scoring when those services are enabled.</p><div class="speaking-library-filters"><label>Find a question<input type="search" id="speaking-search" value="'+esc(f.search)+'" placeholder="Search title or question ID"></label>'+categorySelect+'<button class="portal-button" data-speaking-action="clear-filters">Clear filters</button></div><p id="speaking-match-count" role="status" aria-live="polite"></p><div id="speaking-library-list" class="speaking-question-list"></div><nav id="speaking-library-pages" class="speaking-actions" aria-label="Question list pages"></nav><details class="speaking-card"><summary>My saved attempts</summary><div id="speaking-history">Loading…</div></details>');
+      renderLibraryList();
       try{const history=await api('/attempts');if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.result?a.result.total+'/'+a.result.maximum+' content':a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
     async function start(questionId) {
@@ -110,13 +137,17 @@
       const node=doc.getElementById('speaking-playback');if(!node)return;
       node.innerHTML=playbackUrl?'<audio controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
     }
+    function navigationQuestions() {
+      const type=attempt.question.type,filtered=filterQuestions(catalog.questions,type,libraryFilters.get(type));
+      return filtered.some(q=>q.id===attempt.questionId)?filtered:catalog.questions.filter(q=>q.type===type);
+    }
     function questionNavigation() {
-      const questions=catalog.questions.filter(q=>q.type===attempt.question.type),index=questions.findIndex(q=>q.id===attempt.questionId);
+      const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId);
       return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="portal-button" data-speaking-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next →</button></nav>';
     }
     async function moveQuestion(direction) {
       if(busy||uploadBlob||!['idle','error'].includes(phase)){message('Finish and save your recording before changing questions.');return;}
-      const questions=catalog.questions.filter(q=>q.type===attempt.question.type),index=questions.findIndex(q=>q.id===attempt.questionId),target=questions[index+direction];
+      const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId),target=questions[index+direction];
       if(!target)return;
       busy=true;const ticket=serial,user=owner;
       try {await saveTranscript();const history=await api('/attempts');if(!valid(ticket,user))return;
@@ -330,6 +361,8 @@
     }
     async function click(e) {
       const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
+      if(d.speakingPage!==undefined&&!attempt){filters().page=Number(d.speakingPage)||0;renderLibraryList();return;}
+      if(d.speakingAction==='clear-filters'&&!attempt){libraryFilters.delete(activeType);return library();}
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
       if(d.speakingQuestion)return start(d.speakingQuestion);if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
@@ -344,6 +377,7 @@
       if(action==='transcribe'){if(busy)return;if(doc.getElementById('speaking-transcript')?.value.trim()){message('Your transcript already contains words. Review them, or clear and save it before transcribing.');return;}busy=true;refreshControls();message('Transcribing. Please keep the words you actually said.');const id=attempt.id,user=owner;try{await saveTranscript();const a=await api('/attempts/'+id+'/transcribe',{});if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();message('Check the transcript against your recording before assessment.');}}catch(e){message(e.message);}finally{busy=false;refreshControls();}}
     }
     async function change(e) {
+      if(e.target.id==='speaking-image-category'&&!attempt){filters().category=e.target.value;filters().page=0;renderLibraryList();return;}
       if(e.target.id!=='speaking-file')return;const file=e.target.files?.[0];if(!file||busy||attempt.recording)return;
       if(!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(file.type.split(';')[0])||file.size>3*1024*1024){message('Choose a WebM, MP4, WAV or MP3 audio file under 3 MB.');return;}
       uploadBlob=file;await uploadRecording();
@@ -352,5 +386,5 @@
     env.addEventListener?.('beforeunload',()=>{cacheDraft();clearAudio();});
     return {open,leave,reset};
   }
-  return {createController,esc,time};
+  return {createController,esc,time,imageCategories,imageCategory,filterQuestions};
 });

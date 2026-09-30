@@ -12,7 +12,7 @@ test('Speaking practice is deferred until a speaking route is opened', () => {
 
   assert.equal(html.includes('speaking-practice.js'), false);
   assert.match(js, /function ensureSpeakingRuntimeLoaded\(\)/);
-  assert.match(js, /speaking-practice\.js\?v=20260930-semantic-fallback-v8/);
+  assert.match(js, /speaking-practice\.js\?v=20260930-catalogue-filters-v9/);
   assert.match(js, /Preparing Speaking practice/);
   assert.match(js, /data-speaking-load-retry/);
 });
@@ -25,8 +25,8 @@ test('Speaking deferred-load failure can retry without losing the requested ques
 
 test('Speaking styles and portal bundle are cache-busted with the delivery UI release', () => {
   const html = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
-  assert.match(html, /speaking-practice\.css\?v=6/);
-  assert.match(html, /index\.min\.js\?v=20260930-speaking-semantic-fallback-v8/);
+  assert.match(html, /speaking-practice\.css\?v=7/);
+  assert.match(html, /index\.min\.js\?v=20260930-speaking-catalogue-filters-v9/);
 });
 
 
