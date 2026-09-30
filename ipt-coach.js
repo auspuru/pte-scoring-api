@@ -56,6 +56,19 @@ const TASK_PRIORITY_FRAMEWORK = [
   'These are IPT teaching priorities, not a claim about official Pearson scoring weights.'
 ];
 
+const TARGET_PROFILE_LIBRARY = [
+  'IELTS-equivalent Band 6 (Pearson PTE concordance published July 2025): overall PTE 47–54; minimum skill concordance points are Listening 47, Reading 48, Writing 51, Speaking 54.',
+  'IELTS-equivalent Band 7 (Pearson PTE concordance published July 2025): overall PTE 63–70; minimum skill concordance points are Listening 58, Reading 59, Writing 69, Speaking 76.',
+  'IELTS-equivalent Band 8 (Pearson PTE concordance published July 2025): overall PTE 79–85; minimum skill concordance points are Listening 69, Reading 70, Writing 85, Speaking 88.',
+  'Temporary Graduate visa subclass 485, standard requirement for PTE tests taken on or after 7 August 2025: Overall 55; Listening 40; Reading 42; Writing 41; Speaking 39. Special passport-holder rules can differ, so do not apply this profile if the student identifies an exception category such as a British National (Overseas) or Hong Kong passport holder.',
+  'Australian visa Competent English, for PTE tests taken on or after 7 August 2025: Listening 47; Reading 48; Writing 51; Speaking 54.',
+  'Australian visa Proficient English, for PTE tests taken on or after 7 August 2025: Listening 58; Reading 59; Writing 69; Speaking 76.',
+  'Australian visa Superior English, for PTE tests taken on or after 7 August 2025: Listening 69; Reading 70; Writing 85; Speaking 88.',
+  'The Band 6/7/8 entries are Pearson test-concordance guidance, not visa requirements. The visa entries are Home Affairs English requirements and should be treated separately.',
+  'If a student names a visa subclass that is not explicitly listed above, do not invent a score requirement from the visa number alone. Use an exact requirement the student provides, or state that the visa-specific English threshold must be checked separately.',
+  'These stored visa thresholds are dated to the post-7-August-2025 rules. Do not present them as timeless; visa requirements can change.'
+];
+
 const TARGET_AWARE_PRIORITY_FRAMEWORK = [
   'Study priority depends on the student’s required score, not on maximising every task or every skill.',
   'Use mock-test module performance as the main evidence for whether Reading, Writing, Listening or Speaking is already good enough for the student’s target.',
@@ -200,6 +213,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     'IPT TASK PRIORITY FRAMEWORK:',
     ...TASK_PRIORITY_FRAMEWORK.map(x=>'- '+x),
     '',
+    'TARGET PROFILE LIBRARY:',
+    ...TARGET_PROFILE_LIBRARY.map(x=>'- '+x),
+    '',
     'TARGET-AWARE PRIORITY FRAMEWORK:',
     ...TARGET_AWARE_PRIORITY_FRAMEWORK.map(x=>'- '+x),
     '',
@@ -239,6 +255,11 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '- Do not ask the student which task, recent score or saved response they mean when the profile or current screen already answers that question. Do not ask them to repeat information already present in portal evidence.',
     '- When the student asks where marks are slipping, evaluate OVERALL TASK PERFORMANCE first. Use task average, latest score, recent range, trend and attempt count before interpreting any individual trait.',
     '- When the student asks what to practise or prioritise, first identify the student’s stated target if it is available in the current message or recent chat, then apply the TARGET-AWARE PRIORITY FRAMEWORK and IPT TASK PRIORITY FRAMEWORK before ranking tasks by score. Do not call a secondary task the top priority merely because its percentage is lower.',
+    '- When the student mentions Band 6, Band 7, Band 8, Competent English, Proficient English, Superior English, or subclass 485, resolve the target from the TARGET PROFILE LIBRARY before deciding which modules are already sufficient.',
+    '- Keep Pearson IELTS concordance targets separate from visa thresholds. For example, Band 8 and Superior English currently share the same skill numbers, but they are different target types and should be described accurately.',
+    '- For subclass 485, use both the overall minimum and the sub-skill minimums; never summarise the requirement as "55 overall only".',
+    '- Never compare a portal percentage or native-mark total directly to an official PTE 10–90 threshold unless the saved mock explicitly says that value is a PTE-scale score. Use percentages and native marks as directional evidence of strength, consistency and weakness instead.',
+    '- If the student names another visa subclass whose current English profile is not in the library, do not guess. Give study advice from the student’s stated score requirement if they supplied one; otherwise say the exact visa English target needs separate current verification.',
     '- Use recent mock module scores to decide whether a whole skill is already sufficient for the target. If Reading is consistently meeting the student’s requirement, treat Reading as maintenance even though Fill in the Blanks and Reorder Paragraphs are normally core tasks.',
     '- Do not ask for a target score when the student has already stated it in recent chat. If no target is known, give priority advice from the available evidence without inventing a target.',
     '- The profile field weakestAreas is a raw performance view, not a study-priority ranking. Re-rank it using the IPT TASK PRIORITY FRAMEWORK.',
@@ -260,4 +281,4 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
   ].join('\n');
 }
 
-module.exports = { TASK_NAMES, TASK_CONTRACT, TASK_PRIORITY_FRAMEWORK, TARGET_AWARE_PRIORITY_FRAMEWORK, RULES, GENERAL, buildPrompt, cleanHistory };
+module.exports = { TASK_NAMES, TASK_CONTRACT, TASK_PRIORITY_FRAMEWORK, TARGET_PROFILE_LIBRARY, TARGET_AWARE_PRIORITY_FRAMEWORK, RULES, GENERAL, buildPrompt, cleanHistory };
