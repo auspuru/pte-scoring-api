@@ -84,3 +84,29 @@ test('IPT coach prioritizes overall performance before trait weakness labels',()
   assert.match(prompt,/"performanceBand":"strong"/);
   assert.match(prompt,/"interpretation":"relative_improvement_area"/);
 });
+
+
+test('IPT coach stops over-prioritising Reading once mocks are sufficient for the stated target',()=>{
+  const prompt=coach.buildPrompt({
+    task:'portal',
+    message:'I only need around 70 and my Reading mocks are usually 72 to 85. What should I focus on now?',
+    history:[{role:'user',text:'My target is around 70.'}],
+    studentProfile:{
+      areas:[
+        {task:'dropdown',label:'Reading Blanks (Dropdown)',attempts:10,averagePct:66,latestPct:64,trend:'stable'},
+        {task:'swt',label:'Summarize Written Text',attempts:8,averagePct:61,latestPct:58,trend:'declining'}
+      ],
+      recentMocks:[
+        {title:'Reading Mock 4',engine:'reading',percent:78,breakdown:[]},
+        {title:'Reading Mock 3',engine:'reading',percent:74,breakdown:[]}
+      ]
+    }
+  });
+  assert.match(prompt,/TARGET-AWARE PRIORITY FRAMEWORK/i);
+  assert.match(prompt,/consistently meeting or comfortably exceeding the student’s stated target/i);
+  assert.match(prompt,/Reading as maintenance/i);
+  assert.match(prompt,/Fill in the Blanks and Reorder Paragraphs/i);
+  assert.match(prompt,/mock module scores/i);
+  assert.match(prompt,/Do not ask for a target score when the student has already stated it/i);
+  assert.match(prompt,/not an official Pearson score-conversion claim/i);
+});
