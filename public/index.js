@@ -1249,12 +1249,15 @@ async function flushSyncDirect(options = {}) {
       updatePracticeStats();
       updateDashboard();
     }
-    accountCloudSnapshot.set(syncUserId, structuredClone({
-      ...fullPayload,
-      ...(response.progress || {}),
-      practiceHistory: Array.isArray(response.practiceHistory) ? response.practiceHistory : fullPayload.practiceHistory,
-      practiceHistoryDeleted: Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : fullPayload.practiceHistoryDeleted
-    }));
+    if (typeof accountCloudSnapshot !== 'undefined') {
+      const nextSnapshot = {
+        ...fullPayload,
+        ...(response.progress || {}),
+        practiceHistory: Array.isArray(response.practiceHistory) ? response.practiceHistory : fullPayload.practiceHistory,
+        practiceHistoryDeleted: Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : fullPayload.practiceHistoryDeleted
+      };
+      accountCloudSnapshot.set(syncUserId, JSON.parse(JSON.stringify(nextSnapshot)));
+    }
     offlineMode = false;
     cachePracticeHistory(userProfile?.practiceHistory || fullPayload.practiceHistory, practiceHistoryDeleted);
     LocalStore.set(`pte_${currentUserId}_essays`, essays || []);
