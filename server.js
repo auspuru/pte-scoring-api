@@ -628,6 +628,31 @@ async function pgAdminUserDiagnostics() {
   return out;
 }
 
+function postgresProgressPatch(incoming, merged) {
+  const patch = {};
+  const has = key => Object.prototype.hasOwnProperty.call(incoming || {}, key);
+  const copyFields = fields => fields.forEach(key => { patch[key] = merged[key]; });
+
+  // AccountProgress merges these domains as groups. Persist the full merged
+  // value for only the domains touched by this delta, rather than retransmitting
+  // the student's entire accumulated profile back to Postgres.
+  if (['attempted','history','summaries','scores','scratch'].some(has)) {
+    copyFields(['attempted','history','summaries','scores','scratch','stats']);
+  }
+  if (['essays','essayLibraryDeleted'].some(has)) copyFields(['essays','essayLibraryDeleted']);
+  if (has('vocabProgress')) patch.vocabProgress = merged.vocabProgress;
+  if (has('essayDraft')) patch.essayDraft = merged.essayDraft;
+  if (has('readingProgress')) patch.readingProgress = merged.readingProgress;
+  if (has('practiceHistory') || has('practiceHistoryDeleted')) {
+    patch.practiceHistory = merged.practiceHistory;
+    patch.practiceHistoryDeleted = merged.practiceHistoryDeleted;
+  }
+  for (const key of ['email','templates','currentId','quotaUsed','quotaDate','studyPlan']) {
+    if (has(key)) patch[key] = merged[key];
+  }
+  return patch;
+}
+
 // ─── POSTGRES STORAGE ADAPTER ───────────────────────────────────────────────
 // Same method names as JsonStorage below, but reads/writes through pgPool.
 // All methods are async and use parameterised queries (no SQL injection risk).
@@ -835,10 +860,13 @@ const PgStorage = {
       let total = 0, count = 0;
       Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
       u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
-      await client.query(
-        `UPDATE user_data SET data = $2::jsonb, updated_at = NOW() WHERE username = $1`,
-        [userId, JSON.stringify(u)]
-      );
+      const patch = postgresProgressPatch(incoming, u);
+      if (Object.keys(patch).length) {
+        await client.query(
+          `UPDATE user_data SET data = data || $2::jsonb, updated_at = NOW() WHERE username = $1`,
+          [userId, JSON.stringify(patch)]
+        );
+      }
       await client.query('COMMIT');
       return { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
         practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
