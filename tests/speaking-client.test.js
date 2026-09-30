@@ -13,7 +13,7 @@ function harness() {
     static isTypeSupported(t){return t==='audio/webm;codecs=opus';}
     constructor(stream,opts){this.state='inactive';this.mimeType=opts?.mimeType||'audio/webm';recorders.push(this);}
     start(){this.state='recording';}
-    stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable({data:new Blob([Buffer.alloc(300,2)],{type:this.mimeType})});this.onstop();}
+    stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(300,2)],{type:this.mimeType})});this.onstop?.();}
   }
   class Audio {constructor(url){this.url=url;this.paused=true;audio.push(this);}async play(){this.paused=false;}pause(){this.paused=true;}}
   const env={document:doc,Date:{now:()=>now},Audio,MediaRecorder:Recorder,Blob,crypto:require('node:crypto').webcrypto,
@@ -55,7 +55,7 @@ test('Read Aloud opens directly in timed preparation with Skip preparation as th
   assert.equal(h.nodes.get('speaking-upload-retry').hidden,true);
   assert.equal(h.nodes.get('speaking-finish').hidden,true);
   assert.doesNotMatch(h.host.innerHTML,/Stop recording|Confirm what you said|Audio file under 3 MB|Save transcript/);
-  assert.doesNotMatch(h.host.innerHTML,/My questions/);
+  assert.match(h.host.innerHTML,/My questions/);
   await h.click({speakingAction:'skip'});assert.equal(h.recorders[0].state,'recording');
   assert.equal(h.nodes.get('speaking-skip').hidden,true);
   h.tick(40001);await flush();
@@ -125,9 +125,9 @@ test('A hidden tab interrupts preparation and requires a technical restart inste
 
 test('Countdown labels round up consistently at minute boundaries',()=>{assert.equal(time(59.9),'1:00');assert.equal(time(120),'2:00');assert.equal(time(-1),'0:00');});
 
-test('Question navigation is locked during a timed attempt and returns only after submission',async()=>{
+test('Question navigation is available during preparation and after submission',async()=>{
   const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
-  assert.doesNotMatch(h.host.innerHTML,/Question 1 of 5/);assert.doesNotMatch(h.host.innerHTML,/Next →/);
+  assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Skip question →/);
   await h.click({speakingAction:'skip'});h.tick(40001);await flush();
   assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Next →/);
 });
@@ -184,4 +184,41 @@ test('Assessment failure preserves the saved recording and offers Retry assessme
  const a=[...h.attempts.values()][0];assert(a.recording);assert.equal(a.status,'draft');assert.equal(h.nodes.get('speaking-assess-retry').hidden,false);
  assert.match(h.host.innerHTML,/recording is saved/i);
  h.env.rejectTranscription=false;await h.click({speakingAction:'submit'});await flush();assert.equal(a.status,'submitted');assert.match(h.host.innerHTML,/Your result/);
+});
+
+
+test('Skipping preparation opens the next question without submitting an empty attempt',async()=>{
+ const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-1'});
+ await h.click({speakingMove:'1'});h.tick(1000);await flush();
+ assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.recorders.length,0);
+ assert(!h.requests.some(r=>r.url.endsWith('/submit')||r.url.endsWith('/recording')));
+ await h.click({speakingMove:'-1'});assert.match(h.host.innerHTML,/Question 1 of/);
+});
+
+test('Skipping during recording discards unfinished audio and stops the old timer',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'skip'});
+ await h.click({speakingMove:'1'});await flush();
+ assert.equal(h.recorders[0].state,'inactive');assert.match(h.host.innerHTML,/Question 2 of/);
+ assert(!h.requests.some(r=>r.url.endsWith('/submit')||r.url.endsWith('/recording')));
+ assert.equal([...h.attempts.values()][0].status,'draft');
+});
+
+test('Respond now stops the situation audio and starts exactly one recording',async()=>{
+ const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});
+ assert.equal(h.nodes.get('speaking-respond').hidden,false);const ended=h.audio[0].onended;
+ await h.click({speakingAction:'respond'});assert.equal(h.audio[0].paused,true);
+ assert.equal(h.nodes.get('speaking-phase').textContent,'● Recording');assert.equal(h.nodes.get('speaking-respond').hidden,true);
+ ended();h.tick(1000);assert.equal(h.recorders.length,1);
+ await h.click({speakingAction:'finish'});await flush();assert.equal([...h.attempts.values()][0].status,'submitted');
+});
+
+test('Skipping a listening question ignores late audio completion',async()=>{
+ const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});const ended=h.audio[0].onended;
+ await h.click({speakingMove:'1'});ended();assert.equal(h.audio[0].paused,true);
+ assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
+});
+
+test('Question list remains accessible on the last unattempted question',async()=>{
+ const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-5'});
+ await h.click({speakingAction:'list'});assert.match(h.host.innerHTML,/speaking-question-list/);assert.equal(h.recorders.length,0);
 });
