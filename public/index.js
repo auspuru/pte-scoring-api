@@ -12741,7 +12741,14 @@ function openStudentProgress() {
         return {...a,...ReadingPractice.totals(a)};
       };
       reading = {...reading,history:(reading.history||[]).map(enrich),session:enrich(reading.session)};
-      return {reading,swt:LocalStore.get(getPteStorageKey('history'))||{},essays:getPracticeHistory()};
+      const progress = localAccountProgress(owner);
+      return {
+        reading,
+        swt:progress.history||{},
+        swtDrafts:progress.summaries||{},
+        essays:getPracticeHistory(),
+        essayDraft:progress.essayDraft||null
+      };
     }
   });
   return studentProgressController.open();
