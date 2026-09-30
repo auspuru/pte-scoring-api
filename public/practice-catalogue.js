@@ -74,9 +74,11 @@
     let sectional = 0;
     const sectionalMocks = (bank.mockCatalogue || []).filter(m => m.kind !== 'reading-blanks').map(m => {
       const number = ++sectional;
+      const set = [...(bank.sets || []), ...(bank.importedSets || [])].find(item => item.id === m.setId);
+      const minimumMinutes = 20 + Number(set?.minutes || 25) + Number(bank.mixedMock?.listeningMinutes || 10);
       return { id: m.id, engine: 'reading', module: 'reading', mode: 'sectional',
         title: 'Integrated Reading & Listening Sectional Mock ' + number,
-        minutes: m.minutes || 55, number };
+        minutes: Math.max(Number(m.minutes || 0), minimumMinutes), number };
     });
     const practiceMocks = Array.from({ length: 15 }, (_, i) => ({
       id: 'reading-practice-mock-' + (i + 1),
