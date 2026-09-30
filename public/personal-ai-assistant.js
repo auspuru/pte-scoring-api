@@ -62,6 +62,8 @@
   function syncVisibility() {
     if (!root) return;
     root.hidden = !shouldShow();
+    const section = currentSection();
+    root.classList.toggle('is-task-page', Object.hasOwn(SECTION_TASK, section) || section === 'dictation' || section.startsWith('reading-') || section.startsWith('listening-'));
     if (root.hidden) closePanel(false);
   }
 

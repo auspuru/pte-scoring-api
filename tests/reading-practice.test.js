@@ -809,3 +809,33 @@ test('Reading sync rerenders preserve Recent results expansion and completed pra
  assert.match(source,/data-move="-1"/);
  assert.match(source,/reading-next-action/);
 });
+
+test('Reorder practice arrows work after Retry saves an empty answer and reject invalid moves',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'reorder'});
+ const match=h.host.innerHTML.match(/data-practice-uid="([^"]+)"/);assert(match);
+ await h.click({practiceUid:match[1]});
+ await h.click({action:'retry-question'});
+ let s=snapshot(h).session,q=s.questions[0],order=q.items.map(item=>item.key);
+ assert.deepEqual(s.answers[q.uid],[]);
+ await h.click({reorder:'0',direction:'1'});
+ s=snapshot(h).session;
+ const expected=[...order];[expected[0],expected[1]]=[expected[1],expected[0]];
+ assert.deepEqual(s.answers[q.uid],expected);
+ await h.click({reorder:'0',direction:'-1'});
+ assert.deepEqual(snapshot(h).session.answers[q.uid],expected);
+ await h.click({reorder:'1',direction:'-1'});
+ assert.deepEqual(snapshot(h).session.answers[q.uid],order);
+});
+
+test('Every Reading and Listening question library supports Next and Back without losing the first attempt',async()=>{
+ const libraries=require('../public/practice-catalogue').readingLibraries(bank);
+ for(const library of libraries){
+  if(library.questions.length<2)continue;
+  const h=client();await h.ctx.ReadingPractice.open({libraryId:library.id});
+  await h.click({practiceUid:library.questions[0].uid});const id=snapshot(h).session.id;
+  await h.click({move:'1'});
+  assert.equal(snapshot(h).session.practiceUid,library.questions[1].uid,library.id+' Next');
+  await h.click({move:'-1'});
+  assert.equal(snapshot(h).session.id,id,library.id+' Back restores the first attempt');
+ }
+});

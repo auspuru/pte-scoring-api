@@ -789,7 +789,14 @@
     if(d.word!==undefined){selectedWord=d.word;host.querySelectorAll('[data-word]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.word===selectedWord)));return;}
     if(d.blank!==undefined)return place(Number(d.blank),selectedWord);
     if(d.clear!==undefined){(s.answers[q.uid]||[])[Number(d.clear)]='';persist();return renderSession();}
-    if(d.reorder!==undefined){const a=s.answers[q.uid]||q.items.map(x=>x.key),i=Number(d.reorder),j=i+Number(d.direction);[a[i],a[j]]=[a[j],a[i]];s.answers[q.uid]=a;persist();return renderSession();}
+    if(d.reorder!==undefined&&q.type==='reorder'){
+      // Retry/cloud restore can leave an explicit empty array. Start from the
+      // same visible order as questionHTML rather than swapping undefined entries.
+      const saved=s.answers[q.uid],a=saved?.length?[...saved]:q.items.map(x=>x.key);
+      const i=Number(d.reorder),direction=Number(d.direction),j=i+direction;
+      if(!Number.isInteger(i)||![-1,1].includes(direction)||i<0||i>=a.length||j<0||j>=a.length)return;
+      [a[i],a[j]]=[a[j],a[i]];s.answers[q.uid]=a;persist();return renderSession();
+    }
   }
   return { open, leave, reset, score, diagnostic, report, remaining, storageKey, totals, receiveProgress, setSyncStatus };
 });

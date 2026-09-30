@@ -197,3 +197,16 @@ body.dark .personal-ai-message.user>div,.dark .personal-ai-message.user>div{back
   .personal-ai-launcher,.personal-ai-launcher::before,.personal-ai-launcher.is-waving .personal-ai-mascot-art{animation:none!important}
   .personal-ai-panel,.personal-ai-mascot-art{transition-duration:.01ms!important}
 }
+
+/* Keep question navigation clear on every task, including narrow viewports. */
+.personal-ai-assistant.is-task-page{
+  top:max(84px,calc(env(safe-area-inset-top) + 76px));
+  bottom:auto;
+  right:max(12px,env(safe-area-inset-right));
+}
+.personal-ai-assistant.is-task-page .personal-ai-launcher{
+  width:48px;
+  height:48px;
+  animation:none;
+}
+.personal-ai-assistant.is-task-page .personal-ai-launcher::before{width:38px;height:38px}

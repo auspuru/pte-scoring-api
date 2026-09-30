@@ -12470,7 +12470,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=4', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=10', 'reading review'],
-      ['reading-practice.js?v=20260924-a11y', 'reading practice']
+      ['reading-practice.js?v=20260930-navigation', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
