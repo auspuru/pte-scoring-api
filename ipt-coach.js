@@ -42,6 +42,20 @@ const GENERAL = [
   'When recommending practice, make it concrete and small enough to do today.'
 ];
 
+const TASK_PRIORITY_FRAMEWORK = [
+  'Do not choose study priorities by lowest percentage alone.',
+  'Core speaking priorities: Read Aloud, Repeat Sentence, Respond to a Situation, Retell Lecture, and Summarize Group Discussion.',
+  'Core writing priorities: Summarize Written Text and Essay Writing. Give extra emphasis to Summarize Written Text.',
+  'Core reading priorities: Reading Fill in the Blanks in both dropdown and drag-and-drop/word-bank formats, plus Reorder Paragraphs.',
+  'Reading Multiple Choice questions, including single-answer and multiple-answer items, are lower priority and should not normally displace work on core reading tasks.',
+  'Core listening priorities: Highlight Incorrect Words, Write From Dictation, and Summarize Spoken Text.',
+  'Describe Image and other non-core tasks can still be improved, but a low score there should not normally outrank a meaningful weakness in a core task.',
+  'For a student targeting around 80+ overall, secondary tasks deserve more attention after the core tasks are reasonably stable.',
+  'When comparing two tasks in the same priority tier, use attempt count, average, latest score, recent range, trend, and mock evidence to decide which one needs attention first.',
+  'A modest weakness in a core task can be more worth fixing than a much lower score in a secondary task.',
+  'These are IPT teaching priorities, not a claim about official Pearson scoring weights.'
+];
+
 const RULES = {
   swt:[
     'No rigid SWT template.',
@@ -170,6 +184,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     'GENERAL IPT RULES:',
     ...GENERAL.map(x=>'- '+x),
     '',
+    'IPT TASK PRIORITY FRAMEWORK:',
+    ...TASK_PRIORITY_FRAMEWORK.map(x=>'- '+x),
+    '',
     'TASK: '+name,
     'TASK CONTRACT (non-negotiable):',
     ...(taskContract.length ? taskContract.map(x=>'- '+x) : ['- Follow the task modality shown by the current portal screen.']),
@@ -200,6 +217,9 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
     '- Treat STUDENT PERFORMANCE PROFILE as saved evidence from this student’s own portal history. Use it proactively when the question is about progress, weak areas, marks, study priorities, recent performance or what to practise next.',
     '- Do not ask the student which task, recent score or saved response they mean when the profile or current screen already answers that question. Do not ask them to repeat information already present in portal evidence.',
     '- When the student asks where marks are slipping, evaluate OVERALL TASK PERFORMANCE first. Use task average, latest score, recent range, trend and attempt count before interpreting any individual trait.',
+    '- When the student asks what to practise or prioritise, apply the IPT TASK PRIORITY FRAMEWORK before ranking tasks by score. Do not call a secondary task the top priority merely because its percentage is lower.',
+    '- The profile field weakestAreas is a raw performance view, not a study-priority ranking. Re-rank it using the IPT TASK PRIORITY FRAMEWORK.',
+    '- If a core task is only moderately weaker while a secondary task is dramatically lower, normally prioritise the core task first unless the core task is already stable/strong or the student is explicitly targeting around 80+ overall.',
     '- A trait score must not override a strong overall task pattern on its own. If a task has performanceBand "strong" (75%+ average), describe a lower trait as a relative improvement area unless there is separate evidence that overall scores are declining or the trait is materially lowering recent totals.',
     '- Use trait interpretation fields from the profile. "relative_improvement_area" means the trait is worth polishing but should NOT be presented as the main reason marks are being lost. "possible_score_contributor" can be discussed as a likely contributor when overall task performance is also developing/weak.',
     '- Never say the student has "limited data" when the profile says evidenceStrength "high" or when there are 5 or more usable attempts. With 2–4 usable attempts, say evidence is moderate. Only 1 usable attempt is genuinely limited.',
@@ -217,4 +237,4 @@ function buildPrompt({task,message,history=[],latestScore=null,screenContext='',
   ].join('\n');
 }
 
-module.exports = { TASK_NAMES, TASK_CONTRACT, RULES, GENERAL, buildPrompt, cleanHistory };
+module.exports = { TASK_NAMES, TASK_CONTRACT, TASK_PRIORITY_FRAMEWORK, RULES, GENERAL, buildPrompt, cleanHistory };
