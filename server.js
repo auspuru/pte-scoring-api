@@ -189,6 +189,20 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response']
 }));
 // H1: 10mb was generous enough to wave through abusive payloads. Adjusted to 25mb for PDF html uploads.
+app.use((req,res,next)=>{
+  if(req.method==='POST'&&req.path.startsWith('/api/sync/')){
+    const started=Date.now();
+    const rawLength=Number(req.headers['content-length']);
+    const contentLength=Number.isFinite(rawLength)&&rawLength>=0?rawLength:null;
+    res.once('finish',()=>{
+      const totalMs=Date.now()-started;
+      if(totalMs>=300)console.info('[sync-http-perf]',JSON.stringify({
+        totalMs,contentLength,compact:req.headers['x-sync-response']==='delta'
+      }));
+    });
+  }
+  next();
+});
 app.use(express.json({ limit: '25mb' }));
 
 // H2 (v19.17): rate-limit the paid grading + spellcheck endpoints if the
