@@ -23,6 +23,12 @@ test('Each available individual task has exactly one primary home and a working 
   assert(!all.some(t => /mock/.test(t.route)));
 });
 
+test('Integrated Reading and Listening mocks expose the full timer in the catalogue', () => {
+  const integrated = catalogue.readingMocks(bank).filter(m => m.mode === 'sectional');
+  assert.equal(integrated.length, 6);
+  assert(integrated.every(m => m.minutes === 55));
+});
+
 test('Reading and Listening individual libraries reuse complete keys and stable identities without modifying banks', () => {
   const before = JSON.stringify(bank), libraries = catalogue.readingLibraries(bank);
   assert.equal(libraries.length, 7);
