@@ -136,8 +136,8 @@ function speaking(q,response) {
     version:VERSION,maximum:6,total,assessment:'Content-only local practice estimate',pronunciation:null,fluency:null,
     deliveryStatus:'Teacher review — not assessed by local text scoring',scoringMode:'local',
     overview: total>=5?'The response covers most of the supplied content points. Delivery still needs teacher or audio-based review.':total>=3?'The response covers part of the task, but important content is missing or underdeveloped.':'The response contains limited recoverable task content in the confirmed transcript.',
-    strengths:coverage.filter(x=>x.status==='covered').slice(0,3).map(x=>'Covered: '+x.idea),
-    improvements:coverage.filter(x=>x.status!=='covered').slice(0,3).map(x=>'Add or clarify: '+x.idea),
+    strengths:coverage.filter(x=>x.status==='covered').slice(0,2).map(x=>'Covered: '+x.idea),
+    improvements:coverage.filter(x=>x.status!=='covered').slice(0,2).map(x=>'Add or clarify: '+x.idea),
     coverage:coverage.map(x=>({point:x.idea,status:x.status,evidence:x.evidence,feedback:x.status==='covered'?'This point is represented in the transcript.':x.status==='partial'?'This point is only partly represented; make it clearer.':'Include this relevant point in your response.'}))
   };
 }
