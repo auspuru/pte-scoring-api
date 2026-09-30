@@ -112,6 +112,27 @@ test('My Progress trends combine normal practice and matching mock task results'
   assert.match(source, /mockCount/);
 });
 
+test('My Progress surfaces recent completed SWT and Essay attempts near the top', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading:{history:[]},
+    swt:{3:[{timestamp:'2026-09-30T10:05:00.000Z',overall_score:82}]},
+    swtDrafts:{},
+    essays:[],
+    essayDraft:null
+  }, [], []);
+  model.recentWriting.push({
+    engine:'essay',title:'Write Essay',route:'practice',at:'2026-09-30T10:06:00.000Z',detail:'Completed · 22/26'
+  });
+  assert(model.recentWriting.some(item => item.title === 'Summarise Written Text' && /82\/90/.test(item.detail)));
+  assert.match(source, /Recent writing activity/);
+  assert(source.indexOf('Recent writing activity') < source.indexOf('Currently in progress'));
+});
+
 test('My Progress exposes saved in-progress practice from another device', () => {
   const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
   const ctx = { globalThis: {} };
@@ -154,6 +175,24 @@ test('My Progress exposes saved in-progress practice from another device', () =>
   assert(model.recent.some(item => item.result && item.result.startsWith('In progress')));
   assert.match(source, /Currently in progress/);
   assert.match(source, /In-progress practice is shown as soon as it reaches your account/);
+});
+
+test('My Progress includes completed essay practice in recent writing', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading:{history:[]},swt:{},swtDrafts:{},essays:[],essayDraft:null
+  }, [], []);
+  const essayModel = ctx.StudentProgress.model({
+    reading:{history:[]},swt:{},swtDrafts:{},
+    essays:[{id:'essay-1',questionTitle:'Technology essay',date:Date.parse('2026-09-30T10:06:00.000Z'),scores:{total:22}}],
+    essayDraft:null
+  }, [], []);
+  assert.equal(model.recentWriting.length, 0);
+  assert(essayModel.recentWriting.some(item => item.title === 'Technology essay' && item.detail === 'Completed · 22/26'));
 });
 
 test('My Progress does not relabel an already-scored SWT answer as an unfinished draft', () => {
