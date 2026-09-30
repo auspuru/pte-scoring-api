@@ -12487,7 +12487,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20260930-speaking-feedback-v11', 'speaking practice')
+  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20260930-consistent-nav', 'speaking practice')
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-navigation-ux', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-consistent-nav', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -15182,6 +15182,8 @@ function setSwtPracticeMode(mode){
   const nav = document.getElementById('swtPracticeNav');
   const grid = document.getElementById('swtPracticeGrid');
   if(nav) nav.hidden = false;
+  const questionNav=document.getElementById('swtQuestionNavigation');
+  if(questionNav) questionNav.hidden=false;
   if(grid) grid.hidden = false;
   const requirements = document.getElementById('swtSummaryRequirements');
   if(requirements) requirements.hidden = mode !== 'summary';

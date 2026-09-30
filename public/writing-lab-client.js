@@ -368,7 +368,7 @@
   function practiceNavigation(compact = false) {
     if(!catalog||!attempt||!['sst','wfd'].includes(attempt.kind)||(!compact&&attempt.status!=='submitted'))return '';
     const questions=attempt.kind==='sst'?catalog.spoken:catalog.dictation,index=questions.findIndex(q=>q.id===attempt.testId);
-    return '<nav class="'+(compact?'question-links':'exam-footer')+'" aria-label="Practice questions"><button class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="secondary" data-practice-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next question →</button></nav>';
+    return '<nav class="'+(compact?'question-links':'exam-footer')+'" aria-label="Practice questions"><button class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="secondary" data-practice-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next →</button></nav>';
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;

@@ -74,9 +74,9 @@
 <script src="/portal-writing-motion.js?v=20260929-native-cursor" defer></script>
 <script src="/pte-estimate-display.js?v=1" defer></script>
 <script src="/writing-lab-report.js?v=2" defer></script>
-<script src="index.min.js?v=20260930-navigation-ux" defer></script>
+<script src="index.min.js?v=20260930-consistent-nav" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
-<link rel="stylesheet" href="/question-navigation.css?v=1">
+<link rel="stylesheet" href="/question-navigation.css?v=2">
 <link rel="stylesheet" href="/student-progress.css?v=1">
 <link rel="stylesheet" href="/interventions.css?v=4">
 <link rel="stylesheet" href="/ipt-tokens.css?v=20260928-liquid-foundation">
@@ -554,11 +554,7 @@
             </div>
           </section>
           <div class="passage-nav" id="swtPracticeNav" aria-label="Choose a passage" hidden>
-            <div class="swt-pager">
-              <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">← Back</button>
-              <span>Passage <strong class="nav-label" id="navCurrent">01</strong> <span class="swt-muted">of <span id="navTotal">10</span></span></span>
-              <button type="button" class="nav-arrow" id="navNext" onclick="nextPassage()" aria-label="Next passage">Next →</button>
-            </div>
+
             <label class="swt-select-label">Show<select id="passageFilter" class="passage-filter-select" onchange="changePassageFilter(this.value)">
               <option value="all">All passages</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option>
             </select></label>
@@ -617,6 +613,13 @@
               <div id="swtHighlightFeedback" class="swt-highlight-feedback" hidden></div>
             </section>
           </div>
+          <nav id="swtQuestionNavigation" aria-label="Practice questions" hidden>
+            <div class="swt-pager">
+              <button type="button" class="nav-arrow" id="navPrev" onclick="prevPassage()" aria-label="Previous passage">← Back</button>
+              <span>Question <strong class="nav-label" id="navCurrent">01</strong> <span class="swt-muted">of <span id="navTotal">10</span></span></span>
+              <button type="button" class="nav-arrow" id="navNext" onclick="nextPassage()" aria-label="Next passage">Next →</button>
+            </div>
+          </nav>
         </div>
         <div id="swtResultsScreen" class="swt-sub-screen">
           <header class="swt-heading"><div><div class="eyebrow">Writing practice · SWT</div><h2 tabindex="-1">Your summary, reviewed</h2><p id="resultsBreadcrumb">Review your result, then make one useful improvement.</p></div><button type="button" class="btn" onclick="backToPractice()">← Back to writing</button></header>

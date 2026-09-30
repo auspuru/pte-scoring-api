@@ -150,7 +150,7 @@
     }
     function questionNavigation() {
       const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId);
-      return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="portal-button" data-speaking-move="1" '+(index>=questions.length-1?'disabled':'')+'>'+(attempt.status==='submitted'?'Next →':'Skip question →')+'</button><button class="portal-button" data-speaking-action="list">My questions</button></nav>';
+      return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="portal-button" data-speaking-move="1" '+(index>=questions.length-1?'disabled':'')+'>'+'Next →'+'</button><button class="portal-button" data-speaking-action="list">My questions</button></nav>';
     }
     async function moveQuestion(direction) {
       if(busy||uploadBlob||phase==='saving'){message('Wait for your response to save before changing questions.');return;}
@@ -182,7 +182,7 @@
         : '';
       chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+number+'</h2></div>'+(submitted?'<button class="portal-button" data-speaking-action="list">My questions</button>':'')+'</div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
         +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<img class="speaking-image" src="'+q.imageUrl+'" alt="'+esc(q.title)+' — describe the visual and its labelled data">':'')
-        +examPanel+questionNavigation()+review);
+        +examPanel+review+questionNavigation());
       if(submitted)mountPlayback();refreshControls();
     }
     function feedback(r) {

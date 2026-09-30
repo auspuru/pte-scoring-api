@@ -127,7 +127,7 @@ test('Countdown labels round up consistently at minute boundaries',()=>{assert.e
 
 test('Question navigation is available during preparation and after submission',async()=>{
   const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
-  assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Skip question →/);
+  assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Next →/);
   await h.click({speakingAction:'skip'});h.tick(40001);await flush();
   assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Next →/);
 });
