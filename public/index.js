@@ -14567,6 +14567,7 @@ function resultsView() {
       ${taskFocusSection}
 
       ${summaryRow}
+      ${window.EssayNextSteps?.render(a) || ''}
 
       ${grammarSection}
       ${optionalSection}
@@ -14667,7 +14668,7 @@ function renderGrammarSpellingSection(a) {
       <div class="practice-essay-display">${highlightedEssay}</div>
       <div class="practice-grammar-no-errors">
         <span>✓</span>
-        <span><strong>No grammar or spelling issues found.</strong> Clean writing!</span>
+        <span><strong>No specific corrections were returned by this assessment.</strong> Review the language feedback and check your writing.</span>
       </div>
     </div>
     `;
