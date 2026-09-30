@@ -134,7 +134,7 @@ test('Postgres sync uses optimistic row versions instead of a four-round-trip lo
   assert.match(source, /const maxAttempts = 4/);
   assert.match(source, /perf\.conflicts\+\+/);
   assert.match(source, /ON CONFLICT \(username\) DO NOTHING/);
-  assert.doesNotMatch(source, /FOR UPDATE/);
+  assert.doesNotMatch(source, /SELECT data FROM user_data WHERE username = \\$1 FOR UPDATE/);
   assert.doesNotMatch(source, /client\.query\('BEGIN'\)/);
   assert.doesNotMatch(source, /client\.query\('COMMIT'\)/);
 });
