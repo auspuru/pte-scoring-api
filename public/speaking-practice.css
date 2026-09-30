@@ -38,3 +38,14 @@
 .speaking-exam-mic p{margin:7px 0 0!important;color:var(--ink-soft);font-size:12px!important}
 .speaking-exam-panel+#speaking-playback{display:none}
 @media(max-width:640px){.speaking-exam-status{padding:18px;align-items:flex-end}.speaking-exam-status #speaking-clock{font-size:30px}.speaking-exam-actions{padding:16px 18px 8px}.speaking-exam-note{padding:8px 18px 18px}}
+
+/* Actionable delivery coaching */
+.speaking-delivery-coaching{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.speaking-delivery-coaching>section{padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--bg-hover)}
+.speaking-delivery-coaching h4{margin:3px 0 8px;font-size:15px}
+.speaking-delivery-coaching p{margin:0;font-size:13px;line-height:1.55;color:var(--ink)}
+.speaking-delivery-diagnostics,.speaking-content-breakdown{margin-top:14px}
+.speaking-delivery-diagnostics>summary,.speaking-content-breakdown>summary{cursor:pointer;color:var(--accent);font-size:12px;font-weight:700}
+.speaking-delivery-diagnostics[open]>summary,.speaking-content-breakdown[open]>summary{margin-bottom:12px}
+.speaking-content-breakdown .speaking-coverage{margin-top:12px}
+@media(max-width:800px){.speaking-delivery-coaching{grid-template-columns:1fr}}
