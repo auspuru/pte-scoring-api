@@ -168,7 +168,11 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const di=bank.questions.find(q=>q.type==='di'),other=crypto.randomUUID();
   await request('/attempts',{id:other,questionId:di.id});await request('/attempts/'+other+'/transcript',{text:di.sample,revision:0});
   failModel=true;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.status,'submitted');assert.equal(a.transcript,di.sample);assert.equal(a.question.sample,di.sample);assert(a.result);assert.equal(a.result.scoringMode,'local');assert(a.result.total>=4);
-  failModel=false;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.result.scoringMode,'ai');assert.equal(a.result.total,6);
+  const savedDelivery={score:4,maximum:5,coaching:'Saved audio coaching'};
+  await store.update('alice',other,a=>{a.recording={mime:'audio/webm',data:Buffer.alloc(200).toString('base64')};a.result={...a.result,pronunciation:savedDelivery,fluency:savedDelivery,deliveryVersion:delivery.VERSION};return a;});
+  failDelivery=true; // A content retry must not call the audio assessor again.
+  failModel=false;a=(await request('/attempts/'+other+'/submit',{})).body;
+  assert.deepEqual(a.result.pronunciation,savedDelivery);assert.deepEqual(a.result.fluency,savedDelivery);assert.equal(a.result.scoringMode,'ai');assert.equal(a.result.total,6);
   const prompt=await fetch(base+'/speaking-audio/rs-1.mp3',{headers:{Range:'bytes=0-1023'}});assert.equal(prompt.status,206);assert.equal((await prompt.arrayBuffer()).byteLength,1024);
   assert.equal((await fetch(base+'/speaking-image/di-1.svg')).headers.get('content-type').split(';')[0],'image/svg+xml');
   assert.equal((await fetch(base+'/speaking-audio/not-a-question.mp3')).status,404);

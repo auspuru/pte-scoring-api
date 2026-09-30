@@ -34,7 +34,7 @@ function harness({includePredictions=false}={}) {
     if(parts[2]==='submit'){
       if(!a.transcript&&env.rejectTranscription)return reply({error:'Automatic transcription is temporarily unavailable.'},false);
       if(!a.transcript){a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
-      a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};
+      a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',scoringMode:env.contentFallback?'local':'ai',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};
     }
     return reply(present(a));
   };
@@ -288,4 +288,19 @@ test('Skipping a listening question ignores late audio completion',async()=>{
 test('Question list remains accessible on the last unattempted question',async()=>{
  const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-5'});
  await h.click({speakingAction:'list'});assert.match(h.host.innerHTML,/speaking-question-list/);assert.equal(h.recorders.length,0);
+});
+
+
+test('Content retry reports continued fallback and successful recovery without another upload',async()=>{
+  const h=harness();h.env.contentFallback=true;
+  await h.controller.open('di');await h.click({speakingQuestion:'di-1'});
+  await h.click({speakingAction:'skip'});h.tick(40001);await flush();
+  assert.match(h.host.innerHTML,/Retry content review/);
+  const uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length;
+  await h.click({speakingAction:'submit'});
+  assert.match(h.host.innerHTML,/still unavailable/);
+  h.env.contentFallback=false;await h.click({speakingAction:'submit'});
+  assert.match(h.host.innerHTML,/Content review completed/);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
+  assert.match(h.host.innerHTML,/Improve everyday pronunciation and fluency/);
 });
