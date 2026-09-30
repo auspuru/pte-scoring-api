@@ -374,7 +374,7 @@ test('Essay notifications are concise and always self-dismiss', () => {
   assert.match(uiSource, /practiceSampleBandLabel\(sample\.sampleBand\)/);
   assert.match(uiSource, /Add the missing personal\/task detail shown in your results/);
   assert.match(htmlSource, /index\.css\?v=20260928-toastfix/);
-  assert.match(htmlSource, /index\.min\.js\?v=20260930-responsive-perf/);
+  assert.match(htmlSource, /index\.min\.js\?v=20260930-sync-delta/);
 });
 
 test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {

@@ -147,6 +147,43 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
   assert.match(serverSource, /JSON\.stringify\(patch\)/);
 });
 
+test('Compact sync responses echo only progress domains touched by the save', () => {
+  const start = serverSource.indexOf('function compactSyncPushResponse(');
+  const end = serverSource.indexOf('\n\n// ═══ SYNC ENDPOINTS', start);
+  assert(start >= 0 && end > start);
+  const ctx = {};
+  vm.createContext(ctx);
+  vm.runInContext(serverSource.slice(start, end) + '\nthis.compact = compactSyncPushResponse;', ctx);
+
+  const result = {
+    success: true, stats: { totalAttempts: 4 }, passageCount: 2, attemptCount: 4,
+    progress: {
+      attempted:[1,2], history:{1:[{timestamp:1}]}, summaries:{1:{text:'new'}}, scores:{1:{overall_score:80}}, scratch:{},
+      essays:[{id:'essay-1'}], essayLibraryDeleted:{}, vocabProgress:{read:{a:1}},
+      essayDraft:{essayText:'draft'}, readingProgress:{version:2,history:[{id:'large'}]}
+    },
+    practiceHistory:[{id:'p1'}], practiceHistoryDeleted:['p0']
+  };
+
+  const quotaOnly = ctx.compact({ quotaUsed:{essay:1} }, result);
+  assert.equal(quotaOnly.success, true);
+  assert.equal(quotaOnly.progress, undefined);
+  assert.equal(quotaOnly.practiceHistory, undefined);
+
+  const swt = ctx.compact({ summaries:{1:{text:'new'}} }, result);
+  assert.deepEqual(Object.keys(swt.progress).sort(), ['attempted','history','scores','scratch','summaries'].sort());
+  assert.equal(swt.progress.readingProgress, undefined);
+
+  const reading = ctx.compact({ readingProgress:{version:3,patches:[]} }, result);
+  assert.deepEqual(Object.keys(reading.progress), ['readingProgress']);
+  assert.equal(reading.practiceHistory, undefined);
+
+  const practice = ctx.compact({ practiceHistory:[{id:'p1'}] }, result);
+  assert.deepEqual(practice.practiceHistory, [{id:'p1'}]);
+  assert.deepEqual(practice.practiceHistoryDeleted, ['p0']);
+  assert.equal(practice.progress, undefined);
+});
+
 test('Railway Postgres prefers the private DATABASE_URL before the public TCP proxy', () => {
   assert.match(serverSource, /process\.env\.PGURL\s*\|\|\s*process\.env\.DATABASE_URL\s*\|\|\s*process\.env\.DATABASE_PUBLIC_URL/s);
   assert.match(serverSource, /process\.env\.DATABASE_URL \? 'DATABASE_URL'/);

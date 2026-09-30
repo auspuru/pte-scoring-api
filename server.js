@@ -186,7 +186,7 @@ app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   // C3: the client now sends x-session-token on sync calls; admin uses x-admin-key.
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response']
 }));
 // H1: 10mb was generous enough to wave through abusive payloads. Adjusted to 25mb for PDF html uploads.
 app.use(express.json({ limit: '25mb' }));
@@ -3317,6 +3317,41 @@ app.get('/api/leaderboard', async (req, res) => {
   catch (e) { res.status(500).json({ error: 'Failed to get leaderboard' }); }
 });
 
+function compactSyncPushResponse(incoming, result) {
+  incoming = incoming && typeof incoming === 'object' ? incoming : {};
+  result = result && typeof result === 'object' ? result : {};
+  const progress = result.progress && typeof result.progress === 'object' ? result.progress : {};
+  const has = key => Object.prototype.hasOwnProperty.call(incoming, key);
+  const compactProgress = {};
+  const copy = fields => fields.forEach(key => {
+    if (Object.prototype.hasOwnProperty.call(progress, key)) compactProgress[key] = progress[key];
+  });
+
+  // Echo only the merged progress domains that this save touched. Full cloud
+  // reconciliation still uses GET /api/sync/:userId, so routine POSTs no longer
+  // retransmit unrelated Reading, Writing and vocabulary history.
+  if (['attempted','history','summaries','scores','scratch'].some(has)) {
+    copy(['attempted','history','summaries','scores','scratch']);
+  }
+  if (['essays','essayLibraryDeleted'].some(has)) copy(['essays','essayLibraryDeleted']);
+  if (has('vocabProgress')) copy(['vocabProgress']);
+  if (has('essayDraft')) copy(['essayDraft']);
+  if (has('readingProgress')) copy(['readingProgress']);
+
+  const out = {
+    success: result.success !== false,
+    stats: result.stats,
+    passageCount: result.passageCount,
+    attemptCount: result.attemptCount
+  };
+  if (Object.keys(compactProgress).length) out.progress = compactProgress;
+  if (has('practiceHistory') || has('practiceHistoryDeleted')) {
+    out.practiceHistory = result.practiceHistory;
+    out.practiceHistoryDeleted = result.practiceHistoryDeleted;
+  }
+  return out;
+}
+
 // ═══ SYNC ENDPOINTS ═══
 // Pull: get full user data from server (called on login)
 // C3: now requires a valid session token matching :userId.
@@ -3329,7 +3364,10 @@ app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
 // Push: send full user data to server (called on login + after verify)
 // C3: now requires a valid session token matching :userId.
 app.post('/api/sync/:userId', requireSyncAuth, async (req, res) => {
-  try { res.json(await StorageAPI.setUserData(canonicalUserId(req.params.userId), req.body)); }
+  try {
+    const result = await StorageAPI.setUserData(canonicalUserId(req.params.userId), req.body);
+    res.json(req.get('x-sync-response') === 'delta' ? compactSyncPushResponse(req.body, result) : result);
+  }
   catch (e) { res.status(500).json({ error: 'Sync push failed' }); }
 });
 
