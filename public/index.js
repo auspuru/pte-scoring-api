@@ -955,16 +955,30 @@ async function enterApp(uid) {
   checkUserEmailRequirement();
 }
 
+async function fetchAccountProgress(url, options, sameSession) {
+  // Reads can safely retry during the short volume-backed deployment gap.
+  for (let attempt = 0; ; attempt++) {
+    if (!sameSession()) throw new Error('Account session changed');
+    try {
+      const response = await fetch(url, { ...options, signal: AbortSignal.timeout(20000) });
+      if (![502, 503, 504].includes(response.status) || attempt >= 3) return response;
+    } catch (error) {
+      if (attempt >= 3 || !sameSession()) throw error;
+    }
+    await new Promise(resolve => setTimeout(resolve, 2000 * (2 ** attempt)));
+  }
+}
+
 async function loadUserData(uid) {
   uid = canonicalClientUserId(uid);
   const token = sessionToken;
   const sameSession = () => uid === canonicalClientUserId(currentUserId) && token === sessionToken;
   setSync('syncing', 'Loading...');
   try {
-    const r = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
+    const r = await fetchAccountProgress(API_URL + '/api/sync/' + encodeURIComponent(uid), {
       cache: 'no-store', signal: AbortSignal.timeout(20000),
       headers: { 'x-session-token': token }
-    });
+    }, sameSession);
     if (!sameSession()) return false;
     if (r.status === 401 || r.status === 403) {
       handleAuthExpired();
@@ -1265,10 +1279,10 @@ async function refreshPracticeHistory(options = {}) {
     try {
       // Reconcile every practice area. Field clocks preserve newer edits,
       // and active editors are never rebuilt by a background refresh.
-      const response = await fetch(API_URL + '/api/sync/' + encodeURIComponent(uid), {
+      const response = await fetchAccountProgress(API_URL + '/api/sync/' + encodeURIComponent(uid), {
         cache: 'no-store', signal: AbortSignal.timeout(20000),
         headers: { 'x-session-token': token }
-      });
+      }, sameSession);
       if (!sameSession()) return false;
       if (response.status === 401 || response.status === 403) { handleAuthExpired(); return false; }
       if (!response.ok) throw new Error('Could not refresh cloud history');
