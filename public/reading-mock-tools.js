@@ -269,7 +269,9 @@
       validateReading(reading, set.minutes);
       const audio = preset.audioQuestionIds.map(id => bank.audioQuestionBank.find(q => q.id === id));
       if (audio.some(q => !q) || audio.filter(q => q.type === 'hcs').length !== 2 || audio.filter(q => q.type === 'hiw').length !== 2) throw Error('This mock audio set is incomplete.');
-      return composeIntegrated(preset.name, reading, set.minutes, audio, bank.mixedMock.listeningMinutes, swtPassages, preset.timed, preset.minutes);
+      const minimumIntegratedMinutes = 20 + set.minutes + bank.mixedMock.listeningMinutes;
+      const sharedMinutes = preset.minutes ? Math.max(preset.minutes, minimumIntegratedMinutes) : undefined;
+      return composeIntegrated(preset.name, reading, set.minutes, audio, bank.mixedMock.listeningMinutes, swtPassages, preset.timed, sharedMinutes);
     }
     const sectional = bank.sectionalMocks.find(item => item.id === mode);
     const set = bank.sets.find(item => item.id === (sectional?.setId || setId));

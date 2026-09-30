@@ -2742,7 +2742,7 @@
         "hiw-evidence-c2"
       ],
       "family": "practice",
-      "minutes": 25
+      "minutes": 55
     },
     {
       "id": "practice-mock-2",
@@ -2757,7 +2757,7 @@
         "hiw-governance-c2"
       ],
       "family": "practice",
-      "minutes": 25
+      "minutes": 55
     },
     {
       "id": "practice-mock-3",
@@ -2772,7 +2772,7 @@
         "hiw-consent-c2"
       ],
       "family": "practice",
-      "minutes": 25
+      "minutes": 55
     },
     {
       "id": "sectional-mock-1",
