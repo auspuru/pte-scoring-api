@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = 'local-scoring-2026-09-23.1';
+const VERSION = 'local-scoring-2026-09-30.2';
 const STOP = new Set(('the a an and or but to of in on for with by from as at is are was were be been being this that these those it its their his her into than then while if so such can could would should may might will do does did have has had about over under between through during before after also very more most much many some any each both other another which who whom whose when where why how').split(' '));
 
 function words(text) {
@@ -38,11 +38,29 @@ function bestEvidence(reference, response, maxWords=12) {
   if(!best)return '';
   return best.split(/\s+/).slice(0,maxWords).join(' ');
 }
+function semanticCoverage(idea,response) {
+  const i=String(idea||'').toLowerCase().replace(/[’‘]/g,"'"),r=String(response||'').toLowerCase().replace(/[’‘]/g,"'");
+  const sentences=splitSentences(response);
+  const evidenceFor=re=>sentences.find(sentence=>re.test(sentence.toLowerCase().replace(/[’‘]/g,"'")))||'';
+  const polite=/\b(?:hi|hello|sorry|please|thank(?:s| you)?|excuse me|could we|could you|would you|would it|can we)\b/i;
+  const request=/\b(?:could we|could you|would you|can we|please|i(?:'d| would) like|let'?s|how about|could we agree)\b/i;
+  const collaborate=/\b(?:agree|agreement|happy to discuss|what do you think|works? for everyone|works? for you|if not|otherwise|another|alternative|instead|option|could we|would .* work)\b/i;
+  const commit=/\b(?:i(?:'ll| will)|we(?:'ll| will)|upload|share|send|complete|finish|provide|respond|follow up)\b/i;
+  let status=null,evidence='';
+  if(/respectful|politely|polite|without accusing|without blaming/.test(i)&&polite.test(r)){status='covered';evidence=evidenceFor(polite);}
+  if(!status&&/(?:request|ask|propose|reasonable agreement)/.test(i)&&request.test(r)){status='covered';evidence=evidenceFor(request);}
+  if(!status&&/(?:agreement|alternative|everyone'?s needs|fair way|available alternative|practical backup)/.test(i)&&collaborate.test(r)){status='covered';evidence=evidenceFor(collaborate);}
+  if(!status&&/(?:commit|completing|sharing|allocated work|keep the project moving)/.test(i)&&commit.test(r)){status='covered';evidence=evidenceFor(commit);}
+  if(!status&&/(?:acknowledge the inconvenience|apolog)/.test(i)&&/\b(?:sorry|apolog|i know|understand)\b/i.test(r)){status='covered';evidence=evidenceFor(/\b(?:sorry|apolog|i know|understand)\b/i);}
+  return status?{status,evidence}:null;
+}
 function ideaCoverage(ideas,response) {
   return (Array.isArray(ideas)?ideas:Object.values(ideas||{})).filter(Boolean).map((idea,index)=>{
-    const hit=overlap(idea,response);
-    const status=hit.ratio>=0.42&&hit.matched>=2?'covered':hit.ratio>=0.2&&hit.matched>=1?'partial':'missing';
-    return {index,idea:String(idea),...hit,status,evidence:status==='missing'?'':bestEvidence(idea,response)};
+    const hit=overlap(idea,response),semantic=semanticCoverage(idea,response);
+    let status=hit.ratio>=0.42&&hit.matched>=2?'covered':hit.ratio>=0.2&&hit.matched>=1?'partial':'missing';
+    if(semantic?.status==='covered')status='covered';
+    const evidence=status==='missing'?'':semantic?.evidence||bestEvidence(idea,response);
+    return {index,idea:String(idea),...hit,status,evidence};
   });
 }
 function summaryContent(ideas,response,max=4) {
@@ -123,11 +141,16 @@ function essay(question,answer,{formScore=2}={}) {
 }
 function speaking(q,response) {
   const facts=Array.isArray(q?.facts)?q.facts:[];
-  const coverage=ideaCoverage(facts,response);
+  let coverage=ideaCoverage(facts,response);
+  const sampleHit=q?.sample?overlap(q.sample,response):{ratio:0,matched:0,total:0};
+  const responseConcepts=concepts(response).length,sampleConcepts=concepts(q?.sample||'').length;
+  const nearSample=sampleConcepts>=8&&responseConcepts>=Math.ceil(sampleConcepts*0.55)&&sampleHit.ratio>=0.72;
+  if(nearSample)coverage=coverage.map(item=>({...item,status:'covered',evidence:item.evidence||bestEvidence(item.idea,response)||bestEvidence(q.sample,response)}));
   const weights=coverage.map(x=>x.status==='covered'?1:x.status==='partial'?0.5:0);
   const ratio=weights.length?weights.reduce((a,b)=>a+b,0)/weights.length:0;
   let total=ratio>=0.85?6:ratio>=0.68?5:ratio>=0.5?4:ratio>=0.34?3:ratio>=0.18?2:ratio>0?1:0;
-  if(q?.type==='rts'){
+  if(nearSample)total=6;
+  if(q?.type==='rts'&&!nearSample){
     const goal=promptRelevance(q.text||'',response);
     if(goal.ratio<0.08)total=Math.min(total,2);
     else if(goal.ratio>=0.22)total=Math.max(total,4);
@@ -141,4 +164,4 @@ function speaking(q,response) {
     coverage:coverage.map(x=>({point:x.idea,status:x.status,evidence:x.evidence,feedback:x.status==='covered'?'This point is represented in the transcript.':x.status==='partial'?'This point is only partly represented; make it clearer.':'Include this relevant point in your response.'}))
   };
 }
-module.exports={VERSION,words,concepts,overlap,ideaCoverage,summaryContent,promptRelevance,essay,speaking,obviousGrammarIssues};
+module.exports={VERSION,words,concepts,overlap,semanticCoverage,ideaCoverage,summaryContent,promptRelevance,essay,speaking,obviousGrammarIssues};
