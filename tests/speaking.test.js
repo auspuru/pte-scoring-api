@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
-const {createStore}=require('../writing-lab-store');
+const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('There are five original questions for each supported Speaking task, with samples and verified audio',()=>{
   assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:30,recordings:20});
   assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,30);
@@ -181,6 +181,29 @@ test('Transcription failures identify provider access and quota without exposing
  }
 });
 
+
+test('The official noisy-kitchen sample receives full content credit even in local fallback',()=>{
+  const q=bank.questions.find(q=>q.title==='A noisy shared kitchen');assert(q);
+  const result=localEngine.speaking(q,q.sample);
+  assert.equal(result.total,6);assert(result.coverage.every(item=>item.status==='covered'));
+});
+
+test('RTS local fallback recognises polite paraphrases rather than literal rubric words',()=>{
+  const q=bank.questions.find(q=>q.title==='A noisy shared kitchen');
+  const response='Hi everyone, could we please keep the kitchen a little quieter late at night? The conversations make it hard for me to sleep before my morning class. Could we keep our voices low after ten thirty or move longer chats to the lounge? If that does not suit everyone, I am happy to discuss another option.';
+  const result=localEngine.speaking(q,response);
+  assert(result.total>=5);assert.equal(result.coverage[0].status,'covered');assert.equal(result.coverage[2].status,'covered');assert.equal(result.coverage[3].status,'covered');
+});
+
+test('Semantic Speaking grading retries one invalid assessment before falling back',async()=>{
+  const q=bank.questions.find(q=>q.title==='A noisy shared kitchen');let calls=0;
+  const result=await scoring.grade(q,q.sample,async prompt=>{
+    calls++;
+    if(calls===1)return {total:4,overview:'Incomplete',strengths:[],improvements:[],coverage:[]};
+    const data=JSON.parse(prompt.split('DATA=')[1]);return modelResult({facts:data.facts},data.student);
+  });
+  assert.equal(calls,2);assert.equal(result.scoringMode,'ai');assert.equal(result.total,6);
+});
 
 test('Semantic Speaking tasks fall back to local content scoring when the reviewer is offline',async()=>{
   for(const q of bank.questions.filter(q=>['di','rl','sgd','rts'].includes(q.type)).slice(0,8)){
