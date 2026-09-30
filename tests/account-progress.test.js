@@ -147,6 +147,13 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
   assert.match(serverSource, /JSON\.stringify\(patch\)/);
 });
 
+test('Background learning snapshots use a trailing debounce instead of running after every autosave', () => {
+  assert.match(serverSource, /const LEARNING_REFRESH_DELAY_MS=5000/);
+  assert.match(serverSource, /const existing=learningRefreshes\.get\(uid\);\s*if\(existing\)clearTimeout\(existing\)/s);
+  assert.match(serverSource, /setTimeout\(\(\)=>\{[\s\S]*interventionLearning\.observeStudent\(uid\)[\s\S]*\},LEARNING_REFRESH_DELAY_MS\)/);
+  assert.doesNotMatch(serverSource, /if\(!uid\|\|learningRefreshes\.has\(uid\)\)return/);
+});
+
 test('Compact sync responses echo only progress domains touched by the save', () => {
   const start = serverSource.indexOf('function compactSyncPushResponse(');
   const end = serverSource.indexOf('\n\n// ═══ SYNC ENDPOINTS', start);
