@@ -134,17 +134,41 @@ test('My Progress exposes saved in-progress practice from another device', () =>
       history:[]
     },
     swt:{},
-    essays:[]
+    swtDrafts:{
+      7:{text:'A saved SWT draft still being written',timestamp:'1970-01-01T00:00:00.250Z'}
+    },
+    essays:[],
+    essayDraft:{
+      version:1,essayText:'An unfinished essay response',questionText:'Discuss the issue.',
+      questionTitle:'Essay draft topic',updatedAt:350
+    }
   }, [
     { id:'sst-live', kind:'sst', status:'active', title:'SST live', startedAt:300, completed:0, questions:1 }
   ], [
     { id:'ra-live', type:'ra', status:'draft', startedAt:400, result:null }
   ]);
-  assert.equal(model.activePractice.length, 3);
+  assert.equal(model.activePractice.length, 5);
   assert.equal(model.activePractice[0].title, 'Read Aloud');
+  assert(model.activePractice.some(item => item.title === 'Summarise Written Text' && /words saved/.test(item.detail)));
+  assert(model.activePractice.some(item => item.title === 'Write Essay' && /Essay draft topic/.test(item.detail)));
   assert(model.recent.some(item => item.result && item.result.startsWith('In progress')));
   assert.match(source, /Currently in progress/);
   assert.match(source, /In-progress practice is shown as soon as it reaches your account/);
+});
+
+test('My Progress does not relabel an already-scored SWT answer as an unfinished draft', () => {
+  const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
+  const ctx = { globalThis: {} };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(source, ctx);
+  const model = ctx.StudentProgress.model({
+    reading:{history:[]},
+    swt:{4:[{timestamp:'2026-09-30T10:01:00.000Z',overall_score:79}]},
+    swtDrafts:{4:{text:'The answer that was already scored',timestamp:'2026-09-30T10:00:00.000Z'}},
+    essays:[]
+  }, [], []);
+  assert.equal(model.activePractice.some(item => item.engine === 'swt'), false);
 });
 
 test('My Progress forces a fresh cloud pull instead of relying on the background throttle', () => {
