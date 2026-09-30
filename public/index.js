@@ -12420,7 +12420,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20260929-scoring-submit-v6', 'speaking practice')
+  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20260930-actionable-feedback-v7', 'speaking practice')
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12459,23 +12459,6 @@ async function getPortalCatalogueProgress() {
   try { setLatestPracticeMeta(result.practice,'swt',practiceLastTime(LocalStore.get(getPteStorageKey('history'))||{})); } catch (_) {}
   try { setLatestPracticeMeta(result.practice,'practice',practiceLastTime(getPracticeHistory())); } catch (_) {}
   try {
-    const response=await fetch(API_URL+'/api/speaking/catalog',{cache:'no-store',signal:AbortSignal.timeout(10000)});
-    if(response.ok){
-      const catalog=await response.json();
-      const routeBySpeakingType={ra:'speaking-ra',rs:'speaking-rs',di:'speaking-di',rl:'speaking-rl',sgd:'speaking-sgd',rts:'speaking-rts'};
-      const counts={};
-      for(const question of Array.isArray(catalog?.questions)?catalog.questions:[]){
-        const route=routeBySpeakingType[question?.type];
-        if(!route)continue;
-        counts[route]=(counts[route]||0)+1;
-      }
-      for(const [route,count] of Object.entries(counts)){
-        result.practice[route] ||= {};
-        result.practice[route].count=count;
-      }
-    }
-  } catch (_) {}
-  try {
     const packed=localAccountProgress(uid)?.readingProgress;
     const reading=window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
     const sessions=[reading?.session,...(reading?.drafts||[]),...(reading?.history||[])].filter(Boolean);
@@ -12492,17 +12475,6 @@ async function getPortalCatalogueProgress() {
     }
   } catch (_) {}
   if(token){
-    try{
-      const response=await fetch(API_URL+'/api/speaking/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
-      if(response.ok){
-        const rows=await response.json();
-        const routeBySpeakingType={ra:'speaking-ra',rs:'speaking-rs',di:'speaking-di',rl:'speaking-rl',sgd:'speaking-sgd',rts:'speaking-rts'};
-        for(const attempt of Array.isArray(rows)?rows:[]){
-          const route=routeBySpeakingType[attempt?.type];
-          if(route)setLatestPracticeMeta(result.practice,route,practiceLastTime(attempt));
-        }
-      }
-    }catch(_){}
     try{
       const response=await fetch(API_URL+'/api/writing-lab/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
       if(response.ok){
