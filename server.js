@@ -858,91 +858,92 @@ const PgStorage = {
   async setUserData(userId, userData) {
     userId = canonicalUserId(userId);
     const incoming = (userData && typeof userData === 'object') ? userData : {};
-    const perfStart = Date.now(), perf = { fields: Object.keys(incoming).sort() };
+    const perfStart = Date.now(), perf = { fields: Object.keys(incoming).sort(), conflicts: 0 };
     let phase = Date.now();
     const client = await pgPool.connect();
     perf.connectMs = Date.now() - phase;
     try {
-      // Serialise full-profile writes so two devices cannot read the same old
-      // snapshot and then overwrite each other's essay attempts.
-      phase = Date.now();
-      await client.query('BEGIN');
-      perf.beginMs = Date.now() - phase;
-      phase = Date.now();
-      let { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
-      perf.rowLockMs = Date.now() - phase;
-      if (!rows.length) {
-        // Existing profiles need only the row lock above. First-time profiles
-        // take a keyed creation lock and recheck, so concurrent devices cannot
-        // race to initialise the same account during rolling deployments.
+      // The database may be a network round trip away from the app. Use an
+      // optimistic compare-and-swap instead of a multi-step locking transaction
+      // on every autosave. xmin changes on every row update, so a write
+      // only succeeds if nobody changed the profile after our read. A real
+      // concurrent edit simply retries against the newest snapshot.
+      const maxAttempts = 4;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
         phase = Date.now();
-        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', ['user_data:' + userId]);
-        perf.createLockMs = Date.now() - phase;
-        phase = Date.now();
-        ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
-        perf.createRecheckMs = Date.now() - phase;
+        let { rows } = await client.query(
+          'SELECT data, xmin::text AS version FROM user_data WHERE username = $1',
+          [userId]
+        );
+        perf.readMs = (perf.readMs || 0) + (Date.now() - phase);
+
         if (!rows.length) {
           phase = Date.now();
           const created = await client.query(
             `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
              ON CONFLICT (username) DO NOTHING
-             RETURNING data`, [userId]
+             RETURNING data, xmin::text AS version`,
+            [userId]
           );
-          perf.createRowMs = Date.now() - phase;
+          perf.createRowMs = (perf.createRowMs || 0) + (Date.now() - phase);
           if (created.rows.length) rows = created.rows;
           else {
-            phase = Date.now();
-            ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
-            perf.createConflictRecheckMs = Date.now() - phase;
+            perf.conflicts++;
+            continue;
           }
         }
-      }
 
-      phase = Date.now();
-      const existing = rows[0]?.data || {};
-      const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
-      const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
-      const progress = AccountProgress.mergeProgress(existing, incoming);
-      const u = {
-        ...existing, ...progress,
-        email: incoming.email !== undefined ? incoming.email : (existing.email || ''),
-        templates: incoming.templates !== undefined ? incoming.templates : (existing.templates || {}),
-        currentId: incoming.currentId !== undefined ? incoming.currentId : (existing.currentId || null),
-        quotaUsed: incoming.quotaUsed !== undefined ? incoming.quotaUsed : (existing.quotaUsed || {}),
-        quotaDate: incoming.quotaDate !== undefined ? incoming.quotaDate : (existing.quotaDate || ""),
-        studyPlan: Number(incoming.studyPlan?.updatedAt || 0) >= Number(existing.studyPlan?.updatedAt || 0)
-          ? (incoming.studyPlan || existing.studyPlan || {}) : (existing.studyPlan || {}),
-        practiceHistory: mergedPracticeHistory,
-        practiceHistoryDeleted: deleted
-      };
-      let total = 0, count = 0;
-      Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
-      u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
-      const patch = postgresProgressPatch(incoming, u, existing);
-      perf.mergeMs = Date.now() - phase;
-
-      if (Object.keys(patch).length) {
         phase = Date.now();
-        await client.query(
-          `UPDATE user_data SET data = data || $2::jsonb, updated_at = NOW() WHERE username = $1`,
-          [userId, JSON.stringify(patch)]
-        );
-        perf.writeMs = Date.now() - phase;
-      }
-      phase = Date.now();
-      await client.query('COMMIT');
-      perf.commitMs = Date.now() - phase;
+        const existing = rows[0]?.data || {};
+        const version = String(rows[0]?.version || '');
+        const deleted = mergeDeleted(existing.practiceHistoryDeleted, incoming.practiceHistoryDeleted);
+        const mergedPracticeHistory = mergeHistory(existing.practiceHistory, incoming.practiceHistory, deleted);
+        const progress = AccountProgress.mergeProgress(existing, incoming);
+        const u = {
+          ...existing, ...progress,
+          email: incoming.email !== undefined ? incoming.email : (existing.email || ''),
+          templates: incoming.templates !== undefined ? incoming.templates : (existing.templates || {}),
+          currentId: incoming.currentId !== undefined ? incoming.currentId : (existing.currentId || null),
+          quotaUsed: incoming.quotaUsed !== undefined ? incoming.quotaUsed : (existing.quotaUsed || {}),
+          quotaDate: incoming.quotaDate !== undefined ? incoming.quotaDate : (existing.quotaDate || ""),
+          studyPlan: Number(incoming.studyPlan?.updatedAt || 0) >= Number(existing.studyPlan?.updatedAt || 0)
+            ? (incoming.studyPlan || existing.studyPlan || {}) : (existing.studyPlan || {}),
+          practiceHistory: mergedPracticeHistory,
+          practiceHistoryDeleted: deleted
+        };
+        let total = 0, count = 0;
+        Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+        u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+        const patch = postgresProgressPatch(incoming, u, existing);
+        perf.mergeMs = (perf.mergeMs || 0) + (Date.now() - phase);
 
-      phase = Date.now();
-      const result = { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
-        practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
-      perf.responseBuildMs = Date.now() - phase;
-      perf.totalMs = Date.now() - perfStart;
-      if (perf.totalMs >= 300) console.info('[account-sync-perf]', JSON.stringify(perf));
-      return result;
-    } catch (e) {
-      await client.query('ROLLBACK').catch(() => {});
-      throw e;
+        const finish = () => {
+          phase = Date.now();
+          const result = { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
+            practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
+          perf.responseBuildMs = (perf.responseBuildMs || 0) + (Date.now() - phase);
+          perf.totalMs = Date.now() - perfStart;
+          perf.attempts = attempt + 1;
+          if (perf.totalMs >= 300) console.info('[account-sync-perf]', JSON.stringify(perf));
+          return result;
+        };
+
+        if (!Object.keys(patch).length) return finish();
+
+        phase = Date.now();
+        const updated = await client.query(
+          `UPDATE user_data
+             SET data = data || $2::jsonb, updated_at = NOW()
+             WHERE username = $1 AND xmin::text = $3
+             RETURNING xmin::text AS version`,
+          [userId, JSON.stringify(patch), version]
+        );
+        perf.writeMs = (perf.writeMs || 0) + (Date.now() - phase);
+        if (updated.rows.length) return finish();
+
+        perf.conflicts++;
+      }
+      throw new Error('Concurrent profile updates are unusually busy; please retry.');
     } finally {
       client.release();
     }
