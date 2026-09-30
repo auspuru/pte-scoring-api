@@ -123,6 +123,30 @@ test('Actual server storage serializes simultaneous sync writes and preserves ev
   assert.equal((await store.getUserData('other')).essayDraft.essayText, 'Other account');
 });
 
+test('Postgres sync builds a top-level patch for only the progress domains in the incoming delta', () => {
+  const start = serverSource.indexOf('function postgresProgressPatch(');
+  const end = serverSource.indexOf('\n}', start) + 2;
+  assert(start >= 0 && end > start);
+  const ctx = {};
+  vm.createContext(ctx);
+  vm.runInContext(serverSource.slice(start, end) + '\nthis.patch = postgresProgressPatch;', ctx);
+
+  const merged = {
+    attempted:[1], history:{1:[{timestamp:10}]}, summaries:{1:{text:'draft'}}, scores:{}, scratch:{}, stats:{totalAttempts:1},
+    essays:[{id:'e1'}], essayLibraryDeleted:{}, vocabProgress:{read:{a:1}}, essayDraft:{essayText:'draft'},
+    readingProgress:{version:2}, practiceHistory:[{id:'p1'}], practiceHistoryDeleted:[],
+    email:'student@example.com', templates:{}, currentId:'e1', quotaUsed:{}, quotaDate:'2026-09-30', studyPlan:{updatedAt:5}
+  };
+  const readingOnly = ctx.patch({ readingProgress:{version:3,patches:[]} }, merged);
+  assert.deepEqual(Object.keys(readingOnly), ['readingProgress']);
+  const swt = ctx.patch({ summaries:{1:{text:'draft'}} }, merged);
+  assert.deepEqual(Object.keys(swt).sort(), ['attempted','history','scores','scratch','stats','summaries'].sort());
+  const practice = ctx.patch({ practiceHistory:[{id:'p1'}] }, merged);
+  assert.deepEqual(Object.keys(practice).sort(), ['practiceHistory','practiceHistoryDeleted'].sort());
+  assert.match(serverSource, /SET data = data \|\| \$2::jsonb/);
+  assert.match(serverSource, /JSON\.stringify\(patch\)/);
+});
+
 test('Both sync and legacy progress routes require the matching account token', () => {
   for (const method of ['get', 'post']) for (const route of ['sync', 'progress']) assert(serverSource.includes(`app.${method}('/api/${route}/:userId', requireSyncAuth,`));
   const start = serverSource.indexOf('function requireSyncAuth('), end = serverSource.indexOf('\n}', start) + 2;
