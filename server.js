@@ -864,8 +864,8 @@ const PgStorage = {
     perf.connectMs = Date.now() - phase;
     try {
       // The database may be a network round trip away from the app. Use an
-      // optimistic compare-and-swap instead of BEGIN -> FOR UPDATE -> UPDATE ->
-      // COMMIT on every autosave. xmin changes on every row update, so a write
+      // optimistic compare-and-swap instead of a multi-step locking transaction
+      // on every autosave. xmin changes on every row update, so a write
       // only succeeds if nobody changed the profile after our read. A real
       // concurrent edit simply retries against the newest snapshot.
       const maxAttempts = 4;
