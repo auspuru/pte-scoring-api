@@ -77,6 +77,11 @@ test('Full mixed mock adds SWT and highlight tasks; two fixed sectionals contain
   assert.equal(full.questions.filter(q=>q.type==='hiw').length,2);
   assert.equal(new Set(full.questions.map(q=>q.uid)).size,full.questions.length);
  }
+ const integrated=bank.mockCatalogue.filter(m=>m.kind!=='reading-blanks').map(m=>({preset:m,result:compose(bank,m.id,m.setId,swtPassages)}));
+ for(const {preset,result} of integrated){
+  const set=bank.sets.find(s=>s.id===preset.setId),expected=20+set.minutes+bank.mixedMock.listeningMinutes;
+  assert.equal(result.minutes,expected,preset.id+' must reserve time for SWT, Reading, HCS and HIW');
+ }
  const sections=bank.sectionalMocks.map(m=>compose(bank,m.id,'v3'));
  assert.deepEqual(sections.map(s=>s.questions.length),[16,20]);
  assert.deepEqual(sections.map(s=>s.minutes),[25,30]);
