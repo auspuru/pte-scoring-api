@@ -191,6 +191,15 @@ test('Compact sync responses echo only progress domains touched by the save', ()
   assert.equal(practice.progress, undefined);
 });
 
+test('slow account syncs expose database phase timing without logging account identifiers', () => {
+  assert.match(serverSource, /\[account-sync-perf\]/);
+  assert.match(serverSource, /connectMs/);
+  assert.match(serverSource, /rowLockMs/);
+  assert.match(serverSource, /mergeMs/);
+  assert.match(serverSource, /responseBuildMs/);
+  assert.doesNotMatch(serverSource, /\[account-sync-perf\][^\n]*userId/);
+});
+
 test('Postgres pool keeps one private connection warm without increasing the pool maximum', () => {
   assert.match(serverSource, /max:\s*10,\s*min:\s*1,\s*idleTimeoutMillis:\s*300000/);
   assert.match(serverSource, /keepAlive:\s*true,\s*keepAliveInitialDelayMillis:\s*10000/);

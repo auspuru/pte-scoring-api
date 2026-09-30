@@ -64,3 +64,14 @@ test('Postgres updates use the row lock directly and reserve the advisory lock f
   assert.equal(creating.queries.filter(q => /pg_advisory_xact_lock/.test(q)).length, 1);
   assert.equal(creating.queries.filter(q => /FOR UPDATE/.test(q)).length, 2);
 });
+
+
+test('slow Postgres attempt updates expose phase timing without logging attempt data', () => {
+  const source = require('node:fs').readFileSync(require.resolve('../writing-lab-store'), 'utf8');
+  assert.match(source, /\[attempt-store-perf\]/);
+  assert.match(source, /connectMs/);
+  assert.match(source, /rowLockMs/);
+  assert.match(source, /writeMs/);
+  assert.match(source, /commitMs/);
+  assert.doesNotMatch(source, /JSON\.stringify\(\{ namespace, uid/);
+});
