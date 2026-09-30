@@ -11,3 +11,16 @@ test('Essay navigation restores separate drafts and blocks a move when saving fa
  ctx.practiceState.essayText='Second draft';ctx.moveEssayQuestion(-1);assert.equal(ctx.practiceState.essayText,'First draft');assert.equal(ctx.practiceState.timerStartedAt,123);
  ctx.safeLSSet=()=>false;ctx.moveEssayQuestion(1);assert.equal(ctx.practiceState.selectedQuestionId,'a');assert.equal(ctx.practiceState.essayText,'First draft');
 });
+
+test('SWT Back/Next respect attempted filters and stop at each filtered boundary',()=>{
+ const script=source.slice(source.indexOf('function swtNavigationPositions('),source.indexOf('function switchWriteTab('));
+ const disabled={},jumps=[];
+ const ctx={passages:[{id:1},{id:2},{id:3},{id:4}],attempted:new Set([2,4]),activeFilter:'attempted',currentPassageId:2,
+ document:{getElementById:id=>({toggleAttribute:(name,value)=>disabled[id]=value,focus(){}})},jumpToPassage:id=>{jumps.push(id);ctx.currentPassageId=id;}};
+ vm.createContext(ctx);vm.runInContext(script,ctx);
+ ctx.updateSwtPracticeNavigation();assert.equal(disabled.navPrev,true);assert.equal(disabled.navNext,false);
+ ctx.nextPassage();assert.deepEqual(jumps,[4]);ctx.updateSwtPracticeNavigation();assert.equal(disabled.navNext,true);
+ ctx.nextPassage();assert.deepEqual(jumps,[4]);ctx.prevPassage();assert.deepEqual(jumps,[4,2]);
+ ctx.activeFilter='unattempted';ctx.currentPassageId=1;ctx.nextPassage();assert.equal(ctx.currentPassageId,3);
+ ctx.activeFilter='attempted';ctx.attempted.clear();ctx.updateSwtPracticeNavigation();assert.equal(disabled.navPrev,true);assert.equal(disabled.navNext,true);
+});

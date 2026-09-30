@@ -1,0 +1,85 @@
+/* Shared question controls: preserve native task actions and exam restrictions. */
+#readingPane .reading-actions,
+#readingPane .reading-exam-footer,
+#speakingPane nav.speaking-actions,
+#essayQuestionNav nav,
+#writingLabScreen .exam > .exam-footer {
+  position:sticky;
+  bottom:0;
+  z-index:30;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  margin:18px 0 0;
+  border:1px solid var(--line,#dce4e8);
+  border-radius:12px;
+  background:var(--bg-card,#fff);
+  box-shadow:0 -4px 18px rgba(23,59,99,.08);
+}
+#readingPane .reading-actions .reading-next-action,
+#essayQuestionNav nav > button:last-child,
+#speakingPane nav.speaking-actions [data-speaking-move="1"] {
+  margin-left:auto;
+  background:var(--accent,#205080);
+  color:#fff;
+  border-color:var(--accent,#205080);
+}
+#writingLabScreen .question-links {
+  display:flex;
+  flex:1;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+#writingLabScreen .question-links > span,
+#speakingPane nav.speaking-actions > span,
+#essayQuestionNav nav > span {
+  font-size:13px;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink-soft,#536f80);
+}
+#readingPane .reading-actions button,
+#readingPane .reading-exam-footer button,
+#speakingPane nav.speaking-actions button,
+#essayQuestionNav nav button,
+#writingLabScreen .exam-footer button,
+#swtPracticeNav button {
+  min-height:44px;
+  min-width:44px;
+  touch-action:manipulation;
+}
+#swtPracticeNav {
+  position:sticky;
+  top:12px;
+  z-index:30;
+  background:var(--bg-card,#fff);
+  box-shadow:0 4px 18px rgba(23,59,99,.08);
+}
+#swtPracticeNav .swt-pager { flex:1; }
+#swtPracticeNav button:disabled,
+#readingPane .reading-actions button:disabled,
+#speakingPane nav.speaking-actions button:disabled,
+#essayQuestionNav nav button:disabled,
+#writingLabScreen .exam-footer button:disabled {
+  opacity:.45;
+  cursor:default;
+}
+@media(max-width:640px) {
+  #readingPane .reading-actions,
+  #speakingPane nav.speaking-actions,
+  #essayQuestionNav nav,
+  #writingLabScreen .exam > .exam-footer { padding-inline:10px;gap:8px; }
+  #writingLabScreen .question-links { flex-basis:100%;order:2; }
+  #writingLabScreen .exam > .exam-footer > #next { margin-left:auto; }
+  #speakingPane nav.speaking-actions > span,
+  #essayQuestionNav nav > span { flex:1;text-align:center; }
+  #swtPracticeNav { top:0; }
+  #swtPracticeNav .swt-pager { width:100%;justify-content:space-between; }
+  #swtPracticeNav .swt-passage-picker { flex:1;min-width:0; }
+}
+
+#essayQuestionNav{position:sticky;bottom:0;z-index:30}
+#essayQuestionNav nav{position:static}

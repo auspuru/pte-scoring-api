@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-essay-next-steps', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-navigation-ux', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -15118,6 +15118,7 @@ function changePassageFilter(val) {
       jumpToPassage(parseInt(select.options[0].value));
     }
   }
+  updateSwtPracticeNavigation();
 }
 
 function changeResultsPassageFilter(val) {
@@ -15410,10 +15411,28 @@ function loadPassage(id){
   if(swtPracticeMode==='summary') resetTimer(); else stopTimer();
   const select1 = document.getElementById('passageSelect');
   if (select1) select1.value = id;
+  updateSwtPracticeNavigation();
 }
 
-function prevPassage(){ if(currentPassageId > 1) loadPassage(currentPassageId - 1); }
-function nextPassage(){ if(currentPassageId < passages.length) loadPassage(currentPassageId + 1); }
+function swtNavigationPositions(filter = activeFilter) {
+  return passages.flatMap((p, index) => {
+    const done = attempted.has(p.id);
+    return (filter === 'attempted' && !done) || (filter === 'unattempted' && done) ? [] : [index + 1];
+  });
+}
+function updateSwtPracticeNavigation() {
+  const positions = swtNavigationPositions(), index = positions.indexOf(currentPassageId);
+  document.getElementById('navPrev')?.toggleAttribute('disabled', index <= 0);
+  document.getElementById('navNext')?.toggleAttribute('disabled', index < 0 || index >= positions.length - 1);
+}
+function moveSwtQuestion(direction) {
+  const positions = swtNavigationPositions(), index = positions.indexOf(currentPassageId), target = positions[index + direction];
+  if(index < 0 || target == null) return;
+  jumpToPassage(target);
+  document.getElementById('swtReadHeading')?.focus({preventScroll:true});
+}
+function prevPassage(){ moveSwtQuestion(-1); }
+function nextPassage(){ moveSwtQuestion(1); }
 
 function switchWriteTab(tab){
   writeTab = tab;
@@ -16508,8 +16527,8 @@ function backToPractice(){
 }
 
 function navResultsPassage(delta){
-  const target = currentPassageId + delta;
-  if(target < 1 || target > passages.length) return;
+  const positions = swtNavigationPositions(activeResFilter), index = positions.indexOf(currentPassageId), target = positions[index + delta];
+  if(index < 0 || target == null) return;
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
   const p = passages.find(x => x.id === target) || passages[target-1];
   if(!p) return;
@@ -16524,8 +16543,9 @@ function navResultsPassage(delta){
 }
 
 function goToNextPassage(){
-  if(currentPassageId >= passages.length){ toast('You\'re on the last passage.'); return; }
-  loadPassage(currentPassageId + 1);
+  const positions = swtNavigationPositions(activeResFilter), index = positions.indexOf(currentPassageId), target = positions[index + 1];
+  if(index < 0 || target == null){ toast('You\'re on the last passage in this filter.'); return; }
+  loadPassage(target);
   showSwtScreen('swtPracticeScreen');
   const summaryInputEl = document.getElementById('summaryInput');
   if (summaryInputEl) summaryInputEl.focus();
@@ -16539,9 +16559,10 @@ function updateResultsNav(){
   const nextBtn = document.getElementById('nextPassageBtn');
   if(cur) cur.textContent = String(currentPassageId).padStart(2,'0');
   if(tot) tot.textContent = passages.length;
-  if(prev) prev.toggleAttribute('disabled', currentPassageId === 1);
-  if(next) next.toggleAttribute('disabled', currentPassageId === passages.length);
-  if(nextBtn) nextBtn.style.display = (currentPassageId === passages.length) ? 'none' : 'inline-flex';
+  const positions=swtNavigationPositions(activeResFilter),index=positions.indexOf(currentPassageId);
+  if(prev) prev.toggleAttribute('disabled', index <= 0);
+  if(next) next.toggleAttribute('disabled', index < 0 || index >= positions.length - 1);
+  if(nextBtn) nextBtn.style.display = (index < 0 || index >= positions.length - 1) ? 'none' : 'inline-flex';
   const select = document.getElementById('resPassageSelect');
   if(select) select.value = currentPassageId;
 }
