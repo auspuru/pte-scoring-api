@@ -110,3 +110,32 @@ test('IPT coach stops over-prioritising Reading once mocks are sufficient for th
   assert.match(prompt,/Do not ask for a target score when the student has already stated it/i);
   assert.match(prompt,/not an official Pearson score-conversion claim/i);
 });
+
+
+test('IPT coach resolves Band 6, Band 7, Band 8 and 485 targets from the stored target library',()=>{
+  const prompt=coach.buildPrompt({
+    task:'portal',
+    message:'I am aiming for Band 8 now, but my friend only needs a 485 visa score.',
+    history:[]
+  });
+  assert.match(prompt,/TARGET PROFILE LIBRARY/i);
+  assert.match(prompt,/Band 6.*Listening 47.*Reading 48.*Writing 51.*Speaking 54/i);
+  assert.match(prompt,/Band 7.*Listening 58.*Reading 59.*Writing 69.*Speaking 76/i);
+  assert.match(prompt,/Band 8.*Listening 69.*Reading 70.*Writing 85.*Speaking 88/i);
+  assert.match(prompt,/subclass 485.*Overall 55.*Listening 40.*Reading 42.*Writing 41.*Speaking 39/i);
+  assert.match(prompt,/never summarise the requirement as "55 overall only"/i);
+  assert.match(prompt,/do not invent a score requirement from the visa number alone/i);
+});
+
+test('IPT coach keeps portal mock percentages separate from official PTE thresholds',()=>{
+  const prompt=coach.buildPrompt({
+    task:'portal',
+    message:'My Reading mock is 78% and I need Band 8. Have I met Reading?',
+    studentProfile:{
+      recentMocks:[{title:'Integrated Reading Mock',engine:'reading',percent:78}]
+    }
+  });
+  assert.match(prompt,/Never compare a portal percentage or native-mark total directly to an official PTE 10–90 threshold/i);
+  assert.match(prompt,/percent":78/);
+  assert.match(prompt,/Band 8.*Reading 70/i);
+});
