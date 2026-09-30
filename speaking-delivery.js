@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-09-29.3';
+const VERSION = 'azure-delivery-2026-09-30.4';
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
@@ -60,6 +60,29 @@ function descriptor(kind,score) {
     ? ['Disfluent','Limited','Intermediate','Good','Advanced','Highly proficient']
     : ['Non-English','Intrusive','Intermediate','Good','Advanced','Highly proficient'];
   return labels[score];
+}
+
+function coaching(kind,{score,accuracy,fluency,prosody,words=[]}={}) {
+  if(!Number.isInteger(score))return '';
+  if(kind==='pronunciation'){
+    const practice=(words||[]).filter(w=>/[A-Za-z]/.test(w.word)&&!/^(the|and|for|was|are|is|to|of|a|an|in|on|at)$/i.test(w.word)).slice(0,3).map(w=>w.word);
+    if(score>=5)return 'Maintain this clarity. Shadow one model sentence once, matching word stress and sentence stress rather than speaking faster.';
+    if(score===4&&Number.isFinite(prosody)&&Number.isFinite(accuracy)&&prosody+10<accuracy)return 'Your sounds are clear; the main gain is stress and emphasis. Mark 3–4 key words in a sentence, stress them clearly, reduce the small connecting words, then shadow the sentence twice.';
+    if(score===4)return practice.length?'Keep your clarity and polish the weakest words: '+practice.join(', ')+'. Say each word slowly, then in a phrase, then in the full sentence.':'Keep your clarity and focus on consistent word stress. Shadow short phrases and copy the stressed syllables exactly.';
+    if(score===3)return practice.length?'Work on clarity before speed. Practise '+practice.join(', ')+' slowly, then repeat each inside a short phrase without changing the vowel or final consonant.':'Work on clarity before speed. Use short phrases, open the vowel sounds fully, and make final consonants audible.';
+    if(score===2)return 'Slow down slightly and make each stressed syllable clear. Practise one sentence at a time: listen, mark the stressed syllables, then repeat it three times.';
+    return 'Build intelligibility first. Use short model sentences, repeat them slowly, and focus on one difficult sound or stressed syllable at a time.';
+  }
+  if(score>=5)return 'Maintain the same steady pace and phrasing. Keep pausing only at natural idea boundaries.';
+  if(score===4)return 'Aim for one smooth phrase per idea. Keep a steady pace, pause briefly at punctuation or meaning changes, and continue after small mistakes instead of restarting.';
+  if(score===3)return 'Use 4–6 word meaning groups. Pause only between ideas, avoid restarting a sentence after a small mistake, and practise one 30-second response with a steady pace.';
+  if(score===2)return 'Slow down enough to keep phrases connected. Speak in short meaning groups, reduce long silent pauses, and replace repeated restarts with a brief pause and continuation.';
+  return 'First build continuous speech. Practise 10–15 second chunks without stopping, then connect two chunks while keeping a comfortable, even pace.';
+}
+
+function usefulPracticeWords(words) {
+  const stop=/^(the|and|for|was|are|is|to|of|a|an|in|on|at|with|by|as|it)$/i;
+  return (words||[]).filter(w=>/[A-Za-z]/.test(w.word)&&!/^\d+(?:[.,]\d+)?$/.test(w.word)&&!stop.test(w.word)).slice(0,5);
 }
 
 function round1(value) {
@@ -150,7 +173,7 @@ function aggregate(chunks,{evidence}={}) {
   for(const item of usable)for(const word of item.words||[]) {
     if(word.errorType!=='None'||(Number.isFinite(word.accuracy)&&word.accuracy<70))issues.push(word);
   }
-  const weakest=[...new Map(issues.sort((a,b)=>(a.accuracy??101)-(b.accuracy??101)).map(item=>[item.word.toLowerCase(),item])).values()].slice(0,8);
+  const weakest=usefulPracticeWords([...new Map(issues.sort((a,b)=>(a.accuracy??101)-(b.accuracy??101)).map(item=>[item.word.toLowerCase(),item])).values()]);
   const enough=evidence?.sufficient!==false;
   const evidenceText=evidence&&!enough
     ? (Number.isFinite(evidence.coverage)
@@ -162,11 +185,13 @@ function aggregate(chunks,{evidence}={}) {
     pronunciation:{
       score:enough?band5(pronunciationRaw):null,maximum:5,raw:pronunciationRaw,
       descriptor:enough?descriptor('pronunciation',band5(pronunciationRaw)):'',
+      coaching:enough?coaching('pronunciation',{score:band5(pronunciationRaw),accuracy,prosody,words:weakest}):'',
       accuracy,prosody,completeness,words:weakest
     },
     fluency:{
       score:enough?band5(fluencyRaw):null,maximum:5,raw:fluencyRaw,
       descriptor:enough?descriptor('fluency',band5(fluencyRaw)):'',
+      coaching:enough?coaching('fluency',{score:band5(fluencyRaw),fluency,prosody}):'',
       acousticFluency:fluency,prosody
     },
     deliveryEvidence:evidence||null,
@@ -271,4 +296,4 @@ async function assessRecording(recording,{
   return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds)});
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
+module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
