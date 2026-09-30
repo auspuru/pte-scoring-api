@@ -3447,12 +3447,16 @@ app.get('/api/admin/user-data/:username', requireAdmin, async (req, res) => {
 // Lets an admin view a student's portal in a new tab. Security model:
 //   1. Admin (authenticated by ADMIN_KEY) requests a token for one username.
 //   2. The token is an HMAC-signed string: base64(username|expiry).signature
-//      — signed with a secret derived from ADMIN_KEY, valid ~5 minutes.
+//      — signed with a secret derived from ADMIN_KEY, valid for one staff workday.
 //   3. The student portal sends the token back; the server validates the
 //      signature + expiry and returns that user's data.
 // A student cannot forge a token (no ADMIN_KEY), and the token cannot be reused
 // for a different username (the username is inside the signed payload).
-const IMPERSONATION_TTL_MS = 5 * 60 * 1000;  // 5 minutes
+//
+// The portal reuses this token as its authenticated admin-view session on sync
+// requests, so the TTL must cover a realistic support session. Five minutes was
+// causing admins to be signed out mid-review as soon as the next sync occurred.
+const IMPERSONATION_TTL_MS = 8 * 60 * 60 * 1000;  // 8 hours
 function _impersonationSecret() {
   // Derive a signing secret from ADMIN_KEY so it rotates if the admin key changes.
   return crypto.createHash('sha256').update('impersonation:' + ADMIN_KEY).digest();
