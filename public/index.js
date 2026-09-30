@@ -1144,7 +1144,9 @@ function queueSync() {
   LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_syncPending`, true);
   setSync('syncing', 'Saving to your account…');
   clearTimeout(syncTimer);
-  syncTimer = setTimeout(flushSync, 1200);
+  // Coalesce rapid editor updates instead of creating a train of writes.
+  // LocalStorage/draft stores already protect the student's work immediately.
+  syncTimer = setTimeout(flushSync, 1800);
 }
 
 async function flushSync() {
@@ -1288,7 +1290,9 @@ async function flushSyncDirect(options = {}) {
     syncInFlightSession = null;
     if (completed && sameSession() && syncQueued) {
       clearTimeout(syncTimer);
-      syncTimer = setTimeout(flushSync, 0);
+      // If edits arrived during a slow request, give them a brief window to
+      // coalesce before sending the next delta. This avoids back-to-back row locks.
+      syncTimer = setTimeout(flushSync, 650);
     }
   }
 }
