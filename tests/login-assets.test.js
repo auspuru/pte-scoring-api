@@ -43,6 +43,16 @@ test('Saved-session checks validate the token and successful auth is not mislabe
 });
 
 
+test('Admin impersonation lasts through a staff workday and is removed from the URL', () => {
+  const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
+  const client = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
+
+  assert.match(server, /const IMPERSONATION_TTL_MS = 8 \* 60 \* 60 \* 1000/);
+  assert.match(client, /sessionStorage\.setItem\('pte_impersonate_token', impToken\)/);
+  assert.match(client, /cleanUrl\.searchParams\.delete\('impersonate'\)/);
+  assert.match(client, /history\.replaceState/);
+});
+
 test('Authentication falls back to session storage when local storage quota is exhausted', () => {
   const client = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'utf8');
   assert.match(client, /function setAuthStorageValue\(key, value\)/);
