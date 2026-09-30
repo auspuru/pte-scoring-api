@@ -187,7 +187,10 @@
     if (reduceMotion && reduceMotion.addEventListener) reduceMotion.addEventListener('change', setMotionClass);
     if (finePointer && finePointer.addEventListener) finePointer.addEventListener('change', setMotionClass);
 
-    new MutationObserver(installGlassSurfaces).observe(document.body, { childList: true, subtree: true });
+    new MutationObserver(records => {
+      // Glass surfaces are elements, never word-count/status text nodes.
+      if (records.some(record => [...record.addedNodes].some(node => node.nodeType === 1))) installGlassSurfaces();
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === 'loading') {

@@ -59,7 +59,11 @@ function removeAdminPortalEntry() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
   else run();
   // Some layouts are injected after authentication; remove any late-added entry.
-  const observer = new MutationObserver(run);
+  const observer = new MutationObserver(records => {
+    // Word counters replace text nodes on every keystroke. Only newly inserted
+    // elements can introduce an admin entry; ignore text-only mutations.
+    if (records.some(record => [...record.addedNodes].some(node => node.nodeType === 1))) run();
+  });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
 
@@ -14150,6 +14154,14 @@ function updatePracticeTemplateOverlap() {
   return result;
 }
 
+let practiceOverlapTimer = null;
+function queuePracticeTemplateOverlap() {
+  clearTimeout(practiceOverlapTimer);
+  practiceOverlapTimer = setTimeout(() => {
+    if (practiceState.view === 'write') updatePracticeTemplateOverlap();
+  }, 500);
+}
+
 function updateLiveWordCount() {
   const ta = document.getElementById('practiceEssayInput');
   if (!ta) return;
@@ -14201,7 +14213,7 @@ function updateLiveWordCount() {
   if (practiceState.timerEnabled && !practiceState.timerStartedAt && count > 0) {
     startPracticeTimer();
   }
-  updatePracticeTemplateOverlap();
+  queuePracticeTemplateOverlap();
   updateSubmitBtnState();
 }
 

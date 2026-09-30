@@ -6,7 +6,13 @@ function prepareModal(overlay,index){if(overlay.dataset.a11yReady)return;overlay
 function opened(overlay){prepareModal(overlay,[...document.querySelectorAll('.modal-overlay')].indexOf(overlay)+1);returnFocus=document.activeElement;activeDialog=overlay;requestAnimationFrame(()=>{(overlay.querySelector(focusable)||overlay).focus?.();});}
 function closed(overlay){if(activeDialog!==overlay)return;activeDialog=null;const target=returnFocus;returnFocus=null;target?.focus?.();}
 function scan(){document.querySelectorAll('.modal-overlay').forEach((overlay,index)=>{prepareModal(overlay,index+1);const was=overlay.dataset.openState==='true',now=overlay.classList.contains('show');overlay.dataset.openState=String(now);if(now&&!was)opened(overlay);else if(!now&&was)closed(overlay);});}
-const observer=new MutationObserver(scan);
+const observer=new MutationObserver(records=>{
+  // Modal state changes matter; editor counters and health indicators do not.
+  const relevant=records.some(record=>record.type==='attributes'
+    ? record.target.matches?.('.modal-overlay')
+    : [...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===1 && (node.matches?.('.modal-overlay') || node.querySelector?.('.modal-overlay'))));
+  if(relevant)scan();
+});
 function trap(ev){if(!activeDialog)return;if(ev.key==='Escape'){ev.preventDefault();const buttons=[...activeDialog.querySelectorAll('button')];const close=buttons.find(b=>/close|cancel|done|back/i.test((b.textContent||'').trim())||/close|cancel/i.test(b.getAttribute?.('onclick')||''));if(close)close.click();else{activeDialog.classList.remove('show');scan();}return;}if(ev.key!=='Tab')return;const nodes=[...activeDialog.querySelectorAll(focusable)].filter(el=>el.offsetParent!==null);if(!nodes.length){ev.preventDefault();return;}const first=nodes[0],last=nodes.at(-1);if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}}
 function addPasswordToggles(){document.querySelectorAll('input[type="password"]').forEach(input=>{if(input.dataset.toggleReady)return;input.dataset.toggleReady='true';const b=document.createElement('button');b.type='button';b.className='password-visibility-toggle';b.textContent='Show';b.setAttribute('aria-label','Show password');b.addEventListener('click',()=>{const show=input.type==='password';input.type=show?'text':'password';b.textContent=show?'Hide':'Show';b.setAttribute('aria-label',(show?'Hide':'Show')+' password');});input.insertAdjacentElement('afterend',b);});}
 function labelEssayFields(){const labels={f_intro:'Introduction',f_bp1:'Body paragraph 1',f_bp2:'Body paragraph 2',f_concl:'Conclusion'};for(const [id,label] of Object.entries(labels)){const el=document.getElementById(id);if(el&&!el.getAttribute('aria-label'))el.setAttribute('aria-label',label);}}
