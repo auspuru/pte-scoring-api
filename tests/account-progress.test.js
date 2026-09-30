@@ -123,21 +123,20 @@ test('Actual server storage serializes simultaneous sync writes and preserves ev
   assert.equal((await store.getUserData('other')).essayDraft.essayText, 'Other account');
 });
 
-test('Postgres sync locks existing rows before entering the first-profile creation path', () => {
+test('Postgres sync uses optimistic row versions instead of a four-round-trip lock transaction', () => {
   const start = serverSource.indexOf('async setUserData(userId, userData)', serverSource.indexOf('const PgStorage'));
   const end = serverSource.indexOf('\n  async getProgress(userId)', start);
   assert(start >= 0 && end > start);
   const source = serverSource.slice(start, end);
-  const firstLock = source.indexOf("SELECT data FROM user_data WHERE username = $1 FOR UPDATE");
-  const createGuard = source.indexOf('if (!rows.length)');
-  const advisory = source.indexOf('pg_advisory_xact_lock');
-  const insert = source.indexOf('INSERT INTO user_data');
-  assert(firstLock >= 0 && createGuard > firstLock);
-  assert(advisory > createGuard && insert > advisory);
-  assert.match(source, /RETURNING data/);
-  assert.doesNotMatch(source.slice(0, createGuard), /INSERT INTO user_data/);
-  assert.match(source, /perf\.rowLockMs/);
-  assert.match(source, /perf\.createLockMs/);
+  assert.match(source, /SELECT data, xmin::text AS version FROM user_data WHERE username = \$1/);
+  assert.match(source, /WHERE username = \$1 AND xmin::text = \$3/);
+  assert.match(source, /RETURNING xmin::text AS version/);
+  assert.match(source, /const maxAttempts = 4/);
+  assert.match(source, /perf\.conflicts\+\+/);
+  assert.match(source, /ON CONFLICT \(username\) DO NOTHING/);
+  assert.doesNotMatch(source, /FOR UPDATE/);
+  assert.doesNotMatch(source, /client\.query\('BEGIN'\)/);
+  assert.doesNotMatch(source, /client\.query\('COMMIT'\)/);
 });
 
 test('Postgres sync builds a top-level patch for only the progress domains in the incoming delta', () => {
@@ -248,10 +247,12 @@ test('slow practice account checks expose timing without logging account identif
   assert.match(serverSource, /getAccount: getPracticeAccount/);
 });
 
-test('slow account syncs expose database phase timing without logging account identifiers', () => {
+test('slow account syncs expose optimistic retry timing without logging account identifiers', () => {
   assert.match(serverSource, /\[account-sync-perf\]/);
   assert.match(serverSource, /connectMs/);
-  assert.match(serverSource, /rowLockMs/);
+  assert.match(serverSource, /readMs/);
+  assert.match(serverSource, /writeMs/);
+  assert.match(serverSource, /conflicts/);
   assert.match(serverSource, /mergeMs/);
   assert.match(serverSource, /responseBuildMs/);
   assert.doesNotMatch(serverSource, /\[account-sync-perf\][^\n]*userId/);
