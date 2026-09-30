@@ -173,7 +173,7 @@ function device(store, owner = 'student') {
   vm.createContext(ctx);
   for (const name of ['account-progress', 'reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) vm.runInContext(fs.readFileSync(require.resolve('../public/' + name), 'utf8'), ctx);
   vm.runInContext('const accountProgressMemory = new Map(); const accountCloudSnapshot = new Map();\n' +
-    ['localAccountProgress', 'cacheAccountProgress', 'captureAccountProgress', 'receiveAccountProgress', 'accountSyncPayload', 'queueSync', 'flushSync', 'flushSyncDirect', 'refreshPracticeHistory', 'resumeAccountSync'].map(clientFunction).join('\n'), ctx);
+    ['fetchAccountProgress', 'localAccountProgress', 'cacheAccountProgress', 'captureAccountProgress', 'receiveAccountProgress', 'accountSyncPayload', 'queueSync', 'flushSync', 'flushSyncDirect', 'refreshPracticeHistory', 'resumeAccountSync'].map(clientFunction).join('\n'), ctx);
   const click = dataset => host.onclick({ target: { closest: () => ({ dataset, disabled: false, setAttribute() {} }) } });
   return { ctx, host, values, requests, statuses, timers, errors, click, offline(value) { offline = value; } };
 }
