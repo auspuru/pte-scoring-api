@@ -125,7 +125,7 @@ test('Actual server storage serializes simultaneous sync writes and preserves ev
 
 test('Postgres sync builds a top-level patch for only the progress domains in the incoming delta', () => {
   const start = serverSource.indexOf('function postgresProgressPatch(');
-  const end = serverSource.indexOf('\n}', start) + 2;
+  const end = serverSource.indexOf('\n\n// ─── POSTGRES STORAGE ADAPTER', start);
   assert(start >= 0 && end > start);
   const ctx = {};
   vm.createContext(ctx);
