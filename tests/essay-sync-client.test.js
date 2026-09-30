@@ -48,6 +48,7 @@ test('An immediate attempt save waits for a second write if an older sync is in 
   const { ctx, requests, statuses } = harness();
   const first = ctx.flushSync();
   assert.equal(requests.length, 1);
+  assert.equal(requests[0].options.headers['x-sync-response'], 'delta');
   ctx.userProfile.practiceHistory.push(a('new', 2));
   ctx.syncQueued = true;
   let newSaved = false;
