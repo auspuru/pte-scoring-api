@@ -72,14 +72,15 @@ function locateEvidence(text, evidence) {
 }
 function normalize(q,text,raw) {
   const validList=(list,n)=>Array.isArray(list)&&list.length<=n&&list.every(x=>typeof x==='string'&&x.trim()&&x.length<800);
-  if(!raw||!Number.isInteger(raw.total)||raw.total<0||raw.total>6||typeof raw.overview!=='string'||raw.overview.length>1200||!validList(raw.strengths,2)||!validList(raw.improvements,2)||raw.coverage?.length!==q.facts.length)throw Error('Incomplete content assessment. Please retry.');
+  if(!raw||!Number.isInteger(raw.total)||raw.total<0||raw.total>6||typeof raw.overview!=='string'||raw.overview.length>1200||!validList(raw.strengths,3)||!validList(raw.improvements,3)||raw.coverage?.length!==q.facts.length)throw Error('Incomplete content assessment. Please retry.');
   const coverage=raw.coverage.map((item,i)=>{
     if(item.point!==i||!['covered','partial','missing','inaccurate'].includes(item.status)||typeof item.evidence!=='string'||item.evidence.length>500||typeof item.feedback!=='string'||!item.feedback.trim()||item.feedback.length>1000||item.status==='missing'&&item.evidence||item.status!=='missing'&&!item.evidence)throw Error('Unsupported assessment evidence. Please retry.');
     const evidence = locateEvidence(text, item.evidence);
     if (evidence === null) throw Error('Unsupported assessment evidence. Please retry.');
     return {point:q.facts[i],status:item.status,evidence,feedback:item.feedback};
   });
-  return {...base(6),total:raw.total,overview:raw.overview,strengths:raw.strengths,improvements:raw.improvements,coverage};
+  const compact=list=>[...new Map(list.map(item=>[item.trim().toLowerCase().replace(/\s+/g,' '),item.trim()])).values()].slice(0,2);
+  return {...base(6),total:raw.total,overview:raw.overview.trim(),strengths:compact(raw.strengths),improvements:compact(raw.improvements),coverage};
 }
 async function grade(q,text,callModel) {
   if(['ra','rs'].includes(q.type)) return exact(q,text);
