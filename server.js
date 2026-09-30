@@ -669,6 +669,13 @@ function postgresProgressPatch(incoming, merged) {
   return patch;
 }
 
+const PRACTICE_ACCOUNT_CACHE_TTL_MS = 5000;
+const practiceAccountCache = new Map();
+function invalidatePracticeAccount(uid) {
+  const key = canonicalUserId(uid);
+  if (key) practiceAccountCache.delete(key);
+}
+
 // ─── POSTGRES STORAGE ADAPTER ───────────────────────────────────────────────
 // Same method names as JsonStorage below, but reads/writes through pgPool.
 // All methods are async and use parameterised queries (no SQL injection risk).
@@ -719,10 +726,12 @@ const PgStorage = {
       [acct.username, acct.passwordHash, acct.secretQ || '', acct.secretAHash || '',
        acct.createdAt || null, acct.lastLogin || null, !!acct.blocked, acct.role || 'user']
     );
+    invalidatePracticeAccount(acct.username);
   },
   async _deleteAccount(uid) {
     await pgPool.query('DELETE FROM accounts WHERE username = $1', [uid]);
     await pgPool.query('DELETE FROM user_data WHERE username = $1', [uid]);
+    invalidatePracticeAccount(uid);
   },
 
   // ── readData / writeData — emulate the JSON shape for any code that still
@@ -772,6 +781,7 @@ const PgStorage = {
         );
       }
       await client.query('COMMIT');
+      practiceAccountCache.clear();
     } catch (e) { await client.query('ROLLBACK'); throw e; }
     finally { client.release(); }
   },
@@ -1837,6 +1847,7 @@ const AuthAPI = {
           deleted = result.rows.map(row => row.username);
         }
         await client.query('COMMIT');
+        deleted.forEach(invalidatePracticeAccount);
         return { success: true, deleted, notFound: ids.filter(id => !deleted.includes(id)) };
       } catch (e) {
         await client.query('ROLLBACK').catch(() => {});
@@ -6280,13 +6291,29 @@ app.use(['/api/speaking/attempts','/api/writing-lab/attempts'],(req,res,next)=>{
 });
 
 async function getPracticeAccount(uid) {
+  uid = canonicalUserId(uid);
+  const now = Date.now();
+  const cached = practiceAccountCache.get(uid);
+  if (cached && cached.expiresAt > now) return cached.account;
+
   const started = Date.now();
-  const account = USE_POSTGRES ? await PgStorage._getAccount(uid) : (await AuthAPI.readAccounts()).accounts[uid];
+  let account;
+  if (USE_POSTGRES) {
+    const { rows } = await pgPool.query('SELECT username, blocked, role FROM accounts WHERE username = $1', [uid]);
+    account = rows.length ? {
+      username: rows[0].username,
+      blocked: !!rows[0].blocked,
+      role: rows[0].role || 'user'
+    } : null;
+  } else {
+    account = (await AuthAPI.readAccounts()).accounts[uid] || null;
+  }
   const totalMs = Date.now() - started;
   if (totalMs >= 300) console.info('[practice-auth-perf]', JSON.stringify({
     totalMs,
     backend: USE_POSTGRES ? 'postgres' : 'json'
   }));
+  practiceAccountCache.set(uid, { account, expiresAt: Date.now() + PRACTICE_ACCOUNT_CACHE_TTL_MS });
   return account;
 }
 
