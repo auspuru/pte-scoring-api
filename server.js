@@ -133,14 +133,13 @@ try { rateLimit = require('express-rate-limit'); } catch (_) { /* not installed 
 // v19.10: Optional Postgres support. The 'pg' module is loaded lazily so that
 // installations without a database URL still work (local dev, JSON-file fallback).
 //
-// Connection URL precedence (v19.10.1):
-//   1. PGURL              — explicit override, wins over everything
-//   2. DATABASE_PUBLIC_URL — Railway's public proxy host (*.proxy.rlwy.net),
-//                            reachable from anywhere. Preferred because the
-//                            private host (postgres.railway.internal) only
-//                            resolves when Railway private networking is fully
-//                            active, which is not guaranteed on every project.
-//   3. DATABASE_URL       — Railway's default (often the private internal host)
+// Connection URL precedence:
+//   1. PGURL               — explicit operator override
+//   2. DATABASE_URL        — Railway private network; preferred for services
+//                            running inside Railway because it avoids the public
+//                            TCP proxy and its extra latency/egress.
+//   3. DATABASE_PUBLIC_URL — fallback for deployments where only public DB
+//                            connectivity is available.
 //
 // Whichever is chosen, the JSON-file StorageAPI is replaced with the Postgres
 // adapter. With none of them set, the server falls back to the JSON file.
@@ -148,14 +147,14 @@ let Pool = null;
 try { Pool = require('pg').Pool; } catch (_) { /* pg not installed — JSON fallback only */ }
 const DATABASE_URL =
       process.env.PGURL
-   || process.env.DATABASE_PUBLIC_URL
    || process.env.DATABASE_URL
+   || process.env.DATABASE_PUBLIC_URL
    || '';
 // Record which env var won, for the boot log + /api/health diagnostic.
 const DATABASE_URL_SOURCE =
       process.env.PGURL ? 'PGURL'
-    : process.env.DATABASE_PUBLIC_URL ? 'DATABASE_PUBLIC_URL'
     : process.env.DATABASE_URL ? 'DATABASE_URL'
+    : process.env.DATABASE_PUBLIC_URL ? 'DATABASE_PUBLIC_URL'
     : 'none';
 const USE_POSTGRES = !!(DATABASE_URL && Pool);
 

@@ -147,6 +147,12 @@ test('Postgres sync builds a top-level patch for only the progress domains in th
   assert.match(serverSource, /JSON\.stringify\(patch\)/);
 });
 
+test('Railway Postgres prefers the private DATABASE_URL before the public TCP proxy', () => {
+  assert.match(serverSource, /process\.env\.PGURL\s*\|\|\s*process\.env\.DATABASE_URL\s*\|\|\s*process\.env\.DATABASE_PUBLIC_URL/s);
+  assert.match(serverSource, /process\.env\.DATABASE_URL \? 'DATABASE_URL'/);
+  assert.match(serverSource, /process\.env\.DATABASE_PUBLIC_URL \? 'DATABASE_PUBLIC_URL'/);
+});
+
 test('Both sync and legacy progress routes require the matching account token', () => {
   for (const method of ['get', 'post']) for (const route of ['sync', 'progress']) assert(serverSource.includes(`app.${method}('/api/${route}/:userId', requireSyncAuth,`));
   const start = serverSource.indexOf('function requireSyncAuth('), end = serverSource.indexOf('\n}', start) + 2;
