@@ -123,6 +123,23 @@ test('Actual server storage serializes simultaneous sync writes and preserves ev
   assert.equal((await store.getUserData('other')).essayDraft.essayText, 'Other account');
 });
 
+test('Postgres sync locks existing rows before entering the first-profile creation path', () => {
+  const start = serverSource.indexOf('async setUserData(userId, userData)', serverSource.indexOf('const PgStorage'));
+  const end = serverSource.indexOf('\n  async getProgress(userId)', start);
+  assert(start >= 0 && end > start);
+  const source = serverSource.slice(start, end);
+  const firstLock = source.indexOf("SELECT data FROM user_data WHERE username = $1 FOR UPDATE");
+  const createGuard = source.indexOf('if (!rows.length)');
+  const advisory = source.indexOf('pg_advisory_xact_lock');
+  const insert = source.indexOf('INSERT INTO user_data');
+  assert(firstLock >= 0 && createGuard > firstLock);
+  assert(advisory > createGuard && insert > advisory);
+  assert.match(source, /RETURNING data/);
+  assert.doesNotMatch(source.slice(0, createGuard), /INSERT INTO user_data/);
+  assert.match(source, /perf\.rowLockMs/);
+  assert.match(source, /perf\.createLockMs/);
+});
+
 test('Postgres sync builds a top-level patch for only the progress domains in the incoming delta', () => {
   const start = serverSource.indexOf('function postgresProgressPatch(');
   const end = serverSource.indexOf('\n\n// ─── POSTGRES STORAGE ADAPTER', start);

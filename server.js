@@ -844,14 +844,34 @@ const PgStorage = {
       await client.query('BEGIN');
       perf.beginMs = Date.now() - phase;
       phase = Date.now();
-      await client.query(
-        `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
-         ON CONFLICT (username) DO NOTHING`, [userId]
-      );
-      perf.ensureRowMs = Date.now() - phase;
-      phase = Date.now();
-      const { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
+      let { rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]);
       perf.rowLockMs = Date.now() - phase;
+      if (!rows.length) {
+        // Existing profiles need only the row lock above. First-time profiles
+        // take a keyed creation lock and recheck, so concurrent devices cannot
+        // race to initialise the same account during rolling deployments.
+        phase = Date.now();
+        await client.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', ['user_data:' + userId]);
+        perf.createLockMs = Date.now() - phase;
+        phase = Date.now();
+        ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
+        perf.createRecheckMs = Date.now() - phase;
+        if (!rows.length) {
+          phase = Date.now();
+          const created = await client.query(
+            `INSERT INTO user_data (username, data) VALUES ($1, '{}'::jsonb)
+             ON CONFLICT (username) DO NOTHING
+             RETURNING data`, [userId]
+          );
+          perf.createRowMs = Date.now() - phase;
+          if (created.rows.length) rows = created.rows;
+          else {
+            phase = Date.now();
+            ({ rows } = await client.query('SELECT data FROM user_data WHERE username = $1 FOR UPDATE', [userId]));
+            perf.createConflictRecheckMs = Date.now() - phase;
+          }
+        }
+      }
 
       phase = Date.now();
       const existing = rows[0]?.data || {};
