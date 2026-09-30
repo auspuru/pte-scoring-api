@@ -32,7 +32,9 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/\sstyle="/i);
   assert.doesNotMatch(html,/Material\+Symbols|material-symbols-outlined|Fraunces|Plus\+Jakarta|Plus Jakarta/i);
   assert.match(html,/writing-lab-portal\.css/);
-  assert.match(html,/writing-lab-client\.js/);
+  assert.doesNotMatch(html,/<script[^>]+writing-lab-client\.js/,'Writing Lab stays off the initial dashboard load');
+  assert.match(portal,/ensureWritingLabRuntimeLoaded/);
+  assert.match(portal,/\/writing-lab-client\.js\?v=20260930-essay-next-steps/);
   assert.doesNotMatch(lab,/<h1\b/,'Writing Lab uses the application page title instead of nested H1s');
   assert.doesNotMatch(portal,/<h1 class="essay-title">/,'Essay preview must not add a second application H1');
   assert.match(portal,/function renderVocabFlashcardContainer\(\)/,'use the existing vocabulary flashcard flow');
@@ -112,7 +114,11 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
   assert.match(html,/\/personal-ai-assistant\.js\?v=8/);
-  assert.match(html,/\/interventions-client\.js\?v=9/);
+  assert.doesNotMatch(html,/<script[^>]+interventions-client\.js/,'Next Steps stays off the initial dashboard load');
+  assert.match(portal,/ensureInterventionsRuntimeLoaded/);
+  assert.match(portal,/\/interventions-client\.js\?v=9/);
+  assert.doesNotMatch(html,/<script[^>]+student-progress\.js/,'Progress stays off the initial dashboard load');
+  assert.match(portal,/ensureStudentProgressRuntimeLoaded/);
   assert.match(personalAssistant,/\/api\/interventions\/screen-help/,'assistant should answer from the current portal screen');
   assert.match(personalAssistant,/function screenContext\(usePage = true\)/,'assistant should collect current visible page context');
   assert.match(personalAssistant,/aria-label="Open AI Assistant" title="Open AI Assistant"/,'assistant mascot should open the current-page side panel');
