@@ -2884,46 +2884,6 @@ function estimateSkillContributions(rawScore, contentScore, grammarScore, vocabS
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FEEDBACK & TIPS// ═══════════════════════════════════════════════════════════════════════════════
-// FEEDBACK & TIPS
-// ═══════════════════════════════════════════════════════════════════════════════
-function generateFeedback(coverage, grammar, vocab, firstPerson) {
-  const presentCount = coverage.filter(c => c.present).length;
-  const missing = coverage.filter(c => !c.present).map(c => c.type);
-  const parts = [];
-
-  if (presentCount === 3) parts.push('All 3 key ideas captured — excellent comprehension.');
-  else if (presentCount === 2) parts.push(`2/3 key ideas found. Missing: ${missing[0]}.`);
-  else if (presentCount === 1) parts.push(`Only 1/3 key ideas found. Missing: ${missing.join(' and ')}.`);
-  else parts.push('No key ideas detected. Use TOPIC → PIVOT → CONCLUSION structure.');
-
-  if (grammar.score === 2) parts.push('Meaning remains clear; optional grammar refinements do not reduce scores.');
-  else parts.push(grammar.grammar_issues[0] || 'Correct the grammatical error that changes or obscures meaning.');
-
-  if (vocab.meaning_changed) parts.push('⚠️ CRITICAL: Your synonyms changed the meaning of the passage!');
-  else if (vocab.score === 2) parts.push(`Vocabulary excellent (${vocab.total_paraphrase_credit} safe synonym swaps).`);
-  else parts.push('Use context-appropriate wording that preserves the original message.');
-
-  if (firstPerson.isProblematic) parts.push('⚠️ First-person language — shift to "The author/narrator".');
-
-  return parts.join(' ');
-}
-
-function generateImprovementTips(rawScore, contentScore, grammarScore, vocabScore, grammar, vocab) {
-  const tips = [];
-  if (contentScore < 2) tips.push('CONTENT: Identify Topic (what is it about?), Pivot (but/however), Conclusion (so what?)');
-  if (grammarScore < 2) {
-    tips.push('GRAMMAR: Correct the error that changes or obscures the intended meaning.');
-  }
-  if (vocab.meaning_changed) {
-    tips.push('VOCABULARY: Your synonym CHANGED the meaning! "minor"→"small" is OK, "minor"→"major" is WRONG. Always check the synonym preserves the original idea.');
-  } else if (vocabScore < 2) {
-    tips.push('VOCABULARY: Choose wording that preserves the intended meaning.');
-  }
-  if (rawScore >= 6 && rawScore < 7) tips.push('ALMOST BAND 9: One small fix could push you to 90.');
-  return tips.join(' | ');
-}
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // ROUTES
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -4637,16 +4597,6 @@ function buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, sp
   const summary_line = sParts.join(' · ');
 
   return { verdict, strengths, improvements, method_coaching: methodCoaching, summary_line };
-}
-
-// Legacy aliases — kept for any other call site that imports them
-function buildFeedback(contentVerdict, grammar, vocab, firstPerson, form) {
-  const card = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, { count: 0 }, 0, contentVerdict.content_score, 0, null);
-  return card.summary_line;
-}
-function buildImprovementTips(rawScore, contentScore, vocab, grammar, contentVerdict, form) {
-  const card = buildFeedbackCard(contentVerdict, grammar, vocab, { isProblematic: false }, form, { count: 0 }, rawScore, contentScore, 0, null);
-  return card.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
 }
 
 function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
