@@ -59,6 +59,10 @@
     }
 
     function activate(section, options = {}) {
+      if (win.PortalExamMode?.isActive()) {
+        if (current && ready) win.history.replaceState(null, '', '#/' + routes[current].path);
+        return current;
+      }
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
@@ -125,6 +129,7 @@
     });
     const menu = doc.getElementById('portalMenuToggle');
     if (menu) menu.addEventListener('click', () => {
+      if (win.PortalExamMode?.isActive()) return;
       const open = !doc.body.classList.contains('portal-menu-open');
       doc.body.classList.toggle('portal-menu-open', open);
       menu.setAttribute('aria-expanded', String(open));
@@ -147,7 +152,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { history: 'replace', focus: false });
       },
-      reset() { win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); ready = false; current = null; closeMenu(); },
+      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }

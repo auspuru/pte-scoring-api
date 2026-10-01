@@ -19,6 +19,9 @@
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd'].includes(q.type);
   function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
+  function setMockMode(enabled) {
+    window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root);
+  }
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
@@ -70,6 +73,7 @@
     if(tab !== 'history') historyKind=tab === 'mocks' ? 'mock' : tab;
     clearInterval(timer); clearTimeout(saveTimer); stopAudio();
     shell.classList.remove('exam-mode');
+    setMockMode(false);
     attempt=null; view=tab;
     const destination=historyKind==='mock'?'mock-tests':'practice-hub';
     const back='<button class="secondary" data-portal="'+destination+'">← '+(destination==='mock-tests'?'Mock Tests':'Practice')+'</button>';
@@ -158,11 +162,12 @@
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
     shell.classList.add('exam-mode');
+    setMockMode(attempt.kind==='mock');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
     const instruction=q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.';
     root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
       (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><details><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
-      '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready':'Saved automatically')+'</p></div><footer class="exam-footer"><button class="secondary" data-leave="1">Exit</button>'+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
+      '<label class="answer-label" for="answer">Your response</label><textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools"><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready':'Saved automatically')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'':'<button class="secondary" data-leave="1">Exit</button>')+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
     document.getElementById('answer').addEventListener('input',onInput);
     document.getElementById('notes')?.addEventListener('input',onInput);
     document.getElementById('next').onclick=nextQuestion;
@@ -382,6 +387,7 @@
     }catch(e){if(serial===navigationSerial && workspaceVisible)notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
   }
   function renderResults() {
+    setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
@@ -458,6 +464,7 @@
     return hub(tab);
   }
   async function suspend() {
+    setMockMode(false);
     navigationSerial++; pendingRequest=null; workspaceVisible=false; stopAudio(); writeDraft();
     try { await saveAnswer(false); } catch (_) {}
   }

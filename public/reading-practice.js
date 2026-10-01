@@ -148,6 +148,7 @@
     const active = enabled && !host?.hidden;
     host?.classList?.toggle('reading-exam-active',active);
     document.body?.classList?.toggle('reading-exam-open',active);
+    if (typeof window !== 'undefined') window.PortalExamMode?.set('reading', active, host);
   }
   function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); parkSession(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function showRequested(request) {

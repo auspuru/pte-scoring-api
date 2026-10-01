@@ -163,6 +163,21 @@ test('Mobile navigation moves focus to the active item and Escape returns it to 
   assert.equal(h.doc.activeElement, h.nodes.get('portalMenuToggle'));
 });
 
+test('An active mock blocks portal routes, browser history and menu controls until submission', () => {
+  const h=harness(); let active=false, left=0;
+  h.win.PortalExamMode={isActive:()=>active,reset:()=>{active=false;}};
+  h.win.ReadingPractice={open(){},leave(){left++;},reset(){}};
+  h.controller.start(); h.controller.activate('reading'); active=true;
+  assert.equal(h.controller.activate('spoken-text'),'reading');
+  assert.equal(h.controller.current(),'reading'); assert.equal(left,0);
+  assert.equal(h.nodes.get('readingPane').hidden,false); assert.equal(h.nodes.get('writingLabScreen').hidden,true);
+  h.win.location.hash='#/essays'; h.events.popstate();
+  assert.equal(h.win.location.hash,'#/reading'); assert.equal(h.controller.current(),'reading');
+  h.nodes.get('portalMenuToggle').handlers.click(); assert(!h.doc.body.classList.contains('portal-menu-open'));
+  active=false; h.controller.activate('progress'); assert.equal(h.controller.current(),'progress');
+  active=true; h.controller.reset(); assert.equal(active,false);
+});
+
 function storage() {
   const values = new Map();
   return { values, getItem: key => values.get(key) || null, setItem: (key, val) => values.set(key, val), removeItem: key => values.delete(key) };

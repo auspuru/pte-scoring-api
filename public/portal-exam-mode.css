@@ -1,0 +1,27 @@
+/* Mock attempts occupy the viewport; portal controls return after submission. */
+body.portal-exam-active { overflow: hidden; }
+[data-exam-blocked] { display: none !important; }
+body.portal-exam-active .app-shell { grid-template-columns: minmax(0,1fr); }
+.portal-exam-surface {
+  position: fixed !important; inset: 0 !important; z-index: 1000 !important;
+  width: 100% !important; height: 100dvh !important; max-width: none !important;
+  margin: 0 !important; padding: 0 !important; overflow: hidden !important;
+  transform: none !important; animation: none !important; color-scheme: light;
+}
+#writingLabScreen.portal-exam-surface { background: #fff; }
+#writingLabScreen.portal-exam-surface #lab { height: 100%; overflow: hidden; }
+:is(#writingLabScreen, #lab).portal-exam-surface .exam {
+  display: grid; grid-template-rows: auto auto minmax(0,1fr) auto;
+  height: 100%; min-height: 0; overflow: hidden;
+}
+:is(#writingLabScreen, #lab).portal-exam-surface .exam-main {
+  min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  width: 100%; max-width: 1320px; margin: 0 auto; padding-bottom: 24px;
+}
+:is(#writingLabScreen, #lab).portal-exam-surface .exam-footer {
+  position: static; margin: 0; padding: 16px 28px;
+  border-top: 1px solid #b5c4ce; background: #f1f4f6; justify-content: flex-end;
+}
+@media (max-width:600px) {
+  :is(#writingLabScreen, #lab).portal-exam-surface .exam-footer { padding: 12px 16px; }
+}

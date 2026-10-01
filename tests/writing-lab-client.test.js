@@ -66,6 +66,20 @@ function attempt(index=3) {
 function open(h,a) { a.serverNow=100000;h.hooks.set(a);h.hooks.showAttempt(); }
 async function flush() { for(let i=0;i<5;i++) await new Promise(resolve=>setImmediate(resolve)); }
 
+test('Writing mocks show only forward navigation and release exam mode after submission or suspension', async () => {
+  const h=harness(),calls=[];
+  h.context.window.PortalExamMode={set:(owner,enabled)=>calls.push({owner,enabled})};
+  open(h,attempt(0));
+  assert.deepEqual(calls.at(-1),{owner:'writing',enabled:true});
+  assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-leave=|data-portal=|data-tab=|data-practice-move=/);
+  assert.match(h.nodes.get('lab').innerHTML,/id="next"/);
+  await h.hooks.suspend(); assert.equal(calls.at(-1).enabled,false);
+  const completed=attempt(0); completed.status='submitted'; completed.questions=structuredClone(bank.mocks[0].questions); completed.results=completed.questions.map(q=>({total:0,maximum:report.maximumFor(q),maxima:{content:report.maximumFor(q)},scores:{content:0},feedback:{},reasons:[]}));
+  h.hooks.set(completed); h.hooks.showAttempt(); assert.equal(calls.at(-1).enabled,false);
+  const practice=attempt(3); practice.kind='sst'; open(h,practice);
+  assert.equal(calls.at(-1).enabled,false); assert.match(h.nodes.get('lab').innerHTML,/data-leave="1"/);
+});
+
 test('Task pages and saved attempts stay scoped to individual practice or mocks',async()=>{
  const h=harness();h.hooks.setCatalog({mocks:bank.mocks,spoken:bank.spoken,dictation:bank.mocks[0].questions.filter(q=>q.type==='wfd')});
  await h.hooks.hub('sst');assert.match(h.nodes.get('lab').innerHTML,/Summarise Spoken Text/);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-board|Start Exam/);

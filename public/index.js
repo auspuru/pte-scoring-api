@@ -12467,10 +12467,10 @@ function ensureReadingRuntimeLoaded() {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
       ['reading-mock-tools.js?v=20260930-expanded-22', 'reading mock tools'],
-      ['reading-exam-player.js?v=20260930-expanded-bank', 'reading exam player'],
+      ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=20261001-passage-review', 'reading review'],
-      ['reading-practice.js?v=20261001-passage-review', 'reading practice']
+      ['reading-practice.js?v=20261001-exam-focus', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20260930-consistent-nav', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261001-exam-focus', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12735,6 +12735,10 @@ function launchAssignedQuestion(item) {
 }
 
 function switchSection(section, options = {}) {
+  if (window.PortalExamMode?.isActive()) {
+    portalWorkspace?.activate(section, { history:'replace', focus:false });
+    return;
+  }
   savePortalEssayDraft();
   if (section === 'practice') { openPractice(false, options); return; }
   if (section === 'vocab') { openVocab(options); return; }

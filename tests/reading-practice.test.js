@@ -190,8 +190,18 @@ test('Every mock and diagnostic uses the same exam shell while practice keeps it
   if(isMock){
    assert.match(h.host.innerHTML,/[Tt]ime remaining/);assert.match(h.host.innerHTML,/data-action="exam-next"/);
    assert.doesNotMatch(h.host.innerHTML,/data-question=|data-action="flag"|data-move="-1"|data-action="check"/);
+   if(mode!=='diagnostic') assert.doesNotMatch(h.host.innerHTML,/data-action="exam-exit"/);
   }else assert.match(h.host.innerHTML,/data-action="check"/);
  }
+});
+test('Reading mocks enter shared exam isolation and release it for results and sign-out',async()=>{
+ const h=client(),calls=[];h.ctx.window={PortalExamMode:{set:(owner,enabled)=>calls.push({owner,enabled})}};
+ await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
+ assert.deepEqual(calls.at(-1),{owner:'reading',enabled:true});
+ const saved=()=>JSON.parse(h.values.get(storageKey('first')));
+ while(!saved().session.done)h.click({action:'exam-next'});
+ assert.equal(calls.at(-1).enabled,false);assert.match(h.host.innerHTML,/All answers &amp; feedback/);
+ h.ctx.ReadingPractice.reset();assert.equal(calls.at(-1).enabled,false);
 });
 test('Exam Next skips unanswered parts and parks the remaining time on exit',async()=>{
  const h=client(),clock=clockFor(h);await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});
