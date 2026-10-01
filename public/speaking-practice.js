@@ -142,7 +142,7 @@
     }
     function mountPlayback() {
       const node=doc.getElementById('speaking-playback');if(!node)return;
-      node.innerHTML=playbackUrl?'<audio controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
+      node.innerHTML=playbackUrl?'<audio id="speaking-response-player" controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
     }
     function navigationQuestions() {
       const type=attempt.question.type,filtered=filterQuestions(catalog.questions,type,libraryFilters.get(type));
@@ -216,9 +216,17 @@
               +(Number.isFinite(Number(pronunciationCurrent.prosody))?'<span>Prosody <strong>'+esc(Math.round(Number(pronunciationCurrent.prosody)))+'/100</strong></span>':'')
               +(Number.isFinite(Number(fluencyCurrent.acousticFluency))?'<span>Acoustic fluency <strong>'+esc(Math.round(Number(fluencyCurrent.acousticFluency)))+'/100</strong></span>':'')
             +'</div>'
-            +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words worth practising</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
+            +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Listen and practise</h4><p>Replay the flagged word, check its stressed syllable, then repeat it in a short phrase three times. Verify the flag against your recording.</p><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<button class="portal-button" data-speaking-action="replay-word" data-speaking-start="'+(Number.isFinite(w.startSeconds)?Math.max(0,w.startSeconds-0.2):0)+'" data-speaking-end="'+(Number.isFinite(w.startSeconds)&&Number.isFinite(w.durationSeconds)?w.startSeconds+w.durationSeconds+0.35:0)+'" aria-label="'+esc((Number.isFinite(w.startSeconds)?'Replay word: ':'Replay recording to check: ')+w.word)+'">▶ '+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</button>').join('')+'</div></div>':'')
             +'</details>'
           : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>Not enough speech for a reliable delivery score</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
+      const fluencyExercise=Number.isFinite(fluencyCurrent?.acousticFluency)&&fluencyCurrent.acousticFluency<60
+        ? 'Choose one sentence. Mark / between ideas, say each phrase without restarting, then record it twice. Compare the two recordings for fewer mid-phrase stops at a comfortable pace.'
+        : Number.isFinite(fluencyCurrent?.prosody)&&fluencyCurrent.prosody<70
+          ? 'Underline the important words in one sentence. Shadow a clear model, stressing those words and easing your voice at the end. Record and compare three repetitions.'
+          : 'Record a 20–30 second response twice. Keep pauses between ideas, use natural emphasis, and compare your recordings for a steady, comfortable pace.';
+      const nextStep=r.improvements?.[0] || (pronunciationReady&&pronunciationCurrent.score<4
+        ? pronunciationCurrent.coaching : fluencyReady&&fluencyCurrent.score<4 ? fluencyExercise
+        : 'Try another question. Keep the main ideas complete and your speaking pace comfortable.');
       const contentFallback=r.scoringMode==='local'
         ? '<div class="speaking-delivery-callout speaking-content-fallback"><div><strong>Content used the local fallback scorer</strong><p>The semantic reviewer could not complete this assessment, so this content score is a simpler estimate. You can retry the semantic review without re-recording.</p></div><button class="portal-button" data-speaking-action="submit">Retry content review</button></div>'
         : '';
@@ -234,6 +242,7 @@
           +scoreCard('Pronunciation',pronunciationCurrent,'pronunciation',pronunciationDetail)
           +scoreCard('Oral fluency',fluencyCurrent,'fluency',fluencyDetail)
         +'</div>'
+        +'<section class="speaking-next-step"><h4>Your next step</h4><p>'+esc(nextStep)+'</p></section>'
         +contentFallback
         +deliveryStatus
         +'<div class="speaking-feedback-grid">'
@@ -393,6 +402,20 @@
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
       if(d.speakingQuestion)return start(d.speakingQuestion);if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
+      if(action==='replay-word'){
+        if(attempt?.status!=='submitted')return;
+        try {
+          await loadPlayback();
+          const player=doc.getElementById('speaking-response-player');
+          if(!player){message('Reopen the attempt to load your recording.');return;}
+          const start=Math.max(0,Number(d.speakingStart)||0),end=Number(d.speakingEnd)||0;
+          player.ontimeupdate=()=>{if(end>start&&player.currentTime>=end){player.pause();player.ontimeupdate=null;}};
+          player.currentTime=start;
+          await player.play();
+          message('Listen for the stressed syllable and clear word endings. Repeat the word in a phrase three times, then reattempt.');
+        }catch(_){message('Use the recording player to listen again, then reattempt.');}
+        return;
+      }
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
       if(action==='record')return begin();

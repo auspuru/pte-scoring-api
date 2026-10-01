@@ -304,3 +304,15 @@ test('Content retry reports continued fallback and successful recovery without a
   assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
   assert.match(h.host.innerHTML,/Improve everyday pronunciation and fluency/);
 });
+
+test('A flagged-word replay seeks and pauses the saved audio without another upload',async()=>{
+  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
+  await h.click({speakingAction:'skip'});await h.click({speakingAction:'finish'});await flush();
+  let plays=0,pauses=0;const player={currentTime:0,play:async()=>{plays++;},pause:()=>{pauses++;}};
+  h.nodes.set('speaking-response-player',player);
+  const uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length;
+  await h.click({speakingAction:'replay-word',speakingStart:'6.2',speakingEnd:'7.05'});
+  assert.equal(player.currentTime,6.2);assert.equal(plays,1);
+  player.currentTime=7.1;player.ontimeupdate();assert.equal(pauses,1);assert.equal(player.ontimeupdate,null);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
+});

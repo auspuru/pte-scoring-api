@@ -8,7 +8,7 @@ const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const AUDIO_VERSION = '20261001-sst-minute1';
+const AUDIO_VERSION = '20261001-sst-natural2';
 const MAX_ASSESSMENT_QUEUE = 500;
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
@@ -99,8 +99,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       run().finally(() => { running--; drain(); });
     }
   }
-  function assess(uid, a, index) {
-    if (a.results[index]) return Promise.resolve(a.results[index]);
+  function assess(uid, a, index, { retryLocal = false } = {}) {
+    if (a.results[index] && !(retryLocal && a.results[index].scoringMode === 'local')) return Promise.resolve(a.results[index]);
     const key = uid + ':' + a.id + ':' + index;
     if (pending.has(key)) return pending.get(key);
     const task = new Promise((resolve, reject) => {
@@ -117,7 +117,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
             return value;
           });
           if (!current.completed[index]) throw bad('Submit this answer first.', 409);
-          let result = current.results[index];
+          let result = retryLocal && current.results[index]?.scoringMode === 'local' ? null : current.results[index];
           if (!result) {
             const question = current.questions[index];
             if (question.type === 'essay' && essayGrader) {
@@ -138,7 +138,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           }
           const updated = await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
-            value.results[index] ||= result;
+            if (retryLocal && value.results[index]?.scoringMode === 'local' && result.scoringMode !== 'local') value.results[index] = result;
+            else value.results[index] ||= result;
             return value;
           });
           failedAt.delete(key); resolve(updated.results[index]);
@@ -203,7 +204,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
-        byType:summary.byType, integrity:current.integrity || null });
+        byType:summary.byType, provisional:summary.provisional, integrity:current.integrity || null });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
@@ -283,8 +284,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const index=Number(req.params.index);
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
-    if(a.results[index]) return res.json(a.results[index]);
-    res.json(await assess(req.labUser, a, index));
+    const retryLocal = req.body?.retry === true && a.questions[index].type === 'sst' && a.results[index]?.scoringMode === 'local';
+    if(a.results[index] && !retryLocal) return res.json(a.results[index]);
+    res.json(await assess(req.labUser, a, index, { retryLocal }));
   }));
   app.use('/api/writing-lab', router);
   return { store };

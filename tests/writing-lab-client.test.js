@@ -502,8 +502,15 @@ test('Writing Lab prefers the sessionStorage login token before stale localStora
 });
 
 
-test('Writing Lab result UI exposes estimate scores only', () => {
-  assert.match(client, /<h2>Practice estimate<\/h2>/);
+test('Writing Lab result UI distinguishes provisional estimates and keeps criterion feedback expandable', () => {
+  const h=harness(),a=attempt();a.status='submitted';a.questions=structuredClone(bank.mocks[0].questions);
+  a.results=a.questions.map(q=>({total:report.maximumFor(q),maximum:report.maximumFor(q),scores:{content:4,form:2},maxima:{content:4,form:2},feedback:{content:'Main idea captured.',form:'Within the limit.'},strengths:[],improvements:[],errors:[],gated:false,reasons:[]}));
+  h.hooks.set(a);h.hooks.renderResults();
+  assert.match(h.nodes.get('lab').innerHTML, /<h2>Practice estimate<\/h2>/);
+  a.results[3].scoringMode='local';h.hooks.set(a);h.hooks.renderResults();
+  assert.match(h.nodes.get('lab').innerHTML, /Provisional practice estimate/);
+  assert.match(h.nodes.get('lab').innerHTML, /data-review-retry="3"/);
+  assert.match(h.nodes.get('lab').innerHTML, /assessment-details/);
   assert.match(client, /<small> \/ 90<\/small>/);
   assert.doesNotMatch(client, /Native practice result/);
   assert.doesNotMatch(client, /<th>Marks<\/th>/);

@@ -126,12 +126,10 @@ async function stretchMp3(bytes, minimumSeconds) {
     const seconds = Number.parseFloat(stdout);
     if (!Number.isFinite(seconds) || seconds <= 0) throw Error('Recording duration could not be measured.');
     if (seconds >= minimumSeconds) return bytes;
-    // atempo stretches the existing speech while preserving pitch. Chaining
-    // keeps each factor within ffmpeg's supported range, even for short clips.
-    const filters = [];
-    let tempo = seconds / minimumSeconds;
-    while (tempo < 0.5) { filters.push('atempo=0.5'); tempo /= 0.5; }
-    filters.push('atempo=' + tempo.toFixed(8));
+    // A duration target must never turn a short lecture into slow-motion speech.
+    // Keep the original content and pitch, allowing at most an 8% slowdown.
+    const tempo = Math.max(0.92, seconds / minimumSeconds);
+    const filters = ['atempo=' + tempo.toFixed(8)];
     await run('ffmpeg', [
       '-loglevel','error','-y','-i',source,'-af',filters.join(','),
       '-codec:a','libmp3lame','-b:a','192k','-ar','48000','-ac','1',output
@@ -224,7 +222,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     const cacheInput = cacheVersion ? { ...input, cacheVersion } : input;
     const unpacedHash = digest(cacheInput);
     const hash = digest(minimumSeconds ? {
-      ...cacheInput, minimumSeconds,
+      ...cacheInput, minimumSeconds, pacingVersion:'natural-bounded-v2',
       ...(bundledSource ? { sourceAudioSha256:manifest[id].audioSha256 } : {})
     } : cacheInput);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');

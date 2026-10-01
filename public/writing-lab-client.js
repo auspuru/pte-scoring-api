@@ -146,7 +146,7 @@
         const all=await api('/attempts');
         if(!target.isConnected) return;
         const history=all.filter(a=>a.kind===historyKind);
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 practice estimate')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 '+(a.provisional?'provisional estimate':'practice estimate'))):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
   }
@@ -452,21 +452,21 @@
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>'+(summary.provisional?'Provisional practice estimate':'Practice estimate')+'</h2><p>'+(scored?(summary.provisional?'Includes a basic fallback assessment. Retry the flagged SST review before using this score to judge progress.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':(g.provisional?' · provisional estimate':' · estimated score'))+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
   function reviewCard(q,i) {
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
-    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
-      (r? (r.gated?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
+    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(report.provisional(r)?'Provisional estimate ':'Estimate ')+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p>'+ (q.type==='sst'&&r?'':'<h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>')+
+      (r? (report.provisional(r)?'<div class="assessment-provisional" role="status"><strong>Provisional assessment</strong><p>This used basic local checks because the full review was unavailable. Language and spelling have not been fully verified.</p>'+(q.type==='sst'?'<button class="secondary" data-review-retry="'+i+'">Retry SST review</button>':'')+'</div>':'')+(q.type==='sst'?report.sstReview(q,attempt.answers[i]||'',r):'')+(r.gated?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.score90(r.total,r.maximum)) : '')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+(r.wordFeedback||[]).map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
-      '<table class="trait-table"><thead><tr><th>Criterion</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+'</td><td>'+esc(r.feedback[k]||(r.gated?'No further scoring feedback when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>'+
+      '<details class="assessment-details"><summary>Why these marks? View all feedback · '+r.total+'/'+r.maximum+' native marks</summary><table class="trait-table"><thead><tr><th>Criterion</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+' <strong>'+r.scores[k]+'/'+r.maxima[k]+'</strong></td><td>'+esc(r.feedback[k]||(r.gated?'No further scoring feedback when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>'+
       ((r.strengths||[]).length?'<h3>What worked well</h3><ul>'+(r.strengths||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
       (q.type==='essay'&&window.EssayNextSteps?window.EssayNextSteps.render({...r,essayText:attempt.answers[i]||'',questionText:q.text}):'')+
       ((r.improvements||[]).length?'<h3>What to improve</h3><ul>'+(r.improvements||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
-      ((r.errors||[]).length?'<h3>Language corrections</h3><ul>'+(r.errors||[]).map(e=>'<li><b>'+esc(e.phrase)+'</b> → '+esc(e.correction)+'<br>'+esc(e.explanation)+'</li>').join('')+'</ul>':''):'')+
+      ((r.errors||[]).length?'<h3>Language corrections</h3><ul>'+(r.errors||[]).map(e=>'<li><b>'+esc(e.phrase)+'</b> → '+esc(e.correction)+'<br>'+esc(e.explanation)+'</li>').join('')+'</ul>':'')+'</details>':'')+
       '<details><summary>Review '+(listening?'recording, transcript and key points':'question and key points')+'</summary>'+(listening?'<audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio>':'')+'<div class="response">'+esc(q.text)+'</div>'+((q.keyPoints||[]).length?'<ul>'+(q.keyPoints||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+'</details><details><summary>'+(dictation?'View correct sentence':'View sample '+(q.type==='essay'?'essay':'summary'))+'</summary>'+(dictation?'':'')+'<div class="response sample">'+esc(q.sample)+'</div><p class="muted">'+count(q.sample)+' words</p></details></article>';
   }
   async function scoreRemaining() {
@@ -568,6 +568,17 @@
   });
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
+    if(b.dataset.reviewRetry !== undefined) {
+      const index=Number(b.dataset.reviewRetry),id=attempt?.id;
+      if(!id||grading.has(id)||!Number.isInteger(index)||!report.provisional(attempt.results[index]))return;
+      grading.add(id);b.disabled=true;notify('Reviewing your saved summary…');
+      try {
+        const result=await api('/attempts/'+id+'/score/'+index,{retry:true});
+        if(attempt?.id===id){attempt.results[index]=result;renderResults();notify(report.provisional(result)?'The full review is still unavailable. Your saved response is safe.':'Your assessment has been updated.');}
+      }catch(e){notify(e.message);b.disabled=false;}
+      finally{grading.delete(id);}
+      return;
+    }
     if(b.disabled)return;
     if(b.dataset.libraryPage!==undefined){libraryPage=Math.max(0,Number(b.dataset.libraryPage));return hub(view);}
     if(b.dataset.practiceMove!==undefined)return movePractice(Number(b.dataset.practiceMove),b);
