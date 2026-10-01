@@ -136,7 +136,9 @@ function extractAssessment(json) {
     return {
       word:String(word?.Word||'').trim(),
       accuracy:round1(detail.AccuracyScore),
-      errorType:String(detail.ErrorType||'None')
+      errorType:String(detail.ErrorType||'None'),
+      ...(word?.Offset != null && word?.Duration != null && Number.isFinite(Number(word.Offset)) && Number(word.Offset) >= 0 && Number.isFinite(Number(word.Duration)) && Number(word.Duration) > 0
+        ? { startSeconds:Number(word.Offset)/10000000, durationSeconds:Number(word.Duration)/10000000 } : {})
     };
   }).filter(word=>word.word);
   return {
@@ -290,6 +292,7 @@ async function assessRecording(recording,{
     }
     if(!reference)continue;
     const assessed=await azureAssess(wav,reference,{apiKey,endpoint,locale,scripted,request});
+    for (const word of assessed.words || []) if (Number.isFinite(word.startSeconds)) word.startSeconds += totalSeconds - seconds;
     assessed.weight=seconds;
     results.push(assessed);
   }

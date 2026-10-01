@@ -53,7 +53,9 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
     const bytes = await fs.readFile(file);
     if (q.type === 'sst' && manifest[q.id].seconds < 60) {
       assert.notEqual(file, original);
-      assert(Math.abs(await duration(file) - 60) < 0.25, q.id + ' should play for approximately one minute');
+      const seconds=await duration(file);
+      assert(seconds <= manifest[q.id].seconds / 0.92 + 0.25, q.id + ' must not become slow-motion speech');
+      assert(seconds >= manifest[q.id].seconds - 0.25, q.id + ' must not be sped up');
       const inspected = inspectMp3(bytes);
       assert.equal(inspected.valid, true);
       assert.equal(inspected.sampleRate, 48000);
@@ -203,7 +205,7 @@ test('SST pacing reuses existing neural masters without new speech, repeated pro
   const [file,sameFile] = await Promise.all([paced.get(ids[0]),paced.get(ids[0])]);
   assert.equal(file,sameFile,'Concurrent requests must reuse the same processed recording');
   assert.notEqual(file,originalFiles[0]);
-  assert(Math.abs(await duration(file)-60)<0.25);
+  assert(await duration(file) <= manifest[short.id].seconds / 0.92 + 0.25,'A short lecture must stay near its natural duration');
   const bytes = await fs.readFile(file);
   assert.equal(await paced.get(ids[0]),file);
   assert.deepEqual(await fs.readFile(file),bytes,'Repeat playback must not stretch the recording again');

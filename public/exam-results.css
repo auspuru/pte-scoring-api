@@ -165,3 +165,24 @@
   .reading-results-view .reading-word-feedback-close { min-width: 44px; }
   .reading-results-view .reading-inline-answer { vertical-align: middle; }
 }
+/* Evidence-based SST review and provisional assessment state. */
+.sst-next-step,.assessment-provisional{padding:20px 24px;margin:20px 0;border-radius:16px;background:#edf3ff;border:1px solid #c6d7f4;color:#152e57}
+.assessment-provisional{background:#fff7e8;border-color:#e5c88e;color:#654817}
+.sst-next-step h3,.assessment-provisional p{margin-top:0}
+.sst-comparison{margin:24px 0}
+.sst-comparison-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.sst-comparison .response{white-space:pre-wrap;line-height:1.8;overflow-wrap:anywhere;max-height:440px;overflow:auto}
+.sst-evidence-captured{background:#d9f2e2;color:#12452c}
+.sst-evidence-missing{background:#fff0c7;color:#694600}
+.sst-evidence-misunderstood{background:#ffe1df;color:#802b24}
+.sst-comparison mark{border-radius:3px;padding:1px 2px}
+.sst-coverage-list{list-style:none;padding:0;display:grid;gap:12px}
+.sst-coverage-list li{padding:14px 16px;border:1px solid #d8e1ed;border-radius:12px}
+.sst-status{display:inline-block;padding:3px 8px;border-radius:6px;margin-right:10px;font-size:12px;text-transform:capitalize}
+.sst-coverage-list p{margin:8px 0 0}
+.assessment-details{margin:20px 0;border:1px solid #d8e1ed;border-radius:12px;padding:16px}
+.assessment-details summary{font-weight:650;cursor:pointer;min-height:32px}
+.speaking-next-step{padding:18px 22px;margin:18px 0;background:#edf3ff;border:1px solid #c6d7f4;border-radius:16px}
+.speaking-next-step h4{margin:0 0 8px}
+.speaking-next-step p{margin:0;line-height:1.7}
+@media(max-width:760px){.sst-comparison-columns{grid-template-columns:1fr}.sst-next-step,.assessment-provisional{padding:16px}.sst-comparison .response{max-height:340px}}
