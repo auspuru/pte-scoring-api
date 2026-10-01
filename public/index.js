@@ -12466,11 +12466,11 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=20261001-hiw-score2', 'reading mock tools'],
+      ['reading-mock-tools.js?v=20261001-mock-input2', 'reading mock tools'],
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=20261001-hiw-score2', 'reading review'],
-      ['reading-practice.js?v=20261001-hiw-score2', 'reading practice']
+      ['reading-practice.js?v=20261001-mock-input2', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261001-protected-mock1', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261001-mock-input2', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;

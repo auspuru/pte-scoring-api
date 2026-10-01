@@ -214,7 +214,6 @@
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
     shell.classList.add('exam-mode');
-    setMockMode(attempt.kind==='mock');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q);
     const instruction=q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.';
     root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?'Writing sectional mock':'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
@@ -223,12 +222,15 @@
     document.getElementById('answer').addEventListener('input',onInput);
     document.getElementById('notes')?.addEventListener('input',onInput);
     document.getElementById('next').onclick=nextQuestion;
+    setMockMode(attempt.kind==='mock');
     if(listening) setupAudio(q); else stopAudio();
     timer=setInterval(tick,500); tick();
     root.focus(); window.scrollTo(0,0);
   }
   function onInput() {
     if(!attempt || attempt.status!=='active') return;
+    attempt.answers[attempt.index]=document.getElementById('answer').value;
+    attempt.notes=document.getElementById('notes')?.value || '';
     attempt.revisions[attempt.index]++;
     document.getElementById('word-count').textContent=count(document.getElementById('answer').value);
     writeDraft(); clearTimeout(saveTimer); saveTimer=setTimeout(()=>saveAnswer(false),650);
@@ -286,6 +288,13 @@
     document.getElementById('answer').readOnly=true;
     try { await saveAnswer(true); }
     catch(e) { notify(e.message); moving=false; if(button.isConnected) {button.disabled=false;document.getElementById('answer').readOnly=false;} }
+    finally {
+      if(attempt?.id===originalId && attempt.index===originalIndex && attempt.status==='active') {
+        moving=false;
+        const editor=document.getElementById('answer');if(editor)editor.readOnly=false;
+        if(button.isConnected)button.disabled=saveConflict;
+      }
+    }
   }
   async function tick() {
     if(!attempt || attempt.status!=='active') return;

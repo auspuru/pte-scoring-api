@@ -425,11 +425,17 @@
       ${review?explanation(q,a):''}
       <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
   }
-  function playback(q) { return mock.audioPlayback(q, !exam.isExam(state.session)); }
+  function playback(q) { return { ...mock.audioPlayback(q), hideLabels:exam.isExam(state.session) }; }
+  function displayAudioState(item, hideLabels) {
+    if (!item || !hideLabels) return item;
+    const messages = { playing:'Playing. Follow the question on screen.', complete:'Audio complete. Your answer is ready to submit.' };
+    return messages[item.status] ? { ...item, message:messages[item.status] } : item;
+  }
   function audioHTML(q) {
-    const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
+    const s = state.session, item = displayAudioState(s.audioStates?.[q.uid],exam.isExam(s)), locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
     const profile = playback(q);
-    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(item?.message || (profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>`;
+    const statusMessage = item?.message;
+    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(statusMessage || (profile.hideLabels || profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>`;
   }
   function prepareAudio(q) {
     const s=state?.session;
@@ -540,7 +546,7 @@
     const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
     const retryable=pending.some(item=>s.assessments[item.q.uid]?.status!=='working');
     const retry=pending.length?'<button class="portal-button" data-action="retry-all-swt" '+(retryable?'':'disabled')+'>'+(retryable?'Retry pending SWT assessments':'Assessing SWT responses…')+'</button>':'';
-    const question=item=>review.question(item.q,s.answers[item.q.uid],s.assessments[item.q.uid],s.audioStates[item.q.uid],item.points,item.index,s.questions.length,taskLabels[item.q.type],reviewView);
+    const question=item=>review.question(item.q,s.answers[item.q.uid],s.assessments[item.q.uid],displayAudioState(s.audioStates[item.q.uid],exam.isExam(s)),item.points,item.index,s.questions.length,taskLabels[item.q.type],reviewView);
     const existing=host.querySelector('[data-review-session="'+encodeURIComponent(s.id)+'"]');
     if(existing){
       // Keep filters, scroll and audio controls in place as SWT assessments arrive.

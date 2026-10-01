@@ -27,6 +27,7 @@
       if (guard) return;
       guard = doc.createElement('dialog'); guard.id = 'portal-exam-guard'; guard.className = 'portal-exam-guard';
       guard.oncancel = event => event.preventDefault();
+      guard.setAttribute('tabindex','-1');
       guard.setAttribute('role','dialog'); guard.setAttribute('aria-modal','true'); guard.setAttribute('aria-labelledby','portal-exam-guard-title');
       const card = doc.createElement('div'); card.className = 'portal-exam-guard-card';
       heading = doc.createElement('h2'); heading.id = 'portal-exam-guard-title';
@@ -53,7 +54,7 @@
             heading.textContent = 'Preparing your mock…'; message.textContent = 'Keep this window open. Your timer starts when the questions are ready.';
             enter.hidden = true; cancel.hidden = true;
           } else {
-            current.locked = false; guard.close(); guard.hidden = true; current.pane.inert = current.inert;
+            unlock(current);
             current.pane.focus({ preventScroll:true });
           }
           current.options.onResume?.();
@@ -73,10 +74,17 @@
       enter.textContent = pending ? 'Enter fullscreen and begin mock' : 'Return to fullscreen';
       enter.hidden = false;
       cancel.hidden = !pending; error.textContent = ''; guard.hidden = false;
-      if(!guard.open)guard.showModal();
+      if (!guard.open) guard.showModal();
       if (record && !pending) emit(reason);
       current.options.onLock?.();
       enter.focus({ preventScroll:true });
+    }
+    function unlock(current) {
+      current.locked = false;
+      current.pane.inert = false;
+      // Hiding an open native modal still blocks response fields. Always
+      // close it when the runner starts, rerenders or resumes unlocked.
+      if (guard) { guard.close(); guard.hidden = true; }
     }
     function isolate() {
       if (!active) return;
@@ -121,16 +129,16 @@
       if (!enabled) { if (active?.owner === owner) reset(); return; }
       if (!pane || pane.hidden || (active && active.owner !== owner)) return;
       if (active?.pane === pane) {
-        if (active.options?.pending && !options?.pending) {
-          active.locked = false; pane.inert = active.inert; if(guard){guard.close();guard.hidden = true;}
-        }
+        const ready = active.options?.pending && !options?.pending;
         active.options = options;
+        if (ready || !active.locked) unlock(active);
         if(options?.pending) { active.locked = false; lock('fullscreen-required',false); }
         if (options && !options.pending && (!fullscreen() || !focused())) lock('fullscreen-required');
         return;
       }
       reset();
       active = { owner, pane, options, inert:!!pane.inert, tabindex:pane.getAttribute('tabindex') };
+      pane.inert = false;
       doc.body.classList.remove('portal-menu-open');
       doc.getElementById('portalMenuToggle')?.setAttribute('aria-expanded', 'false');
       doc.body.classList.add('portal-exam-active');
@@ -178,7 +186,12 @@
       return true;
     }
     doc.addEventListener?.('visibilitychange', () => { if (doc.hidden) lock('tab-hidden'); });
-    win.addEventListener?.('blur', () => lock('window-blur'));
+    win.addEventListener?.('blur', () => { if (!focused()) lock('window-blur'); });
+    doc.addEventListener?.('focusin', event => {
+      if (active?.locked && !guard.contains(event.target)) {
+        (enter.hidden ? guard : enter).focus({ preventScroll:true });
+      }
+    }, true);
     win.addEventListener?.('beforeunload', () => { if(active?.options && !active.options.pending && !active.locked) emit('fullscreen-required'); });
     doc.addEventListener?.('fullscreenchange', () => { if (!fullscreen()) lock('fullscreen-exit'); });
     for (const type of ['copy','cut','paste']) doc.addEventListener?.(type, event => {
@@ -195,6 +208,12 @@
     doc.addEventListener?.('keydown', event => {
       if (!active?.options) return;
       const key=String(event.key).toLowerCase();
+      if (active.locked && key === 'tab') {
+        const buttons = [enter,cancel].filter(button => !button.hidden && !button.disabled);
+        const index = buttons.indexOf(doc.activeElement);
+        const target = buttons.length ? buttons[(index + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length] : guard;
+        event.preventDefault(); target.focus({ preventScroll:true }); return;
+      }
       if (['f5','f12','contextmenu'].includes(key) || ((event.ctrlKey || event.metaKey) && ['l','t','n','w','r','u','p','s'].includes(key))) {
         event.preventDefault(); event.stopImmediatePropagation();
       }

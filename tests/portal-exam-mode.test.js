@@ -78,11 +78,11 @@ test('Standalone Writing Lab preserves its final submission dialog and existing 
 
 test('Fullscreen preflight holds the questions until the runner starts and may be cancelled before starting', async () => {
   const h=harness(),ready=h.mode.prepare('reading',h.reading),guard=h.guard(),buttons=guard.children[0].children.filter(n=>n.tagName==='BUTTON');
-  assert(h.mode.isLocked());assert(h.reading.inert);assert(guard.open);
+  assert(h.mode.isLocked());assert(h.reading.inert);assert(!guard.hidden);
   await buttons[0].onclick();assert.equal(await ready,true);
-  assert.equal(h.doc.fullscreenElement,h.doc.documentElement);assert(guard.open);assert(h.reading.inert);
+  assert.equal(h.doc.fullscreenElement,h.doc.documentElement);assert(!guard.hidden);assert(h.reading.inert);
   h.mode.set('reading',true,h.reading,{onEvent(){}});
-  assert(!h.mode.isLocked());assert(!guard.open);assert(!h.reading.inert);
+  assert(!h.mode.isLocked());assert(guard.hidden);assert(!h.reading.inert);
   h.mode.reset();assert.equal(h.doc.fullscreenElement,null);
   const second=h.mode.prepare('reading',h.reading);buttons[1].onclick();assert.equal(await second,false);assert(!h.mode.isActive());
 });
@@ -97,7 +97,25 @@ test('Tab or window departures lock the questions, record one interruption and r
   h.doc.hidden=false;h.doc.focused=true;h.fire('focus');assert(h.mode.isLocked());
   await enter.onclick();assert(!h.mode.isLocked());assert(!h.reading.inert);assert.equal(h.doc.fullscreenElement,h.doc.documentElement);
   h.doc.fullscreenElement=null;h.fire('fullscreenchange');assert.equal(records.length,2);assert.equal(records[1].reason,'fullscreen-exit');
-  h.mode.set('reading',false);assert(!h.reading.inert);assert(!h.guard().open);assert(!h.fire('contextmenu').prevented);
+  h.mode.set('reading',false);assert(!h.reading.inert);assert(h.guard().hidden);assert(!h.fire('contextmenu').prevented);
+});
+
+test('The lock overlay traps focus only while visible and leaves running response fields editable',async()=>{
+  const h=harness(),answer=h.node('answer',h.writing,'TEXTAREA'),records=[];
+  h.writing.inert=true;h.doc.fullscreenElement=h.doc.documentElement;
+  h.mode.set('writing',true,h.writing,{onEvent:event=>records.push(event)});
+  assert(!h.writing.inert);answer.focus();
+  assert(!h.fire('keydown',{key:'a',target:answer}).prevented);
+  h.fire('blur');assert(!h.mode.isLocked());assert.equal(records.length,0);
+  h.doc.focused=false;h.fire('blur');
+  const guard=h.guard(),enter=guard.children[0].children.find(n=>n.tagName==='BUTTON');
+  assert.equal(guard.tagName,'DIALOG');assert(guard.open);assert(!guard.hidden);assert(h.writing.inert);
+  answer.focus();h.fire('focusin',{target:answer});assert.equal(h.doc.activeElement,enter);
+  assert(h.fire('keydown',{key:'Tab'}).prevented);assert.equal(h.doc.activeElement,enter);
+  h.doc.focused=true;await enter.onclick();
+  assert(guard.hidden);assert(!guard.open);assert(!h.writing.inert);assert(!h.mode.isLocked());
+  answer.focus();h.fire('focusin',{target:answer});assert.equal(h.doc.activeElement,answer);
+  h.mode.reset();assert(h.writing.inert);
 });
 
 test('Unavailable or rejected fullscreen cannot bypass preflight', async () => {

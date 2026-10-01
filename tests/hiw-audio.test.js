@@ -308,14 +308,32 @@ async function mockHiwClient(questionId) {
   return h;
 }
 
-test('Mock HIW uses clean single-speaker speech without background, chirps, phone rings or their labels',async()=>{
+test('Mock HIW keeps both voices, background, chirps and phone rings while hiding their labels',async()=>{
   const h=await mockHiwClient();
   const s=h.snapshot().session,q=s.questions[s.index];
   assert.doesNotMatch(h.host.innerHTML,/Office typing|Woodpecker|phone ring|Two speakers/);
-  h.countdown();assert.equal(h.utterances.length,1);assert.equal(h.utterances[0].text,q.audioText);
-  h.utterances[0].onstart();h.fire(700);h.fire(4500);assert.equal(h.nodes.length,0);
-  h.utterances[0].onend();assert.equal(h.snapshot().session.audioStates[q.uid].status,'complete');
+  h.countdown();
+  for(let i=0;i<h.utterances.length;i++) {
+    h.utterances[i].onstart();h.fire(700);h.fire(4500);
+    assert.doesNotMatch(h.host.innerHTML,/Office typing|Woodpecker|phone ring|Two speakers/);
+    h.utterances[i].onend();
+  }
+  assert(h.utterances.length>=2);assert.notEqual(h.utterances[0].voice.name,h.utterances[1].voice.name);
+  assert.equal(h.utterances.map(u=>u.text).join(' ').replace(/\s+/g,' ').trim(),q.audioText.replace(/\s+/g,' ').trim());
+  assert(h.nodes.some(n=>n.kind==='buffer'&&n.started));
+  assert(h.nodes.some(n=>n.kind==='oscillator'&&n.started&&n.frequency.values.includes(1700)));
+  assert(h.nodes.some(n=>n.kind==='oscillator'&&n.started&&n.frequency.values.includes(880)));
+  assert.equal(h.snapshot().session.audioStates[q.uid].status,'complete');
+  assert.doesNotMatch(h.host.innerHTML,/Office typing|Woodpecker|phone ring|Two speakers/);
   h.ctx.ReadingPractice.leave();
+});
+
+test('Mock status hides sound descriptions even when Web Audio is unavailable',()=>{
+  const h=harness();delete h.env.AudioContext;
+  h.speaker.play('mock','First sentence. Second sentence.',{...tools.audioPlayback({type:'hiw'}),hideLabels:true});
+  for(let i=0;i<h.utterances.length;i++){h.utterances[i].onstart();h.utterances[i].onend();}
+  assert(h.events.some(e=>e[1]==='playing'));assert.equal(h.events.at(-1)[1],'complete');
+  assert(h.events.every(e=>!/background|Woodpecker|phone ring|speakers/i.test(e[2])));
 });
 
 test('Submitting six saved HIW selections after interrupted playback keeps 6/6 in the results',async()=>{

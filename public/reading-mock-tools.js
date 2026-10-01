@@ -458,7 +458,7 @@
         if (startTimeout !== null) env.clearTimeout(startTimeout);
         startTimeout = env.setTimeout(() => finish('error', 'Audio did not start. Select Play audio to enable playback in this browser.'), 8000);
       };
-      const playingMessage = () => effectsUnavailable ? 'Playing speech. Practice background sound is unavailable in this browser.' :
+      const playingMessage = () => options.hideLabels ? 'Playing. Follow the question on screen.' : effectsUnavailable ? 'Playing speech. Practice background sound is unavailable in this browser.' :
         variant === 'mixed' ? 'Playing: ' + options.label + '.' :
         variant === 'two-speakers' ? 'Playing. Follow both speakers.' :
         variant === 'sound-cue' ? 'Playing with brief woodpecker-style chirp cues.' :
@@ -491,7 +491,7 @@
           if (!current()) return;
           if (!partStarted) return finish('error', 'Audio did not start. Check your sound and try again.');
           if (cursor < utterances.length) return playNext();
-          finish('complete', effectsUnavailable ? 'Audio complete. Practice background sound was unavailable in this browser.' : 'Audio complete. Your answer is ready to submit.');
+          finish('complete', effectsUnavailable && !options.hideLabels ? 'Audio complete. Practice background sound was unavailable in this browser.' : 'Audio complete. Your answer is ready to submit.');
         };
         utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
         try { env.speechSynthesis.speak(utterance); } catch (_) { finish('error', 'Audio could not start. Try another browser with an English voice.'); }

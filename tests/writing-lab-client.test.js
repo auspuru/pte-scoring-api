@@ -7,30 +7,39 @@ const path = require('node:path');
 const report = require('../public/writing-lab-report');
 const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
-const { present } = require('../writing-lab');
+const { present, advance } = require('../writing-lab');
+const { createController } = require('../public/portal-exam-mode');
 const { installWritingLab } = require('../writing-lab');
 const express = require('express');
 const os = require('node:os');
 const client = fs.readFileSync(path.join(__dirname, '../public/writing-lab-client.js'), 'utf8');
-function harness({ audioReadyState = 4 } = {}) {
+function harness({ audioReadyState = 4, protectedMode = false, portal = false } = {}) {
   const nodes = new Map(), intervals = new Map(), recordings = [], requests = [], memory = new Map();
   let now = 100000, seq = 0;
   class Element {
-    constructor(id) { this.id=id; this.parentElement=this; this.value=''; this.isConnected=true; this.textContent=''; this.disabled=false; this.classes=new Set(); this.events={};
-      this.classList={add:c=>this.classes.add(c),remove:c=>this.classes.delete(c),toggle:c=>this.classes.has(c)?this.classes.delete(c):this.classes.add(c)}; }
+    constructor(id,tagName='DIV') { this.id=id; this.tagName=tagName; this.parentElement=null; this.children=[]; this.attrs=new Map();this.inert=false;this.hidden=false;this.value=''; this.isConnected=true; this.textContent=''; this.disabled=false;this.readOnly=false; this.classes=new Set(); this.events={};
+      this.classList={add:c=>this.classes.add(c),remove:c=>this.classes.delete(c),contains:c=>this.classes.has(c),toggle:c=>this.classes.has(c)?this.classes.delete(c):this.classes.add(c)}; }
     addEventListener(name,fn) { this.events[name]=fn; }
-    focus() {} close() {} showModal() {}
+    appendChild(child){child.parentElement=this;this.children.push(child);}
+    contains(target){return target===this||this.children.some(child=>child.contains(target));}
+    getAttribute(name){return this.attrs.get(name)??null;}
+    setAttribute(name,value){this.attrs.set(name,value);}
+    removeAttribute(name){this.attrs.delete(name);}
+    focus() {for(let n=this;n;n=n.parentElement)if(n.inert||n.hidden)return;document.activeElement=this;}
+    close() {this.open=false;this.onclose?.();} showModal() {this.open=true;}
     set innerHTML(html) {
       this.html=html;
       if(this.id!=='lab') return;
-      for(const [id,node] of nodes) if(!['lab','notice','confirm-dialog'].includes(id)) { node.isConnected=false; nodes.delete(id); }
-      for(const match of html.matchAll(/id="([^"]+)"/g)) nodes.set(match[1],new Element(match[1]));
+      this.children=[];
+      for(const [id,node] of nodes) if(!['lab','notice','writingLabScreen'].includes(id)&&!id.startsWith('confirm-')) { node.isConnected=false; nodes.delete(id); }
+      for(const match of html.matchAll(/<([a-z]+)[^>]*id="([^"]+)"/g)) {const node=new Element(match[2],match[1].toUpperCase());nodes.set(match[2],node);this.appendChild(node);}
       for(const match of html.matchAll(/<[^>]+id="([^"]+)"[^>]*>/g)) if(/\bdisabled\b/.test(match[0])) nodes.get(match[1]).disabled=true;
       for(const match of html.matchAll(/<textarea[^>]*id="([^"]+)"[^>]*>([^]*?)<\/textarea>/g)) nodes.get(match[1]).value=match[2];
     }
     get innerHTML() { return this.html||''; }
   }
-  for(const id of ['lab','notice','confirm-dialog']) nodes.set(id,new Element(id));
+  for(const id of ['lab','notice','confirm-dialog']) nodes.set(id,new Element(id,id==='confirm-dialog'?'DIALOG':'DIV'));
+  if(portal)nodes.set('writingLabScreen',new Element('writingLabScreen'));
   class Audio {
     constructor(url) { this.src=url; this.readyState=audioReadyState; this.currentTime=0; this.duration=80; this.paused=true; this.ended=false; this.plays=0; this.loads=0; recordings.push(this); }
     async play() { this.paused=false; this.plays++; }
@@ -38,7 +47,14 @@ function harness({ audioReadyState = 4 } = {}) {
     load() { this.loads++; this.error=null; this.readyState=0; }
   }
   class Clock extends Date { static now() { return now; } }
-  const document={getElementById:id=>nodes.get(id)||null,body:new Element('body'),hidden:false,events:{},addEventListener(name,fn){this.events[name]=fn;}};
+  const listen=(events,name,fn)=>{const prior=events[name];events[name]=prior?e=>{prior(e);fn(e);}:fn;};
+  const document={getElementById:id=>nodes.get(id)||null,body:new Element('body'),documentElement:new Element('html'),hidden:false,focused:true,hasFocus(){return this.focused;},events:{},addEventListener(name,fn){listen(this.events,name,fn);},createElement:tag=>new Element('',tag.toUpperCase())};
+  document.documentElement.appendChild(document.body);
+  const shell=nodes.get('writingLabScreen')||document.body;if(portal)document.body.appendChild(shell);
+  for(const id of ['lab','notice','confirm-dialog'])shell.appendChild(nodes.get(id));
+  if(protectedMode)for(const id of ['confirm-title','confirm-text','confirm-ok','confirm-cancel']) {const node=new Element(id,id.endsWith('ok')||id.endsWith('cancel')?'BUTTON':'DIV');nodes.set(id,node);nodes.get('confirm-dialog').appendChild(node);}
+  document.documentElement.requestFullscreen=async()=>{document.fullscreenElement=document.documentElement;document.events.fullscreenchange?.({});};
+  document.exitFullscreen=async()=>{document.fullscreenElement=null;document.events.fullscreenchange?.({});};
   const context={document,Audio,Date:Clock,console,AbortSignal,crypto:require('node:crypto').webcrypto,
     location:{pathname:'/writing-mocks',origin:'https://practice.test'},navigator:{},
     localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},
@@ -50,10 +66,11 @@ function harness({ audioReadyState = 4 } = {}) {
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
+  context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
   vm.createContext(context);
   const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
+  if(protectedMode)context.window.PortalExamMode=createController(document,context.window);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
     countdown:async()=>{for(let i=0;i<3;i++) for(const task of [...intervals.values()]) if(task.ms===1000) await task.fn();}};
@@ -65,6 +82,50 @@ function attempt(index=3) {
 }
 function open(h,a) { a.serverNow=100000;h.hooks.set(a);h.hooks.showAttempt(); }
 async function flush() { for(let i=0;i<5;i++) await new Promise(resolve=>setImmediate(resolve)); }
+
+test('The real protected controller allows typing and saving in every Writing mock task, including dictations',async()=>{
+  for(const portal of [false,true]) {
+    const h=harness({protectedMode:true,portal}),mode=h.context.window.PortalExamMode;
+    const server=attempt(0),events=[];h.hooks.setCatalog({mocks:bank.mocks,spoken:[],dictation:[]});
+    h.context.fetch=async(url,options={})=>{
+      const body=options.body?JSON.parse(options.body):{};h.requests.push({url,body});
+      if(url.endsWith('/answer')) {
+        server.answers[body.index]=body.text;server.revisions[body.index]=body.revision;server.notes=body.notes;
+        if(body.next)advance(server,100000,'Submitted');
+      }
+      if(url.endsWith('/integrity')){events.push(...body.events);return {ok:true,json:async()=>({protected:true,events})};}
+      return {ok:true,json:async()=>({...structuredClone(server),serverNow:100000})};
+    };
+    const starting=h.hooks.start(bank.mocks[0].id,{disabled:false});
+    h.nodes.get('confirm-ok').onclick();await flush();
+    const guard=h.document.body.children.find(n=>n.id==='portal-exam-guard'),enter=guard.children[0].children.find(n=>n.tagName==='BUTTON');
+    assert(mode.isLocked());await enter.onclick();await starting;
+    const typed=new Set();
+    for(let index=0;index<server.questions.length;index++) {
+      const question=server.questions[index],editor=h.nodes.get('answer'),text='My response for '+question.type+' '+index;
+      assert.equal(h.hooks.current().index,index);assert(!mode.isLocked());assert(guard.hidden);
+      editor.focus();assert.equal(h.document.activeElement,editor);assert(!editor.disabled);assert(!editor.readOnly);
+      let blocked=false;h.document.events.keydown({key:'a',target:editor,preventDefault(){blocked=true;},stopImmediatePropagation(){}});assert(!blocked);
+      editor.value=text;editor.events.input();typed.add(question.type);
+      if(question.type==='sst') {
+        h.document.focused=false;h.context.window.events.blur({});assert(mode.isLocked());assert(!guard.hidden);
+        h.document.focused=true;await enter.onclick();
+        assert.equal(h.nodes.get('answer').value,text);h.nodes.get('answer').focus();assert.equal(h.document.activeElement,h.nodes.get('answer'));
+      }
+      await h.hooks.saveAnswer(false);assert.equal(server.answers[index],text);
+      if(index<server.questions.length-1)await h.nodes.get('next').onclick();
+    }
+    assert.deepEqual([...typed].sort(),['essay','sst','swt','wfd']);assert.equal(events.length,1);
+    mode.reset();
+  }
+});
+
+test('A Next save conflict keeps the response editable while preserving the draft and blocking advancement',async()=>{
+  const h=harness();open(h,attempt(0));const editor=h.nodes.get('answer');editor.value='My unsaved response';editor.events.input();
+  const conflict=attempt(0);conflict.answers[0]='A newer response';conflict.revisions[0]=20;h.context.reply=conflict;
+  await h.nodes.get('next').onclick();
+  assert.equal(h.hooks.current().index,0);assert.equal(editor.value,'My unsaved response');assert(!editor.readOnly);assert(h.nodes.get('next').disabled);
+});
 
 test('Writing mock creation waits for protected preflight and cancelling starts no server attempt',async()=>{
   for(const accepted of [false,true]) {

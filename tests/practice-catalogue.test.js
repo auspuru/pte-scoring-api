@@ -189,11 +189,15 @@ test('Original prediction-pattern FIB questions are exposed without copying the 
 });
 
 
-test('Leaving Reading parks timed sessions instead of letting clocks run away', () => {
+test('Leaving Reading parks practice timers while protected mocks keep their deadline', () => {
   const source=fs.readFileSync(require.resolve('../public/reading-practice'),'utf8');
-  assert.match(source,/function parkSession/);
-  assert.match(source,/pausedRemainingSeconds/);
-  assert.match(source,/function resumeParkedSession/);
   assert.match(source,/function leave\(\).*parkSession\(\)/);
-  assert.doesNotMatch(source,/timer continues/i);
+  const implementation=source.slice(source.indexOf('  function parkSession('),source.indexOf('  function resumeParkedSession(')).trim();
+  const park=require('node:vm').runInNewContext('('+implementation+')',{Date:{now:()=>30000},timing:{current:session=>session.stage}});
+  const practice={deadline:60000,stage:{deadline:60000}};
+  assert.equal(park(practice),true);assert.equal(practice.deadline,null);assert.equal(practice.pausedRemainingSeconds,30);
+  assert.equal(practice.stage.deadline,null);assert.equal(practice.stage.pausedRemainingSeconds,30);
+  const protectedMock={deadline:60000,stage:{deadline:60000},integrity:{protected:true}};
+  assert.equal(park(protectedMock),false);assert.equal(protectedMock.deadline,60000);assert.equal(protectedMock.stage.deadline,60000);
+  assert.equal(protectedMock.pausedRemainingSeconds,undefined);
 });
