@@ -115,6 +115,35 @@ async function normalizeMp3(bytes, input={}) {
   }
 }
 
+async function stretchMp3(bytes, minimumSeconds) {
+  const stem = path.join(os.tmpdir(), 'ipt-stretch-audio-' + randomUUID());
+  const source = stem + '-source.mp3', output = stem + '.mp3';
+  try {
+    await fs.writeFile(source, bytes);
+    const { stdout } = await run('ffprobe', [
+      '-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',source
+    ], { timeout:15000, maxBuffer:1024*1024 });
+    const seconds = Number.parseFloat(stdout);
+    if (!Number.isFinite(seconds) || seconds <= 0) throw Error('Recording duration could not be measured.');
+    if (seconds >= minimumSeconds) return bytes;
+    // atempo stretches the existing speech while preserving pitch. Chaining
+    // keeps each factor within ffmpeg's supported range, even for short clips.
+    const filters = [];
+    let tempo = seconds / minimumSeconds;
+    while (tempo < 0.5) { filters.push('atempo=0.5'); tempo /= 0.5; }
+    filters.push('atempo=' + tempo.toFixed(8));
+    await run('ffmpeg', [
+      '-loglevel','error','-y','-i',source,'-af',filters.join(','),
+      '-codec:a','libmp3lame','-b:a','192k','-ar','48000','-ac','1',output
+    ], { timeout:120000, maxBuffer:10*1024*1024 });
+    const stretched = await fs.readFile(output);
+    if (stretched.length < 1000) throw Error('Stretched narration output was empty.');
+    return stretched;
+  } finally {
+    await Promise.allSettled([fs.unlink(source), fs.unlink(output)]);
+  }
+}
+
 async function createLocalNarration(input) {
   const stem = path.join(os.tmpdir(), 'ipt-writing-audio-' + randomUUID());
   const wav = stem + '.wav', mp3 = stem + '.mp3';
@@ -162,7 +191,7 @@ async function createEdgeNarration(input) {
     await fs.unlink(mp3).catch(()=>{});
   }
 }
-function createNarration(directory, generate, { bundledDirectory, cacheVersion, previousCacheVersions=[], postProcess } = {}) {
+function createNarration(directory, generate, { bundledDirectory, cacheVersion, previousCacheVersions=[], postProcess, minimumSstSeconds=0 } = {}) {
   const pending = new Map();
   let manifest;
   const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0,16);
@@ -173,19 +202,31 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
   async function get(id) {
     const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || [])].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
+    const minimumSeconds = q.type === 'sst' ? minimumSstSeconds : 0;
+    let bundledSource = null;
     if (bundledDirectory) {
       manifest ||= JSON.parse(await fs.readFile(path.join(bundledDirectory, 'manifest.json'), 'utf8'));
       const entry = manifest[id], bundledFile = path.resolve(bundledDirectory, id + '.mp3');
       // Content hashes prevent an edited lecture from using an old recording.
       if (entry?.textSha256 === createHash('sha256').update(q.text).digest('hex') && entry.bytes > 1000) {
-        try { if ((await fs.stat(bundledFile)).size === entry.bytes) return bundledFile; }
+        try {
+          if ((await fs.stat(bundledFile)).size === entry.bytes) {
+            if (!minimumSeconds || entry.seconds >= minimumSeconds) return bundledFile;
+            bundledSource = bundledFile;
+          }
+        }
         catch(error) { if(error.code !== 'ENOENT') throw error; }
       }
     }
     const neural = q.audioMode === 'runtime-neural';
     const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:neural ? 'wav' : 'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:neural };
     const legacyHash = digest(input);
-    const hash = digest(cacheVersion ? { ...input, cacheVersion } : input);
+    const cacheInput = cacheVersion ? { ...input, cacheVersion } : input;
+    const unpacedHash = digest(cacheInput);
+    const hash = digest(minimumSeconds ? {
+      ...cacheInput, minimumSeconds,
+      ...(bundledSource ? { sourceAudioSha256:manifest[id].audioSha256 } : {})
+    } : cacheInput);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
     if(await usable(file)) return file;
     if(!pending.has(file)) {
@@ -194,16 +235,23 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
         // Search both the pre-version cache key and explicitly supported prior
         // processing versions so cleanup/encoding upgrades never spend TTS again.
         const candidateHashes = [
+          unpacedHash,
           legacyHash,
           ...previousCacheVersions.map(version => digest({ ...input, cacheVersion:version }))
         ];
-        let sourceFile = null;
-        for (const candidateHash of candidateHashes) {
+        let sourceFile = bundledSource, alreadyProcessed = !!bundledSource;
+        for (const candidateHash of new Set(candidateHashes)) {
+          if (sourceFile) break;
           const candidate = path.resolve(directory, id + '-' + candidateHash + '.mp3');
-          if (candidate !== file && await usable(candidate)) { sourceFile = candidate; break; }
+          if (candidate !== file && await usable(candidate)) {
+            sourceFile = candidate;
+            // A pace-only upgrade must not normalize or mix ambience twice.
+            alreadyProcessed = !!minimumSeconds && !!cacheVersion && candidateHash === unpacedHash;
+          }
         }
         let bytes = sourceFile ? await fs.readFile(sourceFile) : await generate(input);
-        if(postProcess) bytes=await postProcess(bytes, input);
+        if(postProcess && !alreadyProcessed) bytes=await postProcess(bytes, input);
+        if(minimumSeconds) bytes=await stretchMp3(bytes, minimumSeconds);
         if(!Buffer.isBuffer(bytes) || bytes.length<1000 || bytes.length>8*1024*1024) throw Error('Invalid narration response.');
         await writeAtomic(file,bytes);
         return file;
@@ -295,7 +343,8 @@ function installNarration(app, directory, { prewarm=true } = {}) {
     bundledDirectory:path.join(__dirname, 'content', 'writing-audio'),
     cacheVersion:RUNTIME_CACHE_VERSION,
     previousCacheVersions:PREVIOUS_RUNTIME_CACHE_VERSIONS,
-    postProcess:normalizeMp3
+    postProcess:normalizeMp3,
+    minimumSstSeconds:60
   });
   // Bundled files have no synthesis cost. Range requests and students sharing a
   // classroom IP must not consume the old narration-generation request quota.
@@ -309,8 +358,8 @@ function installNarration(app, directory, { prewarm=true } = {}) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
-  const runtimeIds=(predictions.sst||[]).filter(q=>q.audioMode==='runtime-neural').map(q=>q.id);
-  if(prewarm) setImmediate(()=>prewarmNarration(narration,runtimeIds).catch(error=>
+  const sstIds=(predictions.sst||[]).map(q=>q.id);
+  if(prewarm) setImmediate(()=>prewarmNarration(narration,sstIds).catch(error=>
     console.warn('[writing-audio] Prewarm task failed:',error.message)));
   return narration;
 }

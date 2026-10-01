@@ -4,6 +4,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
+const { execFile } = require('node:child_process');
+const { promisify } = require('node:util');
 const express = require('express');
 const { createNarration, installNarration, normalizeMp3, createAmbiencePcm, prewarmNarration } = require('../writing-lab-audio');
 const { validateWritingAudio, inspectMp3 } = require('../scripts/validate-writing-audio');
@@ -12,6 +14,12 @@ const predictions = require('../content/writing-predictions-sep-2026');
 const userSst = require('../content/user-sst-predictions');
 const userWfd = require('../content/user-wfd-predictions');
 const directory = path.join(__dirname, '..', 'content', 'writing-audio');
+const manifest = require('../content/writing-audio/manifest.json');
+const run = promisify(execFile);
+async function duration(file) {
+  const { stdout } = await run('ffprobe', ['-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',file]);
+  return Number.parseFloat(stdout);
+}
 const questions = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(m => m.questions), ...predictions.sst, ...predictions.wfd].filter(q => ['sst', 'wfd'].includes(q.type));
 const bundledQuestions = questions.filter(q => q.audioMode !== 'runtime-neural');
 const runtimeQuestions = questions.filter(q => q.audioMode === 'runtime-neural');
@@ -34,13 +42,25 @@ test('A cold cache and failed narration provider cannot prevent bundled audio pl
 test('The student audio endpoint serves real MP3 data and byte ranges for loading and resuming', async t => {
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'audio-http-'));
   const app = express();
-  installNarration(app, cache, { prewarm:false });
+  const narration = installNarration(app, cache, { prewarm:false });
   const server = app.listen(0, '127.0.0.1');
   await new Promise(resolve => server.once('listening', resolve));
   t.after(async () => { await new Promise(resolve => server.close(resolve)); await fs.rm(cache, { recursive: true, force: true }); });
   const base = 'http://127.0.0.1:' + server.address().port;
   for (const q of bundledQuestions) {
-    const bytes = await fs.readFile(path.join(directory, q.id + '.mp3'));
+    const original = path.join(directory, q.id + '.mp3');
+    const file = await narration.get(q.id);
+    const bytes = await fs.readFile(file);
+    if (q.type === 'sst' && manifest[q.id].seconds < 60) {
+      assert.notEqual(file, original);
+      assert(Math.abs(await duration(file) - 60) < 0.25, q.id + ' should play for approximately one minute');
+      const inspected = inspectMp3(bytes);
+      assert.equal(inspected.valid, true);
+      assert.equal(inspected.sampleRate, 48000);
+      assert.equal(inspected.bitrate, 192000);
+    } else {
+      assert.equal(file, original, 'Longer lectures and dictations must keep their original recording');
+    }
     const url = base + '/writing-audio/' + q.id + '.mp3?v=' + bank.version;
     const full = await fetch(url);
     assert.equal(full.status, 200);
@@ -163,6 +183,32 @@ test('A named prior cache version is reprocessed without another TTS call', asyn
   assert.equal(providerCalls,1);
   assert.equal(processCalls,1);
   assert.equal((await fs.readFile(upgradedFile)).length,2001);
+});
+
+test('SST pacing reuses existing neural masters without new speech, repeated processing or speeding up longer recordings', async t => {
+  const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-sst-pacing-'));
+  t.after(() => fs.rm(cache, { recursive:true, force:true }));
+  const short = bundledQuestions.find(q => q.type === 'sst' && manifest[q.id].seconds < 60);
+  const long = bundledQuestions.find(q => q.type === 'sst' && manifest[q.id].seconds > 60);
+  const sourceBytes = await Promise.all([short,long].map(q => fs.readFile(path.join(directory,q.id+'.mp3'))));
+  const ids = runtimeSstQuestions.slice(0,2).map(q => q.id);
+  let providerCalls = 0;
+  const prior = createNarration(cache, async () => sourceBytes[providerCalls++], { cacheVersion:'current-hd' });
+  const originalFiles = [];
+  for (const id of ids) originalFiles.push(await prior.get(id));
+  const paced = createNarration(cache, () => { throw Error('Pacing must reuse the existing speech'); }, {
+    cacheVersion:'current-hd', minimumSstSeconds:60,
+    postProcess:() => { throw Error('An existing master must not be normalized or mixed again'); }
+  });
+  const [file,sameFile] = await Promise.all([paced.get(ids[0]),paced.get(ids[0])]);
+  assert.equal(file,sameFile,'Concurrent requests must reuse the same processed recording');
+  assert.notEqual(file,originalFiles[0]);
+  assert(Math.abs(await duration(file)-60)<0.25);
+  const bytes = await fs.readFile(file);
+  assert.equal(await paced.get(ids[0]),file);
+  assert.deepEqual(await fs.readFile(file),bytes,'Repeat playback must not stretch the recording again');
+  assert.deepEqual(await fs.readFile(await paced.get(ids[1])),sourceBytes[1],'Longer speech must not be accelerated');
+  assert.equal(providerCalls,2);
 });
 
 test('Lecture ambience stays subtle and mixes into a valid HD master', async () => {
