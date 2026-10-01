@@ -28,7 +28,7 @@
     return '<div class="reading-review-tools"><div class="reading-filter-list" role="group" aria-label="Filter answers">'
       + Object.entries(filters).map(([value,label])=>'<button type="button" data-review-filter="'+value+'" aria-pressed="'+(view.filter===value)+'">'+label+' <span data-filter-count="'+value+'">'+model.filter(item=>matches(item,{filter:value,type:view.type})).length+'</span></button>').join('')
       + '</div><div class="reading-review-options"><label>Task <select data-review-task><option value="all">All task types</option>'+types.map(type=>'<option value="'+type+'" '+(view.type===type?'selected':'')+'>'+escape(labels[type])+'</option>').join('')+'</select></label>'
-      + '<button type="button" class="portal-button" data-review-context aria-pressed="'+view.context+'">'+(view.context?'Hide passages':'Show passages')+'</button><button class="portal-button" data-review-reset '+(view.filter==='all'&&view.type==='all'?'hidden':'')+'>Reset filters</button>'
+      + '<button class="portal-button" data-review-reset '+(view.filter==='all'&&view.type==='all'?'hidden':'')+'>Reset filters</button>'
       + '<span class="reading-review-count" data-review-count role="status" aria-live="polite"></span></div></div>';
   }
   function overview(session, total, labels, model, view) {
@@ -36,7 +36,7 @@
     const improve=model.filter(item=>['review','unanswered'].includes(item.status)).length;
     const grading=session.questions.some(q=>session.assessments?.[q.uid]?.status==='working');
     const accuracy=total.percent==null?'—':total.percent+'%';
-    return '<section class="reading-card reading-report reading-review-overview"><div class="reading-review-hero"><div class="reading-score-orbit" style="--accuracy:'+(total.percent||0)+'%"><div><strong>'+accuracy+'</strong><span>Accuracy</span></div></div><div class="reading-review-headline"><p class="portal-eyebrow">IPT Brisbane · Session complete</p><h2>Results</h2><p>'+total.earned+'/'+total.possible+' graded points · '+Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' minutes elapsed</p>'
+    return '<section class="reading-card reading-report reading-review-overview"><div class="reading-review-hero"><div class="reading-score-orbit" style="--accuracy:'+(total.percent||0)+'%"><div><strong>'+accuracy+'</strong><span>Accuracy</span></div></div><div class="reading-review-headline"><p class="portal-eyebrow">IPT Brisbane · Session complete</p><h2>Exam results</h2><p>'+total.earned+'/'+total.possible+' graded points · '+Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' minutes elapsed</p>'
       + (session.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':'')
       + '<div class="reading-result-stats"><span><strong>'+correct+'</strong> correct</span><span><strong>'+improve+'</strong> to improve</span><span><strong>'+(total.pending+total.excluded)+'</strong> unassessed</span></div>'
       + (improve?'<button class="portal-button" data-review-filter="review">Focus on improvements <span aria-hidden="true">↓</span></button>':'')+'</div></div>'
@@ -52,6 +52,34 @@
   function blankFeedback(q) {
     const notes=items(q.reasoning?.blanks);
     return notes.length?'<h4>Why each answer fits</h4>'+table(['Blank','Correct answer','Explanation'],notes.map((note,i)=>[i+1,note.answer,[note.explanation,note.meaning].filter(Boolean).join(' ')])):'';
+  }
+  function inlinePassage(q, answer) {
+    const feedbackId='reading-blank-feedback-'+encodeURIComponent(q.uid);
+    return '<div class="reading-passage-caption"><span>Passage &amp; answers</span><span class="reading-answer-key"><span>Your answer</span><span>Correct answer</span></span></div><p class="reading-review-text reading-inline-passage">'+escape(q.passage).replace(/\[\[(\d+)\]\]/g,(token,number)=>{
+      const index=Number(number)-1;
+      if(index<0||index>=q.answers.length)return token;
+      const correct=q.answers[index],selected=answer[index]||'',matched=selected===correct;
+      const status=matched?'Correct':selected?'Incorrect':'Unanswered';
+      const label='Blank '+number+'. '+status+'. Your answer: '+(selected||'Not answered')+'. Correct answer: '+correct+'. Show feedback.';
+      return '<span class="reading-inline-answer" data-correct="'+matched+'"><span class="reading-review-sr-only">Blank '+number+'. '+status+'. </span>'
+        +(matched?'<span class="reading-answer-symbol" aria-hidden="true">✓</span>':'<span class="reading-your-word">'+escape(selected||'Not answered')+'</span><span class="reading-answer-symbol" aria-hidden="true">×</span>')
+        +'<button type="button" class="reading-correct-word" data-review-blank="'+index+'" aria-controls="'+escape(feedbackId)+'" aria-expanded="false" aria-label="'+escape(label)+'">'+escape(correct)+'<span class="reading-answer-info" aria-hidden="true">?</span></button></span>';
+    })+'</p>';
+  }
+  function wordFeedback(q,index) {
+    if(!['dropdown','wordbank'].includes(q.type)||!Number.isInteger(index)||index<0||index>=q.answers.length)return '';
+    const correct=q.answers[index],info=q.reasoning||{},note=items(info.blanks)[index];
+    const choices=items(q.type==='dropdown'?q.options?.[index]:q.bank);
+    const options=choices.filter(option=>option!==correct).map(option=>{
+      const reasons=info.options||{},key=option+'@'+(index+1);
+      const reason=Object.hasOwn(reasons,key)?reasons[key]:Object.hasOwn(reasons,option)?reasons[option]:null;
+      return reason?[option,reason]:null;
+    }).filter(Boolean);
+    const explanation=note?.explanation||info.correct;
+    return '<div class="reading-word-feedback-head"><div><p>Blank '+(index+1)+' · Explanation &amp; feedback</p><h3>Correct answer: <span>'+escape(correct)+'</span></h3></div><button type="button" class="reading-word-feedback-close" data-review-blank-close aria-label="Close '+escape(correct)+' feedback">×</button></div>'
+      +'<div class="reading-word-feedback-body"><div>'+(explanation?'<h4>'+(note?.explanation?'Explanation':'Passage explanation')+'</h4>'+paragraph(explanation):'')
+      +(note?.meaning?'<h4>Meaning</h4>'+paragraph(note.meaning):'')+'</div>'
+      +(options.length?'<div class="reading-word-options"><h4>Wrong Options</h4><ul>'+options.map(([word,reason])=>'<li><strong>'+escape(word)+':</strong> '+escape(reason)+'</li>').join('')+'</ul></div>':'')+'</div>';
   }
   function swtFeedback(q, answer, assessment, points) {
     const data = assessment?.result, traits = data?.trait_scores;
@@ -83,14 +111,16 @@
   function question(q, answer, assessment, audioState, points, index, total, label, options = {}) {
     const a = Array.isArray(answer) ? answer : [];
     const excluded = ['hcs','hiw'].includes(q.type) && audioState?.status !== 'complete';
+    const inline=['dropdown','wordbank'].includes(q.type)&&Boolean(q.passage);
     let response = '', context = '', feedback = '';
-    if (q.passage) context = '<h3>' + (q.type==='hiw'?'Written transcript':'Passage') + '</h3>' + paragraph(q.passage.replace(/\[\[(\d+)\]\]/g, ' [Blank $1] '));
+    if (q.passage) context = inline?inlinePassage(q,a):'<h3>' + (q.type==='hiw'?'Written transcript':'Passage') + '</h3>' + paragraph(q.passage.replace(/\[\[(\d+)\]\]/g, ' [Blank $1] '));
     if (q.prompt) context += paragraph(q.prompt);
     if (q.type === 'swt') {
       response = '<h3>Your summary</h3>' + paragraph(a[0] || 'Not answered');
       feedback = swtFeedback(q, a, assessment, points);
     } else {
-      if (['dropdown','wordbank'].includes(q.type)) response = '<div class="reading-blank-review">'+q.answers.map((correct,i)=>{
+      if (inline) response='<section class="reading-word-feedback" id="'+escape('reading-blank-feedback-'+encodeURIComponent(q.uid))+'" data-review-blank-feedback aria-label="Word feedback" hidden></section><span class="reading-review-sr-only" data-review-blank-status role="status" aria-live="polite"></span>';
+      else if (['dropdown','wordbank'].includes(q.type)) response = '<div class="reading-blank-review">'+q.answers.map((correct,i)=>{
         const matched=a[i]===correct, note=items(q.reasoning?.blanks)[i];
         const why=note?[note.explanation,note.meaning].filter(Boolean).join(' '):'';
         return '<section class="reading-blank-row" data-correct="'+matched+'"><div class="reading-blank-number">Blank '+(i+1)+'<span>'+ (matched?'Correct':a[i]?'Incorrect':'Unanswered')+'</span></div><div class="reading-blank-comparison"><div><span>Your answer</span><strong>'+escape(a[i]||'Not answered')+'</strong></div><div><span>Correct answer</span><strong>'+escape(correct)+'</strong></div></div>'+(why?'<details class="reading-review-detail"><summary>Why this answer fits</summary>'+paragraph(why)+'</details>':'')+'</section>';
@@ -112,19 +142,19 @@
         if (!a.length) response = '<p class="reading-unanswered">Not answered</p>' + response;
       }
       const info = q.reasoning || {};
-      feedback = '<h3>What to notice</h3>' + paragraph(info.correct || 'Compare your response with the correct answer. Select Show passages to reread the source text.');
+      feedback = '<h3>What to notice</h3>' + paragraph(info.correct || 'Compare your response with the correct answer and reread the source text above.');
       if (['dropdown','wordbank'].includes(q.type)) feedback += blankFeedback(q);
       if (info.options) feedback += '<details class="reading-review-detail"><summary>Other options explained</summary>' + list(Object.entries(info.options).map(([option,reason])=>option+': '+reason)) + '</details>';
     }
-    if (context) context='<div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'>'+context+'</div>';
-    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><div class="reading-review-source" data-review-context-content '+(options.context?'':'hidden')+'><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
+    if (context) context='<div class="reading-review-source" data-review-context-content>'+context+'</div>';
+    const audio = q.audioText ? '<div class="reading-audio"><button class="portal-button" data-action="play" data-review-uid="' + escape(q.uid) + '">Replay for review</button><span data-review-audio-status="' + encodeURIComponent(q.uid) + '" role="status">Replay does not change your submitted result.</span></div><div class="reading-review-source" data-review-context-content><h3>Audio transcript</h3>' + paragraph(q.audioText) + '</div>' : '';
     const status = points.pending ? 'Assessment pending' : excluded ? 'Audio item excluded' : points.earned + '/' + points.possible + ' points';
     const outcome=points.pending?'pending':excluded?'excluded':!hasAnswer(a)?'unanswered':points.earned===points.possible?'correct':'review';
     const outcomeLabel={pending:'Awaiting assessment',excluded:'Audio incomplete',unanswered:'Unanswered',correct:'Correct',review:'To improve'}[outcome];
     return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
       + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
       + (excluded && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
-      + '<section class="reading-explanation reading-feedback-detail" aria-label="Explanation and feedback"><h3>Explanation &amp; feedback</h3>' + feedback + '</section>' + audio + '</article>';
+      + (q.type==='swt'?'':'<details class="reading-full-feedback"><summary>Full feedback</summary>')+'<section class="reading-explanation reading-feedback-detail" aria-label="Explanation and feedback"><h3>Explanation &amp; feedback</h3>' + feedback + '</section>'+(q.type==='swt'?'':'</details>') + audio + '</article>';
   }
-  return { question, models, matches, controls, overview, filters, blankFeedback };
+  return { question, models, matches, controls, overview, filters, blankFeedback, wordFeedback };
 });

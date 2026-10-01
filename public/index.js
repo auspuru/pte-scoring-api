@@ -12469,8 +12469,8 @@ function ensureReadingRuntimeLoaded() {
       ['reading-mock-tools.js?v=20260930-expanded-22', 'reading mock tools'],
       ['reading-exam-player.js?v=20260930-expanded-bank', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
-      ['reading-review.js?v=10', 'reading review'],
-      ['reading-practice.js?v=20260930-expanded-bank', 'reading practice']
+      ['reading-review.js?v=20261001-passage-review', 'reading review'],
+      ['reading-practice.js?v=20261001-passage-review', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');

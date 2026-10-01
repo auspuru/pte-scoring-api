@@ -76,7 +76,7 @@
   let libraryView = null, requestSerial = 0;
   const practiceLibraries = () => catalogue ? catalogue.readingLibraries(bank) : bank.practiceLibraries;
   const isReadingPracticeMockId = id => /^reading-practice-mock-(?:[1-9]|1[0-5])$/.test(String(id || ''));
-  let reviewView = { id: null, filter: 'all', type: 'all', context: false };
+  let reviewView = { id: null, filter: 'all', type: 'all' };
   let recentResultsOpen = false;
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [], drafts: [], practiceResults: {} });
@@ -141,7 +141,7 @@
     clearInterval(interval); interval = null; recentResultsOpen = false; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
-    requestSerial++; libraryView=null; reviewView={id:null,filter:'all',type:'all',context:false};
+    requestSerial++; libraryView=null; reviewView={id:null,filter:'all',type:'all'};
     if (host) host.replaceChildren();
   }
   function setExamMode(enabled) {
@@ -218,6 +218,12 @@
       } catch (_) { saveNotice = 'Saved progress could not be restored on this device'; }
       if (state.session) repairSession(state.session);
       host.onclick = click; host.onchange = change; host.oninput = input;
+      host.onkeydown = event => {
+        if(event.key==='Escape'&&state?.session?.done){
+          const card=event.target.closest('[data-review-question]');
+          if(card?.querySelector('[data-review-blank-feedback]:not([hidden])')){closeWordFeedback(card,true);event.preventDefault();}
+        }
+      };
       speaker ||= mock.createSpeaker(globalThis, audioState);
       document.addEventListener?.('visibilitychange', visibilityChanged);
       host.ondragstart = dragStart; host.ondragover = dragOver; host.ondrop = drop;
@@ -482,8 +488,6 @@
     }
     host.querySelectorAll('[data-review-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.reviewFilter===reviewView.filter)));
     host.querySelectorAll('[data-review-type]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.reviewType===reviewView.type)));
-    host.querySelectorAll('[data-review-context-content]').forEach(node=>{node.hidden=!reviewView.context;});
-    const context=host.querySelector('[data-review-context]');if(context){context.setAttribute('aria-pressed',String(reviewView.context));context.textContent=reviewView.context?'Hide passages':'Show passages';}
     const task=host.querySelector('[data-review-task]');if(task)task.value=reviewView.type;
     const reset=host.querySelector('[data-review-reset]');if(reset)reset.hidden=reviewView.filter==='all'&&reviewView.type==='all';
     const count=host.querySelector('[data-review-count]');if(count)count.textContent='Showing '+visible+' of '+model.length+' answers';
@@ -497,7 +501,7 @@
     const practiceIndex=s.practiceUid?practiceItems.findIndex(item=>item.uid===s.practiceUid):-1;
     const practiceNavigation=s.practiceUid?'<div class="reading-actions reading-review-navigation"><button class="portal-button" data-move="-1" '+(practiceIndex<=0?'disabled':'')+'>← Back</button><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><button class="portal-button reading-next-action" data-move="1" '+(practiceIndex<0||practiceIndex>=practiceItems.length-1?'disabled':'')+'>Next <span aria-hidden="true">→</span></button></div>':'';
     setExamMode(false);
-    if(reviewView.id!==s.id)reviewView={id:s.id,filter:'all',type:'all',context:false};
+    if(reviewView.id!==s.id)reviewView={id:s.id,filter:'all',type:'all'};
     const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
     const retryable=pending.some(item=>s.assessments[item.q.uid]?.status!=='working');
     const retry=pending.length?'<button class="portal-button" data-action="retry-all-swt" '+(retryable?'':'disabled')+'>'+(retryable?'Retry pending SWT assessments':'Assessing SWT responses…')+'</button>':'';
@@ -512,9 +516,9 @@
         if(node)node.outerHTML=question(item);
       }
     }else{
-      host.innerHTML='<section data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+      host.innerHTML='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
         + practiceNavigation
-        + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Explore your results. Your responses and explanations stay together.</p></div><div data-review-retry>'+retry+'</div></div>'
+        + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Read the full passages with your answers and corrections in context.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
         + '<div class="reading-complete-review">'+model.map(question).join('')+'</div></section>';
@@ -662,6 +666,27 @@
     const target=[...host.querySelectorAll('[data-paragraph]')].find(el=>el.dataset.paragraph===selectedParagraph.key&&el.dataset.panel===selectedParagraph.panel);
     target?.focus();
   }
+  function closeWordFeedback(card,restoreFocus=false) {
+    const panel=card?.querySelector('[data-review-blank-feedback]');
+    if(!panel)return;
+    panel.hidden=true;
+    const buttons=card.querySelectorAll('[data-review-blank]');
+    const active=Array.from(buttons).find(button=>button.getAttribute('aria-expanded')==='true');
+    buttons.forEach(button=>button.setAttribute('aria-expanded','false'));
+    if(restoreFocus)active?.focus();
+    const status=card.querySelector('[data-review-blank-status]');if(status)status.textContent='Word feedback closed.';
+  }
+  function showWordFeedback(button) {
+    const card=button.closest('[data-review-question]'),panel=card?.querySelector('[data-review-blank-feedback]');
+    const q=state.session.questions.find(item=>encodeURIComponent(item.uid)===card?.dataset.reviewQuestion),index=Number(button.dataset.reviewBlank);
+    if(!q||!panel)return;
+    if(button.getAttribute('aria-expanded')==='true')return closeWordFeedback(card);
+    const content=review.wordFeedback(q,index);if(!content)return;
+    closeWordFeedback(card);
+    panel.innerHTML=content;panel.hidden=false;panel.setAttribute('aria-label','Feedback for '+q.answers[index]);
+    button.setAttribute('aria-expanded','true');
+    const status=card.querySelector('[data-review-blank-status]');if(status)status.textContent='Blank '+(index+1)+'. Feedback for '+q.answers[index]+' opened below the passage.';
+  }
   function transferParagraph(destination,position,key=selectedParagraph.key) {
     if(!editable())return;
     const s=state.session,q=s.questions[s.index];if(q.type!=='reorder'||!q.items.some(item=>item.key===key))return;
@@ -731,9 +756,10 @@
     if(d.action==='resume'){if(s&&!s.done&&resumeParkedSession(s))persist();return render();}
     if(!s)return;
     if(s.done){
+      if(d.reviewBlank!==undefined)return showWordFeedback(b);
+      if(d.reviewBlankClose!==undefined)return closeWordFeedback(b.closest('[data-review-question]'),true);
       if(d.reviewFilter!==undefined&&Object.hasOwn(review.filters,d.reviewFilter)){reviewView.filter=d.reviewFilter;applyReviewFilters();return;}
       if(d.reviewType!==undefined&&Object.hasOwn(taskLabels,d.reviewType)){reviewView.type=reviewView.type===d.reviewType?'all':d.reviewType;applyReviewFilters();return;}
-      if(d.reviewContext!==undefined){reviewView.context=!reviewView.context;applyReviewFilters();return;}
       if(d.reviewReset!==undefined){reviewView.filter='all';reviewView.type='all';applyReviewFilters();return;}
     }
     if(s.done && d.action==='retry-all-swt')return Promise.all(s.questions.filter(q=>q.type==='swt'&&mock.scoreExtra(q,s.answers[q.uid],s.assessments[q.uid]).pending).map(q=>gradeSwt(q)));

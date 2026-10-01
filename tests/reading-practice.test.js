@@ -563,6 +563,50 @@ test('The complete review escapes student and model content and exposes feedback
  assert.doesNotMatch(html,/<script>|<img src=x|<svg|<details|data-question=/);assert.match(html,/&lt;svg/);assert.match(html,/A useful example/);assert.match(html,/Optional refinement/);
 });
 
+test('Reading blanks show submitted answers and corrections at their positions in the full passage',()=>{
+ const review=require('../public/reading-review');
+ const q={uid:'reef:1',type:'dropdown',passage:'She is on a [[1]] against the clock. They must [[2]] the samples.',answers:['mission','collect'],options:[['mission','work'],['collect','lose']],reasoning:{correct:'Use the meaning of the surrounding sentence.',blanks:[{answer:'mission',explanation:'Mission describes a specific task.',meaning:'A task or purpose.'},{answer:'collect',explanation:'Collect means to gather.'}],options:{work:'Work is too general.',lose:'Lose contradicts the purpose.'}}};
+ const answer=['work','collect'],before=JSON.stringify({q,answer});
+ const markup=review.question(q,answer,null,null,{earned:1,possible:2},0,1,'Dropdown blanks');
+ assert.match(markup,/She is on a <span class="reading-inline-answer" data-correct="false">/);
+ assert.match(markup,/reading-your-word">work<\/span>/);assert.match(markup,/data-review-blank="0"[^>]+>mission/);
+ assert.match(markup,/<\/span> against the clock\. They must <span class="reading-inline-answer" data-correct="true">/);
+ assert.match(markup,/data-review-blank="1"[^>]+>collect/);assert.match(markup,/<\/span> the samples\./);
+ assert.doesNotMatch(markup,/reading-blank-review|data-review-context-content hidden|\[Blank \d+\]/);
+ for(const text of [q.reasoning.correct,...q.reasoning.blanks.flatMap(b=>[b.explanation,b.meaning]).filter(Boolean),...Object.values(q.reasoning.options)])assert(markup.includes(text));
+ assert.equal(JSON.stringify({q,answer}),before);
+ const feedback=review.wordFeedback(q,0);
+ for(const text of ['Correct answer:','mission','Explanation','Meaning','Wrong Options','Mission describes a specific task.','A task or purpose.','Work is too general.'])assert(feedback.includes(text));
+ assert(!feedback.includes('Lose contradicts the purpose.'));
+});
+
+test('Inline unanswered blanks and word feedback escape content without changing the grading data',()=>{
+ const review=require('../public/reading-review');
+ const q={uid:'unsafe:"<',type:'wordbank',passage:'<script>bad()</script> [[1]] ends here.',answers:['<word>'],bank:['<word>','<other>'],reasoning:{correct:'Keep <meaning> intact.',blanks:[{explanation:'Use <word>.',meaning:'A <definition>.'}],options:{'<other>@1':'Avoid <other>.'}}};
+ const before=JSON.stringify(q),markup=review.question(q,[],null,null,{earned:0,possible:1},0,1,'Wordbank'),feedback=review.wordFeedback(q,0);
+ assert.match(markup,/Not answered/);assert.match(markup,/data-correct="false"/);
+ assert.match(markup,/&lt;script&gt;/);assert.match(markup,/&lt;word&gt;/);assert.doesNotMatch(markup,/<script>|<word>/);
+ assert.match(feedback,/&lt;definition&gt;/);assert.match(feedback,/Avoid &lt;other&gt;/);assert.doesNotMatch(feedback,/<definition>|<other>/);
+ assert.equal(review.wordFeedback(q,-1),'');assert.equal(review.wordFeedback(q,2),'');assert.equal(review.wordFeedback(q,NaN),'');
+ assert.equal(JSON.stringify(q),before);
+});
+
+test('Opening, switching and closing inline feedback keeps submitted answers, scores and history unchanged',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'practice'});await h.click({action:'submit'});
+ const before=snapshot(h),q=before.session.questions[0];
+ const panel={hidden:true,innerHTML:'',setAttribute(){}},status={textContent:''};
+ const card={dataset:{reviewQuestion:encodeURIComponent(q.uid)},querySelector(selector){if(selector==='[data-review-blank-feedback]')return panel;if(selector==='[data-review-blank-feedback]:not([hidden])')return panel.hidden?null:panel;if(selector==='[data-review-blank-status]')return status;return null;},querySelectorAll:()=>buttons};
+ const buttons=[0,1].map(i=>({dataset:{reviewBlank:String(i)},attributes:{'aria-expanded':'false'},getAttribute(key){return this.attributes[key];},setAttribute(key,value){this.attributes[key]=value;},focus(){this.focused=true;},closest(selector){return selector==='button'?this:card;}}));
+ const click=button=>h.host.onclick({target:button});
+ await click(buttons[0]);assert.equal(panel.hidden,false);assert.equal(buttons[0].getAttribute('aria-expanded'),'true');assert(panel.innerHTML.includes(q.answers[0]));
+ await click(buttons[1]);assert.equal(buttons[0].getAttribute('aria-expanded'),'false');assert.equal(buttons[1].getAttribute('aria-expanded'),'true');assert(panel.innerHTML.includes(q.answers[1]));
+ let prevented=false;h.host.onkeydown({key:'Escape',target:buttons[1],preventDefault(){prevented=true;}});
+ assert.equal(panel.hidden,true);assert.equal(buttons[1].focused,true);assert(prevented);
+ await click(buttons[0]);await click(buttons[0]);assert.equal(panel.hidden,true);
+ await click(buttons[1]);await click({dataset:{reviewBlankClose:''},closest(selector){return selector==='button'?this:card;}});assert.equal(panel.hidden,true);
+ assert.deepEqual(snapshot(h),before);
+});
+
 test('Practice integrated mocks preserve a 55-minute budget across tasks and pause that budget while away',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);h.ctx.passages=swtPassages;
  await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-1'});
@@ -623,7 +667,7 @@ function mountReviewNodes(h,session){
  return {questions,filters,types,contexts,counts,singles,originalHTML};
 }
 
-test('Feedback controls filter in place, show source passages and reset without altering saved answers',async()=>{
+test('Feedback controls filter in place and keep passages visible without altering saved answers',async()=>{
  const {h}=await mixedClient();while(!snapshot(h).session.done)nextQuestion(h);
  const before=snapshot(h),nodes=mountReviewNodes(h,before.session);
  h.click({reviewFilter:'unanswered'});
@@ -632,7 +676,7 @@ test('Feedback controls filter in place, show source passages and reset without 
  h.host.onchange({target:{dataset:{reviewTask:''},value:'swt'}});
  assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,2);assert.equal(nodes.singles['[data-review-task]'].value,'swt');assert.equal(nodes.counts.find(node=>node.dataset.filterCount==='all').textContent,'2');
  h.click({reviewFilter:'correct'});assert.equal(nodes.singles['[data-review-empty]'].hidden,false);assert.equal(nodes.singles['[data-review-reset]'].hidden,false);
- h.click({reviewContext:''});assert(nodes.contexts.every(node=>!node.hidden));assert.equal(nodes.singles['[data-review-context]'].textContent,'Hide passages');
+ assert(nodes.contexts.every(node=>!node.hidden));assert.doesNotMatch(h.host.innerHTML,/data-review-context\s|Show passages|Hide passages/);
  h.click({reviewReset:''});assert([...nodes.questions.values()].every(node=>!node.hidden));assert.equal(nodes.singles['[data-review-empty]'].hidden,true);
  h.click({reviewType:'hcs'});assert.equal([...nodes.questions.values()].filter(node=>!node.hidden).length,2);
  h.click({reviewType:'hcs'});assert([...nodes.questions.values()].every(node=>!node.hidden));
@@ -643,7 +687,7 @@ test('A completed SWT assessment updates the review while preserving filters, so
  const {h}=await mixedClient(true);h.ctx.requestSwtGrade=async()=>{throw Error('Try again');};
  h.host.oninput({target:{dataset:{swtResponse:''},value:'My saved summary.'}});while(!snapshot(h).session.done)nextQuestion(h);await flush();
  const before=snapshot(h),nodes=mountReviewNodes(h,before.session),swt=before.session.questions[0];
- h.click({reviewFilter:'unassessed'});h.click({reviewContext:''});
+ h.click({reviewFilter:'unassessed'});
  const pendingCount=[...nodes.questions.values()].filter(node=>!node.hidden).length;assert.equal(pendingCount,5);
  h.ctx.requestSwtGrade=async()=>confirmedGrade;await h.click({action:'retry-swt',reviewUid:swt.uid});
  assert.equal(h.host.innerHTML,nodes.originalHTML);assert.equal(nodes.filters.find(node=>node.dataset.reviewFilter==='unassessed').attributes['aria-pressed'],'true');
