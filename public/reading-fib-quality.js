@@ -91,9 +91,10 @@
   function classifyFor(q,index,answer){
     const lower=normal(answer).toLowerCase(),slot=slotContext(q,index);
     const before=slot.before.toLowerCase();
-    if (['accurate','aware'].includes(lower)) return 'adjective';
+    if (['accurate','aware','appropriate','incomplete'].includes(lower)) return 'adjective';
     if (['burden','adjustment'].includes(lower)) return 'noun';
     if (lower==='clear' && /expectations\s*$/.test(before)) return 'adjective';
+    if (['visit','label','correct','continue','address','review'].includes(lower) && /\b(?:should|must|to)\s*$/.test(before)) return 'verb';
     // "support" is intentionally context-sensitive in this bank: compare
     // "can support learning" with "financial support" / "receive support".
     if(lower==='support'){

@@ -33,8 +33,8 @@ test('prediction/original content exposes freshness and unique-bank metadata', (
   assert.equal(stats.writingPrediction.swt,18);
   assert.equal(stats.writingPrediction.sst,30);
   assert.equal(stats.writingPrediction.wfd,69);
-  assert.equal(stats.patternOriginal.dropdown,24);
-  assert.equal(stats.patternOriginal.wordbank,24);
+  assert.equal(stats.patternOriginal.dropdown,32);
+  assert.equal(stats.patternOriginal.wordbank,32);
 });
 
 test('student UIs label reused predictions as Revision instead of presenting them as new', () => {

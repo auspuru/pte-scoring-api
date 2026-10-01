@@ -8,8 +8,8 @@
   const source={
     kind:'original-pattern-derived',
     contentStatus:'original',
-    checkedAt:'2026-09-30',
-    lastReviewed:'2026-09-30',
+    checkedAt:'2026-10-01',
+    lastReviewed:'2026-10-01',
     note:'Original IPT Brisbane questions modelled on recurring grammar, collocation, word-form and contextual-vocabulary patterns seen in public PTE prediction files. No third-party passage text is reproduced.',
     references:[
       'https://ptenepal.com/blog/pte-prediction-sep21-27-2026-reading-writing-fib/',
@@ -1000,6 +1000,515 @@
   }
 ]);
 
+  dropdownSeeds.push(...[
+  {
+    "id": "ipt-pattern-rw-25",
+    "title": "Coastal Monitoring",
+    "passage": "A coastal monitoring project needs observations that can be compared over time. Volunteers should [[1]] the same locations on each visit and record the conditions under which photographs were taken. A beach can look different simply because the tide has changed, so the timing of each observation matters. Clear instructions help make the records more [[2]]. Organisers can then compare images without mistaking a change in viewpoint for a change in the shoreline. Training should explain how to recognise a useful reference point and where to stand safely. Reviewing a few early submissions allows the team to [[3]] mistakes before they become routine. A carefully organised collection can provide [[4]] evidence of gradual changes that are difficult to notice during an occasional visit.",
+    "answers": [
+      "visit",
+      "consistent",
+      "correct",
+      "useful"
+    ],
+    "options": [
+      [
+        "visit",
+        "avoid",
+        "remove",
+        "visiting"
+      ],
+      [
+        "consistent",
+        "annual",
+        "distant",
+        "consistently"
+      ],
+      [
+        "correct",
+        "avoid",
+        "create",
+        "correction"
+      ],
+      [
+        "useful",
+        "temporary",
+        "distant",
+        "usefully"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-26",
+    "title": "Oral History Interviews",
+    "passage": "An oral history interview offers insight into how a person remembers an experience. Interviewers should [[1]] participants to describe events in their own words rather than suggesting the response they expect. Preparing a broad set of topics can help guide the conversation without making it rigid. A recording preserves details that notes alone may miss, but permission must be obtained before it begins. The interviewer should also explain how the material will be used. Memories may be [[2]], so an account should be considered alongside other available evidence. This does not make the interview worthless: differences can reveal how people interpret the past. Clear documentation helps future readers [[3]] the context of the conversation and make more [[4]] judgements about its significance.",
+    "answers": [
+      "encourage",
+      "incomplete",
+      "understand",
+      "informed"
+    ],
+    "options": [
+      [
+        "encourage",
+        "prevent",
+        "avoid",
+        "encouragement"
+      ],
+      [
+        "incomplete",
+        "annual",
+        "remote",
+        "incompletely"
+      ],
+      [
+        "understand",
+        "prevent",
+        "remove",
+        "understanding"
+      ],
+      [
+        "informed",
+        "annual",
+        "remote",
+        "information"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-27",
+    "title": "Seed Collections",
+    "passage": "A seed collection is useful only when its records explain what has been stored. Staff must [[1]] each sample with a name, collection date and location. These details allow later users to distinguish similar plants and understand the circumstances in which the seeds were gathered. Storage arrangements should be [[2]] for the material rather than chosen merely for convenience. Regular checks can show whether samples remain usable, while clear records identify which ones need attention. The collection may also support teaching by allowing students to compare examples from different places. Sharing material requires careful documentation so that its history is not lost. Consistent routines help [[3]] the value of the collection and make it easier for another team to [[4]] the work in future.",
+    "answers": [
+      "label",
+      "appropriate",
+      "preserve",
+      "continue"
+    ],
+    "options": [
+      [
+        "label",
+        "prevent",
+        "remove",
+        "labelling"
+      ],
+      [
+        "appropriate",
+        "annual",
+        "distant",
+        "appropriately"
+      ],
+      [
+        "preserve",
+        "remove",
+        "avoid",
+        "preservation"
+      ],
+      [
+        "continue",
+        "avoid",
+        "prevent",
+        "continuation"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-28",
+    "title": "Public Seating",
+    "passage": "The placement of public seating affects who can comfortably use a street or square. A seat beside a busy crossing may be convenient, but noise and a lack of shade can [[1]] people from staying there. Designers should observe how the space is used at different times rather than relying on one brief visit. Older residents and people carrying shopping may have different needs from those passing through quickly. Asking these users about their experience can reveal [[2]] concerns that are easy to overlook. Materials and maintenance also matter, because a damaged seat may become unusable. A useful plan balances appearance with comfort and access. Reviewing the result after installation allows designers to [[3]] problems and improve the [[4]] of later projects.",
+    "answers": [
+      "discourage",
+      "practical",
+      "address",
+      "quality"
+    ],
+    "options": [
+      [
+        "discourage",
+        "protect",
+        "separate",
+        "discouragement"
+      ],
+      [
+        "practical",
+        "annual",
+        "distant",
+        "practically"
+      ],
+      [
+        "address",
+        "avoid",
+        "create",
+        "addressing"
+      ],
+      [
+        "quality",
+        "congestion",
+        "quantity",
+        "qualified"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-29",
+    "title": "Field Notebooks",
+    "passage": "A field notebook records observations that may be difficult to reconstruct later. Researchers should [[1]] entries at the time of a visit, while details are still fresh. A description should distinguish what was directly observed from what the writer thinks it might mean. This separation makes later interpretation more [[2]]. Sketches can show relationships that a list of measurements does not capture, provided the drawing includes enough labels to be understood. Numbering pages and dating each entry also helps keep the material organised. When several people contribute, an agreed format makes comparisons easier. The notebook is not merely a personal reminder: it may become part of the evidence supporting a report. Clear records allow colleagues to [[3]] the work and recognise the [[4]] of the conclusions.",
+    "answers": [
+      "write",
+      "reliable",
+      "review",
+      "limitations"
+    ],
+    "options": [
+      [
+        "write",
+        "erase",
+        "remove",
+        "writing"
+      ],
+      [
+        "reliable",
+        "annual",
+        "distant",
+        "reliably"
+      ],
+      [
+        "review",
+        "prevent",
+        "remove",
+        "reviewing"
+      ],
+      [
+        "limitations",
+        "instructions",
+        "permissions",
+        "limited"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-30",
+    "title": "Appointment Reminders",
+    "passage": "An appointment reminder is most useful when it tells the recipient exactly what to do next. A message should [[1]] the date, time and location in a form that is easy to read. It should also explain how to change the booking if attendance is no longer possible. Giving people a simple way to respond can make scheduling more [[2]]. However, a reminder cannot solve every reason for a missed appointment. Transport difficulties or conflicting responsibilities may require additional support. Services should therefore examine recurring patterns rather than assuming that every absence reflects a lack of interest. Asking users about their experience helps staff [[3]] barriers and choose a suitable response. Reviewing the process regularly can improve the [[4]] of the service for both staff and visitors.",
+    "answers": [
+      "confirm",
+      "efficient",
+      "identify",
+      "reliability"
+    ],
+    "options": [
+      [
+        "confirm",
+        "remove",
+        "prevent",
+        "confirmation"
+      ],
+      [
+        "efficient",
+        "annual",
+        "distant",
+        "efficiently"
+      ],
+      [
+        "identify",
+        "remove",
+        "avoid",
+        "identification"
+      ],
+      [
+        "reliability",
+        "congestion",
+        "permission",
+        "reliably"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-31",
+    "title": "Neighbourhood Maps",
+    "passage": "A neighbourhood map can show more than the position of streets. Residents may [[1]] places they value, routes they use and spaces they find difficult to access. Bringing these observations together gives planners a richer account of local experience. The map should distinguish factual information from personal impressions so that readers can interpret it [[2]]. A busy road, for example, may be easy for one person to cross but a serious barrier for another. Workshops give participants an opportunity to explain these differences and compare their views. Organisers should record who contributed and avoid presenting a small group as representative of everyone. Regular updates help [[3]] the map’s usefulness as the area changes. The result can support more [[4]] decisions about local improvements.",
+    "answers": [
+      "identify",
+      "accurately",
+      "maintain",
+      "informed"
+    ],
+    "options": [
+      [
+        "identify",
+        "remove",
+        "avoid",
+        "identification"
+      ],
+      [
+        "accurately",
+        "rarely",
+        "randomly",
+        "accurate"
+      ],
+      [
+        "maintain",
+        "remove",
+        "avoid",
+        "maintenance"
+      ],
+      [
+        "informed",
+        "annual",
+        "remote",
+        "information"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  },
+  {
+    "id": "ipt-pattern-rw-32",
+    "title": "Reusable Packaging",
+    "passage": "A reusable packaging scheme depends on what happens after a customer receives an item. Containers must be [[1]] to the collection point so that they can be cleaned and used again. Instructions should explain the process without assuming that customers are familiar with it. Convenient return locations make participation more [[2]], while clear information about deposits can prevent confusion. Operators also need a way to record how many containers come back and how many are lost. These figures help them assess whether the scheme is achieving its purpose. A durable container alone does not guarantee success if it rarely completes another cycle. Reviewing the whole process allows the team to [[3]] practical barriers and make changes that improve the scheme’s long-term [[4]].",
+    "answers": [
+      "returned",
+      "manageable",
+      "address",
+      "performance"
+    ],
+    "options": [
+      [
+        "returned",
+        "discarded",
+        "concealed",
+        "returning"
+      ],
+      [
+        "manageable",
+        "annual",
+        "distant",
+        "management"
+      ],
+      [
+        "address",
+        "avoid",
+        "create",
+        "addressing"
+      ],
+      [
+        "performance",
+        "congestion",
+        "permission",
+        "performing"
+      ]
+    ],
+    "skills": [
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary",
+      "grammar + contextual vocabulary"
+    ]
+  }
+]);
+  wordbankSeeds.push(...[
+  {
+    "id": "ipt-pattern-r-25",
+    "title": "Coastal Monitoring",
+    "passage": "Volunteers should [[1]] the shoreline from the marked observation point. Each image must include the fixed sign so that later comparisons use the same view. A simple form asks for the date, time and weather [[2]]. Images are uploaded to a shared [[3]] after each visit. The project coordinator checks the records and contacts volunteers if important details are missing, helping maintain the [[4]] of the collection over time.",
+    "answers": [
+      "photograph",
+      "conditions",
+      "folder",
+      "quality"
+    ],
+    "bank": [
+      "photograph",
+      "conditions",
+      "folder",
+      "quality",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-26",
+    "title": "Oral History Interviews",
+    "passage": "Before the interview begins, the participant should give written [[1]] for the recording. The interviewer prepares broad questions but allows time for unexpected topics. A short [[2]] identifies the date and location of the conversation. After the session, the recording is checked and stored with the participant’s contact details. Any restrictions on its future [[3]] must be recorded clearly so that researchers can respect the original [[4]].",
+    "answers": [
+      "permission",
+      "introduction",
+      "use",
+      "agreement"
+    ],
+    "bank": [
+      "permission",
+      "introduction",
+      "use",
+      "agreement",
+      "despite",
+      "distant",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-27",
+    "title": "Seed Collections",
+    "passage": "Each seed sample needs a clearly written [[1]] showing the plant name and collection date. Volunteers should keep samples separate while preparing them for storage. The coordinator checks that the accompanying [[2]] is complete before placing the material in a container. Regular inspections help staff [[3]] any problems early. A shared register also shows which samples are available, allowing visitors to plan their work without repeatedly handling the entire [[4]].",
+    "answers": [
+      "label",
+      "information",
+      "identify",
+      "collection"
+    ],
+    "bank": [
+      "label",
+      "information",
+      "identify",
+      "collection",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-28",
+    "title": "Public Seating",
+    "passage": "The council is reviewing the [[1]] of seats along the shopping street. Residents can mark places where a rest point would be useful. Staff will [[2]] the suggested sites to check access and available space. The proposed layout will be displayed for public [[3]] before installation begins. Later inspections will check that the seats remain in good condition and that their position does not create an [[4]] for people using the footpath.",
+    "answers": [
+      "location",
+      "inspect",
+      "comment",
+      "obstacle"
+    ],
+    "bank": [
+      "location",
+      "inspect",
+      "comment",
+      "obstacle",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-29",
+    "title": "Field Notebooks",
+    "passage": "Students should begin each notebook [[1]] with the date and location of their visit. Measurements need to include units, and sketches should show a scale where possible. A separate section is used for interpretation so that readers can [[2]] observations from explanations. Before leaving the site, students check their notes for missing details. This routine produces a more useful [[3]] of the visit and supports careful [[4]] when the final report is prepared.",
+    "answers": [
+      "entry",
+      "distinguish",
+      "record",
+      "analysis"
+    ],
+    "bank": [
+      "entry",
+      "distinguish",
+      "record",
+      "analysis",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-30",
+    "title": "Appointment Reminders",
+    "passage": "The reminder includes the appointment [[1]] and instructions for reaching the office. Visitors who cannot attend should [[2]] the booking using the contact details provided. This gives staff time to offer the place to someone else. Any request for additional [[3]] should be made before the visit. Keeping the service informed helps avoid unnecessary waiting and allows the team to make suitable [[4]] for each visitor.",
+    "answers": [
+      "time",
+      "cancel",
+      "assistance",
+      "arrangements"
+    ],
+    "bank": [
+      "time",
+      "cancel",
+      "assistance",
+      "arrangements",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-31",
+    "title": "Neighbourhood Maps",
+    "passage": "Participants are asked to [[1]] useful places on a printed neighbourhood map. Different colours show walking routes, shared facilities and areas that are difficult to reach. Each mark needs a short [[2]] so that other people can understand its meaning. Organisers compare the completed maps and prepare a combined [[3]]. Residents then review the result, providing an opportunity to check details and correct any [[4]] before it is shared more widely.",
+    "answers": [
+      "mark",
+      "explanation",
+      "summary",
+      "errors"
+    ],
+    "bank": [
+      "mark",
+      "explanation",
+      "summary",
+      "errors",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  },
+  {
+    "id": "ipt-pattern-r-32",
+    "title": "Reusable Packaging",
+    "passage": "Customers should [[1]] used containers to the designated collection point. Staff record each return before arranging cleaning. A small [[2]] is repaid when the container is received, encouraging customers to bring it back. The scheme’s instructions explain which items are accepted and where collection points are located. Regularly reviewing the return [[3]] helps organisers decide whether the system needs changes and assess its overall [[4]].",
+    "answers": [
+      "return",
+      "deposit",
+      "rate",
+      "performance"
+    ],
+    "bank": [
+      "return",
+      "deposit",
+      "rate",
+      "performance",
+      "despite",
+      "annual",
+      "concealed"
+    ]
+  }
+]);
+
   function dropdown(seed){
     return {
       ...seed,uid:seed.id,type:'dropdown',
@@ -1030,7 +1539,7 @@
   }
 
   return {
-    version:'original-reading-2026-09-30.1',
+    version:'original-reading-2026-10-01.1',
     source,
     dropdown:dropdownSeeds.map(dropdown),
     wordbank:wordbankSeeds.map(wordbank)
