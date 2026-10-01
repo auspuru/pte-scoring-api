@@ -9,10 +9,13 @@
   const originalChoiceIndex = (q, displayIndex) => Array.isArray(q?.choiceIndices) ? q.choiceIndices[displayIndex] : displayIndex;
   const filters = { all:'All answers', review:'To improve', correct:'Correct', unanswered:'Unanswered', unassessed:'Unassessed' };
   const hasAnswer = answer => answer.some(value => typeof value === 'string' ? value.trim().length > 0 : value != null);
+  // Playback metadata is diagnostic. A saved response still receives its
+  // answer-key score when playback ends early or its completion event is lost.
+  const audioExcluded = (q,answer,audioState) => ['hcs','hiw'].includes(q.type) && audioState?.status!=='complete' && !hasAnswer(items(answer));
   function models(session, scorer) {
     return session.questions.map((q,index)=>{
       const answer=Array.isArray(session.answers[q.uid])?session.answers[q.uid]:[], points=scorer(q,answer,session.assessments?.[q.uid]);
-      const excluded=['hcs','hiw'].includes(q.type)&&session.audioStates?.[q.uid]?.status!=='complete';
+      const excluded=audioExcluded(q,answer,session.audioStates?.[q.uid]);
       const answered=hasAnswer(answer);
       const status=points.pending?'pending':excluded?'excluded':!answered?'unanswered':points.earned===points.possible?'correct':'review';
       return {q,index,points,status};
@@ -110,7 +113,8 @@
   }
   function question(q, answer, assessment, audioState, points, index, total, label, options = {}) {
     const a = Array.isArray(answer) ? answer : [];
-    const excluded = ['hcs','hiw'].includes(q.type) && audioState?.status !== 'complete';
+    const excluded = audioExcluded(q,a,audioState);
+    const interrupted = ['hcs','hiw'].includes(q.type) && audioState?.status !== 'complete';
     const inline=['dropdown','wordbank'].includes(q.type)&&Boolean(q.passage);
     let response = '', context = '', feedback = '';
     if (q.passage) context = inline?inlinePassage(q,a):'<h3>' + (q.type==='hiw'?'Written transcript':'Passage') + '</h3>' + paragraph(q.passage.replace(/\[\[(\d+)\]\]/g, ' [Blank $1] '));
@@ -152,9 +156,9 @@
     const outcome=points.pending?'pending':excluded?'excluded':!hasAnswer(a)?'unanswered':points.earned===points.possible?'correct':'review';
     const outcomeLabel={pending:'Awaiting assessment',excluded:'Audio incomplete',unanswered:'Unanswered',correct:'Correct',review:'To improve'}[outcome];
     return '<article class="reading-card reading-review-question" data-review-question="' + encodeURIComponent(q.uid) + '" data-result="'+outcome+'"><div class="reading-review-heading"><div><p class="portal-eyebrow">Question ' + (index+1) + ' of ' + total + ' · '+outcomeLabel+'</p><h2>' + escape(label) + '</h2></div><span class="reading-review-points">' + escape(status) + '</span></div>'
-      + context + response + (excluded ? paragraph('Audio did not finish before you moved on. This item is excluded from the graded total; your saved selections appear below the transcript.') : '')
-      + (excluded && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
+      + context + response + (interrupted ? paragraph(excluded ? 'Audio did not finish and no answer was submitted. This item is excluded from the graded total.' : 'Playback was incomplete. Your saved selections have been scored and included in the graded total.') : '')
+      + (interrupted && audioState?.message ? '<p class="reading-note"><strong>Playback status:</strong> ' + escape(audioState.message) + '</p>' : '')
       + (q.type==='swt'?'':'<details class="reading-full-feedback"><summary>Full feedback</summary>')+'<section class="reading-explanation reading-feedback-detail" aria-label="Explanation and feedback"><h3>Explanation &amp; feedback</h3>' + feedback + '</section>'+(q.type==='swt'?'':'</details>') + audio + '</article>';
   }
-  return { question, models, matches, controls, overview, filters, blankFeedback, wordFeedback };
+  return { question, models, matches, controls, overview, filters, blankFeedback, wordFeedback, audioExcluded };
 });

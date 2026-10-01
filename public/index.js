@@ -12466,11 +12466,11 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=20260930-expanded-22', 'reading mock tools'],
+      ['reading-mock-tools.js?v=20261001-hiw-score2', 'reading mock tools'],
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
-      ['reading-review.js?v=20261001-passage-review', 'reading review'],
-      ['reading-practice.js?v=20261001-protected-mock1', 'reading practice']
+      ['reading-review.js?v=20261001-hiw-score2', 'reading review'],
+      ['reading-practice.js?v=20261001-hiw-score2', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');

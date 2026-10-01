@@ -121,13 +121,16 @@ test('Every reading practice screen keeps a final Next question control after th
  assert.deepEqual(tools.prepareQuestion(shuffled, 'reload'), shuffled);
  });
 
-test('Every playback path uses automatic HIW sound in practice, mocks and review', () => {
+test('HIW playback keeps challenge effects for individual practice and uses clean speech for mocks', () => {
  const source = fs.readFileSync(require.resolve('../public/reading-practice'), 'utf8');
- assert.match(source, /function playback\(q\).*mock\.audioPlayback\(q\)/);
+ assert.match(source, /function playback\(q\).*mock\.audioPlayback\(q, !exam\.isExam\(state.session\)\)/);
  const calls = source.split('\n').filter(line => line.includes('speaker.play(') && !line.includes("'soundcheck'"));
  assert.equal(calls.length, 3);
  assert(calls.every(line => line.includes('playback(q)') || line.includes('playback(item)')));
- const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') assert.equal(tools.audioPlayback(value).variant, 'mixed'); Object.values(value).forEach(walk); };
+ const walk = value => { if (!value || typeof value !== 'object') return; if(value.type === 'hiw') {
+   assert.equal(tools.audioPlayback(value).variant, 'mixed');
+   const clean=tools.audioPlayback(value,false);assert.equal(clean.variant,'single');assert.equal(clean.background,undefined);assert.equal(clean.cues,undefined);assert.equal(clean.transcript,value.audioText);
+ } Object.values(value).forEach(walk); };
  walk(bank);
  assert.equal(tools.audioPlayback({type:'hcs'}).variant, 'single');
 });

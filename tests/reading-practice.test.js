@@ -105,14 +105,41 @@ test('HIW keys correspond exactly to transcript/audio differences',()=>{
   assert(q.reasoning.correct);assert(q.reasoning.options);
  }
 });
-test('Provisional SWT and unplayed audio are excluded from confirmed totals, with visible counts',()=>{
+test('Provisional SWT and unanswered unplayed audio are excluded while saved HIW selections keep their score',()=>{
  const questions=compose(bank,'full','v1',swtPassages).questions;
  const swt=questions[0],hiw=questions.find(q=>q.type==='hiw');
  const s={questions,answers:{[swt.uid]:['A complete summary.'],[hiw.uid]:hiw.answers},assessments:{},audioStates:{}};
- const before=totals(s);assert.equal(before.pending,1);assert.equal(before.excluded,4);assert.equal(before.earned,0);
+ const before=totals(s);assert.equal(before.pending,1);assert.equal(before.excluded,3);assert.equal(before.earned,6);
  s.assessments[swt.uid]={result:{...confirmedGrade,score_provisional:true}};assert.equal(totals(s).pending,1);
  s.assessments[swt.uid]={result:confirmedGrade};s.audioStates[hiw.uid]={status:'complete'};
- const after=totals(s);assert.equal(after.pending,0);assert.equal(after.excluded,3);assert.equal(after.earned,14);assert.equal(after.possible,before.possible+15);
+ const after=totals(s);assert.equal(after.pending,0);assert.equal(after.excluded,3);assert.equal(after.earned,14);assert.equal(after.possible,before.possible+9);
+});
+
+test('The screenshot HIW answer earns 6/6 despite interrupted or missing playback metadata, including negative marking',()=>{
+ const review=require('../public/reading-review'),q=bank.mixedMock.audioQuestions.find(q=>q.id==='hiw-evidence-c2');
+ assert.deepEqual(q.answers,[12,17,31,48,86,114]);
+ for(const status of [undefined,'playing','error']) {
+  const audioState=status?{status,message:'Playback was interrupted.'}:undefined;
+  const s={questions:[q],answers:{[q.uid]:q.answers},assessments:{},audioStates:{[q.uid]:audioState}};
+  assert.equal(totals(s).earned,6);assert.equal(totals(s).possible,6);assert.equal(totals(s).excluded,0);
+  assert.equal(review.models(s,score)[0].status,'correct');
+  const html=review.question(q,q.answers,null,audioState,score(q,q.answers),0,1,'Highlight Incorrect Words');
+  assert.match(html,/6\/6 points/);assert.match(html,/saved selections have been scored/);assert.doesNotMatch(html,/Audio item excluded/);
+  s.answers[q.uid]=[...q.answers,0];assert.equal(totals(s).earned,5);assert.equal(totals(s).possible,6);
+  s.answers[q.uid]=[];assert.equal(totals(s).excluded,1);assert.equal(totals(s).possible,0);
+ }
+});
+
+test('Previously excluded HIW attempts recover their totals and practice summaries when saved results reopen',async()=>{
+ const h=client(),q=bank.mixedMock.audioQuestions.find(q=>q.id==='hiw-evidence-c2'),now=Date.now();
+ const completed={id:'saved-hiw-mock',mode:'full',name:'Saved mock',questions:[q],index:0,answers:{[q.uid]:q.answers},assessments:{},audioStates:{[q.uid]:{status:'error',message:'Playback was interrupted.'}},times:{},flags:[],checked:[],done:true,startedAt:now-60000,finishedAt:now-1000,earned:0,possible:0,percent:null,pending:0,excluded:1};
+ const practice={...completed,id:'saved-hiw-practice',mode:'practice',practiceUid:q.uid};
+ h.values.set(storageKey('first'),JSON.stringify({session:completed,history:[completed,practice],drafts:[],practiceResults:{[q.uid]:{earned:0,possible:0,percent:null,finishedAt:practice.finishedAt}}}));
+ await h.ctx.ReadingPractice.open();
+ const saved=snapshot(h);assert.equal(saved.session.earned,6);assert.equal(saved.session.possible,6);
+ assert(saved.history.every(record=>record.earned===6&&record.possible===6&&record.excluded===0));
+ assert.equal(saved.practiceResults[q.uid].earned,6);assert.equal(saved.practiceResults[q.uid].possible,6);
+ assert.deepEqual(saved.session.answers[q.uid],q.answers);assert.equal(saved.session.audioStates[q.uid].status,'error');assert.match(h.host.innerHTML,/6\/6 points/);
 });
 
 test('A complete local SWT estimate counts in mixed Reading totals even without AI-only annotations',()=>{
@@ -677,7 +704,7 @@ test('Switching task libraries parks a running mock until the student resumes it
 test('Feedback filters distinguish partial, blank, pending and excluded answers without changing their points',()=>{
  const review=require('../public/reading-review');
  const questions=[{uid:'partial',type:'dropdown',answers:['a','b']},{uid:'right',type:'mcsa',answer:0},{uid:'wrong',type:'mcsa',answer:0},{uid:'blank',type:'swt'},{uid:'pending',type:'swt'},{uid:'audio',type:'hcs',answer:0}];
- const session={questions,answers:{partial:['a'],right:[0],wrong:[1],blank:['   '],pending:['My response'],audio:[0]},assessments:{},audioStates:{}};
+ const session={questions,answers:{partial:['a'],right:[0],wrong:[1],blank:['   '],pending:['My response'],audio:[]},assessments:{},audioStates:{}};
  const before=JSON.stringify(session),points=totals(session),model=review.models(session,score);
  assert.deepEqual(model.map(item=>item.status),['review','correct','review','unanswered','pending','excluded']);
  const ids=(filter,type='all')=>model.filter(item=>review.matches(item,{filter,type})).map(item=>item.q.uid);

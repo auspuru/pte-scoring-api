@@ -37,7 +37,7 @@
       const items = questions.filter(q => q.type === type);
       const points = items.map(q => {
         const p = score(q, answers[q.uid], assessments[q.uid]);
-        return mock.isAudio(q) && audioStates[q.uid]?.status !== 'complete' ? { ...p, earned: 0, excluded: true } : p;
+        return review.audioExcluded(q,answers[q.uid],audioStates[q.uid]) ? { ...p, earned: 0, excluded: true } : p;
       });
       return { type, label, count: items.length, earned: points.reduce((n,p)=>n+p.earned,0), possible: points.reduce((n,p)=>n+p.possible,0),
         gradedPossible: points.reduce((n,p)=>n+(p.pending || p.excluded ? 0 : p.possible),0),
@@ -49,6 +49,21 @@
     const sum = key => rows.reduce((n,r)=>n+r[key],0);
     const earned = sum('earned'), possible = sum('gradedPossible');
     return { rows, earned, possible, pending: sum('pending'), excluded: sum('excluded'), percent: possible ? Math.round(earned/possible*100) : null };
+  }
+  function refreshSavedResults(reading=state) {
+    let changed=false;
+    for(const record of [reading.session,...reading.history,...reading.drafts].filter(s=>s?.done)) {
+      const {earned,possible,percent,pending,excluded}=totals(record), result={earned,possible,percent,pending,excluded};
+      if(Object.keys(result).some(key=>record[key]!==result[key])) {Object.assign(record,result);changed=true;}
+      if(record.practiceUid) {
+        const before=reading.practiceResults[record.practiceUid];
+        if(!before || before.finishedAt<=record.finishedAt) {
+          const next={...before,earned,possible,percent,finishedAt:record.finishedAt};
+          if(JSON.stringify(before)!==JSON.stringify(next)){reading.practiceResults[record.practiceUid]=next;changed=true;}
+        }
+      }
+    }
+    return changed;
   }
   function storageKey(owner) { return 'ipt_reading_v1:' + encodeURIComponent(String(owner).trim().toLowerCase()); }
   function remaining(session, now = Date.now()) {
@@ -114,6 +129,7 @@
     const merged = progressSync().mergeReading(state, remote);
     // Recalculate display totals using the existing grader, never a sync rule.
     merged.history = merged.history.map(s => ({ ...s, ...totals(s) }));
+    refreshSavedResults(merged);
     // Only preserve an existing session reference. Two empty sessions also have
     // matching optional IDs, but there is no object to update on the home page.
     if (before && merged.session && before.id === merged.session.id) { Object.assign(before, merged.session); merged.session = before; }
@@ -226,6 +242,7 @@
         saveNotice = cloudStatus?.text || 'Progress is saved on this device';
       } catch (_) { saveNotice = 'Saved progress could not be restored on this device'; }
       if (state.session) repairSession(state.session);
+      if(refreshSavedResults())persist();
       host.onclick = click; host.onchange = change; host.oninput = input;
       host.onkeydown = event => {
         if(event.key==='Escape'&&state?.session?.done){
@@ -408,7 +425,7 @@
       ${review?explanation(q,a):''}
       <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
   }
-  function playback(q) { return mock.audioPlayback(q); }
+  function playback(q) { return mock.audioPlayback(q, !exam.isExam(state.session)); }
   function audioHTML(q) {
     const s = state.session, item = s.audioStates?.[q.uid], locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
     const profile = playback(q);
@@ -488,7 +505,7 @@
       const traits = assessment?.result?.trait_scores;
       return `<section class="reading-explanation"><h3>${p.pending?'SWT grade pending':p.earned+'/'+p.possible+' SWT points'}</h3>${p.pending?`<p>${escape(assessment?.message || 'Your response is saved.')}</p><button class="portal-button" data-action="retry-swt" ${assessment?.status==='working'?'disabled':''}>${assessment?.status==='working'?'IPT Brisbane AI is analysing…':'Retry SWT grading'}</button>`:traits?`<p>Content ${traits.content} · Form ${traits.form} · Grammar ${traits.grammar} · Vocabulary ${traits.vocabulary}</p>`:'<p>No summary was submitted.</p>'}${q.sampleResponse?`<details><summary>Example summary</summary><p>${escape(q.sampleResponse)}</p></details>`:''}</section>`;
     }
-    const excluded=mock.isAudio(q) && state.session.audioStates?.[q.uid]?.status!=='complete';
+    const excluded=review.audioExcluded(q,a,state.session.audioStates?.[q.uid]);
     const actual=['mcsa','hcs'].includes(q.type)?[q.answer]:q.answers;
     const display=value=>['mcma','mcsa','hcs'].includes(q.type)?mock.choiceText(q,value):q.type==='reorder'?q.items.find(i=>i.key===value)?.text:q.type==='hiw'?`Word ${value+1}: ${q.corrections.find(c=>c.index===value).written} → ${q.corrections.find(c=>c.index===value).spoken}`:value;
     return `<section class="reading-explanation"><h3>${excluded?'Audio item excluded':(p.earned===p.possible?'Well done':'Review this answer')+' · '+p.earned+'/'+p.possible}</h3>${excluded?'<p>Audio did not complete before submission. This item is excluded from your graded total. You can replay it for review.</p>':''}<ol>${actual.map((correct,i)=>`<li><strong>${q.type==='dropdown'||q.type==='wordbank'?'Blank '+(i+1)+': ':''}${escape(display(correct))}</strong></li>`).join('')}</ol><p>${escape(info.correct||'Compare your response with the answer above, then reread the surrounding passage for the supporting meaning.')}</p>${info.options?`<details><summary>Why other options do not fit</summary><ul>${Object.entries(info.options).map(([option,reason])=>`<li><strong>${escape(option)}:</strong> ${escape(reason)}</li>`).join('')}</ul></details>`:''}${review.blankFeedback(q)}${q.audioText?`<details><summary>Audio transcript</summary><p>${escape(q.audioText)}</p></details>`:''}</section>`;
@@ -806,7 +823,7 @@
     if(d.action==='flag'){s.flags=s.flags.includes(q.uid)?s.flags.filter(x=>x!==q.uid):[...s.flags,q.uid];persist();return renderSession();}
     if(d.action==='submit'){
       const unfinished=s.questions.filter(item=>mock.isAudio(item)&&s.audioStates[item.uid]?.status!=='complete').length;
-      const message=unfinished ? unfinished+' recording'+(unfinished===1?' has':'s have')+' not finished. Those answers will be unassessed if you finish now. Keep listening or replay the audio to include them in your score. Finish anyway?' : 'Finish this reading session and show the answers?';
+      const message=unfinished ? unfinished+' recording'+(unfinished===1?' has':'s have')+' not finished. Your saved selections will be scored; unanswered audio items will remain unassessed. Keep listening or finish and review?' : 'Finish this reading session and show the answers?';
       const accepted=!unfinished || await (typeof globalThis.portalConfirm==='function'
         ? globalThis.portalConfirm(message,{title:'Finish reading session',confirmLabel:'Finish and review'})
         : Promise.resolve(true));

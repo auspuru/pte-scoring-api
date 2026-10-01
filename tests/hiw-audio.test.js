@@ -298,6 +298,38 @@ test('HIW practice has no sound controls and uses automatic fixed distraction au
   h.ctx.ReadingPractice.leave();
 });
 
+async function mockHiwClient(questionId) {
+  const h=await readingClient();
+  h.ctx.passages=[1,2].map(id=>({id,text:('A clear passage about public services and sustainable planning helps students practise their written summaries. ').repeat(3)+id,keyElements:{what:'Sustainable planning improves public services.'}}));
+  await h.click({start:'full'});
+  while(h.snapshot().session.questions[h.snapshot().session.index].type!=='hiw' || questionId && h.snapshot().session.questions[h.snapshot().session.index].id!==questionId) {
+    await h.click({action:'exam-next'});await h.click({action:'exam-confirm'});
+  }
+  return h;
+}
+
+test('Mock HIW uses clean single-speaker speech without background, chirps, phone rings or their labels',async()=>{
+  const h=await mockHiwClient();
+  const s=h.snapshot().session,q=s.questions[s.index];
+  assert.doesNotMatch(h.host.innerHTML,/Office typing|Woodpecker|phone ring|Two speakers/);
+  h.countdown();assert.equal(h.utterances.length,1);assert.equal(h.utterances[0].text,q.audioText);
+  h.utterances[0].onstart();h.fire(700);h.fire(4500);assert.equal(h.nodes.length,0);
+  h.utterances[0].onend();assert.equal(h.snapshot().session.audioStates[q.uid].status,'complete');
+  h.ctx.ReadingPractice.leave();
+});
+
+test('Submitting six saved HIW selections after interrupted playback keeps 6/6 in the results',async()=>{
+  const h=await mockHiwClient('hiw-evidence-c2'),s=h.snapshot().session,q=s.questions[s.index];
+  h.countdown();h.utterances[0].onstart();
+  for(const index of q.answers)h.click({hiwWord:String(index)});
+  h.utterances[0].onerror({error:'interrupted'});await h.click({action:'exam-next'});await h.click({action:'exam-confirm'});
+  const saved=h.snapshot();assert.equal(saved.session.done,true);assert.equal(saved.history[0].earned,6);
+  const row=h.ctx.ReadingPractice.totals(saved.session).rows.find(row=>row.type==='hiw');assert.equal(row.earned,6);assert.equal(row.gradedPossible,6);
+  const card=h.host.innerHTML.split('data-review-question="'+encodeURIComponent(q.uid)+'"')[1].split('</article>')[0];
+  assert.match(card,/6\/6 points/);assert.match(card,/Playback status:/);assert.doesNotMatch(card,/Audio item excluded/);
+  h.ctx.ReadingPractice.leave();
+});
+
 test('Infrastructure practice warns before incomplete submission and grades six correct selections after listening finishes', async () => {
   const h = await readingClient(), q = bank.practiceLibraries.find(l => l.id === 'hiw').questions.find(q => q.id === 'hiw-c2-07');
   await h.click({ practiceUid: q.uid });

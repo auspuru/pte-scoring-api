@@ -440,7 +440,7 @@
       options = { ...options };
       const effectsReady = unlock();
       if (!env.speechSynthesis || !env.SpeechSynthesisUtterance) {
-        onState(key, 'error', 'Audio is unavailable in this browser. Open the practice in a browser with an English speech voice. This item will be excluded if audio cannot play.');
+        onState(key, 'error', 'Audio is unavailable in this browser. Open the practice in a browser with an English speech voice. Your saved selections can still be scored.');
         return;
       }
       const ticket = serial, variant = options.variant || 'single', twoSpeakers = variant === 'two-speakers' || variant === 'mixed';
