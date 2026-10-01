@@ -56,7 +56,7 @@
     return session.deadline == null ? null : Math.max(0, Math.ceil((session.deadline - now) / 1000));
   }
   function parkSession(session=state?.session){
-    if(!session||session.done||session.deadline==null||Number.isFinite(session.pausedRemainingSeconds))return false;
+    if(!session||session.done||session.integrity?.protected||session.deadline==null||Number.isFinite(session.pausedRemainingSeconds))return false;
     const now=Date.now(),stage=timing.current(session);
     session.pausedRemainingSeconds=Math.max(0,Math.ceil((session.deadline-now)/1000));session.pausedAt=now;session.deadline=null;
     if(stage?.deadline!=null){stage.pausedRemainingSeconds=Math.max(0,Math.ceil((stage.deadline-now)/1000));stage.deadline=null;}
@@ -148,7 +148,15 @@
     const active = enabled && !host?.hidden;
     host?.classList?.toggle('reading-exam-active',active);
     document.body?.classList?.toggle('reading-exam-open',active);
-    if (typeof window !== 'undefined') window.PortalExamMode?.set('reading', active, host);
+    if (typeof window !== 'undefined') window.PortalExamMode?.set('reading', active, host, active && state?.session?.integrity?.protected ? {
+      onEvent(event) {
+        const session=state?.session;
+        if(!session || session.done) return;
+        session.integrity.events=[...(session.integrity.events||[]),{...event,questionIndex:session.index}].slice(-200); persist();
+      },
+      onLock() { recordTime(); cancelAudio(); persist(); },
+      onResume() { if(!expireSession())renderSession(); }
+    } : null);
   }
   function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); parkSession(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function showRequested(request) {
@@ -286,10 +294,15 @@
           plan={questions:[{...q}],minutes:0,name:q.title};
         }
       }
+      const protection = typeof window !== 'undefined' ? window.PortalExamMode : null;
+      const protectedMock = exam.isExam({mode}) && typeof protection?.prepare === 'function';
+      if (protectedMock && !await protection.prepare('reading',host)) return;
+      if (ticket !== generation || startTicket !== startGeneration || startedOwner !== identity() || token !== authToken()) return;
       const startedAt = Date.now();
       cancelAudio();
       const preparedQuestions = mock.prepareQuestions(plan.questions, startedAt + ':' + mode);
       const session = { id: startedAt.toString(36) + '-' + Math.random().toString(36).slice(2,8), mode, name: catalogue?.readingMocks(bank).find(m=>m.id===mode)?.title || plan.name, formatVersion: bank.version, questions: preparedQuestions, index: 0, answers: {}, assessments: {}, audioStates: {}, times: {}, flags: [], startedAt, deadline: timed ? startedAt + plan.minutes * 60000 : null, done: false, checked: [] };
+      if(protectedMock) session.integrity={protected:true,events:[]};
       timing.initialise(session, plan.stages, startedAt);
       if (state.session && !state.session.done) state.drafts = [state.session, ...(state.drafts || []).filter(s => s.id !== state.session.id)];
       state.session = session;
@@ -297,6 +310,7 @@
       libraryView=null;
       selectedWord = ''; selectedParagraph = {}; examNotice = null; activeSince = Date.now(); persist(); render();
     } catch (error) {
+      if (ticket === generation && startTicket === startGeneration) setExamMode(false);
       if (ticket === generation && startTicket === startGeneration && startedOwner === identity() && status) status.textContent = error.message || 'This mock could not start. Please try again.';
     } finally { if (ticket === generation && startTicket === startGeneration) starting = false; }
   }
@@ -311,7 +325,7 @@
     host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
       ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':Number.isFinite(state.session.pausedRemainingSeconds)?'Your answers are saved. The timer is paused until you continue.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 23-minute timer.':'Your answers are saved.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
       <p data-start-status role="status" aria-live="polite"></p>
-      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Your timer pauses if you leave the test screen and resumes when you continue.</p></details>
+      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Mocks require fullscreen. Leaving the test window locks the questions and records an interruption. The timer continues while you are away.</p></details>
       ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
       <details class="reading-home-help" data-reading-recent-results ${recentResultsOpen?'open':''}><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
     const recentDetails = host?.querySelector?.('[data-reading-recent-results]');
@@ -371,6 +385,9 @@
     const s=state.session, q=s.questions[s.index], a=s.answers[q.uid]||[];
     if (s.done) return renderReview();
     const testing=exam.isExam(s)&&!s.done;
+    if(testing && typeof window !== 'undefined' && window.PortalExamMode?.prepare && !s.integrity?.protected) {
+      resumeParkedSession(s); s.integrity={protected:true,events:[]}; persist();
+    }
     setExamMode(testing);
     if(mock.isAudio(q))prepareAudio(q);
     if(testing) {
@@ -399,14 +416,14 @@
   }
   function prepareAudio(q) {
     const s=state?.session;
-    if (!s || s.done || !mock.isAudio(q) || !viewingQuestion || host.hidden || document.hidden || s.audioStates[q.uid]) return;
+    if (!s || s.done || !mock.isAudio(q) || !viewingQuestion || host.hidden || document.hidden || (typeof window !== 'undefined' && window.PortalExamMode?.isLocked?.('reading')) || s.audioStates[q.uid]) return;
     const seconds=bank.mixedMock.audioPreparationSeconds;
     s.audioStates[q.uid]={status:'countdown',readyAt:Date.now()+seconds*1000,message:'Audio starts automatically in '+seconds+' seconds. Get ready to listen.'};
     persist();
   }
   function updateAutoplay() {
     const s=state?.session;
-    if(!owner||identity()!==owner||!s||s.done||!viewingQuestion||host.hidden||document.hidden)return;
+    if(!owner||identity()!==owner||!s||s.done||!viewingQuestion||host.hidden||document.hidden||(typeof window !== 'undefined' && window.PortalExamMode?.isLocked?.('reading')))return;
     const q=s.questions[s.index]; if(!mock.isAudio(q))return;
     prepareAudio(q);
     const item=s.audioStates[q.uid]; if(item?.status!=='countdown')return;
@@ -519,6 +536,7 @@
     }else{
       host.innerHTML='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
         + practiceNavigation
+        + (typeof window !== 'undefined' ? window.PortalExamMode?.reportHTML?.(s.integrity)||'' : '')
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Read the full passages with your answers and corrections in context.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'

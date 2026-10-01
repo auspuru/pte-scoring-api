@@ -13,6 +13,17 @@ function session(id = 'mock-a') {
     startedAt: 1000, updatedAt: 1000, deadline: 1501000, answers: {}, assessments: {}, audioStates: {}, times: {}, checked: [], flags: [], done: false };
 }
 
+test('Reading interruption records survive packing and stale cloud merges without replacing answers',()=>{
+  const a=session(),b=clone(a);
+  a.answers[q.uid]=['answer'];b.answers[q.uid]=['answer'];
+  a.integrity={protected:true,events:[{id:'one',reason:'window-blur',at:2000}]};
+  b.integrity={protected:true,events:[{id:'two',reason:'tab-hidden',at:3000}]};b.updatedAt=4000;
+  const merged=P.unpackReading(P.packReading(P.mergeReading({session:a},{session:b}))).session;
+  assert.deepEqual(merged.integrity.events.map(event=>event.id),['one','two']);assert.deepEqual(merged.answers[q.uid],['answer']);
+  const stale=P.mergeReading({session:merged},{session:session()}).session;
+  assert.equal(stale.integrity.events.length,2);assert(stale.integrity.protected);
+});
+
 test('SWT merges every passage and keeps newer drafts, cleared text, scores and history', () => {
   const a = { attempted: [1], summaries: { 1: { text: 'new', timestamp: 300 } }, scores: { 1: { overall_score: 80, __timestamp: 300 } }, history: { 1: [{ text: 'new', timestamp: 300 }] } };
   const b = { attempted: [2], summaries: { 1: { text: 'old', timestamp: 100 }, 2: { text: 'other', timestamp: 200 } }, scores: { 1: { overall_score: 40, __timestamp: 100 } }, history: { 1: [{ text: 'old', timestamp: 100 }] } };

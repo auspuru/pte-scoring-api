@@ -203,7 +203,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
-        byType:summary.byType });
+        byType:summary.byType, integrity:current.integrity || null });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
@@ -217,7 +217,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if (existing) return reconcile(existing);
       return { id,testId,title:mock?.title || individual.title,kind:mock ? 'mock' : individual.type,questions:q,index:0,
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
-        answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null) };
+        answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null),
+        ...(mock ? {integrity:{protected:true,events:[]}} : {}) };
     });
     assessSubmitted(req.labUser, a);
     res.json(present(a));
@@ -235,6 +236,21 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     });
     assessSubmitted(req.labUser, a);
     res.json(present(a));
+  }));
+  router.post('/attempts/:id/integrity', route(async(req,res) => {
+    const events=req.body?.events;
+    const allowed=new Set(['tab-hidden','window-blur','fullscreen-exit','fullscreen-required','external-paste-blocked','external-drop-blocked']);
+    if(!Array.isArray(events) || !events.length || events.length>20 || events.some(event=>!event || typeof event.id!=='string' || !/^[a-zA-Z0-9-]{1,128}$/.test(event.id) || !allowed.has(event.reason) || !Number.isSafeInteger(event.at) || event.at<0)) throw bad('Invalid interruption record.');
+    const a=await store.update(req.labUser,req.params.id,value=>{
+      if(!value) throw bad('Attempt not found.',404);
+      if(value.kind!=='mock') throw bad('Protected mock required.',409);
+      const stored=value.integrity?.events || [], ids=new Set(stored.map(event=>event.id));
+      for(const event of events) if(!ids.has(event.id) && stored.length<200) {
+        stored.push({id:event.id,reason:event.reason,at:event.at,receivedAt:Date.now(),questionIndex:value.index}); ids.add(event.id);
+      }
+      value.integrity={protected:true,events:stored}; return value;
+    });
+    res.set('Cache-Control','no-store'); res.json(a.integrity);
   }));
   router.post('/attempts/:id/answer', route(async(req,res) => {
     const { index,text,revision,next,notes,playback } = req.body || {};

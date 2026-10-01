@@ -20,7 +20,11 @@
   const audioQuestion = q => ['sst','wfd'].includes(q.type);
   function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
   function setMockMode(enabled) {
-    window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root);
+    window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root, enabled ? {
+      onEvent:recordInterruption,
+      onLock() { stopAudio(); writeDraft(); saveAnswer(false); },
+      onResume() { if(attempt?.status==='active')showAttempt(); }
+    } : null);
   }
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
@@ -39,15 +43,20 @@
     } catch (_) { /* localStorage fallback below */ }
     return storage.get('pte_session_token') || '';
   }
-  async function api(path, body) {
+  async function api(path, body, keepalive=false) {
     const response = await fetch('/api/writing-lab'+path, {method:body===undefined?'GET':'POST',cache:'no-store',
-      headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(150000)});
+      headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(150000),keepalive});
     let value;
     try { value=await response.json(); } catch(_) { throw Error('The connection was interrupted. Please retry.'); }
     if(!response.ok) throw Error(value.error || 'The request could not be completed.');
     return value;
   }
   function setAttempt(value) {
+    if(value?.kind==='mock') {
+      const local=attempt?.id===value.id ? attempt.integrity?.events || [] : [];
+      const events=new Map([...pendingIntegrity(value.id),...local,...(value.integrity?.events || [])].map(event=>[event.id,event]));
+      value.integrity={protected:true,events:[...events.values()].sort((a,b)=>a.at-b.at).slice(0,200)};
+    }
     attempt=value; offset=value.serverNow-Date.now(); saveConflict=false;
     if(value?.status==='submitted') (value.questions||[]).forEach(q=>seenQuestionIds.add(q.id));
   }
@@ -61,6 +70,46 @@
     if(status && !saveConflict) status.textContent=saved?'Saved on this device · syncing…':'Device saving unavailable · syncing to your account…';
   }
   function draft() { try { return JSON.parse(storage.get(draftKey())||'null'); } catch(_) { return null; } }
+  const integritySending=new Set();
+  const integrityQueues=new Map();
+  const integrityKey=id=>'ipt-mock-interruptions:'+username+':'+id;
+  function pendingIntegrity(id=attempt?.id) {
+    const key=integrityKey(id);
+    if(integrityQueues.has(key))return integrityQueues.get(key);
+    try { const value=JSON.parse(storage.get(key)||'[]'); return Array.isArray(value) ? value : []; } catch(_) { return []; }
+  }
+  function recordInterruption(event) {
+    if(attempt?.kind!=='mock' || attempt.status!=='active')return;
+    attempt.integrity ||= {protected:true,events:[]};
+    if(attempt.integrity.events.length<200)attempt.integrity.events.push({...event,questionIndex:attempt.index});
+    const key=integrityKey(attempt.id), pending=[...pendingIntegrity(),event].slice(0,200);
+    integrityQueues.set(key,pending);storage.put(key,JSON.stringify(pending));
+    flushIntegrity();
+  }
+  async function flushIntegrity() {
+    if(attempt?.kind!=='mock' || !username)return;
+    const id=attempt.id, user=username, key=integrityKey(id), pending=pendingIntegrity(id);
+    if(!pending.length || integritySending.has(key))return;
+    integritySending.add(key);
+    let again=false;
+    try {
+      const sent=pending.slice(0,20), result=await api('/attempts/'+id+'/integrity',{events:sent},true);
+      if(!Array.isArray(result?.events))throw Error('Interruption record not acknowledged.');
+      if(username!==user)return;
+      const ids=new Set(sent.map(event=>event.id)), remaining=pendingIntegrity(id).filter(event=>!ids.has(event.id));
+      if(remaining.length){integrityQueues.set(key,remaining);storage.put(key,JSON.stringify(remaining));}
+      else {integrityQueues.delete(key);storage.remove(key);}
+      if(attempt?.id===id) {
+        const events=new Map([...(attempt.integrity?.events || []),...result.events].map(event=>[event.id,event]));
+        attempt.integrity={protected:true,events:[...events.values()].sort((a,b)=>a.at-b.at).slice(0,200)};
+        const reportNode=root.querySelector?.('[data-integrity-report]');
+        if(reportNode)reportNode.innerHTML=window.PortalExamMode?.reportHTML?.(attempt.integrity)||'';
+      }
+      again=remaining.length>0;
+    } catch(_) { /* Keep the device queue and retry when the connection returns. */ }
+    finally { integritySending.delete(key); }
+    if(again)flushIntegrity();
+  }
   function returnToPortal(section) {
     if (inPortal && typeof window.switchSection === 'function') return window.switchSection(section);
     if (window.parent !== window) window.parent.postMessage({ type: 'writing-lab-navigate', section }, location.origin);
@@ -121,11 +170,13 @@
     if (serial!==navigationSerial || !workspaceVisible) return;
     button.disabled=true;
     try {
+      if(mock && window.PortalExamMode?.prepare && !await window.PortalExamMode.prepare('writing',portalShell || root)) {button.disabled=false;return;}
+      if(serial!==navigationSerial || !workspaceVisible)return;
       const started=await api('/attempts',{id:crypto.randomUUID(),testId});
       if (serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(started);
       showAttempt();
-    } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
+    } catch(e) { if(serial===navigationSerial && workspaceVisible) {setMockMode(false);notify(e.message);button.disabled=false;} }
   }
   async function resume(id,button,serial=++navigationSerial) {
     button.disabled=true;
@@ -139,6 +190,7 @@
       }
       historyKind=attempt.kind;
       showAttempt();
+      flushIntegrity();
       if(attempt?.status==='active') saveAnswer(false);
     } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
@@ -283,7 +335,7 @@
     };
     const play=async()=>{
       clearInterval(audioCountdown);
-      if(!current() || audioFinished || document.hidden || starting) return;
+      if(!current() || audioFinished || document.hidden || window.PortalExamMode?.isLocked?.('writing') || starting) return;
       if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); }
       if(attempt.status==='active' && attempt.deadline<=Date.now()+offset) { tick(); return; }
       starting=true;
@@ -334,7 +386,7 @@
         status.textContent='Recording starts in '+remaining+'…';
         clearInterval(audioCountdown);
         audioCountdown=setInterval(()=>{
-          if(!current() || document.hidden || !workspaceVisible) { clearInterval(audioCountdown); return; }
+          if(!current() || document.hidden || !workspaceVisible || window.PortalExamMode?.isLocked?.('writing')) { clearInterval(audioCountdown); return; }
           if(--remaining<=0) { clearInterval(audioCountdown); play(); }
           else status.textContent='Recording starts in '+remaining+'…';
         },1000);
@@ -391,7 +443,7 @@
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Estimated PTE practice score. This is not an official Pearson PTE score.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -433,6 +485,7 @@
   }
   async function edit(command) {
     const editor=document.getElementById('answer');if(!editor || editor.disabled || editor.readOnly) return;
+    if(attempt?.kind==='mock' && window.PortalExamMode?.edit?.(command,editor))return;
     const start=editor.selectionStart,end=editor.selectionEnd;
     try {
       if(command==='paste') { const text=await navigator.clipboard.readText();editor.setRangeText(text,start,end,'end');onInput(); }
@@ -521,10 +574,10 @@
     }
   });
 
-  window.addEventListener('beforeunload',e=>{ if(attempt?.status==='active') {writeDraft();e.preventDefault();e.returnValue='';} });
-  document.addEventListener('visibilitychange',()=>{if(document.hidden) {stopAudio();writeDraft();saveAnswer(false);} else tick();});
-  window.addEventListener('online',()=>saveAnswer(false));
+  window.addEventListener('beforeunload',e=>{ if(attempt?.status==='active') {writeDraft();flushIntegrity();e.preventDefault();e.returnValue='';} });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden) {stopAudio();writeDraft();saveAnswer(false);} else {tick();flushIntegrity();}});
+  window.addEventListener('online',()=>{saveAnswer(false);flushIntegrity();});
   window.addEventListener('storage',event=>{if(event.key==='pte_session_token') location.reload();});
-  setInterval(()=>{if(attempt?.status==='active' && !moving) saveAnswer(false);},15000);
+  setInterval(()=>{if(attempt?.status==='active' && !moving) saveAnswer(false);flushIntegrity();},15000);
   if(!inPortal) boot();
 })();

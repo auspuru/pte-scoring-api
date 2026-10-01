@@ -172,6 +172,10 @@
       a.audioStates?.[k]?.status === 'complete' ? copy(a.audioStates[k]) : b.audioStates?.[k]?.status === 'complete' ? copy(b.audioStates[k]) :
         newer(a.audioStates?.[k], b.audioStates?.[k], a.updatedAt, b.updatedAt)]));
     s.times = maxMap(a.times, b.times);
+    if(a.integrity?.protected || b.integrity?.protected) {
+      const events = new Map([...list(a.integrity?.events),...list(b.integrity?.events)].filter(event=>event && typeof event.id==='string').map(event=>[event.id,event]));
+      s.integrity={protected:true,events:[...events.values()].sort((x,y)=>x.at-y.at).slice(-200)};
+    }
     s.checked = [...new Set([...list(a.checked), ...list(b.checked)])];
     s.stageIndex = Math.max(a.stageIndex || 0, b.stageIndex || 0);
     if (s.stages) {

@@ -52,7 +52,7 @@ function harness({ audioReadyState = 4 } = {}) {
   };
   context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){this.events[name]=fn;},scrollTo(){}};
   vm.createContext(context);
-  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
+  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
   const hooks=context.window.testApi;
   return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
@@ -65,6 +65,45 @@ function attempt(index=3) {
 }
 function open(h,a) { a.serverNow=100000;h.hooks.set(a);h.hooks.showAttempt(); }
 async function flush() { for(let i=0;i<5;i++) await new Promise(resolve=>setImmediate(resolve)); }
+
+test('Writing mock creation waits for protected preflight and cancelling starts no server attempt',async()=>{
+  for(const accepted of [false,true]) {
+    const h=harness();h.hooks.setCatalog({mocks:bank.mocks,spoken:[],dictation:[]});
+    for(const id of ['confirm-title','confirm-text','confirm-ok','confirm-cancel'])h.nodes.set(id,{textContent:''});
+    const dialog=h.nodes.get('confirm-dialog');dialog.close=()=>dialog.onclose();
+    let ready;h.context.window.PortalExamMode={prepare:()=>new Promise(resolve=>ready=resolve),set(){}};
+    h.context.reply=attempt(0);const button={disabled:false},starting=h.hooks.start(bank.mocks[0].id,button);
+    h.nodes.get('confirm-ok').onclick();await flush();
+    assert.equal(h.requests.length,0);assert.equal(h.hooks.current(),null);
+    ready(accepted);await starting;
+    assert.equal(h.requests.filter(request=>request.url==='/api/writing-lab/attempts').length,accepted?1:0);
+    if(!accepted)assert.equal(button.disabled,false);
+  }
+});
+
+test('Writing interruption records retry after offline recovery and survive stale server snapshots without changing the deadline',async()=>{
+  const h=harness(),initial=attempt(0);open(h,initial);let online=false;
+  h.context.fetch=async(url,options)=>{
+    h.requests.push({url,body:JSON.parse(options.body),keepalive:options.keepalive});
+    if(!online)throw Error('Offline');
+    return {ok:true,json:async()=>({protected:true,events:JSON.parse(options.body).events.map(event=>({...event,receivedAt:200000}))})};
+  };
+  h.hooks.recordInterruption({id:'interruption-1',reason:'window-blur',at:100000});await flush();
+  const key='ipt-mock-interruptions:tester:test-id';assert(h.memory.has(key));
+  h.hooks.set({...initial,integrity:{protected:true,events:[]}});assert.equal(h.hooks.current().integrity.events.length,1);
+  online=true;await h.hooks.flushIntegrity();assert(!h.memory.has(key));
+  assert.equal(h.hooks.current().integrity.events[0].receivedAt,200000);assert.equal(h.hooks.current().deadline,initial.deadline);
+  assert(h.requests.every(request=>request.keepalive));
+  const practice=attempt(3);practice.kind='sst';open(h,practice);const count=h.requests.length;
+  h.hooks.recordInterruption({id:'practice',reason:'tab-hidden',at:100000});await flush();assert.equal(h.requests.length,count);
+});
+
+test('Protected Writing clipboard controls delegate to the internal clipboard and do not access the system clipboard',async()=>{
+  const h=harness(),calls=[];open(h,attempt(0));
+  h.context.window.PortalExamMode={edit:(command,editor)=>{calls.push({command,id:editor.id});return true;}};
+  h.context.navigator.clipboard={readText(){throw Error('System clipboard must not be read');},writeText(){throw Error('System clipboard must not be written');}};
+  await h.hooks.edit('paste');assert.deepEqual(calls,[{command:'paste',id:'answer'}]);
+});
 
 test('Writing mocks show only forward navigation and release exam mode after submission or suspension', async () => {
   const h=harness(),calls=[];

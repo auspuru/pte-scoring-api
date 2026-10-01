@@ -1,5 +1,18 @@
 /* Mock attempts occupy the viewport; portal controls return after submission. */
 body.portal-exam-active { overflow: hidden; }
+.portal-exam-guard[hidden] { display: none !important; }
+.portal-exam-guard {
+  position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center;
+  width: 100%; height: 100dvh; max-width: none; max-height: none; margin: 0; border: 0; box-sizing: border-box;
+  padding: 24px; overflow-y: auto; background: #edf2f7; color: #173246; color-scheme: light;
+}
+.portal-exam-guard-card { width: min(100%,540px); padding: 32px; border: 1px solid #c5d3de; border-radius: 16px; background: white; box-shadow: 0 12px 48px #16324615; }
+.portal-exam-guard-card h2 { font-size: 24px; margin: 0 0 16px; }
+.portal-exam-guard-card p { line-height: 1.6; }
+.portal-exam-guard-card button { margin: 8px 8px 0 0; }
+.portal-exam-guard-error { color: #a12d2d; }
+.portal-exam-report { padding: 16px 20px; margin: 16px 0; border: 1px solid #c5d3de; border-radius: 8px; background: #f6f8fa; color: #173246; }
+.portal-exam-report summary { cursor: pointer; font-weight: 600; }
 [data-exam-blocked] { display: none !important; }
 body.portal-exam-active .app-shell { grid-template-columns: minmax(0,1fr); }
 .portal-exam-surface {

@@ -325,6 +325,27 @@ const timing=require('../public/reading-session-timing');
 function clockFor(h){let now=Date.now();h.ctx.Date=class extends Date{static now(){return now;}};return {get now(){return now;},set(value){now=value;},add(ms){now+=ms;}};}
 function nextQuestion(h){h.click({action:'exam-next'});h.click({action:'exam-confirm'});}
 function snapshot(h){return JSON.parse(h.values.get(storageKey('first')));}
+test('Protected Reading waits for fullscreen before starting, records departures and keeps its deadline while hidden',async()=>{
+ const h=client(),clock=clockFor(h),listeners=new Map();let ready,options;
+ h.ctx.document.addEventListener=(name,fn)=>listeners.set(name,fn);h.ctx.document.removeEventListener=name=>listeners.delete(name);
+ h.ctx.window={PortalExamMode:{prepare:()=>new Promise(resolve=>ready=resolve),set:(owner,enabled,pane,value)=>{if(enabled)options=value;},isLocked:()=>false}};
+ await h.ctx.ReadingPractice.open();const starting=h.click({start:'sectional-1'});
+ assert.equal(JSON.parse(h.values.get(storageKey('first'))||'{}').session||null,null);
+ clock.add(120000);ready(true);await starting;
+ let s=snapshot(h).session;assert.equal(s.startedAt,clock.now);assert(s.integrity.protected);const deadline=s.deadline;
+ options.onEvent({id:'departure-1',reason:'tab-hidden',at:clock.now});h.ctx.document.hidden=true;listeners.get('visibilitychange')();
+ assert.equal(snapshot(h).session.deadline,deadline);assert.equal(snapshot(h).session.pausedRemainingSeconds,undefined);
+ clock.add(120000);h.ctx.document.hidden=false;listeners.get('visibilitychange')();s=snapshot(h).session;
+ assert.equal(s.deadline,deadline);assert.equal(s.integrity.events.length,1);
+ h.ctx.ReadingPractice.leave();assert.equal(snapshot(h).session.deadline,deadline);
+});
+
+test('Cancelling protected Reading preflight leaves no new attempt, and individual practice skips protection',async()=>{
+ const h=client();let preflights=0;
+ h.ctx.window={PortalExamMode:{prepare:async()=>{preflights++;return false;},set(){}}};
+ await h.ctx.ReadingPractice.open();await h.click({start:'sectional-1'});assert.equal(snapshot(h).session,null);
+ await h.click({start:'practice'});assert.equal(snapshot(h).session.mode,'practice');assert.equal(snapshot(h).session.integrity,undefined);assert.equal(preflights,1);
+});
 async function mixedClient(withAudio=false){const h=client(),clock=clockFor(h);let audio;if(withAudio){audio=speechHarness();Object.assign(h.ctx,audio.env);}h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();await h.click({start:'full'});return {h,clock,audio};}
 function goToAudio(h){const index=snapshot(h).session.questions.findIndex(q=>q.type==='hcs');while(snapshot(h).session.index<index)nextQuestion(h);}
 
