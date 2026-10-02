@@ -20,6 +20,8 @@
   border-color:rgba(255,255,255,.70);
 }
 .portal-nav-emoji>img{width:100%;height:100%;object-fit:contain}
+.portal-nav-emoji[data-emoji="ipt"]{width:46px;min-width:46px;flex-basis:46px;padding:3px;background:#fff;box-shadow:none}
+.portal-emoji-context[data-emoji="ipt"]{width:64px;background:#fff;box-shadow:none}
 .portal-nav-emoji::after{inset:2px;border-radius:8px}
 .portal-nav-emoji .fx{transform:scale(.42);transform-origin:center}
 .sidebar-menu .nav-item.active .portal-nav-emoji{
