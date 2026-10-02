@@ -4837,8 +4837,7 @@ app.post('/api/grade', async (req, res) => {
         summary_assessment: contentVerdict.summary_assessment || null,
         feels_connected: contentVerdict.cohesion ? contentVerdict.cohesion !== 'weak' : true,
         cohesion: contentVerdict.cohesion || 'unknown',
-        feedback_note: [contentVerdict.feedback_note, contentVerdict.consistency_review_note].filter(Boolean).join(' '),
-        consistency_review_status: contentVerdict.consistency_review_status || (contentVerdict.consistency_reviewed ? 'reviewed' : 'not-required'),
+        feedback_note: contentVerdict.feedback_note || '',
         source: contentVerdict.source || 'local_fallback',
         score_adjusted: contentVerdict.content_score_adjusted || null,
         // v19.7.2: surface the headline-rescue audit so debugging is easy.

@@ -329,26 +329,9 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError);
 
-  let review;
-  try {
-    review = await callAndNormalizeReview(question, essay, call, onAttemptError);
-  } catch (error) {
-    // The independent review improves consistency, but a malformed secondary
-    // response must never discard an already validated primary assessment.
-    const fallback = {
-      ...primary,
-      subjectiveReview: {
-        source: 'primary-only',
-        status: 'independent-review-unavailable',
-        primary: {
-          content: primary.diagnosticScores?.content ?? primary.scores.content,
-          linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
-          coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
-        }
-      }
-    };
-    return { assessment: fallback, primaryRaw };
-  }
+  // Final scores require the independent assessment. A failed review remains
+  // retryable and must not publish or cache a primary-only score.
+  const review = await callAndNormalizeReview(question, essay, call, onAttemptError);
 
   if (!needsResolver(primary, review)) {
     const agreed = applySubjectiveDecision(primary, {
@@ -367,28 +350,9 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
     return { assessment: agreed, primaryRaw };
   }
 
-  try {
-    const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError);
-    return {
-      assessment: applySubjectiveDecision(primary, resolved, 'resolver'),
-      primaryRaw
-    };
-  } catch (error) {
-    const fallback = {
-      ...primary,
-      subjectiveReview: {
-        source: 'primary-only',
-        status: 'resolver-unavailable',
-        primary: {
-          content: primary.diagnosticScores?.content ?? primary.scores.content,
-          linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
-          coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
-        },
-        independent: review.scores
-      }
-    };
-    return { assessment: fallback, primaryRaw };
-  }
+  // Material disagreement must be resolved before a final score is released.
+  const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError);
+  return { assessment: applySubjectiveDecision(primary, resolved, 'resolver'), primaryRaw };
 }
 
 module.exports = {

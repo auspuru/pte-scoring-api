@@ -117,7 +117,7 @@ test('Recovery never fabricates arrays, overrides conflicting fields or accepts 
   }
 });
 
-test('A recovered complete model assessment needs no second call and can be cached normally', async () => {
+test('Recovered assessments still require the second review before caching', async () => {
   let calls = 0;
   const service = createJudgmentService({ policyVersion: 'format-regression', buildPrompt: () => 'Assess the fixture.',
     call: async () => { calls++; return format.response(envelope(embedded({ grammar_annotations: [], vocabulary_annotations: [] }))); },
@@ -126,7 +126,7 @@ test('A recovered complete model assessment needs no second call and can be cach
     const result = await service.judge(fixture.summary, fixture.passage, 'Fixture ideas');
     assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
   }
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
 });
 
 test('Truncated and missing provider responses never become confirmed scores', () => {

@@ -17,11 +17,11 @@ test('Student and sample requests for the same response share one complete asses
   const svc = service(async () => { calls++; await Promise.resolve(); return good(); });
   const [student, reference] = await Promise.all([invoke(svc), invoke(svc)]);
   assert.deepEqual(student, reference);
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
   student.summary_assessment.relationships_clear = false;
   const repeat = await invoke(svc);
   assert.equal(repeat.summary_assessment.relationships_clear, true, 'Route mutations must not contaminate the cache');
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
 });
 
 test('Changed passage, diagnostics or rubric cannot reuse an old assessment', async () => {
@@ -30,9 +30,26 @@ test('Changed passage, diagnostics or rubric cannot reuse an old assessment', as
   await invoke(svc);
   await svc.judge(fixture.summary, fixture.passage + ' New information.', 'diagnostic ideas');
   await svc.judge(fixture.summary, fixture.passage, 'updated ideas');
-  assert.equal(calls, 3);
+  assert.equal(calls, 6);
   const other = service(async () => good(), { policyVersion: 'new' });
   assert.notEqual(svc.keyFor('a', 'b', 'c'), other.keyFor('a', 'b', 'c'));
+});
+
+test('An undisputed first score stays pending until the second assessment finishes', async () => {
+  let release, started;
+  const secondStarted = new Promise(resolve => { started = resolve; });
+  const second = new Promise(resolve => { release = resolve; });
+  let calls = 0, finished = false;
+  const svc = service(async () => {
+    if (++calls === 1) return good();
+    started(); return second;
+  });
+  const task = invoke(svc).then(result => { finished = true; return result; });
+  await secondStarted;
+  assert.equal(finished, false);
+  release(good());
+  assert.equal((await task).consistency_reviewed, true);
+  assert.equal(calls, 2);
 });
 
 test('A disputed relationship gets an independent review, not an automatic full-score override', async () => {
@@ -66,15 +83,12 @@ test('A genuine missing cause confirmed by the review stays below full content',
   assert.equal(result.full_content_eligible, false);
 });
 
-test('Unavailable optional review retains a validated first assessment and allows a later review retry', async () => {
+test('Unavailable second review is provisional and is not cached as a confirmed deduction', async () => {
   const disputed = good(); disputed.summary_assessment.relationships_clear = false;
   let calls = 0;
   const svc = service(async () => { calls++; return calls % 2 ? disputed : null; });
-  const raw = await invoke(svc);
-  const result = applyScoringPolicy(raw, fixture.summary);
-  assert.equal(raw.consistency_review_status, 'primary-only');
-  assert.equal(result.needs_semantic_review, false);
-  assert.equal(result.content_score, 3);
+  const result = applyScoringPolicy(await invoke(svc), fixture.summary);
+  assert.equal(result.needs_semantic_review, true);
   assert.equal(result.full_content_eligible, false);
   await invoke(svc);
   assert.equal(calls, 4);
@@ -87,24 +101,7 @@ test('Failed or malformed assessments are retried rather than cached', async () 
   await invoke(svc);
   await invoke(svc);
   await invoke(svc);
-  assert.equal(calls, 3);
-});
-
-test('Production annotation failure in the second pass cannot hide a complete first-pass score', async () => {
-  const primary = good(); primary.summary_assessment.relationships_clear = false;
-  const broken = structuredClone(primary);
-  delete broken.grammar_annotations; delete broken.vocabulary_annotations;
-  let calls = 0;
-  const svc = service(async () => ++calls === 1 ? primary : broken);
-  const raw = await invoke(svc);
-  const result = applyScoringPolicy(raw, fixture.summary);
-  assert.equal(calls, 2);
-  assert.equal(result.needs_semantic_review, false);
-  assert.equal(result.content_score, 3);
-  assert.equal(result.grammar_score, 2);
-  assert.equal(result.vocabulary_score, 2);
-  assert.equal(raw.consistency_review_status, 'primary-only');
-  assert.match(raw.consistency_review_note, /validated first assessment/);
+  assert.equal(calls, 4);
 });
 
 test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async () => {
@@ -121,7 +118,7 @@ test('An unresponsive provider is aborted within one budget and cannot leave the
   assert(Date.now() - started < 1000);
   blocked = false;
   assert.equal((await invoke(svc)).content_score, 4);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
 });
 
 test('A failed request followed by a disputed assessment cannot create an unbounded retry chain', async () => {
@@ -130,16 +127,16 @@ test('A failed request followed by a disputed assessment cannot create an unboun
   const svc = service(async () => ++calls === 1 ? null : disputed);
   const result = await invoke(svc);
   assert.equal(calls, 2);
-  assert.equal(result.consistency_review_status, 'primary-only');
-  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
+  assert.equal(result.review_unavailable, true);
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, true);
 });
 
-test('Formatting differences preserve verified meaning without requesting another model assessment', async () => {
+test('Formatting differences preserve verified meaning across both required assessments', async () => {
   let calls = 0;
   const svc = service(async () => { calls++; return good(); });
   const spaced = fixture.summary.replace(/ /g, '  ');
   const result = applyScoringPolicy(await svc.judge(spaced, fixture.passage, 'diagnostic ideas'), spaced);
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
   assert.equal(result.needs_semantic_review, false);
   assert.equal(result.content_score, 4);
   assert(spaced.includes(result.summary_assessment.main_idea_evidence));
@@ -150,12 +147,12 @@ test('Expired and evicted entries cause a fresh assessment', async () => {
   let calls = 0;
   const svc = service(async () => { calls++; return good(); }, { ttlMs: -1 });
   await invoke(svc); await invoke(svc);
-  assert.equal(calls, 2);
+  assert.equal(calls, 4);
   const bounded = service(async () => { calls++; return good(); }, { maxEntries: 1 });
   await invoke(bounded);
   await bounded.judge(fixture.summary, fixture.passage, 'different hints');
   await invoke(bounded);
-  assert.equal(calls, 5);
+  assert.equal(calls, 10);
 });
 
 test('Meaning-changing language allegations are reviewed even when content was marked complete', async () => {

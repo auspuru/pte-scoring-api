@@ -79,17 +79,9 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
         let result = await read(prompt, 'assessment');
         if (!result) result = await read(prompt + '\n\nThe previous request did not return a complete response. Return complete JSON with all required assessment and annotation fields.', 'retry');
         if (!result) return null;
-        const a = result.summary_assessment || {};
-        // Review relationship deductions where the judge already acknowledges
-        // the main idea and useful support. The review may confirm OR correct
-        // the score; it must not promote a genuinely incomplete answer.
-        const disputed = a.main_idea_accurate === true && a.supporting_evidence?.length
-          && (a.relationships_clear === false || a.material_meaning_change === true
-            || a.missing_dependencies?.length || result.cohesion === 'weak'
-            || [...(Array.isArray(result.grammar_annotations) ? result.grammar_annotations : []),
-                ...(Array.isArray(result.vocabulary_annotations) ? result.vocabulary_annotations : [])]
-              .some(item => ['changed', 'obscured'].includes(item.meaning_impact)));
-        if (disputed || !isComplete(result, summary)) {
+        // Every semantic score needs the independent second pass. A valid
+        // primary assessment is not a final score when that review fails.
+        {
           // Do not include the preliminary score/flags: they can anchor the
           // reviewer even when its new explanation explicitly rejects them.
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
@@ -98,11 +90,9 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
             + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review');
           if (reviewed && isComplete(reviewed, summary)) result = { ...reviewed, consistency_reviewed: true };
-          else result = isComplete(result, summary)
-            ? { ...result, consistency_review_status: 'primary-only', consistency_review_note: 'The independent consistency check was unavailable; this score uses the validated first assessment.' }
-            : { ...result, review_unavailable: true };
+          else result = { ...result, review_unavailable: true };
         }
-        if (isComplete(result, summary) && !result.review_unavailable && result.consistency_review_status !== 'primary-only') {
+        if (isComplete(result, summary) && !result.review_unavailable) {
           cache.set(key, { value: structuredClone(result), expires: Date.now() + ttlMs });
           while (cache.size > maxEntries) cache.delete(cache.keys().next().value);
         }
