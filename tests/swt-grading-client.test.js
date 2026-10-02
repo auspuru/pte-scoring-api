@@ -64,11 +64,27 @@ test('Server errors and malformed JSON keep the draft and restore the submit but
   }
 });
 
-test('A stalled grading connection is aborted rather than leaving the student waiting indefinitely', async () => {
+test('An explicitly limited grading request remains abortable', async () => {
   const h = harness();
   const pending = h.ctx.requestSwtGrade({ text: summary }, 15);
   await assert.rejects(pending, /took too long.*summary is safe/);
   assert.equal(h.requests[0].options.signal.aborted, true);
+});
+
+test('Normal submission keeps waiting for the reviewed result without scheduling a browser cutoff', async () => {
+  const h = harness();
+  let timers = 0;
+  h.ctx.setTimeout = () => { timers++; throw Error('Unexpected assessment cutoff'); };
+  const pending = h.ctx.scoreSummary();
+  await Promise.resolve();
+  assert.equal(timers, 0);
+  assert.equal(h.ctx.swtGradingPending, true);
+  assert.equal(h.button.disabled, true);
+  assert.equal(h.results.length, 0);
+  h.requests[0].reply(result());
+  await pending;
+  assert.equal(h.results.length, 1);
+  assert.equal(h.ctx.swtGradingPending, false);
 });
 
 test('Late SWT results stay with their original passage and cannot appear under another account', async () => {

@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261001-mock-input2', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261002-wait-review1', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -14354,7 +14354,7 @@ function startLoadingMessages() {
   const sampleLabel = practiceSampleBandLabel(practiceState.sampleBand);
   const messages = [
     'Your original essay is being assessed.',
-    'Your feedback will cover content, structure and language.',
+    'Waiting for the independent second assessment before showing your final score.',
     'Your ' + sampleLabel + ' sample will build on your own ideas.',
     'Your results will appear as soon as they are ready.'
   ];
@@ -15611,7 +15611,7 @@ function resetTimer(){
   }
 }
 
-async function requestSwtGrade(payload, timeoutMs = 75000) {
+async function requestSwtGrade(payload, timeoutMs = 0) {
   const controller = new AbortController();
   let timer;
   try {
@@ -15628,7 +15628,7 @@ async function requestSwtGrade(payload, timeoutMs = 75000) {
         }
         return data;
       })(),
-      new Promise((_, reject) => { timer = setTimeout(() => {
+      new Promise((_, reject) => { if (timeoutMs > 0) timer = setTimeout(() => {
         reject(new Error('The assessment took too long. Your summary is safe; please try again.'));
         controller.abort();
       }, timeoutMs); })
