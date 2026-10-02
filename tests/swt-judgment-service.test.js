@@ -66,12 +66,15 @@ test('A genuine missing cause confirmed by the review stays below full content',
   assert.equal(result.full_content_eligible, false);
 });
 
-test('Unavailable second review is provisional and is not cached as a confirmed deduction', async () => {
+test('Unavailable optional review retains a validated first assessment and allows a later review retry', async () => {
   const disputed = good(); disputed.summary_assessment.relationships_clear = false;
   let calls = 0;
   const svc = service(async () => { calls++; return calls % 2 ? disputed : null; });
-  const result = applyScoringPolicy(await invoke(svc), fixture.summary);
-  assert.equal(result.needs_semantic_review, true);
+  const raw = await invoke(svc);
+  const result = applyScoringPolicy(raw, fixture.summary);
+  assert.equal(raw.consistency_review_status, 'primary-only');
+  assert.equal(result.needs_semantic_review, false);
+  assert.equal(result.content_score, 3);
   assert.equal(result.full_content_eligible, false);
   await invoke(svc);
   assert.equal(calls, 4);
@@ -85,6 +88,23 @@ test('Failed or malformed assessments are retried rather than cached', async () 
   await invoke(svc);
   await invoke(svc);
   assert.equal(calls, 3);
+});
+
+test('Production annotation failure in the second pass cannot hide a complete first-pass score', async () => {
+  const primary = good(); primary.summary_assessment.relationships_clear = false;
+  const broken = structuredClone(primary);
+  delete broken.grammar_annotations; delete broken.vocabulary_annotations;
+  let calls = 0;
+  const svc = service(async () => ++calls === 1 ? primary : broken);
+  const raw = await invoke(svc);
+  const result = applyScoringPolicy(raw, fixture.summary);
+  assert.equal(calls, 2);
+  assert.equal(result.needs_semantic_review, false);
+  assert.equal(result.content_score, 3);
+  assert.equal(result.grammar_score, 2);
+  assert.equal(result.vocabulary_score, 2);
+  assert.equal(raw.consistency_review_status, 'primary-only');
+  assert.match(raw.consistency_review_note, /validated first assessment/);
 });
 
 test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async () => {
@@ -110,8 +130,8 @@ test('A failed request followed by a disputed assessment cannot create an unboun
   const svc = service(async () => ++calls === 1 ? null : disputed);
   const result = await invoke(svc);
   assert.equal(calls, 2);
-  assert.equal(result.review_unavailable, true);
-  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, true);
+  assert.equal(result.consistency_review_status, 'primary-only');
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
 });
 
 test('Formatting differences preserve verified meaning without requesting another model assessment', async () => {

@@ -98,9 +98,11 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
             + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review');
           if (reviewed && isComplete(reviewed, summary)) result = { ...reviewed, consistency_reviewed: true };
-          else result = { ...result, review_unavailable: true };
+          else result = isComplete(result, summary)
+            ? { ...result, consistency_review_status: 'primary-only', consistency_review_note: 'The independent consistency check was unavailable; this score uses the validated first assessment.' }
+            : { ...result, review_unavailable: true };
         }
-        if (isComplete(result, summary) && !result.review_unavailable) {
+        if (isComplete(result, summary) && !result.review_unavailable && result.consistency_review_status !== 'primary-only') {
           cache.set(key, { value: structuredClone(result), expires: Date.now() + ttlMs });
           while (cache.size > maxEntries) cache.delete(cache.keys().next().value);
         }
@@ -115,4 +117,3 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
   return { judge, keyFor };
 }
 module.exports = { createJudgmentService, materialiseEvidence };
-

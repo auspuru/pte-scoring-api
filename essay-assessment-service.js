@@ -323,6 +323,9 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   essay = String(essay || '').trim();
   const form = policy.formFor(essay);
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
+  const evidence = require('./essay-evidence');
+  const providerCall = call;
+  call = async prompt => evidence.materialise(await providerCall(prompt + evidence.instructions(essay)), essay);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError);
 
