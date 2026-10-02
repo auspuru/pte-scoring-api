@@ -45,7 +45,8 @@
   }
   async function api(path, body, keepalive=false) {
     const response = await fetch('/api/writing-lab'+path, {method:body===undefined?'GET':'POST',cache:'no-store',
-      headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(150000),keepalive});
+      headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),
+      ...(/\/score\/\d+$/.test(path)?{}:{signal:AbortSignal.timeout(150000)}),keepalive});
     let value;
     try { value=await response.json(); } catch(_) { throw Error('The connection was interrupted. Please retry.'); }
     if(!response.ok) throw Error(value.error || 'The request could not be completed.');
@@ -478,7 +479,7 @@
         if(attempt?.id!==id) return;
         if(attempt.results[i]) continue;
         const status=document.getElementById('scoring-status');
-        if(status) status.textContent='Assessing question '+(i+1)+' of '+questionCount+'… You can leave; your submitted answers are saved.';
+        if(status) status.textContent='Assessing question '+(i+1)+' of '+questionCount+'… Waiting for the final reviewed result. Your submitted answers are saved.';
         try {
           const result=await api('/attempts/'+id+'/score/'+i,{});
           if(attempt?.id!==id) return;

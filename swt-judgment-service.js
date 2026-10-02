@@ -79,17 +79,9 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
         let result = await read(prompt, 'assessment');
         if (!result) result = await read(prompt + '\n\nThe previous request did not return a complete response. Return complete JSON with all required assessment and annotation fields.', 'retry');
         if (!result) return null;
-        const a = result.summary_assessment || {};
-        // Review relationship deductions where the judge already acknowledges
-        // the main idea and useful support. The review may confirm OR correct
-        // the score; it must not promote a genuinely incomplete answer.
-        const disputed = a.main_idea_accurate === true && a.supporting_evidence?.length
-          && (a.relationships_clear === false || a.material_meaning_change === true
-            || a.missing_dependencies?.length || result.cohesion === 'weak'
-            || [...(Array.isArray(result.grammar_annotations) ? result.grammar_annotations : []),
-                ...(Array.isArray(result.vocabulary_annotations) ? result.vocabulary_annotations : [])]
-              .some(item => ['changed', 'obscured'].includes(item.meaning_impact)));
-        if (disputed || !isComplete(result, summary)) {
+        // Every semantic score needs the independent second pass. A valid
+        // primary assessment is not a final score when that review fails.
+        {
           // Do not include the preliminary score/flags: they can anchor the
           // reviewer even when its new explanation explicitly rejects them.
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
@@ -115,4 +107,3 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
   return { judge, keyFor };
 }
 module.exports = { createJudgmentService, materialiseEvidence };
-
