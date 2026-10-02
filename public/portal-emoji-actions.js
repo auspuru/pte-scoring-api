@@ -78,12 +78,14 @@
   let pulseTimer = 0;
   let mutationTimer = 0;
 
-  function asset(id) { return '/brand-emojis/' + id + '.svg?v=4'; }
+  function asset(id) {
+    return id === 'ipt' ? '/assets/ipt-brisbane-logo.webp?v=20260924-logo' : '/brand-emojis/' + id + '.svg?v=4';
+  }
 
   function setMarkup(el, id, label) {
     el.dataset.emoji = id;
     el.setAttribute('aria-label', label || id);
-    el.innerHTML = '<img src="' + asset(id) + '" alt=""><span class="fx" aria-hidden="true">' + (effects[id] || '') + '</span>';
+    el.innerHTML = '<img src="' + asset(id) + '" alt="">' + (id === 'ipt' ? '' : '<span class="fx" aria-hidden="true">' + (effects[id] || '') + '</span>');
   }
 
   function activate(el, duration = 900) {
