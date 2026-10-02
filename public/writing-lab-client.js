@@ -318,6 +318,7 @@
   }
   function setupAudio(q) {
     const id=attempt.id, index=attempt.index, key=questionKey();
+    const canPause=q.type==='sst' && attempt.kind!=='mock';
     const savedDraft=draft(), local=savedDraft?.index===index?savedDraft:null;
     const saved=attempt.playback?.[index];
     if(audioAttempt!==key) {
@@ -368,7 +369,10 @@
         }
         if(!current()) { stopStalePlayback(); return; }
         if(attempt.deadline<=Date.now()+offset || document.hidden) { player.pause(); tick(); return; }
-        status.textContent=audioFinished?completeText:'Playing…'; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
+        status.textContent=audioFinished?completeText:'Playing…';
+        if(canPause && !audioFinished) { startButton.textContent='Pause recording'; startButton.classList.remove('hidden'); }
+        else startButton.classList.add('hidden');
+        writeDraft(); saveAnswer(false);
       } catch(e) {
         if(!current()) { stopStalePlayback(); return; }
         player.pause();
@@ -376,7 +380,7 @@
         if(phase==='attempt') status.textContent=e.message+' Press Play recording to retry.';
         else if(player.error) {startButton.textContent='Retry audio';status.textContent='Audio could not load. Check your connection and retry.';}
         else status.textContent='Press Play recording to allow audio and continue.';
-      } finally { starting=false; }
+      } finally { starting=false; if(canPause && current() && !audioFinished) startButton.disabled=false; }
     };
     player.ontimeupdate=()=>{
       if(!current()) return;
@@ -389,7 +393,10 @@
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
       startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
       startButton.textContent=attempt.status==='ready'?'Play':player.currentTime>0?'Continue recording':'Play';
-      if(!player.paused) startButton.classList.add('hidden');
+      if(!player.paused) {
+        if(canPause) { startButton.textContent='Pause recording'; startButton.classList.remove('hidden'); }
+        else startButton.classList.add('hidden');
+      }
       update();
       if(!prepared && !starting && player.paused && attempt.kind==='mock' && attempt.status==='active' && player.currentTime===0 && !document.hidden && workspaceVisible) {
         let remaining=3;
@@ -430,7 +437,13 @@
       startButton.textContent='Retry audio'; startButton.disabled=false; startButton.classList.remove('hidden');
     };
     document.getElementById('audio-volume').oninput=e=>player.volume=Number(e.target.value);
-    startButton.onclick=play;
+    startButton.onclick=()=>{
+      if(canPause && !player.paused && !starting && current() && !audioFinished) {
+        player.pause(); writeDraft(); saveAnswer(false);
+        return;
+      }
+      return play();
+    };
   }
   function practiceNavigation(compact = false) {
     if(!catalog||!attempt||!['sst','wfd'].includes(attempt.kind)||(!compact&&attempt.status!=='submitted'))return '';
