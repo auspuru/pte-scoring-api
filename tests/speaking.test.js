@@ -142,6 +142,9 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
   const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,79);
+  const learning=await request('/describe-image-learning',undefined,'');assert.equal(learning.status,200);
+  assert(learning.body.questions.length>=5);assert(learning.body.questions.every(q=>q.imageUrl&&q.title&&!q.facts&&!q.sample&&!q.visual));
+  assert(learning.body.questions.some(q=>q.predictionSource?.weekly));
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
   assert.equal((await request('/attempts',undefined,'')).status,401);
