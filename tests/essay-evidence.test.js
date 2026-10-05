@@ -25,3 +25,36 @@ test('Out of bounds, reversed and invented evidence remains invalid; legacy quot
   const result=evidence.materialise({scoringEvidence:{linguisticExamples:['invented phrase']}},'One real sentence.');
   assert.equal(policy.exactQuote('One real sentence.',result.scoringEvidence.linguisticExamples[0]),'');
 });
+
+test('Invalid coverage spans preserve only verified exact quotation fallback', () => {
+  const essay = 'Schools support learning.';
+  const raw = {promptCoverage:[{requirement:'benefit',status:'addressed',evidence_span:[99,100],evidence:'Schools support learning.'}]};
+  assert.equal(evidence.materialise(raw,essay).promptCoverage[0].evidence,essay);
+  raw.promptCoverage[0].evidence = 'Schools improve outcomes.';
+  assert.throws(()=>evidence.materialise(raw,essay),error => error.code==='coverage_quote' && error.evidenceIssues[0].path.join('.')==='promptCoverage.0.evidence_span');
+});
+
+test('Targeted repair changes only citations and preserves original decisions', async () => {
+  const essay='Schools support learning.';
+  const raw={scores:{content:4},promptCoverage:[{requirement:'benefit',status:'partial',evidence_span:[],nextStep:'Develop the reason.'}]};
+  const calls=[];
+  const result=await evidence.callWithRepair(async prompt=>{
+    calls.push(prompt);
+    return calls.length===1 ? raw : {scores:{content:6},repairs:[{path:['promptCoverage',0,'evidence_span'],span:[1,3]}]};
+  },'Return {"evidence":"exact essay phrase"}',essay);
+  assert.equal(calls.length,2);
+  assert.match(calls[0],/"evidence_span":\[1,3\]/);
+  assert.equal(result.scores.content,4);
+  assert.equal(result.promptCoverage[0].status,'partial');
+  assert.equal(result.promptCoverage[0].evidence,essay);
+  assert.deepEqual(raw.promptCoverage[0].evidence_span,[]);
+});
+
+test('Unrepairable evidence cannot become a successful assessment', async () => {
+  let calls=0;
+  await assert.rejects(evidence.callWithRepair(async()=>++calls===1
+    ? {promptCoverage:[{status:'addressed',evidence_span:[]}]}
+    : {repairs:[{path:['promptCoverage',0,'evidence_span'],span:[]}]},'Assess','One real sentence.'),
+    error=>error.code==='coverage_quote' && error.evidenceRepairExhausted);
+  assert.equal(calls,2);
+});

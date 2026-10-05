@@ -263,6 +263,10 @@ app.post('/api/essay/grade', async (req, res) => {
   }
   catch (error) {
     console.error('[essay-grade] assessment failed:', error && error.message ? error.message : error);
+    if (error.retryable === false) {
+      return res.status(503).json({ code: 'ESSAY_EVIDENCE_VALIDATION_FAILED', retryable: false,
+        error: 'The assessment evidence could not be verified. Your writing is safe. Please wait before submitting again.' });
+    }
     res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' });
   }
 });

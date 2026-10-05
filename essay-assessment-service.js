@@ -280,6 +280,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError) {
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay assessment unavailable.');
@@ -296,6 +297,7 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError) {
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay subjective review unavailable.');
@@ -313,6 +315,7 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay subjective resolver unavailable.');
@@ -325,7 +328,7 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
   const evidence = require('./essay-evidence');
   const providerCall = call;
-  call = async prompt => evidence.materialise(await providerCall(prompt + evidence.instructions(essay)), essay);
+  call = async prompt => evidence.callWithRepair(providerCall, prompt, essay);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError);
 

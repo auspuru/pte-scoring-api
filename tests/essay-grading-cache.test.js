@@ -78,3 +78,19 @@ test('changing only sample band reuses the completed essay assessment', async ()
   assert.equal(calls.review, 1);
   assert.equal(calls.sample, 2);
 });
+
+test('exhausted evidence repair suppresses identical submissions without publishing a score', async () => {
+  let calls = 0;
+  const grader = createEssayGrader(async prompt => {
+    calls++;
+    if (prompt.startsWith('Repair ONLY')) return { repairs: [] };
+    const raw = structuredClone(primary);
+    raw.promptCoverage[0].evidence = 'Invented unsupported passage';
+    raw.promptCoverage[0].evidence_span = [];
+    return raw;
+  });
+  const question = 'Discuss transport priorities.';
+  await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
+  await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
+  assert.equal(calls, 2);
+});
