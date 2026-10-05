@@ -6,16 +6,32 @@ const { assessEssay } = require('./essay-assessment-service');
 function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
   const assessmentCache = new Map(), assessmentPending = new Map();
+  const validationFailures = new Map();
 
   async function getAssessment(question, essay) {
     const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
+    const blocked = validationFailures.get(key);
+    if (blocked && blocked.expires > Date.now()) {
+      const error = new Error('Essay evidence validation needs repair.');
+      error.code = blocked.code; error.retryable = false; throw error;
+    }
+    validationFailures.delete(key);
     const hit = assessmentCache.get(key);
     if (hit && hit.expires > Date.now()) return structuredClone(hit.assessment);
     if (hit) assessmentCache.delete(key);
 
     if (!assessmentPending.has(key)) {
       const task = (async () => {
-        const assessed = await assessEssay(question, essay, call, { onAttemptError });
+        let assessed;
+        try { assessed = await assessEssay(question, essay, call, { onAttemptError }); }
+        catch (error) {
+          if (error.evidenceRepairExhausted) {
+            error.retryable = false;
+            validationFailures.set(key, { code: error.code || 'evidence_validation', expires: Date.now() + 60000 });
+            while (validationFailures.size > 100) validationFailures.delete(validationFailures.keys().next().value);
+          }
+          throw error;
+        }
         assessmentCache.set(key, {
           assessment: structuredClone(assessed.assessment),
           expires: Date.now() + 20 * 60 * 1000
