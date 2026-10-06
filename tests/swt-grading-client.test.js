@@ -32,6 +32,9 @@ function harness() {
       reply: (data, status = 200) => resolve({ ok: status === 200, status, json: async () => data }),
       broken: () => resolve({ ok: true, status: 200, json: async () => { throw new SyntaxError('bad JSON'); } }) }))
   };
+  const recovery = require('../public/grading-request');
+  ctx.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
+    { ...extra, fetch: ctx.fetch, wait: async () => {} }) };
   vm.createContext(ctx);
   vm.runInContext(['requestSwtGrade', 'scoreSummary', 'retrySwtAssessment'].map(fn).join('\n'), ctx);
   return { ctx, requests, saved, results, notices, loading, screens, input, button };
@@ -51,16 +54,32 @@ test('SWT uses one request, prevents duplicate submissions and displays the retu
   assert.equal(h.button.disabled, false);
 });
 
-test('Server errors and malformed JSON keep the draft and restore the submit button', async () => {
+test('Provisional SWT scoring recovers before one final attempt is displayed and saved', async () => {
+  const h = harness(); const pending = h.ctx.scoreSummary();
+  h.requests[0].reply({ ...result(), score_provisional: true });
+  for (let i = 0; i < 20 && h.requests.length < 2; i++) await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.requests.length, 2); assert.equal(h.saved.length, 0); assert.equal(h.results.length, 0);
+  assert.equal(h.requests[1].options.body, h.requests[0].options.body);
+  assert.equal(h.button.disabled, true);
+  h.requests[1].reply(result()); await pending;
+  assert.equal(h.saved.length, 1); assert.equal(h.results.length, 1);
+  assert.equal(h.results[0][0].score_provisional, false);
+});
+
+test('Rate limits stop promptly; repeated malformed JSON keeps the draft and restores submission', async () => {
   for (const broken of [false, true]) {
     const h = harness(); const pending = h.ctx.scoreSummary();
-    if (broken) h.requests[0].broken();
+    if (broken) {
+      h.requests[0].broken();
+      for (let i = 0; i < 20 && h.requests.length < 2; i++) await new Promise(resolve => setImmediate(resolve));
+      assert.equal(h.requests.length, 2); h.requests[1].broken();
+    }
     else h.requests[0].reply({ error: 'Too many scoring requests. Please wait a minute.' }, 429);
     await pending;
     assert.equal(h.input.value, summary);
     assert.equal(h.saved.length, 0); assert.equal(h.results.length, 0);
     assert.equal(h.ctx.swtGradingPending, false); assert.equal(h.button.disabled, false);
-    assert.match(h.notices[0], broken ? /summary is safe/ : /wait a minute/);
+    assert.match(h.notices[0], broken ? /response is safe/ : /wait a minute/);
   }
 });
 

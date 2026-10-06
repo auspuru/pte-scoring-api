@@ -44,9 +44,14 @@
     return storage.get('pte_session_token') || '';
   }
   async function api(path, body, keepalive=false) {
-    const response = await fetch('/api/writing-lab'+path, {method:body===undefined?'GET':'POST',cache:'no-store',
+    const options = {method:body===undefined?'GET':'POST',cache:'no-store',
       headers:{'Content-Type':'application/json','x-session-token':token()},body:body===undefined?undefined:JSON.stringify(body),
-      ...(/\/score\/\d+$/.test(path)?{}:{signal:AbortSignal.timeout(150000)}),keepalive});
+      ...(/\/score\/\d+$/.test(path)?{}:{signal:AbortSignal.timeout(150000)}),keepalive};
+    if (/\/score\/\d+$/.test(path)) {
+      const ownerToken = options.headers['x-session-token'];
+      return window.GradingRequest.request('/api/writing-lab'+path, options, { canRetry: () => token() === ownerToken });
+    }
+    const response = await fetch('/api/writing-lab'+path, options);
     let value;
     try { value=await response.json(); } catch(_) { throw Error('The connection was interrupted. Please retry.'); }
     if(!response.ok) throw Error(value.error || 'The request could not be completed.');

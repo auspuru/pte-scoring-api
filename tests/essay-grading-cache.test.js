@@ -79,6 +79,27 @@ test('changing only sample band reuses the completed essay assessment', async ()
   assert.equal(calls.sample, 2);
 });
 
+test('A temporary citation-repair outage does not lock a recoverable essay for a minute', async () => {
+  let primaryCalls = 0, repairCalls = 0;
+  const grader = createEssayGrader(async prompt => {
+    if (prompt.startsWith('Repair ONLY')) {
+      repairCalls++; throw Object.assign(Error('Provider unavailable'), { status: 503 });
+    }
+    if (prompt.startsWith('Independently review ONLY')) return review;
+    if (prompt.startsWith('The original essay has already been scored.')) return {
+      sampleStatus: 'ready', sampleResponse: essay, sampleSourceIdeas: ['Public transport helps cities move people efficiently'], sampleNote: '' };
+    primaryCalls++;
+    if (primaryCalls <= 2) {
+      const raw = structuredClone(primary); raw.promptCoverage[0].evidence = 'Unsupported text';
+      raw.promptCoverage[0].evidence_span = []; return raw;
+    }
+    return primary;
+  });
+  await assert.rejects(grader.grade('Discuss transport priorities.', essay), error => error.retryable !== false);
+  assert.equal((await grader.grade('Discuss transport priorities.', essay)).scores.total, 23);
+  assert.equal(primaryCalls, 3); assert.equal(repairCalls, 2);
+});
+
 test('exhausted evidence repair suppresses identical submissions without publishing a score', async () => {
   let calls = 0;
   const grader = createEssayGrader(async prompt => {

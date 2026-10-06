@@ -2,43 +2,50 @@
 // Keep the full assessment contract explicit and recover misplaced annotation
 // data before the independent scoring/evidence validator checks completeness.
 const text = { type: 'string' };
-const span = { type: 'array', items: { type: 'integer', minimum: 1 }, minItems: 2, maxItems: 2,
+// Strict decoding supports types, required fields and enums. Word bounds and
+// the two-number span length are still enforced by materialiseEvidence.
+const span = { type: 'array', items: { type: 'integer' },
   description: 'First and last word numbers, 1-based inclusive, from the numbered student response. Never cite the passage.' };
-const annotation = { type: 'object', properties: {
+const annotation = { type: 'object', additionalProperties: false, properties: {
   phrase_span: span, fix: text, severity: { type: 'string', enum: ['minor', 'major'] }, type: text,
   meaning_impact: { type: 'string', enum: ['none', 'changed', 'obscured'] },
   meaning_effect: { ...text, description: 'Specific effect on meaning for changed/obscured; otherwise empty.' }, rationale: text
 }, required: ['phrase_span', 'fix', 'severity', 'type', 'meaning_impact', 'meaning_effect', 'rationale'] };
 const tool = {
   name: 'submit_swt_assessment',
+  strict: true,
   description: 'Return the complete SWT assessment under the supplied scoring policy. Evaluate meaning and language independently of the output format. Supply every required property, including a nonempty relationship explanation and empty annotation arrays when no corrections are needed. Cite student evidence using the numbered words; do not rewrite quotations. This tool returns assessment data and performs no external action.',
-  input_schema: { type: 'object', properties: {
-    content_score: { type: 'number', minimum: 0, maximum: 4 },
-    grammar_score: { type: 'number', minimum: 0, maximum: 2 },
-    vocabulary_score: { type: 'number', minimum: 0, maximum: 2 },
+  // Reuse repeated structures: inlining both annotation schemas exceeds the
+  // provider's compiled-grammar limit despite having no optional fields.
+  input_schema: { type: 'object', additionalProperties: false, $defs: { span, annotation }, properties: {
+    content_score: { type: 'number', description: 'Content score from 0 to 4.' },
+    grammar_score: { type: 'number', description: 'Grammar score from 0 to 2.' },
+    vocabulary_score: { type: 'number', description: 'Vocabulary score from 0 to 2.' },
     cohesion: { type: 'string', enum: ['strong', 'adequate', 'weak'] },
-    summary_assessment: { type: 'object', properties: {
+    summary_assessment: { type: 'object', additionalProperties: false, properties: {
       main_idea_accurate: { type: 'boolean' },
-      main_idea_span: { type: 'array', items: { type: 'integer', minimum: 1 }, maxItems: 2,
+      main_idea_span: { type: 'array', items: { type: 'integer' },
         description: 'Two inclusive student word numbers, or [] if no accurate main idea is present.' },
-      supporting_spans: { type: 'array', items: span },
+      supporting_spans: { type: 'array', items: { $ref: '#/$defs/span' } },
       conclusion_status: { type: 'string', enum: ['captured', 'clearly_implied', 'not_applicable', 'missing', 'incorrect'] },
       relationships_clear: { type: 'boolean' }, material_meaning_change: { type: 'boolean' },
-      missing_dependencies: { type: 'array', items: { type: 'object', properties: {
+      missing_dependencies: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
         effect: text, missing_context: text, explanation: text
       }, required: ['effect', 'missing_context', 'explanation'] } },
-      relationship_explanation: { type: 'string', minLength: 1, description: 'Explain the connections that are preserved or the necessary context missing from this response. Always provide an explanation.' },
+      relationship_explanation: { type: 'string', description: 'Explain the connections that are preserved or the necessary context missing from this response. Always provide a nonempty explanation.' },
       next_step: text, repair: text
     }, required: ['main_idea_accurate', 'main_idea_span', 'supporting_spans', 'conclusion_status', 'relationships_clear', 'material_meaning_change', 'missing_dependencies', 'relationship_explanation', 'next_step', 'repair'] },
-    grammar_annotations: { type: 'array', items: annotation },
-    vocabulary_annotations: { type: 'array', items: annotation },
-    per_idea_scores: { type: 'object', additionalProperties: { type: 'number', enum: [0, 1] } },
+    grammar_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
+    vocabulary_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
+    per_idea_scores: { type: 'object', additionalProperties: false,
+      required: ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'], properties: Object.fromEntries(
+      ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'].map(key => [key, { type: 'number', enum: [0, 1] }])) },
     academic_register: { type: 'boolean' },
-    recommended_swaps: { type: 'array', items: { type: 'object', properties: {
+    recommended_swaps: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
       word: text, context: text, synonyms: { type: 'array', items: text }, rationale: text
     }, required: ['word', 'context', 'synonyms', 'rationale'] } },
     feedback_note: { ...text, description: 'Plain student-facing feedback only. This is the final field; never place other JSON fields inside this string.' }
-  }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'per_idea_scores', 'feedback_note'] }
+  }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'per_idea_scores', 'academic_register', 'recommended_swaps', 'feedback_note'] }
 };
 function request(prompt, model) {
   return { model, max_tokens: 4000, temperature: 0, tools: [tool],

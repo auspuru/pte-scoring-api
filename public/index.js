@@ -12503,7 +12503,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261002-sst-pause1', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261006-one-submit1', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -14401,16 +14401,19 @@ async function submitPracticeEssay() {
   renderPracticeMain();
   startLoadingMessages();
   try {
-    const res = await fetch(API_URL + '/api/essay/grade', {
+    const data = await GradingRequest.request(API_URL + '/api/essay/grade', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
       },
       body: JSON.stringify({ question, essay, sampleBand })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'The assessment could not be completed. Please try again.');
+    }, { canRetry: sameOwner,
+      validate: value => !!EssayScoring.normalizeResult(value, essay),
+      onRecover: () => {
+        const status = document.getElementById('practiceLoadingText');
+        if (status) status.textContent = 'Completing your review… Your essay is saved; no need to submit again.';
+      } });
     const result = EssayScoring.normalizeResult(data, essay);
     const attempt = {
       ...result,
@@ -14475,15 +14478,13 @@ async function retryPracticeSample() {
   renderPracticeMain();
   try {
     const sampleBand = practiceSampleBand(attempt.sampleBand);
-    const res = await fetch(API_URL + '/api/essay/grade', {
+    const data = await GradingRequest.request(API_URL + '/api/essay/grade', {
       method: 'POST', headers: {
         'Content-Type': 'application/json',
         'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
       },
       body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText, sampleBand })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'The sample could not be prepared. Please try again.');
+    }, { canRetry: sameOwner });
     const sample = EssayScoring.normalizeSample(data, attempt.essayText, attempt, { sampleBand });
     if (!sameOwner()) return;
     const current = getPracticeHistory().find(item => item.id === attempt.id);
@@ -15611,23 +15612,18 @@ function resetTimer(){
   }
 }
 
-async function requestSwtGrade(payload, timeoutMs = 0) {
+async function requestSwtGrade(payload, timeoutMs = 0, canRetry = () => true) {
   const controller = new AbortController();
   let timer;
   try {
     return await Promise.race([
-      (async () => {
-        const res = await fetch(API_URL + '/api/grade', { method: 'POST',
-          headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal });
-        let data;
-        try { data = await res.json(); }
-        catch { throw new Error('The assessment response was incomplete. Your summary is safe; please try again.'); }
-        if (!res.ok) throw new Error(typeof data?.error === 'string' ? data.error : 'The assessment is unavailable. Your summary is safe; please try again.');
-        if (!data?.trait_scores || !['content', 'form', 'grammar', 'vocabulary'].every(key => Number.isFinite(data.trait_scores[key]))) {
-          throw new Error('The assessment response was incomplete. Your summary is safe; please try again.');
-        }
-        return data;
-      })(),
+      GradingRequest.request(API_URL + '/api/grade', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal }, {
+        canRetry,
+        validate: data => !!data?.trait_scores && ['content', 'form', 'grammar', 'vocabulary'].every(key => Number.isFinite(data.trait_scores[key])),
+        isFinal: data => !data.score_provisional && !data.ai_feedback_degraded,
+        onRecover: () => showLoading(true, 'scoring')
+      }),
       new Promise((_, reject) => { if (timeoutMs > 0) timer = setTimeout(() => {
         reject(new Error('The assessment took too long. Your summary is safe; please try again.'));
         controller.abort();
@@ -15662,7 +15658,7 @@ async function scoreSummary(submission = null){
   try {
     const payload = { type: 'swt', passageId, prompt: p.text, keyPoints: p.keyElements, text };
     if (owner.uid) payload.userId = owner.uid;
-    const data = await requestSwtGrade(payload);
+    const data = await requestSwtGrade(payload, 0, sameOwner);
     if (!sameOwner()) return;
     // The grade already includes spelling feedback. A separate dictionary
     // request must not delay the student's completed assessment.
