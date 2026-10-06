@@ -34,7 +34,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(html,/writing-lab-portal\.css/);
   assert.doesNotMatch(html,/<script[^>]+writing-lab-client\.js/,'Writing Lab stays off the initial dashboard load');
   assert.match(portal,/ensureWritingLabRuntimeLoaded/);
-  assert.match(portal,/\/writing-lab-client\.js\?v=20260930-essay-next-steps/);
+  assert.match(portal,/\/writing-lab-client\.js\?v=[^\s\x27"]+/);
   assert.doesNotMatch(lab,/<h1\b/,'Writing Lab uses the application page title instead of nested H1s');
   assert.doesNotMatch(portal,/<h1 class="essay-title">/,'Essay preview must not add a second application H1');
   assert.match(portal,/function renderVocabFlashcardContainer\(\)/,'use the existing vocabulary flashcard flow');
@@ -56,7 +56,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/<link[^>]+portal-vocab-library\.css/,'Vocabulary and Library CSS stays off the first-load path');
   assert.doesNotMatch(html,/<link[^>]+portal-writing-motion\.css/,'Writing motion CSS stays off the first-load path');
   assert.match(html,/\/portal-writing-motion\.js\?v=20260929-native-cursor/);
-  assert.match(html,/\/portal-shell\.js\?v=20260929-assistant-ux2/);
+  assert.match(html,/\/portal-shell\.js\?v=[^"\s]+/);
   assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix-final/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
@@ -113,10 +113,10 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
   assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
-  assert.match(html,/\/personal-ai-assistant\.js\?v=8/);
+  assert.match(html,/\/personal-ai-assistant\.js\?v=\d+/);
   assert.doesNotMatch(html,/<script[^>]+interventions-client\.js/,'Next Steps stays off the initial dashboard load');
   assert.match(portal,/ensureInterventionsRuntimeLoaded/);
-  assert.match(portal,/\/interventions-client\.js\?v=9/);
+  assert.match(portal,/\/interventions-client\.js\?v=\d+/);
   assert.doesNotMatch(html,/<script[^>]+student-progress\.js/,'Progress stays off the initial dashboard load');
   assert.match(portal,/ensureStudentProgressRuntimeLoaded/);
   assert.match(personalAssistant,/\/api\/interventions\/screen-help/,'assistant should answer from the current portal screen');

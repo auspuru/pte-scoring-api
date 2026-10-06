@@ -164,7 +164,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   }
   const route = fn => async (req,res) => { try { await fn(req,res); } catch(e) {
     console.warn('[writing-lab]', e.status || 503, e.message);
-    res.status(e.status || 503).json({ error:e.status ? e.message : 'This action could not be completed. Your saved answers are safe. Please retry.' });
+    res.status(e.status || 503).json({ error:e.status ? e.message : 'This action could not be completed. Your saved answers are safe. Please retry.',
+      ...(e.retryable === false ? { retryable: false } : {}) });
   } };
   const identify = async req => {
     const uid = verifyToken(req.headers['x-session-token'] || '');

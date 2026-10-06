@@ -31,4 +31,6 @@ test('production build minifies the portal client and loads the tiny auth boot f
   assert.match(html, /index\.min\.js\?v=/);
   assert.doesNotMatch(html, /src="index\.js\?v=/);
   assert(html.indexOf('auth-boot.js') < html.indexOf('index.min.js'));
+  assert(html.indexOf('grading-request.js') < html.indexOf('index.min.js'));
+  assert.match(html, /grading-request\.js\?v=[^"\s]+/);
 });

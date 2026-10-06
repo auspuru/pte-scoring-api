@@ -4695,7 +4695,8 @@ app.post('/api/grade', async (req, res) => {
     let spelling = checkSpelling(text, prompt);
 
     // The judgment service owns both retries and consistency reviews within
-    // one 55-second budget. Do not start another retry loop at the route level.
+    // one 90-second budget, including recovery for the independent review.
+    // Do not start another provider retry loop at the route level.
     let [llmJudgment, enrichedSpelling] = await Promise.all([
       judgeContentWithClaude(text, prompt, keyPoints).catch(error => {
         console.warn('[swt-grade] assessment unavailable:', error.code || error.name); return null;

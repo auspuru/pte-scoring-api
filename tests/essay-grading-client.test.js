@@ -43,8 +43,11 @@ function harness() {
     savePracticeHistory: next => { history = next; return new Promise(resolve => saves.push({ next, finish: resolve })); },
     fetch: (url, options) => new Promise(resolve => requests.push({ url, options,
       reply: body => resolve({ ok: true, json: async () => body }),
-      fail: () => resolve({ ok: false, json: async () => ({ error: 'Assessment unavailable. Your essay is safe.' }) }) }))
+      fail: (retryable = false) => resolve({ ok: false, status: 503, json: async () => ({ retryable, error: 'Assessment unavailable. Your essay is safe.' }) }) }))
   };
+  const recovery = require('../public/grading-request');
+  ctx.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
+    { ...extra, fetch: ctx.fetch, wait: async () => {} }) };
   vm.createContext(ctx);
   vm.runInContext(fn('submitPracticeEssay') + '\n' + fn('retryPracticeSample'), ctx);
   return { ctx, requests, saves, views, messages, quota: () => quota,
@@ -67,6 +70,19 @@ test('Essay score renders while cloud saving is still pending', async () => {
   assert.equal(h.quota(), 1);
   h.saves[0].finish(); await submitted;
   assert.equal(h.ctx.practiceSubmissionPending, false);
+});
+
+test('A temporary essay failure recovers from the same click and saves/charges only once', async () => {
+  const h = harness(); const submitted = h.ctx.submitPracticeEssay();
+  h.requests[0].fail(true);
+  await until(() => h.requests.length === 2);
+  assert.equal(h.ctx.practiceState.view, 'loading');
+  assert.equal(h.requests[1].options.body, h.requests[0].options.body);
+  await h.ctx.submitPracticeEssay(); assert.equal(h.requests.length, 2);
+  h.requests[1].reply(result()); await until(() => h.saves.length === 1);
+  assert.equal(h.ctx.practiceState.view, 'results');
+  assert.equal(h.quota(), 1); assert.equal(h.history().length, 1);
+  h.saves[0].finish(); await submitted;
 });
 
 test('An actual grading failure restores the unchanged essay without consuming quota', async () => {

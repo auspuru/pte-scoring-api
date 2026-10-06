@@ -14,6 +14,7 @@ test('The SWT contract puts both required annotation arrays before the final fee
   const request = format.request('Assess the supplied summary.', 'claude-haiku-4-5-20251001');
   assert.equal(request.tools.length, 1);
   const tool = request.tools[0];
+  assert.equal(tool.strict, true);
   assert.deepEqual(request.tool_choice, { type: 'tool', name: tool.name });
   for (const field of ['content_score', 'grammar_score', 'vocabulary_score', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations']) {
     assert(tool.input_schema.required.includes(field));
@@ -23,6 +24,20 @@ test('The SWT contract puts both required annotation arrays before the final fee
   assert.equal(Object.keys(tool.input_schema.properties).at(-1), 'feedback_note');
   assert.match(request.messages[0].content, /separate top-level arrays/);
   assert.equal(request.max_tokens, 4000);
+});
+
+test('The strict schema has no unsupported constraints or optional property permutations', () => {
+  function check(schema) {
+    for (const key of ['minimum', 'maximum', 'minLength', 'maxLength', 'maxItems']) assert.equal(schema[key], undefined);
+    if (schema.type === 'object') {
+      assert.equal(schema.additionalProperties, false);
+      assert.deepEqual(new Set(schema.required), new Set(Object.keys(schema.properties)));
+      Object.values(schema.properties).forEach(check);
+    }
+    if (schema.items) check(schema.items);
+    if (schema.$defs) Object.values(schema.$defs).forEach(check);
+  }
+  check(format.tool.input_schema);
 });
 
 test('The exact live failure recovers already-provided arrays from escaped feedback JSON', () => {

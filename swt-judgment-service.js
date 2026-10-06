@@ -35,7 +35,7 @@ function materialiseEvidence(result, summary) {
 // Identical source + response + rubric use one assessment, whether submitted
 // by a learner or checked as a reference. No sample-answer score overrides.
 function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, validationIssues = () => [],
-  onAttemptError = () => {}, totalTimeoutMs = 55000, maxEntries = 200, ttlMs = 20 * 60 * 1000 }) {
+  onAttemptError = () => {}, totalTimeoutMs = 90000, maxEntries = 200, ttlMs = 20 * 60 * 1000 }) {
   const cache = new Map();
   const pending = new Map();
   const keyFor = (summary, passage, ideas) => createHash('sha256')
@@ -48,10 +48,10 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
     if (!pending.has(key)) {
       const task = (async () => {
         const deadline = Date.now() + totalTimeoutMs;
-        let attempts = 0;
+        let attempts = 0, unavailable = false;
         async function read(prompt, stage) {
           const remaining = Math.min(timeoutMs, deadline - Date.now());
-          if (attempts >= 2 || remaining <= 0) return null;
+          if (attempts >= 4 || unavailable || remaining <= 0) return null;
           attempts++;
           const controller = new AbortController();
           let timer;
@@ -68,9 +68,10 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
               code: response ? 'incomplete_assessment' : 'empty_response', issues: response ? validationIssues(response, summary) : [] });
             return response;
           } catch (error) {
-            // A provider timeout has consumed this request's usable budget.
-            // Do not race a second provider call into a millisecond-scale remainder.
-            if (error.code === 'SWT_TIMEOUT') attempts = 2;
+            // An individual call may time out while the shared budget still
+            // has room for recovery and the independent review. Configuration
+            // and authentication errors cannot recover by repeating the call.
+            if ([400, 401, 403].includes(error.status)) unavailable = true;
             onAttemptError({ stage, attempt: attempts, code: error.code || error.name || 'unknown', status: error.status });
             return null;
           } finally { clearTimeout(timer); }
@@ -87,8 +88,14 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
             + 'Independently reassess this response from the passage. Pay particular attention to category-level paraphrases, pronoun referents, locally stated reasons, and additive versus causal links. Confirm a deduction only for a genuinely missing necessary proposition or explicit material falsehood. A regulatory advantage can explain competitive dominance without naming individual laws; a named invention can be the referent of it despite an intervening clause about motivation. Keep stylistic refinements optional. Do not assume any benchmark guarantees a score. Return a fresh complete JSON assessment with mutually consistent numerical scores, semantic flags and short actionable feedback. If the relationships are faithful, set relationships_clear true and material_meaning_change false; do not retain a deduction whose explanation you reject. Copy main_idea_evidence and each supporting_evidence as a CONTIGUOUS EXACT substring of the student summary: no inserted brackets, ellipses, paraphrases or altered verb forms.';
           const issues = validationIssues(result, summary);
-          const reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
+          let reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
             + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review');
+          if (!reviewed || !isComplete(reviewed, summary)) {
+            const reviewIssues = reviewed ? validationIssues(reviewed, summary) : [];
+            reviewed = await read(reviewPrompt + '\nVALIDATION RETRY: The independent review was incomplete. Return the full assessment, including both top-level annotation arrays (use [] only when no correction is needed).'
+              + (reviewIssues.length ? '\nCorrect these invalid fields: ' + reviewIssues.join(', ') + '.' : '')
+              + '\nUse numbered student word spans for every citation.', 'review-retry');
+          }
           if (reviewed && isComplete(reviewed, summary)) result = { ...reviewed, consistency_reviewed: true };
           else result = { ...result, review_unavailable: true };
         }

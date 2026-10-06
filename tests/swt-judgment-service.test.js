@@ -86,22 +86,24 @@ test('A genuine missing cause confirmed by the review stays below full content',
 test('Unavailable second review is provisional and is not cached as a confirmed deduction', async () => {
   const disputed = good(); disputed.summary_assessment.relationships_clear = false;
   let calls = 0;
-  const svc = service(async () => { calls++; return calls % 2 ? disputed : null; });
+  const svc = service(async () => { calls++; return calls % 3 === 1 ? disputed : null; });
   const result = applyScoringPolicy(await invoke(svc), fixture.summary);
   assert.equal(result.needs_semantic_review, true);
   assert.equal(result.full_content_eligible, false);
   await invoke(svc);
-  assert.equal(calls, 4);
+  assert.equal(calls, 6);
 });
 
-test('Failed or malformed assessments are retried rather than cached', async () => {
+test('A failed primary call recovers and still receives the independent review in one submission', async () => {
   let calls = 0;
   const svc = service(async () => { calls++; return calls === 1 ? null : calls === 2 ? {} : good(); });
-  assert.equal(applyScoringPolicy(await invoke(svc), fixture.summary).needs_semantic_review, true);
+  const result = await invoke(svc);
+  assert.equal(result.consistency_reviewed, true);
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
   await invoke(svc);
   await invoke(svc);
   await invoke(svc);
-  assert.equal(calls, 4);
+  assert.equal(calls, 3);
 });
 
 test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async () => {
@@ -121,14 +123,59 @@ test('An unresponsive provider is aborted within one budget and cannot leave the
   assert.equal(calls, 3);
 });
 
-test('A failed request followed by a disputed assessment cannot create an unbounded retry chain', async () => {
+test('A recovered primary still receives an independent review of its genuine deduction', async () => {
   let calls = 0;
   const disputed = good(); disputed.summary_assessment.relationships_clear = false;
   const svc = service(async () => ++calls === 1 ? null : disputed);
   const result = await invoke(svc);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
+  assert.equal(result.consistency_reviewed, true);
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
+  assert.equal(applyScoringPolicy(result, fixture.summary).content_score, 3);
+});
+
+test('Missing review annotations recover before returning or caching the final result', async () => {
+  let calls = 0;
+  const broken = good(); delete broken.grammar_annotations; delete broken.vocabulary_annotations;
+  const svc = service(async prompt => {
+    calls++;
+    if (calls === 2) return broken;
+    if (calls === 3) assert.match(prompt, /Correct these invalid fields: grammar_annotations, vocabulary_annotations/);
+    return good();
+  });
+  const result = await invoke(svc);
+  assert.equal(calls, 3);
+  assert.equal(result.consistency_reviewed, true);
+  assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, false);
+  await invoke(svc); assert.equal(calls, 3);
+});
+
+test('Both stages can recover once, but repeated invalid reviews stop within four calls', async () => {
+  let calls = 0;
+  const broken = good(); broken.grammar_annotations = [{ phrase: 'invented evidence' }];
+  const svc = service(async () => ++calls === 1 ? null : calls === 2 ? good() : broken);
+  const result = await invoke(svc);
+  assert.equal(calls, 4);
   assert.equal(result.review_unavailable, true);
   assert.equal(applyScoringPolicy(result, fixture.summary).needs_semantic_review, true);
+});
+
+test('An individual timeout leaves room for recovery and review inside the shared deadline', async () => {
+  let calls = 0, firstSignal;
+  const svc = service(async (prompt, timeout, { signal }) => {
+    if (++calls === 1) { firstSignal = signal; return new Promise(() => {}); }
+    return good();
+  }, { totalTimeoutMs: 300 });
+  const result = await svc.judge(fixture.summary, fixture.passage, 'diagnostic ideas', 20);
+  assert.equal(firstSignal.aborted, true);
+  assert.equal(calls, 3);
+  assert.equal(result.consistency_reviewed, true);
+});
+
+test('Provider configuration errors are not multiplied by the retry budget', async () => {
+  let calls = 0;
+  const svc = service(async () => { calls++; throw Object.assign(Error('Invalid schema'), { status: 400 }); });
+  assert.equal(await invoke(svc), null); assert.equal(calls, 1);
 });
 
 test('Formatting differences preserve verified meaning across both required assessments', async () => {
