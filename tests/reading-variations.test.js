@@ -10,7 +10,7 @@ const fibQuality = require('../public/reading-fib-quality');
 const catalogue = require('../public/practice-catalogue');
 
 test('Fifteen Reading Practice mocks use all five real Reading task types in 23 minutes', () => {
-  const seenPredictionIds=new Set();
+  const seenFibIds=new Set();
   for(let number=1;number<=15;number++){
     const plan=tools.compose(bank,'reading-practice-mock-'+number);
     assert.equal(plan.minutes,23);
@@ -22,8 +22,8 @@ test('Fifteen Reading Practice mocks use all five real Reading task types in 23 
       const words=String(q.passage||'').trim().split(/\s+/).filter(Boolean).length;
       assert(words<=(q.type==='wordbank'?80:300),q.id);
       assert.match(q.reasoning.correct,/No specialist subject knowledge is required/);
+      seenFibIds.add(q.uid || q.id);
       if(q.predictionSource){
-        seenPredictionIds.add(q.predictionSource.sourceId);
         assert.equal(q.predictionSource.provider,'PTE Nepal');
         assert.equal(q.predictionSource.week,'21-27 September 2026');
       }
@@ -33,7 +33,9 @@ test('Fifteen Reading Practice mocks use all five real Reading task types in 23 
   assert.equal(predictions.wordbank.length,30);
   assert.equal(new Set(predictions.dropdown.map(q=>q.predictionSource.sourceId)).size,30);
   assert.equal(new Set(predictions.wordbank.map(q=>q.predictionSource.sourceId)).size,30);
-  assert(seenPredictionIds.size>=30,'Reading Practice mocks should retain a broad prediction FIB pool');
+  // General Reading mocks now rotate the language-first question bank;
+  // dedicated prediction mocks are checked separately below.
+  assert(seenFibIds.size>=30,'Reading Practice mocks should rotate at least 30 distinct FIB questions');
 });
 test('Reading answer choices are shuffled for display while answer coordinates and scoring remain unchanged', () => {
   let checked = 0;

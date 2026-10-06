@@ -41,7 +41,7 @@ test('essay practice exposes a live template-overlap warning without blocking sc
 
   // A high warning still continues into the existing assessment request.
   const warning = js.indexOf("templateOverlap.level === 'high'");
-  const request = js.indexOf("fetch(API_URL + '/api/essay/grade'", warning);
+  const request = js.indexOf("GradingRequest.request(API_URL + '/api/essay/grade'", warning);
   assert(warning >= 0 && request > warning);
 });
 
