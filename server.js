@@ -239,13 +239,12 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
   anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 }
 
-const essayGrader = createEssayGrader(async prompt => {
+const essayJudgeFormat = require('./essay-judge-format');
+const essayGrader = createEssayGrader(async (prompt, options) => {
   if (!anthropic) throw new Error('Essay grader unavailable');
-  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-    max_tokens: 6000, messages: [{ role: 'user', content: prompt }] }, { timeout: 85000, maxRetries: 0 });
-  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete assessment');
-  const text = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
-  return JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || 'null');
+  const response = await anthropic.messages.create(essayJudgeFormat.request(prompt, CLAUDE_MODEL, options),
+    { timeout: 85000, maxRetries: 0 });
+  return essayJudgeFormat.response(response, options);
 }, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)) });
 app.post('/api/essay/grade', async (req, res) => {
   const { question, essay } = req.body || {};

@@ -34,15 +34,33 @@ test('Invalid coverage spans preserve only verified exact quotation fallback', (
   assert.throws(()=>evidence.materialise(raw,essay),error => error.code==='coverage_quote' && error.evidenceIssues[0].path.join('.')==='promptCoverage.0.evidence_span');
 });
 
+test('Missing coverage aliases are normalized before requiring a citation', () => {
+  for (const status of ['missing', 'NOT ADDRESSED', 'not-covered', 'absent']) {
+    const raw = { promptCoverage: [{ requirement: 'personal experience', status,
+      evidence_span: [], nextStep: 'Include your own experience.' }] };
+    const result = evidence.materialise(raw, 'Schools support learning.');
+    assert.equal(result.promptCoverage[0].status, 'missing');
+    assert.equal(result.promptCoverage[0].evidence, '');
+    assert.equal(raw.promptCoverage[0].status, status);
+  }
+  const result = evidence.materialise({ promptCoverage: [{ addressed: false, evidence_span: [] }] }, 'One sentence.');
+  assert.equal(result.promptCoverage[0].status, 'missing');
+  for (const status of ['partial', 'partially addressed', 'addressed', 'unknown', '']) {
+    assert.throws(() => evidence.materialise({ promptCoverage: [{ status, evidence_span: [] }] }, 'One sentence.'), { code: 'coverage_quote' });
+  }
+});
+
 test('Targeted repair changes only citations and preserves original decisions', async () => {
   const essay='Schools support learning.';
   const raw={scores:{content:4},promptCoverage:[{requirement:'benefit',status:'partial',evidence_span:[],nextStep:'Develop the reason.'}]};
   const calls=[];
-  const result=await evidence.callWithRepair(async prompt=>{
-    calls.push(prompt);
+  const stages=[];
+  const result=await evidence.callWithRepair(async (prompt, options)=>{
+    calls.push(prompt); stages.push(options.stage);
     return calls.length===1 ? raw : {scores:{content:6},repairs:[{path:['promptCoverage',0,'evidence_span'],span:[1,3]}]};
-  },'Return {"evidence":"exact essay phrase"}',essay);
+  },'Return {"evidence":"exact essay phrase"}',essay,{stage:'subjective-review'});
   assert.equal(calls.length,2);
+  assert.deepEqual(stages,['subjective-review','evidence-repair']);
   assert.match(calls[0],/"evidence_span":\[1,3\]/);
   assert.equal(result.scores.content,4);
   assert.equal(result.promptCoverage[0].status,'partial');
