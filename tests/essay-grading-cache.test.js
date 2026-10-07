@@ -113,5 +113,56 @@ test('exhausted evidence repair suppresses identical submissions without publish
   const question = 'Discuss transport priorities.';
   await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
   await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
-  assert.equal(calls, 2);
+  assert.equal(calls, 4);
+});
+
+test('an unsupported review judgement gets one reassessment and still requires a resolver for disagreement', async () => {
+  const calls = [];
+  const missing = { requirement: 'personal experience', status: 'missing', evidence_span: [],
+    nextStep: 'Describe a personal journey that supports your position.' };
+  const decision = structuredClone(review);
+  decision.scores.content = 3;
+  decision.promptCoverage.push(missing);
+  decision.rationale = { content: 'The requested personal experience is missing.', linguistic: 'Good range.', coherence: 'Well organised.' };
+  const grader = createEssayGrader(async (prompt, options) => {
+    calls.push(options?.stage || 'sample');
+    if (options?.stage === 'assessment') return primary;
+    if (options?.stage === 'evidence-repair') return { repairs: [] };
+    if (options?.stage === 'subjective-resolver') return decision;
+    if (options?.stage === 'subjective-review') {
+      if (calls.filter(stage => stage === 'subjective-review').length === 1) {
+        const unsupported = structuredClone(review);
+        unsupported.promptCoverage.push({ ...missing, status: 'partial' });
+        return unsupported;
+      }
+      assert.match(prompt, /Independently reassess the original essay/);
+      return decision;
+    }
+    return { sampleStatus: 'ready', sampleResponse: essay,
+      sampleSourceIdeas: ['Public transport helps cities move people efficiently'], sampleNote: '' };
+  });
+  const result = await grader.grade('Discuss transport priorities. Include a personal experience.', essay);
+  assert.deepEqual(calls, ['assessment', 'subjective-review', 'evidence-repair', 'subjective-review', 'subjective-resolver', 'sample']);
+  assert.equal(result.scores.content, 3);
+  assert.equal(result.scores.total, 21);
+  assert.equal(result.promptCoverage[1].status, 'missing');
+  assert.equal(result.promptCoverage[1].evidence, '');
+  assert.equal(result.subjectiveReview.source, 'resolver');
+});
+
+test('persistent invalid second review never publishes a primary-only score and duplicate calls are suppressed', async () => {
+  const calls = [];
+  const grader = createEssayGrader(async (_prompt, options) => {
+    calls.push(options.stage);
+    if (options.stage === 'assessment') return primary;
+    if (options.stage === 'evidence-repair') return { repairs: [] };
+    const unsupported = structuredClone(review);
+    unsupported.promptCoverage[0].evidence = 'Invented unsupported passage';
+    unsupported.promptCoverage[0].evidence_span = [];
+    return unsupported;
+  });
+  const question = 'Discuss transport priorities.';
+  await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
+  await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
+  assert.deepEqual(calls, ['assessment', 'subjective-review', 'evidence-repair', 'subjective-review', 'evidence-repair']);
 });

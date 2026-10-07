@@ -1,6 +1,7 @@
 'use strict';
 
 const policy = require('./public/essay-scoring');
+const essayEvidence = require('./essay-evidence');
 
 const SUBJECTIVE = ['content', 'linguistic', 'coherence'];
 const MAXIMUM = Object.values(policy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
@@ -58,11 +59,7 @@ function normalizeReview(raw, essay) {
   }
   const promptCoverage = raw.promptCoverage.map(item => {
     const requirement = String(item?.requirement || '').trim();
-    let status = String(item?.status || '').trim().toLowerCase().replace(/[ _-]+/g, ' ');
-    if (status === 'fully addressed' || status === 'complete' || status === 'covered') status = 'addressed';
-    if (status === 'partially addressed' || status === 'partly addressed' || status === 'incomplete') status = 'partial';
-    if (status === 'not addressed' || status === 'not covered' || status === 'absent') status = 'missing';
-    if (!status && typeof item?.addressed === 'boolean') status = item.addressed ? 'addressed' : 'missing';
+    const status = essayEvidence.coverageStatus(item);
     if (!requirement || !['addressed','partial','missing'].includes(status)) {
       const error = new Error('Invalid prompt coverage review.');
       error.validationHint = 'Each requirement needs requirement and status exactly addressed, partial or missing; include evidence and nextStep where incomplete.';
@@ -273,14 +270,13 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact short essay quotations and internally consistent scores.')
+        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact short essay quotations and internally consistent scores.')
         : '';
-      const raw = await call(policy.buildAssessmentPrompt(question, essay) + retry);
+      const raw = await call(policy.buildAssessmentPrompt(question, essay) + retry, { stage: 'assessment' });
       return { assessment: policy.normalizeAssessment(raw, essay), raw };
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
-      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay assessment unavailable.');
@@ -291,13 +287,12 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError) {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact essay quotations.')
+        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations.')
         : '';
-      return normalizeReview(await call(buildReviewPrompt(question, essay) + retry), essay);
+      return normalizeReview(await call(buildReviewPrompt(question, essay) + retry, { stage: 'subjective-review' }), essay);
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
-      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay subjective review unavailable.');
@@ -308,14 +303,13 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (lastError.validationHint || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
+        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
         : '';
-      const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry);
+      const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry, { stage: 'subjective-resolver' });
       return normalizeReview(raw, essay);
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
-      if (error.evidenceRepairExhausted) break;
     }
   }
   throw lastError || new Error('Essay subjective resolver unavailable.');
@@ -326,9 +320,8 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
   essay = String(essay || '').trim();
   const form = policy.formFor(essay);
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
-  const evidence = require('./essay-evidence');
   const providerCall = call;
-  call = async prompt => evidence.callWithRepair(providerCall, prompt, essay);
+  call = async (prompt, options) => essayEvidence.callWithRepair(providerCall, prompt, essay, options);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError);
 

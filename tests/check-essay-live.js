@@ -4,22 +4,22 @@ const assert = require('node:assert/strict');
 const { createEssayGrader } = require('../essay-grading');
 const policy = require('../public/essay-scoring');
 const fixture = require('./essay-fixtures');
+const judgeFormat = require('../essay-judge-format');
 const args = Object.fromEntries(process.argv.slice(2).map(s => s.replace(/^--/, '').split('=')));
 if (!args.url || !['proxy','grade'].includes(args.mode)) throw new Error('Provide --url and --mode=proxy|grade');
 const base = new URL(args.url).origin;
 async function post(path, data) {
   const r = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: AbortSignal.timeout(180000) });
   const result = await r.json();
-  if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (result.error || path));
+  if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (typeof result.error === 'object' ? JSON.stringify(result.error) : result.error || path));
   return result;
 }
-const grader = createEssayGrader(async prompt => {
-  const response = await post('/api/claude', { model: 'claude-haiku-4-5-20251001', temperature: 0, max_tokens: 6000,
-    messages: [{ role: 'user', content: prompt }] });
-  if (response.stop_reason === 'max_tokens') throw new Error('Truncated assessment');
-  const raw = response.content.filter(c => c.type === 'text').map(c => c.text).join('\n');
-  return JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] || 'null');
-});
+const grader = createEssayGrader(async (prompt, options) => {
+  const started = Date.now();
+  const response = await post('/api/claude', judgeFormat.request(prompt, 'claude-haiku-4-5-20251001', options));
+  if (args.trace) console.log(JSON.stringify({ stage: options?.stage || 'sample', durationMs: Date.now() - started, stopReason: response.stop_reason }));
+  return judgeFormat.response(response, options);
+}, { onAttemptError: details => { if (args.trace) console.error(JSON.stringify(details)); } });
 (async () => {
   const cases = [
     { name: 'Balanced media essay without an unrequested opinion', ...fixture, minContent: 4, spelling: 2 },
