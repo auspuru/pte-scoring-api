@@ -191,9 +191,11 @@ test('A named prior cache version is reprocessed without another TTS call', asyn
 test('SST pacing reuses existing neural masters without new speech, repeated processing or speeding up longer recordings', async t => {
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'runtime-sst-pacing-'));
   t.after(() => fs.rm(cache, { recursive:true, force:true }));
-  const short = bundledQuestions.find(q => q.type === 'sst' && manifest[q.id].seconds < 60);
+  const short = bundledQuestions.find(q => q.type === 'sst');
   const long = bundledQuestions.find(q => q.type === 'sst' && manifest[q.id].seconds > 60);
-  const sourceBytes = await Promise.all([short,long].map(q => fs.readFile(path.join(directory,q.id+'.mp3'))));
+  const shortFile = path.join(cache,'short-master.mp3');
+  await run('ffmpeg', ['-v','error','-y','-i',path.join(directory,short.id+'.mp3'),'-t','35','-codec:a','libmp3lame',shortFile]);
+  const sourceBytes = await Promise.all([shortFile,path.join(directory,long.id+'.mp3')].map(file => fs.readFile(file)));
   const ids = runtimeSstQuestions.slice(0,2).map(q => q.id);
   let providerCalls = 0;
   const prior = createNarration(cache, async () => sourceBytes[providerCalls++], { cacheVersion:'current-hd' });
@@ -286,9 +288,11 @@ test('Old stretched caches are bypassed while intact long caches and retained ma
   const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'sst-legacy-repair-'));
   t.after(() => fs.rm(cache, { recursive:true, force:true }));
   const ids = runtimeSstQuestions.slice(0,2).map(q => q.id);
-  const originals = await Promise.all(['pred26-sst-10','sst-food-waste'].map(id => fs.readFile(path.join(directory,id+'.mp3'))));
+  const shortMaster = path.join(cache,'short-master.mp3');
+  await run('ffmpeg', ['-v','error','-y','-i',path.join(directory,'sst-food-waste.mp3'),'-t','35','-codec:a','libmp3lame',shortMaster]);
+  const originals = await Promise.all([shortMaster,path.join(directory,'sst-food-waste.mp3')].map(file => fs.readFile(file)));
   const oldShort = path.join(cache,'stretched.mp3');
-  await run('ffmpeg', ['-v','error','-y','-i',path.join(directory,'pred26-sst-10.mp3'),'-af','atempo='+manifest['pred26-sst-10'].seconds/60,'-codec:a','libmp3lame',oldShort]);
+  await run('ffmpeg', ['-v','error','-y','-i',shortMaster,'-af','atempo='+await duration(shortMaster)/60,'-codec:a','libmp3lame',oldShort]);
   for (const [index,id] of ids.entries()) {
     const q = runtimeSstQuestions[index];
     const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:'wav', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:true, cacheVersion:'old-hd', minimumSeconds:60 };
@@ -307,4 +311,15 @@ test('Old stretched caches are bypassed while intact long caches and retained ma
   assert.equal(processing,1,'The intact long cache must not be mixed or normalized again');
   const unpaced = createNarration(cache, () => { throw Error('Retained master must avoid paid synthesis'); }, { cacheVersion:'old-hd' });
   for (const [index,id] of ids.entries()) assert.deepEqual(await fs.readFile(await unpaced.get(id)), originals[index]);
+});
+
+test('Short prediction SST masters are recorded natively for at least one minute with unchanged transcript hashes', () => {
+  const native = predictions.sst.filter(q => q.audioMode !== 'runtime-neural');
+  assert.equal(native.length,17);
+  for (const q of native) {
+    const entry = manifest[q.id];
+    assert(entry.seconds >= 60 && entry.seconds <= 70,q.id+' must be about one minute');
+    assert.equal(entry.pacing,'native-neural-rate');
+    assert.equal(entry.textSha256,createHash('sha256').update(q.text).digest('hex'));
+  }
 });
