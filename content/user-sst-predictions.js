@@ -219,7 +219,9 @@ const sst = raw.map((item, index) => ({
   narrationText: humanisedNarration(item.transcript, index),
   audioMode: 'runtime-neural',
   ttsModel: 'tts-1-hd',
-  audioSpeed: 0.94,
+  // Body fat change's original master was only 54 seconds. Regenerate it at
+  // a measured native delivery rate rather than stretching the cached MP3.
+  audioSpeed: index === 12 ? 0.83 : 0.94,
   audioInstructions: '',
   audioAmbience: AMBIENCE_PROFILES[index],
   keyPoints: item.keyPoints,

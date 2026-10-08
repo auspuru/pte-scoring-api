@@ -8,7 +8,7 @@ const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
-const AUDIO_VERSION = '20261008-sst-natural2';
+const AUDIO_VERSION = '20261008-sst-native-minute3';
 const MAX_ASSESSMENT_QUEUE = 500;
 const clone = value => structuredClone(value);
 function roundRobinPairs(items) {
