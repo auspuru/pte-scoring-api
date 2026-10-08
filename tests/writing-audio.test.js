@@ -6,8 +6,9 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
+const { createHash } = require('node:crypto');
 const express = require('express');
-const { createNarration, installNarration, normalizeMp3, createAmbiencePcm, prewarmNarration } = require('../writing-lab-audio');
+const { createNarration, installNarration, normalizeMp3, stretchMp3, createAmbiencePcm, prewarmNarration } = require('../writing-lab-audio');
 const { validateWritingAudio, inspectMp3 } = require('../scripts/validate-writing-audio');
 const bank = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
@@ -53,11 +54,13 @@ test('The student audio endpoint serves real MP3 data and byte ranges for loadin
     const bytes = await fs.readFile(file);
     if (q.type === 'sst' && manifest[q.id].seconds < 60) {
       assert.notEqual(file, original);
-      assert(Math.abs(await duration(file) - 60) < 0.25, q.id + ' should play for approximately one minute');
-      const inspected = inspectMp3(bytes);
-      assert.equal(inspected.valid, true);
-      assert.equal(inspected.sampleRate, 48000);
-      assert.equal(inspected.bitrate, 192000);
+      if (manifest[q.id].seconds / 60 < 0.92) {
+        assert.deepEqual(bytes, await fs.readFile(original), q.id + ' must preserve natural speech');
+        assert(Math.abs(await duration(file) - manifest[q.id].seconds) < 0.05);
+      } else {
+        assert(Math.abs(await duration(file) - 60) < 0.25);
+      }
+      assert.equal(inspectMp3(bytes).valid, true);
     } else {
       assert.equal(file, original, 'Longer lectures and dictations must keep their original recording');
     }
@@ -203,7 +206,7 @@ test('SST pacing reuses existing neural masters without new speech, repeated pro
   const [file,sameFile] = await Promise.all([paced.get(ids[0]),paced.get(ids[0])]);
   assert.equal(file,sameFile,'Concurrent requests must reuse the same processed recording');
   assert.notEqual(file,originalFiles[0]);
-  assert(Math.abs(await duration(file)-60)<0.25);
+  assert.deepEqual(await fs.readFile(file),sourceBytes[0],'Short speech must retain its original pace');
   const bytes = await fs.readFile(file);
   assert.equal(await paced.get(ids[0]),file);
   assert.deepEqual(await fs.readFile(file),bytes,'Repeat playback must not stretch the recording again');
@@ -265,4 +268,43 @@ test('User SST masters use OpenAI quality-optimized HD TTS and never robotic loc
   const neuralBlock=source.slice(neuralStart,neuralEnd);
   assert.doesNotMatch(neuralBlock,/createLocalNarration/);
   assert.doesNotMatch(neuralBlock,/createEdgeNarration/);
+});
+
+
+test('Near-minute SST speech permits only a small pitch-preserving pace adjustment', async t => {
+  const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'sst-near-minute-'));
+  t.after(() => fs.rm(cache, { recursive:true, force:true }));
+  const short = path.join(cache, '57-seconds.mp3');
+  await run('ffmpeg', ['-v','error','-y','-i',path.join(directory,'sst-food-waste.mp3'),'-t','57','-codec:a','libmp3lame',short]);
+  const bytes = await fs.readFile(short);
+  const paced = path.join(cache, 'paced.mp3');
+  await fs.writeFile(paced, await stretchMp3(bytes, 60));
+  assert(Math.abs(await duration(paced) - 60) < 0.25);
+});
+
+test('Old stretched caches are bypassed while intact long caches and retained masters avoid paid regeneration', async t => {
+  const cache = await fs.mkdtemp(path.join(os.tmpdir(), 'sst-legacy-repair-'));
+  t.after(() => fs.rm(cache, { recursive:true, force:true }));
+  const ids = runtimeSstQuestions.slice(0,2).map(q => q.id);
+  const originals = await Promise.all(['pred26-sst-10','sst-food-waste'].map(id => fs.readFile(path.join(directory,id+'.mp3'))));
+  const oldShort = path.join(cache,'stretched.mp3');
+  await run('ffmpeg', ['-v','error','-y','-i',path.join(directory,'pred26-sst-10.mp3'),'-af','atempo='+manifest['pred26-sst-10'].seconds/60,'-codec:a','libmp3lame',oldShort]);
+  for (const [index,id] of ids.entries()) {
+    const q = runtimeSstQuestions[index];
+    const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:'wav', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:true, cacheVersion:'old-hd', minimumSeconds:60 };
+    const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex').slice(0,16);
+    await fs.writeFile(path.join(cache,id+'-'+hash+'.mp3'), index === 0 ? await fs.readFile(oldShort) : originals[index]);
+  }
+  let calls = 0, processing = 0;
+  const fixed = createNarration(cache, async () => { calls++; return originals[0]; }, {
+    cacheVersion:'old-hd', minimumSstSeconds:60,
+    postProcess:async bytes => { processing++; return bytes; }
+  });
+  for (const [index,id] of ids.entries()) {
+    assert.deepEqual(await fs.readFile(await fixed.get(id)), originals[index]);
+  }
+  assert.equal(calls,1,'Only the recording with no intact master should be generated again');
+  assert.equal(processing,1,'The intact long cache must not be mixed or normalized again');
+  const unpaced = createNarration(cache, () => { throw Error('Retained master must avoid paid synthesis'); }, { cacheVersion:'old-hd' });
+  for (const [index,id] of ids.entries()) assert.deepEqual(await fs.readFile(await unpaced.get(id)), originals[index]);
 });

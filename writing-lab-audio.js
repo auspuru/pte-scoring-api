@@ -10,6 +10,8 @@ const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
 const RUNTIME_CACHE_VERSION = 'openai-tts1-hd-realism-v7';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
+const SST_PACING_VERSION = 'natural-pace-v2';
+const MINIMUM_SST_TEMPO = 0.92;
 const SPEECH_CLEANUP_FILTER = [
   'highpass=f=60',
   'lowpass=f=18000',
@@ -126,14 +128,13 @@ async function stretchMp3(bytes, minimumSeconds) {
     const seconds = Number.parseFloat(stdout);
     if (!Number.isFinite(seconds) || seconds <= 0) throw Error('Recording duration could not be measured.');
     if (seconds >= minimumSeconds) return bytes;
-    // atempo stretches the existing speech while preserving pitch. Chaining
-    // keeps each factor within ffmpeg's supported range, even for short clips.
-    const filters = [];
-    let tempo = seconds / minimumSeconds;
-    while (tempo < 0.5) { filters.push('atempo=0.5'); tempo /= 0.5; }
-    filters.push('atempo=' + tempo.toFixed(8));
+    // A one-minute target must never turn a short lecture into slow-motion
+    // speech. Keep short recordings intact; only allow a small pace adjustment
+    // for recordings already close to the target, preserving pitch.
+    const tempo = seconds / minimumSeconds;
+    if (tempo < MINIMUM_SST_TEMPO) return bytes;
     await run('ffmpeg', [
-      '-loglevel','error','-y','-i',source,'-af',filters.join(','),
+      '-loglevel','error','-y','-i',source,'-af','atempo=' + tempo.toFixed(8),
       '-codec:a','libmp3lame','-b:a','192k','-ar','48000','-ac','1',output
     ], { timeout:120000, maxBuffer:10*1024*1024 });
     const stretched = await fs.readFile(output);
@@ -224,7 +225,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     const cacheInput = cacheVersion ? { ...input, cacheVersion } : input;
     const unpacedHash = digest(cacheInput);
     const hash = digest(minimumSeconds ? {
-      ...cacheInput, minimumSeconds,
+      ...cacheInput, minimumSeconds, pacingVersion:SST_PACING_VERSION,
       ...(bundledSource ? { sourceAudioSha256:manifest[id].audioSha256 } : {})
     } : cacheInput);
     const file = path.resolve(directory, id + '-' + hash + '.mp3');
@@ -249,8 +250,30 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
             alreadyProcessed = !!minimumSeconds && !!cacheVersion && candidateHash === unpacedHash;
           }
         }
+        // Old paced caches are safe to reuse only when their duration proves
+        // they exceeded the target and were never stretched. A 60-second cache
+        // may contain heavily slowed speech, so it cannot be a new master.
+        if (!sourceFile && minimumSeconds) {
+          const priorHash = digest({ ...cacheInput, minimumSeconds });
+          const priorFile = path.resolve(directory, id + '-' + priorHash + '.mp3');
+          if (await usable(priorFile)) {
+            const { stdout } = await run('ffprobe', [
+              '-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',priorFile
+            ], { timeout:15000, maxBuffer:1024*1024 });
+            if (Number.parseFloat(stdout) > minimumSeconds + 0.25) {
+              sourceFile = priorFile;
+              alreadyProcessed = true;
+            }
+          }
+        }
         let bytes = sourceFile ? await fs.readFile(sourceFile) : await generate(input);
         if(postProcess && !alreadyProcessed) bytes=await postProcess(bytes, input);
+        if(!Buffer.isBuffer(bytes) || bytes.length<1000 || bytes.length>8*1024*1024) throw Error('Invalid narration response.');
+        // Retain the unstretched master so later playback-processing repairs
+        // never need another paid synthesis or repeatedly process the speech.
+        if (minimumSeconds && !bundledSource) {
+          await writeAtomic(path.resolve(directory, id + '-' + unpacedHash + '.mp3'), bytes);
+        }
         if(minimumSeconds) bytes=await stretchMp3(bytes, minimumSeconds);
         if(!Buffer.isBuffer(bytes) || bytes.length<1000 || bytes.length>8*1024*1024) throw Error('Invalid narration response.');
         await writeAtomic(file,bytes);
@@ -363,4 +386,4 @@ function installNarration(app, directory, { prewarm=true } = {}) {
     console.warn('[writing-audio] Prewarm task failed:',error.message)));
   return narration;
 }
-module.exports={createNarration,createLocalNarration,createEdgeNarration,normalizeMp3,createAmbiencePcm,wavFromPcm16,prewarmNarration,installNarration};
+module.exports={createNarration,createLocalNarration,createEdgeNarration,normalizeMp3,stretchMp3,createAmbiencePcm,wavFromPcm16,prewarmNarration,installNarration};
