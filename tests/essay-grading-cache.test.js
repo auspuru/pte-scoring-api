@@ -12,6 +12,7 @@ const essay = [
 ].join('\n\n');
 
 const primary = {
+  taskRelevance: { status: 'relevant', evidence: 'cities should give strong priority', reason: 'The essay compares transport investment priorities.' },
   scores: { content: 5, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 5, coherence: 5 },
   feedback: {
     content: 'Relevant and developed.',
@@ -39,6 +40,7 @@ const primary = {
 };
 
 const review = {
+  taskRelevance: { status: 'relevant', evidence: 'cities should give strong priority', reason: 'The essay compares transport investment priorities.' },
   scores: { content: 5, linguistic: 5, coherence: 5 },
   promptCoverage: [{ requirement: 'address transport priorities', status: 'addressed', evidence: 'cities should give strong priority', nextStep: '' }],
   scoringEvidence: {

@@ -76,3 +76,27 @@ test('Unrepairable evidence cannot become a successful assessment', async () => 
     error=>error.code==='coverage_quote' && error.evidenceRepairExhausted);
   assert.equal(calls,2);
 });
+
+test('Relevance citations use original essay spans and reject fabricated or absent support', () => {
+  const essay = 'Public transport improves access for commuters.';
+  const raw = { taskRelevance: { status: 'minimal', evidence_span: [1, 4], reason: 'A benefit of transport is mentioned.' } };
+  assert.equal(evidence.materialise(raw, essay).taskRelevance.evidence, 'Public transport improves access');
+  for (const span of [[], [0, 4], [1, 99], [4, 1]]) {
+    assert.throws(() => evidence.materialise({ taskRelevance: { ...raw.taskRelevance, evidence_span: span } }, essay), { code: 'relevance_quote' });
+  }
+  assert.throws(() => evidence.materialise({ taskRelevance: { status: 'relevant', evidence: 'Invented relevance' } }, essay), { code: 'relevance_quote' });
+  assert.equal(evidence.materialise({ taskRelevance: { status: 'off_topic', evidence_span: [], reason: 'Different topic.' } }, essay).taskRelevance.evidence, '');
+  assert.throws(() => evidence.materialise({ taskRelevance: { status: 'off_topic', evidence_span: [1, 4] } }, essay), { code: 'relevance_quote' });
+});
+
+test('Relevance citation repair cannot change the judgement or scores', async () => {
+  let calls = 0;
+  const result = await evidence.callWithRepair(async () => ++calls === 1
+    ? { scores: { content: 1 }, taskRelevance: { status: 'minimal', evidence_span: [], reason: 'A transport benefit is mentioned.' } }
+    : { scores: { content: 6 }, repairs: [{ path: ['taskRelevance', 'evidence_span'], span: [1, 4] }] },
+  'Assess relevance.', 'Public transport improves access for commuters.', { stage: 'assessment' });
+  assert.equal(result.scores.content, 1);
+  assert.equal(result.taskRelevance.status, 'minimal');
+  assert.equal(result.taskRelevance.evidence, 'Public transport improves access');
+  assert.equal(calls, 2);
+});

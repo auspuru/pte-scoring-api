@@ -86,6 +86,7 @@ test('resolver validation retries once before falling back', async () => {
     calls += 1;
     if (calls === 1) return {};
     return {
+      taskRelevance: { status: 'relevant', evidence: 'Public transport improves access', reason: 'The idea describes a benefit of public transport.' },
       scores: { content: 5, linguistic: 5, coherence: 5 },
       promptCoverage: [{ requirement: 'address transport', status: 'addressed', evidence: 'Public transport improves access', nextStep: '' }],
       scoringEvidence: { linguisticExamples: [], developmentEvidence: [] },

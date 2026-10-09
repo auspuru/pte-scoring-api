@@ -24,12 +24,15 @@ TRAITS
 TASK ANALYSIS
 Break the prompt into its real requested parts: opinion/degree of agreement, both sides of a comparison, advantages and disadvantages, causes and solutions, a named choice/item, requested reasons, requested example/personal experience, or another explicit instruction. Do not invent requirements.
 
+${policy.TASK_RELEVANCE_GUIDANCE}
+
 EVIDENCE
 For every addressed or partial prompt requirement, quote a short contiguous phrase from the original essay. For linguisticExamples and developmentEvidence, quote short contiguous phrases from the essay. A 6/6 in Linguistic or Coherence requires at least two valid examples.
 
 Return:
 {
-  "scores":{"content":0,"linguistic":0,"coherence":0},
+  "scores":{"content":6,"linguistic":6,"coherence":6},
+  "taskRelevance":{"status":"relevant","evidence":"exact essay phrase","reason":"brief relevance decision against the actual question"},
   "promptCoverage":[{"requirement":"...","status":"addressed","evidence":"exact essay phrase","nextStep":""}],
   "scoringEvidence":{"linguisticExamples":["exact essay phrase"],"developmentEvidence":["exact essay phrase"]},
   "rationale":{"content":"brief reason","linguistic":"brief reason","coherence":"brief reason"}
@@ -39,7 +42,7 @@ DATA:
 ${JSON.stringify({ question, essay, wordCount: form.count, formScore: form.score })}`;
 }
 
-function normalizeReview(raw, essay) {
+function normalizeReview(raw, essay, { requireTaskRelevance = false } = {}) {
   if (!raw || typeof raw !== 'object' || !raw.scores || !Array.isArray(raw.promptCoverage)
     || !raw.promptCoverage.length || !raw.scoringEvidence) {
     const error = new Error('Incomplete subjective essay review.');
@@ -93,6 +96,14 @@ function normalizeReview(raw, essay) {
   const developmentEvidence = distinctQuotes((raw.scoringEvidence.developmentEvidence || [])
     .map(item => policy.exactQuote(essay, item, true)).filter(Boolean));
 
+  const taskRelevance = policy.normalizeTaskRelevance(raw.taskRelevance, essay, promptCoverage, { required: requireTaskRelevance });
+  if (taskRelevance?.status === 'off_topic') scores.content = 0;
+  if (taskRelevance?.status === 'minimal' && scores.content > 1) {
+    const error = new Error('Minimal relevance conflicts with Content review.');
+    error.code = 'relevance_score';
+    error.validationHint = 'Minimal task relevance can earn at most Content 1. Reassess relevance and Content consistently.';
+    throw error;
+  }
   if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
     const error = new Error('Full Content review conflicts with prompt coverage.');
     error.validationHint = 'Content 6 requires every requested part to be addressed.';
@@ -116,6 +127,7 @@ function normalizeReview(raw, essay) {
 
   return {
     scores,
+    ...(taskRelevance ? { taskRelevance } : {}),
     promptCoverage,
     scoringEvidence: { linguisticExamples, developmentEvidence },
     rationale: raw.rationale || {}
@@ -145,15 +157,18 @@ Use these score ranges:
 Hard rule: Content 0 means the response does not meaningfully answer the task. Content 6 requires every explicit prompt requirement to be addressed.
 A 6/6 Linguistic or Coherence score requires at least two short exact essay quotations supporting it.
 
+${policy.TASK_RELEVANCE_GUIDANCE}
+
 PRIMARY REVIEW:
-${JSON.stringify({ scores: { content: (primary.diagnosticScores || primary.scores).content, linguistic: (primary.diagnosticScores || primary.scores).linguistic, coherence: (primary.diagnosticScores || primary.scores).coherence }, promptCoverage: primary.promptCoverage, scoringEvidence: primary.scoringEvidence })}
+${JSON.stringify({ scores: { content: (primary.diagnosticScores || primary.scores).content, linguistic: (primary.diagnosticScores || primary.scores).linguistic, coherence: (primary.diagnosticScores || primary.scores).coherence }, taskRelevance: primary.taskRelevance, promptCoverage: primary.promptCoverage, scoringEvidence: primary.scoringEvidence })}
 
 INDEPENDENT REVIEW:
 ${JSON.stringify(review)}
 
 Return:
 {
-  "scores":{"content":0,"linguistic":0,"coherence":0},
+  "scores":{"content":6,"linguistic":6,"coherence":6},
+  "taskRelevance":{"status":"relevant","evidence":"exact essay phrase","reason":"brief relevance decision against the actual question"},
   "promptCoverage":[{"requirement":"...","status":"addressed","evidence":"exact essay phrase","nextStep":""}],
   "scoringEvidence":{"linguisticExamples":["exact essay phrase"],"developmentEvidence":["exact essay phrase"]},
   "rationale":{"content":"brief reason","linguistic":"brief reason","coherence":"brief reason"}
@@ -192,6 +207,7 @@ function applySubjectiveDecision(assessment, decision, source) {
       feedback[key] = String(decision.rationale[key]).trim();
     }
   }
+  if (decision.taskRelevance?.status === 'off_topic') feedback.content = decision.taskRelevance.reason;
   const nextSteps = decision.promptCoverage.filter(item => item.status !== 'addressed').map(item => item.nextStep).filter(Boolean);
   const traitSteps = SUBJECTIVE.filter(key => diagnosticScores[key] < policy.MAXIMA[key]).map(key => feedback[key]).filter(Boolean);
   const improvements = hardGate
@@ -215,6 +231,7 @@ function applySubjectiveDecision(assessment, decision, source) {
 
   return {
     ...assessment,
+    ...(decision.taskRelevance ? { taskRelevance: decision.taskRelevance } : {}),
     scores,
     diagnosticScores,
     scoreGate,
@@ -273,7 +290,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError) {
         ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact short essay quotations and internally consistent scores.')
         : '';
       const raw = await call(policy.buildAssessmentPrompt(question, essay) + retry, { stage: 'assessment' });
-      return { assessment: policy.normalizeAssessment(raw, essay), raw };
+      return { assessment: policy.normalizeAssessment(raw, essay, { requireTaskRelevance: true }), raw };
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
@@ -289,7 +306,7 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError) {
       const retry = lastError
         ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations.')
         : '';
-      return normalizeReview(await call(buildReviewPrompt(question, essay) + retry, { stage: 'subjective-review' }), essay);
+      return normalizeReview(await call(buildReviewPrompt(question, essay) + retry, { stage: 'subjective-review' }), essay, { requireTaskRelevance: true });
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
@@ -306,7 +323,7 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
         ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
         : '';
       const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry, { stage: 'subjective-resolver' });
-      return normalizeReview(raw, essay);
+      return normalizeReview(raw, essay, { requireTaskRelevance: true });
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
@@ -336,6 +353,7 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
         linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
         coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
       },
+      taskRelevance: primary.taskRelevance,
       promptCoverage: primary.promptCoverage,
       scoringEvidence: {
         linguisticExamples: primary.scoringEvidence?.linguisticExamples || [],
@@ -343,6 +361,7 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
       }
     }, 'agreement');
     agreed.subjectiveReview.independent = review.scores;
+    agreed.subjectiveReview.independentRelevance = review.taskRelevance;
     return { assessment: agreed, primaryRaw };
   }
 

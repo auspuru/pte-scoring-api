@@ -21,6 +21,9 @@ const maxima = require('./public/essay-scoring').MAXIMA;
 const scores = keys => object(Object.fromEntries(keys.map(key => [key, score(maxima[key])])));
 const reasons = keys => object(Object.fromEntries(keys.map(key => [key, text])));
 const common = {
+  taskRelevance: object({ status: { type: 'string', enum: ['relevant', 'minimal', 'off_topic'] },
+    evidence_span: { $ref: '#/$defs/span' },
+    reason: { ...text, description: 'Explain the connection to the actual topic. off_topic requires empty evidence_span and Content 0; nonzero relevance needs substantive original essay evidence.' } }),
   promptCoverage: { type: 'array', items: { $ref: '#/$defs/coverage' } },
   scoringEvidence: object({ linguisticExamples: citations, developmentEvidence: citations })
 };

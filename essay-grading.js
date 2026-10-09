@@ -58,6 +58,14 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
       };
     }
 
+    if (assessment.taskRelevance?.status === 'off_topic') {
+      const nextSteps = assessment.promptCoverage.map(item => item.nextStep).filter(Boolean);
+      return policy.normalizeSample({
+        sampleStatus: 'needs-ideas', sampleResponse: '', sampleSourceIdeas: [],
+        sampleNote: 'Add ideas that answer this question before a sample can preserve your own viewpoint. ' + nextSteps.join(' ')
+      }, essay, assessment, { sampleBand });
+    }
+
     let lastError;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {

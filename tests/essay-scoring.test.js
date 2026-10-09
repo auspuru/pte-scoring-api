@@ -12,6 +12,7 @@ const uiSource = fs.readFileSync(path.join(__dirname, '../public/index.js'), 'ut
 const htmlSource = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
 function good() {
   return { scores: { ...policy.MAXIMA },
+    taskRelevance: { status: 'relevant', evidence: 'Schools can respond by teaching students', reason: 'The essay explains media effects on students.' },
     feedback: Object.fromEntries(Object.keys(policy.MAXIMA).map(key => [key, 'Your ideas are clear and relevant.'])),
     errors: [], optionalRefinements: [],
     promptCoverage: [{ requirement: 'Positive and negative effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }],
@@ -29,6 +30,7 @@ function good() {
 function goodReview(overrides = {}) {
   return {
     scores: { content: 6, linguistic: 6, coherence: 6, ...(overrides.scores || {}) },
+    taskRelevance: overrides.taskRelevance || { status: 'relevant', evidence: 'Schools can respond by teaching students', reason: 'The essay explains media effects on students.' },
     promptCoverage: overrides.promptCoverage || [
       { requirement: 'Positive and negative effects', status: 'addressed', evidence: 'mass media supports learning', nextStep: '' }
     ],
@@ -383,7 +385,7 @@ test('Essay UI uses the validated grader and keeps the detailed rubric secondary
   assert.match(uiSource, /EssayScoring\.taskFocusNote/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
   assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
-  assert.match(htmlSource, /essay-scoring\.js\?v=20260928-band-samples/);
+  assert.match(htmlSource, /essay-scoring\.js\?v=20261009-topic-gate/);
 });
 
 test('Incomplete model output gets one retry; only validated assessments are cached', async () => {
@@ -575,11 +577,13 @@ test('Assessment validation failures return a retryable failure instead of a fab
 
 test('Missing ideas produce an honest next step and cannot suppress a full-score sample', () => {
   const raw = good(); raw.scores.content = 1;
+  raw.taskRelevance = { status: 'off_topic', evidence: '', reason: 'The essay discusses media rather than transport investment.' };
   raw.promptCoverage = [{ requirement: 'A position about railways versus roads', status: 'missing', evidence: '',
     nextStep: 'State which transport investment you support and give a reason.' }];
   raw.sampleStatus = 'needs-ideas'; raw.sampleResponse = ''; raw.sampleSourceIdeas = [];
   raw.sampleNote = 'Your essay discusses media. Add your position about railways versus roads and a supporting reason.';
   const result = policy.normalizeResult(raw, essay);
+  assert.equal(result.scores.total, 0);
   assert.equal(result.sampleKind, 'needs-ideas');
   assert.equal(result.sampleResponse, '');
   assert.match(result.sampleNote, /railways versus roads/);
