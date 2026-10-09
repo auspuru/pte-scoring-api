@@ -40,8 +40,9 @@ function validatePredictionSwtSamples(bank = predictions.swt) {
     }
 
     const local = policy.localGrade(q, q.sample, { reason: 'published sample validation' });
-    if (local.scores.content !== 4 || local.scores.form !== 1 || local.total !== 9) {
-      throw new Error(q.id + ' sample failed the existing local SWT benchmark: ' + JSON.stringify(local.scores));
+    if (local.scores.content !== 3 || local.scores.form !== 1 || local.scores.grammar !== 2
+      || local.scores.vocabulary !== 2 || local.score_provisional !== true || local.full_content_eligible !== false) {
+      throw new Error(q.id + ' sample failed the provisional coverage/form checks: ' + JSON.stringify(local.scores));
     }
 
     const copied = longestCopiedRun(q.text, q.sample);
@@ -52,12 +53,12 @@ function validatePredictionSwtSamples(bank = predictions.swt) {
     }
   }
 
-  return { count: bank.length, fullLocalBenchmark: bank.length, maxCopiedRun: Math.max(...bank.map(q => longestCopiedRun(q.text, q.sample))) };
+  return { count: bank.length, provisionalCoverage: bank.length, maxCopiedRun: Math.max(...bank.map(q => longestCopiedRun(q.text, q.sample))) };
 }
 
 if (require.main === module) {
   const result = validatePredictionSwtSamples();
-  console.log('Validated ' + result.count + ' September SWT samples; all meet the local 9/9 benchmark; longest copied run: ' + result.maxCopiedRun + ' words.');
+  console.log('Validated ' + result.count + ' September SWT samples; form and provisional keyword coverage checked (semantic review still required); longest copied run: ' + result.maxCopiedRun + ' words.');
 }
 
 module.exports = { validatePredictionSwtSamples, longestCopiedRun };

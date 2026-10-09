@@ -12,7 +12,7 @@ const functionSource = name => {
   const start = server.indexOf('function ' + name + '(');
   return server.slice(start, server.indexOf('\n}', start) + 2);
 };
-const validateForm = vm.runInNewContext(functionSource('validateForm') + '\nvalidateForm;');
+const validateForm = vm.runInNewContext(functionSource('validateForm') + '\nvalidateForm;', { SwtForm: require('../swt-form-policy') });
 
 test('Reported references are revised without mutating the stored passage or bypassing scoring', () => {
   for (const id of [8, 9]) {

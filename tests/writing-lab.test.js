@@ -357,7 +357,11 @@ test('local Writing fallback returns a usable score when the external model is u
   assert.equal(result.scoringMode,'local');
   assert.equal(result.assessmentType,'Local practice assessment');
   assert.equal(result.scores.form,1);
-  assert(result.scores.content>=3);
+  assert.equal(result.scores.content,3);
+  assert.equal(result.score_provisional,true);
+  assert.equal(result.needs_semantic_review,true);
+  assert.equal(result.full_content_eligible,false);
+  assert(result.total < result.maximum);
   assert(Number.isFinite(result.total));
 });
 test('local fallback keeps deterministic WFD scoring unchanged',async()=>{
@@ -374,4 +378,34 @@ test('Writing narration has a local MP3 fallback when remote TTS is unavailable'
   assert.match(source,/run\('espeak'/);
   assert.match(source,/run\('ffmpeg'/);
   assert.match(source,/using local narrator/);
+});
+
+test('Provider-free SWT and SST keyword matches stay provisional, including reversed claims', async () => {
+  for (const type of ['swt', 'sst']) {
+    const q={type,text:'Trees cool cities and provide shade; councils must maintain them.',
+      keyPoints:['Trees cool cities','Trees provide shade','Councils must maintain trees']};
+    for (const reversed of [false,true]) {
+      let answer=reversed
+        ? 'Trees do not cool cities or provide shade, and councils must not maintain trees.'
+        : 'Trees cool cities and provide shade, and councils must maintain trees.';
+      if(type==='sst') answer += ' '+Array(42).fill('context').join(' ')+'.';
+      const r=await policy.grade(q,answer,async()=>{throw Error('offline');});
+      assert.equal(r.scoringMode,'local');
+      assert.equal(r.score_provisional,true);
+      assert.equal(r.full_content_eligible,false);
+      assert(r.scores.content<=3);
+      assert(r.total<r.maximum);
+    }
+  }
+});
+
+test('Local Content zero awards no native points while retaining language diagnostics', async () => {
+  const q={type:'swt',text:'Trees cool cities.',keyPoints:['Trees cool cities','Councils maintain trees']};
+  const r=await policy.grade(q,'Astronauts explore distant planets in space.',async()=>{throw Error('offline');});
+  assert.equal(r.total,0);
+  assert.equal(r.gated,true);
+  assert.equal(r.score_provisional,true);
+  assert(Object.values(r.scores).every(x=>x===0));
+  assert.equal(r.diagnosticScores.form,1);
+  assert.equal(r.diagnosticScores.grammar,2);
 });

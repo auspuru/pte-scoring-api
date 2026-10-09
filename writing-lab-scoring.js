@@ -1,5 +1,6 @@
 'use strict';
-const VERSION = 'exam-practice-2026-09-23.3';
+const VERSION = 'exam-practice-2026-10-09.1';
+const SwtForm = require('./swt-form-policy');
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
@@ -11,13 +12,10 @@ const MAXIMA = {
   essay: { content: 6, form: 2, grammar: 2, vocabulary: 2, spelling: 2, linguistic: 6, coherence: 6 }
 };
 const wordCount = text => String(text || '').trim().split(/\s+/).filter(Boolean).length;
-function sentenceCount(text) {
-  const normal = text.trim().replace(/\b(?:Mr|Mrs|Ms|Dr|Prof|St|Jr|Sr|vs|etc)\./gi, '$&~')
-    .replace(/\b(?:e\.g\.|i\.e\.|(?:[A-Z]\.){2,})/g, x => x.replace(/\./g, '~'))
-    .replace(/(\d)\.(?=\d)/g, '$1~').replace(/\.~/g, '~');
-  return normal.split(/[.!?]+(?:["'”’)]*)\s*|\n\s*\n/).filter(x => /[\p{L}\p{N}]/u.test(x)).length;
-}
+const sentenceCount = SwtForm.sentenceCount;
+
 function formFor(type, text) {
+  if (type === 'swt') return SwtForm.formFor(text);
   if (type === 'essay') {
     const form = essayPolicy.formFor(text);
     return { count: form.count, score: form.score, reasons: form.reasons || [], feedback: form.feedback };
@@ -26,19 +24,12 @@ function formFor(type, text) {
   const letters = text.replace(/[^\p{L}]/gu, '');
   if (!count) reasons.push('No response was submitted.');
   if (letters && letters === letters.toUpperCase() && letters !== letters.toLowerCase()) reasons.push('The response is written entirely in capital letters.');
-  let score;
-  if (type === 'swt') {
-    score = count >= 5 && count <= 75 ? 1 : 0;
-    if (!score) reasons.push('A written summary must contain 5–75 words.');
-    if (sentenceCount(text) !== 1) reasons.push('Write one complete sentence.');
-  } else {
-    const [low, high, targetLow, targetHigh] = type === 'sst' ? [40, 100, 50, 70] : [120, 380, 200, 300];
-    score = count >= targetLow && count <= targetHigh ? 2 : count >= low && count <= high ? 1 : 0;
-    if (!score) reasons.push(`The allowed range is ${low}–${high} words; aim for ${targetLow}–${targetHigh}.`);
-    if (count && !/[.!?;:,]/.test(text)) reasons.push('The response has no punctuation.');
-    const lines = text.trim().split(/\n/).filter(x => x.trim());
-    if (lines.length && lines.every(x => /^\s*(?:[-*•]|\d+[.)])\s/.test(x))) reasons.push('Write connected prose, rather than only bullet points.');
-  }
+  const [low, high, targetLow, targetHigh] = type === 'sst' ? [40, 100, 50, 70] : [120, 380, 200, 300];
+  let score = count >= targetLow && count <= targetHigh ? 2 : count >= low && count <= high ? 1 : 0;
+  if (!score) reasons.push(`The allowed range is ${low}–${high} words; aim for ${targetLow}–${targetHigh}.`);
+  if (count && !/[.!?;:,]/.test(text)) reasons.push('The response has no punctuation.');
+  const lines = text.trim().split(/\n/).filter(x => x.trim());
+  if (lines.length && lines.every(x => /^\s*(?:[-*•]|\d+[.)])\s/.test(x))) reasons.push('Write connected prose, rather than only bullet points.');
   if (reasons.length) score = 0;
   return { count, score, reasons };
 }
@@ -112,7 +103,7 @@ function normalize(q, text, raw) {
 }
 function localContentScore(q, text) {
   if (q.type === 'essay') throw new Error('Essay scoring is available only through the unified essay engine.');
-  return localEngine.summaryContent(q.keyPoints || [], text, 4).score;
+  return Math.min(3, localEngine.summaryContent(q.keyPoints || [], text, 4).score);
 }
 function localLanguage(q, text) {
   const maxima=MAXIMA[q.type], form=formFor(q.type,text), lower=String(text||'').toLowerCase();
@@ -129,13 +120,16 @@ function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
   if(q.type==='essay') throw new Error('Essay scoring is available only through the unified essay engine.');
   if(q.type==='wfd') return gradeDictation(q,text);
   const maxima=MAXIMA[q.type], lang=localLanguage(q,text);
-  if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason};
+  if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,score_provisional:false};
   const scores={content:localContentScore(q,text),form:lang.form.score,grammar:lang.grammar,vocabulary:lang.vocabulary};
   if(maxima.spelling!=null)scores.spelling=lang.spelling;
+  if (!scores.content) return { ...zeroResult(q.type,text,['The response does not adequately address the source or prompt.']),
+    assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,score_provisional:true,
+    diagnosticScores:{...scores},needs_semantic_review:true,full_content_eligible:false };
   const total=Object.values(scores).reduce((a,b)=>a+b,0),maximum=Object.values(maxima).reduce((a,b)=>a+b,0);
-  return {version:VERSION,assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,scores,maxima,total,maximum,wordCount:lang.form.count,gated:false,reasons:[],
-    feedback:Object.fromEntries(Object.keys(maxima).map(k=>[k,k==='content'?'Local estimate based on coverage of the supplied task ideas and prompt.':k==='form'?lang.form.count+' words. Form requirements satisfied.':'Local rule-based estimate; AI feedback can refine this when available.'])),
-    strengths:['Your response was scored immediately by the local fallback engine.'],improvements:['Use Retry assessment when available for richer semantic and language feedback.'],errors:[]};
+  return {version:VERSION,assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,score_provisional:true,needs_semantic_review:true,full_content_eligible:false,scores,maxima,total,maximum,wordCount:lang.form.count,gated:false,reasons:[],
+    feedback:Object.fromEntries(Object.keys(maxima).map(k=>[k,k==='content'?'Provisional keyword-coverage estimate; meaning and relationships have not been verified.':k==='form'?lang.form.count+' words. Form requirements satisfied.':'Local rule-based estimate; AI feedback can refine this when available.'])),
+    strengths:['Your response received a provisional local practice estimate.'],improvements:['Use Retry assessment when available for richer semantic and language feedback.'],errors:[]};
 }
 async function gradeUnifiedEssay(q, text, call) {
   const { assessment } = await assessEssay(q.text, text, call);

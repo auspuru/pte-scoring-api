@@ -107,9 +107,9 @@ test('All incomplete content levels remain distinct from complete summaries desp
     const data = full(); data.trait_scores.content = content;
     Object.assign(data, { raw_score: 9, overall_score: 90, band: 'Band 9' });
     const result = require('../public/swt-feedback').presentation(data);
-    assert.equal(result.raw, content + 5);
+    assert.equal(result.raw, content === 0 ? 0 : content + 5);
     assert.equal(result.max, 90);
-    assert.equal(result.estimate, [15, 38, 65, 79, 90][content]);
+    assert.equal(result.estimate, [10, 38, 65, 79, 90][content]);
     assert.equal(result.headline === 'Complete, well-connected summary', content === 4);
   }
 });
@@ -121,16 +121,16 @@ test('Provisional and invalid results never promise a complete summary', () => {
   }
 });
 
-test('A local SWT result remains visible when only AI-specific feedback is unavailable', () => {
+test('Saved local SWT full marks cannot masquerade as a confirmed semantic result', () => {
   const data = { ...full(), ai_feedback_degraded: true, score_provisional: false, mode: 'local' };
   const result = require('../public/swt-feedback').presentation(data);
-  assert.equal(result.headline, 'Local practice result');
-  assert.equal(result.score, 90);
-  assert.match(result.secondary, /Local practice estimate/);
+  assert.equal(result.headline, 'Provisional result');
+  assert.equal(result.score, null);
+  assert.match(result.secondary, /confirmed result/);
   const guidance = build(data);
-  assert.equal(guidance.provisional, false);
+  assert.equal(guidance.provisional, true);
   assert.equal(guidance.degraded, true);
-  assert.match(guidance.summary, /local practice engine/i);
+  assert.match(guidance.summary, /provisional/i);
 });
 
 test('A saved Content 4 without semantic eligibility is reviewed instead of labelled complete', () => {
@@ -179,4 +179,42 @@ test('Long model explanations are compacted in the student priority card', () =>
   const result = build(data);
   assert(result.priorities[0].detail.length <= 421);
   assert(result.priorities[0].detail.endsWith('…'));
+});
+
+test('A Content-zero gate preserves valid-form guidance without inventing language deductions', () => {
+  const data = full();
+  data.trait_scores = { content: 0, form: 0, grammar: 0, vocabulary: 0 };
+  data.content_gate_triggered = true;
+  data.score_gate = { status: 'zero_content' };
+  data.diagnostic_trait_scores = { content: 0, form: 1, grammar: 2, vocabulary: 2 };
+  const guidance = build(data);
+  assert.equal(guidance.formValid, true);
+  assert.equal(guidance.priorities.length, 1);
+  assert.match(guidance.priorities[0].title, /central message/);
+  assert.match(guidance.summary, /no task points/);
+  const display = require('../public/swt-feedback').presentation(data);
+  assert.equal(display.headline, 'Content requirements not met');
+  assert.equal(display.raw, 0);
+  assert.equal(display.estimate, 10);
+});
+
+test('Detailed SWT form and language panels do not confuse awarded zeros with diagnostic failures', () => {
+  const targets = { annotatedSubmission: {}, annotatedFeedback: {}, traitBreakdown: {} };
+  const data = { trait_scores: { content: 0, form: 0, grammar: 0, vocabulary: 0 },
+    diagnostic_trait_scores: { content: 0, form: 1, grammar: 2, vocabulary: 2 },
+    content_gate_triggered: true, score_gate: { status: 'zero_content' } };
+  const context = { document: { getElementById: id => targets[id] }, escapeHtml: String, fmtNum: String };
+  vm.createContext(context);
+  for (const name of ['renderAnnotatedSubmission', 'renderTraitBreakdown']) {
+    const start = source.indexOf('function ' + name + '(');
+    const end = source.indexOf('\n}', start) + 2;
+    vm.runInContext(source.slice(start, end), context);
+  }
+  context.renderAnnotatedSubmission(data, {}, {}, 'Astronauts explore distant planets in space.');
+  context.renderTraitBreakdown(data, data.trait_scores);
+  assert.match(targets.annotatedFeedback.innerHTML, /One sentence within/);
+  assert(!targets.annotatedFeedback.innerHTML.includes('Check the form'));
+  assert.match(targets.traitBreakdown.innerHTML, /No Form points awarded because Content is 0/);
+  assert(!targets.traitBreakdown.innerHTML.includes('Form requirement not met'));
+  assert(!targets.traitBreakdown.innerHTML.includes('Review the grammar affecting meaning'));
 });

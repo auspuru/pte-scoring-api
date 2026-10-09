@@ -15968,7 +15968,7 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
   if (fb) {
     const traits = data.trait_scores || {};
     const assessment = cd.summary_assessment || {};
-    const validForm = Number(traits.form) >= 1;
+    const validForm = Number((data.diagnostic_trait_scores || traits).form) >= 1;
     const items = [{ cls: validForm ? 'good' : 'warn', icon: validForm ? '✓' : '!',
       text: validForm ? 'One sentence within 5–75 words.' : 'Check the form: one complete sentence within 5–75 words.' }];
     if (!data.score_provisional && !data.ai_feedback_degraded && validForm) {
@@ -16275,6 +16275,8 @@ function renderTraitBreakdown(data, traits){
   if (!el) return;
   const cMax = traits.content_max || 4;
   const cd = data.content_details || {};
+  const contentGated = data.content_gate_triggered === true || data.score_gate?.status === 'zero_content';
+  const gateNote = 'No task points awarded because Content is 0. Form and language diagnostics remain separate.';
   const concise = value => String(value || '').replace(/\s+/g, ' ').trim();
   const contentNote = concise(cd.feedback_note || cd.notes || 'Strengthen the main idea and its supporting connections.');
 
@@ -16283,12 +16285,12 @@ function renderTraitBreakdown(data, traits){
       note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: meaning and connections need a complete assessment.'
         : (traits.content >= cMax) ? 'Main message, relevant support and conclusion connect clearly.' : contentNote },
     { name:'Form', score:traits.form||0, max:1,
-      note: (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
+      note: contentGated ? 'No Form points awarded because Content is 0; the sentence form is valid.' : (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
     { name:'Grammar', score:traits.grammar||0, max:2,
-      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed grammar assessment unavailable.'
+      note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed grammar assessment unavailable.'
         : (traits.grammar >= 2) ? 'Meaning remains clear. Minor slips are optional refinements.' : 'Review the grammar affecting meaning in your next steps above.' },
     { name:'Vocabulary', score:traits.vocabulary||0, max:2,
-      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed vocabulary assessment unavailable.'
+      note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed vocabulary assessment unavailable.'
         : (traits.vocabulary >= 2) ? 'Wording preserves the message. Accurate source words are welcome.' : 'Review the wording affecting meaning in your next steps above.' }
   ];
 
