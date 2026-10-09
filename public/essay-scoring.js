@@ -4,7 +4,7 @@
   else root.EssayScoring = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
-  const VERSION = 'essay-unified-2.2';
+  const VERSION = 'essay-unified-2.3';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
   const MAXIMUM = Object.values(MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
   const clean = value => typeof value === 'string' ? value.trim() : '';
@@ -52,6 +52,34 @@
     error.code = code;
     error.validationHint = hint;
     throw error;
+  }
+  const TASK_RELEVANCE_GUIDANCE = `TASK RELEVANCE BEFORE SCORING:
+Decide whether the ORIGINAL essay contains substantive ideas about the actual question. Return taskRelevance with status relevant, minimal or off_topic, an exact essay quotation in evidence, and a short reason.
+First inspect the WHOLE essay, including its opening and conclusion, for any meaningful topic-related assertion. Judge that assertion before assessing completion of the requested comparison, opinion, examples or other parts. Missing those parts lowers Content but does not erase an actual topical idea. Content 0 requires no meaningful topical idea anywhere; Content 1 preserves an isolated relevant assertion. This boundary applies to the final resolver as well as both initial reviews.
+off_topic: the essay has NO substantive idea about the actual question. It answers a different topic, or contains only generic filler/copied question words without a meaningful connection to this task. Set Content to 0, evidence to an empty string and every prompt requirement to missing. Correct grammar, length, paragraph structure and template phrases cannot rescue an unrelated response. An essay solely on mass media does not answer a public-transport-versus-roads question merely because both concern society.
+minimal: at least one substantive idea genuinely relates to this question, but task fulfilment is very limited. An isolated meaningful topical assertion still counts even if it is immediately abandoned and the rest discusses a different topic; do not erase it because most of the essay is unrelated. For example, a claim that buses enable workers to reach their jobs identifies a real transport benefit and can earn Content 1, even without a comparison or opinion. In contrast, saying only that transport is an important topic today is generic filler and earns no relevance credit. Content can be 1 only with an exact quotation of the relevant idea and an explanation of its connection to the actual task. Do not cite a generic introduction or the question itself as relevance evidence.
+Boundary example: "Public transport can help people reach work." is a meaningful benefit claim and must receive minimal relevance / Content 1 when the rest of the essay is unrelated. "Public transport is an important topic today." offers no substantive claim about transport and cannot earn relevance credit. Do not describe the first example as mere keyword overlap or off_topic because it lacks investment details, a comparison or an opinion.
+relevant: substantive ideas relate to the actual topic. Score Content normally for coverage and development; relevance alone does not guarantee high marks. Valid paraphrases, a different position, a missing opinion or one missing side do not make an otherwise relevant essay off-topic. Weak language, ordinary grammar errors and taught structure are not reasons to label it off-topic.
+If every prompt requirement is missing, any nonzero Content still requires taskRelevance evidence demonstrating genuine topical substance. Wholly unrelated responses receive 0, never a consolation Content 1.`;
+  function normalizeTaskRelevance(raw, essay, promptCoverage, { required = false } = {}) {
+    // Historical results may predate this field. Every new server assessment
+    // requires it; browser normalization remains compatible with saved work.
+    if (raw == null) {
+      if (required) fail('task_relevance', 'Return taskRelevance with status, exact essay evidence and a short reason before scoring Content.');
+      return null;
+    }
+    if (!['relevant', 'minimal', 'off_topic'].includes(raw.status) || !clean(raw.reason)) {
+      fail('task_relevance', 'taskRelevance.status must be relevant, minimal or off_topic, with a reason grounded in the actual question.');
+    }
+    if (raw.status === 'off_topic') {
+      if (clean(raw.evidence) || promptCoverage.some(item => item.status !== 'missing')) {
+        fail('relevance_coverage', 'An off_topic decision requires empty relevance evidence and all prompt requirements missing. Reassess contradictory coverage instead of inventing a connection.');
+      }
+      return { status: raw.status, evidence: '', reason: clean(raw.reason) };
+    }
+    const evidence = exactQuote(essay, raw.evidence);
+    if (!evidence) fail('relevance_quote', 'A relevant or minimal decision requires an exact contiguous quotation of a substantive idea from the original essay, with its connection to this question.');
+    return { status: raw.status, evidence, reason: clean(raw.reason) };
   }
   const escape = value => String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   function hasUnsupportedSampleFacts(sample, essay) {
@@ -128,8 +156,10 @@ If the response is wholly off-topic or lacks ideas/a required position needed to
 Assess the question's actual requirements first. Require a personal opinion only if the question requests one (including agree/disagree or an explicit choice). A balanced discussion of advantages and disadvantages does not automatically need a personal preference. Preserve the student's viewpoint and ideas when suggesting a revision.
 ${focusGuidance}
 
+${TASK_RELEVANCE_GUIDANCE}
+
 Use INTEGER scores only:
-- content 0–6: judge whether the response answers EVERY actual requirement in the prompt, remains relevant, and develops its main ideas with reasons, explanation and/or examples. 6 = every requested part is addressed and meaningfully developed; 4–5 = mostly complete/relevant with weaker development; 2–3 = partial, thin or noticeably incomplete; 1 = minimal recoverable relevance; 0 = does not meaningfully answer the task. Do not reward topic-keyword overlap or generic prepared paragraphs.
+- content 0–6: judge whether the response answers EVERY actual requirement in the prompt, remains relevant, and develops its main ideas with reasons, explanation and/or examples. 6 = every requested part is addressed and meaningfully developed; 4–5 = mostly complete/relevant with weaker development; 2–3 = partial, thin or noticeably incomplete; 1 = at least one meaningful topical idea, even if every requested part is missing; 0 = no meaningful topical idea anywhere in the essay. Do not reward topic-keyword overlap or generic prepared paragraphs.
 - form 0–2: deterministic Form is already ${form.score}/2 from the response itself. Use this exact score; do not recount or override it. Form can be 0 for invalid length or invalid presentation such as all capitals, no punctuation, list-only prose or only very short sentences. If Form is 0, the official essay score is 0.
 - spelling 0–2: 2 = no spelling errors; 1 = exactly one spelling error; 0 = more than one spelling error. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors.
 - grammar 0–2: 2 when meaning is clear and unchanged, including a few minor grammar slips; 1 for one or two actual grammar errors that change or obscure meaning; 0 for 3+ distinct meaning-changing errors that block meaning. Count actual grammar, not stylistic preferences. A more elegant synonym, a shorter sentence, or another valid connector is optional advice.
@@ -151,6 +181,7 @@ ${SAMPLE_GUIDANCE}
 Return only complete JSON with ALL of these fields:
 {
  "scores":{"content":6,"form":${form.score},"spelling":2,"grammar":2,"vocabulary":2,"linguistic":6,"coherence":6},
+ "taskRelevance":{"status":"relevant","evidence":"short exact essay phrase","reason":"why this idea relates to the actual question"},
  "promptCoverage":[{"requirement":"a part requested in the question","status":"addressed","evidence":"short exact essay phrase","nextStep":""}],
  "scoringEvidence":{"linguisticExamples":["short exact essay phrase"],"developmentEvidence":["short exact essay phrase"],"vocabularyExamples":["short exact essay phrase"]},
  "feedback":{"content":"...","form":"${form.feedback}","spelling":"...","grammar":"...","vocabulary":"...","linguistic":"...","coherence":"..."},
@@ -186,7 +217,7 @@ DATA:
 ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment.promptCoverage, contentScore: assessment.scores.content })}`;
   }
 
-  function normalizeAssessment(raw, essay) {
+  function normalizeAssessment(raw, essay, { requireTaskRelevance = false } = {}) {
     if (!raw || typeof raw !== 'object' || !raw.scores || !raw.feedback) fail('assessment_fields', 'Return complete scores and feedback objects.');
     const scores = {};
     for (const [key, max] of Object.entries(MAXIMA)) {
@@ -270,6 +301,15 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
       return { ...item, evidence };
     });
 
+    const taskRelevance = normalizeTaskRelevance(raw.taskRelevance, essay, promptCoverage, { required: requireTaskRelevance });
+    // Apply the semantic zero boundary even when the model proposes a
+    // consolation point. This also protects against two reviewers agreeing
+    // on Content 1 while explicitly judging the response wholly unrelated.
+    if (taskRelevance?.status === 'off_topic') scores.content = 0;
+    if (taskRelevance?.status === 'minimal' && scores.content > 1) {
+      fail('relevance_score', 'Minimal task relevance can earn at most Content 1. Reassess the relevance decision and Content consistently.');
+    }
+    if (taskRelevance?.status === 'minimal') scores.content = 1;
     if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
       fail('content_coverage', 'Full Content marks require every requested part to be addressed.');
     }
@@ -313,6 +353,7 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     scores.total = Object.values(scores).reduce((sum, n) => sum + n, 0);
 
     const feedback = { ...raw.feedback, form: form.feedback };
+    if (taskRelevance?.status === 'off_topic') feedback.content = taskRelevance.reason;
     if (spelling !== raw.scores.spelling) {
       feedback.spelling = spelling === 2
         ? 'Full Spelling marks: no spelling errors were identified.'
@@ -356,7 +397,7 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
         : `Content is 0, so the official practice score for this essay is 0/${MAXIMUM}. No other trait points are counted.`)
       : clean(raw.overallVerdict);
 
-    return { ...raw, scores, diagnosticScores, scoreGate, feedback, errors, promptCoverage,
+    return { ...raw, ...(taskRelevance ? { taskRelevance } : {}), scores, diagnosticScores, scoreGate, feedback, errors, promptCoverage,
       scoringEvidence: evidenceQuotes, optionalRefinements,
       improvements: scores.total === MAXIMUM ? [] : [...new Set(priorities)].filter(Boolean).slice(0, 3),
       strengths: (Array.isArray(raw.strengths) ? raw.strengths : []).map(clean).filter(Boolean).slice(0, 3),
@@ -463,5 +504,5 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     return { percent, level, matchedWords, totalWords: answer.length, ngram, thresholds: { medium, high } };
   }
 
-  return { VERSION, MAXIMA, MAXIMUM, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
+  return { VERSION, MAXIMA, MAXIMUM, TASK_RELEVANCE_GUIDANCE, normalizeTaskRelevance, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
 });

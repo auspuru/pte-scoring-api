@@ -16,6 +16,10 @@ test('every grading stage forces structured output; independent review and repai
       assert.equal(tool.input_schema.$defs.score6.type, 'integer');
       assert(tool.input_schema.required.includes('promptCoverage'));
       assert(tool.input_schema.required.includes('scoringEvidence'));
+      assert(tool.input_schema.required.includes('taskRelevance'));
+      assert.deepEqual(tool.input_schema.properties.taskRelevance.properties.status.enum, ['relevant', 'minimal', 'off_topic']);
+      assert.equal(tool.input_schema.properties.taskRelevance.properties.evidence_span.$ref, '#/$defs/span');
+      if (stage === 'subjective-resolver') assert(tool.input_schema.required.includes('candidateRelevance'));
     }
     const result = { scores: { content: 4 } };
     const normalized = format.response({ content: [{ type: 'text', text: 'Untrusted preamble' },

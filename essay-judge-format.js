@@ -8,7 +8,7 @@ const object = properties => ({ type: 'object', additionalProperties: false,
   properties, required: Object.keys(properties) });
 const texts = { type: 'array', items: text };
 const span = { type: 'array', items: { type: 'integer' },
-  description: 'Exactly two 1-based inclusive word numbers from the ORIGINAL student essay; [] only when a prompt requirement is missing.' };
+  description: 'Exactly two 1-based inclusive word numbers from the ORIGINAL student essay; [] only for missing prompt coverage or off_topic relevance.' };
 const citation = object({ span: { $ref: '#/$defs/span' } });
 const citations = { type: 'array', items: { $ref: '#/$defs/citation' } };
 const coverage = object({ requirement: text,
@@ -21,6 +21,9 @@ const maxima = require('./public/essay-scoring').MAXIMA;
 const scores = keys => object(Object.fromEntries(keys.map(key => [key, score(maxima[key])])));
 const reasons = keys => object(Object.fromEntries(keys.map(key => [key, text])));
 const common = {
+  taskRelevance: object({ status: { type: 'string', enum: ['relevant', 'minimal', 'off_topic'] },
+    evidence_span: { $ref: '#/$defs/span' },
+    reason: { ...text, description: 'Explain the connection to the actual topic. off_topic requires empty evidence_span and Content 0; nonzero relevance needs substantive original essay evidence.' } }),
   promptCoverage: { type: 'array', items: { $ref: '#/$defs/coverage' } },
   scoringEvidence: object({ linguisticExamples: citations, developmentEvidence: citations })
 };
@@ -43,11 +46,14 @@ const primary = object({ scores: scores(Object.keys(maxima)), ...common,
   improvements: texts, overallVerdict: text
 });
 const review = object({ scores: scores(traits), ...common, rationale: reasons(traits) });
+const resolver = object({ ...review.properties,
+  candidateRelevance: object({ status: { type: 'string', enum: ['substantive', 'generic', 'unrelated', 'none'] },
+    reason: { ...text, description: 'Judge the supplied candidate assertion in isolation against the actual topic, before assessing completion of the full task. none only when no candidate is supplied.' } }) });
 const repair = object({ repairs: { type: 'array', items: object({
   path: { type: 'array', items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } },
   span: { $ref: '#/$defs/span' }
 }) } });
-const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': review, 'evidence-repair': repair };
+const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': resolver, 'evidence-repair': repair };
 
 function toolFor(stage) {
   const schema = schemas[stage];
