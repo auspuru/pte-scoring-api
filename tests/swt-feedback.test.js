@@ -197,3 +197,24 @@ test('A Content-zero gate preserves valid-form guidance without inventing langua
   assert.equal(display.raw, 0);
   assert.equal(display.estimate, 10);
 });
+
+test('Detailed SWT form and language panels do not confuse awarded zeros with diagnostic failures', () => {
+  const targets = { annotatedSubmission: {}, annotatedFeedback: {}, traitBreakdown: {} };
+  const data = { trait_scores: { content: 0, form: 0, grammar: 0, vocabulary: 0 },
+    diagnostic_trait_scores: { content: 0, form: 1, grammar: 2, vocabulary: 2 },
+    content_gate_triggered: true, score_gate: { status: 'zero_content' } };
+  const context = { document: { getElementById: id => targets[id] }, escapeHtml: String, fmtNum: String };
+  vm.createContext(context);
+  for (const name of ['renderAnnotatedSubmission', 'renderTraitBreakdown']) {
+    const start = source.indexOf('function ' + name + '(');
+    const end = source.indexOf('\n}', start) + 2;
+    vm.runInContext(source.slice(start, end), context);
+  }
+  context.renderAnnotatedSubmission(data, {}, {}, 'Astronauts explore distant planets in space.');
+  context.renderTraitBreakdown(data, data.trait_scores);
+  assert.match(targets.annotatedFeedback.innerHTML, /One sentence within/);
+  assert(!targets.annotatedFeedback.innerHTML.includes('Check the form'));
+  assert.match(targets.traitBreakdown.innerHTML, /No Form points awarded because Content is 0/);
+  assert(!targets.traitBreakdown.innerHTML.includes('Form requirement not met'));
+  assert(!targets.traitBreakdown.innerHTML.includes('Review the grammar affecting meaning'));
+});
