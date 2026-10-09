@@ -46,11 +46,14 @@ const primary = object({ scores: scores(Object.keys(maxima)), ...common,
   improvements: texts, overallVerdict: text
 });
 const review = object({ scores: scores(traits), ...common, rationale: reasons(traits) });
+const resolver = object({ ...review.properties,
+  candidateRelevance: object({ status: { type: 'string', enum: ['substantive', 'generic', 'unrelated', 'none'] },
+    reason: { ...text, description: 'Judge the supplied candidate assertion in isolation against the actual topic, before assessing completion of the full task. none only when no candidate is supplied.' } }) });
 const repair = object({ repairs: { type: 'array', items: object({
   path: { type: 'array', items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } },
   span: { $ref: '#/$defs/span' }
 }) } });
-const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': review, 'evidence-repair': repair };
+const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': resolver, 'evidence-repair': repair };
 
 function toolFor(stage) {
   const schema = schemas[stage];

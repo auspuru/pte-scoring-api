@@ -139,12 +139,57 @@ test('a zero-versus-positive relevance disagreement still requires a resolver be
     if (options.stage === 'assessment') return raw;
     if (options.stage === 'subjective-review') return weak;
     assert.match(prompt, /TASK RELEVANCE BEFORE SCORING/);
-    return review(raw);
+    return { ...review(raw), candidateRelevance: { status: 'unrelated', reason: 'The quoted learning benefit concerns media, not transport.' } };
   });
   const result = await grader.grade(transportQuestion, mediaEssay);
   assert.equal(result.scores.total, 0);
   assert.equal(result.subjectiveReview.source, 'resolver');
   assert.deepEqual(stages, ['assessment', 'subjective-review', 'subjective-resolver']);
+});
+
+test('resolver must judge a positive relevance candidate before applying the zero boundary', async () => {
+  for (const [candidate, disposition, expected] of [
+    ['Public transport can help people reach work.', 'substantive', 1],
+    ['Public transport is an important topic today.', 'generic', 0]
+  ]) {
+    const essay = candidate + ' ' + mediaEssay;
+    const coverage = [missing('both views'), missing('your opinion')];
+    const raw = primary(relevance('minimal', candidate, 'Candidate idea identified.'), 1, coverage);
+    const zero = review(primary(relevance('off_topic'), 0, coverage));
+    let resolverCalls = 0;
+    const grader = createEssayGrader(async (prompt, options) => {
+      if (options?.stage === 'assessment') return raw;
+      if (options?.stage === 'subjective-review') return zero;
+      if (options?.stage === 'subjective-resolver') {
+        resolverCalls++;
+        assert(prompt.includes(JSON.stringify(candidate)));
+        assert.match(prompt, /Consider this assertion IN ISOLATION/);
+        return { ...zero, candidateRelevance: { status: disposition,
+          reason: disposition === 'substantive' ? 'Reaching work is a genuine benefit of transport.' : 'Calling a topic important provides no actual transport idea.' } };
+      }
+      return { sampleStatus: 'needs-ideas', sampleResponse: '', sampleNote: 'Add a comparison and your position.' };
+    });
+    const result = await grader.grade(transportQuestion, essay);
+    assert.equal(result.scores.content, expected);
+    assert.equal(result.taskRelevance.status, expected ? 'minimal' : 'off_topic');
+    assert.equal(resolverCalls, 1);
+    assert.equal(result.subjectiveReview.candidateRelevance.status, disposition);
+  }
+});
+
+test('resolver cannot silently omit the candidate check at the zero boundary', async () => {
+  const essay = 'Public transport can help people reach work. ' + mediaEssay;
+  const coverage = [missing('both views'), missing('your opinion')];
+  const raw = primary(relevance('minimal', 'Public transport can help people reach work.', 'A transport benefit.'), 1, coverage);
+  const zero = review(primary(relevance('off_topic'), 0, coverage));
+  let resolverCalls = 0;
+  const grader = createEssayGrader(async (_prompt, options) => {
+    if (options.stage === 'assessment') return raw;
+    if (options.stage === 'subjective-review') return zero;
+    resolverCalls++; return zero;
+  });
+  await assert.rejects(grader.grade(transportQuestion, essay), { code: 'relevance_candidate' });
+  assert.equal(resolverCalls, 2);
 });
 
 test('historical saved assessments without relevance remain readable', () => {

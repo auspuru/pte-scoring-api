@@ -147,8 +147,18 @@ function needsResolver(primary, review) {
   return SUBJECTIVE.some(key => Math.abs(Number(primaryScores[key]) - Number(review.scores[key])) > 1);
 }
 
+function relevanceCandidate(primary, review) {
+  const primaryContent = (primary.diagnosticScores || primary.scores).content;
+  if ((primaryContent === 0) === (review.scores.content === 0)) return '';
+  return (primaryContent > 0 ? primary : review).taskRelevance?.evidence || '';
+}
+
 function buildResolverPrompt(question, essay, primary, review) {
+  const candidate = relevanceCandidate(primary, review);
   return `Resolve a disagreement between two independent essay assessments. Judge the essay itself, not which reviewer is "right". Return JSON only with the same three subjective scores, promptCoverage and evidence.
+
+CANDIDATE RELEVANCE CHECK — do this FIRST, independently of overall task completion:
+${candidate ? `The reviewers disagree at the zero-Content boundary. A reviewer identified this exact original-essay assertion: ${JSON.stringify(candidate)}. Consider this assertion IN ISOLATION against the question ${JSON.stringify(question)}. Does it make a substantive claim about the actual topic (a benefit, drawback, reason, position, cause, solution or example), merely mention generic topic words, or concern a different topic? Return candidateRelevance.status substantive, generic or unrelated and explain why. Missing comparison, opinion, development or later follow-through cannot turn a substantive topical assertion into generic or unrelated. A substantive candidate establishes at least Content 1 even when the rest of the essay is off-topic. Do not disregard this quoted idea when making the final relevance decision.` : 'No zero-versus-positive candidate is supplied. Return candidateRelevance.status none and a brief reason.'}
 
 Use these score ranges:
 - Content 0–6
@@ -169,6 +179,7 @@ ${JSON.stringify(review)}
 Return:
 {
   "scores":{"content":6,"linguistic":6,"coherence":6},
+  "candidateRelevance":{"status":"none","reason":"no zero-boundary candidate supplied"},
   "taskRelevance":{"status":"relevant","evidence":"exact essay phrase","reason":"brief relevance decision against the actual question"},
   "promptCoverage":[{"requirement":"...","status":"addressed","evidence":"exact essay phrase","nextStep":""}],
   "scoringEvidence":{"linguisticExamples":["exact essay phrase"],"developmentEvidence":["exact essay phrase"]},
@@ -252,7 +263,8 @@ function applySubjectiveDecision(assessment, decision, source) {
         linguistic: assessment.diagnosticScores?.linguistic ?? assessment.scores.linguistic,
         coherence: assessment.diagnosticScores?.coherence ?? assessment.scores.coherence
       },
-      reviewer: decision.scores
+      reviewer: decision.scores,
+      ...(decision.candidateRelevance ? { candidateRelevance: decision.candidateRelevance } : {})
     }
   };
 }
@@ -324,7 +336,25 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
         ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
         : '';
       const raw = await call(buildResolverPrompt(question, essay, primary, review) + retry, { stage: 'subjective-resolver' });
-      return normalizeReview(raw, essay, { requireTaskRelevance: true });
+      const candidate = relevanceCandidate(primary, review);
+      let decision = raw;
+      if (candidate) {
+        const checked = raw?.candidateRelevance;
+        if (!checked || !['substantive', 'generic', 'unrelated'].includes(checked.status)
+          || !String(checked.reason || '').trim()) {
+          const error = new Error('The resolver must assess the quoted relevance candidate.');
+          error.code = 'relevance_candidate';
+          error.validationHint = 'Return candidateRelevance with status substantive, generic or unrelated and a reason judging the quoted assertion itself, before full task coverage.';
+          throw error;
+        }
+        if (checked.status === 'substantive' && (raw.scores?.content === 0 || raw.taskRelevance?.status === 'off_topic')) {
+          decision = { ...raw, scores: { ...raw.scores, content: 1 },
+            taskRelevance: { status: 'minimal', evidence: candidate, reason: checked.reason } };
+        }
+      }
+      const normalized = normalizeReview(decision, essay, { requireTaskRelevance: true });
+      if (candidate) normalized.candidateRelevance = raw.candidateRelevance;
+      return normalized;
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
@@ -368,7 +398,10 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {} } 
 
   // Material disagreement must be resolved before a final score is released.
   const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError);
-  return { assessment: applySubjectiveDecision(primary, resolved, 'resolver'), primaryRaw };
+  const assessment = applySubjectiveDecision(primary, resolved, 'resolver');
+  assessment.subjectiveReview.independent = review.scores;
+  assessment.subjectiveReview.independentRelevance = review.taskRelevance;
+  return { assessment, primaryRaw };
 }
 
 module.exports = {
