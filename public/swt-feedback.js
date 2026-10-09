@@ -14,9 +14,12 @@
     const assessment = content.summary_assessment || {};
     const grammar = list((data.grammar_details || {}).grammar_annotations);
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
-    const provisional = data.score_provisional === true;
+    const provisional = data.score_provisional === true
+      || (!data.form_gate_triggered && (data.mode === 'local' || content.source === 'local_fallback'));
     const degraded = data.ai_feedback_degraded === true;
-    const formValid = Number(traits.form) >= 1;
+    const contentGated = data.content_gate_triggered === true || (data.score_gate || {}).status === 'zero_content'
+      || (Number(traits.content) === 0 && Number(traits.form) >= 1);
+    const formValid = contentGated || Number(traits.form) >= 1;
     const semanticFull = content.full_content_eligible === true
       || (content.full_content_eligible == null
         && assessment.relationships_clear === true
@@ -32,7 +35,9 @@
       return compact(issues.slice(0, 2).map(a => '“' + clean(a.phrase) + '” → “' + clean(a.fix) + '”. ' + clean(a.meaning_effect)).join(' ') || fallback);
     };
     if (!formValid) {
-      add('Make it one sentence within 5–75 words', clean((data.form_details || {}).reason) || 'Join your ideas into one complete sentence, check the word count, and end with sentence punctuation.');
+      add('Make it one sentence within 5–75 words', clean((data.form_details || {}).reason || data.form_reason) || 'Join your ideas into one complete sentence, check the word count, and end with sentence punctuation.');
+    } else if (contentGated) {
+      add('Capture the passage’s central message', clean(assessment.next_step) || clean(content.feedback_note) || clean(content.notes) || 'Re-read the passage and state its main claim accurately. Content 0 awards no task points; this does not mean every language trait contains errors.');
     } else if (provisional) {
       add('Request a complete assessment', 'The meaning and connections could not be fully assessed. Submit again before using these provisional scores to guide a revision.');
     } else {
@@ -57,11 +62,12 @@
       }
     }
     const summary = !formValid ? 'The form requirements need attention before this response can receive a complete score.'
+      : contentGated ? 'Content is 0, so no task points are awarded. Form and language diagnostics remain separate.'
       : provisional ? 'This result is provisional. A complete assessment of meaning and connections is still needed.'
       : degraded && data.mode === 'local' ? 'This score was produced by the local practice engine. Detailed AI semantic annotations are unavailable, but the local score remains usable.'
       : full ? 'Your summary captures the main message, relevant support and conclusion with clear connections. Minor slips that preserve meaning do not reduce your marks.'
       : compact(clean(content.feedback_note) || clean(content.notes) || 'Review the priorities below to see what held this response back and what to change next.', 300);
-    return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, degraded, formValid };
+    return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, degraded, formValid, contentGated };
   }
   // Recompute presentation from traits, including previously saved attempts.
   // Never trust a historical band label or a raw total as proof of completeness.
@@ -71,7 +77,7 @@
     const contentDetails = data.content_details || {};
     const assessment = contentDetails.summary_assessment || {};
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
-    const raw = ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
+    const raw = (!feedback.formValid || content === 0) ? 0 : ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
     const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
     const estimate = feedback.formValid ? Math.min(rawEstimate, caps[Math.floor(content)]) : 10;
@@ -81,6 +87,7 @@
         && !list(assessment.missing_dependencies).length));
     let headline = fullEligible ? 'Complete, well-connected summary' : 'Review the missing content or connection';
     if (!feedback.formValid) headline = 'Form requirements not met';
+    else if (feedback.contentGated) headline = 'Content requirements not met';
     else if (feedback.provisional) headline = 'Provisional result';
     else if (feedback.degraded && data.mode === 'local') headline = 'Local practice result';
     else if (content <= 1) headline = 'Incomplete summary — limited content';

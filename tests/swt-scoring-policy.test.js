@@ -54,7 +54,7 @@ function functionSource(name) {
 async function grade(fixture, semanticJudgment) {
   let route;
   const context = {
-    ...policy, SWT_SCORING_CRITERIA: policy.SCORING_CRITERIA,
+    ...policy, SwtForm: require('../swt-form-policy'), SWT_SCORING_CRITERIA: policy.SCORING_CRITERIA,
     SWT_CONTENT_MAX: 4, SWT_MAX_RAW: 9, DEBUG: false,
     EXTERNAL_SPELLCHECK_ENABLED: false,
     console, setTimeout, clearTimeout,
@@ -251,7 +251,7 @@ test('Unexplained claims of grammar meaning change require review rather than a 
 
 test('Offline fallback returns a usable conservative local score without pretending AI feedback exists', async () => {
   const result = await grade(fixtures[1], null);
-  assert.equal(result.score_provisional, false);
+  assert.equal(result.score_provisional, true);
   assert.equal(result.ai_feedback_degraded, true);
   assert.equal(result.mode, 'local');
   assert.equal(result.trait_scores.grammar, 2);
@@ -262,6 +262,7 @@ test('Offline fallback returns a usable conservative local score without pretend
 
 test('Existing one-sentence and word-limit form gates still apply', async () => {
   for (const summary of ['Caffeine helps bees. It improves memory.', 'Caffeine helps bees',
+    'CAFFEINE IMPROVES BEES MEMORY OF FLOWERS.',
     Array(76).fill('word').join(' ') + '.']) {
     const result = await grade({ ...fixtures[1], summary }, judgment());
     assert.equal(result.form_gate_triggered, true);
@@ -289,8 +290,15 @@ test('Content caps apply equally to PTE estimates and bands while raw totals sta
     j.summary_assessment.missing_dependencies = [{ effect: 'the effect', missing_context: 'the necessary cause', explanation: 'The selected effect is disconnected.' }];
     const result = await grade(fixtures[1], j);
     assert.equal(result.trait_scores.content, content);
-    assert.equal(result.raw_score, content + 5);
-    assert.equal(result.overall_score, [15, 38, 65, 79][content]);
+    assert.equal(result.raw_score, content === 0 ? 0 : content + 5);
+    assert.equal(result.overall_score, [10, 38, 65, 79][content]);
+    if (content === 0) {
+      assert.equal(result.score_gate.status, 'zero_content');
+      for (const trait of ['form', 'grammar', 'vocabulary']) assert.equal(result.trait_scores[trait], 0);
+      assert.equal(result.diagnostic_trait_scores.form, 1);
+      assert.equal(result.diagnostic_trait_scores.grammar, 2);
+      assert.equal(result.diagnostic_trait_scores.vocabulary, 2);
+    }
     assert.equal(result.band, ['Band 5', 'Band 6', 'Band 7', 'Band 8'][content]);
   }
 });

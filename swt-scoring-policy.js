@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.8';
+const POLICY_VERSION = '20.3.9';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -13,7 +13,7 @@ const SCORING_CRITERIA = Object.freeze({
     one: 'Very limited relevant information.',
     zero: 'Off-topic, fabricated or unintelligible.'
   }),
-  form: Object.freeze({ max: 1, rule: 'Exactly one sentence containing 5–75 words and ending with sentence punctuation.' }),
+  form: Object.freeze({ max: 1, rule: 'Exactly one sentence containing 5–75 words and ending with sentence punctuation; not entirely in capital letters.' }),
   grammar: Object.freeze({
     max: 2,
     full: 'Full marks when grammatical slips leave the meaning clear and unchanged; optional corrections do not reduce scores.',

@@ -28,7 +28,9 @@ const server = spawn(process.execPath, ['server.js'], {
     RAILWAY_VOLUME_MOUNT_PATH: tempData,
     DISABLE_EXTERNAL_SPELLCHECK: '1',
     SKIP_PUPPETEER_WARMUP: '1',
-    ANTHROPIC_API_KEY: ''
+    ANTHROPIC_API_KEY: '',
+    OPENAI_API_KEY: '',
+    DATABASE_URL: ''
   },
   stdio: ['ignore', 'pipe', 'pipe']
 });
@@ -98,7 +100,8 @@ async function main() {
     {
       name: 'Off-topic control',
       text: 'The internet is useful for students because it provides information and entertainment; therefore, schools should provide computers to everyone.',
-      pass: r => r.band !== 'Band 9' && r.trait_scores?.content === 0
+      pass: r => r.raw_score === 0 && r.content_gate_triggered === true
+        && ['content','form','grammar','vocabulary'].every(k => r.trait_scores?.[k] === 0)
     },
     {
       name: 'One-idea control',
@@ -109,6 +112,18 @@ async function main() {
       name: 'No-semicolon full-content control',
       text: 'Travel and tourism contributes substantially to global GDP and employment while providing opportunities for women, minorities and young people, supporting environmental conservation and local culture, and offering comparatively low start-up and operating costs.',
       pass: r => r.trait_scores?.grammar === 2 && r.score_provisional === true && r.trait_scores?.content <= 3
+    }, {
+      name: 'All-capitals form gate',
+      text: 'TRAVEL AND TOURISM SUPPORTS GLOBAL GDP AND EMPLOYMENT.',
+      pass: r => r.raw_score === 0 && r.form_gate_triggered === true && r.llm_used === false
+    }, {
+      name: 'Missing-punctuation form gate',
+      text: 'Travel and tourism supports global GDP and employment',
+      pass: r => r.raw_score === 0 && r.form_gate_triggered === true
+    }, {
+      name: 'Reversed-meaning keyword overlap cannot certify full Content',
+      text: 'Travel and tourism does not contribute to global GDP and employment or provide opportunities for women, minorities and young people, conserve the environment and local culture, or offer low start-up and operating costs.',
+      pass: r => r.trait_scores?.content <= 3 && r.score_provisional === true && r.content_details?.full_content_eligible === false
     }
   ];
 

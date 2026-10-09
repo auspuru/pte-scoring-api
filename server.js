@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
+const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
@@ -2680,17 +2681,9 @@ function generateVocabSuggestions(studentText) {
 // FORM VALIDATION
 // ═══════════════════════════════════════════════════════════════════════════════
 function validateForm(text) {
-  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
-  const wc = words.length;
-  if (wc < 5)  return { valid: false, score: 0, reason: 'Too short (min 5 words)', wc, overflow_penalty: 0 };
-  if (wc > 75) return { valid: false, score: 0, reason: `Too long (${wc} words, max 75) — form fails, PTE 10`, wc, overflow_penalty: 0 };
-  if (!/[.!?]$/.test(text.trim())) return { valid: false, score: 0, reason: 'Must end with period', wc, overflow_penalty: 0 };
-  const clean = text.replace(/\b(?:Dr|Mrs|Mr|Ms|Prof|Jr|Sr|St|etc|vs|approx|govt|Inc|Corp|Ltd|Vol|No|Fig)\./gi, '##')
-                     .replace(/\b(?:U\.K|U\.S|i\.e|e\.g|a\.m|p\.m)\b\.?/gi, '##');
-  const sentences = (clean.match(/[.!?](\s|$)/g) || []).length;
-  if (sentences !== 1) return { valid: false, score: 0, reason: `Must be exactly one sentence (found ${sentences})`, wc, overflow_penalty: 0 };
-
-  return { valid: true, score: 1, reason: 'Valid', wc, overflow_penalty: 0, warning: null };
+  const form = SwtForm.formFor(text);
+  return { valid: form.score === 1, score: form.score, reason: form.reasons.join(' ') || 'Valid',
+    wc: form.count, overflow_penalty: 0, warning: null };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -4301,7 +4294,7 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
       synonym_appropriateness: 'no_swaps', synonym_issues: [], cohesion,
       grammar_score: grammarHint?.score ?? 2, vocabulary_score: 2,
       academic_register: false, feedback_note: 'Detailed content feedback requires key elements',
-      source: 'local_fallback'
+      source: 'local_fallback', needs_semantic_review: true, full_content_eligible: false, local_confidence: 'low'
     };
   }
 
@@ -4312,28 +4305,21 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
   const contradiction = detectStrongLocalContradiction(studentText, passageText);
   const coverageScore = coverageToContentScore(present.length, fields.length, centralCaptured);
   const presentChecks = checks.filter(c => c.present);
-  const strongMatches = presentChecks.filter(c => c.strongConceptFallback || c.matchRate >= 42).length;
   const averageMatch = presentChecks.length
     ? presentChecks.reduce((sum,c)=>sum + (Number(c.matchRate) || 0),0) / presentChecks.length : 0;
-  // A local result can be confirmed when the response directly and strongly
-  // matches the central idea plus enough supporting propositions, and no local
-  // contradiction is detected. Paraphrased/ambiguous cases remain provisional
-  // so the richer semantic reviewer can still resolve relationships.
-  const locallyConfirmed = !contradiction && coverageScore === SWT_CONTENT_MAX
-    && centralCaptured && strongMatches >= Math.min(3, fields.length) && averageMatch >= 42;
-  let score = locallyConfirmed ? coverageScore : Math.min(3, coverageScore);
+  // Lexical overlap cannot verify negation, causal direction or relationships.
+  // Keep every provider-free estimate provisional and below full Content.
+  let score = Math.min(3, coverageScore);
   if (contradiction) score = Math.min(score, 1);
   const perIdea = Object.fromEntries(fields.map(f => [f.name, present.includes(f.name) ? 1 : 0]));
 
   return {
     content_score: score,
     content_max: SWT_CONTENT_MAX,
-    content_reason: locallyConfirmed
-      ? 'Local content assessment confirmed strong coverage of the central message and essential supporting ideas.'
-      : 'Provisional local content estimate: the response needs semantic review of paraphrasing or relationships for a confirmed score.',
-    full_content_eligible: locallyConfirmed && score === SWT_CONTENT_MAX,
-    needs_semantic_review: !locallyConfirmed,
-    local_confidence: locallyConfirmed ? 'high' : averageMatch >= 30 ? 'medium' : 'low',
+    content_reason: 'Provisional local estimate: keyword coverage cannot verify the passage meaning or relationships.',
+    full_content_eligible: false,
+    needs_semantic_review: true,
+    local_confidence: averageMatch >= 30 ? 'medium' : 'low',
     ideas_captured: present,
     ideas_missing: missing,
     per_idea_scores: perIdea,
@@ -4343,7 +4329,6 @@ function judgeContentLocal(studentText, passageText, keyElements, grammarHint) {
     vocabulary_score: 2,
     academic_register: false,
     feedback_note: contradiction ? 'The summary appears to reverse the passage meaning'
-      : locallyConfirmed ? 'Strong local match to the central message and essential support'
       : 'Retry the semantic review for finer checking of paraphrases and logical relationships',
     source: 'local_fallback'
   };
@@ -4606,7 +4591,7 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   const arr = [];
   const cMax = SWT_CONTENT_MAX;
   if (form.overflow_penalty) arr.push({ type: 'word_count_overflow', impact: -form.overflow_penalty, detail: form.warning });
-  if (contentScore === 0) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_15', detail: 'Central message missing' });
+  if (contentScore === 0) arr.push({ type: 'content_gate', impact: 'all_zero', detail: 'Central message missing' });
   else if (contentScore === 1) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_38', detail: 'Very limited relevant content' });
   else if (contentScore === 2) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_65', detail: 'Partial central message/support' });
   else if (contentScore === 3) arr.push({ type: 'content_gate', impact: 'cap_at_PTE_79', detail: 'Strong but incomplete content' });
@@ -4676,6 +4661,7 @@ app.post('/api/grade', async (req, res) => {
         skill_contributions: { reading: { estimate: 10, note: 'Form invalid' }, writing: { estimate: 10, note: 'Form invalid' } },
         paraphrase_analysis: { quality: 0, safeSwapCount: 0, dangerousSwapCount: 0 },
         overall_score: 10, raw_score: 0, max_raw_score: ffMaxRaw, total_ideas: ffMaxContent, band: 'Band 5',
+        score_gate: { status: 'zero_form', reason: form.reason }, score_provisional: false,
         form_gate_triggered: true, form_reason: form.reason, word_count: form.wc,
         feedback: formFailCard.summary_line,
         feedback_card: formFailCard,
@@ -4728,16 +4714,8 @@ app.post('/api/grade', async (req, res) => {
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
     const contentVerdict = llmJudgment || fallback;
-    // F1 (v19.17): when the local fallback is used (Claude failed twice), the
-    // response can't include grammar annotations or vocabulary swaps. Flag this
-    // so the frontend can show an honest "detailed feedback unavailable for this
-    // attempt — try again" notice instead of silently dropping those sections.
-    // A local fallback is a valid independent practice estimate even when the
-    // richer AI-only semantic annotations are unavailable. Keep those concepts
-    // separate: degraded feedback means fewer annotations, not "no score".
-    // If an AI judgment itself is internally incomplete, it remains provisional.
     const aiFeedbackDegraded = !llmJudgment || contentVerdict.needs_semantic_review === true;
-    const scoreProvisional = !!llmJudgment && contentVerdict.needs_semantic_review === true;
+    const scoreProvisional = !llmJudgment || contentVerdict.needs_semantic_review === true;
     if (typeof contentVerdict.content_max !== 'number') contentVerdict.content_max = maxContent;
     const contentScore = Math.max(0, Math.min(maxContent, contentVerdict.content_score || 0));
 
@@ -4761,13 +4739,18 @@ app.post('/api/grade', async (req, res) => {
       cohesionPenaltyApplied = true;
     }
 
-    let rawScore = 1 + contentScore + grammarScore + vocab.score;
+    const contentGated = contentScore === 0;
+    const diagnosticTraits = { form: form.score, content: contentScore, grammar: grammarScore, vocabulary: vocab.score };
+    const awardedForm = contentGated ? 0 : form.score;
+    const awardedGrammar = contentGated ? 0 : grammarScore;
+    const awardedVocabulary = contentGated ? 0 : vocab.score;
+    let rawScore = awardedForm + contentScore + awardedGrammar + awardedVocabulary;
     if (form.overflow_penalty) rawScore -= form.overflow_penalty;
 
     // Holistic content gates: full content is required for Band 9, but a single
     // omitted secondary checklist item can still receive Content 4.
     let contentCapPTE = null;
-    if (contentScore === 0) contentCapPTE = 15;
+    if (contentScore === 0) contentCapPTE = 10;
     else if (contentScore === 1) contentCapPTE = 38;
     else if (contentScore === 2) contentCapPTE = 65;
     else if (contentScore === 3) contentCapPTE = 79;
@@ -4806,7 +4789,7 @@ app.post('/api/grade', async (req, res) => {
       band = 'Band 8';
     }
 
-    const skillContributions = estimateSkillContributions(rawScore, contentScore, grammarScore, vocab.score, swaps, llmJudgment, maxContent, maxRaw);
+    const skillContributions = estimateSkillContributions(rawScore, contentScore, awardedGrammar, awardedVocabulary, swaps, llmJudgment, maxContent, maxRaw);
     const feedbackCard = buildFeedbackCard(contentVerdict, grammar, vocab, firstPerson, form, spelling, rawScore, contentScore, grammarScore, llmJudgment, maxContent, maxRaw, overallScore, band);
     const feedback = feedbackCard.summary_line;
     const improvementTips = feedbackCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • ');
@@ -4816,14 +4799,18 @@ app.post('/api/grade', async (req, res) => {
       // produced the scores (no grammar annotations / vocab swaps available).
       ai_feedback_degraded: aiFeedbackDegraded,
       score_provisional: scoreProvisional,
+      content_gate_triggered: contentGated,
+      score_gate: { status: contentGated ? 'zero_content' : 'valid',
+        reason: contentGated ? 'Content is 0; no task points are awarded. Language and form diagnostics are retained separately.' : '' },
+      diagnostic_trait_scores: diagnosticTraits,
       trait_scores: {
-        form: 1,
+        form: awardedForm,
         form_max: 1,
         content: contentScore,
         content_max: maxContent,         // fixed holistic Content maximum
-        grammar: Math.round(grammarScore * 10) / 10,
+        grammar: Math.round(awardedGrammar * 10) / 10,
         grammar_max: 2,
-        vocabulary: Math.round(vocab.score * 10) / 10,
+        vocabulary: Math.round(awardedVocabulary * 10) / 10,
         vocabulary_max: 2
       },
       content_details: {
