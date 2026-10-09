@@ -142,6 +142,6 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     }));
     return entries.filter(Boolean);
   }
-  return { update, list };
+  return { update, list, initialise };
 }
 module.exports = { createStore };

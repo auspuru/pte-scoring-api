@@ -140,28 +140,19 @@ function essay(question,answer,{formScore=2}={}) {
   };
 }
 function speaking(q,response) {
-  const facts=Array.isArray(q?.facts)?q.facts:[];
-  let coverage=ideaCoverage(facts,response);
-  const sampleHit=q?.sample?overlap(q.sample,response):{ratio:0,matched:0,total:0};
-  const responseConcepts=concepts(response).length,sampleConcepts=concepts(q?.sample||'').length;
-  const nearSample=sampleConcepts>=8&&responseConcepts>=Math.ceil(sampleConcepts*0.55)&&sampleHit.ratio>=0.72;
-  if(nearSample)coverage=coverage.map(item=>({...item,status:'covered',evidence:item.evidence||bestEvidence(item.idea,response)||bestEvidence(q.sample,response)}));
-  const weights=coverage.map(x=>x.status==='covered'?1:x.status==='partial'?0.5:0);
-  const ratio=weights.length?weights.reduce((a,b)=>a+b,0)/weights.length:0;
-  let total=ratio>=0.85?6:ratio>=0.68?5:ratio>=0.5?4:ratio>=0.34?3:ratio>=0.18?2:ratio>0?1:0;
-  if(nearSample)total=6;
-  if(q?.type==='rts'&&!nearSample){
-    const goal=promptRelevance(q.text||'',response);
-    if(goal.ratio<0.08)total=Math.min(total,2);
-    else if(goal.ratio>=0.22)total=Math.max(total,4);
-  }
+  // Overlap can locate useful phrases, but cannot verify negation, quantities,
+  // speaker attribution or relationships. Do not turn it into content marks.
+  const coverage=ideaCoverage(Array.isArray(q?.facts)?q.facts:[],response);
   return {
-    version:VERSION,maximum:6,total,assessment:'Content-only local practice estimate',pronunciation:null,fluency:null,
-    deliveryStatus:'Teacher review — not assessed by local text scoring',scoringMode:'local',
-    overview: total>=5?'The response covers most of the supplied content points. Delivery still needs teacher or audio-based review.':total>=3?'The response covers part of the task, but important content is missing or underdeveloped.':'The response contains limited recoverable task content in the confirmed transcript.',
-    strengths:coverage.filter(x=>x.status==='covered').slice(0,2).map(x=>'Covered: '+x.idea),
-    improvements:coverage.filter(x=>x.status!=='covered').slice(0,2).map(x=>'Add or clarify: '+x.idea),
-    coverage:coverage.map(x=>({point:x.idea,status:x.status,evidence:x.evidence,feedback:x.status==='covered'?'This point is represented in the transcript.':x.status==='partial'?'This point is only partly represented; make it clearer.':'Include this relevant point in your response.'}))
+    version:'speaking-local-unverified-2026-10-09.1',maximum:6,total:null,
+    assessment:'Content review unavailable',contentStatus:'unavailable',score_provisional:true,needs_semantic_review:true,
+    pronunciation:null,fluency:null,deliveryStatus:'Teacher review — not assessed by local text scoring',scoringMode:'local',
+    overview:'Your transcript is saved. A reliable content assessment is still needed.',
+    strengths:[],improvements:['Compare your transcript with the task, then retry content review when available.'],
+    coverage:coverage.map(x=>({point:x.idea,status:'unverified',evidence:String(response||'').includes(x.evidence)?x.evidence:'',
+      feedback:x.evidence?'Matching task wording was found; its meaning has not been verified.'
+        :'No close wording match was found; a valid paraphrase may still express this point.'}))
   };
 }
+
 module.exports={VERSION,words,concepts,overlap,semanticCoverage,ideaCoverage,summaryContent,promptRelevance,essay,speaking,obviousGrammarIssues};

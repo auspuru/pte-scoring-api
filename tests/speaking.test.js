@@ -167,7 +167,7 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   assert.equal((await request('/attempts')).body.length,2);assert.equal((await store.list('bob')).length,0);
   const di=bank.questions.find(q=>q.type==='di'),other=crypto.randomUUID();
   await request('/attempts',{id:other,questionId:di.id});await request('/attempts/'+other+'/transcript',{text:di.sample,revision:0});
-  failModel=true;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.status,'submitted');assert.equal(a.transcript,di.sample);assert.equal(a.question.sample,di.sample);assert(a.result);assert.equal(a.result.scoringMode,'local');assert(a.result.total>=4);
+  failModel=true;a=(await request('/attempts/'+other+'/submit',{})).body;assert.equal(a.status,'submitted');assert.equal(a.transcript,di.sample);assert.equal(a.question.sample,di.sample);assert(a.result);assert.equal(a.result.scoringMode,'local');assert.equal(a.result.total,null);assert.equal(a.result.score_provisional,true);
   const savedDelivery={score:4,maximum:5,coaching:'Saved audio coaching'};
   await store.update('alice',other,a=>{a.recording={mime:'audio/webm',data:Buffer.alloc(200).toString('base64')};a.result={...a.result,pronunciation:savedDelivery,fluency:savedDelivery,deliveryVersion:delivery.VERSION};return a;});
   failDelivery=true; // A content retry must not call the audio assessor again.
@@ -188,17 +188,19 @@ test('Transcription failures identify provider access and quota without exposing
 });
 
 
-test('The official noisy-kitchen sample receives full content credit even in local fallback',()=>{
+test('A teaching sample cannot certify full content without semantic review',()=>{
   const q=bank.questions.find(q=>q.title==='A noisy shared kitchen');assert(q);
   const result=localEngine.speaking(q,q.sample);
-  assert.equal(result.total,6);assert(result.coverage.every(item=>item.status==='covered'));
+  assert.equal(result.total,null);assert.equal(result.score_provisional,true);assert(result.coverage.every(item=>item.status==='unverified'));
 });
 
-test('RTS local fallback recognises polite paraphrases rather than literal rubric words',()=>{
+test('RTS fallback retains exact phrase diagnostics without asserting coverage',()=>{
   const q=bank.questions.find(q=>q.title==='A noisy shared kitchen');
   const response='Hi everyone, could we please keep the kitchen a little quieter late at night? The conversations make it hard for me to sleep before my morning class. Could we keep our voices low after ten thirty or move longer chats to the lounge? If that does not suit everyone, I am happy to discuss another option.';
   const result=localEngine.speaking(q,response);
-  assert(result.total>=5);assert.equal(result.coverage[0].status,'covered');assert.equal(result.coverage[2].status,'covered');assert.equal(result.coverage[3].status,'covered');
+  assert.equal(result.total,null);assert(result.coverage.every(item=>item.status==='unverified'));
+  assert(result.coverage.some(item=>item.evidence));
+  assert(result.coverage.every(item=>!item.evidence||response.includes(item.evidence)));
 });
 
 test('Semantic Speaking grading retries one invalid assessment before falling back',async()=>{
@@ -216,8 +218,9 @@ test('Semantic Speaking tasks fall back to local content scoring when the review
     const result=await scoring.grade(q,q.sample,async()=>{throw Error('offline');});
     assert.equal(result.scoringMode,'local');
     assert.equal(result.maximum,6);
-    assert(Number.isInteger(result.total));
-    assert(result.total>=0&&result.total<=6);
+    assert.equal(result.total,null);
+    assert.equal(result.score_provisional,true);
+    assert.equal(result.contentStatus,'unavailable');
     assert.equal(result.coverage.length,q.facts.length);
   }
 });

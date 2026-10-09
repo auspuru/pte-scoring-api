@@ -29,8 +29,12 @@ uses pronunciation accuracy plus prosody when available; oral fluency uses Azure
 fluency signal plus prosody when available. The portal uses a conservative mapping
 from Azure's 0–100 signals to the six Pearson-style descriptor levels rather than
 treating Azure percentages as Pearson marks. Without Azure
-configuration or during a provider outage, content feedback still completes and
-delivery remains available for teacher review. Existing admin impersonation can
+configuration, delivery remains available for teacher review. If the semantic
+content reviewer is unavailable, content marks are withheld: keyword similarity
+cannot verify negation, numerical relationships or speaker attribution. The
+transcript, recording and separate audio feedback remain available, and content
+review can be retried without another recording. RA and RS still use deterministic
+transcript matching. Saved local fallback marks are also displayed as pending. Existing admin impersonation can
 access a student's saved speaking attempts with its normal scope.
 
 RA uses word edit distance: omissions, replacements and insertions each reduce

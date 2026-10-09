@@ -23,6 +23,7 @@ function startChild(t, mode) {
       if (message === 'finish') response.end('saved');
     });
     installGracefulShutdown(server, {
+      onShutdown: () => process.send({ type: 'unready' }),
       timeoutMs: ${mode === 'drain' ? 3000 : 200},
       logger: {
         log: message => process.send({ type: 'log', message }),
@@ -42,11 +43,15 @@ function startChild(t, mode) {
   return { child, messages, exited: once(child, 'exit') };
 }
 
-async function messageOf(child, type) {
-  for (;;) {
-    const [message] = await once(child, 'message');
-    if (message.type === type) return message;
-  }
+function messageOf(child, type) {
+  return new Promise(resolve => {
+    const listener = message => {
+      if (message.type !== type) return;
+      child.removeListener('message', listener);
+      resolve(message);
+    };
+    child.on('message', listener);
+  });
 }
 
 for (const mode of ['drain', 'request-hang', 'cleanup-hang']) {
@@ -75,6 +80,7 @@ for (const mode of ['drain', 'request-hang', 'cleanup-hang']) {
     assert.equal(signal, null);
     assert.equal(code, mode === 'drain' ? 0 : 1);
     if (mode !== 'request-hang') assert.deepEqual(response, { status: 200, body: 'saved' });
+    assert.equal(messages.filter(message => message.type === 'unready').length, 1);
     assert.equal(messages.filter(message => message.type === 'cleanup').length,
       mode === 'request-hang' ? 0 : 1);
     if (mode !== 'drain') assert.ok(messages.some(message => /deadline exceeded/.test(message.message)));
