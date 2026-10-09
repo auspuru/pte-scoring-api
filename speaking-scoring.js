@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = 'speaking-content-2026-09-23.2';
+const VERSION = 'speaking-content-2026-10-09.1';
 const localEngine = require('./local-scoring-engine');
 const tokens = text => String(text || '').toLowerCase().replace(/[’‘]/g, "'").match(/[\p{L}\p{N}]+(?:'[\p{L}]+)*/gu) || [];
 function align(expected, actual) {
@@ -79,29 +79,43 @@ function normalize(q,text,raw) {
     if (evidence === null) throw Error('Unsupported assessment evidence. Please retry.');
     return {point:q.facts[i],status:item.status,evidence,feedback:item.feedback};
   });
+  if(raw.total===6 && (coverage.some(item=>item.status==='inaccurate') || !coverage.some(item=>item.status==='covered'))) throw Error('Full content score contradicts the coverage assessment.');
   const compact=list=>[...new Map(list.map(item=>[item.trim().toLowerCase().replace(/\s+/g,' '),item.trim()])).values()].slice(0,2);
   return {...base(6),total:raw.total,overview:raw.overview.trim(),strengths:compact(raw.strengths),improvements:compact(raw.improvements),coverage};
+}
+function resultForClient(result, transcript) {
+  if (!result || result.scoringMode !== 'local') return result;
+  return { ...result, total:null, score_provisional:true, contentStatus:'unavailable', needs_semantic_review:true,
+    assessment:'Content review unavailable', overview:'Your transcript is saved. A reliable content assessment is still needed.',
+    strengths:[], improvements:['Compare your transcript with the task, then retry content review when available.'],
+    coverage:(result.coverage || []).map(item=>({...item,status:'unverified',
+      evidence:typeof transcript==='string'?(locateEvidence(transcript,item.evidence)||''):item.evidence,
+      feedback:item.evidence?'Matching task wording was found; its meaning has not been verified.'
+        :'No close wording match was found; a valid paraphrase may still express this point.'})) };
 }
 async function grade(q,text,callModel) {
   if(['ra','rs'].includes(q.type)) return exact(q,text);
   if(!tokens(text).length)return {...base(6),total:0,overview:'No spoken content was supplied for assessment.',strengths:[],improvements:['Record a response or enter the exact words you said, then reattempt.'],coverage:q.facts.map(point=>({point,status:'missing',evidence:'',feedback:'Include this relevant idea in your response.'}))};
   let lastError;
+  const started=Date.now();
   const basePrompt=prompt(q,text);
   for(let attempt=0;attempt<2;attempt++){
     try {
-      const retryNote='RETRY NOTE: Your previous assessment could not be validated. Return complete JSON only, quote STUDENT evidence exactly, and include every supplied fact once in order.';
+      const retryNote='RETRY NOTE: Your previous assessment could not be validated. Return complete JSON only, quote STUDENT evidence exactly, and include every supplied fact once in order. A full content score must agree with your evidence: no inaccurate facts and at least one accurately covered idea. Missing optional details alone do not prevent full marks.';
       const modelPrompt=attempt?basePrompt.replace('\nDATA=','\n'+retryNote+'\nDATA='):basePrompt;
-      return { ...normalize(q,text,await callModel(modelPrompt)), scoringMode:'ai' };
+      const result=normalize(q,text,await callModel(modelPrompt));
+      console.info('[speaking-content-perf]',JSON.stringify({type:q.type,mode:'ai',attempts:attempt+1,durationMs:Date.now()-started}));
+      return { ...result, scoringMode:'ai', score_provisional:false, contentStatus:'assessed' };
     } catch (error) {
       lastError=error;
     }
   }
   const reason=String(lastError?.message||'External content reviewer unavailable');
-  const category=/Unsupported assessment evidence|Incomplete content assessment/.test(reason)?'validation':'provider';
-  console.warn('[speaking-content-fallback]',JSON.stringify({type:q.type,category}));
+  const category=/Unsupported assessment evidence|Incomplete content assessment|Full content score contradicts/.test(reason)?'validation':'provider';
+  console.warn('[speaking-content-fallback]',JSON.stringify({type:q.type,category,attempts:2,durationMs:Date.now()-started}));
   const local = localEngine.speaking(q,text);
   local.source = require('./content/speaking-bank').source;
   local.fallbackReason = reason;
   return local;
 }
-module.exports={tokens,align,repeatAlignment,exact,prompt,normalize,grade};
+module.exports={VERSION,tokens,align,repeatAlignment,exact,prompt,normalize,grade,resultForClient};

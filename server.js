@@ -9,6 +9,7 @@ const compression = require('compression');
 const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
+const { createReadiness } = require('./service-readiness');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
 const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
@@ -413,6 +414,15 @@ if (USE_POSTGRES) {
   pgPool.on('error', (err) => { console.error('Postgres pool error:', err.message); });
   console.log(`🐘 Postgres pool created — SSL ${sslDisabled ? 'disabled (local)' : 'enabled'}, URL from ${DATABASE_URL_SOURCE}`);
 }
+
+const serviceReadiness = createReadiness({ probeStorage: async () => {
+  if (USE_POSTGRES) {
+    if (!pgPool) throw new Error('Storage unavailable');
+    await pgPool.query({ text: 'SELECT 1', query_timeout: 1500 });
+  }
+  await fs.access(DATA_DIR, fsSync.constants.R_OK | fsSync.constants.W_OK);
+} });
+app.get('/api/ready', serviceReadiness.handler);
 
 async function pgInitSchema() {
   if (!pgPool) return;
@@ -6260,7 +6270,7 @@ async function getPracticeAccount(uid) {
   return account;
 }
 
-require('./speaking-lab').installSpeakingLab(app, {
+const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
@@ -6273,7 +6283,7 @@ require('./speaking-lab').installSpeakingLab(app, {
   }
 });
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
-require('./writing-lab').installWritingLab(app, {
+const writingLab = require('./writing-lab').installWritingLab(app, {
   pool: pgPool,
   directory: path.join(DATA_DIR, 'writing-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
@@ -6331,6 +6341,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     getBrowser().catch(err => console.error('Puppeteer warm-up failed:', err));
   }
 
+  let storageInitialized = !USE_POSTGRES;
   // v19.10: Initialise Postgres schema and migrate any existing JSON data.
   // Both operations are idempotent.
   if (USE_POSTGRES) {
@@ -6364,10 +6375,24 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
       } else {
         console.log(`🐘 Passage seed skipped (${seed.reason}${seed.error ? ': ' + seed.error : ''})`);
       }
+      storageInitialized = true;
     } catch (e) {
+      serviceReadiness.markFailed();
       console.error('🐘 Postgres init failed:', e.message);
       console.error('     The server will keep running but writes will fail until Postgres is healthy.');
     }
+  }
+
+  if (!storageInitialized) return;
+  try {
+    await ensureDataDir();
+    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise()]);
+    serviceReadiness.markInitialized();
+    console.log('[service-readiness] storage and practice stores initialized');
+  } catch (error) {
+    serviceReadiness.markFailed();
+    console.error('[service-readiness] initialization failed');
+    return;
   }
 
   try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
@@ -6406,6 +6431,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
 });
 
 installGracefulShutdown(httpServer, {
+  onShutdown: () => serviceReadiness.stop(),
   cleanup: async () => {
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([

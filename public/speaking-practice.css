@@ -58,3 +58,5 @@
 .speaking-question-meta,#speaking-match-count{font-size:12px;color:var(--ink-soft)}
 .speaking-question-list h3{overflow-wrap:anywhere}
 @media(max-width:640px){.speaking-library-filters label{flex-basis:100%}.speaking-library-filters>button{width:100%}}
+
+.speaking-status.unverified{background:#fff4dd;color:#805800}

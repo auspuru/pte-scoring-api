@@ -304,3 +304,29 @@ test('Content retry reports continued fallback and successful recovery without a
   assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
   assert.match(h.host.innerHTML,/Improve everyday pronunciation and fluency/);
 });
+
+test('Saved local full marks display pending content while preserving audio coaching', async () => {
+  const h=harness();h.env.contentFallback=true;
+  const request=h.env.fetch;
+  h.env.fetch=async(...args)=>{
+    const response=await request(...args),json=response.json;
+    response.json=async()=>{
+      const data=await json();
+      if(data.result){
+        data.result={...data.result,total:6,maximum:6,scoringMode:'local',overview:'Fully covered.',
+          strengths:['Every point covered.'],coverage:[{point:'Sales rose.',status:'covered',evidence:'Sales fell.',feedback:'Fully covered.'}],
+          pronunciation:{score:4,maximum:5,descriptor:'Clear delivery',coaching:'Stress the key topic words.'},
+          fluency:{score:4,maximum:5,descriptor:'Steady delivery',coaching:'Pause between related ideas.'}};
+      }
+      return data;
+    };
+    return response;
+  };
+  await h.controller.open('di');await h.click({speakingQuestion:'di-1'});
+  await h.click({speakingAction:'skip'});h.tick(40001);await flush();
+  assert.match(h.host.innerHTML,/speaking-metric content is-pending/);
+  assert.match(h.host.innerHTML,/Content review pending/);
+  assert.match(h.host.innerHTML,/Stress the key topic words/);
+  assert.match(h.host.innerHTML,/Pause between related ideas/);
+  assert.doesNotMatch(h.host.innerHTML,/Fully covered|Every point covered|Content strengths/);
+});

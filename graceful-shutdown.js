@@ -1,11 +1,12 @@
 'use strict';
 
 // Keep this deadline below Railway's deploy.drainingSeconds (60 seconds).
-function installGracefulShutdown(server, { cleanup, timeoutMs = 55_000, logger = console } = {}) {
+function installGracefulShutdown(server, { cleanup, onShutdown, timeoutMs = 55_000, logger = console } = {}) {
   let stopping = false;
   const shutdown = signal => {
     if (stopping) return;
     stopping = true;
+    if (onShutdown) onShutdown();
     logger.log(`${signal} — draining active HTTP requests`);
 
     // Also bounds stuck requests and resource cleanup. A repeated signal must

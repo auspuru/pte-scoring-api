@@ -30,7 +30,9 @@ const server = spawn(process.execPath, ['server.js'], {
     SKIP_PUPPETEER_WARMUP: '1',
     ANTHROPIC_API_KEY: '',
     OPENAI_API_KEY: '',
-    DATABASE_URL: ''
+    DATABASE_URL: '',
+    DATABASE_PUBLIC_URL: '',
+    PGURL: ''
   },
   stdio: ['ignore', 'pipe', 'pipe']
 });
@@ -45,7 +47,7 @@ async function waitForServer() {
   const deadline = Date.now() + 15000;
   while (Date.now() < deadline) {
     try {
-      const res = await fetch(`${base}/api/health`);
+      const res = await fetch(`${base}/api/ready`);
       if (res.ok) return;
     } catch (_) {}
     await sleep(200);
