@@ -8,7 +8,7 @@ const object = properties => ({ type: 'object', additionalProperties: false,
   properties, required: Object.keys(properties) });
 const texts = { type: 'array', items: text };
 const span = { type: 'array', items: { type: 'integer' },
-  description: 'Exactly two 1-based inclusive word numbers from the ORIGINAL student essay; [] only when a prompt requirement is missing.' };
+  description: 'Exactly two 1-based inclusive word numbers from the ORIGINAL student essay; [] only for missing prompt coverage or off_topic relevance.' };
 const citation = object({ span: { $ref: '#/$defs/span' } });
 const citations = { type: 'array', items: { $ref: '#/$defs/citation' } };
 const coverage = object({ requirement: text,
