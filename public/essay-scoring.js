@@ -309,6 +309,7 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     if (taskRelevance?.status === 'minimal' && scores.content > 1) {
       fail('relevance_score', 'Minimal task relevance can earn at most Content 1. Reassess the relevance decision and Content consistently.');
     }
+    if (taskRelevance?.status === 'minimal') scores.content = 1;
     if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
       fail('content_coverage', 'Full Content marks require every requested part to be addressed.');
     }

@@ -104,6 +104,7 @@ function normalizeReview(raw, essay, { requireTaskRelevance = false } = {}) {
     error.validationHint = 'Minimal task relevance can earn at most Content 1. Reassess relevance and Content consistently.';
     throw error;
   }
+  if (taskRelevance?.status === 'minimal') scores.content = 1;
   if (scores.content === 6 && promptCoverage.some(item => item.status !== 'addressed')) {
     const error = new Error('Full Content review conflicts with prompt coverage.');
     error.validationHint = 'Content 6 requires every requested part to be addressed.';

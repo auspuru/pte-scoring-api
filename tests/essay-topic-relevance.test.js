@@ -60,15 +60,17 @@ test('two reviewers proposing Content 1 for a wholly unrelated essay cannot reta
 
 test('minimal genuine relevance can retain Content 1 even when the requested parts are missing', async () => {
   const essay = mediaEssay.replace('The topic of mass media', 'Public transport can help people reach work. The topic of mass media');
-  const raw = primary(relevance('minimal', 'Public transport can help people reach work.', 'A transport benefit is present, but neither comparison nor opinion is developed.'), 1,
-    [missing('both views'), missing('your opinion')]);
-  const grader = createEssayGrader(async (_prompt, options) => options?.stage === 'assessment' ? raw
-    : options?.stage === 'subjective-review' ? review(raw)
-      : { sampleStatus: 'needs-ideas', sampleResponse: '', sampleSourceIdeas: [], sampleNote: 'Add a comparison of public transport and road expansion, and your position.' });
-  const result = await grader.grade(transportQuestion, essay);
-  assert.equal(result.scores.content, 1);
-  assert.equal(result.scores.total, 19);
-  assert.equal(result.scoreGate.status, 'valid');
+  for (const proposedContent of [0, 1]) {
+    const raw = primary(relevance('minimal', 'Public transport can help people reach work.', 'A transport benefit is present, but neither comparison nor opinion is developed.'), proposedContent,
+      [missing('both views'), missing('your opinion')]);
+    const grader = createEssayGrader(async (_prompt, options) => options?.stage === 'assessment' ? raw
+      : options?.stage === 'subjective-review' ? review(raw)
+        : { sampleStatus: 'needs-ideas', sampleResponse: '', sampleSourceIdeas: [], sampleNote: 'Add a comparison of public transport and road expansion, and your position.' });
+    const result = await grader.grade(transportQuestion, essay);
+    assert.equal(result.scores.content, 1);
+    assert.equal(result.scores.total, 19);
+    assert.equal(result.scoreGate.status, 'valid');
+  }
 });
 
 test('valid paraphrases and a missing requested opinion keep their assessed marks', async () => {
