@@ -237,3 +237,11 @@ test('A repaired reasoning issue can resolve while a different development issue
  assert.equal(F.normalize(a,essay,question,a.scores,{previous:{issues:[prior]}}).revisionDecisions[0].status,'resolved');
  assert(F.GUIDANCE.includes('credit the hour-reduction explanation'));
 });
+
+test('A missing own-experience correction requests a genuine observation instead of supplying an invented first-person story',()=>{
+ const q='Do you agree? Use your own experience.',a=raw(q),req=F.requirements(q).find(r=>r.kind==='own_experience');a.scores.content=5;
+ a.promptCoverage.find(c=>c.requirementId===req.id).status='missing';
+ a.feedbackIssues=[issue({code:'missing_requirement',category:'coverage',requirementId:req.id,evidence:{essayQuote:'',promptQuote:req.label},suggestedChange:'Write: I live alone and watch comedy after my stressful job.'})];
+ const suggestion=F.normalize(a,essay,q,a.scores).feedbackIssues[0].suggestedChange;
+ assert.match(suggestion,/genuine experience or observation/);assert.doesNotMatch(suggestion,/I live alone|stressful job/);
+});

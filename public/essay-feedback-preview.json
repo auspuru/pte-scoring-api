@@ -287,7 +287,7 @@
           "Appropriate acknowledgement of limitations ('cannot replace close relationships', 'cannot listen to the viewer')"
         ],
         "improvements": [
-          "Include a specific personal example: for instance, 'After a stressful day at work, I find that watching my favourite comedy series helps me unwind' or 'Living alone, I noticed that having familiar presenters on in the background made my evenings feel less isolating.' This grounds the argument in lived experience."
+          "Add one genuine experience or observation from your own life, then explain how it supports your stated position. Use only details that actually happened to you; keep your own opinion."
         ],
         "overallVerdict": "This is a well-reasoned, clearly structured response that addresses the extent of agreement and provides sound explanations for both claimed benefits. Grammar, spelling and vocabulary are secure. The main gap is the absence of personal experience, which the prompt explicitly requests. Adding a specific example from your own life would complete the task and move the essay toward full marks. Current performance is solid but incomplete against the full prompt requirements.\"",
         "feedbackIssues": [
@@ -306,7 +306,7 @@
               "end": null
             },
             "explanation": "The prompt explicitly requests 'your own experience' to support the agreement. The essay provides general reasoning and hypothetical examples ('Someone living alone may therefore feel more comfortable during dinner') but no personal observation or experience attributable to the writer. This is a direct gap against a canonical requirement.",
-            "suggestedChange": "Include a specific personal example: for instance, 'After a stressful day at work, I find that watching my favourite comedy series helps me unwind' or 'Living alone, I noticed that having familiar presenters on in the background made my evenings feel less isolating.' This grounds the argument in lived experience.",
+            "suggestedChange": "Add one genuine experience or observation from your own life, then explain how it supports your stated position. Use only details that actually happened to you; keep your own opinion.",
             "scoreRationale": "Content is 5 rather than 6 because one of three explicit requirements (own experience) is entirely absent. The reasoning and agreement are well-developed, preventing a lower score, but full marks require all requested elements.",
             "status": "open",
             "version": "essay-feedback-2026-10-15.1",

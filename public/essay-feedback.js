@@ -112,7 +112,9 @@ For revisionDecisions, assess current text independently first; previous issues 
       issues.push({id:'issue_' + hash(signature), code:item.code, category:item.category, priority:item.priority,
         requirementId: req?.id || '', trait:item.trait, affectsScore:item.affectsScore,
         evidence:{essayQuote:quote, promptQuote:quote ? '' : promptQuote, start:quote ? essay.indexOf(quote) : null, end:quote ? essay.indexOf(quote)+quote.length : null},
-        explanation:clean(item.explanation), suggestedChange:clean(item.suggestedChange), scoreRationale:item.affectsScore ? clean(item.scoreRationale) : '',
+        explanation:clean(item.explanation), suggestedChange:req?.kind==='own_experience' && coverage.some(c=>c.requirementId===req.id && c.status==='missing')
+          ? 'Add one genuine experience or observation from your own life, then explain how it supports your stated position. Use only details that actually happened to you; keep your own opinion.'
+          : clean(item.suggestedChange), scoreRationale:item.affectsScore ? clean(item.scoreRationale) : '',
         status:'open', version:VERSION});
     }
     for (const c of coverage) if(c.status!=='addressed' && !issues.some(i=>i.requirementId===c.requirementId && i.trait==='content' && i.priority!=='optional')) invalid('Return a specific issue for each missing or partial canonical requirement, using its current evidence and requirementId.');
