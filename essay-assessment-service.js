@@ -128,6 +128,12 @@ function normalizeReview(raw, essay, { requireTaskRelevance = false, feedbackV3 
     throw error;
   }
 
+  if (feedbackV3 && (!String(raw.overallVerdict || '').trim() || SUBJECTIVE.some(key=>!String(raw.rationale?.[key] || '').trim()))) {
+    const error = new Error('Final essay feedback lacks a trait rationale or overall assessment.');
+    error.code = 'feedback_contract';
+    error.validationHint = 'Return a specific rationale for each subjective trait and an overallVerdict consistent with the final issues.';
+    throw error;
+  }
   return {
     scores,
     ...(taskRelevance ? { taskRelevance } : {}),
@@ -227,6 +233,8 @@ function applySubjectiveDecision(assessment, decision, source) {
   for (const key of SUBJECTIVE) {
     if (decision.rationale && String(decision.rationale[key] || '').trim()) {
       feedback[key] = String(decision.rationale[key]).trim();
+    } else if (decision.scores[key] === policy.MAXIMA[key] && (assessment.diagnosticScores || assessment.scores)[key] !== policy.MAXIMA[key]) {
+      feedback[key] = 'The final review awarded full marks for this trait under the current practice rubric.';
     }
   }
   if (decision.taskRelevance?.status === 'off_topic') feedback.content = decision.taskRelevance.reason;
@@ -341,7 +349,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError, op
       return {assessment, raw};
     } catch (error) {
       lastError = error;
-      onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
     }
   }
   throw lastError || new Error('Essay assessment unavailable.');
@@ -357,7 +365,7 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError, opt
       return normalizeReview(await call(buildReviewPrompt(question, essay, options) + retry, { stage: 'subjective-review', feedbackV3:options.feedbackV3 }), essay, { requireTaskRelevance: true, ...options, question });
     } catch (error) {
       lastError = error;
-      onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
     }
   }
   throw lastError || new Error('Essay subjective review unavailable.');
@@ -392,7 +400,7 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
       return normalized;
     } catch (error) {
       lastError = error;
-      onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown' });
+      onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
     }
   }
   throw lastError || new Error('Essay subjective resolver unavailable.');

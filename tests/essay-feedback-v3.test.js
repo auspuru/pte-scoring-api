@@ -176,3 +176,10 @@ test('History cap preserves the original and final drafts when many intermediate
  const history=Array.from({length:70},(_,i)=>({id:'a'+i,date:i+1,attemptGroupId:'a0',originalAttemptId:'a0',parentAttemptId:i?'a'+(i-1):null,revisionNumber:i,isFinalDraft:i===50,essayText:'draft '+i}));
  const merged=sync.mergeHistory([],history,[]);assert.equal(merged.length,50);assert(merged.some(a=>a.id==='a0'));assert(merged.some(a=>a.id==='a69'));assert(merged.some(a=>a.id==='a50'));
 });
+
+test('A final review cannot omit the explanation behind its scores or reuse a stale primary trait comment',()=>{
+ const {normalizeReview}=require('../essay-assessment-service');const r=reviewFrom(raw());delete r.rationale;
+ assert.throws(()=>normalizeReview(r,essay,{feedbackV3:true,question,requireTaskRelevance:true}),{code:'feedback_contract'});
+ const a=raw();a.scores.content=4;a.feedback.content='The opinion is missing.';const b=reviewFrom(raw());b.rationale={};
+ assert.doesNotMatch(applySubjectiveDecision(a,b,'resolver').feedback.content,/missing/);
+});
