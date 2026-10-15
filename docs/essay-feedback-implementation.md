@@ -24,7 +24,7 @@ Set `ESSAY_FEEDBACK_V3=false` and redeploy to restore the legacy contract for ne
 
 ## Verification
 
-The baseline passed 679 tests. The final implementation passes 714 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
+The baseline passed 679 tests. The final implementation passes 715 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
 
 `tests/essay-feedback-cases.js` provides synthetic teaching cases and weaker variants. `scripts/evaluate-essay-feedback.js` submits them only to an explicitly configured isolated review service, records complete results and timings, and repeats selected cases with semantically identical paragraph spacing to avoid returning only cached results. Contract tests alone do not prove model teaching accuracy.
 
@@ -36,7 +36,7 @@ Production-wide activation requires the plan's human teaching review, satisfacto
 
 ## Live evaluation and review outcome
 
-The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 714 tests.
+The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 715 tests.
 
 Live model checks exposed two integration faults that mocked contract tests could not establish: the prose output example still named only legacy fields, and demanding a correction for every below-maximum holistic mark encouraged fabricated repairs. The output example now matches the tool contract. A sufficient essay can retain a good holistic mark without a manufactured correction; every reduced trait still needs its rubric explanation, and every missing/partial canonical requirement needs an issue. A single targeted feedback-format repair may reconstruct malformed feedback from existing judgements and current evidence. It cannot alter scores or coverage, and failure does not restart full scoring or publish a result. Repeated identical formatting failures are suppressed briefly to prevent credit-consuming retries.
 
@@ -47,3 +47,5 @@ Eight synthetic cases passed real model evaluation: reasons OR experience, expli
 The small live sample includes intermediate contract revisions. It observed two calls for a straightforward sufficient answer and up to five for complex disagreement/repair cases; complex cases can take more than two minutes. These timings are recorded in `essay-feedback-live-validation.json` and are not a matched production latency baseline or p50/p95 equivalence claim. New-flow samples are optional, and no unconditional assessment call was added for prose polish. Production p50/p95, failure rate and cohort cost comparison remain release-monitoring tasks.
 
 Release decision: keep production-wide activation disabled pending Puru's teaching review and a satisfactory small production cohort. The review preview is `/essay-feedback-preview.html`. Production data is untouched by synthetic evaluation. The implementation and compatible legacy fields can be deployed with the feature disabled; use the documented kill switch before any code rollback.
+
+A live revision walkthrough identified an overly broad local safeguard: it blocked resolution of an old reasoning issue whenever any development weakness remained on the same requirement. Resolution now follows the specific prior issue; coverage issues still require current coverage, and an unchanged flagged passage remains open. Distinct current issues retain their own evidence. The policy also explicitly credits already supplied conditional mechanisms rather than demanding every concluding qualifier be developed.

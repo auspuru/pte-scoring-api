@@ -111,7 +111,7 @@ test('Revision resolution requires current evidence and cannot follow from delet
  a.revisionDecisions=[{priorIssueId:old.id,status:'resolved',currentIssueCode:'',evidence:'mass media supports learning',reason:'The revised explanation supplies the condition.'}];
  assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'resolved');
  a.revisionDecisions[0].evidence='';assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'needs_clarification');
- const r=F.requirements(question)[0];old.requirementId=r.id;a.revisionDecisions[0].evidence='mass media supports learning';a.promptCoverage[0].status='missing';a.scores.content=5;a.feedbackIssues=[issue({code:'missing_requirement',category:'coverage',requirementId:r.id,evidence:{essayQuote:'',promptQuote:r.label}})];
+ const r=F.requirements(question)[0];old.requirementId=r.id;old.category='coverage';old.code='missing_requirement';a.revisionDecisions[0].evidence='mass media supports learning';a.promptCoverage[0].status='missing';a.scores.content=5;a.feedbackIssues=[issue({code:'missing_requirement',category:'coverage',requirementId:r.id,evidence:{essayQuote:'',promptQuote:r.label}})];
  assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'needs_clarification');
 });
 
@@ -226,4 +226,14 @@ test('Grammar slips with unsupported meaning-impact claims remain non-scoring la
  const a=raw();a.errors=[{type:'grammar',impact:'meaning',phrase:'young people encounter news',correction:'young people encounter the news',explanation:'An article helps specify the noun.'}];
  const {assessment}=await assessEssay(question,essay,async(_p,o)=>o.stage==='assessment'?a:reviewFrom(raw()),{feedbackV3:true});
  assert.equal(assessment.scores.grammar,2);assert.equal(assessment.languageCorrections[0].impact,'minor');assert.deepEqual(assessment.optionalRefinements,[]);
+});
+
+
+test('A repaired reasoning issue can resolve while a different development issue remains on the same requirement',()=>{
+ const a=raw(),req=F.requirements(question)[0];a.scores.content=5;a.promptCoverage[0]={...a.promptCoverage[0],status:'partial',nextStep:'Clarify another point.'};
+ const prior={...issue(),id:'old-reasoning',requirementId:req.id};
+ a.feedbackIssues=[issue({code:'development_gap',requirementId:req.id})];
+ a.revisionDecisions=[{priorIssueId:prior.id,status:'resolved',currentIssueCode:'',evidence:'Schools can respond by teaching students',reason:'The new explanation corrects the earlier inference; a separate point still needs development.'}];
+ assert.equal(F.normalize(a,essay,question,a.scores,{previous:{issues:[prior]}}).revisionDecisions[0].status,'resolved');
+ assert(F.GUIDANCE.includes('credit the hour-reduction explanation'));
 });
