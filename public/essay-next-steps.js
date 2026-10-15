@@ -6,7 +6,7 @@
   const text=String(a.essayText||a.response||''),scores=a.diagnosticScores||a.scores||{};
   if(a.feedbackVersion && Array.isArray(a.feedbackIssues)){
    const formCard=typeof scores.form==='number' && scores.form<2 ? [{id:'form',title:'Meet the essay form requirement',why:a.feedback?.form || 'Check the form of your response.',source:'',exercise:'Revise to 200–300 words of connected prose, preserving the ideas needed to answer the question.',check:'The response meets the form guidance and still answers the question.',model:''}] : [];
-   return [...formCard,...a.feedbackIssues.filter(i=>i.priority!=='optional' && i.status==='open').slice(0,2).map(i=>({id:i.id,issueId:i.id,title:'Practise: '+i.code.replace(/_/g,' '),why:i.explanation,source:i.evidence?.essayQuote&&text.includes(i.evidence.essayQuote)?i.evidence.essayQuote:'',exercise:i.suggestedChange,check:'Check this specific change against the question and preserve your original position.',model:''}))].slice(0,2);
+   return [...formCard,...a.feedbackIssues.filter(i=>i.priority!=='optional' && i.status==='open').sort((a,b)=>(a.priority==='major'?0:1)-(b.priority==='major'?0:1)).slice(0,2).map(i=>({id:i.id,issueId:i.id,title:'Practise: '+i.code.replace(/_/g,' '),why:i.explanation,source:i.evidence?.essayQuote&&text.includes(i.evidence.essayQuote)?i.evidence.essayQuote:'',exercise:i.suggestedChange,check:'Check this specific change against the question and preserve your original position.',model:''}))].slice(0,2);
   }
   const errors=(a.errors||[]).filter(e=>e&&e.phrase&&text.includes(e.phrase)&&e.correction&&e.correction!==e.phrase);
   const missing=(a.promptCoverage||[]).find(c=>['missing','partial','not_addressed'].includes(c.status));

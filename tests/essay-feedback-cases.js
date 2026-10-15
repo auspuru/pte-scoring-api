@@ -42,6 +42,8 @@ An office near a train station can be easier for staff to reach. Employees may s
 
 Nearby cafes and shops can also improve the working day. Staff can buy lunch without making a long journey and complete small errands during a break. An office in a busy area may also be easier for clients to find. These practical benefits can make the location attractive to both employees and visitors, particularly when services remain available after normal working hours.
 
+Inside the office, separate quiet rooms may help employees focus by reducing conversations around their desks.
+
 In conclusion, offices near transport and useful services can make daily work more convenient. A central location gives staff better access and can support visits from clients. Businesses should compare travel options and nearby facilities when deciding where to establish an office, since these features affect the people who use it each day.`;
 const cases=[
  {id:'reasons_or_experience',question:'Television helps people relax and acts as a companion for the lonely. To what extent do you agree? Give reasons or your own experience.',essay:television,forbidMissingKind:'own_experience',forbidCodes:['stance_conflict'],repeat:true},

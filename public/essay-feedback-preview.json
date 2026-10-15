@@ -1,0 +1,1647 @@
+{
+  "policyVersion": "essay-feedback-2026-10-15.1",
+  "synthetic": true,
+  "examples": [
+    {
+      "id": "reasons_or_experience",
+      "title": "Reasons or experience",
+      "assessment": {
+        "scores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2,
+          "total": 24
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships.",
+          "reason": "The opening directly addresses the prompt's core claim: the student agrees that television helps people relax and provides companionship, while qualifying that it cannot replace close relationships. This is a substantive engagement with the actual question."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "status": "addressed",
+            "evidence_span": [
+              1,
+              20
+            ],
+            "nextStep": "",
+            "requirementId": "req_1",
+            "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships."
+          },
+          {
+            "requirement": "reasons or your own experience",
+            "status": "addressed",
+            "evidence_span": [
+              38,
+              104
+            ],
+            "nextStep": "",
+            "requirementId": "req_2",
+            "evidence": "After a demanding working day, a light comedy can give viewers a break from their worries. Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while. This does not solve the source of stress, but a short period of entertainment can make the evening more enjoyable. People can then return to their responsibilities with a clearer mind."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while.",
+            "This benefit has limits because a programme cannot listen to the viewer or offer personal support.",
+            "Overall, television serves both functions when people use it sensibly. It offers accessible entertainment and temporary companionship, while genuine relationships remain essential for lasting emotional support."
+          ],
+          "developmentEvidence": [
+            "After a demanding working day, a light comedy can give viewers a break from their worries.",
+            "Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while.",
+            "Television can also make a quiet home feel less empty. Familiar presenters and regular programmes create a routine, while conversation and music provide background company. Someone living alone may therefore feel more comfortable during dinner.",
+            "This benefit has limits because a programme cannot listen to the viewer or offer personal support. Television is most useful alongside phone calls, visits and activities that maintain real social contact."
+          ],
+          "vocabularyExamples": [
+            "Its value depends on the programmes people choose and the amount of time they spend watching",
+            "accessible entertainment and temporary companionship, while genuine relationships remain essential for lasting emotional support.",
+            "Familiar presenters and regular programmes create a routine, while conversation and music provide background company."
+          ]
+        },
+        "feedback": {
+          "content": "Excellent coverage: you state your position clearly, provide two well-developed reasons (relaxation and companionship), and qualify your agreement with realistic limits. The essay directly answers the prompt with substantive support throughout.",
+          "form": "205 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors. Consistent and accurate throughout.",
+          "grammar": "Clear and accurate. Meaning is preserved across all sentences; minor stylistic variations are optional.",
+          "vocabulary": "Precise and varied: 'demanding working day,' 'accessible entertainment,' 'temporary companionship,' 'genuine relationships.' Word choice is appropriate and supports your argument effectively.",
+          "linguistic": "Good range of sentence structures and connectors ('Following,' 'while,' 'because,' 'Overall'), though some sentences follow similar patterns. Expressions like 'clearer mind' and 'background company' show control, but variety could be slightly stronger.",
+          "coherence": "Well-organised with clear progression: agreement → relaxation benefit → companionship benefit → limitations → conclusion. Logical connections are present, though transitions between ideas could be slightly more explicit to strengthen flow."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while.",
+            "correction": "Following a familiar story requires less cognitive effort than managing work problems, so viewers may feel calmer temporarily.",
+            "explanation": "Optional: 'cognitive effort' is more precise than 'less effort,' and 'temporarily' reinforces the qualified nature of the benefit.",
+            "affects_score": false
+          },
+          {
+            "phrase": "Familiar presenters and regular programmes create a routine, while conversation and music provide background company.",
+            "correction": "Familiar presenters and regular programmes establish a routine, while background conversation and music provide companionship.",
+            "explanation": "Optional: 'establish' is slightly more active than 'create,' and 'companionship' is more direct than 'background company.'",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding ('I agree,' 'After a demanding working day,' 'Television can also,' 'Overall') appropriately filled with relevant reasoning. No generic filler detected; all template phrases support substantive claims about television's role in relaxation and companionship.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear, qualified position: you agree but acknowledge television cannot replace real relationships, showing nuanced thinking.",
+          "Two well-developed reasons: relaxation through light entertainment and companionship through familiar presenters, each explained with logical cause-and-effect.",
+          "Realistic limitations acknowledged: you note that television does not solve stress and cannot offer personal support, strengthening credibility.",
+          "Logical structure: introduction → two benefits → limitations → balanced conclusion that ties ideas together."
+        ],
+        "improvements": [],
+        "overallVerdict": "This is a strong, well-reasoned response that fully addresses the prompt. You clearly agree with the statement, provide two substantive reasons (relaxation and companionship), and qualify your position with realistic limitations. The essay is well-organised, accurate, and uses appropriate vocabulary. Linguistic range and coherence are solid but could be marginally enhanced through slightly more varied sentence structures and one additional explicit transition. At 205 words, the response is within target length and demonstrates clear, controlled writing.\"",
+        "feedbackIssues": [],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 205,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships. Its value depends on the programmes people choose and the amount of time they spend watching them.\n\nAfter a demanding working day, a light comedy can give viewers a break from their worries. Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while. This does not solve the source of stress, but a short period of entertainment can make the evening more enjoyable. People can then return to their responsibilities with a clearer mind.\n\nTelevision can also make a quiet home feel less empty. Familiar presenters and regular programmes create a routine, while conversation and music provide background company. Someone living alone may therefore feel more comfortable during dinner. This benefit has limits because a programme cannot listen to the viewer or offer personal support. Television is most useful alongside phone calls, visits and activities that maintain real social contact.\n\nOverall, television serves both functions when people use it sensibly. It offers accessible entertainment and temporary companionship, while genuine relationships remain essential for lasting emotional support. These benefits are useful within a balanced daily routine.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 70,
+              "end": 98
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "support",
+            "operator": "OR",
+            "groupId": "or_2",
+            "alternatives": [
+              "reasons",
+              "experience"
+            ],
+            "label": "reasons or your own experience",
+            "promptSpan": {
+              "quote": "reasons or your own experience",
+              "start": 104,
+              "end": 134
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "agreement",
+          "primary": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "reviewer": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independent": {
+            "content": 6,
+            "linguistic": 6,
+            "coherence": 6
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships.",
+            "reason": "The essay directly addresses the prompt's core claim by stating agreement that television helps people relax and provides companionship, while qualifying this with a nuanced position about its limitations and dependence on usage patterns."
+          }
+        },
+        "questionText": "Television helps people relax and acts as a companion for the lonely. To what extent do you agree? Give reasons or your own experience.",
+        "attemptId": "preview_reasons_or_experience",
+        "attemptGroupId": "preview_reasons_or_experience",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_reasons_or_experience",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "explicit_own_experience",
+      "title": "When your own experience is required",
+      "assessment": {
+        "scores": {
+          "content": 5,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2,
+          "total": 23
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships.",
+          "reason": "The essay directly addresses the prompt's core claim: 'I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships.' This substantive position engages with both functions mentioned in the question and qualifies the extent of agreement."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "status": "addressed",
+            "evidence_span": [
+              1,
+              20
+            ],
+            "nextStep": "",
+            "requirementId": "req_1",
+            "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships."
+          },
+          {
+            "requirement": "Explain why",
+            "status": "addressed",
+            "evidence_span": [
+              38,
+              104
+            ],
+            "nextStep": "",
+            "requirementId": "req_2",
+            "evidence": "After a demanding working day, a light comedy can give viewers a break from their worries. Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while. This does not solve the source of stress, but a short period of entertainment can make the evening more enjoyable. People can then return to their responsibilities with a clearer mind."
+          },
+          {
+            "requirement": "your own experience",
+            "status": "missing",
+            "evidence_span": [],
+            "nextStep": "Add a specific personal observation or experience that demonstrates how television has helped you relax or provided companionship. For example, describe a particular situation when you used television in this way.",
+            "requirementId": "req_3",
+            "evidence": ""
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while.",
+            "This benefit has limits because a programme cannot listen to the viewer or offer personal support."
+          ],
+          "developmentEvidence": [
+            "After a demanding working day, a light comedy can give viewers a break from their worries.",
+            "Television can also make a quiet home feel less empty. Familiar presenters and regular programmes create a routine, while conversation and music provide background company. Someone living alone may therefore feel more comfortable during dinner.",
+            "Overall, television serves both functions when people use it sensibly. It offers accessible entertainment and temporary companionship, while genuine relationships remain essential for lasting emotional support."
+          ],
+          "vocabularyExamples": [
+            "accessible entertainment and temporary companionship,",
+            "Familiar presenters and regular programmes create a routine, while conversation and music provide background company."
+          ]
+        },
+        "feedback": {
+          "content": "You address the extent of agreement and provide clear reasons for both benefits (relaxation and companionship), with appropriate qualifications. However, the prompt explicitly requests your own experience, which is absent. The essay remains general throughout; adding a personal example would strengthen the response and fully satisfy the task.",
+          "form": "205 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors detected. Consistent and accurate throughout.",
+          "grammar": "Grammar is secure. Sentences are well-formed with clear meaning. Minor stylistic variations are acceptable.",
+          "vocabulary": "Vocabulary is appropriate and precise. Words like 'accessible,' 'temporary,' and 'companionship' are well-chosen; some repetition of 'television' and 'programme(s)' is natural given the topic.",
+          "linguistic": "You demonstrate controlled sentence variety: complex structures with subordination ('Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while') and balanced constructions ('while genuine relationships remain essential for lasting emotional support'). Range is useful but somewhat consistent in pattern; further variation in sentence openings or rhetorical devices would strengthen this further.",
+          "coherence": "The essay is well-organised with a clear position, two developed paragraphs on each benefit, and a conclusion that synthesises the argument. Logical progression is evident: relaxation benefit → companionship benefit → limitations → balanced conclusion. Connections between ideas are secure, though the link between paragraphs could be slightly more explicit."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "Its value depends on the programmes people choose and the amount of time they spend watching them.",
+            "correction": "Consider developing this qualification earlier or integrating it into the main argument rather than stating it as a separate sentence.",
+            "explanation": "The sentence 'Its value depends on the programmes people choose and the amount of time they spend watching them' introduces a useful condition but stands somewhat isolated; weaving this into the discussion of benefits would improve flow.",
+            "affects_score": false
+          },
+          {
+            "phrase": "This does not solve the source of stress,",
+            "correction": "This does not solve the underlying source of stress",
+            "explanation": "Minor clarification: 'source of stress' is slightly vague; specifying 'underlying' or 'root cause' would be more precise, though the current phrasing is acceptable.",
+            "affects_score": false
+          },
+          {
+            "phrase": "Television is most useful alongside phone calls, visits and activities that maintain real social contact.",
+            "correction": "Television is most useful when combined with phone calls, visits and activities that maintain real social contact.",
+            "explanation": "Optional: 'alongside' is correct but 'when combined with' or 'in combination with' might emphasise the integration more strongly.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding ('I agree', 'After a demanding working day', 'Television can also', 'Overall') appropriately filled with relevant ideas. No generic filler detected. Structure is clear and purposeful, not formulaic. The taught phrases serve the argument rather than replacing it.\", \"templateEvidence\">[]",
+        "strengths": [
+          "Clear, qualified position that directly addresses the extent of agreement",
+          "Well-developed reasoning for both benefits (relaxation and companionship) with logical explanations",
+          "Appropriate acknowledgement of limitations ('cannot replace close relationships', 'cannot listen to the viewer')"
+        ],
+        "improvements": [
+          "Include a specific personal example: for instance, 'After a stressful day at work, I find that watching my favourite comedy series helps me unwind' or 'Living alone, I noticed that having familiar presenters on in the background made my evenings feel less isolating.' This grounds the argument in lived experience."
+        ],
+        "overallVerdict": "This is a well-reasoned, clearly structured response that addresses the extent of agreement and provides sound explanations for both claimed benefits. Grammar, spelling and vocabulary are secure. The main gap is the absence of personal experience, which the prompt explicitly requests. Adding a specific example from your own life would complete the task and move the essay toward full marks. Current performance is solid but incomplete against the full prompt requirements.\"",
+        "feedbackIssues": [
+          {
+            "id": "preview_explicit_own_experience:issue_1i2hh3u",
+            "code": "missing_requirement",
+            "category": "coverage",
+            "priority": "major",
+            "requirementId": "req_3",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "",
+              "promptQuote": "your own experience",
+              "start": null,
+              "end": null
+            },
+            "explanation": "The prompt explicitly requests 'your own experience' to support the agreement. The essay provides general reasoning and hypothetical examples ('Someone living alone may therefore feel more comfortable during dinner') but no personal observation or experience attributable to the writer. This is a direct gap against a canonical requirement.",
+            "suggestedChange": "Include a specific personal example: for instance, 'After a stressful day at work, I find that watching my favourite comedy series helps me unwind' or 'Living alone, I noticed that having familiar presenters on in the background made my evenings feel less isolating.' This grounds the argument in lived experience.",
+            "scoreRationale": "Content is 5 rather than 6 because one of three explicit requirements (own experience) is entirely absent. The reasoning and agreement are well-developed, preventing a lower score, but full marks require all requested elements.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_explicit_own_experience"
+          }
+        ],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 5,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "templateEvidence": [],
+        "wordCount": 205,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships. Its value depends on the programmes people choose and the amount of time they spend watching them.\n\nAfter a demanding working day, a light comedy can give viewers a break from their worries. Following a familiar story requires less effort than dealing with work problems, so viewers may feel calmer for a while. This does not solve the source of stress, but a short period of entertainment can make the evening more enjoyable. People can then return to their responsibilities with a clearer mind.\n\nTelevision can also make a quiet home feel less empty. Familiar presenters and regular programmes create a routine, while conversation and music provide background company. Someone living alone may therefore feel more comfortable during dinner. This benefit has limits because a programme cannot listen to the viewer or offer personal support. Television is most useful alongside phone calls, visits and activities that maintain real social contact.\n\nOverall, television serves both functions when people use it sensibly. It offers accessible entertainment and temporary companionship, while genuine relationships remain essential for lasting emotional support. These benefits are useful within a balanced daily routine.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 70,
+              "end": 98
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "reasons",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Explain why",
+            "promptSpan": {
+              "quote": "Explain why",
+              "start": 99,
+              "end": 110
+            }
+          },
+          {
+            "id": "req_3",
+            "kind": "own_experience",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "your own experience",
+            "promptSpan": {
+              "quote": "your own experience",
+              "start": 116,
+              "end": 135
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "agreement",
+          "primary": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "reviewer": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independent": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "I agree that television can help people relax and provide a sense of company, although it cannot replace close relationships.",
+            "reason": "The essay directly addresses the prompt's core claim, opening with 'I agree that television can help people relax and provide a sense of company' and developing both functions throughout with reasoned explanations."
+          }
+        },
+        "questionText": "Television helps people relax and acts as a companion for the lonely. To what extent do you agree? Explain why with your own experience.",
+        "attemptId": "preview_explicit_own_experience",
+        "attemptGroupId": "preview_explicit_own_experience",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_explicit_own_experience",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "one_sided_supported",
+      "title": "A supported one-sided answer",
+      "assessment": {
+        "scores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2,
+          "total": 24
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "I believe governments should prioritise reliable public transport over building new urban roads.",
+          "reason": "The essay directly addresses the prompt by stating a clear position: governments should prioritise public transport over new urban roads. This substantive claim is developed throughout with specific reasons about access, congestion and driver alternatives."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "status": "addressed",
+            "evidence_span": [
+              1,
+              13
+            ],
+            "nextStep": "",
+            "requirementId": "req_1",
+            "evidence": "I believe governments should prioritise reliable public transport over building new urban roads."
+          },
+          {
+            "requirement": "Give reasons",
+            "status": "addressed",
+            "evidence_span": [
+              28,
+              162
+            ],
+            "nextStep": "",
+            "requirementId": "req_2",
+            "evidence": "First, public transport serves residents who cannot drive or cannot afford a car. A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently. Investment should therefore improve both the routes and their reliability, rather than simply adding a service that runs too rarely to be useful.\n\nSecond, well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office. As more commuters share vehicles, fewer cars need to enter the centre during busy periods. The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach.",
+            "For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office.",
+            "The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder."
+          ],
+          "developmentEvidence": [
+            "public transport serves residents who cannot drive or cannot afford a car.",
+            "A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently. Investment should therefore improve both the routes and their reliability, rather than simply adding a service that runs too rarely to be useful.",
+            "well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office.",
+            "The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder."
+          ],
+          "vocabularyExamples": [
+            "prioritise reliable public transport",
+            "well-connected services give existing drivers a realistic alternative.",
+            "deserves priority because it widens access and can ease congestion."
+          ]
+        },
+        "feedback": {
+          "content": "Excellent response. You clearly agree that governments should prioritise public transport and provide two well-developed reasons: access for non-drivers and a realistic alternative for existing drivers. Each reason is explained with practical detail and logical consequence.",
+          "form": "203 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors. Consistent and accurate throughout.",
+          "grammar": "Clear and accurate. Meaning is preserved across all sentences, including complex conditional structures.",
+          "vocabulary": "Appropriate and precise. Terms like 'prioritise', 'reliable', 'realistic alternative' and 'dependable journey' are well-chosen and varied.",
+          "linguistic": "Good range of sentence structures: simple statements, complex conditionals and causal chains. Occasional repetition of 'public transport' and 'services' limits variety slightly. Expressions like 'The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder' show controlled complexity.",
+          "coherence": "Well-organised with clear progression. Introduction states position, two body paragraphs develop distinct reasons, and conclusion reinforces the main claim. Logical connectors ('First', 'Second', 'In conclusion') guide the reader. Development is solid but could deepen the link between the two reasons or explore trade-offs more explicitly."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "public transport serves residents who cannot drive or cannot afford a car.",
+            "correction": "public transport serves residents who cannot drive or afford a car",
+            "explanation": "Minor: 'cannot drive or cannot afford' repeats the auxiliary; 'cannot drive or afford' is more concise, though the current phrasing is grammatically valid.",
+            "affects_score": false
+          },
+          {
+            "phrase": "simply adding a service that runs too rarely to be useful.",
+            "correction": "rather than adding a service that runs too infrequently to be useful",
+            "explanation": "Optional: 'runs too rarely' is clear, but 'runs too infrequently' is slightly more formal and avoids the near-repetition of 'rarely' elsewhere in academic writing.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding phrases ('First', 'Second', 'In conclusion') and a conventional five-paragraph structure. These are appropriate and filled with relevant ideas rather than generic filler. No template-only content detected; all claims are substantive and developed.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear, unambiguous position stated immediately and reinforced in conclusion.",
+          "Two distinct, well-reasoned arguments: access for non-drivers and congestion reduction through driver alternatives.",
+          "Practical detail: 'frequent bus connecting homes with workplaces', 'dependable journey and convenient connection to the office', 'frequency and connections' show concrete understanding."
+        ],
+        "improvements": [],
+        "overallVerdict": "Strong response that fully addresses the prompt. The position is clear, reasons are well-developed with practical examples, and the essay is well-organised. Linguistic range and coherence are solid but not exceptional; minor repetition and a slightly more explicit connection between ideas would elevate the response further. Content, Form, Spelling, Grammar and Vocabulary are all secure at full marks.\"",
+        "feedbackIssues": [],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 5,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 203,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "I believe governments should prioritise reliable public transport over building new urban roads. Better bus and train services can improve access and reduce pressure on crowded streets.\n\nFirst, public transport serves residents who cannot drive or cannot afford a car. A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently. Investment should therefore improve both the routes and their reliability, rather than simply adding a service that runs too rarely to be useful.\n\nSecond, well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office. As more commuters share vehicles, fewer cars need to enter the centre during busy periods. The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder.\n\nIn conclusion, public transport deserves priority because it widens access and can ease congestion. Funding should focus on practical networks that people can rely on throughout the day. These improvements can make daily travel easier for a wide range of residents.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 69,
+              "end": 97
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "reasons",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Give reasons",
+            "promptSpan": {
+              "quote": "Give reasons",
+              "start": 98,
+              "end": 110
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "agreement",
+          "primary": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "reviewer": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independent": {
+            "content": 6,
+            "linguistic": 6,
+            "coherence": 6
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "I believe governments should prioritise reliable public transport over building new urban roads.",
+            "reason": "The essay directly addresses the prompt's core question with a clear position: 'I believe governments should prioritise reliable public transport over building new urban roads.' This substantive claim engages with the actual debate about transport priorities."
+          }
+        },
+        "questionText": "Governments should prioritise public transport over new urban roads. To what extent do you agree? Give reasons for your answer.",
+        "attemptId": "preview_one_sided_supported",
+        "attemptGroupId": "preview_one_sided_supported",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_one_sided_supported",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "explanation_elsewhere",
+      "title": "An explanation already present in the essay",
+      "assessment": {
+        "scores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 6,
+          "coherence": 6,
+          "form": 2,
+          "total": 26
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "Shopping malls can provide useful services and employment, but their overall value depends on how they affect existing shops.",
+          "reason": "The essay directly addresses whether shopping malls benefit local communities by presenting a qualified position: malls can provide benefits (services, employment, convenience) but their overall value depends on specific conditions (local demand, effects on existing shops, access infrastructure). This is substantive engagement with the actual question, not generic filler."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "status": "addressed",
+            "evidence_span": [
+              20,
+              36
+            ],
+            "nextStep": "",
+            "requirementId": "req_1",
+            "evidence": "I support carefully planned malls that meet local demand rather than assuming every new development is beneficial."
+          },
+          {
+            "requirement": "Give reasons",
+            "status": "addressed",
+            "evidence_span": [
+              37,
+              173
+            ],
+            "nextStep": "",
+            "requirementId": "req_2",
+            "evidence": "A shopping mall requires more workers, so employment will increase. This claim needs a qualification: one development can replace several existing shops. The net effect depends on whether new retail, security and cleaning positions exceed the jobs lost elsewhere. For example, a mall serving a growing neighbourhood may support additional work because it attracts demand that nearby businesses could not previously meet. A development moving the same customers between shops may have a smaller effect.\n\nMalls can also make shopping more convenient. People can buy different products in one trip, and an indoor space may be easier to use in bad weather. However, this benefit depends on access. Reliable public transport, pedestrian entrances and affordable parking can help residents reach the facilities. Without these connections, a convenient interior may still be difficult for many people to use."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "This claim needs a qualification:",
+            "However, this benefit depends on access. Reliable public transport, pedestrian entrances and affordable parking can help residents reach the facilities."
+          ],
+          "developmentEvidence": [
+            "A shopping mall requires more workers, so employment will increase. This claim needs a qualification: one development can replace several existing shops. The net effect depends on whether new retail, security and cleaning positions exceed the jobs lost elsewhere. For example, a mall serving a growing neighbourhood may support additional work because it attracts demand that nearby businesses could not previously meet. A development moving the same customers between shops may have a smaller effect.",
+            "Malls can also make shopping more convenient. People can buy different products in one trip, and an indoor space may be easier to use in bad weather. However, this benefit depends on access. Reliable public transport, pedestrian entrances and affordable parking can help residents reach the facilities. Without these connections, a convenient interior may still be difficult for many people to use."
+          ],
+          "vocabularyExamples": [
+            "I support carefully planned malls that meet local demand rather than assuming every new development is beneficial.",
+            "Overall, malls can improve shopping and provide work when demand and access justify them. Planning should consider both the new opportunities and the effects on existing businesses before claiming that a development will create a net benefit."
+          ]
+        },
+        "feedback": {
+          "content": "The essay fully addresses both requirements. The writer presents a clear qualified position (req_1): malls can benefit communities but only when carefully planned and when they meet genuine local demand rather than displacing existing activity. Two substantial reasons (req_2) are developed with internal logic: employment effects (with nuanced qualification that net job creation depends on whether new positions exceed jobs lost elsewhere, supported by a contextual example of a growing neighbourhood) and convenience benefits (with the important caveat that access infrastructure determines whether convenience is actually available to residents). The conclusion reinforces the conditional stance. All ideas remain topically relevant to the question.",
+          "form": "210 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors detected. Spelling is accurate throughout.",
+          "grammar": "Grammar is clear and meaning is preserved. Minor stylistic variations are acceptable; no meaning-changing errors.",
+          "vocabulary": "Wording is appropriate and precise. Terms like 'qualification,' 'net effect,' 'access,' and 'justify' are well-chosen and support your argument effectively.",
+          "linguistic": "The essay demonstrates controlled range and precision. Sentence structures vary effectively: simple assertions (\"Malls can also make shopping more convenient\"), complex conditional reasoning (\"The net effect depends on whether new retail, security and cleaning positions exceed the jobs lost elsewhere\"), and embedded qualifications (\"However, this benefit depends on access\"). Vocabulary is precise and appropriate (\"qualification,\" \"net effect,\" \"pedestrian entrances\"). The writer uses subordination and coordination flexibly to express nuanced ideas, avoiding repetitive patterns. Two distinct quotations support this assessment: the self-aware qualification \"This claim needs a qualification: one development can replace several existing shops\" and the structured conditional \"However, this benefit depends on access. Reliable public transport, pedestrian entrances and affordable parking can help residents reach the facilities.\"",
+          "coherence": "The essay is logically structured with clear progression. The opening establishes a qualified position and signals the two main lines of reasoning. Each paragraph develops a distinct reason with internal logic: the employment paragraph acknowledges the claim, qualifies it, explains the condition for net benefit, and illustrates with a contextual example. The convenience paragraph presents a benefit, then immediately introduces the access condition and explains what infrastructure is needed. The conclusion synthesises both reasons and reinforces the conditional framework. Transitions are implicit but logical; the \"However\" in paragraph 3 effectively signals a qualification rather than a contradiction. Claims build coherently toward the final position that planning must weigh opportunities against effects on existing businesses."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "This claim needs a qualification:",
+            "correction": "This claim requires qualification:",
+            "explanation": "Minor stylistic alternative; 'requires' is slightly more direct than 'needs,' though both are correct.",
+            "affects_score": false
+          },
+          {
+            "phrase": "However, this benefit depends on access.",
+            "correction": "However, this benefit is contingent on access.",
+            "explanation": "Optional rephrasing for variety; 'contingent on' is a more formal alternative to 'depends on,' adding lexical range.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding phrases ('Overall,' 'However,' 'For example') appropriately to structure ideas. These are valid connectors, not generic filler, because they link substantive claims about employment, convenience and access. The introduction and conclusion are purposeful and directly address the question rather than repeating it.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear qualified position that directly answers the extent-of-agreement question",
+          "Two substantial reasons developed with internal logic and appropriate qualification",
+          "Effective use of conditional reasoning to explain when benefits apply"
+        ],
+        "improvements": [],
+        "overallVerdict": "This is a strong response that fully addresses both prompt requirements with substantive reasoning. The writer presents a qualified position (malls benefit communities under specific conditions) and supports it with two well-developed reasons: employment effects (with nuanced analysis of net job creation) and convenience (with access as a qualifying condition). The essay maintains coherent logical progression, uses varied and controlled expression, and avoids overgeneralisation by consistently qualifying claims. All ideas remain relevant to the question throughout. Both reviewers correctly identified the essay as relevant and fully addressing requirements; the independent review's 6/6/6 assessment is justified by the complete coverage, sophisticated reasoning, and controlled linguistic range demonstrated.\"",
+        "feedbackIssues": [],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 6,
+          "coherence": 6,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 210,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "Shopping malls can provide useful services and employment, but their overall value depends on how they affect existing shops. I support carefully planned malls that meet local demand rather than assuming every new development is beneficial.\n\nA shopping mall requires more workers, so employment will increase. This claim needs a qualification: one development can replace several existing shops. The net effect depends on whether new retail, security and cleaning positions exceed the jobs lost elsewhere. For example, a mall serving a growing neighbourhood may support additional work because it attracts demand that nearby businesses could not previously meet. A development moving the same customers between shops may have a smaller effect.\n\nMalls can also make shopping more convenient. People can buy different products in one trip, and an indoor space may be easier to use in bad weather. However, this benefit depends on access. Reliable public transport, pedestrian entrances and affordable parking can help residents reach the facilities. Without these connections, a convenient interior may still be difficult for many people to use.\n\nOverall, malls can improve shopping and provide work when demand and access justify them. Planning should consider both the new opportunities and the effects on existing businesses before claiming that a development will create a net benefit.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 42,
+              "end": 70
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "reasons",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Give reasons",
+            "promptSpan": {
+              "quote": "Give reasons",
+              "start": 71,
+              "end": 83
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "reviewer": {
+            "content": 6,
+            "linguistic": 6,
+            "coherence": 6
+          },
+          "independent": {
+            "content": 6,
+            "linguistic": 6,
+            "coherence": 6
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "Shopping malls can provide useful services and employment, but their overall value depends on how they affect existing shops.",
+            "reason": "The essay directly addresses whether shopping malls benefit local communities, presenting a qualified position that malls can provide benefits (services, employment, convenience) but their value depends on specific conditions (local demand, access, effects on existing shops)."
+          }
+        },
+        "questionText": "Shopping malls benefit local communities. To what extent do you agree? Give reasons for your answer.",
+        "attemptId": "preview_explanation_elsewhere",
+        "attemptGroupId": "preview_explanation_elsewhere",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_explanation_elsewhere",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "jobs_automation",
+      "title": "Jobs and automation",
+      "assessment": {
+        "scores": {
+          "content": 2,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 3,
+          "coherence": 3,
+          "form": 2,
+          "total": 16
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "Automation is beneficial",
+          "reason": "The essay directly addresses the prompt question about automation improving working life, opening with 'Automation is beneficial' and maintaining focus on automation's effects throughout."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "requirementId": "req_1",
+            "status": "addressed",
+            "evidence_span": [
+              17,
+              28
+            ],
+            "nextStep": "",
+            "evidence": "I believe that every business should introduce it as quickly as possible"
+          },
+          {
+            "requirement": "Explain your reasons.",
+            "requirementId": "req_2",
+            "status": "partial",
+            "evidence_span": [
+              40,
+              100
+            ],
+            "nextStep": "Develop the reasoning in paragraph 3 with evidence or explanation. The claim that 'Automation will always reduce everyone's working hours and increase the number of jobs' is stated but not justified; explain the mechanism or conditions under which this occurs.",
+            "evidence": "Machines can perform repeated movements throughout the day. A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce some tiring tasks and give staff time to check quality. People still need training to operate the equipment and respond when it stops working."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action.",
+            "Once a machine completes part of a task, every worker will be free to leave earlier and the company will recruit more staff."
+          ],
+          "developmentEvidence": [
+            "Machines can perform repeated movements throughout the day. A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce some tiring tasks and give staff time to check quality. People still need training to operate the equipment and respond when it stops working.",
+            "Automation will always reduce everyone's working hours and increase the number of jobs. Once a machine completes part of a task, every worker will be free to leave earlier and the company will recruit more staff. This means that there is no reason for employees to worry about changes to their roles. Employers can introduce equipment without discussing how work will be shared because the benefits happen automatically."
+          ],
+          "vocabularyExamples": [
+            "Automation is beneficial because it can take over repetitive work and improve the speed of production.",
+            "Its ability to complete work quickly is a clear advantage,"
+          ]
+        },
+        "feedback": {
+          "content": "The essay addresses both required elements: a clear agreement position ('I believe that every business should introduce it as quickly as possible') and reasons (repetitive work reduction, speed improvement, quality checking). Paragraph 2 provides a concrete factory example with logical consequences (reduced tiring tasks, staff time for quality checks). However, paragraph 3 asserts that automation 'will always reduce everyone's working hours and increase the number of jobs' without justification—this contradicts real-world conditions where automation can displace workers or concentrate benefits. The conclusion restates benefits without addressing the logical gap. Coverage is present but reasoning is incomplete and partially flawed, preventing a higher score.",
+          "form": "211 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors detected.",
+          "grammar": "Meaning is clear throughout. Minor variations in sentence structure are acceptable.",
+          "vocabulary": "Wording is appropriate and adequate. Terms like 'repetitive work,' 'tiring tasks' and 'production process' fit the topic well.",
+          "linguistic": "The essay demonstrates basic sentence variety with some complex structures (e.g., 'A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action'). However, expression lacks sophistication and flexibility; sentences often follow predictable patterns with limited subordination or rhetorical variation. Vocabulary is functional and topic-appropriate ('repetitive work', 'production', 'equipment') but not precise. Overstatement ('will always', 'will guarantee') compromises precision. The range is narrow enough to prevent a score above 3.",
+          "coherence": "The essay follows a basic three-part structure (introduction, two body paragraphs, conclusion) with clear topic sentences. Paragraph 2 develops the factory example logically, showing how machines reduce repetitive tasks and create time for quality checks. Paragraph 3 attempts to extend the argument but introduces an unsupported assertion that disrupts logical flow and contradicts the earlier acknowledgment that training is needed. The conclusion summarises without resolving the reasoning gap. Connections between ideas are present but mechanical; the essay does not develop claims progressively or acknowledge complexity. The logical progression is undermined by the unsubstantiated claim in paragraph 3, which weakens overall coherence."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "Automation will always reduce everyone's working hours and increase the number of jobs.",
+            "correction": "Automation can reduce working hours and create new jobs in some sectors.",
+            "explanation": "The word 'always' is too absolute. Softening this claim with 'can' or 'may' and adding 'in some sectors' makes the statement more credible and nuanced.",
+            "affects_score": false
+          },
+          {
+            "phrase": "Employers can introduce equipment without discussing how work will be shared because the benefits happen automatically.",
+            "correction": "Employers should introduce equipment after discussing how work will be shared, because the benefits do not happen automatically.",
+            "explanation": "The current statement that employers 'can introduce equipment without discussing' contradicts the premise that benefits are automatic. Reversing this to recommend discussion strengthens your argument.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding ('I believe', 'To begin with', 'In conclusion') appropriately to structure the response. These phrases are filled with relevant ideas about automation, not generic filler. The template supports rather than detracts from the argument.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear position statement: 'I believe that every business should introduce it as quickly as possible' directly answers the agreement question.",
+          "Concrete example: The factory scenario (paragraph 2) provides a specific, logically developed illustration of how automation reduces repetitive tasks and creates time for quality checks.",
+          "Structured organisation: The essay follows a clear three-part format with introduction, development, and conclusion."
+        ],
+        "improvements": [
+          "Explain the causal link: for example, 'When machines complete repetitive tasks, companies can redeploy workers to new roles, such as maintenance or quality control, thereby creating employment.' Or acknowledge that this outcome depends on company policy and market conditions.",
+          "Either develop the claim with specific conditions (e.g., 'if companies use savings to hire new staff') or acknowledge that benefits require deliberate management decisions, not automatic outcomes."
+        ],
+        "overallVerdict": "The essay directly addresses the prompt with a clear agreement position and provides two reasons. Paragraph 2 develops a concrete factory example with logical consequences. However, paragraph 3 contains a major unsupported claim that automation 'will always reduce everyone's working hours and increase the number of jobs' without explaining the mechanism or conditions, and this contradicts the earlier acknowledgment that training is required. The logical gap between the assertion of automatic benefits and the need for deliberate training undermines coherence. Content and Coherence are both reduced due to incomplete reasoning and a partially contradictory claim that is not resolved. The essay demonstrates adequate basic structure and some sentence variety, but lacks the precision and development needed for higher marks.\"",
+        "feedbackIssues": [
+          {
+            "id": "preview_jobs_automation:issue_l9770t",
+            "code": "unsupported_inference",
+            "category": "reasoning",
+            "priority": "major",
+            "requirementId": "req_2",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "Automation will always reduce everyone's working hours and increase the number of jobs.",
+              "promptQuote": "",
+              "start": 636,
+              "end": 723
+            },
+            "explanation": "Paragraph 3 asserts that 'Automation will always reduce everyone's working hours and increase the number of jobs' but provides no mechanism or evidence for this claim. The statement is presented as fact without explanation of how or under what conditions this occurs. This weakens the reasoning requirement and contradicts real-world conditions where automation can displace workers or concentrate benefits.",
+            "suggestedChange": "Explain the causal link: for example, 'When machines complete repetitive tasks, companies can redeploy workers to new roles, such as maintenance or quality control, thereby creating employment.' Or acknowledge that this outcome depends on company policy and market conditions.",
+            "scoreRationale": "Content is reduced from 3 to 2 because one of the two main reasons (paragraph 3) lacks substantive justification. Paragraph 2 provides adequate explanation, but paragraph 3 repeats the agreement without developing it, leaving the reasoning incomplete.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_jobs_automation"
+          },
+          {
+            "id": "preview_jobs_automation:issue_15yocw4",
+            "code": "development_gap",
+            "category": "reasoning",
+            "priority": "major",
+            "requirementId": "req_2",
+            "trait": "coherence",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "Employers can introduce equipment without discussing how work will be shared because the benefits happen automatically.",
+              "promptQuote": "",
+              "start": 937,
+              "end": 1056
+            },
+            "explanation": "Paragraph 3 asserts that 'Employers can introduce equipment without discussing how work will be shared because the benefits happen automatically.' This claim lacks development and contradicts the earlier acknowledgment that 'People still need training to operate the equipment.' The paragraph does not explain how automatic benefits occur or address the tension between these statements, creating a logical gap.",
+            "suggestedChange": "Either develop the claim with specific conditions (e.g., 'if companies use savings to hire new staff') or acknowledge that benefits require deliberate management decisions, not automatic outcomes.",
+            "scoreRationale": "Coherence is reduced from 4 to 3 because the logical progression is disrupted by an underdeveloped and partially contradictory claim that is not resolved. The essay does not effectively connect or reconcile competing ideas.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_jobs_automation"
+          }
+        ],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 2,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 3,
+          "coherence": 3,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 211,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "Automation is beneficial because it can take over repetitive work and improve the speed of production. I believe that every business should introduce it as quickly as possible because workers will automatically have fewer working hours and more jobs.\n\nMachines can perform repeated movements throughout the day. A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce some tiring tasks and give staff time to check quality. People still need training to operate the equipment and respond when it stops working.\n\nAutomation will always reduce everyone's working hours and increase the number of jobs. Once a machine completes part of a task, every worker will be free to leave earlier and the company will recruit more staff. This means that there is no reason for employees to worry about changes to their roles. Employers can introduce equipment without discussing how work will be shared because the benefits happen automatically.\n\nIn conclusion, automation can improve the production process and remove some repetitive tasks. Its ability to complete work quickly is a clear advantage, and I therefore support its use in businesses. It will guarantee shorter working hours and additional employment for all workers.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 34,
+              "end": 62
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "instruction",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Explain your reasons.",
+            "promptSpan": {
+              "quote": "Explain your reasons.",
+              "start": 63,
+              "end": 84
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 2,
+            "linguistic": 3,
+            "coherence": 3
+          },
+          "reviewer": {
+            "content": 2,
+            "linguistic": 3,
+            "coherence": 3
+          },
+          "independent": {
+            "content": 2,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "Automation is beneficial",
+            "reason": "The essay directly addresses the prompt question about automation improving working life, opening with 'Automation is beneficial' and maintaining focus on automation's effects throughout."
+          }
+        },
+        "questionText": "Automation improves working life. To what extent do you agree? Explain your reasons.",
+        "attemptId": "preview_jobs_automation",
+        "attemptGroupId": "preview_jobs_automation",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_jobs_automation",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "relative_comparison",
+      "title": "Weighing a relative comparison",
+      "assessment": {
+        "scores": {
+          "content": 4,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 4,
+          "form": 2,
+          "total": 20
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "Smartphones provide useful services, but they can also distract their users.",
+          "reason": "The essay directly addresses smartphones' advantages and disadvantages, establishing that both effects deserve attention and setting up a comparison framework for the question."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "Are the disadvantages as great as the advantages?",
+            "status": "partial",
+            "evidence_span": [
+              197,
+              211
+            ],
+            "nextStep": "Explicitly weigh or compare the significance of disadvantages against advantages. The conclusion lists both but does not judge whether disadvantages are as great as advantages. Add a direct statement such as 'the advantages outweigh the disadvantages' or explain why one set is more significant.",
+            "requirementId": "req_1",
+            "evidence": "Both the helpful functions and the potential distractions are common parts of daily smartphone use."
+          },
+          {
+            "requirement": "Explain your judgement.",
+            "status": "partial",
+            "evidence_span": [
+              170,
+              196
+            ],
+            "nextStep": "Strengthen the reasoning for your position on the relative weight of advantages versus disadvantages. Currently, the essay suggests users can manage problems but does not explain why this affects the overall comparison. Clarify how the ability to control interruptions influences whether disadvantages are as great as advantages.",
+            "requirementId": "req_2",
+            "evidence": "They make communication and access to information easier, while notifications and constant checking can interfere with concentration. People can use settings and routines to control the interruptions."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "A person reading an important document may lose their place when messages arrive, making the task take longer.",
+            "Social media can also encourage people to keep checking their phones during meals or conversations.",
+            "People can contact family members quickly and share practical information when plans change."
+          ],
+          "developmentEvidence": [
+            "People can contact family members quickly and share practical information when plans change.",
+            "A student travelling to a new campus can also use a map to find the right building.",
+            "A person reading an important document may lose their place when messages arrive, making the task take longer.",
+            "Social media can also encourage people to keep checking their phones during meals or conversations."
+          ],
+          "vocabularyExamples": [
+            "convenient communication.",
+            "frequent notifications can interrupt concentration.",
+            "This habit may reduce the attention they give to people nearby."
+          ]
+        },
+        "feedback": {
+          "content": "The essay presents both advantages and disadvantages with concrete, relevant examples (communication, map use, learning materials; notifications, social media checking, reduced attention). Development within each section is clear and specific. However, the essay does not directly answer the core comparative question: whether disadvantages are as great as advantages. The conclusion acknowledges both exist and mentions mitigation strategies but avoids a clear judgment about their relative magnitude or significance. This partial response to the comparison requirement (req_1) and incomplete reasoning for the judgment (req_2) prevents a full Content 5 or 6.",
+          "form": "211 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors. Full Spelling marks.",
+          "grammar": "Meaning is clear throughout. Minor grammar is secure. Full Grammar marks.",
+          "vocabulary": "Appropriate and precise wording: 'convenient communication,' 'frequent notifications,' 'interfere with concentration.' Vocabulary is adequate and well-chosen.",
+          "linguistic": "The essay demonstrates controlled sentence variety with simple, compound and complex structures. Vocabulary is precise and appropriate throughout. Sentences are generally well-formed and expression is competent. The range of expression, while appropriate to the task, does not show the flexibility and sophistication required for a higher score. Linguistic remains at 4 due to competent but not sophisticated expression.",
+          "coherence": "The essay follows a clear structure: introduction, advantages paragraph, disadvantages paragraph, and conclusion. Paragraphs have distinct purposes and ideas develop logically within each section. Transitions between sections are present but basic. The connection between the two sides and the final judgment is underdeveloped; the conclusion restates the balance without explaining why disadvantages do or do not match advantages in significance. This structural clarity with incomplete logical resolution supports a 4 rather than a higher score."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "Their influence is visible in communication, study and everyday routines, so both positive and negative effects deserve attention.",
+            "correction": "Their influence is visible in communication, study and everyday routines, so both positive and negative effects deserve careful examination.",
+            "explanation": "Optional: 'careful examination' is slightly more precise than 'deserve attention' and signals deeper analysis.",
+            "affects_score": false
+          },
+          {
+            "phrase": "Both the helpful functions and the potential distractions are common parts of daily smartphone use.",
+            "correction": "Both the helpful functions and the potential distractions are common parts of daily smartphone use, but the advantages of communication and access to information appear to outweigh the disadvantages, which users can manage through deliberate settings and routines.",
+            "explanation": "Optional: This revision explicitly states a position on the comparison and explains the reasoning, directly addressing the prompt's core question.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding phrases ('One advantage is,' 'On the other hand,' 'In conclusion') appropriately filled with relevant content. The structure is clear and purposeful, not generic filler. The template supports the argument rather than replacing it.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear structure with distinct paragraphs for advantages, disadvantages, and conclusion",
+          "Concrete, relevant examples (map use for navigation, learning materials while travelling, notifications interrupting reading, social media checking during meals)",
+          "Controlled sentence variety with appropriate use of complex structures"
+        ],
+        "improvements": [
+          "Add an explicit statement comparing the weight of disadvantages to advantages, such as 'the advantages outweigh the disadvantages because...' or 'the disadvantages are not as great as the advantages because...' Anchor this judgment to the evidence presented.",
+          "Clarify the reasoning: does the ability to manage interruptions mean disadvantages are less significant? Or does it mean both sides remain balanced? Explicitly link your position on the comparison to this evidence."
+        ],
+        "overallVerdict": "The essay addresses the smartphone topic with relevant examples and clear organisation, but fails to complete the core comparative task. The two major issues—missing direct comparison of disadvantage and advantage significance (req_1) and incomplete reasoning for the judgment (req_2)—prevent higher achievement. Content is 4 due to partial coverage of the comparison requirement. Linguistic and Coherence are 4 due to competent but not sophisticated expression and underdeveloped logical resolution of the comparison. Addressing both issues would require an explicit judgment about whether disadvantages are as great as advantages, supported by reasoning that connects the evidence to that position.\"",
+        "feedbackIssues": [
+          {
+            "id": "preview_relative_comparison:issue_1ogvof",
+            "code": "comparison_missing",
+            "category": "coverage",
+            "priority": "major",
+            "requirementId": "req_1",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "Both the helpful functions and the potential distractions are common parts of daily smartphone use.",
+              "promptQuote": "",
+              "start": 1335,
+              "end": 1434
+            },
+            "explanation": "The essay lists advantages and disadvantages but does not judge their relative significance. The conclusion states both exist and are 'common parts of daily smartphone use,' which restates balance without answering whether disadvantages are as great as advantages. A direct comparison of magnitude or significance is required.",
+            "suggestedChange": "Add an explicit statement comparing the weight of disadvantages to advantages, such as 'the advantages outweigh the disadvantages because...' or 'the disadvantages are not as great as the advantages because...' Anchor this judgment to the evidence presented.",
+            "scoreRationale": "Content is 4 (partial completion with weaker development) rather than 5–6 because the core comparative requirement is not directly addressed. The essay demonstrates understanding of both sides but fails to complete the comparison task.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_relative_comparison"
+          },
+          {
+            "id": "preview_relative_comparison:issue_rh735p",
+            "code": "development_gap",
+            "category": "reasoning",
+            "priority": "major",
+            "requirementId": "req_2",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "People can use settings and routines to control the interruptions.",
+              "promptQuote": "",
+              "start": 1268,
+              "end": 1334
+            },
+            "explanation": "The essay mentions that users 'can use settings and routines to control the interruptions' but does not explain how this reasoning supports a judgement about whether disadvantages are as great as advantages. The connection between the ability to manage problems and the overall comparison is missing.",
+            "suggestedChange": "Clarify the reasoning: does the ability to manage interruptions mean disadvantages are less significant? Or does it mean both sides remain balanced? Explicitly link your position on the comparison to this evidence.",
+            "scoreRationale": "Without a clear judgement and its reasoning, the essay cannot fully satisfy the 'Explain your judgement' requirement. This weakens Content development.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_relative_comparison"
+          }
+        ],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 4,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 4,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 211,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "Smartphones provide useful services, but they can also distract their users. Their influence is visible in communication, study and everyday routines, so both positive and negative effects deserve attention.\n\nOne advantage is convenient communication. People can contact family members quickly and share practical information when plans change. A student travelling to a new campus can also use a map to find the right building. Access to learning materials allows students to review unfamiliar ideas while travelling. These features can help users complete tasks and remain connected with people who matter to them.\n\nOn the other hand, frequent notifications can interrupt concentration. A person reading an important document may lose their place when messages arrive, making the task take longer. Social media can also encourage people to keep checking their phones during meals or conversations. This habit may reduce the attention they give to people nearby. Setting quiet periods and putting the phone away during focused work can help users manage these problems.\n\nIn conclusion, smartphones have advantages and disadvantages. They make communication and access to information easier, while notifications and constant checking can interfere with concentration. People can use settings and routines to control the interruptions. Both the helpful functions and the potential distractions are common parts of daily smartphone use.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "comparison",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Are the disadvantages as great as the advantages?",
+            "promptSpan": {
+              "quote": "Are the disadvantages as great as the advantages?",
+              "start": 47,
+              "end": 96
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "instruction",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Explain your judgement.",
+            "promptSpan": {
+              "quote": "Explain your judgement.",
+              "start": 97,
+              "end": 120
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 4,
+            "linguistic": 4,
+            "coherence": 4
+          },
+          "reviewer": {
+            "content": 4,
+            "linguistic": 4,
+            "coherence": 4
+          },
+          "independent": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "Smartphones provide useful services, but they can also distract their users.",
+            "reason": "The essay directly addresses the prompt by presenting both advantages and disadvantages of smartphones and discussing their relative impact on daily life."
+          }
+        },
+        "questionText": "Smartphones have advantages and disadvantages. Are the disadvantages as great as the advantages? Explain your judgement.",
+        "attemptId": "preview_relative_comparison",
+        "attemptGroupId": "preview_relative_comparison",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_relative_comparison",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "design_not_location",
+      "title": "Office design and location",
+      "assessment": {
+        "scores": {
+          "content": 2,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 3,
+          "form": 2,
+          "total": 17
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "separate quiet rooms may help employees focus by reducing conversations around their desks.",
+          "reason": "The essay contains a substantive claim about office design: 'separate quiet rooms may help employees focus by reducing conversations around their desks.' This directly addresses how design features affect workers. Although the essay overwhelmingly emphasises location rather than design, this isolated assertion demonstrates genuine topical engagement with the actual question about design effects."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "How does the design of an office building affect the people who work there?",
+            "status": "partial",
+            "evidence_span": [
+              164,
+              176
+            ],
+            "nextStep": "Develop the design-feature analysis substantially. Address multiple interior design elements (lighting, layout, temperature control, ergonomics, colour, noise insulation, open vs. closed spaces) and explain how each affects employee wellbeing, productivity, focus or experience.",
+            "requirementId": "req_1",
+            "evidence": "separate quiet rooms may help employees focus by reducing conversations around their desks."
+          },
+          {
+            "requirement": "Explain the effects of design features.",
+            "status": "partial",
+            "evidence_span": [
+              164,
+              176
+            ],
+            "nextStep": "Expand the explanation of design effects beyond the single sentence about quiet rooms. Provide multiple design features with clear, developed explanations of their specific impacts on workers' focus, health, morale, collaboration or performance.",
+            "requirementId": "req_2",
+            "evidence": "separate quiet rooms may help employees focus by reducing conversations around their desks."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "This can make arriving at work more predictable and reduce the stress associated with a difficult commute.",
+            "These practical benefits can make the location attractive to both employees and visitors, particularly when services remain available after normal working hours."
+          ],
+          "developmentEvidence": [
+            "An office near a train station can be easier for staff to reach.",
+            "For example, a worker who does not own a car can take a regular train instead of arranging a lift.",
+            "Nearby cafes and shops can also improve the working day. Staff can buy lunch without making a long journey and complete small errands during a break.",
+            "separate quiet rooms may help employees focus by reducing conversations around their desks."
+          ],
+          "vocabularyExamples": [
+            "This can make arriving at work more predictable and reduce the stress associated with a difficult commute.",
+            "These practical benefits",
+            "particularly when services remain available after normal working hours."
+          ]
+        },
+        "feedback": {
+          "content": "Content 2 reflects partial and misaligned coverage. The essay addresses the prompt's core question (design effects) with only one isolated sentence about quiet rooms, while devoting the majority of the response to office location—transport access, nearby services, client convenience—which is not a design feature. The prompt explicitly asks about building design; location is a different category. Both canonical requirements are only minimally addressed. A substantive topical assertion exists (the quiet-rooms claim), preserving relevance and preventing Content 0, but the required focus on design features is largely absent and underdeveloped.",
+          "form": "229 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors. Spelling is accurate throughout.",
+          "grammar": "Grammar is clear and correct. Meaning is preserved across all sentences.",
+          "vocabulary": "Vocabulary is appropriate and varied. Word choice is precise and natural.",
+          "linguistic": "Linguistic 4 reflects clear, controlled expression with appropriate vocabulary and varied sentence structures. Sentences range from simple to complex with subordinate clauses (e.g., 'This can make arriving at work more predictable and reduce the stress associated with a difficult commute'). Word choice is precise and contextually suitable. However, the range is somewhat limited—most sentences follow similar patterns of claim plus explanation, with little evidence of sophisticated syntactic variation, rhetorical devices or extended complexity. The writing is competent but does not demonstrate the full range and flexibility required for a 5 or 6.",
+          "coherence": "Coherence 3 reflects logical structure undermined by a fundamental focus problem. The essay is well-organised with clear paragraphing and explicit progression: introduction of the location claim, three body paragraphs developing location benefits (transport, services, client access), one isolated sentence on design, and a conclusion that reiterates location. Connections between ideas are explicit within the location argument. However, coherence is weakened by the design sentence appearing abruptly and disconnected from the surrounding argument—it reads as an afterthought rather than an integrated part of the essay's main claim. The essay lacks unified focus on the actual prompt topic, and the design element is orphaned rather than woven into a coherent whole."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "The location of an office can affect how employees experience their working day.",
+            "correction": "The design of an office building can affect how employees experience their working day.",
+            "explanation": "Shifting focus from 'location' to 'design' in the opening sentence would align the introduction more closely with the prompt's primary requirement.",
+            "affects_score": false
+          },
+          {
+            "phrase": "I believe that businesses should choose an office near the city centre because the area offers convenient services and transport.",
+            "correction": "Consider replacing the location-focused opinion with a thesis about design features: 'I believe that thoughtful interior design—such as quiet zones and ergonomic layouts—significantly improves employee wellbeing and productivity.'",
+            "explanation": "This would establish design as the central argument rather than location, matching the prompt's emphasis.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding ('I believe', 'For example', 'In conclusion') appropriately and fills it with relevant ideas about location. However, the template structure does not rescue the category mismatch: the prompt asks about office building design features, but the essay prioritises location and transport. The single design-feature sentence (quiet rooms) is underdeveloped and appears isolated. Template phrases are valid when filled with topical content, but here the topical content is misaligned with the prompt's primary focus.\"",
+        "templateEvidence": [
+          "I believe that businesses should choose an office near the city centre",
+          "For example, a worker who does not own a car can take a regular train",
+          "In conclusion, offices near transport and useful services can make daily work more convenient"
+        ],
+        "strengths": [
+          "Clear, logical structure with well-organised paragraphs and explicit transitions between ideas",
+          "Precise, appropriate vocabulary and controlled sentence construction throughout",
+          "Concrete, specific examples that effectively support claims (e.g., worker without a car using train; staff buying lunch during breaks)"
+        ],
+        "improvements": [
+          "Rewrite the introduction and thesis to centre on office building design features and their effects on workers. Develop multiple design elements (e.g., open-plan vs. private spaces, natural light, noise control, ergonomic furniture, colour schemes, temperature control) with explanations of how each affects employee focus, health, productivity or wellbeing.",
+          "Expand the design-feature analysis into a full paragraph or more. For each design feature, explain the specific effect on workers with reasoning or examples: e.g., 'Natural light in open-plan areas can improve mood and reduce eye strain, helping employees maintain alertness throughout the day.' Discuss multiple features to demonstrate range and depth.",
+          "Either integrate the design point into a unified argument (e.g., 'A well-designed office with quiet zones can further enhance the benefits of a central location') or dedicate a full paragraph to interior design, explaining multiple features and their effects before the conclusion. Ensure the design discussion is woven into the overall structure."
+        ],
+        "feedbackIssues": [
+          {
+            "id": "preview_design_not_location:issue_v5sw9o",
+            "code": "category_mismatch",
+            "category": "coverage",
+            "priority": "major",
+            "requirementId": "req_1",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "The location of an office can affect how employees experience their working day. I believe that businesses should choose an office near the city centre because the area offers convenient services and transport.",
+              "promptQuote": "",
+              "start": 0,
+              "end": 210
+            },
+            "explanation": "The essay's opening and main body focus on office location (city centre, train station, nearby cafes and shops) rather than building design features. The prompt asks specifically about design—interior layout, acoustics, lighting, ergonomics, colour, spatial configuration—but the essay treats location as the primary topic. Only one sentence addresses interior design (quiet rooms). Location and design are distinct categories; proximity to transport is not a design feature.",
+            "suggestedChange": "Rewrite the introduction and thesis to centre on office building design features and their effects on workers. Develop multiple design elements (e.g., open-plan vs. private spaces, natural light, noise control, ergonomic furniture, colour schemes, temperature control) with explanations of how each affects employee focus, health, productivity or wellbeing.",
+            "scoreRationale": "Content 2 reflects partial and misaligned coverage. The essay is relevant to a broad interpretation of 'office effects' but fails to prioritise the prompt's core requirement: design features. Thorough development of location does not compensate for underdeveloped design analysis. Addressing both requirements substantially is necessary for Content 3 or higher.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_design_not_location"
+          },
+          {
+            "id": "preview_design_not_location:issue_tqhny2",
+            "code": "development_gap",
+            "category": "reasoning",
+            "priority": "major",
+            "requirementId": "req_2",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "separate quiet rooms may help employees focus by reducing conversations around their desks.",
+              "promptQuote": "",
+              "start": 972,
+              "end": 1063
+            },
+            "explanation": "The only design-feature explanation is a single sentence: 'separate quiet rooms may help employees focus by reducing conversations around their desks.' This is underdeveloped and isolated. No other interior design features are discussed, and the explanation lacks depth about the mechanism, scope or broader impact on employee experience. The prompt requires explanation of effects of design features (plural); only one feature is mentioned.",
+            "suggestedChange": "Expand the design-feature analysis into a full paragraph or more. For each design feature, explain the specific effect on workers with reasoning or examples: e.g., 'Natural light in open-plan areas can improve mood and reduce eye strain, helping employees maintain alertness throughout the day.' Discuss multiple features to demonstrate range and depth.",
+            "scoreRationale": "Partial coverage of req_2 with minimal development prevents Content from reaching 3. A single underdeveloped design feature does not satisfy the requirement to explain effects of design features. Substantial expansion is needed.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_design_not_location"
+          },
+          {
+            "id": "preview_design_not_location:issue_1x7iiqp",
+            "code": "organisation_gap",
+            "category": "organisation",
+            "priority": "minor",
+            "requirementId": "",
+            "trait": "coherence",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "separate quiet rooms may help employees focus by reducing conversations around their desks.",
+              "promptQuote": "",
+              "start": 972,
+              "end": 1063
+            },
+            "explanation": "The design-feature sentence appears abruptly in isolation, disconnected from the location-focused argument that dominates the essay. It reads as an afterthought rather than an integrated part of the essay's main claim. Coherence is weakened by this structural isolation and lack of integration.",
+            "suggestedChange": "Either integrate the design point into a unified argument (e.g., 'A well-designed office with quiet zones can further enhance the benefits of a central location') or dedicate a full paragraph to interior design, explaining multiple features and their effects before the conclusion. Ensure the design discussion is woven into the overall structure.",
+            "scoreRationale": "Coherence 3 reflects weak development and loose connections. The design sentence is logically disconnected from the surrounding argument, disrupting the essay's flow and coherence. A unified focus on design would strengthen overall coherence.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_design_not_location"
+          }
+        ],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 2,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 3,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "overallVerdict": "The essay demonstrates relevant topical engagement but fails to meet the prompt's core requirements. The response prioritises office location over building design, addressing only one isolated design feature (quiet rooms) with minimal explanation. Both canonical requirements—how design affects workers and explanation of design effects—are only partially and underdeveloped. The writing is clear and well-structured, but the fundamental category mismatch (location vs. design) and lack of design-feature development prevent higher achievement. Content 2 reflects this partial, misaligned coverage. Coherence is weakened by the orphaned design sentence. Substantial revision focusing on interior design features and their effects on employee wellbeing, productivity and experience is necessary to meet the prompt's expectations.\"",
+        "wordCount": 229,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "The location of an office can affect how employees experience their working day. I believe that businesses should choose an office near the city centre because the area offers convenient services and transport.\n\nAn office near a train station can be easier for staff to reach. Employees may spend less time finding parking and have more choices about how they travel. For example, a worker who does not own a car can take a regular train instead of arranging a lift. This can make arriving at work more predictable and reduce the stress associated with a difficult commute.\n\nNearby cafes and shops can also improve the working day. Staff can buy lunch without making a long journey and complete small errands during a break. An office in a busy area may also be easier for clients to find. These practical benefits can make the location attractive to both employees and visitors, particularly when services remain available after normal working hours.\n\nInside the office, separate quiet rooms may help employees focus by reducing conversations around their desks.\n\nIn conclusion, offices near transport and useful services can make daily work more convenient. A central location gives staff better access and can support visits from clients. Businesses should compare travel options and nearby facilities when deciding where to establish an office, since these features affect the people who use it each day.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "instruction",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "How does the design of an office building affect the people who work there?",
+            "promptSpan": {
+              "quote": "How does the design of an office building affect the people who work there?",
+              "start": 0,
+              "end": 75
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "instruction",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Explain the effects of design features.",
+            "promptSpan": {
+              "quote": "Explain the effects of design features.",
+              "start": 76,
+              "end": 115
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 2,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "reviewer": {
+            "content": 2,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "independent": {
+            "content": 2,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "independentRelevance": {
+            "status": "minimal",
+            "evidence_span": [
+              161,
+              176
+            ],
+            "reason": "The essay contains one substantive claim about office design: 'separate quiet rooms may help employees focus by reducing conversations around their desks.' This directly addresses how design features affect workers. However, the essay overwhelmingly focuses on office location (transport, nearby services, client access) rather than design features as requested. The isolated design claim is abandoned immediately, and the rest discusses location benefits, which is a different topic from the prompt's focus on design.",
+            "evidence": "Inside the office, separate quiet rooms may help employees focus by reducing conversations around their desks."
+          }
+        },
+        "questionText": "How does the design of an office building affect the people who work there? Explain the effects of design features.",
+        "attemptId": "preview_design_not_location",
+        "attemptGroupId": "preview_design_not_location",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_design_not_location",
+        "revisionNumber": 0
+      }
+    },
+    {
+      "id": "stance_conflict",
+      "title": "A contradictory conclusion",
+      "assessment": {
+        "scores": {
+          "content": 3,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 3,
+          "form": 2,
+          "total": 18
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "I believe governments should prioritise reliable public transport over building new urban roads.",
+          "reason": "The essay opens with a clear substantive position directly addressing the prompt: 'I believe governments should prioritise reliable public transport over building new urban roads.' This is a genuine topical assertion about the actual debate, not generic filler."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "requirementId": "req_1",
+            "status": "partial",
+            "evidence_span": [
+              1,
+              13
+            ],
+            "nextStep": "The opening states agreement with the prompt, but the conclusion (words 165–177) directly contradicts this by asserting 'only new urban roads deserve government investment and public transport should receive none.' Clarify your actual position: either revise the conclusion to reinforce your opening stance, or explicitly explain the shift if it is intentional. As written, the reader cannot determine your genuine agreement level.",
+            "evidence": "I believe governments should prioritise reliable public transport over building new urban roads."
+          },
+          {
+            "requirement": "Give reasons",
+            "requirementId": "req_2",
+            "status": "addressed",
+            "evidence_span": [
+              28,
+              162
+            ],
+            "nextStep": "",
+            "evidence": "First, public transport serves residents who cannot drive or cannot afford a car. A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently. Investment should therefore improve both the routes and their reliability, rather than simply adding a service that runs too rarely to be useful.\n\nSecond, well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office. As more commuters share vehicles, fewer cars need to enter the centre during busy periods. The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach.",
+            "The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder."
+          ],
+          "developmentEvidence": [
+            "public transport serves residents who cannot drive or cannot afford a car. A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently.",
+            "Second, well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office. As more commuters share vehicles, fewer cars need to enter the centre during busy periods."
+          ],
+          "vocabularyExamples": [
+            "I believe governments should prioritise reliable public transport over building new urban roads.",
+            "well-connected services give existing drivers a realistic alternative."
+          ]
+        },
+        "feedback": {
+          "content": "The essay addresses both required elements: a clear opening position (prioritise public transport) and two developed reasons (access for non-drivers; alternative for existing drivers). However, the conclusion contains a material contradiction that directly negates the thesis. Words 165–177 state 'only new urban roads deserve government investment and public transport should receive none,' which reverses the entire argument. This is not a qualified concession or alternative perspective—it is a complete logical reversal that undermines coherence and creates fundamental confusion about the writer's actual stance. Content is reduced to 3 because the contradiction prevents full alignment with the core requirement of stating a consistent agreement position.",
+          "form": "204 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors detected. Spelling is accurate throughout.",
+          "grammar": "Grammar is generally sound with clear meaning preserved. Minor variations in sentence structure are acceptable.",
+          "vocabulary": "Vocabulary is appropriate and precise. Terms like 'prioritise,' 'reliable,' 'realistic alternative' and 'dependable journey' are well-chosen and support your argument effectively.",
+          "linguistic": "The essay demonstrates controlled sentence construction with appropriate vocabulary (dependable, realistic alternative, practical networks). Sentences range from simple statements to complex conditional structures (e.g., 'The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder'). However, the range remains somewhat limited—most sentences follow predictable claim-plus-explanation patterns. The contradiction in the conclusion also affects clarity. The essay does not reach the highest level of varied, controlled expression required for a 6.",
+          "coherence": "The essay follows a logical three-part structure (introduction, two reasons, conclusion) with clear paragraph purposes and functional transitions ('First,' 'Second,' 'In conclusion'). The first two body paragraphs develop distinct reasons with supporting detail. However, the conclusion severely damages coherence by reversing the entire argument. The statement 'only new urban roads deserve government investment and public transport should receive none' contradicts everything preceding it, creating a logical rupture that undermines the development of claims throughout. This is not a qualified position—it is a direct negation of the thesis that prevents the essay from achieving coherent overall development."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "only new urban roads deserve government investment and public transport should receive none.",
+            "correction": "Revise to: 'In conclusion, governments should prioritise public transport investment. Funding should focus on practical networks that people can rely on throughout the day.'",
+            "explanation": "Your current conclusion reverses your opening position. This revision aligns the conclusion with your stated agreement and removes the contradiction.",
+            "affects_score": false
+          }
+        ],
+        "feedbackIssues": [
+          {
+            "id": "preview_stance_conflict:issue_3ewre7",
+            "code": "stance_conflict",
+            "category": "reasoning",
+            "priority": "major",
+            "requirementId": "req_1",
+            "trait": "content",
+            "affectsScore": true,
+            "evidence": {
+              "essayQuote": "only new urban roads deserve government investment and public transport should receive none.",
+              "promptQuote": "",
+              "start": 1096,
+              "end": 1188
+            },
+            "explanation": "The conclusion directly contradicts the essay's stated position. The opening (words 1–13) and body paragraphs argue that governments should prioritise public transport investment. However, the conclusion states 'only new urban roads deserve government investment and public transport should receive none.' This is a complete reversal that undermines the coherence of the entire argument and creates confusion about the writer's actual stance on the prompt question. This is not a qualified concession or alternative perspective—it is a direct negation of the thesis.",
+            "suggestedChange": "Revise the conclusion to reinforce the position established in the introduction and body. For example: 'In conclusion, governments should prioritise public transport investment because it serves residents who cannot drive, provides a realistic alternative for existing drivers, and depends on reliable frequency and connections. These improvements can make daily travel easier for a wide range of residents.'",
+            "scoreRationale": "The contradiction prevents a Content score of 6 because it creates material confusion about whether the writer actually agrees with the prompt statement. Although both required elements (opinion and reasons) are present and developed, the reversal in the conclusion significantly weakens the overall argument and prevents full alignment with the core requirement of stating a consistent position. Coherence is also reduced because the logical rupture undermines the development of claims throughout the essay.",
+            "status": "open",
+            "version": "essay-feedback-2026-10-15.1",
+            "attemptId": "preview_stance_conflict"
+          }
+        ],
+        "revisionDecisions": [],
+        "diagnosticScores": {
+          "content": 3,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 4,
+          "coherence": 3,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "improvements": [
+          "Revise the conclusion to reinforce the position established in the introduction and body. For example: 'In conclusion, governments should prioritise public transport investment because it serves residents who cannot drive, provides a realistic alternative for existing drivers, and depends on reliable frequency and connections. These improvements can make daily travel easier for a wide range of residents.'"
+        ],
+        "strengths": [
+          "Clear initial position statement aligned with the prompt question",
+          "Two distinct, well-developed reasons with specific supporting detail (access for non-drivers; alternative for existing drivers)",
+          "Appropriate use of conditional reasoning to qualify claims (e.g., 'passengers will continue driving if the alternative makes their journey much harder')"
+        ],
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "templateDetector": "ok",
+        "templateEvidence": [],
+        "overallVerdict": "The essay presents a clear opening position and two well-developed reasons that directly address the prompt. However, a material contradiction in the conclusion—stating that 'only new urban roads deserve government investment and public transport should receive none'—directly negates the entire thesis and creates fundamental confusion about the writer's stance. This is not a qualified concession but a complete reversal that significantly undermines argument coherence and prevents full marks. The essay scores 3 for Content and Coherence due to this substantive weakness, despite otherwise competent development and structure. Linguistic range is 4 due to limited sentence variety and the clarity damage caused by the contradiction.\"}",
+        "templateNote": "",
+        "wordCount": 204,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "I believe governments should prioritise reliable public transport over building new urban roads. Better bus and train services can improve access and reduce pressure on crowded streets.\n\nFirst, public transport serves residents who cannot drive or cannot afford a car. A frequent bus connecting homes with workplaces allows these residents to accept jobs that would otherwise be difficult to reach. Accessible vehicles and stations also help older passengers travel more independently. Investment should therefore improve both the routes and their reliability, rather than simply adding a service that runs too rarely to be useful.\n\nSecond, well-connected services give existing drivers a realistic alternative. For example, a commuter may leave the car at home when a train offers a dependable journey and a convenient connection to the office. As more commuters share vehicles, fewer cars need to enter the centre during busy periods. The benefit depends on frequency and connections, because passengers will continue driving if the alternative makes their journey much harder.\n\nIn conclusion, only new urban roads deserve government investment and public transport should receive none. Funding should focus on practical networks that people can rely on throughout the day. These improvements can make daily travel easier for a wide range of residents.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 69,
+              "end": 97
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "reasons",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Give reasons",
+            "promptSpan": {
+              "quote": "Give reasons",
+              "start": 98,
+              "end": 110
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 2,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "reviewer": {
+            "content": 3,
+            "linguistic": 4,
+            "coherence": 3
+          },
+          "independent": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "I believe governments should prioritise reliable public transport over building new urban roads.",
+            "reason": "The essay directly addresses the prompt question with a clear position: 'I believe governments should prioritise reliable public transport over building new urban roads.' This is a substantive topical assertion about the actual debate."
+          }
+        },
+        "questionText": "Governments should prioritise public transport over new urban roads. To what extent do you agree? Give reasons for your answer.",
+        "attemptId": "preview_stance_conflict",
+        "attemptGroupId": "preview_stance_conflict",
+        "parentAttemptId": null,
+        "originalAttemptId": "preview_stance_conflict",
+        "revisionNumber": 0
+      }
+    }
+  ]
+}

@@ -29,7 +29,7 @@ function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () 
         try { assessed = await assessEssay(question, essay, measuredCall, { onAttemptError, ...options }); }
 
         catch (error) {
-          if (error.evidenceRepairExhausted) {
+          if (error.evidenceRepairExhausted || error.feedbackRepairExhausted) {
             error.retryable = false;
             validationFailures.set(key, { code: error.code || 'evidence_validation', expires: Date.now() + 60000 });
             while (validationFailures.size > 100) validationFailures.delete(validationFailures.keys().next().value);

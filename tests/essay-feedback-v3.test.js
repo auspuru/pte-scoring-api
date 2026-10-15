@@ -37,9 +37,9 @@ test('Every assessment stage shares the feedback policy and requirements, treati
  assert.deepEqual(result.assessment.improvements,[]);
 });
 
-test('Sufficient answers can have no corrections; reduced content still needs a real, evidenced weakness',()=>{
+test('Complete answers can retain holistic marks without a fabricated correction; actual issues need evidence',()=>{
  const a=raw();assert.deepEqual(F.normalize(a,essay,question,a.scores).feedbackIssues,[]);
- a.scores.content=5;assert.throws(()=>F.normalize(a,essay,question,a.scores),{code:'feedback_contract'});
+ a.scores.content=5;a.feedback.content='Both effects are covered; the overall development is good under the existing rubric.';assert.deepEqual(F.normalize(a,essay,question,a.scores).feedbackIssues,[]);
  a.feedbackIssues=[issue()];const result=F.normalize(a,essay,question,a.scores);assert.equal(result.feedbackIssues.length,1);
  assert.equal(essay.slice(result.feedbackIssues[0].evidence.start,result.feedbackIssues[0].evidence.end),a.feedbackIssues[0].evidence.essayQuote);
 });
@@ -111,7 +111,7 @@ test('Revision resolution requires current evidence and cannot follow from delet
  a.revisionDecisions=[{priorIssueId:old.id,status:'resolved',currentIssueCode:'',evidence:'mass media supports learning',reason:'The revised explanation supplies the condition.'}];
  assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'resolved');
  a.revisionDecisions[0].evidence='';assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'needs_clarification');
- const r=F.requirements(question)[0];old.requirementId=r.id;a.revisionDecisions[0].evidence='mass media supports learning';a.promptCoverage[0].status='missing';
+ const r=F.requirements(question)[0];old.requirementId=r.id;a.revisionDecisions[0].evidence='mass media supports learning';a.promptCoverage[0].status='missing';a.scores.content=5;a.feedbackIssues=[issue({code:'missing_requirement',category:'coverage',requirementId:r.id,evidence:{essayQuote:'',promptQuote:r.label}})];
  assert.equal(F.normalize(a,essay,question,a.scores,{previous}).revisionDecisions[0].status,'needs_clarification');
 });
 
@@ -182,4 +182,42 @@ test('A final review cannot omit the explanation behind its scores or reuse a st
  assert.throws(()=>normalizeReview(r,essay,{feedbackV3:true,question,requireTaskRelevance:true}),{code:'feedback_contract'});
  const a=raw();a.scores.content=4;a.feedback.content='The opinion is missing.';const b=reviewFrom(raw());b.rationale={};
  assert.doesNotMatch(applySubjectiveDecision(a,b,'resolver').feedback.content,/missing/);
+});
+
+test('Good holistic language marks do not force invented repairs or change the rubric',async()=>{
+ const a=raw();a.scores.linguistic=5;a.scores.coherence=5;
+ const {assessment}=await assessEssay(question,essay,async(_p,o)=>o.stage==='assessment'?a:reviewFrom(a),{feedbackV3:true});
+ assert.equal(assessment.scores.linguistic,5);assert.equal(assessment.scores.coherence,5);assert.deepEqual(assessment.feedbackIssues,[]);assert.deepEqual(assessment.improvements,[]);
+});
+
+test('Only malformed feedback is repaired; a repair cannot change scores or coverage and never reruns scoring',async()=>{
+ const a=raw();delete a.feedbackIssues;const stages=[];
+ const {assessment}=await assessEssay(question,essay,async(_p,o)=>{
+  stages.push(o.stage);
+  if(o.stage==='assessment')return a;
+  if(o.stage==='feedback-repair')return {...reviewFrom(raw()),scores:{content:0,linguistic:0,coherence:0},promptCoverage:[],feedbackIssues:[],revisionDecisions:[]};
+  return reviewFrom(raw());
+ },{feedbackV3:true});
+ assert.deepEqual(stages,['assessment','feedback-repair','subjective-review']);assert.equal(assessment.scores.content,6);assert.equal(assessment.promptCoverage.length,F.requirements(question).length);
+ assert.equal(format.toolFor('feedback-repair',{feedbackV3:true}).strict,true);
+});
+
+test('Known category aliases retain stable revision codes instead of creating new issues',()=>{
+ const a=raw();a.scores.content=5;a.feedbackIssues=[issue({code:'comparison_incomplete'})];
+ assert.equal(F.normalize(a,essay,question,a.scores).feedbackIssues[0].code,'comparison_missing');
+});
+
+test('Overlapping quotations of the same confirmed issue do not cause an unnecessary resolver call',()=>{
+ const a=raw(),b=raw();a.scores.content=b.scores.content=5;a.feedbackIssues=[issue()];b.feedbackIssues=[issue({evidence:{essayQuote:'Advertisements often connect expensive products',promptQuote:''}})];
+ const primary={...a,...F.normalize(a,essay,question,a.scores)},review={...b,...F.normalize(b,essay,question,b.scores)};
+ assert.equal(needsResolver(primary,review),false);
+ review.feedbackIssues[0].evidence={essayQuote:'Schools can respond',start:essay.indexOf('Schools can respond'),end:essay.indexOf('Schools can respond')+19};
+ assert.equal(needsResolver(primary,review),true);
+});
+
+test('Inconsistent relevance candidates require an independent valid resolver, without silently changing a score',async()=>{
+ const a=raw();a.scores.content=3;a.taskRelevance.status='minimal';const b=reviewFrom(a),stages=[];
+ const {assessment}=await assessEssay(question,essay,async(_p,o)=>{stages.push(o.stage);return o.stage==='subjective-resolver'?reviewFrom(raw()):o.stage==='assessment'?a:b;},{feedbackV3:true});
+ assert.deepEqual(stages,['assessment','subjective-review','subjective-resolver']);assert.equal(assessment.taskRelevance.status,'relevant');assert.equal(assessment.scores.content,6);assert.equal(assessment.needsSemanticResolver,undefined);
+ await assert.rejects(assessEssay(question,essay,async(_p,o)=>o.stage==='assessment'?a:b,{feedbackV3:true}),{code:'relevance_score'});
 });
