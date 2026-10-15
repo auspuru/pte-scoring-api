@@ -24,7 +24,7 @@ Set `ESSAY_FEEDBACK_V3=false` and redeploy to restore the legacy contract for ne
 
 ## Verification
 
-The baseline passed 679 tests. The final implementation passes 713 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
+The baseline passed 679 tests. The final implementation passes 714 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
 
 `tests/essay-feedback-cases.js` provides synthetic teaching cases and weaker variants. `scripts/evaluate-essay-feedback.js` submits them only to an explicitly configured isolated review service, records complete results and timings, and repeats selected cases with semantically identical paragraph spacing to avoid returning only cached results. Contract tests alone do not prove model teaching accuracy.
 
@@ -36,7 +36,7 @@ Production-wide activation requires the plan's human teaching review, satisfacto
 
 ## Live evaluation and review outcome
 
-The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 713 tests.
+The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 714 tests.
 
 Live model checks exposed two integration faults that mocked contract tests could not establish: the prose output example still named only legacy fields, and demanding a correction for every below-maximum holistic mark encouraged fabricated repairs. The output example now matches the tool contract. A sufficient essay can retain a good holistic mark without a manufactured correction; every reduced trait still needs its rubric explanation, and every missing/partial canonical requirement needs an issue. A single targeted feedback-format repair may reconstruct malformed feedback from existing judgements and current evidence. It cannot alter scores or coverage, and failure does not restart full scoring or publish a result. Repeated identical formatting failures are suppressed briefly to prevent credit-consuming retries.
 

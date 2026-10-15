@@ -394,7 +394,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError, op
         assessment = {...assessment,strengths:raw.strengths,overallVerdict:raw.overallVerdict};
         const contract = feedbackPolicy.normalize(raw, essay, question, assessment.diagnosticScores || assessment.scores, {previous:options.revisionContext});
         assessment.essayText = essay;
-        assessment.languageCorrections = (raw.errors || []).filter(e=>e.type==='grammar' && e.impact==='minor').map(e=>({...e,affects_score:false}));
+        assessment.languageCorrections = (raw.errors || []).filter(e=>e.type==='grammar' && !assessment.errors.some(actual=>actual.type==='grammar' && actual.phrase===e.phrase)).map(e=>({...e,impact:'minor',affects_score:false}));
         assessment.optionalRefinements = assessment.optionalRefinements.filter(e=>!assessment.languageCorrections.some(c=>c.phrase===e.phrase && c.correction===e.correction));
         assessment = feedbackPolicy.apply(assessment, contract);
       }

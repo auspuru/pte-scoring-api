@@ -221,3 +221,9 @@ test('Inconsistent relevance candidates require an independent valid resolver, w
  assert.deepEqual(stages,['assessment','subjective-review','subjective-resolver']);assert.equal(assessment.taskRelevance.status,'relevant');assert.equal(assessment.scores.content,6);assert.equal(assessment.needsSemanticResolver,undefined);
  await assert.rejects(assessEssay(question,essay,async(_p,o)=>o.stage==='assessment'?a:b,{feedbackV3:true}),{code:'relevance_score'});
 });
+
+test('Grammar slips with unsupported meaning-impact claims remain non-scoring language corrections',async()=>{
+ const a=raw();a.errors=[{type:'grammar',impact:'meaning',phrase:'young people encounter news',correction:'young people encounter the news',explanation:'An article helps specify the noun.'}];
+ const {assessment}=await assessEssay(question,essay,async(_p,o)=>o.stage==='assessment'?a:reviewFrom(raw()),{feedbackV3:true});
+ assert.equal(assessment.scores.grammar,2);assert.equal(assessment.languageCorrections[0].impact,'minor');assert.deepEqual(assessment.optionalRefinements,[]);
+});
