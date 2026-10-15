@@ -65,9 +65,22 @@
       // when timestamps tie, the later record in the input wins.
       if (!previous || attemptTime(candidate) >= attemptTime(previous)) byKey.set(key, candidate);
     }
-    return [...byKey.values()]
-      .sort((a, b) => attemptTime(b) - attemptTime(a))
-      .slice(0, MAX_HISTORY);
+    const sorted=[...byKey.values()].sort((a,b)=>attemptTime(b)-attemptTime(a));
+    if(sorted.length<=MAX_HISTORY)return sorted;
+    const chosen=new Map();
+    // Keep each retained revision's original alongside its latest/final draft.
+    // Whole older groups age out together; intermediate drafts use spare space.
+    const groups=new Map();
+    for(const a of sorted){const key=a.attemptGroupId || attemptKey(a);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(a);}
+    for(const group of groups.values()) {
+      const latest=[...group].sort((a,b)=>(Number(b.revisionNumber)||0)-(Number(a.revisionNumber)||0) || attemptTime(b)-attemptTime(a))[0];
+      const original=group.find(a=>a.id===(latest.originalAttemptId || latest.attemptGroupId)) || group.find(a=>!a.parentAttemptId);
+      const required=[...new Set([latest,original,...group.filter(a=>a.isFinalDraft)].filter(Boolean))];
+      if(chosen.size+required.length>MAX_HISTORY)continue;
+      for(const a of required)chosen.set(attemptKey(a),a);
+    }
+    for(const a of sorted){if(chosen.size>=MAX_HISTORY)break;if(!a.attemptGroupId || chosen.has('id:'+a.originalAttemptId))chosen.set(attemptKey(a),a);}
+    return [...chosen.values()].sort((a,b)=>attemptTime(b)-attemptTime(a));
   }
 
   function historyFingerprint(history) {

@@ -327,7 +327,7 @@ test('Essay sample targeting supports Bands 6–9 without changing the scoring r
     assert.match(prompt, new RegExp('selected Band ' + band + ' target'));
   }
   assert.match(uiSource, /Desired sample response band/);
-  assert.match(uiSource, /JSON\.stringify\(\{ question, essay, sampleBand \}\)/);
+  assert.match(uiSource, /JSON\.stringify\(\{ question, essay, sampleBand[, ]/);
   assert.match(uiSource, /sampleBand: '9'/);
 });
 

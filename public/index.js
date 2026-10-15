@@ -12902,7 +12902,7 @@ function setPortalLibraryView(view) {
 function savePortalEssayDraft(options = {}) {
   clearTimeout(portalDraftTimer);
   if (!currentUserId || practiceState.view !== 'write') return;
-  const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
+  const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt', 'revisionParentId', 'submissionId', 'submissionSignature'].map(k => practiceState[k]));
   if (savePortalEssayDraft.owner === currentUserId && savePortalEssayDraft.signature === signature) return;
   const saved = !!portalDraftStore?.write(currentUserId, practiceState);
   if (saved) {
@@ -12932,13 +12932,13 @@ function restorePortalEssayDraft(resetSession = false) {
   portalDraftRevision = draft?.updatedAt || 0;
   if (draft && (draft.essayText.trim() || draft.questionText.trim())) {
     // Copy only fields produced by our draft schema, never arbitrary storage keys.
-    for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt']) {
+    for (const key of ['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt', 'revisionParentId', 'submissionId', 'submissionSignature']) {
       practiceState[key] = draft[key];
     }
     practiceState.view = 'write';
   }
   savePortalEssayDraft.owner = currentUserId;
-  savePortalEssayDraft.signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt'].map(k => practiceState[k]));
+  savePortalEssayDraft.signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt', 'revisionParentId', 'submissionId', 'submissionSignature'].map(k => practiceState[k]));
   practiceRevision = null;
   document.getElementById('practiceContent').replaceChildren();
   if (resetSession) {
@@ -13376,6 +13376,9 @@ function emptyPracticeState() { return {
   questionTitle: '',
   questionText: '',
   essayText: '',
+  revisionParentId: null,
+  submissionId: null,
+  submissionSignature: '',
   sampleBand: '9',          // target level for the learning sample; scoring itself is unchanged
   currentAttempt: null,      // the in-memory attempt object (post-scoring)
   viewingAttemptId: null,    // ID of the history attempt being viewed
@@ -13641,7 +13644,9 @@ function renderPracticeHistory() {
       ? practiceState.expandedQuestions[qKey] 
       : hasActiveAttempt;
       
-    const attemptsHtml = g.attempts.map(a => {
+    const visibleAttempts = g.attempts.filter(a=>!a.parentAttemptId || a.isFinalDraft || a.id === practiceState.viewingAttemptId || a === g.attempts.find(x=>(x.attemptGroupId || x.id)===(a.attemptGroupId || a.id)));
+    const hiddenAttempts = g.attempts.filter(a=>!visibleAttempts.includes(a));
+    const renderAttempt = a => {
       const isActive = (a.id === practiceState.viewingAttemptId);
       const total = a.scores?.total || 0;
       const scoreBand = total >= 22 ? 'high' : (total >= 15 ? 'mid' : 'low');
@@ -13653,12 +13658,13 @@ function renderPracticeHistory() {
             <span class="practice-history-score ${scoreBand}">${total}/${PRACTICE_MAX_TOTAL}</span>
           </div>
           <div style="font-size:12px; color: var(--ink-soft); line-height: 1.4;">
-            Attempt with ${a.wordCount} words
+            ${a.isFinalDraft ? 'Final draft' : a.parentAttemptId ? 'Revision ' + a.revisionNumber : 'Original attempt'} · ${a.wordCount} words
           </div>
           <button class="practice-history-del" style="right: 6px; top: 8px;" onclick="event.stopPropagation(); deletePracticeAttempt('${a.id}')" title="Delete">✕</button>
         </div>
       `;
-    }).join('');
+    };
+    const attemptsHtml = visibleAttempts.map(renderAttempt).join('') + (hiddenAttempts.length ? '<details><summary>Intermediate drafts (' + hiddenAttempts.length + ')</summary>' + hiddenAttempts.map(renderAttempt).join('') + '</details>' : '');
     
     return `
       <div class="practice-history-group" style="margin-bottom: 12px; border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; background: var(--bg-card); box-shadow: var(--shadow);">
@@ -13740,7 +13746,7 @@ function moveEssayQuestion(direction) {
   if(practiceState.view==='write'&&practiceState.selectedQuestionId){drafts[practiceState.selectedQuestionId]={...practiceState};if(!safeLSSet(key,JSON.stringify(drafts))){toast('Could not save your draft. Please keep this question open.',true);return;}}
   stopPracticeTimer();
   const saved=drafts[target.id];
-  Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
+  Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',revisionParentId:null,submissionId:null,currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
   practiceState.view='write';practiceState.timerIntervalId=null;renderPracticeMain();
 }
 function renderPracticeMain() {
@@ -13794,6 +13800,9 @@ function startNewPractice() {
   practiceState.questionTitle = '';
   practiceState.questionText = '';
   practiceState.essayText = '';
+  practiceState.revisionParentId = null;
+  practiceState.submissionId = null;
+  practiceState.submissionSignature = '';
   practiceState.viewingAttemptId = null;
   practiceState.currentAttempt = null;
   // Reset timer (but keep user's toggle preference)
@@ -14343,7 +14352,7 @@ function loadingView() {
       <img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109">
       <div class="practice-loading-icon" aria-hidden="true"></div>
       <div class="practice-loading-text" role="status" aria-live="polite">Checking your response…</div>
-      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback and a ${practiceSampleBandLabel(practiceState.sampleBand)} sample using your own ideas will appear here.</div>
+      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback will appear here after both assessments finish.</div>
     </div>
   `;
 }
@@ -14355,7 +14364,7 @@ function startLoadingMessages() {
   const messages = [
     'Your original essay is being assessed.',
     'Waiting for the independent second assessment before showing your final score.',
-    'Your ' + sampleLabel + ' sample will build on your own ideas.',
+    'Checking that the feedback matches the final assessment.',
     'Your results will appear as soon as they are ready.'
   ];
   let i = 0;
@@ -14394,6 +14403,14 @@ async function submitPracticeEssay() {
   const questionId = practiceState.selectedQuestionId || '';
   const questionTitle = practiceState.questionTitle || '';
   const elapsedMsAtSubmit = getPracticeElapsedMs();
+  const submissionSignature = JSON.stringify([question,essay,practiceState.revisionParentId]);
+  if (!practiceState.submissionId || practiceState.submissionSignature !== submissionSignature) {
+    practiceState.submissionId = 'pr_' + (globalThis.crypto?.randomUUID?.() || Date.now() + Math.random().toString(36).slice(2));
+    practiceState.submissionSignature = submissionSignature;
+  }
+  const submissionId = practiceState.submissionId;
+  const parentAttemptId = practiceState.revisionParentId;
+  savePortalEssayDraft();
   const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
   stopPracticeTimer();
   practiceSubmissionPending = true;
@@ -14405,9 +14422,10 @@ async function submitPracticeEssay() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
+        'X-Essay-Scoring-Version': EssayScoring.VERSION || '',
+        'X-Session-Token': owner.token || ''
       },
-      body: JSON.stringify({ question, essay, sampleBand })
+      body: JSON.stringify({ question, essay, sampleBand, attemptId:submissionId, parentAttemptId, includeSample:false })
     }, { canRetry: sameOwner,
       validate: value => !!EssayScoring.normalizeResult(value, essay),
       onRecover: () => {
@@ -14417,7 +14435,7 @@ async function submitPracticeEssay() {
     const result = EssayScoring.normalizeResult(data, essay);
     const attempt = {
       ...result,
-      id: 'pr_' + Date.now() + Math.random().toString(36).slice(2, 8),
+      id: result.attemptId || submissionId,
       date: Date.now(), questionId, questionTitle, questionText: question, essayText: essay, sampleBand,
       ...(elapsedMsAtSubmit !== null ? { elapsedMs: elapsedMsAtSubmit } : {})
     };
@@ -14471,7 +14489,7 @@ async function submitPracticeEssay() {
 let practiceSamplePendingId = null;
 async function retryPracticeSample() {
   const attempt = practiceState.currentAttempt;
-  if (!attempt || attempt.sampleKind !== 'unavailable' || practiceSamplePendingId) return;
+  if (!attempt || !['unavailable','not-requested'].includes(attempt.sampleKind) || practiceSamplePendingId) return;
   const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
   const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
   practiceSamplePendingId = attempt.id;
@@ -14481,9 +14499,10 @@ async function retryPracticeSample() {
     const data = await GradingRequest.request(API_URL + '/api/essay/grade', {
       method: 'POST', headers: {
         'Content-Type': 'application/json',
-        'X-Essay-Scoring-Version': EssayScoring.VERSION || ''
+        'X-Essay-Scoring-Version': EssayScoring.VERSION || '',
+        'X-Session-Token': owner.token || ''
       },
-      body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText, sampleBand })
+      body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText, sampleBand, attemptId:attempt.id, parentAttemptId:attempt.parentAttemptId, includeSample:true })
     }, { canRetry: sameOwner });
     const sample = EssayScoring.normalizeSample(data, attempt.essayText, attempt, { sampleBand });
     if (!sameOwner()) return;
@@ -14517,12 +14536,12 @@ async function retryPracticeSample() {
 
 function renderPracticeSample(a) {
   const sampleLabel = practiceSampleBandLabel(a.sampleBand);
-  if (a.sampleKind === 'unavailable') {
+  if (['unavailable','not-requested'].includes(a.sampleKind)) {
     const pending = practiceSamplePendingId === a.id;
     return `<div class="practice-grammar-section" style="margin-top:20px;">
       <div class="practice-grammar-title">${sampleLabel} sample · Your ideas</div>
       <p style="font-size:13px; line-height:1.6; color:var(--ink-soft);">${escapeHtml(a.sampleNote || '')}</p>
-      <button class="admin-btn" onclick="retryPracticeSample()" ${pending ? 'disabled' : ''}>${pending ? 'Preparing your sample…' : 'Retry sample'}</button>
+      <button class="admin-btn" onclick="retryPracticeSample()" ${pending ? 'disabled' : ''}>${pending ? 'Preparing your sample…' : (a.sampleKind === 'not-requested' ? 'Generate optional sample' : 'Retry sample')}</button>
     </div>`;
   }
   if (a.sampleKind === 'needs-ideas') {
@@ -14561,6 +14580,7 @@ function resultsView() {
   const a = practiceState.currentAttempt;
   if (!a) return welcomeView();
   const total = a.scores?.total || 0;
+  const structuredFeedback = !!a.feedbackVersion && a.feedbackVersion === window.EssayFeedback?.VERSION;
 
   // Form check banner
   let formBanner = '';
@@ -14729,11 +14749,11 @@ function resultsView() {
       ${templateBanner}
       ${taskFocusSection}
 
-      ${summaryRow}
-      ${window.EssayNextSteps?.render(a) || ''}
+      ${structuredFeedback ? window.EssayFeedback.render(a,{includeLanguage:false}) : summaryRow}
 
       ${grammarSection}
       ${optionalSection}
+      ${window.EssayNextSteps?.render(a) || ''}
 
       ${sampleResponseSection}
 
@@ -14745,6 +14765,7 @@ function resultsView() {
 
       <div class="practice-actions">
         <button class="practice-action-btn primary" onclick="revisePracticeEssay()">Revise this essay</button>
+        ${structuredFeedback ? `<button class="practice-action-btn" onclick="markPracticeFinal()">${a.isFinalDraft ? 'Final draft ✓' : 'Mark as my final draft'}</button>` : ''}
         <button class="practice-action-btn primary" onclick="reattemptPractice()">↻ Re-attempt this question</button>
         <button class="practice-action-btn" onclick="startNewPractice()">+ Try a different question</button>
         <button class="practice-action-btn" onclick="window.print()"><span style="margin-right: 4px;">🖨</span> Print / Save PDF</button>
@@ -14773,6 +14794,8 @@ function reattemptPractice() {
     if (match) practiceState.selectedQuestionId = match.id;
   }
   practiceState.essayText = '';
+  practiceState.revisionParentId = null;
+  practiceState.submissionId = null;
   practiceState.sampleBand = practiceSampleBand(a.sampleBand);
   practiceRevision = null;
   practiceState.viewingAttemptId = null;
@@ -14793,6 +14816,9 @@ function revisePracticeEssay() {
   practiceState.questionSource = a.questionId ? 'library' : 'custom';
   practiceState.selectedQuestionId = a.questionId || null;
   practiceState.essayText = text;
+  practiceState.revisionParentId = a.id;
+  practiceState.submissionId = null;
+  practiceState.submissionSignature = '';
   practiceState.sampleBand = practiceSampleBand(a.sampleBand);
   practiceState.view = 'write';
   practiceState.writeStep = 2;
@@ -14800,7 +14826,19 @@ function revisePracticeEssay() {
   practiceState.viewingAttemptId = null;
   resetPracticeTimer();
   renderPracticeMain();
+  savePortalEssayDraft();
   document.getElementById('practiceEssayInput')?.focus();
+}
+
+async function markPracticeFinal() {
+  const a=practiceState.currentAttempt;
+  if (!a || !a.feedbackVersion) return;
+  const group=a.attemptGroupId || a.id;
+  const updated=getPracticeHistory().map(item=>(item.attemptGroupId || item.id)===group ? {...item,isFinalDraft:item.id===a.id,updatedAt:Date.now()} : item);
+  practiceState.currentAttempt=updated.find(item=>item.id===a.id);
+  await savePracticeHistory(updated,{immediate:true});
+  renderPracticeMain(); renderPracticeHistory();
+  toast('Final draft saved. Your original and other revisions remain available.');
 }
 
 // ---------- Grammar & Spelling section (Grammarly-style hybrid) ----------
@@ -14811,7 +14849,7 @@ function revisePracticeEssay() {
 function renderGrammarSpellingSection(a) {
   const grammarScore = a.scores?.grammar || 0;
   const spellingScore = a.scores?.spelling || 0;
-  const errors = Array.isArray(a.errors) ? a.errors.filter(e => e && e.phrase) : [];
+  const errors = [...(Array.isArray(a.errors) ? a.errors : []),...(Array.isArray(a.languageCorrections) ? a.languageCorrections : [])].filter(e=>e && e.phrase);
   const grammarPillClass = grammarScore === 2 ? '' : (grammarScore === 1 ? 'warn' : 'bad');
   const spellingPillClass = spellingScore === 2 ? '' : (spellingScore === 1 ? 'warn' : 'bad');
 
@@ -14949,7 +14987,7 @@ function applyErrorFix(ev, idx) {
   const newText = card.querySelector('.gh-card-new')?.textContent || '';
   if (!newText || newText === '—') return;
   const attempt = practiceState.currentAttempt;
-  const error = attempt?.errors?.[idx];
+  const error = [...(attempt?.errors || []),...(attempt?.languageCorrections || [])][idx];
   if (!error) return;
   if (practiceRevision?.attemptId !== attempt.id) practiceRevision = { attemptId: attempt.id, text: attempt.essayText };
   if (!practiceRevision.text.includes(error.phrase)) { toast('That wording has already changed in your draft.'); return; }

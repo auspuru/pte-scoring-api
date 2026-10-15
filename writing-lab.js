@@ -121,9 +121,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           if (!result) {
             const question = current.questions[index];
             if (question.type === 'essay' && essayGrader) {
-              const unified = await essayGrader.grade(question.text, current.answers[index]);
+              const unified = await essayGrader.grade(question.text, current.answers[index], '9', {feedbackV3:require('./essay-feedback-rollout').enabledFor(uid),includeSample:false});
               result = {
-                ...unified,
+                ...require('./public/essay-feedback').scope(unified,{attemptId:a.id+'_'+index}),
                 version: unified.scoring_version || essayPolicy.VERSION,
                 assessmentType: 'Unified essay practice assessment',
                 maxima: { ...essayPolicy.MAXIMA },
