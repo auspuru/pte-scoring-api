@@ -29,6 +29,7 @@ async function main(){
  assert.equal((await request(path,{practiceHistory:[original]},owner.token)).status,200);
  const body={question:fixture.question,essay:revisedEssay,includeSample:false,attemptId:'qa_revision',parentAttemptId:original.id};
  const started=Date.now(),graded=await request('/api/essay/grade',body,owner.token),latencyMs=Date.now()-started;
+ await fs.writeFile(output,JSON.stringify({synthetic:true,passed:false,status:graded.status,latencyMs,assessment:graded.body},null,2));
  assert.equal(graded.status,200,JSON.stringify(graded.body));const a=graded.body;
  assert.equal(a.parentAttemptId,original.id);assert.equal(a.originalAttemptId,original.id);assert.equal(a.revisionNumber,1);
  const resolved=a.revisionDecisions.filter(d=>d.status==='resolved');assert(resolved.length>0,'No original issue was confirmed resolved.');

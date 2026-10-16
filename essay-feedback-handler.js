@@ -19,7 +19,10 @@ function createEssayGradeHandler({grader,verifyToken,getUserData,env=process.env
         if(!parent) return res.status(404).json({error:'The original essay attempt was not found in your account.'});
         if(parent.questionText?.trim()!==question.trim()) return res.status(409).json({error:'Revisions must answer the original question. Start a new attempt for a different question.'});
       }
-      const revisionContext=parent?.feedbackVersion===feedback.VERSION ? {issues:(parent.feedbackIssues || []).filter(i=>i.priority!=='optional')} : null;
+      // Compare the writing problem, without carrying the previous deduction or
+      // score rationale into an otherwise independent assessment of this draft.
+      const revisionContext=parent?.feedbackVersion===feedback.VERSION ? {issues:(parent.feedbackIssues || []).filter(i=>i.priority!=='optional')
+        .map(({id,code,category,priority,requirementId,trait,evidence,explanation,suggestedChange})=>({id,code,category,priority,requirementId,trait,evidence,explanation,suggestedChange}))} : null;
       const result=await grader.grade(question,essay,sampleBand,{feedbackV3,revisionContext,includeSample:req.body.includeSample!==false});
       const attemptId=typeof req.body.attemptId==='string' && /^[a-zA-Z0-9_-]{1,100}$/.test(req.body.attemptId)?req.body.attemptId:randomUUID();
       res.json(essayResultForClient(feedback.scope(result,{attemptId,parent}),req.get('x-essay-scoring-version') || ''));

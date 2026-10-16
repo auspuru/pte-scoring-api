@@ -20,6 +20,13 @@ test('Revision handler loads only the signed-in account history and scopes its n
 test('Another student cannot load a revision parent by guessing its ID',async t=>{
  const h=await start(t);const r=await h.post({parentAttemptId:'original'},'signed-b');assert.equal(r.status,404);assert.equal(h.calls.length,0);assert.deepEqual(h.lookups,['student-b']);
 });
+test('Revision comparison excludes prior score rationales and deduction metadata',async t=>{
+ const h=await start(t);h.parent.feedbackIssues=[{id:'prior',code:'development_gap',category:'reasoning',priority:'major',trait:'content',requirementId:'req_1',evidence:{essayQuote:'Original draft'},explanation:'Explain how the effect occurs.',suggestedChange:'Add the causal connection.',affectsScore:true,scoreRationale:'Previous Content was 2 out of 6.',scores:{content:2}}];
+ assert.equal((await h.post({parentAttemptId:'original'})).status,200);
+ const context=h.calls[0][3].revisionContext;assert.equal(context.issues[0].id,'prior');assert.equal(context.issues[0].explanation,h.parent.feedbackIssues[0].explanation);
+ assert.equal(context.issues[0].scoreRationale,undefined);assert.equal(context.issues[0].affectsScore,undefined);assert.equal(context.issues[0].scores,undefined);
+ assert.equal(h.parent.feedbackIssues[0].scoreRationale,'Previous Content was 2 out of 6.');
+});
 test('A different prompt cannot silently join an existing revision chain',async t=>{
  const h=await start(t);assert.equal((await h.post({parentAttemptId:'original',question:'Another question?'})).status,409);assert.equal(h.calls.length,0);
 });

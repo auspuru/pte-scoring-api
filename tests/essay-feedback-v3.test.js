@@ -278,3 +278,23 @@ test('An exhausted semantic assessment suppresses immediate duplicate paid retri
  for(let i=0;i<2;i++)await assert.rejects(grader.grade(question,essay,'9',{feedbackV3:true,includeSample:false}),{code:'feedback_contract',retryable:false});
  assert.equal(calls,2);
 });
+
+test('Omitted revision decisions receive feedback-only repair with exact previous IDs and unchanged scores',async()=>{
+ const prior={...issue(),id:'original:issue1'},stages=[];
+ const {assessment}=await assessEssay(question,essay,async(p,o)=>{
+  stages.push(o.stage);
+  if(o.stage==='feedback-repair'){
+   assert(p.includes(prior.id));return {...reviewFrom(raw()),revisionDecisions:[{priorIssueId:prior.id,status:'resolved',currentIssueCode:'',evidence:'Schools can respond by teaching students',reason:'The current explanation supplies the missing condition.'}]};
+  }
+  return o.stage==='assessment'?raw():reviewFrom(raw());
+ },{feedbackV3:true,revisionContext:{issues:[prior]}});
+ assert.deepEqual(stages,['assessment','feedback-repair','subjective-review','feedback-repair']);
+ assert.equal(assessment.scores.content,6);assert.equal(assessment.revisionDecisions[0].status,'resolved');
+ const a=raw();a.revisionDecisions=[{priorIssueId:'shortened-id'}];
+ assert.throws(()=>F.normalize(a,essay,question,a.scores,{previous:{issues:[prior]}}),{code:'feedback_contract'});
+});
+
+test('Disagreement about whether a specific prior issue is resolved requires final adjudication',()=>{
+ const a={...raw(),feedbackVersion:F.VERSION,revisionDecisions:[{priorIssueId:'old',status:'resolved'}]},b={...a,revisionDecisions:[{priorIssueId:'old',status:'open'}]};
+ assert.equal(needsResolver(a,b),true);b.revisionDecisions[0].status='resolved';assert.equal(needsResolver(a,b),false);
+});

@@ -179,6 +179,8 @@ function needsResolver(primary, review) {
       if(index<0)return false;remaining.splice(index,1);return true;
     }) && remaining.length===0;
     if (coverage(primary)!==coverage(review) || !sameIssues) return true;
+    const revisions=value=>JSON.stringify((value.revisionDecisions || []).map(d=>[d.priorIssueId,d.status]).sort());
+    if(revisions(primary)!==revisions(review))return true;
   }
   return SUBJECTIVE.some(key => Math.abs(Number(primaryScores[key]) - Number(review.scores[key])) > 1);
 }

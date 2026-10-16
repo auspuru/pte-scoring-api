@@ -24,7 +24,7 @@ Set `ESSAY_FEEDBACK_V3=false` and redeploy to restore the legacy contract for ne
 
 ## Verification
 
-The baseline passed 679 tests. The final implementation passes 719 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
+The baseline passed 679 tests. The final implementation passes 722 tests plus existing offline calibration controls. New tests cover exact requirements, OR alternatives, final-authority replacement, structured evidence, optional advice, zero-correction answers, revision ownership, failure behaviour, caching, call counts, issue-linked exercises and historical retention. Existing essay, mock, navigation and client recovery tests remain in the release gate.
 
 `tests/essay-feedback-cases.js` provides synthetic teaching cases and weaker variants. `scripts/evaluate-essay-feedback.js` submits them only to an explicitly configured isolated review service, records complete results and timings, and repeats selected cases with semantically identical paragraph spacing to avoid returning only cached results. Contract tests alone do not prove model teaching accuracy.
 
@@ -36,7 +36,7 @@ Production-wide activation requires the plan's human teaching review, satisfacto
 
 ## Live evaluation and review outcome
 
-The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 719 tests.
+The isolated hosted gate and GitHub CI initially passed all 707 tests, the 136-test build subset, calibration controls, narration/content validators, Edge TTS and the downloaded Puppeteer executable. Subsequent regression coverage now includes 722 tests.
 
 Live model checks exposed two integration faults that mocked contract tests could not establish: the prose output example still named only legacy fields, and demanding a correction for every below-maximum holistic mark encouraged fabricated repairs. The output example now matches the tool contract. A sufficient essay can retain a good holistic mark without a manufactured correction; every reduced trait still needs its rubric explanation, and every missing/partial canonical requirement needs an issue. A single targeted feedback-format repair may reconstruct malformed feedback from existing judgements and current evidence. It cannot alter scores or coverage. A formatting failure does not restart scoring or publish a result. A coverage/issue contradiction instead bypasses the formatter and uses the existing stage's bounded semantic reassessment (at most two attempts), with explicit instructions to credit sufficient explanations or identify a genuine gap. Persistent conflicts fail closed and suppress immediate duplicate paid retries. Repeated identical formatting failures are suppressed briefly to prevent credit-consuming retries.
 
@@ -53,3 +53,5 @@ A live revision walkthrough identified an overly broad local safeguard: it block
 The live preview also exposed invented first-person examples in a missing-own-experience suggestion. For that specific canonical missing requirement, the server now supplies a deterministic request for the student's genuine observation rather than a fabricated story. OR alternatives do not trigger this safeguard or make a personal story compulsory.
 
 `scripts/evaluate-essay-revisions.js` exercises a disposable synthetic account on an explicitly named isolated review host: resolved-issue evidence, linked attempts, save/reload, cached retry, duplicate prevention, original preservation, final marking and account isolation. It never reads production student data.
+
+A further live check found that an otherwise valid final score could omit all prior-issue decisions. The contract now requires every prior ID exactly once and repairs omissions with the feedback-only operation. A disagreement about resolution status also requires final adjudication. Revision context excludes prior score rationales and deduction metadata. Conservative evidence checks still prevent unsupported resolved claims.

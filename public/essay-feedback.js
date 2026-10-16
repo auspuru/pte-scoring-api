@@ -82,7 +82,7 @@ For revisionDecisions, assess current text independently first; previous issues 
         schema.strengths=schema.strengths || ['specific strength'];
         schema.overallVerdict=schema.overallVerdict || 'brief final assessment consistent with the current scores and issues';
         if(Array.isArray(schema.promptCoverage))schema.promptCoverage=schema.promptCoverage.map(c=>({...c,requirementId:'req_1'}));
-        return lead+JSON.stringify(schema,null,2)+'\nPopulate feedbackIssues for actual gaps and each missing/partial requirement; [] is only an example for a sufficient response. Include every canonical requirementId and every final field shown.';
+        return lead+JSON.stringify(schema,null,2)+'\nPopulate feedbackIssues for actual gaps and each missing/partial requirement; [] is only an example for a sufficient response. Populate revisionDecisions with exactly one decision for every supplied previous issue, copying each priorIssueId in full; [] is allowed only when previous issues are empty. Include every canonical requirementId and every final field shown.';
       }catch(_){return all;}
     });
   }
@@ -120,6 +120,8 @@ For revisionDecisions, assess current text independently first; previous issues 
     for (const c of coverage) if(c.status!=='addressed' && !issues.some(i=>i.requirementId===c.requirementId && i.trait==='content' && i.priority!=='optional')) invalid('Independently reassess the whole CURRENT essay: coverage says missing or partial but no specific issue supports that judgement. Align coverage, scores and issues under the existing rubric. Credit explanations already present and mark a requirement addressed when sufficient; otherwise identify the genuine remaining gap with current evidence and its requirementId. Never invent a correction or change scores merely to satisfy formatting.', true);
     for (const trait of SUBJECTIVE) if (Number(scores[trait])<6 && !clean(raw.rationale?.[trait] || raw.feedback?.[trait])) invalid('A reduced holistic trait needs a specific rubric explanation; never manufacture a correction simply to fill the issue list.');
     const decisions = [];
+    const previousIds=(previous?.issues || []).map(i=>i.id);
+    if (raw.revisionDecisions.length!==previousIds.length || new Set(raw.revisionDecisions.map(d=>d?.priorIssueId)).size!==previousIds.length || raw.revisionDecisions.some(d=>!previousIds.includes(d?.priorIssueId))) invalid('Return exactly one revision decision for every previous issue, copying each priorIssueId from the supplied previous issues in full. Compare the current essay against each specific old weakness; provide a status, reason and current evidence. Do not silently omit decisions or infer resolution solely from deletion.');
     for (const prior of previous?.issues || []) {
       const d = raw.revisionDecisions.find(d=>d?.priorIssueId===prior.id);
       const quote = clean(d?.evidence), current = issues.find(i=>i.code===canonicalCode(d?.currentIssueCode) && (!prior.requirementId || i.requirementId===prior.requirementId));
