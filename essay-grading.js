@@ -103,6 +103,9 @@ function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () 
     sampleBand = policy.normalizeSampleBand(sampleBand);
     if (options.feedbackV3 && options.includeSample === false) {
       const assessment = await getAssessment(question, essay, options);
+      // Invalid Form cannot have an optional learning sample yet. This result
+      // also predates structured feedback, so use the existing unavailable form.
+      if (assessment.scoreGate?.status === 'zero_form') return {...assessment,...await prepareSample(question,essay,assessment,sampleBand)};
       return {...assessment,sampleStatus:'not-requested',sampleKind:'not-requested',sampleResponse:'',sampleSourceIdeas:[],sampleWordCount:0,sampleBand,sampleNote:'Request an optional learning sample when you need one.'};
     }
     const key = createHash('sha256').update(JSON.stringify([policy.VERSION, options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy', question, essay, sampleBand, options.revisionContext || null])).digest('hex');
@@ -129,21 +132,27 @@ function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () 
   return { grade };
 }
 
-function essayResultForClient(result, clientVersion) {
-  if (!result || result.scoreGate?.status !== 'zero_content' || clientVersion === policy.VERSION) {
-    return result;
-  }
+function essayResultForClient(result, clientVersion, sampleContractVersion = '') {
+  if (!result) return result;
+  let output=result;
   // Compatibility for an already-open browser running the pre-zero-content
   // validator. That validator needs diagnostic trait values as its input, then
   // applies the Content=0 hard gate itself. Current clients receive the
   // canonical already-zeroed result.
-  if (!result.diagnosticScores || Number(result.diagnosticScores.content) !== 0) return result;
-  return {
-    ...structuredClone(result),
-    scores: { ...result.diagnosticScores, total: 0 },
-    scoring_version: String(result.scoring_version || policy.VERSION) + '-compat',
-    compatibility: 'legacy-zero-content-input'
-  };
+  if (result.scoreGate?.status === 'zero_content' && clientVersion !== policy.VERSION
+      && result.diagnosticScores && Number(result.diagnosticScores.content) === 0) {
+    output={...structuredClone(result),scores:{...result.diagnosticScores,total:0},
+      scoring_version:String(result.scoring_version || policy.VERSION)+'-compat',compatibility:'legacy-zero-content-input'};
+  }
+  // Already-open tabs can still run the cached validator from before optional
+  // samples existed, even though its rubric VERSION is identical. Translate
+  // only the sample transport status; never rescore or generate a paid sample.
+  if (output.sampleStatus === 'not-requested' && sampleContractVersion !== policy.SAMPLE_CONTRACT_VERSION) {
+    output={...structuredClone(output),sampleStatus:'unavailable',sampleKind:'unavailable',
+      sampleNote:'Your score and feedback are ready. A learning sample has not been requested; use the sample button if you want one.',
+      compatibility:[output.compatibility,'legacy-optional-sample-input'].filter(Boolean).join(';')};
+  }
+  return output;
 }
 
 module.exports = { createEssayGrader, essayResultForClient };

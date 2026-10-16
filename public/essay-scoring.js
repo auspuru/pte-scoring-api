@@ -5,6 +5,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
   const VERSION = 'essay-unified-2.3';
+  // Transport capability, separate from the unchanged scoring rubric version.
+  const SAMPLE_CONTRACT_VERSION = 'essay-optional-sample-1';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
   const MAXIMUM = Object.values(MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
   const clean = value => typeof value === 'string' ? value.trim() : '';
@@ -505,5 +507,5 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     return { percent, level, matchedWords, totalWords: answer.length, ngram, thresholds: { medium, high } };
   }
 
-  return { VERSION, MAXIMA, MAXIMUM, TASK_RELEVANCE_GUIDANCE, normalizeTaskRelevance, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
+  return { VERSION, SAMPLE_CONTRACT_VERSION, MAXIMA, MAXIMUM, TASK_RELEVANCE_GUIDANCE, normalizeTaskRelevance, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
 });

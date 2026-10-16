@@ -23,11 +23,11 @@ function result() {
     },
     sampleStatus: 'ready', sampleResponse: essay, sampleSourceIdeas: ['mass media supports learning'] }, essay);
 }
-function harness() {
+function harness(scoring = policy) {
   const requests = [], saves = [], views = [], messages = [];
   let history = [], quota = 0;
   const ctx = {
-    EssayScoring: policy, API_URL: '', currentUserId: 'student', sessionToken: 'session-a',
+    EssayScoring: scoring, API_URL: '', currentUserId: 'student', sessionToken: 'session-a',
     practiceSubmissionPending: false, practiceSamplePendingId: null, practiceHistoryDeleted: [], practiceRevision: null,
     practiceState: { view: 'write', essayText: essay, questionText: question, selectedQuestionId: 'q', questionTitle: 'Media', sampleBand: '7' },
     document: { getElementById: () => null }, countWords: policy.words,
@@ -70,6 +70,17 @@ test('Essay score renders while cloud saving is still pending', async () => {
   assert.equal(h.quota(), 1);
   h.saves[0].finish(); await submitted;
   assert.equal(h.ctx.practiceSubmissionPending, false);
+});
+
+test('An open tab with the cached pre-rollout validator displays its completed score without retrying',async()=>{
+ const {essayResultForClient}=require('../essay-grading');
+ const cached={...policy,SAMPLE_CONTRACT_VERSION:undefined,normalizeResult(raw,text){if(raw.sampleStatus==='not-requested')throw Object.assign(Error('Unsupported sample status'),{code:'sample_status'});return policy.normalizeResult(raw,text);}};
+ const h=harness(cached),submitted=h.ctx.submitPracticeEssay();
+ const headers=h.requests[0].options.headers;assert.equal(headers['X-Essay-Sample-Contract'],'');
+ const a={...result(),feedbackVersion:require('../public/essay-feedback').VERSION,sampleStatus:'not-requested',sampleKind:'not-requested',sampleResponse:'',sampleSourceIdeas:[],sampleWordCount:0};
+ h.requests[0].reply(essayResultForClient(a,headers['X-Essay-Scoring-Version'],headers['X-Essay-Sample-Contract']));
+ await until(()=>h.saves.length===1);assert.equal(h.ctx.practiceState.view,'results');assert.equal(h.requests.length,1);assert.equal(h.ctx.practiceState.currentAttempt.scores.total,26);
+ h.saves[0].finish();await submitted;assert.equal(h.quota(),1);assert.equal(h.history().length,1);
 });
 
 test('A temporary essay failure recovers from the same click and saves/charges only once', async () => {

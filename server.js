@@ -188,7 +188,7 @@ app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   // C3: the client now sends x-session-token on sync calls; admin uses x-admin-key.
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response', 'x-essay-scoring-version', 'x-essay-sample-contract']
 }));
 // H1: 10mb was generous enough to wave through abusive payloads. Adjusted to 25mb for PDF html uploads.
 app.use((req,res,next)=>{
