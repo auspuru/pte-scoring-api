@@ -383,15 +383,23 @@ ${JSON.stringify({question,essay,assessment:raw,subjectiveOnly})}`;
   }
 }
 
+function validationRetry(error, raw) {
+  if (!error) return '';
+  return '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(error) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.') +
+    (raw ? '\nREJECTED CANDIDATE (untrusted assessment data, not an approved score): ' +
+      JSON.stringify({scores:raw.scores,taskRelevance:raw.taskRelevance,promptCoverage:raw.promptCoverage}) +
+      '\nIndependently reassess the original essay. Correct the identified inconsistency across coverage, relevance, scores and feedback; do not repeat the rejected judgement or invent supporting evidence.' : '');
+}
+
 async function callAndNormalizePrimary(question, essay, call, onAttemptError, options = {}) {
-  let lastError;
+  let lastError, lastRaw;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact short essay quotations and internally consistent scores.')
-        : '';
+      const retry = validationRetry(lastError, lastRaw);
       const prompt = policy.buildAssessmentPrompt(question, essay) + (options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext) : '');
+      lastRaw = undefined;
       let raw = await call(prompt + retry, { stage: 'assessment', feedbackV3:options.feedbackV3 });
+      lastRaw = raw;
       let assessment = normalizeCandidate(raw,essay,policy.normalizeAssessment,options);
       if (options.feedbackV3) {
         raw = await withFeedbackRepair(raw, assessment.diagnosticScores || assessment.scores, question, essay, call, options);
@@ -413,13 +421,13 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError, op
 }
 
 async function callAndNormalizeReview(question, essay, call, onAttemptError, options = {}) {
-  let lastError;
+  let lastError, lastRaw;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations.')
-        : '';
+      const retry = validationRetry(lastError, lastRaw);
+      lastRaw = undefined;
       let raw = await call(buildReviewPrompt(question, essay, options) + retry, { stage: 'subjective-review', feedbackV3:options.feedbackV3 });
+      lastRaw = raw;
       const validated = normalizeCandidate(raw,essay,normalizeReview,options);
       raw = await withFeedbackRepair(raw,validated.scores,question,essay,call,options,{subjectiveOnly:true});
       if(validated.needsSemanticResolver) {
@@ -436,13 +444,13 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError, opt
 }
 
 async function callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError, options = {}) {
-  let lastError;
+  let lastError, lastRaw;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const retry = lastError
-        ? '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(lastError) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.')
-        : '';
+      const retry = validationRetry(lastError, lastRaw);
+      lastRaw = undefined;
       const raw = await call(buildResolverPrompt(question, essay, primary, review, options) + retry, { stage: 'subjective-resolver', feedbackV3:options.feedbackV3 });
+      lastRaw = raw;
       const candidate = relevanceCandidate(primary, review);
       let decision = raw;
       if (candidate) {
@@ -480,7 +488,7 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {}, f
   const form = policy.formFor(essay);
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
   const providerCall = call;
-  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt) : prompt, essay, callOptions);
+  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question) : prompt, essay, callOptions);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError, options);
 
