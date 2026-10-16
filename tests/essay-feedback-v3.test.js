@@ -32,9 +32,48 @@ test('Prompt requirements retain exact spans, OR choice, personal requirement an
 test('Every assessment stage shares the feedback policy and requirements, treating prose as data',async()=>{
  const prompts=[];
  const result=await assessEssay(question,essay,async(p,o)=>{prompts.push([p,o]);return o.stage==='assessment'?raw():reviewFrom(raw());},{feedbackV3:true});
- assert.equal(prompts.length,2);for(const [p,o] of prompts){assert(p.includes(F.GUIDANCE));assert(p.includes(JSON.stringify(F.requirements(question))));assert.equal(o.feedbackV3,true);}
+ assert.equal(prompts.length,2);for(const [p,o] of prompts){assert(p.includes(F.GUIDANCE));assert(p.includes(JSON.stringify(F.requirements(question))));assert.equal(o.feedbackV3,true);assert.deepEqual(o.requirements,F.requirements(question));}
  assert.equal(result.assessment.feedbackVersion,F.VERSION);assert.deepEqual(result.assessment.feedbackIssues,[]);
  assert.deepEqual(result.assessment.improvements,[]);
+});
+
+test('Explicit alternatives and choices are retained instead of rejecting valid extra task coverage',()=>{
+ const late="Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.";
+ assert.deepEqual(F.requirements(late).map(r=>r.label),['What is your opinion?','Suggest some alternative actions.']);
+ const choice='Some people prefer to live in cities, while some people prefer to live in the countryside. Which is better for you? Give your reasons or experience.';
+ assert.deepEqual(F.requirements(choice).map(r=>[r.kind,r.operator]),[['judgement','AND'],['support','OR']]);
+ const support='Should parents be held legally responsible for the actions of their children? Support your opinion from your study, observations or experiences.';
+ assert.deepEqual(F.requirements(support).map(r=>[r.kind,r.operator]),[['judgement','AND'],['support','OR']]);
+ for(const q of [late,choice,support])for(const r of F.requirements(q))assert.equal(q.slice(r.promptSpan.start,r.promptSpan.end),r.label);
+ const age='Age restrictions apply to many activities. Give an example, state which minimum age you think it should be and share your own experience.';
+ assert.deepEqual(F.requirements(age).map(r=>r.label),['Give an example','state which minimum age you think it should be','your own experience']);
+ const libraries='Discuss both the advantages and disadvantages of this position and give your own point of view.';
+ assert.deepEqual(F.requirements(libraries).map(r=>r.label),['advantages','disadvantages','give your own point of view']);
+ assert.deepEqual(F.requirements('Give your opinion with examples.').map(r=>r.label),['Give your opinion with examples.']);
+});
+
+test('Question context is not misread as an instruction and alternative support never forces personal experience',()=>{
+ const q='While artificial intelligence becomes advanced, people can use computers to translate foreign languages. To what extent do you agree?';
+ assert.equal(F.requirements(q).length,1);
+ const optional='How far do you agree? Support your opinion with reasons and/or your personal experience.';
+ assert.deepEqual(F.requirements(optional).map(r=>[r.kind,r.operator]),[['judgement','AND'],['support','OR']]);
+ const paired='In your opinion, what are the positive and negative impacts of this change?';
+ assert.deepEqual(F.requirements(paired).map(r=>r.label),['positive','negative']);
+});
+
+test('Late-submission assessment accepts the independently scored alternatives rather than failing the coverage contract',async()=>{
+ const q="Some universities deduct marks from students' work if it is given in late. What is your opinion? Suggest some alternative actions.";
+ const stages=[];
+ const {assessment}=await assessEssay(q,essay,async(_p,o)=>{
+  stages.push(o.stage);const a=raw(q);
+  const tool=format.request(_p,'judge-model',o).tools[0].input_schema;
+  assert.deepEqual(tool.$defs.coverage.properties.requirementId.enum,['req_1','req_2']);
+  assert.equal(tool.properties.promptCoverage.minItems,2);assert.equal(tool.properties.promptCoverage.maxItems,2);
+  return o.stage==='assessment'?a:reviewFrom(a);
+ },{feedbackV3:true});
+ assert.deepEqual(stages,['assessment','subjective-review']);
+ assert.equal(assessment.promptCoverage[1].requirement,'Suggest some alternative actions.');
+ assert(assessment.subjectiveReview.independent);
 });
 
 test('Complete answers can retain holistic marks without a fabricated correction; actual issues need evidence',()=>{

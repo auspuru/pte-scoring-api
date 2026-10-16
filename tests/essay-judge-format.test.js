@@ -44,3 +44,21 @@ test('sample generation retains its separate response contract', () => {
   assert.equal(request.tool_choice, undefined);
   assert.deepEqual(format.response({ content: [{ type: 'text', text: '{"sampleStatus":"needs-ideas"}' }] }), { sampleStatus: 'needs-ideas' });
 });
+
+test('Each structured judgement binds coverage ids and cardinality to the current question without changing global schemas',()=>{
+ const requirements=[{id:'req_1',label:'What is your opinion?'},{id:'req_2',label:'Suggest alternatives.'}];
+ for(const stage of ['assessment','subjective-review','subjective-resolver']) {
+  const schema=format.request('Assess the original essay.','judge-model',{stage,feedbackV3:true,requirements}).tools[0].input_schema;
+  assert.deepEqual(schema.$defs.coverage.properties.requirementId.enum,['req_1','req_2']);
+  assert.deepEqual(schema.$defs.coverage.properties.requirement.enum,requirements.map(r=>r.label));
+  assert.equal(schema.properties.promptCoverage.minItems,2);assert.equal(schema.properties.promptCoverage.maxItems,2);
+  assert.deepEqual(schema.properties.feedbackIssues.items.properties.requirementId.enum,['','req_1','req_2']);
+  assert.match(schema.properties.promptCoverage.description,/each id exactly once/);
+  const single=format.toolFor(stage,{feedbackV3:true,requirements:requirements.slice(0,1)}).input_schema;
+  assert.equal(single.properties.promptCoverage.maxItems,1);
+  assert.deepEqual(single.$defs.coverage.properties.requirementId.enum,['req_1']);
+  assert.equal(format.toolFor(stage).input_schema.$defs.coverage.properties.requirementId,undefined);
+ }
+ for(const stage of ['evidence-repair','feedback-repair'])assert.equal(format.toolFor(stage,{feedbackV3:true,requirements}).input_schema.properties.promptCoverage,undefined);
+ assert.deepEqual(format.toolFor('feedback-repair',{feedbackV3:true,requirements}).input_schema.properties.feedbackIssues.items.properties.requirementId.enum,['','req_1','req_2']);
+});

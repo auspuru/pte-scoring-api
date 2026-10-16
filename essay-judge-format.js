@@ -62,7 +62,7 @@ const feedbackIssue = object({code:{type:'string',enum:require('./public/essay-f
 const revisionDecision = object({priorIssueId:text,status:{type:'string',enum:['resolved','open','needs_clarification']},currentIssueCode:text,evidence_span:span,reason:text});
 const feedbackRepair=object({feedbackIssues:{type:'array',items:feedbackIssue},revisionDecisions:{type:'array',items:revisionDecision},rationale:reasons(traits),strengths:texts,overallVerdict:text});
 schemas['feedback-repair']=feedbackRepair;
-function toolFor(stage, {feedbackV3=false} = {}) {
+function toolFor(stage, {feedbackV3=false, requirements=[]} = {}) {
   let schema = schemas[stage];
   if (schema && feedbackV3 && !['evidence-repair','feedback-repair'].includes(stage)) {
     schema = object({...schema.properties,
@@ -70,6 +70,17 @@ function toolFor(stage, {feedbackV3=false} = {}) {
       ...(stage==='assessment' ? {} : {strengths:texts,overallVerdict:text})});
   }
   if (!schema) return null;
+  const canonical = feedbackV3 && requirements.length ? requirements : null;
+  const judgement = !['evidence-repair','feedback-repair'].includes(stage);
+  if (canonical && schema.properties.feedbackIssues) {
+    schema = {...schema,properties:{...schema.properties,feedbackIssues:{...schema.properties.feedbackIssues,
+      items:object({...feedbackIssue.properties,requirementId:{...text,enum:['',...canonical.map(r=>r.id)]}})}}};
+  }
+  if (canonical && judgement) {
+    schema = {...schema, properties:{...schema.properties,
+      promptCoverage:{...schema.properties.promptCoverage, minItems:canonical.length, maxItems:canonical.length,
+        description:'Return exactly one entry per supplied canonical requirement, each id exactly once. Assess all parts within a grouped requirement together; do not split it into new ids. Canonical id and exact label pairs: '+JSON.stringify(canonical.map(({id,label})=>({id,label})))}}};
+  }
   return {
     name: 'submit_essay_' + stage.replace(/-/g, '_'),
     // The complete primary schema exceeds the provider's strict grammar limit.
@@ -77,7 +88,9 @@ function toolFor(stage, {feedbackV3=false} = {}) {
     // independent reviews and citation repairs support strict decoding.
     ...(stage === 'assessment' || (feedbackV3 && !['evidence-repair','feedback-repair'].includes(stage)) ? {} : { strict: true }),
     description: 'Return complete essay assessment data under the supplied rubric, including empty arrays where appropriate. This tool performs no external action. Cite only original student words. A missing requirement has status missing and an empty evidence_span; never invent evidence to satisfy a judgement. Keep all fields separate; never embed JSON fields inside feedback strings.',
-    input_schema: { ...schema, $defs: {...definitions, ...(feedbackV3 ? {coverage:object({...coverage.properties,requirementId:text})} : {})} }
+    input_schema: { ...schema, $defs: {...definitions, ...(feedbackV3 ? {coverage:object({...coverage.properties,
+      ...(canonical && judgement ? {requirement:{...text,enum:canonical.map(r=>r.label)}} : {}),
+      requirementId:canonical && judgement ? {...text,enum:canonical.map(r=>r.id)} : text})} : {})} }
   };
 }
 

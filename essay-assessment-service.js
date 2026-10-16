@@ -488,7 +488,9 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {}, f
   const form = policy.formFor(essay);
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
   const providerCall = call;
-  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question) : prompt, essay, callOptions);
+  const requirements = feedbackV3 ? feedbackPolicy.requirements(question) : undefined;
+  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question) : prompt, essay,
+    feedbackV3 ? {...callOptions, requirements} : callOptions);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError, options);
 
