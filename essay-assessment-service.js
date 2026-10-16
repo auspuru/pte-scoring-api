@@ -398,7 +398,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError, op
       const retry = validationRetry(lastError, lastRaw);
       const prompt = policy.buildAssessmentPrompt(question, essay) + (options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext) : '');
       lastRaw = undefined;
-      let raw = await call(prompt + retry, { stage: 'assessment', feedbackV3:options.feedbackV3 });
+      let raw = await call(prompt + retry, { stage: 'assessment', feedbackV3:options.feedbackV3, semanticReassessment:!!lastError?.feedbackSemanticConflict });
       lastRaw = raw;
       let assessment = normalizeCandidate(raw,essay,policy.normalizeAssessment,options);
       if (options.feedbackV3) {
@@ -426,7 +426,7 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError, opt
     try {
       const retry = validationRetry(lastError, lastRaw);
       lastRaw = undefined;
-      let raw = await call(buildReviewPrompt(question, essay, options) + retry, { stage: 'subjective-review', feedbackV3:options.feedbackV3 });
+      let raw = await call(buildReviewPrompt(question, essay, options) + retry, { stage: 'subjective-review', feedbackV3:options.feedbackV3, semanticReassessment:!!lastError?.feedbackSemanticConflict });
       lastRaw = raw;
       const validated = normalizeCandidate(raw,essay,normalizeReview,options);
       raw = await withFeedbackRepair(raw,validated.scores,question,essay,call,options,{subjectiveOnly:true});
@@ -449,7 +449,7 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
     try {
       const retry = validationRetry(lastError, lastRaw);
       lastRaw = undefined;
-      const raw = await call(buildResolverPrompt(question, essay, primary, review, options) + retry, { stage: 'subjective-resolver', feedbackV3:options.feedbackV3 });
+      const raw = await call(buildResolverPrompt(question, essay, primary, review, options) + retry, { stage: 'subjective-resolver', feedbackV3:options.feedbackV3, semanticReassessment:!!lastError?.feedbackSemanticConflict });
       lastRaw = raw;
       const candidate = relevanceCandidate(primary, review);
       let decision = raw;

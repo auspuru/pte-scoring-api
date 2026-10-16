@@ -96,9 +96,13 @@ function toolFor(stage, {feedbackV3=false, requirements=[]} = {}) {
 
 function request(prompt, model, options = {}) {
   const tool = toolFor(options.stage, options);
-  return { model, temperature: 0, max_tokens: options.feedbackV3 ? 9000 : 6000,
+  return { model:modelFor(model,options,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6'), temperature: 0, max_tokens: options.feedbackV3 ? 9000 : 6000,
     messages: [{ role: 'user', content: prompt }],
     ...(tool ? { tools: [tool], tool_choice: { type: 'tool', name: tool.name } } : {}) };
+}
+
+function modelFor(model, options = {}, reassessmentModel = 'claude-sonnet-4-6') {
+  return options.feedbackV3 && options.semanticReassessment ? reassessmentModel : model;
 }
 
 function response(value, { stage } = {}) {
@@ -116,4 +120,4 @@ function response(value, { stage } = {}) {
   return JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] || 'null');
 }
 
-module.exports = { toolFor, request, response };
+module.exports = { toolFor, request, response, modelFor };

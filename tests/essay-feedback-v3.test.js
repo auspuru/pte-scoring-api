@@ -82,11 +82,13 @@ for(const stage of ['assessment','subjective-review','subjective-resolver'])test
  const {assessment}=await assessEssay(question,essay,async(p,o)=>{
   stages.push(o.stage);counts[o.stage]=(counts[o.stage]||0)+1;
   if(o.stage===stage && counts[o.stage]===1){
+   assert.equal(o.semanticReassessment,false);
    const rejected=raw();rejected.scores.content=5;
    rejected.feedbackIssues=[issue({code:'comparison_missing',category:'coverage',requirementId:'req_1',evidence:{essayQuote:'',promptQuote:'an invented opposing argument'}})];
    return o.stage==='assessment'?rejected:reviewFrom(rejected);
   }
   if(o.stage===stage && counts[o.stage]===2){
+   assert.equal(o.semanticReassessment,true);
    assert.match(p,/Supported one-sided agreement does not require an opposing paragraph/);
    assert.match(p,/an invented opposing argument/);
   }
