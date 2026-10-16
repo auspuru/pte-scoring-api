@@ -166,6 +166,9 @@
         if (!value || value.version !== 1 || typeof value.essayText !== 'string' || typeof value.questionText !== 'string') return null;
         return {
           version: 1, essayText: value.essayText, questionText: value.questionText,
+          revisionParentId: typeof value.revisionParentId==='string' ? value.revisionParentId : null,
+          submissionId: typeof value.submissionId==='string' ? value.submissionId : null,
+          submissionSignature: typeof value.submissionSignature==='string' ? value.submissionSignature : '',
           questionTitle: typeof value.questionTitle === 'string' ? value.questionTitle : '',
           selectedQuestionId: typeof value.selectedQuestionId === 'string' || typeof value.selectedQuestionId === 'number' ? value.selectedQuestionId : null,
           questionSource: value.questionSource === 'custom' ? 'custom' : 'library',
@@ -182,6 +185,9 @@
       try {
         const record = {
           version: 1, essayText: String(state.essayText || ''), questionText: String(state.questionText || ''),
+          revisionParentId: typeof state.revisionParentId==='string' ? state.revisionParentId : null,
+          submissionId: typeof state.submissionId==='string' ? state.submissionId : null,
+          submissionSignature: typeof state.submissionSignature==='string' ? state.submissionSignature : '',
           questionTitle: String(state.questionTitle || ''), selectedQuestionId: state.selectedQuestionId || null,
           questionSource: state.questionSource === 'custom' ? 'custom' : 'library',
           writeStep: state.writeStep === 2 ? 2 : 1,

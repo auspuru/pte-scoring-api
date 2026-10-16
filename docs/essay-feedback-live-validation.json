@@ -1,0 +1,220 @@
+{
+  "policyVersion": "essay-feedback-2026-10-15.1",
+  "synthetic": true,
+  "productionActivation": false,
+  "note": "Small synthetic evaluation sample; timings include intermediate contract revisions and are not a production latency baseline. Human teaching review is pending.",
+  "results": [
+    {
+      "case": "reasons_or_experience",
+      "passed": true,
+      "latencyMs": 37428,
+      "providerCalls": 2,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCodes": []
+    },
+    {
+      "case": "explicit_own_experience",
+      "passed": true,
+      "latencyMs": 64611,
+      "providerCalls": 3,
+      "scores": {
+        "content": 5,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 23
+      },
+      "issueCodes": [
+        "missing_requirement"
+      ]
+    },
+    {
+      "case": "one_sided_supported",
+      "passed": true,
+      "latencyMs": 47487,
+      "providerCalls": 3,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCodes": []
+    },
+    {
+      "case": "explanation_elsewhere",
+      "passed": true,
+      "latencyMs": 52174,
+      "providerCalls": 3,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 6,
+        "coherence": 6,
+        "form": 2,
+        "total": 26
+      },
+      "issueCodes": []
+    },
+    {
+      "case": "jobs_automation",
+      "passed": true,
+      "latencyMs": 118568,
+      "providerCalls": 5,
+      "scores": {
+        "content": 2,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 3,
+        "coherence": 3,
+        "form": 2,
+        "total": 16
+      },
+      "issueCodes": [
+        "unsupported_inference",
+        "development_gap"
+      ]
+    },
+    {
+      "case": "relative_comparison",
+      "passed": true,
+      "latencyMs": 111016,
+      "providerCalls": 5,
+      "scores": {
+        "content": 4,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 4,
+        "coherence": 4,
+        "form": 2,
+        "total": 20
+      },
+      "issueCodes": [
+        "comparison_missing",
+        "development_gap"
+      ]
+    },
+    {
+      "case": "design_not_location",
+      "passed": true,
+      "latencyMs": 134581,
+      "providerCalls": 5,
+      "scores": {
+        "content": 2,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 4,
+        "coherence": 3,
+        "form": 2,
+        "total": 17
+      },
+      "issueCodes": [
+        "category_mismatch",
+        "development_gap",
+        "organisation_gap"
+      ]
+    },
+    {
+      "case": "stance_conflict",
+      "passed": true,
+      "latencyMs": 65889,
+      "providerCalls": 4,
+      "scores": {
+        "content": 3,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 4,
+        "coherence": 3,
+        "form": 2,
+        "total": 18
+      },
+      "issueCodes": [
+        "stance_conflict"
+      ]
+    }
+  ],
+  "revisionWalkthrough": {
+    "passed": true,
+    "latencyMs": 84654,
+    "retryLatencyMs": 448,
+    "checks": [
+      "resolved-current-evidence",
+      "revision-links",
+      "save-reload",
+      "duplicate-retry",
+      "original-preserved",
+      "marked-final",
+      "account-isolation"
+    ],
+    "originalIssueCodes": [
+      "unsupported_inference",
+      "development_gap"
+    ],
+    "commit": "bf7861ddc797c9e352b7c4d74fd19a905fd24e62",
+    "scores": {
+      "content": 6,
+      "spelling": 2,
+      "grammar": 2,
+      "vocabulary": 2,
+      "linguistic": 5,
+      "coherence": 6,
+      "form": 2,
+      "total": 25
+    },
+    "resolvedIssues": 2
+  },
+  "strongAnswerRepeat": [
+    {
+      "passed": true,
+      "latencyMs": 35600,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCount": 0
+    },
+    {
+      "passed": true,
+      "latencyMs": 38624,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCount": 0
+    }
+  ]
+}

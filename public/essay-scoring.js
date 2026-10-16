@@ -409,6 +409,7 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
   }
   function normalizeSample(raw, essay, assessment, { allowUnavailable = true, sampleBand = raw?.sampleBand || '9' } = {}) {
     const band = normalizeSampleBand(sampleBand);
+    if (raw.sampleStatus === 'not-requested' && raw.feedbackVersion) return {sampleStatus:'not-requested',sampleKind:'not-requested',sampleResponse:'',sampleWordCount:0,sampleSourceIdeas:[],sampleNote:clean(raw.sampleNote),sampleBand:band};
     const sampleResponse = clean(raw.sampleResponse).replace(/\r\n?/g, '\n');
     const sampleSourceIdeas = Array.isArray(raw.sampleSourceIdeas) ? raw.sampleSourceIdeas.map(idea => exactQuote(essay, idea, true)) : [];
     const sampleWordCount = words(sampleResponse);

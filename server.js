@@ -247,30 +247,14 @@ const essayGrader = createEssayGrader(async (prompt, options) => {
   const response = await anthropic.messages.create(essayJudgeFormat.request(prompt, CLAUDE_MODEL, options),
     { timeout: 85000, maxRetries: 0 });
   return essayJudgeFormat.response(response, options);
-}, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)) });
-app.post('/api/essay/grade', async (req, res) => {
-  const { question, essay } = req.body || {};
-  const requestedSampleBand = String(req.body?.sampleBand ?? '9').trim().toLowerCase().replace(/^band\s*/, '');
-  if (typeof question !== 'string' || !question.trim() || question.length > 5000
-    || typeof essay !== 'string' || !essay.trim() || essay.length > 20000) {
-    return res.status(400).json({ error: 'Provide an essay question and response within the size limits.' });
-  }
-  if (!['6', '7', '8', '9'].includes(requestedSampleBand)) {
-    return res.status(400).json({ error: 'Choose a sample band from 6, 7, 8 or 9.' });
-  }
-  try {
-    const result = await essayGrader.grade(question, essay, requestedSampleBand);
-    res.json(essayResultForClient(result, req.get('x-essay-scoring-version') || ''));
-  }
-  catch (error) {
-    console.error('[essay-grade] assessment failed:', error && error.message ? error.message : error);
-    if (error.retryable === false) {
-      return res.status(503).json({ code: 'ESSAY_EVIDENCE_VALIDATION_FAILED', retryable: false,
-        error: 'The assessment evidence could not be verified. Your writing is safe. Please wait before submitting again.' });
-    }
-    res.status(503).json({ error: 'The essay assessment could not be completed. Your writing is safe; please try again.' });
-  }
-});
+}, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)),
+  onAssessment: details => console.info('[essay-assessment-metric]', JSON.stringify(details)) });
+app.post('/api/essay/grade', require('./essay-feedback-handler').createEssayGradeHandler({
+  grader:essayGrader,
+  verifyToken:token=>verifySessionToken(token) || verifyImpersonationToken(token),
+  getUserData:uid=>StorageAPI.getUserData(uid),
+  onError:error=>console.error('[essay-grade] assessment failed:',error?.message || 'unknown')
+}));
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
 // Data storage: Railway volume > local ./data > /tmp fallback

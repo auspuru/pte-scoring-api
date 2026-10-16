@@ -1,15 +1,16 @@
 'use strict';
 const { createHash } = require('node:crypto');
 const policy = require('./public/essay-scoring');
+const feedbackPolicy = require('./public/essay-feedback');
 const { assessEssay } = require('./essay-assessment-service');
 
-function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
+function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () => {} } = {}) {
   const cache = new Map(), pending = new Map();
   const assessmentCache = new Map(), assessmentPending = new Map();
   const validationFailures = new Map();
 
-  async function getAssessment(question, essay) {
-    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay])).digest('hex');
+  async function getAssessment(question, essay, options = {}) {
+    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy', question, essay, options.revisionContext || null])).digest('hex');
     const blocked = validationFailures.get(key);
     if (blocked && blocked.expires > Date.now()) {
       const error = new Error('Essay evidence validation needs repair.');
@@ -22,16 +23,21 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
 
     if (!assessmentPending.has(key)) {
       const task = (async () => {
-        let assessed;
-        try { assessed = await assessEssay(question, essay, call, { onAttemptError }); }
+        let assessed, calls = 0;
+        const started = Date.now();
+        const measuredCall = async (...args) => { calls++; return call(...args); };
+        try { assessed = await assessEssay(question, essay, measuredCall, { onAttemptError, ...options }); }
+
         catch (error) {
-          if (error.evidenceRepairExhausted) {
+          if (error.evidenceRepairExhausted || error.feedbackRepairExhausted || error.feedbackSemanticConflict) {
             error.retryable = false;
             validationFailures.set(key, { code: error.code || 'evidence_validation', expires: Date.now() + 60000 });
             while (validationFailures.size > 100) validationFailures.delete(validationFailures.keys().next().value);
           }
+          onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,status:'failed',code:error.code || 'unknown'});
           throw error;
         }
+        onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,status:'complete'});
         assessmentCache.set(key, {
           assessment: structuredClone(assessed.assessment),
           expires: Date.now() + 20 * 60 * 1000
@@ -91,11 +97,15 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
     };
   }
 
-  async function grade(question, essay, sampleBand = '9') {
+  async function grade(question, essay, sampleBand = '9', options = {}) {
     question = String(question || '').trim();
     essay = String(essay || '').trim();
     sampleBand = policy.normalizeSampleBand(sampleBand);
-    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, question, essay, sampleBand])).digest('hex');
+    if (options.feedbackV3 && options.includeSample === false) {
+      const assessment = await getAssessment(question, essay, options);
+      return {...assessment,sampleStatus:'not-requested',sampleKind:'not-requested',sampleResponse:'',sampleSourceIdeas:[],sampleWordCount:0,sampleBand,sampleNote:'Request an optional learning sample when you need one.'};
+    }
+    const key = createHash('sha256').update(JSON.stringify([policy.VERSION, options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy', question, essay, sampleBand, options.revisionContext || null])).digest('hex');
     const hit = cache.get(key);
     const saved = hit && hit.expires > Date.now() ? structuredClone(hit.result) : null;
     if (saved && (saved.sampleStatus !== 'unavailable' || saved.scoreGate?.status === 'zero_form')) return saved;
@@ -103,7 +113,7 @@ function createEssayGrader(call, { onAttemptError = () => {} } = {}) {
 
     if (!pending.has(key)) {
       const task = (async () => {
-        const assessment = saved || await getAssessment(question, essay);
+        const assessment = saved || await getAssessment(question, essay, options);
         const sample = await prepareSample(question, essay, assessment, sampleBand);
         const result = { ...assessment, ...sample };
         cache.set(key, { result: structuredClone(result), expires: Date.now() + 20 * 60 * 1000 });
