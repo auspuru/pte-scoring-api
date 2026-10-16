@@ -1642,6 +1642,208 @@
         "originalAttemptId": "preview_stance_conflict",
         "revisionNumber": 0
       }
+    },
+    {
+      "id": "jobs_automation_revision",
+      "title": "What changed in the revised essay",
+      "assessment": {
+        "scores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 6,
+          "form": 2,
+          "total": 25
+        },
+        "taskRelevance": {
+          "status": "relevant",
+          "evidence": "Automation can improve working life by taking over repetitive work, but its benefits depend on how employers introduce it. I support its use when managers train workers and share productivity gains with",
+          "reason": "The essay directly addresses the prompt question with a clear conditional position: 'Automation can improve working life by taking over repetitive work, but its benefits depend on how employers introduce it' and explicitly states personal agreement: 'I support its use when managers train workers and share productivity gains with them.' This is substantive engagement with the actual topic, not generic filler."
+        },
+        "promptCoverage": [
+          {
+            "requirement": "To what extent do you agree?",
+            "status": "addressed",
+            "evidence_span": [
+              20,
+              32
+            ],
+            "nextStep": "",
+            "requirementId": "req_1",
+            "evidence": "I support its use when managers train workers and share productivity gains with"
+          },
+          {
+            "requirement": "Explain your reasons.",
+            "status": "addressed",
+            "evidence_span": [
+              34,
+              206
+            ],
+            "nextStep": "",
+            "requirementId": "req_2",
+            "evidence": "Machines can perform repeated movements throughout the day. A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce tiring tasks and give staff time to check quality. Employees still need training to operate the equipment and respond when it stops working.\n\nGreater productivity does not automatically shorten working hours. If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income. If managers instead use the machines only to increase output, working hours may remain unchanged. Shorter hours therefore require an explicit decision about how the gains will be shared.\n\nEmployment effects also depend on the transition. Machines may replace some assembly tasks, while creating demand for maintenance and quality-control work. Retraining can help affected employees move into those roles, although the new positions may not cover every displaced job. Employers should identify suitable roles before replacing tasks and offer practical training to the people affected."
+          }
+        ],
+        "scoringEvidence": {
+          "linguisticExamples": [
+            "If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income.",
+            "Machines may replace some assembly tasks, while creating demand for maintenance and quality-control work. Retraining can help affected employees move into those roles, although the new positions may not cover every displaced job.",
+            "Overall, automation can make work less repetitive and support shorter hours when employers share the gains."
+          ],
+          "developmentEvidence": [
+            "A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce tiring tasks and give staff time to check quality.",
+            "Greater productivity does not automatically shorten working hours. If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income. If managers instead use the machines only to increase output, working hours may remain unchanged. Shorter hours therefore require an explicit decision about how the gains will be shared.",
+            "Employment effects also depend on the transition. Machines may replace some assembly tasks, while creating demand for maintenance and quality-control work. Retraining can help affected employees move into those roles, although the new positions may not cover every displaced job. Employers should identify suitable roles before replacing tasks and offer practical training to the people affected."
+          ],
+          "vocabularyExamples": [
+            "reduce tiring tasks",
+            "Shorter hours therefore require an explicit decision about how the gains will be shared.",
+            "Overall, automation can make work less repetitive and support shorter hours when employers share the gains."
+          ]
+        },
+        "feedback": {
+          "content": "The essay fully addresses both canonical requirements with a clear conditional position and four systematically developed reasons. The opening establishes the position ('I support its use when managers train workers and share productivity gains with them') and the framing principle (benefits depend on how employers introduce automation). Paragraph 2 develops the benefit of reduced repetitive work with a concrete factory example showing how machines can reduce tiring tasks and allow time for quality checking. Paragraph 3 explains the conditional nature of hour reduction through two explicit contrasting scenarios—managers reducing shifts while maintaining pay versus using machines only to increase output—concluding that shorter hours require deliberate management decisions. Paragraph 4 addresses employment effects with realistic acknowledgment that new positions may not cover every displaced job, and specifies employer responsibilities for planning and training. The conclusion reinforces the managed-transition principle. Each reason is grounded in specific conditions or mechanisms rather than unsupported assertions.",
+          "form": "243 words: within the 200–300 target. Full Form marks.",
+          "spelling": "No spelling errors. Consistent use of British spelling (favour, quality-control).",
+          "grammar": "Clear meaning throughout. Minor: 'Employees still need training' (word 80) uses present tense after past context, but meaning is unambiguous. No meaning-changing errors.",
+          "vocabulary": "Appropriate and precise: 'repetitive', 'productivity gains', 'transition', 'retraining', 'managed transition'. Some repetition of 'automation', 'machines', 'work' and 'training', but adequate for the task.",
+          "linguistic": "The essay demonstrates controlled and appropriate expression with varied sentence structures suited to expository reasoning. Conditional clauses ('If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income'; 'although the new positions may not cover every displaced job') show syntactic flexibility. Vocabulary is precise and topic-appropriate ('repetitive movements', 'productivity gains', 'quality-control work', 'managed transition'). The writing is clear and competent throughout. The range is somewhat constrained by consistent reliance on straightforward expository patterns without notable rhetorical devices or exceptional syntactic complexity, but this is appropriate to the task and does not impede clarity or effectiveness. The mark of 5 rather than 6 reflects this competent but not exceptional range.",
+          "coherence": "The essay is well-structured with clear logical progression and explicit connections between ideas. The opening establishes the conditional position and framing principle. Paragraph 2 develops the benefit of reduced repetitive work with concrete detail. Paragraph 3 explains the conditional nature of hour reduction through contrasting scenarios and concludes with an explicit principle. Paragraph 4 addresses employment effects and transition requirements with realistic qualifications. The conclusion synthesises the position and reinforces the managed-transition principle. Each paragraph has a clear purpose, claims are developed with conditions or supporting detail, and the overall argument moves logically from task reduction to hour reduction to employment effects to implementation requirements."
+        },
+        "errors": [],
+        "optionalRefinements": [
+          {
+            "phrase": "Employees still need training to operate the equipment and respond when it stops working.",
+            "correction": "Employees still need training to operate the equipment and to respond when it stops working.",
+            "explanation": "Adding 'to' before 'respond' creates parallel structure with 'to operate' and improves flow, though the current version is grammatically acceptable.",
+            "affects_score": false
+          },
+          {
+            "phrase": "Shorter hours therefore require an explicit decision about how the gains will be shared.",
+            "correction": "Shorter working hours therefore require an explicit decision by managers about how the gains will be shared.",
+            "explanation": "Adding 'by managers' clarifies agency and strengthens the causal link to the earlier conditional reasoning.",
+            "affects_score": false
+          }
+        ],
+        "templateDetector": "ok",
+        "templateNote": "The essay uses standard scaffolding ('Overall', 'also depend on', 'therefore require') appropriately to signal structure. These phrases are filled with substantive conditional reasoning (e.g., 'Shorter hours therefore require an explicit decision about how the gains will be shared') rather than generic filler. No template-only content detected; structure supports the argument.\"",
+        "templateEvidence": [],
+        "strengths": [
+          "Clear, conditional position stated early and reinforced in conclusion: automation improves working life when specific conditions are met (training, shared gains, managed transition)",
+          "Systematic development of four distinct reasons, each with supporting explanation and realistic conditions or limitations",
+          "Explicit causal reasoning: explains how machines reduce repetitive tasks, how productivity gains can translate to shorter hours only through deliberate management decisions, and how employment effects depend on transition planning"
+        ],
+        "improvements": [],
+        "overallVerdict": "The essay fully satisfies both canonical requirements with a clear conditional position and four developed, well-reasoned explanations grounded in specific mechanisms and realistic conditions. Both previous major issues have been resolved: the essay now provides explicit causal explanation for employment effects and directly addresses the tension between automatic productivity and deliberate management decisions. The writing is clear, coherent and appropriately structured. Content and Coherence are fully addressed at the highest level; Linguistic range is competent and controlled but somewhat constrained by consistent expository patterns, justifying a mark of 5 rather than 6. No further corrections are required.",
+        "feedbackIssues": [],
+        "revisionDecisions": [
+          {
+            "priorIssueId": "qa_original:preview_jobs_automation:issue_l9770t",
+            "status": "resolved",
+            "currentIssueId": "",
+            "evidence": "Employment effects also depend on the transition. Machines may replace some assembly tasks, while creating demand for maintenance and quality-control work. Retraining can help affected employees move into those roles, although the new positions may not cover every displaced job.",
+            "reason": "The current essay explicitly addresses the previous unsupported inference by stating that employment effects 'depend on the transition' and explaining the mechanism: machines may replace some tasks while creating demand for maintenance and quality-control work. It acknowledges that retraining 'can help affected employees move into those roles, although the new positions may not cover every displaced job.' This provides the causal explanation and conditions that were missing, replacing any absolute claim with a conditional, realistic account.",
+            "attemptId": "qa_revision",
+            "previousAttemptId": "qa_original"
+          },
+          {
+            "priorIssueId": "qa_original:preview_jobs_automation:issue_15yocw4",
+            "status": "resolved",
+            "currentIssueId": "",
+            "evidence": "Greater productivity does not automatically shorten working hours. If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income. If managers instead use the machines only to increase output, working hours may remain unchanged. Shorter hours therefore require an explicit decision about how the gains will be shared.",
+            "reason": "The current essay resolves the development gap by explicitly stating that 'Greater productivity does not automatically shorten working hours' and then explaining two scenarios: if managers reduce shifts while maintaining pay, hours shorten; if they use machines only to increase output, hours remain unchanged. The essay concludes that 'Shorter hours therefore require an explicit decision about how the gains will be shared.' This directly addresses the tension and explains that benefits require deliberate management decisions, not automatic outcomes.",
+            "attemptId": "qa_revision",
+            "previousAttemptId": "qa_original"
+          }
+        ],
+        "diagnosticScores": {
+          "content": 6,
+          "spelling": 2,
+          "grammar": 2,
+          "vocabulary": 2,
+          "linguistic": 5,
+          "coherence": 6,
+          "form": 2
+        },
+        "scoreGate": {
+          "status": "valid",
+          "cap": 26,
+          "reason": ""
+        },
+        "spellingErrors": [],
+        "grammarIssues": [],
+        "wordCount": 243,
+        "scoring_version": "essay-unified-2.3",
+        "essayText": "Automation can improve working life by taking over repetitive work, but its benefits depend on how employers introduce it. I support its use when managers train workers and share productivity gains with them.\n\nMachines can perform repeated movements throughout the day. A factory using machines may finish more products in the same period, allowing managers to meet orders without asking employees to repeat the same physical action. This can reduce tiring tasks and give staff time to check quality. Employees still need training to operate the equipment and respond when it stops working.\n\nGreater productivity does not automatically shorten working hours. If managers use the time saved to reduce shifts while maintaining pay, staff can work fewer hours without losing income. If managers instead use the machines only to increase output, working hours may remain unchanged. Shorter hours therefore require an explicit decision about how the gains will be shared.\n\nEmployment effects also depend on the transition. Machines may replace some assembly tasks, while creating demand for maintenance and quality-control work. Retraining can help affected employees move into those roles, although the new positions may not cover every displaced job. Employers should identify suitable roles before replacing tasks and offer practical training to the people affected.\n\nOverall, automation can make work less repetitive and support shorter hours when employers share the gains. Its employment benefits require planning and training, so I favour a managed transition rather than assuming every worker will automatically benefit.",
+        "languageCorrections": [],
+        "feedbackVersion": "essay-feedback-2026-10-15.1",
+        "promptRequirements": [
+          {
+            "id": "req_1",
+            "kind": "judgement",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "To what extent do you agree?",
+            "promptSpan": {
+              "quote": "To what extent do you agree?",
+              "start": 34,
+              "end": 62
+            }
+          },
+          {
+            "id": "req_2",
+            "kind": "instruction",
+            "operator": "AND",
+            "groupId": "",
+            "alternatives": [],
+            "label": "Explain your reasons.",
+            "promptSpan": {
+              "quote": "Explain your reasons.",
+              "start": 63,
+              "end": 84
+            }
+          }
+        ],
+        "subjectiveReview": {
+          "source": "resolver",
+          "primary": {
+            "content": 5,
+            "linguistic": 5,
+            "coherence": 5
+          },
+          "reviewer": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 6
+          },
+          "independent": {
+            "content": 6,
+            "linguistic": 5,
+            "coherence": 6
+          },
+          "independentRelevance": {
+            "status": "relevant",
+            "evidence": "Automation can improve working life by taking over repetitive work, but its benefits depend on how employers introduce it. I support its use when managers train workers and share productivity gains with",
+            "reason": "The essay directly addresses the prompt question with a clear position: automation can improve working life, but benefits depend on how employers introduce it and share gains. This is a substantive engagement with the actual topic, not generic filler."
+          }
+        },
+        "sampleStatus": "not-requested",
+        "sampleKind": "not-requested",
+        "sampleResponse": "",
+        "sampleSourceIdeas": [],
+        "sampleWordCount": 0,
+        "sampleBand": "9",
+        "sampleNote": "Request an optional learning sample when you need one.",
+        "attemptId": "qa_revision",
+        "attemptGroupId": "qa_original",
+        "parentAttemptId": "qa_original",
+        "originalAttemptId": "qa_original",
+        "revisionNumber": 1,
+        "questionText": "Automation improves working life. To what extent do you agree? Explain your reasons."
+      }
     }
   ]
 }

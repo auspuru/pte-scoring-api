@@ -154,5 +154,67 @@
         "stance_conflict"
       ]
     }
+  ],
+  "revisionWalkthrough": {
+    "passed": true,
+    "latencyMs": 84654,
+    "retryLatencyMs": 448,
+    "checks": [
+      "resolved-current-evidence",
+      "revision-links",
+      "save-reload",
+      "duplicate-retry",
+      "original-preserved",
+      "marked-final",
+      "account-isolation"
+    ],
+    "originalIssueCodes": [
+      "unsupported_inference",
+      "development_gap"
+    ],
+    "commit": "bf7861ddc797c9e352b7c4d74fd19a905fd24e62",
+    "scores": {
+      "content": 6,
+      "spelling": 2,
+      "grammar": 2,
+      "vocabulary": 2,
+      "linguistic": 5,
+      "coherence": 6,
+      "form": 2,
+      "total": 25
+    },
+    "resolvedIssues": 2
+  },
+  "strongAnswerRepeat": [
+    {
+      "passed": true,
+      "latencyMs": 35600,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCount": 0
+    },
+    {
+      "passed": true,
+      "latencyMs": 38624,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "issueCount": 0
+    }
   ]
 }
