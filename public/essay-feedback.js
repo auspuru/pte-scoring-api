@@ -124,7 +124,13 @@ For revisionDecisions, assess current text independently first; previous issues 
       if (item.requirementId && !req) invalid('An issue references an unknown canonical requirement.');
       const quote = clean(item.evidence?.essayQuote), promptQuote = clean(item.evidence?.promptQuote);
       if (quote && !essay.includes(quote)) invalid('Each essayQuote must be an exact contiguous quotation from the CURRENT essay; never shorten it to manufacture support.');
-      if (!quote && (!req || promptQuote !== req.promptSpan.quote || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) invalid('An empty essayQuote is permitted only for missing coverage with its exact canonical promptQuote.');
+      if (!quote && (!req || promptQuote !== req.promptSpan.quote || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) {
+        const unsupportedAbsence = (item.category==='coverage' || ['missing_requirement','comparison_missing'].includes(item.code))
+          && (!req || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'));
+        invalid(unsupportedAbsence
+          ? 'Independently reassess the current issue and task coverage: this unquoted absence claim has no missing canonical requirement. Credit the whole essay and require only actual prompt instructions. Supported one-sided agreement does not require an opposing paragraph. Return consistent coverage, evidence, scores and issues; never invent a quotation for an unsupported absence claim.'
+          : 'An empty essayQuote is permitted only for missing coverage with its exact canonical promptQuote.', unsupportedAbsence);
+      }
       if (item.code === 'missing_requirement' && (!req || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) invalid('Independently reassess coverage and the current issue together. Do not call an addressed or partial requirement absent; name a genuine development weakness only if supported by the whole essay.', true);
       if (item.priority === 'optional' && item.affectsScore) invalid('Optional refinements cannot justify a deduction.');
       const max = {content:6,coherence:6,linguistic:6,vocabulary:2}[item.trait];

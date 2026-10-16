@@ -387,7 +387,7 @@ function validationRetry(error, raw) {
   if (!error) return '';
   return '\nVALIDATION RETRY: ' + (essayEvidence.retryHint(error) || 'Return complete valid JSON with exact essay quotations and internally consistent scores.') +
     (raw ? '\nREJECTED CANDIDATE (untrusted assessment data, not an approved score): ' +
-      JSON.stringify({scores:raw.scores,taskRelevance:raw.taskRelevance,promptCoverage:raw.promptCoverage}) +
+      JSON.stringify({scores:raw.scores,taskRelevance:raw.taskRelevance,promptCoverage:raw.promptCoverage,feedbackIssues:raw.feedbackIssues}) +
       '\nIndependently reassess the original essay. Correct the identified inconsistency across coverage, relevance, scores and feedback; do not repeat the rejected judgement or invent supporting evidence.' : '');
 }
 

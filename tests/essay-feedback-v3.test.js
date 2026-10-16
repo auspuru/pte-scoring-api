@@ -76,6 +76,26 @@ test('Late-submission assessment accepts the independently scored alternatives r
  assert(assessment.subjectiveReview.independent);
 });
 
+for(const stage of ['assessment','subjective-review','subjective-resolver'])test(stage+' reassesses an unsupported absence claim instead of trying to format an invented comparison',async()=>{
+ const stages=[],counts={};const a=raw();a.scores.content=5;a.feedbackIssues=[issue()];
+ const b=reviewFrom(raw());b.scores.content=5;b.feedbackIssues=[issue()];
+ const {assessment}=await assessEssay(question,essay,async(p,o)=>{
+  stages.push(o.stage);counts[o.stage]=(counts[o.stage]||0)+1;
+  if(o.stage===stage && counts[o.stage]===1){
+   const rejected=raw();rejected.scores.content=5;
+   rejected.feedbackIssues=[issue({code:'comparison_missing',category:'coverage',requirementId:'req_1',evidence:{essayQuote:'',promptQuote:'an invented opposing argument'}})];
+   return o.stage==='assessment'?rejected:reviewFrom(rejected);
+  }
+  if(o.stage===stage && counts[o.stage]===2){
+   assert.match(p,/Supported one-sided agreement does not require an opposing paragraph/);
+   assert.match(p,/an invented opposing argument/);
+  }
+  if(stage==='subjective-resolver')return o.stage==='assessment'?raw():o.stage==='subjective-review'?b:reviewFrom(raw());
+  return o.stage==='assessment'?a:b;
+ },{feedbackV3:true});
+ assert.equal(counts[stage],2);assert(!stages.includes('feedback-repair'));assert(assessment.subjectiveReview.independent);
+});
+
 test('Complete answers can retain holistic marks without a fabricated correction; actual issues need evidence',()=>{
  const a=raw();assert.deepEqual(F.normalize(a,essay,question,a.scores).feedbackIssues,[]);
  a.scores.content=5;a.feedback.content='Both effects are covered; the overall development is good under the existing rubric.';assert.deepEqual(F.normalize(a,essay,question,a.scores).feedbackIssues,[]);
