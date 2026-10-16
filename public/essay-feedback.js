@@ -72,7 +72,7 @@ For revisionDecisions, assess current text independently first; previous issues 
     return '\n\n' + GUIDANCE + '\nCanonical requirements (exact prompt data): ' + JSON.stringify(requirements(question)) +
       '\nPrevious issues for revision comparison only (no previous scores): ' + JSON.stringify(previous?.issues || []);
   }
-  function enrichPrompt(prompt) {
+  function enrichPrompt(prompt, question) {
     // Keep the prose's output example in sync with the forced tool schema.
     // Otherwise models follow the earlier legacy example and omit new fields.
     return prompt.replace(/(\nReturn[^\n]*:\n)(\{[\s\S]*?\n\})/, (all,lead,json)=>{
@@ -81,7 +81,12 @@ For revisionDecisions, assess current text independently first; previous issues 
         schema.feedbackIssues=[];schema.revisionDecisions=[];
         schema.strengths=schema.strengths || ['specific strength'];
         schema.overallVerdict=schema.overallVerdict || 'brief final assessment consistent with the current scores and issues';
-        if(Array.isArray(schema.promptCoverage))schema.promptCoverage=schema.promptCoverage.map(c=>({...c,requirementId:'req_1'}));
+        if(Array.isArray(schema.promptCoverage)) {
+          const canonical=requirements(question), example=schema.promptCoverage[0] || {};
+          schema.promptCoverage=canonical.length
+            ? canonical.map(r=>({...example,requirementId:r.id,requirement:r.label}))
+            : schema.promptCoverage.map(c=>({...c,requirementId:'req_1'}));
+        }
         return lead+JSON.stringify(schema,null,2)+'\nPopulate feedbackIssues for actual gaps and each missing/partial requirement; [] is only an example for a sufficient response. Populate revisionDecisions with exactly one decision for every supplied previous issue, copying each priorIssueId in full; [] is allowed only when previous issues are empty. Include every canonical requirementId and every final field shown.';
       }catch(_){return all;}
     });
@@ -90,7 +95,10 @@ For revisionDecisions, assess current text independently first; previous issues 
     const reqs = requirements(question), byId = new Map(reqs.map(r => [r.id,r]));
     if (!Array.isArray(raw.feedbackIssues) || !Array.isArray(raw.revisionDecisions)) invalid('Return feedbackIssues and revisionDecisions arrays, including [] when there are none.');
     const coverage = raw.promptCoverage || [];
-    if (coverage.length !== reqs.length || new Set(coverage.map(c=>c.requirementId)).size !== reqs.length || coverage.some(c=>!byId.has(c.requirementId))) invalid('Return every canonical requirementId exactly once in promptCoverage.');
+    // A missing, duplicate or unknown requirement leaves the task judgement
+    // incomplete. Reassess this stage; a feedback-only formatter has no
+    // authority to add or change coverage (or its corresponding score).
+    if (coverage.length !== reqs.length || new Set(coverage.map(c=>c.requirementId)).size !== reqs.length || coverage.some(c=>!byId.has(c.requirementId))) invalid('Independently reassess the CURRENT essay against every canonical requirement. Return every canonical requirementId exactly once in promptCoverage: '+reqs.map(r=>r.id).join(', ')+'. Do not merge, omit or invent requirements. Align coverage, scores and issues using current essay evidence.', true);
     const issues = [], seen = new Set();
     for (const rawItem of raw.feedbackIssues) {
       const item=rawItem && {...rawItem,code:canonicalCode(rawItem.code)};

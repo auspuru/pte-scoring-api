@@ -298,3 +298,63 @@ test('Disagreement about whether a specific prior issue is resolved requires fin
  const a={...raw(),feedbackVersion:F.VERSION,revisionDecisions:[{priorIssueId:'old',status:'resolved'}]},b={...a,revisionDecisions:[{priorIssueId:'old',status:'open'}]};
  assert.equal(needsResolver(a,b),true);b.revisionDecisions[0].status='resolved';assert.equal(needsResolver(a,b),false);
 });
+
+for (const stage of ['assessment','subjective-review','subjective-resolver']) {
+ for (const defect of ['omitted','duplicate','unknown']) {
+  test(`${stage} reassesses ${defect} canonical coverage before releasing a reviewed score`,async()=>{
+   const stages=[],counts={},prompts=[];
+   const {assessment}=await assessEssay(question,essay,async(p,o)=>{
+    stages.push(o.stage);prompts.push(p);counts[o.stage]=(counts[o.stage]||0)+1;
+    const a=raw();
+    if(stage==='subjective-resolver' && o.stage==='assessment')a.scores.content=5;
+    if(o.stage===stage && counts[o.stage]===1){
+     if(defect==='omitted')a.promptCoverage.pop();
+     else a.promptCoverage[1].requirementId=defect==='duplicate'?'req_1':'req_unknown';
+    }
+    return o.stage==='assessment'?a:reviewFrom(a);
+   },{feedbackV3:true});
+   const expected=stage==='assessment'?['assessment','assessment','subjective-review']:
+    stage==='subjective-review'?['assessment','subjective-review','subjective-review']:
+    ['assessment','subjective-review','subjective-resolver','subjective-resolver'];
+   assert.deepEqual(stages,expected);
+   assert.deepEqual(assessment.promptCoverage.map(c=>c.requirementId),F.requirements(question).map(r=>r.id));
+   assert.equal(assessment.scores.content,6);assert(assessment.subjectiveReview.independent);
+   assert.match(prompts[stages.lastIndexOf(stage)],/Independently reassess/);
+  });
+ }
+}
+
+test('Every canonical requirement is shown in the actual assessment output example',async()=>{
+ const q='Do you agree? Explain why with your own experience.';
+ await assessEssay(q,essay,async(p,o)=>{
+  const example=JSON.parse(p.match(/\nReturn[^\n]*:\n(\{[\s\S]*?\n\})/)[1]);
+  assert.deepEqual(example.promptCoverage.map(c=>[c.requirementId,c.requirement]),F.requirements(q).map(r=>[r.id,r.label]));
+  return o.stage==='assessment'?raw(q):reviewFrom(raw(q));
+ },{feedbackV3:true});
+});
+
+test('Persistently omitted coverage fails closed after two assessments and never enters a formatting repair',async()=>{
+ const stages=[];
+ await assert.rejects(assessEssay(question,essay,async(_p,o)=>{
+  stages.push(o.stage);const a=raw();a.promptCoverage.pop();return a;
+ },{feedbackV3:true}),{code:'feedback_contract',feedbackSemanticConflict:true});
+ assert.deepEqual(stages,['assessment','assessment']);
+});
+
+for(const stage of ['assessment','subjective-review','subjective-resolver'])test(`${stage} retry identifies the rejected full-Content and partial-coverage contradiction`,async()=>{
+ const counts={},stages=[];
+ const {assessment}=await assessEssay(question,essay,async(p,o)=>{
+  stages.push(o.stage);counts[o.stage]=(counts[o.stage]||0)+1;const a=raw();
+  if(stage==='subjective-resolver' && o.stage==='assessment')a.scores.content=5;
+  if(o.stage===stage && counts[o.stage]===1)a.promptCoverage[0]={...a.promptCoverage[0],status:'partial',nextStep:'Develop the explanation.'};
+  if(o.stage===stage && counts[o.stage]===2){
+   const rejected=JSON.parse(p.match(/REJECTED CANDIDATE[^\n]*: (\{[^\n]+\})/)[1]);
+   assert.equal(rejected.scores.content,6);assert.equal(rejected.promptCoverage[0].status,'partial');
+   assert.match(p,/do not repeat the rejected judgement/);
+  }
+  return o.stage==='assessment'?a:reviewFrom(a);
+ },{feedbackV3:true});
+ assert.equal(counts[stage],2);assert(!stages.includes('feedback-repair'));
+ assert.equal(assessment.scores.content,6);assert.equal(assessment.promptCoverage[0].status,'addressed');
+ assert(assessment.subjectiveReview.independent);
+});
