@@ -364,7 +364,9 @@ async function withFeedbackRepair(raw, scores, question, essay, call, options, {
   };
   try { return check(raw); }
   catch (error) {
-    if(error.code!=='feedback_contract')throw error;
+    // Contradictory coverage is a judgement problem. The existing bounded
+    // stage retry must reassess it; a formatter cannot change that judgement.
+    if(error.code!=='feedback_contract' || error.feedbackSemanticConflict)throw error;
     const prompt=`Repair ONLY the feedback formatting for an already assessed current essay. Do not rescore, change coverage/relevance, invent weaknesses, or introduce claims. Preserve the established rubric judgement. Use existing explanations and CURRENT essay evidence to express actual corrections as structured issues; keep optional polish separate. A missing or partial canonical requirement needs a specific issue, while complete coverage and a less-than-perfect holistic mark do not force a correction. Return feedbackIssues, revisionDecisions, rationale for content/linguistic/coherence, strengths and overallVerdict. Never return new scores or new coverage. If no correction is justified return [].
 Validation to repair: ${error.validationHint}
 ${feedbackPolicy.context(question,options.revisionContext)}
@@ -375,7 +377,7 @@ ${JSON.stringify({question,essay,assessment:raw,subjectiveOnly})}`;
       // A formatting operation has no authority to change the judgement or text.
       return check({...raw,feedbackIssues:repair.feedbackIssues,revisionDecisions:repair.revisionDecisions,
         rationale:repair.rationale,strengths:repair.strengths,overallVerdict:repair.overallVerdict});
-    } catch(repairError) {repairError.feedbackRepairExhausted=true;throw repairError;}
+    } catch(repairError) {if(!repairError.feedbackSemanticConflict)repairError.feedbackRepairExhausted=true;throw repairError;}
   }
 }
 

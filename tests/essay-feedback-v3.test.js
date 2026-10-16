@@ -245,3 +245,36 @@ test('A missing own-experience correction requests a genuine observation instead
  const suggestion=F.normalize(a,essay,q,a.scores).feedbackIssues[0].suggestedChange;
  assert.match(suggestion,/genuine experience or observation/);assert.doesNotMatch(suggestion,/I live alone|stressful job/);
 });
+
+test('A final coverage contradiction receives one semantic reassessment instead of an impossible formatting repair',async()=>{
+ const {callAndNormalizeResolver}=require('../essay-assessment-service');
+ const inconsistent=reviewFrom(raw());inconsistent.scores.content=5;
+ inconsistent.promptCoverage[0]={...inconsistent.promptCoverage[0],status:'partial',nextStep:'Explain the reason.'};
+ const stages=[],prompts=[],errors=[];
+ const result=await callAndNormalizeResolver(question,essay,raw(),reviewFrom(raw()),async(p,o)=>{
+  stages.push(o.stage);prompts.push(p);return stages.length===1?inconsistent:reviewFrom(raw());
+ },e=>errors.push(e),{feedbackV3:true});
+ assert.deepEqual(stages,['subjective-resolver','subjective-resolver']);
+ assert.match(prompts[1],/coverage says missing or partial but no specific issue/);
+ assert.equal(result.scores.content,6);assert.equal(result.promptCoverage[0].status,'addressed');assert.deepEqual(result.feedbackIssues,[]);
+ assert.equal(inconsistent.scores.content,5);assert.equal(inconsistent.promptCoverage[0].status,'partial');assert.equal(errors.length,1);
+});
+
+test('Persistent semantic inconsistency fails closed after two adjudications with no invented issue or score',async()=>{
+ const {callAndNormalizeResolver}=require('../essay-assessment-service');
+ const inconsistent=reviewFrom(raw());inconsistent.scores.content=5;
+ inconsistent.promptCoverage[0]={...inconsistent.promptCoverage[0],status:'partial',nextStep:'Explain the reason.'};
+ const stages=[];
+ await assert.rejects(callAndNormalizeResolver(question,essay,raw(),reviewFrom(raw()),async(_p,o)=>{
+  stages.push(o.stage);return inconsistent;
+ },()=>{},{feedbackV3:true}),{code:'feedback_contract',feedbackSemanticConflict:true});
+ assert.deepEqual(stages,['subjective-resolver','subjective-resolver']);assert.deepEqual(inconsistent.feedbackIssues,[]);
+});
+
+test('An exhausted semantic assessment suppresses immediate duplicate paid retries',async()=>{
+ const inconsistent=raw();inconsistent.scores.content=5;
+ inconsistent.promptCoverage[0]={...inconsistent.promptCoverage[0],status:'partial',nextStep:'Explain the reason.'};
+ let calls=0;const grader=createEssayGrader(async()=>{calls++;return inconsistent;});
+ for(let i=0;i<2;i++)await assert.rejects(grader.grade(question,essay,'9',{feedbackV3:true,includeSample:false}),{code:'feedback_contract',retryable:false});
+ assert.equal(calls,2);
+});
