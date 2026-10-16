@@ -35,8 +35,8 @@ For revisionDecisions, assess current text independently first; previous issues 
     for (const sentence of sentences) {
       const raw = sentence[0], base = sentence.index, text = raw.trim(), start = base + raw.indexOf(text);
       if (!text) continue;
-      const or = /\b(?:reasons?\s+or\s+(?:(?:your\s+)?(?:own\s+)?|personal\s+)?experiences?|(?:(?:your\s+)?(?:own\s+)?|personal\s+)?experiences?\s+or\s+reasons?)\b/i.exec(text);
-      if (or) add(start + or.index, start + or.index + or[0].length, 'support', 'OR', ['reasons', 'experience']);
+      const or = /\b(?:reasons?\s+(?:and\/)?or\s+(?:(?:your\s+)?(?:own\s+)?|(?:your\s+)?personal\s+)?experiences?|(?:(?:your\s+)?(?:own\s+)?|personal\s+)?experiences?\s+or\s+(?:reasons?|examples?)|(?:your\s+)?study,?\s+observations?\s+or\s+experiences?)\b/i.exec(text);
+      if (or) add(start + or.index, start + or.index + or[0].length, 'support', 'OR', or[0].split(/\s+(?:and\/)?or\s+|,\s*/i).map(x=>x.replace(/^(?:your\s+)?(?:own\s+|personal\s+)?/i,'').trim()));
       else {
         const own = /\b(?:(?:your\s+)?own\s+experiences?|your\s+experiences?|personal\s+experiences?)\b/i.exec(text);
         if (own) add(start + own.index, start + own.index + own[0].length, 'own_experience');
@@ -45,14 +45,28 @@ For revisionDecisions, assess current text independently first; previous issues 
           add(start + match.index, start + match.index + match[0].length, 'reasons');
         }
       }
-      if (/\b(?:agree|disagree|your opinion|do you think|your view|which.*(?:prefer|choose)|to what extent)\b/i.test(text)) {
+      // Named subtasks can share a sentence with a support instruction. Keep
+      // those explicit actions instead of letting the support span hide them.
+      const namedActions = [
+        /\b(?:give|provide) (?:an? )?examples?(?=\s*[,.;]|\s+and\s+(?:state|share))/ig,
+        /\bstate which\b.*?(?=\s+and\s+share\b|[.;]|$)/ig,
+        /\b(?:give|state|express) your (?:own )?(?:point of view|opinions?|views?)\b/ig
+      ];
+      if (found.some(r=>r.start>=start && r.end<=start+text.length) || /\b(?:advantages\s+and\s+disadvantages|positive\s+and\s+negative|causes\s+and\s+solutions)\b/i.test(text)) {
+        for (const pattern of namedActions) for (const action of text.matchAll(pattern)) {
+          add(start+action.index,start+action.index+action[0].length,'requested_part');
+        }
+      }
+      const directive = /^(?:["'“”]\s*)?(?:in your (?:opinion|view),?\s+)?(?:please\s+)?(?:discuss|explain|describe|compare|outline|examine|evaluate|suggest|recommend|propose|what|how|why|who|which|should|give|support|use)\b/i.test(text);
+      const judgement = /\b(?:agree|disagree|do you think|which.*(?:prefer|choose|better)|to what extent)\b|^(?:please\s+)?(?:what is your (?:opinion|view)|should\b)/i.test(text);
+      if (judgement && !found.some(r=>r.start===start && r.end===start+text.length)) {
         const supportAt=text.search(/\b(?:give reasons?|explain why|support (?:your|the) answer)\b/i);
         add(start, start + (supportAt>0 ? text.slice(0,supportAt).trimEnd().length : text.length), 'judgement');
       }
-      else if (/\b(?:discuss|explain|describe|compare|what|how|why|give|support|use)\b/i.test(text) && !or && !found.some(r => r.start >= start && r.end <= start + text.length)) add(start, start + text.length, 'instruction');
+      else if (directive && !or && !found.some(r => r.start >= start && r.end <= start + text.length)) add(start, start + text.length, 'instruction');
       const pairs = [/(advantages)\s+and\s+(disadvantages)/ig,/(positive)\s+and\s+(negative)/ig,/(causes)\s+and\s+(solutions)/ig];
-      for (const pattern of pairs) for (const pair of (/\b(?:discuss|explain|describe|compare|outline|what are|examine|evaluate)\b/i.test(text) ? text.matchAll(pattern) : [])) {
-        const enclosing=found.findIndex(r=>r.kind==='instruction' && r.start===start && r.end===start+text.length);
+      for (const pattern of pairs) for (const pair of (directive ? text.matchAll(pattern) : [])) {
+        const enclosing=found.findIndex(r=>['instruction','judgement'].includes(r.kind) && r.start===start && r.end===start+text.length);
         if(enclosing>=0)found.splice(enclosing,1);
         add(start+pair.index,start+pair.index+pair[1].length,'requested_part');
         const offset=pair[0].lastIndexOf(pair[2]);
@@ -110,7 +124,13 @@ For revisionDecisions, assess current text independently first; previous issues 
       if (item.requirementId && !req) invalid('An issue references an unknown canonical requirement.');
       const quote = clean(item.evidence?.essayQuote), promptQuote = clean(item.evidence?.promptQuote);
       if (quote && !essay.includes(quote)) invalid('Each essayQuote must be an exact contiguous quotation from the CURRENT essay; never shorten it to manufacture support.');
-      if (!quote && (!req || promptQuote !== req.promptSpan.quote || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) invalid('An empty essayQuote is permitted only for missing coverage with its exact canonical promptQuote.');
+      if (!quote && (!req || promptQuote !== req.promptSpan.quote || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) {
+        const unsupportedAbsence = (item.category==='coverage' || ['missing_requirement','comparison_missing'].includes(item.code))
+          && (!req || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'));
+        invalid(unsupportedAbsence
+          ? 'Independently reassess the current issue and task coverage: this unquoted absence claim has no missing canonical requirement. Credit the whole essay and require only actual prompt instructions. Supported one-sided agreement does not require an opposing paragraph. Return consistent coverage, evidence, scores and issues; never invent a quotation for an unsupported absence claim.'
+          : 'An empty essayQuote is permitted only for missing coverage with its exact canonical promptQuote.', unsupportedAbsence);
+      }
       if (item.code === 'missing_requirement' && (!req || !coverage.some(c=>c.requirementId===req.id && c.status==='missing'))) invalid('Independently reassess coverage and the current issue together. Do not call an addressed or partial requirement absent; name a genuine development weakness only if supported by the whole essay.', true);
       if (item.priority === 'optional' && item.affectsScore) invalid('Optional refinements cannot justify a deduction.');
       const max = {content:6,coherence:6,linguistic:6,vocabulary:2}[item.trait];
