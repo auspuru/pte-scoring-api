@@ -14423,6 +14423,7 @@ async function submitPracticeEssay() {
       headers: {
         'Content-Type': 'application/json',
         'X-Essay-Scoring-Version': EssayScoring.VERSION || '',
+        'X-Essay-Sample-Contract': EssayScoring.SAMPLE_CONTRACT_VERSION || '',
         'X-Session-Token': owner.token || ''
       },
       body: JSON.stringify({ question, essay, sampleBand, attemptId:submissionId, parentAttemptId, includeSample:false })
@@ -14500,6 +14501,7 @@ async function retryPracticeSample() {
       method: 'POST', headers: {
         'Content-Type': 'application/json',
         'X-Essay-Scoring-Version': EssayScoring.VERSION || '',
+        'X-Essay-Sample-Contract': EssayScoring.SAMPLE_CONTRACT_VERSION || '',
         'X-Session-Token': owner.token || ''
       },
       body: JSON.stringify({ question: attempt.questionText, essay: attempt.essayText, sampleBand, attemptId:attempt.id, parentAttemptId:attempt.parentAttemptId, includeSample:true })
