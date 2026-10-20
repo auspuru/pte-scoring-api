@@ -2,6 +2,7 @@
 const passages = require('../passages.json');
 const writing = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
+const userSwt = require('../content/user-swt-predictions');
 const policy = require('../writing-lab-scoring');
 
 const words = text => String(text || '').trim().split(/\s+/).filter(Boolean).length;
@@ -22,9 +23,12 @@ function validateSample(label, sample) {
 }
 function validatePassage(label, item, text, sample) {
   const count = words(text);
-  if (!within(count, 200, 300)) throw new Error(label + ' must contain 200–300 words; found ' + count + '.');
+  const verbatim = item.editorialReview?.standard === 'swt-user-verbatim';
+  if (!within(count, verbatim ? 150 : 200, verbatim ? 360 : 300)) {
+    throw new Error(label + (verbatim ? ' must contain 150–360 words of verbatim user source text; found ' : ' must contain 200–300 words; found ') + count + '.');
+  }
   if (!sourceStatus(item)) throw new Error(label + ' has source metadata that is not explicitly verified.');
-  if (item.editorialReview?.standard !== 'swt-200-300' || item.editorialReview?.automatedValidation !== 'required'
+  if (!['swt-200-300','swt-user-verbatim'].includes(item.editorialReview?.standard) || item.editorialReview?.automatedValidation !== 'required'
     || !['pending','reviewed'].includes(item.editorialReview?.humanReview)) {
     throw new Error(label + ' is missing editorial review metadata.');
   }
@@ -34,6 +38,7 @@ function validatePassage(label, item, text, sample) {
 function validateSwtContent() {
   const rows = [];
   for (const p of passages) rows.push({ bank:'standalone', id:String(p.id), words:validatePassage('Standalone SWT '+p.id, p, p.text, p.sampleResponse) });
+  for (const p of userSwt.passages) rows.push({ bank:'standalone', id:String(p.id), words:validatePassage('User prediction SWT '+p.id, p, p.text, p.sampleResponse) });
   for (const q of writingLabSwt()) rows.push({ bank:'writing-lab', id:q.id, words:validatePassage('Writing-lab SWT '+q.id, q, q.text, q.sample) });
   for (const q of predictions.swt) {
     const n = validatePassage('Prediction SWT '+q.id, q, q.text, q.sample);
