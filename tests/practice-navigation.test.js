@@ -24,3 +24,17 @@ test('SWT Back/Next respect attempted filters and stop at each filtered boundary
  ctx.activeFilter='unattempted';ctx.currentPassageId=1;ctx.nextPassage();assert.equal(ctx.currentPassageId,3);
  ctx.activeFilter='attempted';ctx.attempted.clear();ctx.updateSwtPracticeNavigation();assert.equal(disabled.navPrev,true);assert.equal(disabled.navNext,true);
 });
+
+test('SWT priority passages use visual positions but save and grade by stable database ID', () => {
+ const helper=source.slice(source.indexOf('const swtPassageAt ='),source.indexOf('let swtResultPassage ='));
+ assert(helper.includes('swtPassageStorageId'));
+ const context={passages:[{id:910498,title:'Origin of Species'},{id:910108,title:'Working Nine to Five'},{id:1,title:'Original first question'}],currentPassageId:1};
+ vm.createContext(context);
+ const ids=vm.runInContext(helper+'; [swtPassageAt(1).title,swtPassageStorageId(),swtPassageStorageId(2),swtPassageStorageId(3)]',context);
+ assert.deepEqual([...ids],['Origin of Species',910498,910108,1]);
+ assert.match(source,/const p = swtPassageAt\(id\);/);
+ assert.match(source,/loadSwtHighlightExercise\(p\.id\);/);
+ assert.match(source,/const passageId = p\?\.id;/);
+ assert.match(source,/summaryInputEl\.value = \(summaries\[p\.id\]/);
+ assert.match(source,/scores\[swtPassageStorageId\(\)\]/);
+});
