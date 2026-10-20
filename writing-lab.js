@@ -26,7 +26,12 @@ function roundRobinPairs(items) {
   }
   return pairs;
 }
-const predictionSwtPairs = roundRobinPairs(predictions.swt);
+const predictionSwtPairs = [
+  // The first prediction mock begins with the two passages requested by the
+  // teacher, then later mocks rotate through all remaining prediction items.
+  [predictions.swt[0], predictions.swt[1]],
+  ...roundRobinPairs(predictions.swt)
+];
 // Prediction essays stay unchanged. Every non-essay task comes only from the
 // current September 2026 prediction bank; generic practice pools are not used.
 const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
