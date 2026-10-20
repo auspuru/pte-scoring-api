@@ -81,15 +81,24 @@
     {
       "attempt": 5,
       "strategy": "minimal_clause_paraphrase",
-      "status": "pending",
+      "status": "reported",
       "sectionScores": {
-        "writing": null,
-        "reading": null
+        "writing": 86,
+        "reading": 29
       },
       "individualTraitScores": null,
       "responses": {
         "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the Web has changed the way we shop, listen to music and communicate, and a person can now have the same access to information as the elite; furthermore, he created the Web because he was dissatisfied with being unable to find all the information he wanted in one place.",
         "forecasting": "For economists in the corporate sector, forecasting is generally a key function that draws upon a broad range of statistical data; however, economic forecasting is far from an exact science, and forecasters can make widely differing assumptions about how an economy works; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      },
+      "scoreReport": {
+        "overall": 29,
+        "listening": 35,
+        "reading": 29,
+        "speaking": 10,
+        "writing": 86,
+        "finishedOn": "2026-10-20",
+        "source": "User-supplied attempt-5 screenshot received 20 October 2026"
       }
     }
   ],

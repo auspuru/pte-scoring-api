@@ -12,7 +12,7 @@ The user compared two passages in Pearson Scored Practice Test 3. These are sect
 | 2 | Concise paraphrased responses | 88 | 31 |
 | 3 | Selected source wording with connectors | 83 | 27 |
 | 4 | Five synonym substitutions per summary | 83 | 27 |
-| 5 | Minimal clause-level paraphrasing | Pending | Pending |
+| 5 | Minimal clause-level paraphrasing | 86 | 29 |
 
 The user reports keeping the other responses unchanged. Those controls and perfect SST/WFD performance have not been independently verified. Attempt 2 also differs in selection, length and sentence construction; the comparison does not isolate a paraphrasing-only effect. No individual trait scores, section-score offsets, universal strategy ranking or synonym threshold are inferred. Attempt 1 is a visual transcription, with punctuation/spelling requiring confirmation before language comparisons.
 
@@ -45,9 +45,15 @@ This sends the fixture passages and responses to the configured Claude proxy, us
 
 ## Current calibration limit
 
-The revised local suite passes 765 tests, and the first hosted release check passed. Live Claude assessments completed after retrying gateway failures: the concise paraphrases earned Content 4, and the original responses earned Content 3 in the observed assessments. Some source-based attempt-3 responses also earned Content 4. The model therefore does not yet reproduce the reported attempt-2 versus attempt-3 section difference; those totals cannot be treated as individual-item ground truth. The implementation is retained in a draft PR, with production unchanged, pending further calibration and attempt 5.
+The revised local suite passes 765 tests, and the first hosted release check passed. Live Claude assessments completed after retrying gateway failures: the concise paraphrases earned Content 4, and the original responses earned Content 3 in the observed assessments. Some source-based attempt-3 responses also earned Content 4. The model therefore does not yet reproduce the reported attempt-2 versus attempt-3 section difference; those totals cannot be treated as individual-item ground truth. The implementation is retained in a draft PR, with production unchanged, pending further calibration. Attempt 5 is now reported below; its responses have not yet been included in a live model assessment.
 
 
 ## Attempt 4 recorded: 20 October 2026
 
-The supplied report shows Overall 29, Listening 35, Reading 27, Speaking 10 and Writing 83. Reading and Writing are unchanged from attempt 3 after the five synonym substitutions. This observation does not establish a universal synonym rule. Attempt 5 retains the existing ideas and most wording, with small changes to clause construction; the essay, SST and three WFD responses remain the exact recorded controls. Its result is pending. No scoring parameters or production deployment were changed when recording this result.
+The supplied report shows Overall 29, Listening 35, Reading 27, Speaking 10 and Writing 83. Reading and Writing are unchanged from attempt 3 after the five synonym substitutions. This observation does not establish a universal synonym rule. Attempt 5 retains the existing ideas and most wording, with small changes to clause construction; the essay, SST and three WFD responses remain the exact recorded controls. Its reported result is recorded below. No scoring parameters or production deployment were changed when recording this result.
+
+## Attempt 5 recorded: 20 October 2026
+
+The supplied report shows Overall 29, Listening 35, Reading 29, Speaking 10 and Writing 86. Compared with attempts 3 and 4, minimal clause-level paraphrasing increases the reported Writing section score by 3 and Reading by 2. Both remain 2 points below attempt 2's concise paraphrases. Listening, Speaking and Overall are unchanged from attempt 4.
+
+In this comparison, small changes to clause construction are associated with an improvement that the five isolated synonym substitutions did not produce. This supports practising meaningful reformulation without requiring a complete rewrite, while leaving selection, concision and coherence central to the teaching approach. The section scores do not establish individual SWT marks, a universal score threshold or a required number of changed words. No scoring parameters or production settings were changed when recording this result.

@@ -133,10 +133,10 @@ test('Comparison evidence keeps aggregate results separate from unknown individu
   const comparison = require('./fixtures/swt-attempt-comparison.json');
   const { formFor } = require('../swt-form-policy');
   assert.deepEqual(comparison.attempts.map(a => a.sectionScores), [
-    { writing: 79, reading: 23 }, { writing: 88, reading: 31 }, { writing: 83, reading: 27 }, { writing: 83, reading: 27 }, { writing: null, reading: null }
+    { writing: 79, reading: 23 }, { writing: 88, reading: 31 }, { writing: 83, reading: 27 }, { writing: 83, reading: 27 }, { writing: 86, reading: 29 }
   ]);
   assert.equal(comparison.attempts[3].status, 'reported');
-  assert.equal(comparison.attempts[4].status, 'pending');
+  assert.equal(comparison.attempts[4].status, 'reported');
   for (const a of comparison.attempts) {
     assert.equal(a.individualTraitScores, null);
     for (const text of Object.values(a.responses)) assert.equal(formFor(text).score, 1);
