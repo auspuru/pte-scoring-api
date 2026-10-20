@@ -36,7 +36,7 @@ function harness() {
   ctx.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
     { ...extra, fetch: ctx.fetch, wait: async () => {} }) };
   vm.createContext(ctx);
-  vm.runInContext(['requestSwtGrade', 'scoreSummary', 'retrySwtAssessment'].map(fn).join('\n'), ctx);
+  vm.runInContext(source.slice(source.indexOf('const swtPassageAt ='), source.indexOf('let swtResultPassage =')) + '\n' + ['requestSwtGrade', 'scoreSummary', 'retrySwtAssessment'].map(fn).join('\n'), ctx);
   return { ctx, requests, saved, results, notices, loading, screens, input, button };
 }
 
