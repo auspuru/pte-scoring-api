@@ -105,6 +105,7 @@ test('Original content has correct task counts, lengths and usable reference ans
 });
 test('Prediction mocks preserve essays and use only September 2026 prediction tasks',()=>{
   assert.equal(predictionMocks.length,bank.predictionEssays.length);assert.equal(predictionMocks.length,33);
+  assert.deepEqual(predictionMocks[0].questions.slice(0,2).map(q=>q.title),['Origin of Species','Working Nine to Five (Independent Work)']);
   assert.deepEqual(predictionMocks.map(m=>m.questions.find(q=>q.type==='essay').text),bank.predictionEssays.map(e=>e.text));
   const signatures=predictionMocks.map(m=>m.questions.filter(q=>q.type!=='essay').map(q=>q.id).join('|'));
   assert.equal(new Set(signatures).size,predictionMocks.length);
