@@ -1278,8 +1278,7 @@ async function seedUserSwtPredictions() {
   if (!USE_POSTGRES) {
     const existing = await PassageAPI.readAll();
     const ids = new Set(existing.map(p => Number(p.id)));
-    const titles = new Set(existing.map(p => String(p.title || '').toLowerCase()));
-    const additions = userSwtPassages.filter(p => !ids.has(p.id) && !titles.has(p.title.toLowerCase()));
+    const additions = userSwtPassages.filter(p => !ids.has(p.id));
     if (additions.length) await PassageAPI.writeAll([...existing, ...additions]);
     return additions.length;
   }
@@ -1292,9 +1291,9 @@ async function seedUserSwtPredictions() {
       const result = await client.query(
         `INSERT INTO passages(id, payload, updated_at)
          SELECT $1, $2::jsonb, NOW()
-         WHERE NOT EXISTS (SELECT 1 FROM passages WHERE id=$1 OR LOWER(payload->>'title')=LOWER($3))
+         WHERE NOT EXISTS (SELECT 1 FROM passages WHERE id=$1)
          ON CONFLICT (id) DO NOTHING`,
-        [p.id, JSON.stringify(p), p.title]);
+        [p.id, JSON.stringify(p)]);
       added += result.rowCount || 0;
     }
     await client.query('COMMIT');
