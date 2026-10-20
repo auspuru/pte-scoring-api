@@ -2,6 +2,7 @@
 const express=require('express'),path=require('node:path'),fs=require('node:fs/promises'),crypto=require('node:crypto');
 const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring'),delivery=require('./speaking-delivery');
 const {createStore}=require('./writing-lab-store');
+const describeFeedback=require('./describe-image-feedback');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type);
 function question(q,reveal=false) {
@@ -48,7 +49,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   if(assessDelivery===delivery.assessRecording)console.info('[speaking-delivery-config]',JSON.stringify(delivery.configurationSummary()));
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>{res.set('Cache-Control','no-store');res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved work is safe; please retry.'});});
   const get=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Attempt not found.',404);return a;});
-  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
   router.use(async(req,res,next)=>{try{const uid=verifyToken(req.headers['x-session-token']||'');const account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.speakingUser=uid;res.set('Cache-Control','no-store');next();}catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}});
   const limiter=require('express-rate-limit')({windowMs:600000,max:40,keyGenerator:req=>req.speakingUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking action.'}});
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));
@@ -72,7 +73,9 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     const a=await store.update(req.speakingUser,req.params.id,a=>{if(!a)throw fail('Attempt not found.',404);if(a.status==='submitted')throw fail('This response is already submitted.',409);if(revision!==a.revision)throw fail('A newer transcript is saved. Reopen this attempt before editing.',409);a.transcript=text;a.revision++;return a;});res.json(present(a));
   }));
   router.post('/attempts/:id/submit',limiter,wrap(async(req,res)=>{
-    let a=await store.update(req.speakingUser,req.params.id,async a=>{if(!a)throw fail('Attempt not found.',404);if(!a.transcript?.trim()){
+    const refreshDescribeFeedback=req.body?.refreshDescribeFeedback===true;
+    let describeReview;
+    let a=await store.update(req.speakingUser,req.params.id,async a=>{if(!a)throw fail('Attempt not found.',404);if(refreshDescribeFeedback&&bank.questions.find(q=>q.id===a.questionId)?.type!=='di')throw fail('Image feedback is only available for Describe Image.');if(!a.transcript?.trim()){
       if(a.recording&&!a.transcription){a.transcription=await transcribe(a.recording);a.transcript=a.transcription;a.revision++;}
       if(!a.transcript?.trim())throw fail('No spoken words were recognised. Review your recording and enter what you said, or record a new attempt.');
     }a.status='submitted';return a;});
@@ -88,7 +91,13 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
           a.result={...next,...savedDelivery};
         }
       }
-      if(a.result&&a.recording&&deliveryAssessmentAvailable&&(a.result.pronunciation==null||a.result.deliveryVersion!==delivery.VERSION)) {
+      // Updating old coaching is explicit. Preserve its existing content and audio marks.
+      if(refreshDescribeFeedback&&q.type==='di'&&a.result?.scoringMode==='ai'&&a.result.coaching?.version!==describeFeedback.VERSION){
+        // Reuse the review if the optimistic store retries this same update.
+        const reviewed=await (describeReview ||= scoring.grade(q,a.transcript,callModel));
+        a.result={...a.result,...(reviewed.coaching?{coaching:reviewed.coaching}:{}),coachingStatus:reviewed.coaching?'assessed':'unavailable'};
+      }
+      if(!refreshDescribeFeedback&&a.result&&a.recording&&deliveryAssessmentAvailable&&(a.result.pronunciation==null||a.result.deliveryVersion!==delivery.VERSION)) {
         try {
           const assessed=await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe});
           if(assessed)a.result={...a.result,...assessed};
@@ -98,7 +107,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
           console.warn('[speaking-delivery]',JSON.stringify({code,...(status?{status}:{})}));
           a.result={...a.result,deliveryStatus:'Audio delivery assessment temporarily unavailable'};
         }
-      } else if(a.result&&a.result.pronunciation==null&&!deliveryAssessmentAvailable) {
+      } else if(!refreshDescribeFeedback&&a.result&&a.result.pronunciation==null&&!deliveryAssessmentAvailable) {
         a.result={...a.result,deliveryStatus:'Teacher review — automated audio assessment not configured'};
       }
       return a;

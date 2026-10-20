@@ -1,6 +1,7 @@
 'use strict';
 const VERSION = 'speaking-content-2026-10-09.1';
 const localEngine = require('./local-scoring-engine');
+const describeFeedback = require('./describe-image-feedback');
 const tokens = text => String(text || '').toLowerCase().replace(/[’‘]/g, "'").match(/[\p{L}\p{N}]+(?:'[\p{L}]+)*/gu) || [];
 function align(expected, actual) {
   const a = tokens(expected), b = tokens(actual), width = b.length + 1;
@@ -56,6 +57,7 @@ Summarise Group Discussion: same six-level scale as retell, additionally judge E
 Respond to a Situation: 6=fully achieves communication goal with appropriate context, direct address and persuasive development; 5=achieves goal with minor omissions; 4=partly achieves goal with some context; 3=basic functional response with limited development; 2=related but goal/context not met; 1=minimally achieves goal without support OR isolated contextual fragments; 0=too limited/irrelevant. Do not summarise the situation instead of saying what you would say. Judge register and purpose, not agreement with one preferred solution.
 Return JSON only: {"total":integer 0..6,"overview":"one concise student-friendly sentence explaining the content result","strengths":["specific supported success"],"improvements":["one or two high-value next steps"],"coverage":[{"point":integer zero-based fact index,"status":"covered|partial|missing|inaccurate","evidence":"exact short quote from STUDENT, or empty for missing","feedback":"one short explanation"}]}.
 Include one coverage item for EVERY supplied fact, in order. Evidence must be verbatim from the student's transcript and must actually support the classification. Distinguish missing from wrong; do not invent errors. At most 2 strengths and 2 improvements. Avoid redundancy: the overview, strengths, improvements and coverage feedback must not restate the same point in slightly different words. Put broad performance summary in overview, specific successes in strengths, and only the highest-value actionable changes in improvements. Coverage feedback should be brief evidence-level detail, not another copy of the improvement advice. Relevant but correct additional details are welcome. Give full marks to an excellent response even if it does not use the sample wording.
+${q.type==='di'?describeFeedback.prompt(q):''}
 DATA=${JSON.stringify({type:q.type,prompt:q.text||q.visual,visual:q.visual,facts:q.facts,sample:q.sample,student:text})}`;
 }
 function locateEvidence(text, evidence) {
@@ -81,7 +83,12 @@ function normalize(q,text,raw) {
   });
   if(raw.total===6 && (coverage.some(item=>item.status==='inaccurate') || !coverage.some(item=>item.status==='covered'))) throw Error('Full content score contradicts the coverage assessment.');
   const compact=list=>[...new Map(list.map(item=>[item.trim().toLowerCase().replace(/\s+/g,' '),item.trim()])).values()].slice(0,2);
-  return {...base(6),total:raw.total,overview:raw.overview.trim(),strengths:compact(raw.strengths),improvements:compact(raw.improvements),coverage};
+  const result={...base(6),total:raw.total,overview:raw.overview.trim(),strengths:compact(raw.strengths),improvements:compact(raw.improvements),coverage};
+  if(q.type==='di'){
+    try { result.coaching=describeFeedback.normalize(q,text,raw.coaching,coverage); result.coachingStatus='assessed'; }
+    catch { result.coachingStatus='unavailable'; }
+  }
+  return result;
 }
 function resultForClient(result, transcript) {
   if (!result || result.scoringMode !== 'local') return result;
