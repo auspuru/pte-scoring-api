@@ -523,6 +523,8 @@
       clearInterval(timer);if(saved)await resume(saved.id,button,serial);else await start(target.id,button,serial);
     }catch(e){if(serial===navigationSerial && workspaceVisible)notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
   }
+  const retryableSwt = index => attempt?.questions[index]?.type==='swt'
+    && (attempt.results[index]?.score_provisional===true || attempt.results[index]?.needs_semantic_review===true);
   function renderResults() {
     setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
@@ -532,14 +534,18 @@
     const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);
     root.innerHTML=studio&&listeningOnly?studioWrap(resultsHTML,attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
     root.focus();
-    if(!scored && !grading.has(attempt.id)) scoreRemaining();
+    if(attempt.questions.some((q,i)=>retryableSwt(i)) && !grading.has(attempt.id)) {
+      const status=document.getElementById('scoring-status');
+      if(status) status.innerHTML='Some SWT estimates are provisional. <button class="secondary" id="retry-scores">Request a complete assessment</button>';
+      document.getElementById('retry-scores')?.addEventListener('click',scoreRemaining);
+    } else if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
   function reviewCard(q,i) {
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
     if(listeningTasks?.isObjective(q))return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?r.total+'/'+r.maximum+' points':'Awaiting assessment')+'</strong></div><p class="muted">'+esc(report.labels[q.type])+'</p>'+(listeningTasks.review?listeningTasks.review(q,attempt.answers[i]):'<h3>Your response</h3><div class="response">'+esc(listeningTasks.response(q,attempt.answers[i]))+'</div><h3>Correct answer</h3><div class="response sample">'+esc(listeningTasks.correct(q))+'</div>')+'<p>'+esc(q.explanation)+'</p><details><summary>Review recording and transcript</summary><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio><div class="response">'+esc(q.text)+'</div></details></article>';
     const structured = q.type==='essay' && !!r?.feedbackVersion && r.feedbackVersion===window.EssayFeedback?.VERSION;
-    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
-      (r? (r.gated?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
+    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(retryableSwt(i)?'Provisional ':'')+'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
+      (r? (r.gated&&!retryableSwt(i)?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.score90(r.total,r.maximum)) : '')+
       (dictation&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+(r.wordFeedback||[]).map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
@@ -558,13 +564,13 @@
     try {
       for(let i=0;i<questionCount;i++) {
         if(attempt?.id!==id) return;
-        if(attempt.results[i]) continue;
+        if(attempt.results[i] && !retryableSwt(i)) continue;
         const status=document.getElementById('scoring-status');
         if(status) status.textContent='Assessing question '+(i+1)+' of '+questionCount+'… Waiting for the final reviewed result. Your submitted answers are saved.';
         try {
           const result=await api('/attempts/'+id+'/score/'+i,{});
           if(attempt?.id!==id) return;
-          attempt.results[i]=result; renderResults();
+          attempt.results[i]=result; if(retryableSwt(i)) failed=true; renderResults();
         } catch(e) { failed=true; }
       }
       if(failed && attempt?.id===id) {
