@@ -13,13 +13,14 @@ const { installWritingLab } = require('../writing-lab');
 const express = require('express');
 const os = require('node:os');
 const client = fs.readFileSync(path.join(__dirname, '../public/writing-lab-client.js'), 'utf8');
-function harness({ audioReadyState = 4, protectedMode = false, portal = false } = {}) {
+function harness({ audioReadyState = 4, protectedMode = false, portal = false, studioMode=false } = {}) {
   const nodes = new Map(), intervals = new Map(), recordings = [], requests = [], memory = new Map();
   let now = 100000, seq = 0;
   class Element {
     constructor(id,tagName='DIV') { this.id=id; this.tagName=tagName; this.parentElement=null; this.children=[]; this.attrs=new Map();this.inert=false;this.hidden=false;this.value=''; this.isConnected=true; this.textContent=''; this.disabled=false;this.readOnly=false; this.classes=new Set(); this.events={};
       this.classList={add:c=>this.classes.add(c),remove:c=>this.classes.delete(c),contains:c=>this.classes.has(c),toggle:c=>this.classes.has(c)?this.classes.delete(c):this.classes.add(c)}; }
     addEventListener(name,fn) { this.events[name]=fn; }
+    querySelectorAll(selector){return (this.controls||[]).filter(node=>selector.split(',').some(part=>node.attrs.has(part.trim().slice(1,-1))));}
     appendChild(child){child.parentElement=this;this.children.push(child);}
     contains(target){return target===this||this.children.some(child=>child.contains(target));}
     getAttribute(name){return this.attrs.get(name)??null;}
@@ -30,7 +31,12 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false } 
     set innerHTML(html) {
       this.html=html;
       if(this.id!=='lab') return;
-      this.children=[];
+      this.children=[];this.controls=[];
+      for(const tag of html.matchAll(/<(input|button)[^>]*data-listening-(?:choice|blank|word)=[^>]*>/g)){
+        const node=new Element('',tag[1].toUpperCase());node.dataset={};
+        for(const attr of tag[0].matchAll(/([\w-]+)="([^"]*)"/g)){node.attrs.set(attr[1],attr[2]);if(attr[1].startsWith('data-'))node.dataset[attr[1].slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=attr[2];}
+        this.controls.push(node);
+      }
       for(const [id,node] of nodes) if(!['lab','notice','writingLabScreen'].includes(id)&&!id.startsWith('confirm-')) { node.isConnected=false; nodes.delete(id); }
       for(const match of html.matchAll(/<([a-z]+)[^>]*id="([^"]+)"/g)) {const node=new Element(match[2],match[1].toUpperCase());nodes.set(match[2],node);this.appendChild(node);}
       for(const match of html.matchAll(/<[^>]+id="([^"]+)"[^>]*>/g)) if(/\bdisabled\b/.test(match[0])) nodes.get(match[1]).disabled=true;
@@ -67,6 +73,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false } 
       return {ok:true,json:async()=>value}; }
   };
   context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
+  if(studioMode){context.window.ListeningStudio=require('../public/listening-studio');context.window.ListeningTasks=require('../public/listening-tasks');}
   const recovery = require('../public/grading-request');
   context.window.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
     { ...extra, fetch: context.fetch, wait: async () => {} }) };
@@ -526,4 +533,36 @@ test('Writing Lab exposes a direct in-page portal lifecycle API',()=>{
   assert.match(client,/leave:suspend/);
   assert.match(client,/async open\(request=\{\}\)/);
   assert.match(client,/const inPortal = !!portalShell/);
+});
+
+
+test('Supported listening practice renders the shared workspace, begins untimed and saves native blank inputs',async()=>{
+ const h=harness({studioMode:true,portal:true});
+ const source=require('../content/listening-mocks').mocks[0].questions.find(q=>q.type==='lfi');
+ h.hooks.setCatalog({mocks:[],spoken:[],dictation:[],listeningPractice:[{id:source.id,type:source.type,minutes:5}]});
+ const a=present({id:'studio-attempt',testId:source.id,title:source.title,kind:'lfi',module:'listening',mode:'practice',index:0,status:'ready',startedAt:100000,deadline:null,questions:[source],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});
+ open(h,a);const html=h.nodes.get('lab').innerHTML;
+ assert.match(html,/Listening practice/);assert.match(html,/data-listening-mode="practice" aria-pressed="true"/);assert.match(html,/Check answer/);assert.match(html,/Next question/);
+ const inputs=h.nodes.get('lab').controls.filter(c=>c.dataset.listeningBlank!==undefined);assert.equal(inputs.length,5);assert(inputs.every(i=>i.disabled));
+ h.context.reply={...a,status:'active',deadline:null};h.context.replyOnce=true;
+ await h.nodes.get('audio-start').onclick();await flush();assert(inputs.every(i=>!i.disabled));
+ inputs[0].value='context';inputs[0].events.input();assert.equal(h.nodes.get('answer').value,'["context"]');
+ await h.hooks.tick();assert.equal(h.nodes.get('timer').textContent,'Untimed');
+ assert.match(h.nodes.get('lab').innerHTML,/id="audio-replay"/);
+});
+
+test('Supported WFD allows pause and replay without creating another attempt or resetting the answer',async()=>{
+ const h=harness({studioMode:true,portal:true}),q=bank.dictation[0];
+ h.hooks.setCatalog({mocks:[],spoken:[],dictation:[q]});
+ const a=present({id:'replay-attempt',testId:q.id,title:q.title,kind:'wfd',module:'listening',mode:'practice',index:0,status:'active',startedAt:100000,deadline:null,questions:[q],answers:['Keep this response'],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});
+ open(h,a);await h.nodes.get('audio-start').onclick();await flush();const player=h.recordings[0];
+ player.currentTime=3;await h.nodes.get('audio-start').onclick();assert(player.paused);
+ await h.nodes.get('audio-replay').onclick();await flush();assert.equal(player.currentTime,0);assert.equal(h.nodes.get('answer').value,'Keep this response');assert.equal(h.hooks.current().id,'replay-attempt');
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/attempts')).length,0);assert.equal(h.hooks.current().deadline,null);
+});
+
+test('Explicit exam-style individual listening has no practice hints or replay control',()=>{
+ const h=harness({studioMode:true,portal:true}),q=bank.dictation[0];h.hooks.setCatalog({mocks:[],spoken:[],dictation:[q]});
+ const a=present({id:'exam-attempt',testId:q.id,title:q.title,kind:'wfd',module:'listening',mode:'exam',index:0,status:'active',startedAt:100000,deadline:220000,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});
+ open(h,a);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/id="audio-replay"|class="studio-help"/);assert.match(h.nodes.get('lab').innerHTML,/data-listening-mode="exam" aria-pressed="true"/);
 });

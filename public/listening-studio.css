@@ -1,0 +1,116 @@
+/* Scoped listening workspace. Writing and protected test layouts retain their own rules. */
+#writingLabScreen.listening-mode,#writingLabScreen.listening-mode #lab{background:#f3f6fa;color:#20334e}
+#writingLabScreen .listening-studio{max-width:1700px;margin:0 auto;padding:27px 25px 35px;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+#writingLabScreen .listening-studio *{box-sizing:border-box}
+#writingLabScreen .studio-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px}
+#writingLabScreen .studio-heading p{font-size:10px;letter-spacing:1.6px;color:#2458ce;font-weight:700;margin:0 0 6px}
+#writingLabScreen .studio-heading h1{font-size:29px;letter-spacing:-.7px;line-height:1.2;margin:0 0 7px;color:#183355}
+#writingLabScreen .studio-heading>div>span{font-size:12px;color:#68798f}
+#writingLabScreen .studio-modes{display:flex;padding:4px;border:1px solid #dce3ec;border-radius:9px;background:#e9eef5;flex-shrink:0}
+#writingLabScreen .studio-modes button{border:0;background:transparent;color:#546982;padding:9px 15px;font-size:12px;border-radius:6px;min-height:40px;white-space:nowrap}
+#writingLabScreen .studio-modes button[aria-pressed=true]{background:#fff;color:#2458ce;box-shadow:0 1px 5px #17345b15}
+#writingLabScreen .studio-mode-note{border:1px solid #e0e6ee;background:#fff;border-radius:8px;padding:10px 14px;font-size:11px;color:#667a94;margin:0 0 21px}
+#writingLabScreen .studio-layout{display:grid;grid-template-columns:180px minmax(0,1fr) 220px;align-items:start;gap:18px}
+#writingLabScreen .studio-task-nav{background:#132d51;border-radius:13px;padding:12px 8px}
+#writingLabScreen .studio-task-nav button{display:flex;align-items:center;gap:9px;width:100%;padding:12px 8px;text-align:left;color:#cad7e9;background:transparent;border:0;border-radius:8px;font-size:11px;line-height:1.45;min-height:50px;margin:2px 0}
+#writingLabScreen .studio-task-nav button>span{display:grid;place-items:center;min-width:29px;height:29px;border-radius:6px;background:#ffffff16;font-weight:700;font-size:10px}
+#writingLabScreen .studio-task-nav b{font-weight:500}
+#writingLabScreen .studio-task-nav button[aria-current=page]{background:#fff;color:#183355}
+#writingLabScreen .studio-task-nav button[aria-current=page]>span{background:#edf2ff;color:#2458ce}
+#writingLabScreen .studio-center{min-width:0}
+#writingLabScreen .listening-studio .exam{display:flex;flex-direction:column;height:auto;min-height:0;background:white;border:1px solid #dfe6ef;border-radius:14px;overflow:visible}
+#writingLabScreen .listening-studio .exam-header{background:white;color:#20334e;border:0;border-bottom:1px solid #e1e7ef;border-radius:14px 14px 0 0;padding:18px 22px;min-height:0}
+#writingLabScreen .listening-studio .exam-header strong{color:#20334e;font-size:13px}
+#writingLabScreen .listening-studio .exam-header small{color:#68798f}
+#writingLabScreen .listening-studio .timer-wrap{background:#f2f5fb;color:#56708d;padding:6px 10px;border-radius:7px;min-width:0}
+#writingLabScreen .listening-studio .timer-wrap span{font-size:8px;letter-spacing:.6px}
+#writingLabScreen .listening-studio .timer-wrap strong{font-size:18px;color:#345a92;font-variant-numeric:tabular-nums}
+#writingLabScreen .listening-studio .timer-wrap.warning strong{color:#b53648}
+#writingLabScreen .listening-studio .exam-strip{background:white;color:#243d60;border:0;padding:17px 22px 0;display:flex;gap:12px;flex-wrap:wrap}
+#writingLabScreen .listening-studio .exam-strip b{font-size:18px;font-weight:650}
+#writingLabScreen .listening-studio .exam-strip span{font-size:11px;color:#68798f}
+#writingLabScreen .listening-studio .exam-main{padding:19px 22px 12px;width:100%;max-width:none}
+#writingLabScreen .listening-studio .instruction{font-size:13px;line-height:1.7;font-weight:400;color:#526984;margin-bottom:16px}
+#writingLabScreen .listening-studio .audio-panel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;align-items:center;padding:15px;background:#f6f9ff;border:1px solid #dce5f3;border-radius:10px;margin:0 0 20px;max-width:none}
+#writingLabScreen .listening-studio .audio-panel h2{display:none}
+#writingLabScreen .listening-studio .audio-panel .audio-meta{grid-column:2;margin:0;font-size:10px;gap:8px}
+#writingLabScreen .listening-studio .audio-panel progress{grid-column:2;height:6px;width:100%;accent-color:#2458ce}
+#writingLabScreen .listening-studio .audio-panel #audio-start{grid-column:1;grid-row:1/3;background:#2458ce;border:0;border-radius:8px;font-size:11px;padding:9px 12px;min-height:42px;max-width:130px;color:white}
+#writingLabScreen .listening-studio .audio-panel .meta{grid-column:2;font-size:10px;display:flex;align-items:center;gap:9px;color:#68798f}
+#writingLabScreen .listening-studio .audio-panel input[type=range]{width:85px;accent-color:#2458ce}
+#writingLabScreen .listening-studio .audio-panel #audio-replay{font-size:11px;padding:5px 9px;border:1px solid #d4dfef;background:white;border-radius:6px;min-height:30px;color:#2458ce}
+#writingLabScreen .listening-studio .audio-panel #audio-start.hidden{display:none!important}
+#writingLabScreen .listening-studio .answer-label{font-size:12px;margin:15px 0 9px;color:#243d60}
+#writingLabScreen .listening-studio textarea#answer{border:1px solid #cbd7e6;border-radius:9px;min-height:110px;height:110px;padding:15px;font-family:inherit;font-size:15px;line-height:1.8;background:white;color:#20334e}
+#writingLabScreen .listening-studio .exam-main-sst textarea#answer{min-height:230px;height:230px}
+#writingLabScreen .listening-studio .editor-tools{background:transparent;border:0;padding:8px 0;font-size:11px;color:#68798f}
+#writingLabScreen .listening-studio .clipboard button{background:#f7f9fc;border:1px solid #e0e6ef;border-radius:4px;font-size:10px;padding:4px 8px;min-height:28px}
+#writingLabScreen .listening-studio details.studio-notes{border:1px solid #e2e8f0;border-radius:8px;padding:9px 12px;margin:12px 0 17px}
+#writingLabScreen .listening-studio details>summary{font-size:11px;cursor:pointer;color:#496b9f}
+#writingLabScreen .listening-studio .notes-area{font-family:inherit;min-height:85px;background:#fbfcfe;border:1px solid #dce4ee;border-radius:6px;font-size:13px}
+#writingLabScreen .listening-studio .listening-choices{margin:0 0 16px;gap:10px}
+#writingLabScreen .listening-studio .listening-choices legend{font-size:11px;line-height:1.6}
+#writingLabScreen .listening-studio .listening-choices label{padding:13px 14px;border-radius:8px;line-height:1.75;font-size:13px;border-color:#dce3ed}
+#writingLabScreen .listening-studio .listening-choices label:has(input:checked){background:#f0f4ff;border-color:#6286dc}
+#writingLabScreen .listening-studio .listening-transcript{font-size:16px;line-height:2.5;margin:12px 0 20px;color:#344a65}
+#writingLabScreen .listening-studio .listening-blank input{width:112px!important;background:#fbfcff;border:1px solid #b8cae4;border-radius:5px;font-size:15px}
+#writingLabScreen .listening-studio .listening-blank-number{font-size:10px;color:#7188a8}
+#writingLabScreen .listening-studio .exam-footer{border-top:1px solid #e0e6ef;background:#fafbfd;border-radius:0 0 14px 14px;padding:14px 18px;gap:10px;flex-wrap:wrap;position:sticky;bottom:0;z-index:3}
+#writingLabScreen .listening-studio .exam-footer button{min-height:42px;font-size:11px;padding:10px 12px;border-radius:7px}
+#writingLabScreen .listening-studio .exam-footer .primary{background:#2458ce;border:1px solid #2458ce;min-width:110px;color:white}
+#writingLabScreen .listening-studio .exam-footer .secondary{background:white;border:1px solid #dce4ee;color:#375879}
+#writingLabScreen .listening-studio .question-links{display:flex;align-items:center;gap:9px;flex-wrap:wrap;flex:1}
+#writingLabScreen .listening-studio .question-links>span{display:none}
+#writingLabScreen .listening-studio .save-status{font-size:10px;color:#187455;min-height:18px;margin:7px 0}
+#writingLabScreen .studio-side-card{background:#fff;border:1px solid #dfe6ef;border-radius:11px;padding:16px;margin-bottom:16px}
+#writingLabScreen .studio-side-card h3{font-size:12px;font-weight:650;margin:0 0 13px;display:flex;justify-content:space-between;gap:8px}
+#writingLabScreen .studio-side-card h3 span{color:#68798f;font-size:9px;font-weight:400;white-space:nowrap}
+#writingLabScreen .studio-side input,#writingLabScreen .studio-side select{width:100%;border:1px solid #dfe5ee;border-radius:6px;padding:8px 9px;font-size:11px;margin-bottom:9px;background:white;color:#516a86}
+#writingLabScreen .studio-question-row{display:flex;gap:9px;align-items:center;width:100%;border:0!important;border-radius:7px!important;background:transparent;color:#294969;text-align:left;padding:10px 8px!important;margin:3px 0;font-size:12px!important;min-height:48px}
+#writingLabScreen .studio-question-row.is-current{background:#edf2ff;color:#2458ce}
+#writingLabScreen .studio-number{width:25px;height:25px;flex-shrink:0;display:grid;place-items:center;border:1px solid #d5dfed;border-radius:50%;font-size:10px}
+#writingLabScreen .is-current .studio-number{background:#2458ce;color:white;border-color:#2458ce}
+#writingLabScreen .studio-question-row b{font-size:11px;font-weight:600}
+#writingLabScreen .studio-question-row small{display:block;font-size:9px;color:#68798f;font-weight:400;margin-top:3px}
+#writingLabScreen .studio-question-row em{display:inline-block;font-style:normal;font-size:9px;color:#84611c;background:#fff5de;padding:2px 5px;border-radius:3px;margin-left:7px}
+#writingLabScreen .studio-row-arrow{margin-left:auto;font-size:12px;color:#8a9db9}
+#writingLabScreen #studio-question-list{max-height:410px;overflow:auto;overscroll-behavior:contain}
+#writingLabScreen .studio-tip{background:#eaf0fc;border:0}
+#writingLabScreen .studio-tip p,#writingLabScreen .studio-empty{font-size:11px;color:#597099;line-height:1.8;margin:0}
+#writingLabScreen .studio-library{background:white;border:1px solid #e0e6ee;border-radius:13px;padding:22px}
+#writingLabScreen .studio-library h2{font-size:20px;color:#20334e;margin-bottom:8px}
+#writingLabScreen .studio-library>p{font-size:12px;color:#68798f;margin-bottom:17px}
+#writingLabScreen .studio-library .cards{display:grid;grid-template-columns:1fr;gap:0}
+#writingLabScreen .studio-library .card{border:0;border-bottom:1px solid #edf0f5;padding:13px 6px;border-radius:0;display:flex;flex-direction:row;justify-content:space-between;align-items:center;gap:14px}
+#writingLabScreen .studio-library .card h2{font-size:14px;margin:0}
+#writingLabScreen .studio-library .card .eyebrow{font-size:9px;letter-spacing:.5px;margin:0;color:#8a6924}
+#writingLabScreen .studio-library .card-footer{width:auto;margin:0;gap:12px}
+#writingLabScreen .studio-library .card-footer .meta{font-size:10px}
+#writingLabScreen .studio-library .card-footer button{min-height:38px;font-size:11px;padding:8px 12px;border-radius:6px;background:#2458ce;color:white}
+#writingLabScreen .studio-bookmark{border:1px solid #d9e3f0;border-radius:6px;background:white;padding:4px 8px;color:#2458ce;font-size:16px;min-height:32px;margin-left:8px}
+#writingLabScreen .studio-help{font-size:12px;background:#edf4ff;border-radius:7px;padding:10px 13px;margin-bottom:16px;color:#39557a}
+#writingLabScreen .studio-help summary{font-weight:600}
+#writingLabScreen .studio-help p{font-size:12px;margin:9px 0 0;line-height:1.75}
+#writingLabScreen .studio-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#writingLabScreen .studio-legacy{font-size:11px;margin-top:15px;color:#68798f}
+#writingLabScreen .studio-review-row{padding:10px 12px;border-bottom:1px solid #dce5ee;font-size:13px;line-height:1.7}
+#writingLabScreen .studio-correct{color:#187455}
+#writingLabScreen .studio-incorrect{color:#b13749}
+#writingLabScreen .studio-review-row strong{display:inline-block;margin-right:5px}
+#writingLabScreen .studio-word-diff{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0}
+#writingLabScreen .studio-word-diff span{padding:4px 7px;border-radius:4px;font-size:13px;background:#e0f1e8;color:#187455}
+#writingLabScreen .studio-word-diff .missing{background:#fff1d8;color:#8b5c12;text-decoration:underline}
+#writingLabScreen .studio-word-diff .extra{background:#ffe7e9;color:#a63749;text-decoration:line-through}
+#writingLabScreen .listening-studio .results{padding:0;margin:0;max-width:none}
+#writingLabScreen .listening-studio .results-header{background:white;border:1px solid #e0e6ee;border-radius:12px;padding:20px;flex-wrap:wrap}
+#writingLabScreen .listening-studio .results-header h2{font-size:20px}
+#writingLabScreen .studio-mock .studio-layout{grid-template-columns:minmax(0,1fr);max-width:1100px;margin:auto}
+#writingLabScreen .studio-mock-label{font-size:11px;background:#edf2ff;color:#2458ce;padding:8px 13px;border-radius:7px}
+body.dark #writingLabScreen .listening-studio{color:#20334e}
+@media(max-width:1400px){#writingLabScreen .studio-layout{grid-template-columns:minmax(0,1fr) 220px}#writingLabScreen .studio-task-nav{grid-column:1/-1;display:flex;overflow-x:auto;padding:7px;gap:4px}#writingLabScreen .studio-task-nav button{width:auto;min-width:130px;flex:1;font-size:10px;padding:8px;min-height:48px}#writingLabScreen .studio-task-nav button>span{min-width:25px;height:25px}}
+@media(max-width:1050px){#writingLabScreen .studio-layout{grid-template-columns:1fr}#writingLabScreen .studio-side{display:grid;grid-template-columns:1fr 1fr;gap:15px}#writingLabScreen .studio-side-card{margin:0}#writingLabScreen #studio-question-list{max-height:230px}#writingLabScreen .listening-studio .exam-footer{position:static}}
+@media(max-width:650px){#writingLabScreen .listening-studio{padding:19px 13px 30px}#writingLabScreen .studio-heading{align-items:flex-start;flex-direction:column;gap:15px}#writingLabScreen .studio-heading h1{font-size:26px}#writingLabScreen .studio-modes{width:100%}#writingLabScreen .studio-modes button{flex:1}#writingLabScreen .studio-side{grid-template-columns:1fr}#writingLabScreen .studio-tip{display:none}#writingLabScreen .listening-studio .exam-main{padding:17px}#writingLabScreen .listening-studio .exam-header{padding:15px 17px}#writingLabScreen .listening-studio .exam-strip{padding:16px 17px 0}#writingLabScreen .listening-studio .exam-strip b{font-size:16px}#writingLabScreen .listening-studio .audio-panel{padding:11px;gap:7px 10px}#writingLabScreen .listening-studio .audio-panel #audio-start{font-size:10px;padding:8px;max-width:95px}#writingLabScreen .listening-studio .listening-blank input{width:99px!important}#writingLabScreen .listening-studio .listening-transcript{font-size:15px}#writingLabScreen .studio-library{padding:17px}#writingLabScreen .studio-library .card{flex-wrap:wrap}#writingLabScreen .listening-studio .exam-footer{padding:12px}#writingLabScreen .listening-studio .exam-footer button{padding:9px;font-size:10px}#writingLabScreen .studio-mode-note{font-size:10px}#writingLabScreen .listening-studio .editor-tools{align-items:flex-start;gap:8px}#writingLabScreen .studio-side-card h3 span{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#writingLabScreen .listening-studio *{scroll-behavior:auto!important;transition:none!important}}
+
+#writingLabScreen.listening-mode #lab{scroll-padding-bottom:90px}
+#writingLabScreen .listening-studio input:focus,#writingLabScreen .listening-studio textarea:focus,#writingLabScreen .listening-studio button:focus{scroll-margin-block:100px}

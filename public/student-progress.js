@@ -56,6 +56,9 @@ function model(data,writing,speaking=[]){
   hcs:{name:'Highlight Correct Summary',route:'listening-hcs'},
   hiw:{name:'Highlight Incorrect Words',route:'listening-hiw'}
  };
+ const listeningMeta={lmcma:{name:'Multiple Choice, Multiple Answers',route:'listening-lmcma'},lfi:{name:'Listening Fill in the Blanks',route:'listening-lfi'},hcs:{name:'Highlight Correct Summary',route:'listening-hcs'},lmcsa:{name:'Multiple Choice, Single Answer',route:'listening-lmcsa'},smw:{name:'Select Missing Word',route:'listening-smw'},hiw:{name:'Highlight Incorrect Words',route:'listening-hiw'}};
+ const listeningRows=writing.filter(a=>listeningMeta[a.kind]&&a.status==='submitted');
+ const listeningPoints=type=>scoredPoints(listeningRows.filter(a=>a.kind===type),a=>ratio(a.total,a.maximum),a=>a.startedAt);
  const speakingMeta={
   ra:{name:'Read Aloud',route:'speaking-ra'},rs:{name:'Repeat Sentence',route:'speaking-rs'},
   di:{name:'Describe Image',route:'speaking-di'},rl:{name:'Retell Lecture',route:'speaking-rl'},
@@ -76,7 +79,7 @@ function model(data,writing,speaking=[]){
   };}),
   ...writing.filter(a=>a?.kind!=='mock'&&a?.status!=='submitted').map(a=>({
     engine:'writing',id:a.id,title:a.title||(a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':'Writing practice'),
-    route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':'practice-hub',at:a.startedAt,
+    route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':listeningMeta[a.kind]?.route||'practice-hub',at:a.startedAt,
     detail:(Number.isFinite(a.completed)&&Number.isFinite(a.questions)?a.completed+' of '+a.questions+' completed':'Saved response in progress')
   })),
   ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status!=='submitted').map(a=>({
@@ -110,13 +113,14 @@ function model(data,writing,speaking=[]){
   const rows=submittedSpeaking.filter(a=>a.type===type);
   return {...meta,points:scoredPoints(rows,a=>ratio(a.result?.total,a.result?.maximum),a=>a.startedAt),latest:rows.map(a=>a.startedAt)};
  });
- const readingAreas=Object.entries(readingMeta).map(([type,meta])=>({...meta,points:readingTaskPoints(type),
+ const readingAreas=Object.entries(readingMeta).map(([type,meta])=>({...meta,points:mergePoints(readingTaskPoints(type),listeningPoints(type),writingMockPoints(type)),
   latest:completedReading.filter(a=>Array.isArray(a.rows)?a.rows.some(r=>r?.type===type):a.practiceUid&&a.questions?.[0]?.type===type).map(a=>a.finishedAt||a.startedAt)}));
  const areas=[
   {name:'Summarise Written Text',route:'swt',points:mergePoints(swtPracticePoints,readingTaskPoints('swt'),writingMockPoints('swt')),latest:swt.map(a=>a.timestamp)},
   {name:'Write Essay',route:'practice',points:mergePoints(essayPracticePoints,writingMockPoints('essay')),latest:essays.map(a=>a.date||a.updatedAt)},
   ...readingAreas,
   ...speakingAreas,
+  ...Object.entries(listeningMeta).filter(([type])=>!readingMeta[type]).map(([type,meta])=>({...meta,points:mergePoints(listeningPoints(type),writingMockPoints(type)),latest:listeningRows.filter(a=>a.kind===type).map(a=>a.startedAt)})),
   {name:'Summarise Spoken Text',route:'spoken-text',points:mergePoints(sstPracticePoints,writingMockPoints('sst')),latest:sstRows.map(a=>a.startedAt)},
   {name:'Write From Dictation',route:'dictation',points:mergePoints(wfdPracticePoints,writingMockPoints('wfd')),latest:wfdRows.map(a=>a.startedAt)}
  ].map(a=>{
@@ -131,7 +135,8 @@ function model(data,writing,speaking=[]){
   {name:'Reading & listening questions',count:practiceReading.length,route:'practice-hub',dates:practiceReading.map(a=>a.finishedAt||a.startedAt)},
   {name:'Speaking practice',count:submittedSpeaking.length,route:'practice-hub',dates:submittedSpeaking.map(a=>a.startedAt)},
   {name:'Summarise Spoken Text',count:sstRows.length,route:'spoken-text',dates:sstRows.map(a=>a.startedAt)},
-  {name:'Write From Dictation',count:wfdRows.length,route:'dictation',dates:wfdRows.map(a=>a.startedAt)}
+  {name:'Write From Dictation',count:wfdRows.length,route:'dictation',dates:wfdRows.map(a=>a.startedAt)},
+  {name:'Listening objective questions',count:listeningRows.length,route:'practice-hub',dates:listeningRows.map(a=>a.startedAt)}
  ];
  const days=new Set([...groups.flatMap(g=>g.dates),...mocks.filter(a=>a.done).map(a=>a.at)].map(stamp).filter(Boolean).map(n=>new Date(n).toLocaleDateString('en-CA')));
  const recentWriting=[
@@ -149,6 +154,7 @@ function model(data,writing,speaking=[]){
   ...essays.map(a=>({title:a.questionTitle||'Write Essay',route:'practice',at:a.date||a.updatedAt,result:Number.isFinite(a?.scores?.total)?a.scores.total+'/26':null})),
   ...practiceReading.map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',at:a.finishedAt||a.startedAt,result:Number.isFinite(a.earned)&&Number.isFinite(a.possible)?a.earned+'/'+a.possible:null};}),
   ...submittedSpeaking.map(a=>({title:speakingMeta[a.type]?.name||a.title||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.startedAt,result:Number.isFinite(a.result?.total)&&Number.isFinite(a.result?.maximum)?a.result.total+'/'+a.result.maximum:null})),
+  ...listeningRows.map(a=>({title:listeningMeta[a.kind].name,route:listeningMeta[a.kind].route,at:a.startedAt,result:Number.isFinite(a.total)?a.total+'/'+a.maximum:null})),
   ...sstRows.map(a=>({title:a.title||'Summarise Spoken Text',route:'spoken-text',at:a.startedAt,result:Number.isFinite(a.total)?a.total+'/'+a.maximum:null})),
   ...wfdRows.map(a=>({title:a.title||'Write From Dictation',route:'dictation',at:a.startedAt,result:Number.isFinite(a.total)?a.total+'/'+a.maximum:null})),
   ...swt.map(a=>({title:'Summarise Written Text',route:'swt',at:a.timestamp,result:Number.isFinite(a.overall_score)?a.overall_score+'/90 estimate':null}))

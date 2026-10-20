@@ -9,8 +9,8 @@
     'reading-reorder': ['Reorder Paragraphs', 'reorder'],
     'reading-wordbank': ['Reading Blanks (Drag & Drop)', 'wordbank'],
     'reading-mcsa': ['Reading Single Answer', 'mcsa'],
-    'listening-hcs': ['Highlight Correct Summary', 'hcs'],
-    'listening-hiw': ['Highlight Incorrect Words', 'hiw']
+    'listening-hcs-bank': ['Highlight Correct Summary · earlier bank', 'hcs'],
+    'listening-hiw-bank': ['Highlight Incorrect Words · earlier bank', 'hiw']
   };
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
@@ -22,6 +22,7 @@
     practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: '' },
     'spoken-text': { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Listening Practice · SST', context: '' },
     dictation: { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'wfd', title: 'Write From Dictation', path: 'dictation', eyebrow: 'Listening Practice · Dictation', context: '' },
+    ...Object.fromEntries(Object.entries({lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words'}).map(([type,title])=>['listening-'+type,{pane:'writingLabScreen',nav:'nav-practice-hub',labTab:type,title,path:'listening-'+type,eyebrow:'Listening Practice',context:''}])),
     'listening-mocks': { pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'listening',title:'Listening sectional mocks',path:'listening-mocks',eyebrow:'Mock Tests · Listening',context:'' },
     'listening-run': { pane:'writingLabScreen',nav:'nav-mock-tests',labTab:'mocks',title:'Listening sectional mock',path:'listening-attempt',eyebrow:'Mock Tests · Listening',context:'' },
     'listening-history': { pane:'writingLabScreen',nav:'nav-mock-tests',labTab:'history',title:'Listening mock attempts',path:'listening-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:'' },

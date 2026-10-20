@@ -12656,6 +12656,7 @@ async function getPortalCatalogueProgress() {
           const at=Number(attempt.finishedAt||attempt.updatedAt||attempt._updatedAt||attempt.startedAt||0);
           if(attempt.kind==='sst')setLatestPracticeMeta(result.practice,'spoken-text',at);
           if(attempt.kind==='wfd')setLatestPracticeMeta(result.practice,'dictation',at);
+          if(['lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(attempt.kind))setLatestPracticeMeta(result.practice,'listening-'+attempt.kind,at);
           if(attempt.kind==='mock'&&attempt.testId){
             const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
             if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
@@ -12746,6 +12747,8 @@ function switchSection(section, options = {}) {
   if (section === 'practice') { openPractice(false, options); return; }
   if (section === 'vocab') { openVocab(options); return; }
   if (section === 'test-centre') section = 'mock-tests';
+  // Older teacher assignments retain their original reading-engine question identity.
+  if(['listening-hcs','listening-hiw'].includes(section) && options.readingRequest) section+='-bank';
   const route = PortalWorkspace.routes[section];
   if (route?.labTab) {
     portalWorkspace.activate(section, options);
@@ -13025,7 +13028,7 @@ async function refreshWritingPortalResume(localCandidate) {
         .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
       if (active) item = {
         engine:'writing-lab', id:active.id,
-        route:active.kind==='mock'?(active.module==='listening'?'listening-run':'writing-run'):active.kind==='wfd'?'dictation':'spoken-text',
+        route:active.kind==='mock'?(active.module==='listening'?'listening-run':'writing-run'):active.kind==='wfd'?'dictation':active.kind==='sst'?'spoken-text':'listening-'+active.kind,
         at:Number(active.startedAt || 0), title:active.title || 'Writing practice',
         detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
         subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'

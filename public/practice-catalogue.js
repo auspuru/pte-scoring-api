@@ -27,8 +27,12 @@
     ] },
     { id: 'listening', title: 'Listening Practice', tasks: [
       { route: 'spoken-text', label: 'Summarise Spoken Text' },
-      { route: 'listening-hcs', type: 'hcs', label: 'Highlight Correct Summary' },
-      { route: 'listening-hiw', type: 'hiw', label: 'Highlight Incorrect Words' },
+      { route:'listening-lmcma', listeningType:'lmcma', label:'Multiple Choice, Multiple Answers' },
+      { route:'listening-lfi', listeningType:'lfi', label:'Fill in the Blanks' },
+      { route: 'listening-hcs', type:'hcs', listeningType:'hcs', label: 'Highlight Correct Summary' },
+      { route:'listening-lmcsa', listeningType:'lmcsa', label:'Multiple Choice, Single Answer' },
+      { route:'listening-smw', listeningType:'smw', label:'Select Missing Word' },
+      { route: 'listening-hiw', type:'hiw', listeningType:'hiw', label: 'Highlight Incorrect Words' },
       { route: 'dictation', label: 'Write From Dictation' }
     ] }
   ];
@@ -128,6 +132,7 @@
     function practiceCount(task) {
       const custom = Number(progress.practice?.[task.route]?.count);
       if (Number.isFinite(custom) && custom >= 0) return custom;
+      if (task.listeningType && data.writing?.listeningPractice) return data.writing.listeningPractice.filter(q=>q.type===task.listeningType).length;
       if (task.type) return readingLibraries(data.reading).find(l => l.id === task.type)?.questions?.length || 0;
       if (task.route === 'spoken-text') return data.writing?.spoken?.length || 0;
       if (task.route === 'dictation') return data.writing?.dictation?.length || 0;
