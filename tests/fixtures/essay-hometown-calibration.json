@@ -12,5 +12,24 @@
     "coherence": 4,
     "total": 20
   },
-  "latestRevisedEssayMock": "pending"
+  "latestRevisedEssayMock": {
+    "status": "reported",
+    "attempt": 6,
+    "scoreReport": {
+      "overall": 29,
+      "listening": 35,
+      "reading": 29,
+      "speaking": 10,
+      "writing": 86,
+      "source": "User-supplied IMG_2205.jpeg report received 20 October 2026"
+    },
+    "revisedEssay": "It is often argued that one's hometown plays a crucial role in the upbringing of a person. However, this does not mean that it completely defines a person's future, as many people become successful despite growing up in small towns. In this essay, I will discuss India's Prime Minister, Narendra Modi. Even though he comes from a modest background, he was still able to achieve great feats in his life.\n\nModi comes from Vadnagar, a small town in the state of Gujarat, where he grew up in a family that was not financially well-off. During his childhood, he helped his father sell tea while attending school. This environment may have helped him develop resilience and understand the struggles of ordinary people.\n\nHowever, despite facing these hurdles in his life, he remained consistent and worked really hard. Later, he joined the Rashtriya Swayamsevak Sangh. After spending years in public life, he eventually became the Chief Minister of the state of Gujarat, where he worked towards the development of the state. His early experiences may have influenced his interest in improving the lives of ordinary people there.\n\nAfter becoming a successful Chief Minister, he became the Prime Minister of India in 2014. His work in Gujarat helped him gain recognition across the country. His journey shows that although his hometown helped shape his character, it did not limit what he could achieve.\n\nIn conclusion, from what has been discussed above, it can be concluded that a person's hometown can influence their character without defining their future. With the right mindset, determination and hard work, people can overcome the limitations of the place where they grew up.",
+    "comparisonToOriginal": {
+      "originalAttempt": 5,
+      "writingDelta": 0,
+      "readingDelta": 0,
+      "listeningDelta": 0,
+      "interpretation": "The revised essay produced no observable score increase with the other responses reported unchanged. Treat the original as a successful whole-test example, not a known individual essay raw score."
+    }
+  }
 }
