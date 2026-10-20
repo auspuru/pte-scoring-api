@@ -12506,7 +12506,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261006-one-submit1', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-8b269024d8d8', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12674,7 +12674,7 @@ function initialisePortalWorkspace() {
   portalCatalogue = PracticeCatalogue.createController({
     document, navigate: switchSection,
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
-    launchWriting: testId => switchSection('writing-run', { labRequest: { testId } }),
+    launchWriting: testId => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', { labRequest: { testId } }),
     getProgress: getPortalCatalogueProgress
   });
   // Progress, Writing Lab and Next Steps are loaded only when needed so the
@@ -12749,7 +12749,7 @@ function switchSection(section, options = {}) {
   const route = PortalWorkspace.routes[section];
   if (route?.labTab) {
     portalWorkspace.activate(section, options);
-    openWritingLab(route.labTab, options.labRequest || {});
+    openWritingLab(route.labTab, {module:section.startsWith('listening-')?'listening':'writing',...(options.labRequest || {})});
     return;
   }
 
@@ -13025,7 +13025,7 @@ async function refreshWritingPortalResume(localCandidate) {
         .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
       if (active) item = {
         engine:'writing-lab', id:active.id,
-        route:active.kind==='mock'?'writing-run':active.kind==='wfd'?'dictation':'spoken-text',
+        route:active.kind==='mock'?(active.module==='listening'?'listening-run':'writing-run'):active.kind==='wfd'?'dictation':'spoken-text',
         at:Number(active.startedAt || 0), title:active.title || 'Writing practice',
         detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
         subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'

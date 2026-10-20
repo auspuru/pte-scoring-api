@@ -146,6 +146,8 @@ async function gradeUnifiedEssay(q, text, call) {
 }
 
 async function grade(q, text, call) {
+  const objective = require('./listening-scoring').grade(q,text);
+  if(objective)return objective;
   if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
   if (q.type === 'wfd') return gradeDictation(q, text);
   const form = formFor(q.type, text);

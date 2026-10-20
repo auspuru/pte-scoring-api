@@ -93,7 +93,7 @@
       ...m, engine: 'writing', module: 'writing', mode: 'sectional', number: m.predictionNumber || 100 + i,
       searchText: [m.title,m.topic,m.question,m.category].filter(Boolean).join(' '),
       title: 'Writing Sectional ' + (m.predictionNumber ? 'Mock ' + String(m.predictionNumber).padStart(2,'0') : 'Special ' + String(i + 1).padStart(2,'0'))
-    }))];
+    })), ...(writing.listeningMocks || []).map((m,i)=>({...m,engine:'writing',module:'listening',mode:'sectional',number:i+1}))];
   }
   function filterMocks(items, { mode = 'sectional', module = 'all', search = '' } = {}) {
     const query = search.trim().toLowerCase();
@@ -157,8 +157,8 @@
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
       board.innerHTML = shown.map(m => {
         const saved=progress.mocks?.[m.id] || {}, status=saved.status || 'New', when=dateLabel(saved.date);
-        return '<article class="mock-catalogue-card ' + m.module + '"><div class="mock-card-meta"><span class="mock-module">' + (m.module === 'reading' ? 'Reading' : 'Writing') + '</span><span class="mock-status" data-status="' + esc(status.toLowerCase().replace(/\s+/g,'-')) + '">' + esc(status) + (when ? ' · ' + esc(when) : '') + '</span></div><h3>' + esc(m.title) + '</h3>'
-          + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
+        return '<article class="mock-catalogue-card ' + m.module + '"><div class="mock-card-meta"><span class="mock-module">' + ({reading:'Reading',writing:'Writing',listening:'Listening'}[m.module] || m.module) + '</span><span class="mock-status" data-status="' + esc(status.toLowerCase().replace(/\s+/g,'-')) + '">' + esc(status) + (when ? ' · ' + esc(when) : '') + '</span></div><h3>' + esc(m.title) + '</h3>'
+          + (m.module === 'listening' ? '<p class="muted">' + m.questionCount + ' questions · All 8 listening task types</p>' : '') + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
       }).join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
       const empty = doc.getElementById('catalogue-empty'); empty.hidden = !!items.length;
@@ -181,15 +181,15 @@
       }
       host.innerHTML = '<div class="catalogue-heading"><span class="mock-catalogue-shell-kicker">Timed practice</span><h2>Mock Tests</h2><p>Choose a practice or sectional mock, continue an unfinished attempt, or review your saved test history.</p></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span></div>'
-        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option></select></label></div>'
-        + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button></div>'
+        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label></div>'
+        + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button><button type="button" data-mock-history="listening">Listening</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
       doc.getElementById('catalogue-module').value = filters.module;
       host.onclick = e => {
         const b = e.target.closest('button'); if (!b || b.disabled) return;
         if (b.dataset.catalogueMode) { filters.mode = b.dataset.catalogueMode; page = 0; renderList(); }
         if (b.dataset.cataloguePage) { page += Number(b.dataset.cataloguePage); renderList(); }
-        if (b.dataset.mockHistory) navigate(b.dataset.mockHistory === 'reading' ? 'reading' : 'writing-history', { readingRequest: { history: true } });
+        if (b.dataset.mockHistory) navigate(b.dataset.mockHistory === 'reading' ? 'reading' : b.dataset.mockHistory === 'listening' ? 'listening-history' : 'writing-history', { readingRequest: { history: true } });
         if (b.dataset.mockId) {
           const m = data.mocks.find(m => m.id === b.dataset.mockId); if (!m) return;
           if (m.engine === 'reading') launchReading(m.id); else launchWriting(m.id);

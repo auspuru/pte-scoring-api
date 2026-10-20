@@ -3,6 +3,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
+const listeningScoring = require('./listening-scoring');
 const report = require('./public/writing-lab-report');
 const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
@@ -63,7 +64,8 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
     ]
   };
 });
-const allMocks = [...bank.mocks, ...predictionMocks];
+const listening = require('./content/listening-mocks');
+const allMocks = [...bank.mocks, ...predictionMocks, ...listening.mocks];
 const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.contentStatus === 'verbatim-user-provided');
 const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const dictation = [...userPredictionDictation, ...previousDictation];
@@ -86,10 +88,12 @@ function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
+    ...(listeningScoring.TYPES.has(q.type) ? {maximum:listeningScoring.maximum(q)} : {}),
+    ...(a.status === 'submitted' || i === a.index ? {prompt:q.prompt,choices:q.choices,passage:q.passage} : {}),
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
-    ...(a.status === 'submitted' || i <= a.index ? { text:['sst','wfd'].includes(q.type) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...(['sst','wfd'].includes(q.type) && (i <= a.index || a.status === 'submitted') ? { audioUrl:'/writing-audio/' + q.id + '.mp3?v=' + AUDIO_VERSION } : {}),
-    ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints } : {}) }));
+    ...(a.status === 'submitted' || i <= a.index ? { text:(['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && a.status !== 'submitted' ? '' : q.text } : {}),
+    ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
+    ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null }) {
@@ -182,7 +186,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
-    mocks:allMocks.map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
+    listeningMocks:listening.mocks.map(m=>({id:m.id,title:m.title,module:'listening',minutes:report.minutesFor(m.questions),questionCount:m.questions.length,tasks:Object.keys(listening.listeningFormat.tasks).map(type=>({type,label:report.labels[type],count:m.questions.filter(q=>q.type===type).length}))})),
+    mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
         return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];
@@ -205,7 +210,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     for (const a of all) {
       const current = a.status==='active' && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
       const summary = report.summarize(current.questions, current.results);
-      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,status:current.status,startedAt:current.startedAt,
+      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
@@ -221,7 +226,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
       if (existing) return reconcile(existing);
-      return { id,testId,title:mock?.title || individual.title,kind:mock ? 'mock' : individual.type,questions:q,index:0,
+      return { id,testId,title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null),
         ...(mock ? {integrity:{protected:true,events:[]}} : {}) };
@@ -270,7 +275,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(revision <= value.revisions[index]) return value;
       value.answers[index]=text; value.revisions[index]=revision;
       if(typeof notes === 'string') value.notes=notes;
-      if (playback && ['sst','wfd'].includes(value.questions[index].type)) {
+      if (playback && (['sst','wfd'].includes(value.questions[index].type) || listeningScoring.TYPES.has(value.questions[index].type))) {
         value.playback ||= value.questions.map(()=>null);
         const old = value.playback[index];
         // Earlier browser-speech failures could save a finished flag at zero seconds.

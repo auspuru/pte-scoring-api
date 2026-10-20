@@ -4,9 +4,9 @@
   else root.WritingLabReport = report;
 })(typeof window === 'object' ? window : this, function () {
   'use strict';
-  const labels = { swt: 'Summarise Written Text', essay: 'Write Essay', sst: 'Summarise Spoken Text', wfd: 'Write from Dictation' };
+  const labels = { swt: 'Summarise Written Text', essay: 'Write Essay', sst: 'Summarise Spoken Text', wfd: 'Write from Dictation', lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks (Type In)',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words' };
   const tokens = text => String(text || '').normalize('NFKC').toLowerCase().replace(/[’‘]/g, "'").match(/[\p{L}\p{N}]+(?:['-][\p{L}\p{N}]+)*/gu) || [];
-  const maximumFor = q => q.type === 'wfd' ? tokens(q.text).length : ({ swt: 9, sst: 12, essay: 26 })[q.type];
+  const maximumFor = q => ['lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(q.type) ? (q.maximum || (['lmcma','lfi','hiw'].includes(q.type) ? q.answers.length : 1)) : q.type === 'wfd' ? tokens(q.text).length : ({ swt: 9, sst: 12, essay: 26 })[q.type];
   function score90(total, maximum) {
     if (!Number.isFinite(total) || !Number.isFinite(maximum) || maximum <= 0 || total < 0 || total > maximum) return null;
     return Math.round(10 + 80 * total / maximum);

@@ -90,7 +90,15 @@ async function normalizeMp3(bytes, input={}) {
   try {
     await fs.writeFile(source, bytes);
     const effects=Array.isArray(input.ambience)?input.ambience:[];
-    if(effects.length) {
+    if(input.endCue) {
+      // Select Missing Word ends before the missing phrase. Append a real cue;
+      // never send the answer or the word "beep" to the speech synthesiser.
+      await run('ffmpeg', [
+        '-loglevel','error','-y','-i',source,'-f','lavfi','-i','sine=frequency=1000:duration=0.35:sample_rate=48000',
+        '-filter_complex','[0:a]'+SPEECH_CLEANUP_FILTER+',apad=pad_dur=0.15[speech];[1:a]volume=0.6,aformat=sample_rates=48000:channel_layouts=mono[cue];[speech][cue]concat=n=2:v=0:a=1[out]',
+        '-map','[out]','-codec:a','libmp3lame','-b:a','192k','-ar','48000','-ac','1',output
+      ], {timeout:120000,maxBuffer:10*1024*1024});
+    } else if(effects.length) {
       const { stdout }=await run('ffprobe',[
         '-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',source
       ],{timeout:15000,maxBuffer:1024*1024});
@@ -201,7 +209,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     catch(error) { if(error.code === 'ENOENT') return false; throw error; }
   };
   async function get(id) {
-    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || [])].find(item => item.id === id && ['sst', 'wfd'].includes(item.type));
+    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || []), ...require('./content/listening-mocks').missing].find(item => item.id === id && ['sst', 'wfd', 'smw'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
     const minimumSeconds = q.type === 'sst' ? minimumSstSeconds : 0;
     let bundledSource = null;
@@ -221,6 +229,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     }
     const neural = q.audioMode === 'runtime-neural';
     const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:neural ? 'wav' : 'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:neural };
+    if(q.audioEndCue)input.endCue=true;
     const legacyHash = digest(input);
     const cacheInput = cacheVersion ? { ...input, cacheVersion } : input;
     const unpacedHash = digest(cacheInput);
@@ -382,6 +391,8 @@ function installNarration(app, directory, { prewarm=true } = {}) {
     }
   });
   const sstIds=(predictions.sst||[]).map(q=>q.id);
+  if(prewarm) setImmediate(()=>prewarmNarration(narration,require('./content/listening-mocks').missing.map(q=>q.id),{attempts:1}).catch(error=>
+    console.warn('[writing-audio] Listening prewarm task failed:',error.message)));
   if(prewarm) setImmediate(()=>prewarmNarration(narration,sstIds).catch(error=>
     console.warn('[writing-audio] Prewarm task failed:',error.message)));
   return narration;
