@@ -19,7 +19,7 @@ test('Each available individual task has exactly one primary home and a working 
   all.forEach(t => assert(routes[t.route], t.route));
   assert.deepEqual(catalogue.groups.find(g => g.id === 'speaking').tasks.map(t => t.route), ['speaking-ra','speaking-rs','speaking-di','speaking-rl','speaking-sgd','speaking-rts']);
   assert.deepEqual(catalogue.groups.find(g => g.id === 'writing').tasks.map(t => t.route), ['swt', 'practice']);
-  assert.deepEqual(catalogue.groups.find(g => g.id === 'listening').tasks.map(t => t.route), ['spoken-text', 'listening-hcs', 'listening-hiw', 'dictation']);
+  assert.deepEqual(catalogue.groups.find(g => g.id === 'listening').tasks.map(t => t.route), ['spoken-text','listening-lmcma','listening-lfi','listening-hcs','listening-lmcsa','listening-smw','listening-hiw','dictation']);
   assert(!all.some(t => /mock/.test(t.route)));
 });
 

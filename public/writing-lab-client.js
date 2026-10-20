@@ -4,8 +4,11 @@
   const portalShell = document.getElementById('writingLabScreen');
   const shell = portalShell || document.body;
   const inPortal = !!portalShell;
+  if(!inPortal)document.body.id='writingLabScreen';
   const report = window.WritingLabReport;
   const listeningTasks = window.ListeningTasks;
+  const studio = window.ListeningStudio;
+  let listeningMode='practice', listeningHistory=[], studioSearch='', studioFilter='all';
   const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const count = text => text.trim().split(/\s+/).filter(Boolean).length;
   const clock = seconds => Math.floor(Math.max(0,seconds)/60)+':'+String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0');
@@ -19,6 +22,41 @@
   let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(q.type);
+  const practiceTypes=['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'];
+  const questionsFor=type=>studio?studio.questions(catalog,type):type==='sst'?catalog?.spoken||[]:type==='wfd'?catalog?.dictation||[]:(catalog?.listeningPractice||[]).filter(q=>q.type===type);
+  const supportedPractice=()=>attempt?.kind!=='mock'&&attempt?.mode==='practice';
+  const beforeDeadline=()=>attempt?.deadline==null||attempt.deadline>Date.now()+offset;
+  function bookmarks(){try{return JSON.parse(storage.get('ipt-listening-bookmarks:'+username)||'[]');}catch(_){return [];}}
+  function studioWrap(content,type,mock=false){
+    if(!studio)return content;
+    return studio.wrap(content,{type,mock,mode:attempt?.mode||listeningMode,items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),activeId:attempt?.testId,search:studioSearch,filter:studioFilter});
+  }
+  function setListeningStyle(enabled){if(enabled)shell.classList.add('listening-mode');else shell.classList.remove('listening-mode');}
+  function bindStudioLibrary(){
+    if(!studio)return;
+    const refresh=()=>{const target=document.getElementById('studio-question-list');if(target)target.innerHTML=studio.rows({items:questionsFor(attempt?.kind==='mock'?null:attempt?.kind||view),history:listeningHistory,bookmarks:bookmarks(),activeId:attempt?.testId,search:studioSearch,filter:studioFilter});};
+    const search=document.getElementById('studio-search'),filter=document.getElementById('studio-filter');
+    if(search)search.oninput=()=>{studioSearch=search.value;refresh();};
+    if(filter)filter.onchange=()=>{studioFilter=filter.value;refresh();};
+  }
+  async function openPracticeId(testId,button,serial=++navigationSerial){
+    if(!username){notify('Sign in to your workspace first.');return;}
+    writeDraft();await saveAnswer(false);await saving.catch(()=>{});if(saveConflict)return;
+    const rows=await api('/attempts');if(serial!==navigationSerial||!workspaceVisible)return;
+    listeningHistory=rows;
+    const saved=rows.filter(a=>a.testId===testId&&(a.mode||'exam')===listeningMode).sort((a,b)=>b.startedAt-a.startedAt)[0];
+    if(saved)return resume(saved.id,button,serial);
+    return start(testId,button,serial);
+  }
+  async function changeListeningMode(mode,button){
+    if(!['practice','exam'].includes(mode)||attempt?.kind==='mock')return;
+    const current=attempt?.mode||listeningMode;if(current===mode)return;
+    if(attempt&&['active','ready'].includes(attempt.status)&&!await confirmAction('Switch practice mode?','Your current attempt stays saved. The other mode has its own response, clock and playback allowance.','Switch mode'))return;
+    const testId=attempt?.testId;writeDraft();await saveAnswer(false);if(saveConflict)return;
+    stopAudio();listeningMode=mode;storage.put('ipt-listening-mode:'+username,mode);
+    if(testId)return openPracticeId(testId,button);
+    return hub(view);
+  }
   function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
   function setMockMode(enabled) {
     window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root, enabled ? {
@@ -64,7 +102,10 @@
       const events=new Map([...pendingIntegrity(value.id),...local,...(value.integrity?.events || [])].map(event=>[event.id,event]));
       value.integrity={protected:true,events:[...events.values()].sort((a,b)=>a.at-b.at).slice(0,200)};
     }
-    attempt=value; if(value.module)mockModule=value.module; offset=value.serverNow-Date.now(); saveConflict=false;
+    attempt=value;
+    if(value?.kind!=='mock'&&value?.mode)listeningMode=value.mode;
+    if(value?.id){listeningHistory=listeningHistory.filter(a=>a.id!==value.id);listeningHistory.push({...value,questions:value.questions?.length||0});}
+    if(value.module)mockModule=value.module; offset=value.serverNow-Date.now(); saveConflict=false;
     if(value?.status==='submitted') (value.questions||[]).forEach(q=>seenQuestionIds.add(q.id));
   }
   function writeDraft() {
@@ -120,7 +161,7 @@
   function returnToPortal(section) {
     if (inPortal && typeof window.switchSection === 'function') return window.switchSection(section);
     if (window.parent !== window) window.parent.postMessage({ type: 'writing-lab-navigate', section }, location.origin);
-    else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : 'mock-tests');
+    else location.href = '/#/' + (section === 'practice-hub' ? 'practice' : section);
   }
   async function hub(tab=view) {
     navigationSerial++;
@@ -136,24 +177,25 @@
     const auth=username?'':'<p class="auth-note">Sign in to your existing workspace account to practise.</p>';
     let content='';
     if(tab==='history') {
-      content='<h2>'+(historyKind==='mock'?(mockModule==='listening'?'Listening mock attempts':'Writing mock attempts'):historyKind==='wfd'?'Dictation attempts':'Spoken text attempts')+'</h2><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
+      content='<h2>'+(historyKind==='mock'?(mockModule==='listening'?'Listening mock attempts':'Writing mock attempts'):historyKind==='wfd'?'Dictation attempts':historyKind==='sst'?'Spoken text attempts':(report.labels[historyKind]||'Listening')+' attempts')+'</h2><p class="muted">Resume an attempt or review saved feedback.</p><div id="history-list" class="history-list"><p>Loading attempts…</p></div>';
     } else if(tab==='mocks') {
       content='<h2>'+(mockModule==='listening'?'Listening':'Writing')+' sectional mock</h2><p>Choose a paper in Mock Tests, or resume a saved attempt below.</p><button class="secondary" data-tab="history">Saved mock attempts</button>';
     } else {
-      const dictation=tab==='wfd', questions=dictation?(catalog.dictation||[]):catalog.spoken;
+      const dictation=tab==='wfd', questions=questionsFor(tab);
       libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(questions.length/12)-1));
-      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(dictation?'Write From Dictation':'Summarise Spoken Text')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':'Listen to a short lecture and write a summary of 50–70 words.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
-        +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card">'+(q.prediction?'<p class="eyebrow">Prediction</p>':'')+'<h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+q.minutes+' minutes</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
+      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(studio?.tasks.find(t=>t[0]===tab)?.[2]||(tab==='wfd'?'Write From Dictation':report.labels[tab])||'Listening practice')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':tab==='sst'?'Listen to a short lecture and write a summary of 50–70 words.':studio?.help[tab]||'Listen and answer the question.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
+        +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card">'+(q.prediction?'<p class="eyebrow">Prediction</p>':'')+'<h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+(studio&&listeningMode==='practice'?'Untimed':q.minutes+' minutes')+'</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
     }
-    root.innerHTML='<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>';
+    root.innerHTML=(studio&&practiceTypes.includes(tab)?studioWrap('<div class="studio-library"><div class="section-heading">'+back+'</div>'+content+(['hcs','hiw'].includes(tab)?'<p class="studio-legacy"><button class="secondary" data-portal="listening-'+tab+'-bank">Open earlier '+tab.toUpperCase()+' question bank</button></p>':'')+'</div>',tab):'<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>');
+    setListeningStyle(practiceTypes.includes(tab)||(tab==='history'&&practiceTypes.includes(historyKind)));bindStudioLibrary();
     if(tab==='history') {
       const target=document.getElementById('history-list');
       if(!username) { target.innerHTML=auth; return; }
       try {
-        const all=await api('/attempts');
+        const all=await api('/attempts');listeningHistory=all;
         if(!target.isConnected) return;
         const history=all.filter(a=>a.kind===historyKind && (historyKind!=='mock'||(a.module||'writing')===mockModule));
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 practice estimate')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 practice estimate')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
   }
@@ -179,7 +221,7 @@
     try {
       if(mock && window.PortalExamMode?.prepare && !await window.PortalExamMode.prepare('writing',portalShell || root)) {button.disabled=false;return;}
       if(serial!==navigationSerial || !workspaceVisible)return;
-      const started=await api('/attempts',{id:crypto.randomUUID(),testId});
+      const started=await api('/attempts',{id:crypto.randomUUID(),testId,...(!mock?{mode:listeningMode}:{})});
       if (serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(started);
       showAttempt();
@@ -192,7 +234,7 @@
       if(serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(value);
       const local=draft();
-      if(attempt.status==='active' && local?.index===attempt.index && local.at<attempt.deadline && local.revision>=attempt.revisions[attempt.index]) {
+      if(attempt.status==='active' && local?.index===attempt.index && (attempt.deadline==null||local.at<attempt.deadline) && local.revision>=attempt.revisions[attempt.index]) {
         attempt.answers[attempt.index]=local.text; attempt.revisions[attempt.index]=local.revision; attempt.notes=local.notes||'';
       }
       historyKind=attempt.kind;
@@ -206,14 +248,14 @@
     button.disabled=true;
     try {
       // A new UUID keeps the completed attempt and its feedback in My attempts.
-      const value=await api('/attempts',{id:crypto.randomUUID(),testId});
+      const value=await api('/attempts',{id:crypto.randomUUID(),testId,...(studio?{mode:attempt?.mode||listeningMode}:{})});
       if(serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(value);
       showAttempt();
     } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
   function questionPosition() {
-    const questions=catalog&&(attempt.kind==='sst'?catalog.spoken:attempt.kind==='wfd'?catalog.dictation:null);
+    const questions=catalog&&attempt.kind!=='mock'?questionsFor(attempt.kind):null;
     const index=questions?questions.findIndex(q=>q.id===attempt.testId):attempt.index;
     return 'Question '+(index+1)+' of '+(questions?questions.length:attempt.questions.length);
   }
@@ -222,15 +264,20 @@
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
     shell.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q),objective=!!listeningTasks?.isObjective(q);
+    const listeningWorkspace=listening&&(attempt.kind!=='mock'||attempt.module==='listening');
+    setListeningStyle(listeningWorkspace);
     const instruction=q.prompt || (q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.');
-    root.innerHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+q.minutes+':00</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
-      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1"></label></div><details><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
-      (objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready':'Saved automatically')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'':'<button class="secondary" data-leave="1">Exit</button>')+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.index===attempt.questions.length-1?'Submit':'Next →')+'</button></footer>'+practiceNavigation()+'</section>';
+    const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
+      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1">'+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</label></div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
+      (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'':'<button class="secondary" data-leave="1">Exit</button>')+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer>'+practiceNavigation()+'</section>';
+    root.innerHTML=studio&&listeningWorkspace?studioWrap(questionHTML,q.type,attempt.kind==='mock'):questionHTML;
+    if(studio&&listeningWorkspace){bindStudioLibrary();const strip=root.querySelector?.('.exam-strip');if(strip&&attempt.kind!=='mock')strip.insertAdjacentHTML('beforeend','<button type="button" class="studio-bookmark" data-listening-bookmark="'+esc(q.id)+'" aria-label="Bookmark question" aria-pressed="'+bookmarks().includes(q.id)+'">'+(bookmarks().includes(q.id)?'★':'☆')+'</button>');}
     document.getElementById('answer').addEventListener('input',onInput);
-    if(objective)listeningTasks.bind(root,q,document.getElementById('answer'),onInput,()=>attempt?.status==='active'&&!moving&&!saveConflict&&!document.getElementById('answer').readOnly&&attempt.deadline>Date.now()+offset&&!window.PortalExamMode?.isLocked?.('writing'));
+    if(objective)listeningTasks.bind(root,q,document.getElementById('answer'),onInput,()=>attempt?.status==='active'&&!moving&&!saveConflict&&!document.getElementById('answer').readOnly&&beforeDeadline()&&!window.PortalExamMode?.isLocked?.('writing'));
     document.getElementById('notes')?.addEventListener('input',onInput);
     document.getElementById('next').onclick=nextQuestion;
     setMockMode(attempt.kind==='mock');
+    if(objective)listeningTasks.setEditable?.(root,attempt.status==='active');
     if(listening) setupAudio(q); else stopAudio();
     timer=setInterval(tick,500); tick();
     root.focus(); window.scrollTo(0,0);
@@ -248,7 +295,7 @@
     const id=attempt.id,index=attempt.index,editor=document.getElementById('answer');
     if(!editor) return Promise.resolve();
     const body={index,text:editor.value,revision:++attempt.revisions[index],next,notes:document.getElementById('notes')?.value || '',
-      ...(audioAttempt===questionKey()?{playback:{position:audio?.currentTime||0,finished:audioFinished}}:{})};
+      ...(audioAttempt===questionKey()?{playback:{position:audio?.currentTime||0,finished:audioFinished,plays:attempt.playback?.[index]?.plays||0}}:{})};
     writeDraft();
     const task=saving.catch(()=>{}).then(async()=>{
       if(saveConflict && attempt?.id===id) return;
@@ -261,13 +308,13 @@
       }
       offset=value.serverNow-Date.now();
       if(value.revisions[index]!==body.revision || value.answers[index]!==body.text) {
-        saveConflict=true; moving=false;
+        saveConflict=true; moving=false;listeningTasks?.setEditable?.(root,false);
         const status=document.getElementById('save-status');
         if(status) status.innerHTML='Another tab updated this answer. Your draft is kept on this device. <button class="secondary" id="keep-draft">Save my current draft</button>';
         const button=document.getElementById('next');if(button)button.disabled=true;
         document.getElementById('keep-draft')?.addEventListener('click',()=>{
           attempt.revisions[index]=Math.max(attempt.revisions[index],value.revisions[index]);saveConflict=false;
-          document.getElementById('answer').readOnly=false;if(button)button.disabled=false;saveAnswer(false);
+          document.getElementById('answer').readOnly=false;listeningTasks?.setEditable?.(root,true);if(button)button.disabled=false;saveAnswer(false);
         });
         return;
       }
@@ -288,24 +335,28 @@
     const originalId=attempt.id, originalIndex=attempt.index;
     const text=document.getElementById('answer').value;
     const final=attempt.index===attempt.questions.length-1;
+    const currentQuestion=attempt.questions[attempt.index],parsed=listeningTasks?.isObjective(currentQuestion)?listeningTasks.parse(text):null;
+    const unanswered=parsed?!parsed.some(value=>typeof value==='string'?value.trim():Number.isInteger(value)):!text.trim();
+    if(unanswered&&!(attempt.kind==='mock'&&final)&&!await confirmAction('Submit without an answer?','Your saved response will be submitted as unanswered.','Submit unanswered'))return;
     if(attempt.kind==='mock' && final && !await confirmAction('Finish this attempt?',(text.trim()?'Your final answer will be locked. ':'Your final answer is blank and will receive zero marks. ')+'You can review scores and feedback after submission.','Finish & submit')) return;
     // The timer may have advanced the question while the dialog was open.
     if(!attempt || attempt.status!=='active' || attempt.id!==originalId || attempt.index!==originalIndex) return;
     moving=true; clearTimeout(saveTimer);
     const button=document.getElementById('next'); button.disabled=true;
-    document.getElementById('answer').readOnly=true;
+    document.getElementById('answer').readOnly=true;listeningTasks?.setEditable?.(root,false);
     try { await saveAnswer(true); }
     catch(e) { notify(e.message); moving=false; if(button.isConnected) {button.disabled=false;document.getElementById('answer').readOnly=false;} }
     finally {
       if(attempt?.id===originalId && attempt.index===originalIndex && attempt.status==='active') {
         moving=false;
         const editor=document.getElementById('answer');if(editor)editor.readOnly=false;
-        if(button.isConnected)button.disabled=saveConflict;
+        if(button.isConnected)button.disabled=saveConflict;listeningTasks?.setEditable?.(root,!saveConflict);
       }
     }
   }
   async function tick() {
     if(!attempt || attempt.status!=='active') return;
+    if(attempt.deadline==null){const node=document.getElementById('timer');if(node)node.textContent='Untimed';return;}
     const remaining=Math.max(0,Math.ceil((attempt.deadline-Date.now()-offset)/1000));
     const timerNode=document.getElementById('timer');
     if(timerNode) { timerNode.textContent=clock(remaining); timerNode.parentElement.classList.toggle('warning',remaining<60); }
@@ -325,7 +376,7 @@
   }
   function setupAudio(q) {
     const id=attempt.id, index=attempt.index, key=questionKey();
-    const canPause=q.type==='sst' && attempt.kind!=='mock';
+    const canReplay=supportedPractice(),canPause=canReplay||(q.type==='sst' && attempt.kind!=='mock'&&attempt.mode!=='exam');
     const savedDraft=draft(), local=savedDraft?.index===index?savedDraft:null;
     const saved=attempt.playback?.[index];
     if(audioAttempt!==key) {
@@ -355,7 +406,7 @@
       clearInterval(audioCountdown);
       if(!current() || audioFinished || document.hidden || window.PortalExamMode?.isLocked?.('writing') || starting) return;
       if(player.error) { resumePosition=Math.max(resumePosition,player.currentTime||0); player.load(); }
-      if(attempt.status==='active' && attempt.deadline<=Date.now()+offset) { tick(); return; }
+      if(attempt.status==='active' && attempt.deadline!=null && attempt.deadline<=Date.now()+offset) { tick(); return; }
       starting=true;
       startButton.disabled=true;
       status.textContent=player.readyState<3?'Loading recording…':'Starting recording…';
@@ -372,11 +423,13 @@
           if(!current()) { stopStalePlayback(); return; }
           setAttempt(value);
           if(attempt.status!=='active') { player.pause(); showAttempt(); return; }
-          document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;
+          document.getElementById('answer').disabled=false; document.getElementById('next').disabled=false;const notes=document.getElementById('notes');if(notes)notes.disabled=false;listeningTasks?.setEditable?.(root,true);
         }
         if(!current()) { stopStalePlayback(); return; }
-        if(attempt.deadline<=Date.now()+offset || document.hidden) { player.pause(); tick(); return; }
+        if((attempt.deadline!=null&&attempt.deadline<=Date.now()+offset) || document.hidden) { player.pause(); tick(); return; }
         status.textContent=audioFinished?completeText:'Playing…';
+        attempt.playback ||= attempt.questions.map(()=>null);
+        attempt.playback[index]={...(attempt.playback[index]||{}),plays:(attempt.playback[index]?.plays||0)+1};
         if(canPause && !audioFinished) { startButton.textContent='Pause recording'; startButton.classList.remove('hidden'); }
         else startButton.classList.add('hidden');
         writeDraft(); saveAnswer(false);
@@ -444,6 +497,8 @@
       startButton.textContent='Retry audio'; startButton.disabled=false; startButton.classList.remove('hidden');
     };
     document.getElementById('audio-volume').oninput=e=>player.volume=Number(e.target.value);
+    const replay=document.getElementById('audio-replay');
+    if(replay&&canReplay)replay.onclick=()=>{if(!current()||starting)return;player.pause();player.currentTime=0;audioFinished=false;resumePosition=0;startButton.classList.remove('hidden');return play();};
     startButton.onclick=()=>{
       if(canPause && !player.paused && !starting && current() && !audioFinished) {
         player.pause(); writeDraft(); saveAnswer(false);
@@ -453,17 +508,17 @@
     };
   }
   function practiceNavigation(compact = false) {
-    if(!catalog||!attempt||!['sst','wfd'].includes(attempt.kind)||(!compact&&attempt.status!=='submitted'))return '';
-    const questions=attempt.kind==='sst'?catalog.spoken:catalog.dictation,index=questions.findIndex(q=>q.id===attempt.testId);
-    return '<nav class="'+(compact?'question-links':'exam-footer')+'" aria-label="Practice questions"><button class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="secondary" data-practice-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next →</button></nav>';
+    if(!catalog||!attempt||!practiceTypes.includes(attempt.kind)||(!compact&&attempt.status!=='submitted')||(attempt.mode==='exam'&&attempt.status!=='submitted'))return '';
+    const questions=questionsFor(attempt.kind),index=questions.findIndex(q=>q.id===attempt.testId);
+    return '<nav class="'+(compact?'question-links':'exam-footer')+'" aria-label="Practice questions"><button class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Previous question</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="secondary" data-practice-move="1" '+(index>=questions.length-1?'disabled':'')+'>Next question →</button></nav>';
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;
-    const questions=attempt.kind==='sst'?catalog.spoken:catalog.dictation,index=questions.findIndex(q=>q.id===attempt.testId),target=questions[index+direction];
+    const questions=questionsFor(attempt.kind),index=questions.findIndex(q=>q.id===attempt.testId),target=questions[index+direction];
     if(!target)return;
     const serial=++navigationSerial;moving=true;button.disabled=true;clearTimeout(saveTimer);stopAudio();writeDraft();
     try {await saveAnswer(false);await saving;if(saveConflict)throw Error('Resolve the saved-answer conflict before changing questions.');
-      const history=await api('/attempts'),saved=history.filter(a=>a.testId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
+      const history=await api('/attempts'),saved=history.filter(a=>a.testId===target.id&&(!studio||(a.mode||'exam')===listeningMode)).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
       if(serial!==navigationSerial||!workspaceVisible)return;
       clearInterval(timer);if(saved)await resume(saved.id,button,serial);else await start(target.id,button,serial);
     }catch(e){if(serial===navigationSerial && workspaceVisible)notify(e.message);}finally{moving=false;if(button.isConnected)button.disabled=false;}
@@ -472,18 +527,21 @@
     setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
-    const retry=['sst','wfd'].includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    root.innerHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?(attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
+    const resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?(attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);
+    root.innerHTML=studio&&listeningOnly?studioWrap(resultsHTML,attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
     root.focus();
     if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
   function reviewCard(q,i) {
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
-    if(listeningTasks?.isObjective(q))return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?r.total+'/'+r.maximum+' points':'Awaiting assessment')+'</strong></div><p class="muted">'+esc(report.labels[q.type])+'</p><h3>Your response</h3><div class="response">'+esc(listeningTasks.response(q,attempt.answers[i]))+'</div><h3>Correct answer</h3><div class="response sample">'+esc(listeningTasks.correct(q))+'</div><p>'+esc(q.explanation)+'</p><details><summary>Review recording and transcript</summary><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio><div class="response">'+esc(q.text)+'</div></details></article>';
+    if(listeningTasks?.isObjective(q))return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?r.total+'/'+r.maximum+' points':'Awaiting assessment')+'</strong></div><p class="muted">'+esc(report.labels[q.type])+'</p>'+(listeningTasks.review?listeningTasks.review(q,attempt.answers[i]):'<h3>Your response</h3><div class="response">'+esc(listeningTasks.response(q,attempt.answers[i]))+'</div><h3>Correct answer</h3><div class="response sample">'+esc(listeningTasks.correct(q))+'</div>')+'<p>'+esc(q.explanation)+'</p><details><summary>Review recording and transcript</summary><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio><div class="response">'+esc(q.text)+'</div></details></article>';
     const structured = q.type==='essay' && !!r?.feedbackVersion && r.feedbackVersion===window.EssayFeedback?.VERSION;
     return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
       (r? (r.gated?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.score90(r.total,r.maximum)) : '')+
+      (dictation&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+(r.wordFeedback||[]).map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
       (structured?window.EssayFeedback.render({...r,essayText:attempt.answers[i]||''})+'<details><summary>Score breakdown and feedback</summary>':'')+
       '<table class="trait-table"><thead><tr><th>Criterion</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+'</td><td>'+esc(r.feedback[k]||(r.gated?'No further scoring feedback when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>'+(structured?'</details>':'')+
@@ -533,13 +591,13 @@
     const serial=++navigationSerial;
     workspaceVisible=true;
     mockModule=request.module || (request.testId?.startsWith('listening-mock-')?'listening':'writing');
-    const tab=['sst','wfd','mocks','history'].includes(request.tab)?request.tab:'mocks';
+    const tab=[...practiceTypes,'mocks','history'].includes(request.tab)?request.tab:'mocks';
     requestedView=tab;
     if (attempt?.status==='active') await saveAnswer(false);
     if (serial!==navigationSerial || !workspaceVisible) return;
     if (request.attemptId) return resume(request.attemptId,{disabled:false},serial);
     if (request.testId) {
-      historyKind='mock';
+      historyKind=questionsFor(tab).some(q=>q.id===request.testId)?tab:'mock';
       if (attempt?.testId===request.testId && ['active','ready'].includes(attempt.status)) return showAttempt();
       if(request.testId.startsWith('listening-mock-')) {
         const rows=await api('/attempts');
@@ -550,7 +608,7 @@
       // Opening another paper never deletes the attempt already saved on the server.
       return start(request.testId,{disabled:false},serial);
     }
-    if (tab==='history') { historyKind='mock'; return hub(tab); }
+    if (tab==='history') { historyKind=request.kind||'mock'; return hub(tab); }
     const kind=tab==='mocks'?'mock':tab;
     historyKind=kind;
     if (attempt?.kind===kind && ['active','ready'].includes(attempt.status)) return showAttempt();
@@ -566,7 +624,8 @@
     bootPromise=(async()=>{
       try {
         const values=await Promise.all([api('/catalog'),api('/session'),api('/attempts')]);
-        catalog=values[0];username=values[1].username;
+        catalog=values[0];username=values[1].username;listeningHistory=values[2]||[];
+        listeningMode=storage.get('ipt-listening-mode:'+username)==='exam'?'exam':'practice';
         seenQuestionIds=new Set((values[2]||[]).filter(a=>a.status==='submitted').flatMap(a=>a.questionIds||[]));
         if(pendingRequest){const request=pendingRequest;pendingRequest=null;await handleRequest(request);}
         else if(!inPortal) await hub(requestedView);
@@ -587,7 +646,7 @@
     },
     leave:suspend,
     reset() {
-      suspend();catalog=null;username=null;attempt=null;requestedView='mocks';view='mocks';handledRequest=null;pendingRequest=null;
+      suspend();catalog=null;username=null;attempt=null;listeningHistory=[];studioSearch='';studioFilter='all';requestedView='mocks';view='mocks';handledRequest=null;pendingRequest=null;
       shell.classList.remove('exam-mode');
       if(inPortal) root.innerHTML='<p class="loading" role="status">Open a Writing or Listening task to begin.</p>';
     }
@@ -600,15 +659,19 @@
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
     if(b.disabled)return;
+    if(b.dataset.listeningMode)return changeListeningMode(b.dataset.listeningMode,b);
+    if(b.dataset.listeningType){studioSearch='';studioFilter='all';writeDraft();await saveAnswer(false);if(saveConflict)return;stopAudio();return returnToPortal(b.dataset.listeningRoute);}
+    if(b.dataset.listeningOpen)return openPracticeId(b.dataset.listeningOpen,b);
+    if(b.dataset.listeningBookmark){const id=b.dataset.listeningBookmark,items=bookmarks(),selected=!items.includes(id);storage.put('ipt-listening-bookmarks:'+username,JSON.stringify(selected?[...items,id]:items.filter(x=>x!==id)));b.textContent=selected?'★':'☆';b.setAttribute('aria-pressed',String(selected));return;}
     if(b.dataset.libraryPage!==undefined){libraryPage=Math.max(0,Number(b.dataset.libraryPage));return hub(view);}
     if(b.dataset.practiceMove!==undefined)return movePractice(Number(b.dataset.practiceMove),b);
     if(b.dataset.portal) { writeDraft(); await saveAnswer(false); stopAudio(); return returnToPortal(b.dataset.portal); }
     if(b.dataset.tab) return hub(b.dataset.tab);
-    if(b.dataset.start) return start(b.dataset.start,b);
+    if(b.dataset.start) return studio?openPracticeId(b.dataset.start,b):start(b.dataset.start,b);
     if(b.dataset.reattempt) return reattempt(b.dataset.reattempt,b);
     if(b.dataset.resume) return resume(b.dataset.resume,b);
     if(b.dataset.edit) return edit(b.dataset.edit);
-    if(b.dataset.leave && await confirmAction('Leave this attempt?','Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {
+    if(b.dataset.leave && await confirmAction('Leave this attempt?',supportedPractice()?'Your answers stay saved in My attempts.':'Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {
       const kind=attempt?.kind; await saveAnswer(false); hub(kind==='mock'?'mocks':kind || 'sst');
       if(kind==='mock')returnToPortal('mock-tests');
     }

@@ -69,6 +69,10 @@ const allMocks = [...bank.mocks, ...predictionMocks, ...listening.mocks];
 const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.contentStatus === 'verbatim-user-provided');
 const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const dictation = [...userPredictionDictation, ...previousDictation];
+// Individual listening questions reuse the verified mock sources and immutable keys.
+const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
+  .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
+const individualQuestions = [...predictions.sst, ...dictation, ...listeningPractice];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -81,7 +85,7 @@ function advance(a, at, reason) {
   }
 }
 function reconcile(a, now = Date.now()) {
-  while (a.status === 'active' && now >= a.deadline) advance(a, a.deadline, 'Time expired');
+  while (a.status === 'active' && a.deadline != null && now >= a.deadline) advance(a, a.deadline, 'Time expired');
   return a;
 }
 function present(a) {
@@ -186,6 +190,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
     listeningMocks:listening.mocks.map(m=>({id:m.id,title:m.title,module:'listening',minutes:report.minutesFor(m.questions),questionCount:m.questions.length,tasks:Object.keys(listening.listeningFormat.tasks).map(type=>({type,label:report.labels[type],count:m.questions.filter(q=>q.type===type).length}))})),
     mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
@@ -208,9 +213,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const all = await store.list(req.labUser);
     const entries = [];
     for (const a of all) {
-      const current = a.status==='active' && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
+      const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
       const summary = report.summarize(current.questions, current.results);
-      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',status:current.status,startedAt:current.startedAt,
+      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
@@ -219,14 +224,16 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
   router.post('/attempts', route(async(req,res) => {
-    const { id, testId } = req.body || {};
-    const mock = allMocks.find(m => m.id === testId), individual = [...predictions.sst, ...dictation].find(q => q.id === testId);
+    const { id, testId, mode } = req.body || {};
+    if(mode!=null && !['practice','exam'].includes(mode))throw bad('Invalid practice mode.');
+    const mock = allMocks.find(m => m.id === testId), individual = individualQuestions.find(q => q.id === testId);
     if (!mock && !individual) throw bad('Question set not found.',404);
     const q = structuredClone(mock ? mock.questions : [individual]);
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
       if (existing) return reconcile(existing);
       return { id,testId,title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
+        mode:mock ? 'exam' : mode || 'exam',
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null),
         ...(mock ? {integrity:{protected:true,events:[]}} : {}) };
@@ -242,7 +249,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.post('/attempts/:id/begin', route(async(req,res) => {
     const a = await store.update(req.labUser,req.params.id,value => {
       if (!value) throw bad('Attempt not found.',404);
-      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.startedAt+value.questions[0].minutes*60000; }
+      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.mode==='practice'&&value.kind!=='mock'?null:value.startedAt+value.questions[0].minutes*60000; }
       return reconcile(value);
     });
     assessSubmitted(req.labUser, a);
@@ -266,7 +273,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.post('/attempts/:id/answer', route(async(req,res) => {
     const { index,text,revision,next,notes,playback } = req.body || {};
     if (!Number.isInteger(index) || typeof text !== 'string' || text.length>20000 || !Number.isSafeInteger(revision) || revision<1 || (notes != null && (typeof notes !== 'string' || notes.length>10000))) throw bad('Invalid answer.');
-    if (playback != null && (!Number.isFinite(playback.position) || playback.position < 0 || playback.position > 600 || typeof playback.finished !== 'boolean')) throw bad('Invalid playback position.');
+    if (playback != null && (!Number.isFinite(playback.position) || playback.position < 0 || playback.position > 600 || typeof playback.finished !== 'boolean' || (playback.plays!=null && (!Number.isSafeInteger(playback.plays)||playback.plays<0||playback.plays>10000)))) throw bad('Invalid playback position.');
     const a = await store.update(req.labUser,req.params.id,value => {
       if(!value) throw bad('Attempt not found.',404);
       reconcile(value);
@@ -280,7 +287,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         const old = value.playback[index];
         // Earlier browser-speech failures could save a finished flag at zero seconds.
         // A recording that never played must remain available to the student.
-        value.playback[index] = {position:Math.max(old?.position || 0, playback.position),
+        value.playback[index] = {...(playback.plays!=null||old?.plays!=null?{plays:Math.max(old?.plays||0,playback.plays||0)}:{}),position:Math.max(old?.position || 0, playback.position),
           finished:(!!old?.finished && old.position > 0) || (playback.finished && playback.position > 0)};
       }
       if(next === true) advance(value,Date.now(),'Submitted');
