@@ -26,6 +26,7 @@ TASK ANALYSIS
 Break the prompt into its real requested parts: opinion/degree of agreement, both sides of a comparison, advantages and disadvantages, causes and solutions, a named choice/item, requested reasons, requested example/personal experience, or another explicit instruction. Do not invent requirements.
 
 ${policy.TASK_RELEVANCE_GUIDANCE}
+${policy.HOLISTIC_TRAIT_GUIDANCE}
 ${options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext) : ""}
 
 EVIDENCE
@@ -209,6 +210,7 @@ Hard rule: Content 0 means there is no meaningful topical idea anywhere in the r
 A 6/6 Linguistic or Coherence score requires at least two short exact essay quotations supporting it.
 
 ${policy.TASK_RELEVANCE_GUIDANCE}
+${policy.HOLISTIC_TRAIT_GUIDANCE}
 ${options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext) : ""}
 
 PRIMARY REVIEW:
@@ -489,8 +491,9 @@ async function assessEssay(question, essay, call, { onAttemptError = () => {}, f
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
   const providerCall = call;
   const requirements = feedbackV3 ? feedbackPolicy.requirements(question) : undefined;
+  const previousIssueIds = feedbackV3 ? (revisionContext?.issues || []).map(issue=>issue.id) : undefined;
   call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question) : prompt, essay,
-    feedbackV3 ? {...callOptions, requirements} : callOptions);
+    feedbackV3 ? {...callOptions, requirements, previousIssueIds} : callOptions);
 
   const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError, options);
 

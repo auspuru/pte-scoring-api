@@ -13406,7 +13406,7 @@ const PRACTICE_RUBRIC = [
   { key: 'spelling',        label: 'Spelling',   max: 2 },
   { key: 'grammar',         label: 'Grammar',    max: 2 },
   { key: 'vocabulary',      label: 'Vocabulary', max: 2 },
-  { key: 'linguistic',      label: 'Sentence variety', max: 6 },
+  { key: 'linguistic',      label: 'Language range', max: 6 },
   { key: 'coherence',       label: 'Organisation', max: 6 }
   // Total = 26
 ];
