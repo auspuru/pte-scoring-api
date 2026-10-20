@@ -214,7 +214,7 @@ test('My Progress forces a fresh cloud pull instead of relying on the background
   assert.match(indexSource, /refreshPracticeHistory\(\{ force: true \}\)/);
   assert.match(indexSource, /My Progress is an observation surface/);
   assert.doesNotMatch(html, /<script[^>]+student-progress\.js/);
-  assert.match(indexSource, /student-progress\.js\?v=20260930-recent-writing/);
+  assert.match(indexSource, /student-progress\.js\?v=sha256-[a-f0-9]{12}/);
 });
 
 test('writing lab presents estimate scores without native mark totals', () => {
