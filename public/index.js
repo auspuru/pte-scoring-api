@@ -12506,7 +12506,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-8b269024d8d8', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-72f066caba8e', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12521,7 +12521,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=20260930-recent-writing', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-404d7ae371bf', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;
@@ -12690,7 +12690,7 @@ function initialisePortalWorkspace() {
 }
 
 async function openWritingLab(tab = 'mocks', options = {}) {
-  const nextTab = ['sst','wfd','mocks','history'].includes(tab) ? tab : 'mocks';
+  const nextTab = Object.values(PortalWorkspace.routes).some(route => route.labTab === tab) ? tab : 'mocks';
   const request = { tab: nextTab, ...options, requestId: crypto.randomUUID() };
   try {
     const writingLab = await ensureWritingLabRuntimeLoaded();
