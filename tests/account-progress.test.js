@@ -329,6 +329,7 @@ function device(store, owner = 'student') {
   ctx.LocalStore = { get: k => { try { return JSON.parse(values.get(k) || 'null'); } catch (_) { return null; } }, set: (k, v) => { values.set(k, JSON.stringify(v)); return true; } };
   ctx.getPracticeHistory = () => ctx.userProfile.practiceHistory;
   vm.createContext(ctx);
+  ctx.PracticeStudio = require('../public/practice-studio');
   for (const name of ['account-progress', 'reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) vm.runInContext(fs.readFileSync(require.resolve('../public/' + name), 'utf8'), ctx);
   vm.runInContext('const accountProgressMemory = new Map(); const accountCloudSnapshot = new Map();\n' +
     ['fetchAccountProgress', 'localAccountProgress', 'cacheAccountProgress', 'captureAccountProgress', 'receiveAccountProgress', 'accountSyncPayload', 'queueSync', 'flushSync', 'flushSyncDirect', 'refreshPracticeHistory', 'resumeAccountSync'].map(clientFunction).join('\n'), ctx);

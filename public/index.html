@@ -68,6 +68,7 @@
 <script src="reading-fib-quality.js?v=20261001-expanded" defer></script>
 <script src="reading-fib-pattern-bank.js?v=20261001-expanded" defer></script>
 <script src="practice-catalogue.js?v=sha256-855d00706c5c" defer></script>
+<script src="/practice-studio.js?v=sha256-3bfdfcd80a40" defer></script>
 <script src="portal-exam-mode.js?v=20261001-mock-input2" defer></script>
 <script src="portal-workspace.js?v=sha256-73b9cebf837b" defer></script>
 <script src="/portal-emoji-actions.js?v=20261002-logo1" defer></script>
@@ -81,7 +82,7 @@
 <script src="/listening-tasks.js?v=sha256-dca21462d7b9" defer></script>
 <script src="/writing-lab-report.js?v=sha256-ce81ca7b8544" defer></script>
 <script src="grading-request.js?v=20261006-one-submit1" defer></script>
-<script src="index.min.js?v=source-sha256-c26101aef484" defer></script>
+<script src="index.min.js?v=source-sha256-3ab212f17fcb" defer></script>
 <link rel="stylesheet" href="portal-polish.css?v=1">
 <link rel="stylesheet" href="/question-navigation.css?v=2">
 <link rel="stylesheet" href="/student-progress.css?v=1">
@@ -95,6 +96,7 @@
 <link rel="stylesheet" href="/portal-exam-mode.css?v=20261001-protected-mock1">
 <link rel="stylesheet" href="/essay-next-steps.css?v=20261015-1">
 <link rel="stylesheet" href="/exam-results.css?v=20261001-passage-review">
+<link rel="stylesheet" href="/practice-studio.css?v=sha256-98651487a210">
 </head>
 <body>
 
@@ -549,7 +551,8 @@
 
 
       <!-- SWT Practice Pane -->
-      <div id="swtPane" class="pane">
+      <div id="swtPane" class="pane practice-studio-surface">
+        <div data-studio-navigation="writing" data-studio-active="swt"></div>
         <div id="swtPracticeScreen" class="swt-sub-screen active">
           <header class="swt-heading">
             <div><div class="eyebrow">Writing practice · SWT</div><h2 tabindex="-1">Summarise written text</h2><p id="swtModeDescription">Choose how you want to practise this task.</p></div>
@@ -1291,7 +1294,8 @@
 
 
 <!-- Essay practice uses the same navigation and header as SWT. -->
-<div class="practice-screen" id="practiceScreen">
+<div class="practice-screen practice-studio-surface" id="practiceScreen">
+  <div data-studio-navigation="writing" data-studio-active="practice"></div>
   <div class="practice-topbar portal-task-toolbar">
     <button type="button" class="portal-button portal-secondary-toggle" aria-controls="practiceAttemptSidebar" aria-expanded="false" onclick="togglePortalSecondary('practice', this)">Your attempts</button>
     <p class="portal-toolbar-note">Plan your response. Write. Review and improve.</p>

@@ -1,0 +1,169 @@
+/* Shared individual-practice layout. Protected mock players keep their own UI. */
+.practice-studio, .practice-studio-surface {
+  --practice-blue: #2458ce;
+  --practice-navy: #172e50;
+  --practice-canvas: #f3f6fb;
+  --practice-surface: #fff;
+  --practice-line: #dce4ef;
+  --practice-ink: #20344f;
+  --practice-muted: #526680;
+  --practice-tint: #edf3ff;
+  color: var(--practice-ink);
+  font-family: var(--sans, Inter, sans-serif);
+  min-width: 0;
+}
+body.dark :is(.practice-studio, .practice-studio-surface) {
+  --practice-blue: #a1bfff;
+  --practice-navy: #15233b;
+  --practice-canvas: #101c2e;
+  --practice-surface: #1b2a40;
+  --practice-line: #3a4c65;
+  --practice-ink: #edf3ff;
+  --practice-muted: #b8c8de;
+  --practice-tint: #273d61;
+}
+.practice-studio { max-width: 1440px; margin-inline: auto; }
+.practice-studio *, .practice-studio-surface * { box-sizing: border-box; }
+.practice-studio-content { min-width: 0; padding: 24px 0; }
+.practice-studio-taskbar {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--practice-navy);
+  color: #fff;
+  min-width: 0;
+  max-width: 100%;
+}
+.practice-studio-taskbar button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #e0eafa;
+  font: 600 13px/1.45 var(--sans, Inter, sans-serif);
+  padding: 9px 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.practice-studio-taskbar .practice-studio-home { border-color: #526887; }
+.practice-studio-tasklinks { display: flex; gap: 4px; overflow-x: auto; min-width: 0; scrollbar-width: thin; scrollbar-color: #7c94b7 transparent; padding-bottom: 2px; }
+.practice-studio-taskbar button:hover { background: #29486f; color: #fff; }
+.practice-studio-taskbar button[aria-current] { background: #fff; color: #173867; }
+.practice-studio-taskbar button:disabled { opacity: .6; cursor: default; }
+.practice-studio-taskbar button[aria-current]:disabled { opacity: 1; }
+.practice-studio-taskbar button:focus-visible { outline: 3px solid #9fc6ff; outline-offset: -3px; }
+.practice-studio-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin: 0 0 24px; }
+.practice-studio-heading h2 { font: 700 clamp(23px, 2.4vw, 30px)/1.3 var(--sans, Inter, sans-serif); color: var(--practice-ink); letter-spacing: -.035em; margin: 5px 0 8px; }
+.practice-studio-eyebrow { color: var(--practice-muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; margin: 0; }
+.practice-studio-description { color: var(--practice-muted); max-width: 70ch; font-size: 14px; line-height: 1.7; margin: 0; }
+.practice-studio-badge { flex-shrink: 0; padding: 7px 11px; border: 1px solid var(--practice-line); border-radius: 7px; font-size: 12px; color: var(--practice-muted); background: var(--practice-surface); }
+.practice-studio-library { border: 1px solid var(--practice-line); border-radius: 14px; background: var(--practice-surface); padding: clamp(18px, 2.5vw, 28px); }
+.practice-studio :is(.portal-button, .btn), .practice-studio-surface :is(.btn, .nav-arrow, .practice-action-btn) { min-height: 44px; }
+.practice-studio .portal-button { border-radius: 8px; border-color: var(--practice-line); background: var(--practice-surface); color: var(--practice-ink); font-size: 13px; }
+.practice-studio .portal-button.primary, #practiceScreen :is(.practice-welcome-cta, .practice-submit-btn, .practice-action-btn.primary) { background: #2458ce !important; border-color: #2458ce !important; color: #fff !important; box-shadow: none !important; }
+.practice-studio :is(button, input, select, textarea):focus-visible, .practice-studio-surface :is(button, input, select, textarea):focus-visible { outline: 3px solid var(--practice-blue); outline-offset: 3px; }
+.practice-studio :is(input[type=search], select) { min-height: 44px; font-size: 16px; }
+.practice-studio :is(.speaking-card, .reading-card) { background: var(--practice-surface); border-color: var(--practice-line); border-radius: 12px; box-shadow: none; }
+.practice-studio :is(.speaking-actions, .reading-actions) { padding: 16px 0 0; margin-top: 22px; border-top: 1px solid var(--practice-line); align-items: center; gap: 10px; }
+.practice-studio :is(.speaking-actions, .reading-actions) > span { font-size: 13px; color: var(--practice-muted); }
+
+/* Speaking: one scannable question list, and a spacious recording workspace. */
+#speakingPane .speaking-workspace { max-width: 1440px; }
+#speakingPane #speaking-notice:empty { display: none; }
+#speakingPane .speaking-exam-disclosure { padding: 14px 16px; background: var(--practice-tint); border-radius: 8px; color: var(--practice-ink); font-size: 13px; }
+#speakingPane .speaking-question-list { display: block; margin: 12px 0 20px; }
+#speakingPane .speaking-question-list article { display: flex; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-bottom: 1px solid var(--practice-line); border-radius: 0; padding: 18px 0; background: transparent; box-shadow: none; }
+#speakingPane .speaking-question-list article > div { min-width: 0; }
+#speakingPane .speaking-question-list h3 { margin: 5px 0; font-size: 16px; }
+#speakingPane .speaking-question-list .portal-button { flex-shrink: 0; }
+#speakingPane .speaking-number { font-size: 12px; color: var(--practice-blue); margin: 0; }
+#speakingPane .speaking-question-meta { margin: 4px 0 0; overflow-wrap: anywhere; }
+#speakingPane .speaking-heading { border-bottom: 1px solid var(--practice-line); padding-bottom: 12px; }
+#speakingPane .speaking-intro { font-size: 15px; line-height: 1.8; }
+#speakingPane .speaking-prompt { font-size: 19px; line-height: 1.9; max-width: none; padding: clamp(20px, 3vw, 36px); }
+#speakingPane .speaking-image { background: #fff; border: 1px solid var(--practice-line); border-radius: 12px; padding: 12px; max-height: 520px; object-fit: contain; }
+#speakingPane .speaking-exam-status { background: var(--practice-tint); }
+#speakingPane .speaking-exam-status #speaking-clock { color: var(--practice-blue); }
+
+/* Reading: full passage width for individual questions, with clear actions. */
+#readingPane .reading-individual-layout { display: block; }
+#readingPane .reading-individual-layout .reading-nav[hidden] { display: none; }
+#readingPane .practice-studio .reading-question { padding: clamp(20px, 3vw, 36px); }
+#readingPane .practice-studio .reading-session-toolbar { background: var(--practice-surface); border: 1px solid var(--practice-line); border-radius: 10px; padding: 12px; }
+#readingPane .practice-studio .reading-session-toolbar > strong { min-width: 0; overflow-wrap: anywhere; }
+#readingPane .practice-studio .reading-timer { margin-left: 0; font-size: 12px; background: var(--practice-tint); color: var(--practice-blue); }
+#readingPane .practice-studio .reading-question h2 { font-size: 23px; margin: 14px 0; }
+#readingPane .practice-studio .reading-question fieldset { min-width: 0; }
+#readingPane .practice-studio .reading-passage { font-size: 17px; line-height: 2.1; }
+#readingPane .practice-studio .reading-library-search { max-width: none; display: flex; flex-direction: column; gap: 7px; font-size: 13px; font-weight: 600; }
+#readingPane .practice-studio .reading-library-search input { width: 100%; border: 1px solid var(--practice-line); border-radius: 8px; padding: 12px; color: var(--practice-ink); background: var(--practice-surface); }
+#readingPane .practice-studio .reading-library-list { padding: 0; list-style: none; }
+#readingPane .practice-studio .reading-library-list li { border-color: var(--practice-line); padding: 18px 0; gap: 16px; }
+#readingPane .practice-studio .reading-library-list li > div { min-width: 0; }
+#readingPane .practice-studio .reading-library-list strong { font-size: 16px; line-height: 1.6; overflow-wrap: anywhere; }
+#readingPane .practice-studio .reading-library-list button { flex-shrink: 0; }
+#readingPane .reading-question-id { display: block; color: var(--practice-muted); font-size: 12px; margin: 4px 0; }
+
+/* Writing: match the shared task bar while keeping editors and selection intact. */
+#swtPane.practice-studio-surface { --swt-accent: var(--practice-blue); --swt-tint: var(--practice-tint); --swt-border: var(--practice-line); --swt-surface: var(--practice-surface); --swt-soft: var(--practice-canvas); --swt-text: var(--practice-ink); --swt-muted: var(--practice-muted); background: var(--practice-canvas); }
+#swtPane > [data-studio-navigation] { max-width: 1440px; margin: 0 auto 28px; }
+#swtPane .swt-heading h2 { font-size: clamp(23px, 2.4vw, 30px); letter-spacing: -.035em; }
+#swtPane .swt-mode-card { box-shadow: none; border-radius: 12px; min-height: 160px; }
+#swtPane .passage-nav { border-radius: 12px; border-color: var(--practice-line); }
+#swtPane .practice-grid { gap: 20px; }
+#swtPane .passage-body { font-size: 17px; line-height: 1.95; }
+#swtPane :is(.summary-input, .scratch-input) { font-size: 17px; line-height: 1.9; border-radius: 9px; min-height: 260px; }
+#swtPane .write-actions { gap: 10px; flex-wrap: wrap; }
+#swtPane .swt-pager { padding: 16px; border: 1px solid var(--practice-line); border-radius: 10px; background: var(--practice-surface); }
+#practiceScreen > [data-studio-navigation] { padding: 18px 24px 0; flex-shrink: 0; background: var(--practice-canvas); }
+#practiceScreen .practice-topbar { background: var(--practice-canvas); border-bottom-color: var(--practice-line); }
+#practiceScreen .practice-main { background: var(--practice-canvas); padding: 24px; }
+#practiceScreen .practice-content { max-width: 1160px; }
+#practiceScreen .practice-sidebar { background: var(--practice-surface); border-right: 1px solid var(--practice-line); }
+#practiceScreen .practice-studio-heading { margin-bottom: 22px; }
+#practiceScreen .practice-step { border-color: var(--practice-line) !important; background: var(--practice-surface) !important; box-shadow: none !important; padding: clamp(18px, 2.5vw, 32px) !important; }
+#practiceScreen .practice-welcome { max-width: none; margin: 0; padding: clamp(22px, 4vw, 48px); border-radius: 14px; border-color: var(--practice-line); }
+#practiceScreen .practice-welcome h3 { font-size: clamp(22px, 2.5vw, 30px); line-height: 1.35; margin: 10px 0 16px; }
+.practice-studio-steps { counter-reset: studio-step; padding: 20px 0; list-style: none; display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; border-block: 1px solid var(--practice-line); }
+.practice-studio-steps li { font-size: 14px; color: var(--practice-muted); display: flex; align-items: center; gap: 9px; }
+.practice-studio-steps li::before { counter-increment: studio-step; content: counter(studio-step); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: var(--practice-blue); background: var(--practice-tint); font-weight: 700; }
+#practiceScreen .practice-step-title { font-family: var(--sans) !important; }
+#practiceScreen .practice-studio-search { display: block; margin: 18px 0 8px; font-size: 13px; font-weight: 600; }
+#practiceScreen :is(.practice-question-search, .practice-custom-prompt) { border-color: var(--practice-line); border-radius: 8px; background: var(--practice-surface); }
+#practiceScreen .practice-source-tab { min-height: 44px; font-size: 14px; }
+#practiceScreen .practice-source-tab.active { color: var(--practice-blue); background: var(--practice-surface); }
+#practiceScreen #practiceEssayInput { min-height: 380px !important; font-size: 17px !important; line-height: 1.9 !important; }
+#practiceScreen .practice-prompt-collapsible.show { overflow-y: auto !important; }
+#practiceScreen #essayQuestionNav > nav { border-top: 1px solid var(--practice-line); padding: 20px 0; margin-top: 20px; }
+
+@media (max-width: 900px) {
+  .practice-studio-taskbar { flex-direction: column; gap: 6px; }
+  .practice-studio-taskbar .practice-studio-home { align-self: flex-start; padding: 6px 10px; }
+  .practice-studio-tasklinks { width: 100%; }
+  .practice-studio-content { padding-block: 20px; }
+  #practiceScreen > [data-studio-navigation] { padding: 16px 16px 0; }
+  #practiceScreen .practice-main { padding: 20px 16px; }
+}
+@media (max-width: 600px) {
+  .practice-studio-heading { flex-direction: column; gap: 10px; }
+  .practice-studio-heading h2 { font-size: 24px; }
+  .practice-studio-taskbar { border-radius: 9px; padding: 8px; }
+  .practice-studio-library { padding: 16px; }
+  #speakingPane .speaking-question-list article, #readingPane .practice-studio .reading-library-list li { align-items: flex-start; flex-direction: column; }
+  #speakingPane .speaking-question-list article .portal-button, #readingPane .practice-studio .reading-library-list li .portal-button { align-self: flex-end; }
+  #readingPane .practice-studio .reading-session-toolbar { gap: 8px; }
+  #readingPane .practice-studio .reading-session-toolbar > strong { width: 100%; }
+  #readingPane .practice-studio .reading-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #readingPane .practice-studio .reading-actions > button { width: 100%; margin: 0; }
+  #practiceScreen .practice-studio-steps { flex-direction: column; gap: 14px; }
+  #practiceScreen .practice-studio-badge { white-space: normal; }
+  #swtPane :is(.summary-input, .scratch-input) { min-height: 220px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .practice-studio *, .practice-studio-surface * { scroll-behavior: auto !important; transition: none !important; }
+}
+
+#swtPane .btn-primary { background: #2458ce; color: #fff; }

@@ -245,6 +245,7 @@ async function readingClient() {
     Date: class extends Date { static now() { return now; } },
     setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, portalConfirm: async () => true };
   vm.createContext(ctx);
+  ctx.PracticeStudio = require('../public/practice-studio');
   for (const file of ['reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) {
     vm.runInContext(fs.readFileSync(require.resolve('../public/' + file), 'utf8'), ctx);
   }
@@ -269,6 +270,7 @@ async function readingClient() {
     Date: class extends Date { static now() { return now; } },
     setInterval: fn => { intervals.push(fn); return intervals.length; }, clearInterval() {}, portalConfirm: async () => true };
   vm.createContext(ctx);
+  ctx.PracticeStudio = require('../public/practice-studio');
   for (const file of ['reading-mock-tools', 'reading-exam-player', 'reading-session-timing', 'reading-review', 'reading-practice']) {
     vm.runInContext(fs.readFileSync(require.resolve('../public/' + file), 'utf8'), ctx);
   }
