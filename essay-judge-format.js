@@ -58,11 +58,13 @@ const schemas = { assessment: primary, 'subjective-review': review, 'subjective-
 const feedbackIssue = object({code:{type:'string',enum:require('./public/essay-feedback').CODES}, category:{type:'string',enum:['coverage','reasoning','relevance','organisation','language']},
   priority:{type:'string',enum:['major','minor','optional']}, requirementId:text,
   trait:{type:'string',enum:['content','linguistic','coherence','vocabulary']}, affectsScore:{type:'boolean'},
-  evidence:object({essay_span:span,promptQuote:text}), explanation:text,suggestedChange:text,scoreRationale:text});
+  evidence:object({essay_span:{...span,description:'The shortest exact essay span that shows the issue; avoid quoting multiple paragraphs.'},promptQuote:text}),
+  explanation:{...text,description:'Briefly identify the actual weakness. Credit relevant reasoning elsewhere; do not turn optional improvements into missing requirements.'},
+  suggestedChange:{...text,description:'One short, achievable action in at most two sentences. If place did not determine success is a permitted position, one explicit link between early circumstances and achievement is enough advice; do not prescribe a researched list of regional political, economic or cultural mechanisms.'},scoreRationale:text});
 const revisionDecision = object({priorIssueId:text,status:{type:'string',enum:['resolved','open','needs_clarification']},currentIssueCode:text,evidence_span:span,reason:text});
 const feedbackRepair=object({feedbackIssues:{type:'array',items:feedbackIssue},revisionDecisions:{type:'array',items:revisionDecision},rationale:reasons(traits),strengths:texts,overallVerdict:text});
 schemas['feedback-repair']=feedbackRepair;
-function toolFor(stage, {feedbackV3=false, requirements=[]} = {}) {
+function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = {}) {
   let schema = schemas[stage];
   if (schema && feedbackV3 && !['evidence-repair','feedback-repair'].includes(stage)) {
     schema = object({...schema.properties,
@@ -70,6 +72,15 @@ function toolFor(stage, {feedbackV3=false, requirements=[]} = {}) {
       ...(stage==='assessment' ? {} : {strengths:texts,overallVerdict:text})});
   }
   if (!schema) return null;
+  if (feedbackV3 && Array.isArray(previousIssueIds) && schema.properties.revisionDecisions) {
+    schema = {...schema,properties:{...schema.properties,revisionDecisions:{
+      ...schema.properties.revisionDecisions,
+      description:previousIssueIds.length
+        ? 'Compare only these previous-attempt issue ids, one decision per id: '+JSON.stringify(previousIssueIds)
+        : 'No previous attempt issues were supplied. Return [] exactly. Current assessment issues are not previous issues.',
+      ...(previousIssueIds.length ? {items:object({...revisionDecision.properties,priorIssueId:{...text,enum:previousIssueIds}})} : {})
+    }}};
+  }
   const canonical = feedbackV3 && requirements.length ? requirements : null;
   const judgement = !['evidence-repair','feedback-repair'].includes(stage);
   if (canonical && schema.properties.feedbackIssues) {

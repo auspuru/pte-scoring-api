@@ -4,7 +4,7 @@
   else root.EssayScoring = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
   'use strict';
-  const VERSION = 'essay-unified-2.3';
+  const VERSION = 'essay-unified-2.4';
   // Transport capability, separate from the unchanged scoring rubric version.
   const SAMPLE_CONTRACT_VERSION = 'essay-optional-sample-1';
   const MAXIMA = { content: 6, form: 2, spelling: 2, grammar: 2, vocabulary: 2, linguistic: 6, coherence: 6 };
@@ -63,6 +63,14 @@ minimal: at least one substantive idea genuinely relates to this question, but t
 Boundary example: "Public transport can help people reach work." is a meaningful benefit claim and must receive minimal relevance / Content 1 when the rest of the essay is unrelated. "Public transport is an important topic today." offers no substantive claim about transport and cannot earn relevance credit. Do not describe the first example as mere keyword overlap or off_topic because it lacks investment details, a comparison or an opinion.
 relevant: substantive ideas relate to the actual topic. Score Content normally for coverage and development; relevance alone does not guarantee high marks. Valid paraphrases, a different position, a missing opinion or one missing side do not make an otherwise relevant essay off-topic. Weak language, ordinary grammar errors and taught structure are not reasons to label it off-topic.
 If every prompt requirement is missing, any nonzero Content still requires taskRelevance evidence demonstrating genuine topical substance. Wholly unrelated responses receive 0, never a consolation Content 1.`;
+  const HOLISTIC_TRAIT_GUIDANCE = `PROPORTIONATE HOLISTIC ASSESSMENT:
+Credit the student's argument across the WHOLE essay, including relevant examples, concessions, introduction and conclusion. Distinguish a genuinely unanswered requirement from an answered point that could be explained more fully. Do not demand academic research, detailed regional history, political context or a particular analytical technique unless the question requests it. A stronger explanation can be useful advice without proving that the existing argument is absent.
+When a question asks whether upbringing influenced a successful person, it permits influence OR non-influence. A relevant account of modest early circumstances contrasted with later accomplishments can support a non-determination argument. Judge the clarity and development of that connection; do not insist on proving a regional causal mechanism, both positions, or several local characteristics. Keep 'where they grew up' distinct from birthplace. A chronological structure is appropriate when it supports this task.
+Score each trait for its own observable quality. A Content development weakness does not automatically reduce Language Range or Organisation. The same passage may affect multiple traits only when a separate trait-specific effect is explained. Do not repeat 'missing analysis' as three deductions.
+Content 5: adequate task coverage, relevant argument and supporting detail, with minor exceptions. Content 4: the main point is addressed but support is inconsistent or materially thin. Reserve lower bands for the corresponding greater task failures. Full Content still requires sufficiently developed coverage, not mere topic relevance.
+Language Range 5: appropriately varied expression with clear communication and little restriction. Language Range 4 needs observable limitations in communicating complex ideas, such as repeated circumlocution, restrictive patterns or lapses in clarity. Credit controlled subordinate clauses and precise ordinary vocabulary. Simple accurate language, one colloquial phrase such as 'really hard', or the absence of an elegant rewrite does not alone establish restricted range. Full marks require convincing varied, controlled expression.
+Organisation 5: conventional, appropriate structure, logical paragraphs, a clear argument and effective links, with possible minor transitions to improve. Organisation 4 needs an observable development or connection problem that makes the argument harder to follow; explain that problem. Do not mark down an otherwise coherent chronological account solely because more Content analysis could be added. Full marks still require effective systematic development and smooth cohesion.
+Keep feedback proportional to the actual weakness. Prefer one short achievable addition or clarification. Use the shortest useful exact quotation; do not quote several paragraphs for one issue. Optional sophistication, alternative connectors and more polished wording belong in optional advice, not compulsory corrections. Do not infer an essay raw mark from a reported whole-test Writing score.`;
   function normalizeTaskRelevance(raw, essay, promptCoverage, { required = false } = {}) {
     // Historical results may predate this field. Every new server assessment
     // requires it; browser normalization remains compatible with saved work.
@@ -160,14 +168,16 @@ ${focusGuidance}
 
 ${TASK_RELEVANCE_GUIDANCE}
 
+${HOLISTIC_TRAIT_GUIDANCE}
+
 Use INTEGER scores only:
 - content 0–6: judge whether the response answers EVERY actual requirement in the prompt, remains relevant, and develops its main ideas with reasons, explanation and/or examples. 6 = every requested part is addressed and meaningfully developed; 4–5 = mostly complete/relevant with weaker development; 2–3 = partial, thin or noticeably incomplete; 1 = at least one meaningful topical idea, even if every requested part is missing; 0 = no meaningful topical idea anywhere in the essay. Do not reward topic-keyword overlap or generic prepared paragraphs.
 - form 0–2: deterministic Form is already ${form.score}/2 from the response itself. Use this exact score; do not recount or override it. Form can be 0 for invalid length or invalid presentation such as all capitals, no punctuation, list-only prose or only very short sentences. If Form is 0, the official essay score is 0.
 - spelling 0–2: 2 = no spelling errors; 1 = exactly one spelling error; 0 = more than one spelling error. Accept standard British, Australian and American spellings and proper names. Quote every actual misspelling in errors.
 - grammar 0–2: 2 when meaning is clear and unchanged, including a few minor grammar slips; 1 for one or two actual grammar errors that change or obscure meaning; 0 for 3+ distinct meaning-changing errors that block meaning. Count actual grammar, not stylistic preferences. A more elegant synonym, a shorter sentence, or another valid connector is optional advice.
 - vocabulary 0–2: 2 appropriate, precise, varied wording; 1 adequate with some repetition or imprecision; 0 very limited or frequently wrong. A simple correct word is not an error; do not invent a compulsory synonym quota.
-- linguistic 0–6: judge the range and control of expression across the essay, including sentence patterns, precision and flexibility. 6 requires convincing evidence of varied, controlled expression; 4–5 shows useful but less consistent range; 2–3 is restricted or repetitive; 0–1 is very limited or difficult to follow.
-- coherence 0–6: judge development, structure and coherence together: logical progression, paragraph purpose, development of claims, sequencing and effective connections. Do not award 6 merely for four paragraphs or frequent linking words. 6 requires clearly developed and logically connected ideas; 4–5 is mostly organised/developed; 2–3 has weak development or connections; 0–1 is confused or disconnected.
+- linguistic 0–6: judge range and control of expression using the Language Range distinctions above. 6 requires convincing varied, controlled expression; 5 permits minor limitations with clear flexible communication; 4 needs observable restrictions when conveying complex ideas; 2–3 is narrow and repetitive; 0–1 is very limited or difficult to follow.
+- coherence 0–6: judge development, structure and coherence using the Organisation distinctions above. 6 is effectively developed and smoothly connected; 5 is conventionally structured, clear and logical with minor gaps; 4 has an observable development or connection problem affecting the reader; 2–3 is weakly connected; 0–1 is confused or disconnected. Paragraph count and linking words alone do not establish full marks.
 
 TAUGHT STRUCTURE:
 IPT teaches phrases such as 'The topic of ... has become increasingly important', 'Its significance lies in its influence on', 'This essay will examine', 'To begin with', 'On the other hand', 'This can be illustrated by' and 'To conclude'. These are valid scaffolding when filled with relevant ideas. Neither award marks nor deduct marks just for recognising a template. Do not claim database matching, plagiarism, AI authorship, or a three-phrase detection threshold. Flag generic filler only when you can quote it and explain how it fails this question; the issue is undeveloped or irrelevant content, not memorisation itself.
@@ -507,5 +517,5 @@ ${JSON.stringify({ question, essay, sampleBand: band, promptCoverage: assessment
     return { percent, level, matchedWords, totalWords: answer.length, ngram, thresholds: { medium, high } };
   }
 
-  return { VERSION, SAMPLE_CONTRACT_VERSION, MAXIMA, MAXIMUM, TASK_RELEVANCE_GUIDANCE, normalizeTaskRelevance, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
+  return { VERSION, SAMPLE_CONTRACT_VERSION, MAXIMA, MAXIMUM, TASK_RELEVANCE_GUIDANCE, HOLISTIC_TRAIT_GUIDANCE, normalizeTaskRelevance, words, formFor, taskFocusNote, exactQuote, normalizeSampleBand, buildPrompt, buildAssessmentPrompt, buildSamplePrompt, normalizeAssessment, normalizeSample, normalizeResult, renderExcerpt, templateOverlap };
 });
