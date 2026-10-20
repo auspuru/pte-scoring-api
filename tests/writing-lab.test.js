@@ -125,6 +125,9 @@ test('Prediction mocks preserve essays and use only September 2026 prediction ta
         if(q.type==='wfd'){
           assert.equal(q.predictionSource.provider,'User supplied WFD predictions');
           assert.equal(q.predictionSource.week,'28 September 2026');
+        } else if (q.type === 'swt') {
+          assert.equal(q.predictionSource.provider,'User supplied SWT prediction screenshots');
+          assert.equal(q.predictionSource.week,'20 October 2026');
         } else {
           assert.equal(q.predictionSource.provider,'User supplied prediction transcript');
           assert.equal(q.predictionSource.week,'25 September 2026');
