@@ -12,6 +12,8 @@
     const traits = data.trait_scores || {};
     const content = data.content_details || {};
     const assessment = content.summary_assessment || {};
+    const synthesis = assessment.synthesis || {};
+    const synthesisNeedsWork = ['partial', 'limited'].includes(synthesis.quality);
     const grammar = list((data.grammar_details || {}).grammar_annotations);
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
     const provisional = data.score_provisional === true
@@ -25,7 +27,7 @@
         && assessment.relationships_clear === true
         && !list(assessment.missing_dependencies).length
         && ['captured', 'clearly_implied', 'not_applicable'].includes(assessment.conclusion_status));
-    const full = formValid && !provisional && semanticFull && Number(traits.content) >= (traits.content_max || 4)
+    const full = formValid && !provisional && semanticFull && !synthesisNeedsWork && Number(traits.content) >= (traits.content_max || 4)
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
     const priorities = [];
     const optional = [];
@@ -47,6 +49,9 @@
           const first = dependencies[0];
           add('Connect the idea to its missing context', clean(assessment.next_step) ||
             (clean(first.effect) ? '“' + compact(first.effect, 100) + '” needs this context: ' : '') + clean(first.missing_context), assessment.repair);
+        } else if (synthesisNeedsWork) {
+          add('Condense and connect the essential ideas',
+            clean(assessment.next_step) || clean(synthesis.explanation) || 'Remove unnecessary detail and combine the main ideas into a concise summary. Start with one short clause; keep accurate technical terms.', assessment.repair);
         } else {
           add(['missing', 'incorrect'].includes(assessment.conclusion_status) ? 'Include the passage’s final message' : 'Strengthen the main idea and its connections',
             clean(assessment.next_step) || clean(content.feedback_note) || clean(content.notes) || 'Check that the main idea, relevant support and conclusion connect clearly. Include any cause or background your selected ideas depend on.', assessment.repair);
@@ -54,7 +59,7 @@
       }
       if (Number(traits.grammar) < 2) add('Correct the grammar affecting meaning', languageDetail(grammar, 'Review the quoted wording in your feedback. A deduction should identify how the sentence changes or obscures the intended meaning.'));
       if (Number(traits.vocabulary) < 2) add('Use wording that preserves the meaning', languageDetail(vocabulary, 'Review the quoted word choices against the passage. Replace any wording that changes the original message.'));
-      if (full) add('Keep this approach', 'You have enough relevant content, clear connections and valid form for full marks. Try another passage, or review the optional refinements below if any are shown.');
+      if (full) add('Keep this approach', 'You have selected and synthesised the essential ideas with clear connections and valid form. Try another passage, or review the optional refinements below if any are shown.');
       for (const a of [...grammar, ...vocabulary]) {
         if (!a || a.affects_score !== false || !clean(a.phrase) || !clean(a.fix)) continue;
         if (optional.some(item => item.phrase === a.phrase && item.fix === a.fix)) continue;
@@ -76,12 +81,13 @@
     const t = data.trait_scores || {};
     const contentDetails = data.content_details || {};
     const assessment = contentDetails.summary_assessment || {};
+    const synthesisNeedsWork = ['partial', 'limited'].includes((assessment.synthesis || {}).quality);
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
     const raw = (!feedback.formValid || content === 0) ? 0 : ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
     const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
     const estimate = feedback.formValid ? Math.min(rawEstimate, caps[Math.floor(content)]) : 10;
-    const fullEligible = !feedback.provisional && (contentDetails.full_content_eligible === true
+    const fullEligible = !feedback.provisional && !synthesisNeedsWork && (contentDetails.full_content_eligible === true
       || (contentDetails.full_content_eligible == null && feedback.full
         && assessment.relationships_clear === true
         && !list(assessment.missing_dependencies).length));
@@ -91,6 +97,7 @@
     else if (feedback.provisional) headline = 'Provisional result';
     else if (feedback.degraded && data.mode === 'local') headline = 'Local practice result';
     else if (content <= 1) headline = 'Incomplete summary — limited content';
+    else if (synthesisNeedsWork) headline = 'Main ideas identified — improve the synthesis';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';
     else if (content < 4) headline = 'Mostly complete — strengthen the missing connection';
     return { headline, score: feedback.provisional ? null : estimate, max: 90,

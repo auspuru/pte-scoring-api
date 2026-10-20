@@ -17,7 +17,8 @@ const tool = {
   description: 'Return the complete SWT assessment under the supplied scoring policy. Evaluate meaning and language independently of the output format. Supply every required property, including a nonempty relationship explanation and empty annotation arrays when no corrections are needed. Cite student evidence using the numbered words; do not rewrite quotations. This tool returns assessment data and performs no external action.',
   // Reuse repeated structures: inlining both annotation schemas exceeds the
   // provider's compiled-grammar limit despite having no optional fields.
-  input_schema: { type: 'object', additionalProperties: false, $defs: { span, annotation }, properties: {
+  input_schema: { type: 'object', additionalProperties: false, $defs: { span, annotation,
+    ideaScore: { type: 'number', description: 'Diagnostic coverage: 0 or 1. This never determines holistic Content.' } }, properties: {
     content_score: { type: 'number', description: 'Content score from 0 to 4.' },
     grammar_score: { type: 'number', description: 'Grammar score from 0 to 2.' },
     vocabulary_score: { type: 'number', description: 'Vocabulary score from 0 to 2.' },
@@ -29,28 +30,31 @@ const tool = {
       supporting_spans: { type: 'array', items: { $ref: '#/$defs/span' } },
       conclusion_status: { type: 'string', enum: ['captured', 'clearly_implied', 'not_applicable', 'missing', 'incorrect'] },
       relationships_clear: { type: 'boolean' }, material_meaning_change: { type: 'boolean' },
+      // A compact wire contract avoids the provider's strict-grammar limit.
+      // The server materialises the public synthesis object and exact quote.
+      synthesis_quality: { ...text, description: 'Exactly effective, partial or limited; validated by the server. Explain this judgment in relationship_explanation.' },
+      synthesis_span: { $ref: '#/$defs/span' },
       missing_dependencies: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
         effect: text, missing_context: text, explanation: text
       }, required: ['effect', 'missing_context', 'explanation'] } },
-      relationship_explanation: { type: 'string', description: 'Explain the connections that are preserved or the necessary context missing from this response. Always provide a nonempty explanation.' },
+      relationship_explanation: { type: 'string', description: 'In 1–2 short sentences explain both the relationships and synthesis. A deduction needs a specific evidenced weakness, not a synonym count.' },
       next_step: text, repair: text
-    }, required: ['main_idea_accurate', 'main_idea_span', 'supporting_spans', 'conclusion_status', 'relationships_clear', 'material_meaning_change', 'missing_dependencies', 'relationship_explanation', 'next_step', 'repair'] },
+    }, required: ['main_idea_accurate', 'main_idea_span', 'supporting_spans', 'conclusion_status', 'relationships_clear', 'material_meaning_change', 'synthesis_quality', 'synthesis_span', 'missing_dependencies', 'relationship_explanation', 'next_step', 'repair'] },
     grammar_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
     vocabulary_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
     per_idea_scores: { type: 'object', additionalProperties: false,
       required: ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'], properties: Object.fromEntries(
-      ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'].map(key => [key, { type: 'number', enum: [0, 1] }])) },
-    academic_register: { type: 'boolean' },
+      ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'].map(key => [key, { $ref: '#/$defs/ideaScore' }])) },
     recommended_swaps: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
-      word: text, context: text, synonyms: { type: 'array', items: text }, rationale: text
-    }, required: ['word', 'context', 'synonyms', 'rationale'] } },
+      word: text, synonyms: { type: 'array', items: text }
+    }, required: ['word', 'synonyms'] } },
     feedback_note: { ...text, description: 'Plain student-facing feedback only. This is the final field; never place other JSON fields inside this string.' }
-  }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'per_idea_scores', 'academic_register', 'recommended_swaps', 'feedback_note'] }
+  }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'per_idea_scores', 'recommended_swaps', 'feedback_note'] }
 };
 function request(prompt, model) {
   return { model, max_tokens: 4000, temperature: 0, tools: [tool],
     tool_choice: { type: 'tool', name: tool.name }, messages: [{ role: 'user', content: prompt
-      + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Write feedback_note last as plain feedback, never as escaped JSON containing other fields.' }] };
+      + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Keep relationship_explanation under 60 words, next_step to one achievable action, and recommended_swaps to at most three useful optional suggestions. Write feedback_note last as short plain feedback, never as escaped JSON containing other fields.' }] };
 }
 
 const feedbackFields = ['grammar_annotations', 'vocabulary_annotations', 'recommended_swaps'];

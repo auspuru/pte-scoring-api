@@ -14,7 +14,7 @@ const examples = [
 function assessment(summary, main, support, relationship, missing = []) {
   return { content_score: 3, grammar_score: 1, vocabulary_score: 1,
     cohesion: missing.length ? 'weak' : 'strong', grammar_annotations: [], vocabulary_annotations: [],
-    summary_assessment: { main_idea_accurate: true, main_idea_evidence: main,
+    summary_assessment: { synthesis: { quality: 'effective', evidence: '', explanation: 'Labelled effective synthesis for this deterministic policy test.' }, main_idea_accurate: true, main_idea_evidence: main,
       supporting_evidence: [support], conclusion_status: 'captured',
       relationships_clear: !missing.length, material_meaning_change: false,
       missing_dependencies: missing, relationship_explanation: relationship } };

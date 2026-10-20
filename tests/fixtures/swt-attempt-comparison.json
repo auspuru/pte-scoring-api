@@ -1,0 +1,73 @@
+{
+  "provenance": "User-supplied Pearson Scored Practice Test 3 experiment, 19–20 October 2026. Section scores are not individual SWT trait labels.",
+  "controls": "User reports other tasks unchanged; submissions and perfect SST/WFD performance have not been independently verified.",
+  "passages": [
+    {
+      "id": "web",
+      "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live.\nSince the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same.\nThe computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one.\n\"It is amazing how far we've come,\" he says. \"But you're always wondering what's the next crazy idea, and working to make sure the Web stays one web and that the internet stays open. There isn't much time to sit back and reflect.\"\nHe invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised."
+    },
+    {
+      "id": "forecasting",
+      "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely.\n'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers.\nSherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates-although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation."
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "strategy": "original",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 79,
+        "reading": 23
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee has transformed the world more than anyone in past few decades,and as the inventor of the World Wide Web he is also a revolutionary; moreover, he is a cultural guru and a technological guru as well; furthermore, he invented the Web because he was aggravated that he could not find all the information he wanted in one place, and it was an fictional concept that he realised.",
+        "forecasting": "Economists in the corporate sector draw upon a wide range of statistical data to perform economic forecasting; however, it is not precise science; moreover, its track record is rather poor, especially for unstable statistics; nevertheless, they do better for some non-volatile statistics, such as government spending real GNP growth and inflation."
+      },
+      "transcription": "Visual transcription of supplied screenshots; exact punctuation/spelling should be confirmed before treating language differences as controlled."
+    },
+    {
+      "attempt": 2,
+      "strategy": "concise_paraphrase",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 88,
+        "reading": 31
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee invented the World Wide Web because he was frustrated by scattered information, and its global spread has transformed shopping, music and communication while giving individuals access to information previously associated with the elite, fundamentally changing how people think and live.",
+        "forecasting": "Economic forecasting is a key function for corporate economists who draw upon statistical data; however, it is far from a precise science because assumptions vary widely, and its track record is poor, especially for volatile statistics, although forecasts perform better for some stable statistics."
+      }
+    },
+    {
+      "attempt": 3,
+      "strategy": "selected_source_wording",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 83,
+        "reading": 27
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered academic, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been transformed, and an individual can now have the same access to information as the elite; furthermore, he invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data; however, economic forecasting is a long way from a precise science, and their assumptions about how an economy works can vary widely; moreover, the record of economic forecasting is rather poor, especially for volatile statistics, although they do better for some stable statistics."
+      }
+    },
+    {
+      "attempt": 4,
+      "strategy": "five_synonyms",
+      "status": "pending",
+      "sectionScores": {
+        "writing": null,
+        "reading": null
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been changed, and a person can now have the same access to information as the elite; furthermore, he created the Web, he says, because he was dissatisfied that he couldn't find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function, and to do the job they draw upon a broad range of statistical data; however, economic forecasting is a long way from an exact science, and their assumptions about how an economy works can differ widely; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      }
+    }
+  ]
+}
