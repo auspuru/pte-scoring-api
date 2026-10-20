@@ -40,3 +40,8 @@ node tests/check-swt-live.js --url=https://your-app --mode=proxy --comparison=tr
 ```
 
 This sends the fixture passages and responses to the configured Claude proxy, uses the current structured contract and independent review, and writes no account progress. It reports observed assessments without forcing the section-score ranking. Attempt 4 remains excluded until its Pearson result is reported.
+
+
+## Current calibration limit
+
+The revised local suite passes 765 tests, and the first hosted release check passed. Live Claude assessments completed after retrying gateway failures: the concise paraphrases earned Content 4, and the original responses earned Content 3 in the observed assessments. Some source-based attempt-3 responses also earned Content 4. The model therefore does not yet reproduce the reported attempt-2 versus attempt-3 section difference; those totals cannot be treated as individual-item ground truth. The implementation is retained in a draft PR, with production unchanged, pending attempt 4 and further calibration.
