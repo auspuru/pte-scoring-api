@@ -5,6 +5,7 @@
 // The remaining source IDs/titles are drawn from the public PTE Nepal weekly
 // prediction index for 21-27 September 2026; those portal-authored items remain
 // adaptations rather than copies of third-party passage text.
+const userSwt = require('./user-swt-predictions');
 const userSst = require('./user-sst-predictions');
 const userWfd = require('./user-wfd-predictions');
 
@@ -423,7 +424,7 @@ const wfdSeeds = [
  ['20002579','Optional tutorials','Optional tutorials will be offered during the final week of term.']
 ];
 
-const swt = swtSeeds.map(makeSwt);
+const swt = [...userSwt.swt, ...swtSeeds.map(makeSwt)];
 const sst = [...userSst.sst, ...sstSeeds.map(makeSst)];
 const wfd = [
   ...userWfd.wfd,
@@ -445,6 +446,7 @@ module.exports = {
   source,
   userSource: userSst.source,
   userWfdSource: userWfd.source,
+  userSwtSource: userSwt.source,
   swt,
   sst,
   wfd
