@@ -60,3 +60,18 @@
 @media(max-width:640px){.speaking-library-filters label{flex-basis:100%}.speaking-library-filters>button{width:100%}}
 
 .speaking-status.unverified{background:#fff4dd;color:#805800}
+
+/* Describe Academy's concise Keep / Change / Try coaching. */
+.speaking-image-coaching{margin:24px 0;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--bg-card);overflow-wrap:anywhere}
+.speaking-image-coaching .speaking-section-head{margin-bottom:18px}
+.speaking-image-coaching .speaking-section-head h3{margin:4px 0 0}
+.speaking-image-coaching .speaking-section-head p{margin:5px 0 0}
+.speaking-image-coaching article{padding:16px;border:1px solid var(--line);border-radius:9px;margin:12px 0;background:var(--bg-hover)}
+.speaking-image-coaching h4{margin:0 0 10px}
+.speaking-image-coaching p{margin:8px 0 0;font-size:14px;line-height:1.75}
+.speaking-image-coaching blockquote{margin:8px 0 14px;padding:3px 0 3px 13px;border-left:3px solid var(--line);font-size:15px;line-height:1.7;color:var(--ink)}
+.speaking-image-coaching .speaking-coaching-keep{border-left:3px solid #23725e}
+.speaking-image-coaching .speaking-coaching-try{border-left:3px solid #2458ce}
+.speaking-image-coaching .speaking-coaching-rewrite{padding:12px;border-radius:7px;background:var(--bg-card);color:var(--ink);font-size:15px;margin-bottom:12px}
+.speaking-image-coaching .speaking-footnote{font-size:12px;color:var(--ink-soft)}
+@media(max-width:640px){.speaking-image-coaching{padding:16px}.speaking-image-coaching article{padding:13px}.speaking-image-coaching .speaking-section-head{flex-direction:column}}

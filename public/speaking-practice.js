@@ -185,6 +185,20 @@
         +examPanel+review+questionNavigation());
       if(submitted)mountPlayback();refreshControls();
     }
+    function describeImageCoaching(r) {
+      if(attempt?.question.type!=='di'||r.scoringMode==='local'||r.score_provisional===true)return '';
+      const c=r.coaching;
+      const valid=c&&Array.isArray(c.changes)&&typeof c.revisedResponse==='string';
+      const update=!valid||(catalog.describeFeedbackVersion&&c.version!==catalog.describeFeedbackVersion);
+      const refresh=update?'<button type="button" class="portal-button" data-speaking-action="refresh-di-feedback">'+(valid?'Update image feedback':'Get image feedback')+'</button>':'';
+      if(!valid)return '<div class="speaking-delivery-callout speaking-image-feedback-pending"><div><strong>Personalised image feedback</strong><p>Get a quoted strength, specific changes and your next practice step for this saved response. Your existing scores and recording are retained.</p></div>'+refresh+'</div>';
+      const focus={accuracy:'Accuracy',selection:'Selecting key features',grouping:'Grouping ideas',relationship:'Connecting ideas',expression:'Clear expression',none:'Keep these strengths'};
+      return '<section class="speaking-image-coaching" aria-labelledby="speaking-image-coaching-title"><div class="speaking-section-head"><div><span class="speaking-kicker">Describe Image feedback</span><h3 id="speaking-image-coaching-title">Keep · Change · Try</h3><p class="speaking-footnote">'+esc(focus[c.priority]||'Your next practice focus')+'</p></div>'+refresh+'</div>'
+        +(c.strength?'<article class="speaking-coaching-keep"><h4>Keep</h4><blockquote>“'+esc(c.strength.quote)+'”</blockquote><p>'+esc(c.strength.why)+'</p></article>':'')
+        +(c.changes.length?'<section class="speaking-coaching-change"><h4>Change</h4>'+c.changes.map(change=>'<article><span class="speaking-kicker">You said</span><blockquote>“'+esc(change.quote)+'”</blockquote><span class="speaking-kicker">Try saying</span><p class="speaking-coaching-rewrite">'+esc(change.rewrite)+'</p><p>'+esc(change.why)+'</p></article>').join('')+'</section>':'<p class="speaking-success-note">No essential content change was identified. Keep the accurate, connected description.</p>')
+        +'<article class="speaking-coaching-try"><h4>Try next</h4><p>'+esc(c.nextTry)+'</p><p class="speaking-footnote">'+esc(c.tip)+'</p></article>'
+        +'<details class="speaking-inner-details"><summary>Your improved response</summary><p>'+esc(c.revisedResponse)+'</p><p class="speaking-footnote">A suggested revision of your words. Content coaching uses the transcript; pronunciation and fluency use your saved audio assessment.</p></details></section>';
+    }
     function feedback(r) {
       const contentPending=r.scoringMode==='local'||r.score_provisional===true;
       if(contentPending) r={...r,total:null,overview:'Your transcript is saved. A reliable content assessment is still needed.',
@@ -225,6 +239,8 @@
       const contentFallback=contentPending
         ? '<div class="speaking-delivery-callout speaking-content-fallback"><div><strong>Content review pending</strong><p>The semantic reviewer could not complete this assessment. Your transcript and audio feedback are retained; retry content review without re-recording.</p></div><button class="portal-button" data-speaking-action="submit">Retry content review</button></div>'
         : '';
+      const imageCoaching=describeImageCoaching(r);
+      const hasImageCoaching=attempt?.question.type==='di'&&r.coaching&&Array.isArray(r.coaching.changes)&&!contentPending;
       const mistakes=r.changes?r.changes.filter(c=>c.kind!=='correct'):[];
       const comparison=r.changes
         ? '<div class="speaking-comparison"><h4>Word accuracy</h4>'
@@ -238,11 +254,12 @@
           +scoreCard('Oral fluency',fluencyCurrent,'fluency',fluencyDetail)
         +'</div>'
         +contentFallback
+        +imageCoaching
         +deliveryStatus
-        +'<div class="speaking-feedback-grid">'
+        +(hasImageCoaching?'':'<div class="speaking-feedback-grid">'
           +(r.strengths.length?'<section><h4>Content strengths</h4>'+list(r.strengths)+'</section>':'')
           +(r.improvements.length?'<section><h4>Highest-value content improvement</h4>'+list(r.improvements)+'</section>':'')
-        +'</div>'
+        +'</div>')
         +(r.coverage?'<details class="speaking-inner-details speaking-content-breakdown"><summary>View detailed content coverage</summary><div class="speaking-coverage">'+r.coverage.map(c=>'<article><span class="speaking-status '+c.status+'">'+esc(c.status)+'</span><h4>'+esc(c.point)+'</h4>'+(c.evidence?'<blockquote>“'+esc(c.evidence)+'”</blockquote>':'')+'<p>'+esc(c.feedback)+'</p></article>').join('')+'</div></details>':'')
         +comparison
         +learningVideos()
@@ -259,7 +276,7 @@
     }
     function refreshControls() {
       const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),finish=doc.getElementById('speaking-finish'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
-      for(const button of host?.querySelectorAll?.('[data-speaking-action="submit"]')||[])button.disabled=busy;
+      for(const button of host?.querySelectorAll?.('[data-speaking-action="submit"], [data-speaking-action="refresh-di-feedback"]')||[])button.disabled=busy;
       const levelPanel=doc.getElementById('speaking-level-panel');if(levelPanel)levelPanel.hidden=!stream;
       if(skip)skip.hidden=phase!=='preparing'||attempt?.question.type==='rts';
       const respond=doc.getElementById('speaking-respond');
@@ -375,15 +392,15 @@
       if(!a||a.status==='submitted'||text===undefined)return Promise.resolve();cacheDraft();
       const task=saveQueue.catch(()=>{}).then(async()=>{if(identity()!==user||owner!==user)return;if(a.transcript===text)return;const saved=await api('/attempts/'+a.id+'/transcript',{text,revision:a.revision});a.transcript=saved.transcript;a.revision=saved.revision;if(attempt?.id===a.id){attempt.transcript=saved.transcript;attempt.revision=saved.revision;}try{const local=JSON.parse(env.localStorage.getItem(localKey(a))||'null');if(local?.text===text)env.localStorage.removeItem(localKey(a));}catch{}});saveQueue=task;return task;
     }
-    async function submit() {
+    async function submit(refreshDescribeFeedback=false) {
       if(busy||!attempt)return;
       if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
-      if(!attempt.recording){message('No saved recording is available for assessment.');return;}
+      if(!attempt.recording&&!refreshDescribeFeedback){message('No saved recording is available for assessment.');return;}
       const retryingContent=attempt.result?.scoringMode==='local';
       busy=true;phase='saving';refreshControls();const id=attempt.id,user=owner;message(retryingContent?'Retrying content review…':'Checking your saved response…');
       try{
-        const a=await api('/attempts/'+id+'/submit',{});
-        if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;phase='idle';notice=retryingContent?(a.result?.scoringMode==='local'?'Content review is still unavailable. Your saved response and audio feedback are retained. Please retry later.':'Content review completed. Your feedback has been updated.'):'';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}
+        const a=await api('/attempts/'+id+'/submit',refreshDescribeFeedback?{refreshDescribeFeedback:true}:{});
+        if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;phase='idle';notice=refreshDescribeFeedback?(a.result?.coachingStatus==='assessed'?'Your image feedback has been updated.':'Image coaching could not be completed. Your existing scores, words and recording are retained. Try updating the feedback again later.'):retryingContent?(a.result?.scoringMode==='local'?'Content review is still unavailable. Your saved response and audio feedback are retained. Please retry later.':'Content review completed. Your feedback has been updated.'):'';render();if(typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));}
       }catch(e){
         phase='error';message(e.message+' Your recording is saved; use Retry assessment.');
         try{const a=await api('/attempts/'+id);if(owner===user&&identity()===user&&attempt?.id===id){attempt=a;render();}}catch{}
@@ -398,6 +415,7 @@
       const action=d.speakingAction;
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
+      if(action==='refresh-di-feedback')return submit(true);
       if(action==='record')return begin();
       if(action==='skip'&&phase==='preparing')return record();
       if(action==='respond'&&attempt?.question.type==='rts'&&!attempt.recording&&!uploadBlob&&!busy){

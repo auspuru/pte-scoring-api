@@ -45,6 +45,20 @@ function harness({includePredictions=false}={}) {
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
 
+test('Describe Image renders quoted Keep/Change/Try coaching safely and refreshes saved feedback without recording again',async()=>{
+ const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-1'});await h.click({speakingAction:'skip'});await h.click({speakingAction:'finish'});await flush();
+ const a=[...h.attempts.values()][0],quote='<img src=x onerror=alert(1)> shows the main contrast.';
+ a.transcript=quote;a.result={...a.result,scoringMode:'ai',strengths:['Duplicate generic advice'],improvements:['Duplicate generic advice'],coaching:{version:'older-version',priority:'relationship',strength:{quote,why:'The contrast is relevant.'},changes:[{quote,rewrite:'Heating uses more electricity than cooling.',why:'Connect the two categories directly.'}],revisedResponse:'Heating uses more electricity than cooling.',tip:'Connect the main categories.',nextTry:'Record one sentence comparing the two largest categories.'}};
+ await h.click({speakingAttempt:a.id});
+ assert.match(h.host.innerHTML,/Keep · Change · Try/);assert.match(h.host.innerHTML,/Try next/);assert.match(h.host.innerHTML,/Your improved response/);
+ assert.match(h.host.innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);assert.doesNotMatch(h.host.innerHTML,/Duplicate generic advice/);
+ const uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,recorders=h.recorders.length;
+ await h.click({speakingAction:'refresh-di-feedback'});
+ assert.deepEqual(JSON.parse(h.requests.filter(r=>r.url.endsWith('/submit')).at(-1).body),{refreshDescribeFeedback:true});
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);assert.equal(h.recorders.length,recorders);
+ assert.match(h.host.innerHTML,/Image coaching could not be completed/);
+});
+
 test('Read Aloud opens directly in timed preparation with Skip preparation as the only normal control',async()=>{
   const h=harness();await h.controller.open('ra');assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,5);
   await h.click({speakingQuestion:'ra-1'});
