@@ -58,6 +58,29 @@
     {
       "attempt": 4,
       "strategy": "five_synonyms",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 83,
+        "reading": 27
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been changed, and a person can now have the same access to information as the elite; furthermore, he created the Web, he says, because he was dissatisfied that he couldn't find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function, and to do the job they draw upon a broad range of statistical data; however, economic forecasting is a long way from an exact science, and their assumptions about how an economy works can differ widely; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      },
+      "scoreReport": {
+        "overall": 29,
+        "listening": 35,
+        "reading": 27,
+        "speaking": 10,
+        "writing": 83,
+        "finishedOn": "2026-10-20",
+        "source": "User-supplied attempt-4 screenshot received 20 October 2026"
+      }
+    },
+    {
+      "attempt": 5,
+      "strategy": "minimal_clause_paraphrase",
       "status": "pending",
       "sectionScores": {
         "writing": null,
@@ -65,9 +88,19 @@
       },
       "individualTraitScores": null,
       "responses": {
-        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been changed, and a person can now have the same access to information as the elite; furthermore, he created the Web, he says, because he was dissatisfied that he couldn't find all the information he wanted in one place.",
-        "forecasting": "For economists in the corporate sector, forecasting is generally a key function, and to do the job they draw upon a broad range of statistical data; however, economic forecasting is a long way from an exact science, and their assumptions about how an economy works can differ widely; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the Web has changed the way we shop, listen to music and communicate, and a person can now have the same access to information as the elite; furthermore, he created the Web because he was dissatisfied with being unable to find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function that draws upon a broad range of statistical data; however, economic forecasting is far from an exact science, and forecasters can make widely differing assumptions about how an economy works; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
       }
     }
-  ]
+  ],
+  "fixedResponses": {
+    "essay": "It is often argued that hometown plays a crucial role in the upbringing of a person. However, this hypothesis is not entirely true, as there are famous celebrities who became successful in their lives despite being born into poor families. In this essay, I will discuss the current Prime Minister of India, Narendra Modi. Even though he comes from a modest background, he was still able to achieve great feats in his life.\n\nModi comes from a small town in the state of Gujarat, and in his earlier days, he was deprived of education because his family was not financially well-off. Moreover, for most of his life, he earned his living by selling tea at railway stations in Gujarat.\n\nHowever, despite facing these hurdles in his life, he remained consistent and worked really hard. Later, he joined the Rashtriya Swayamsevak Sangh (an organisation that promotes Hinduism). After finishing his training with the RSS, he was later elected as the Chief Minister of the state of Gujarat because of his exemplary hard work and political manifesto of making Gujarat the best state in India, which he later achieved.\n\nAfter becoming a successful Chief Minister, in 2014, he became a candidate for Prime Minister of the country. As the people of the country had already seen his work as Chief Minister, they made him the Prime Minister of the country. To this day, he still remains in that position.\n\nIn conclusion, from what has been discussed above, it can be concluded that with the right mindset, determination, and hard work, nothing is impossible. The place where people are born plays a very small role in deciding a person's future.",
+    "sst": "The speaker discussed the conditions in which species of animals survive and reproduce. Moreover, it depends upon water economy, which is the ability of an animal to regulate their body water. Furthermore, their tolerance of temperature also matters. For example, an Arctic Fox lives in colder climate conditions because of its body size, daily behaviour, habitat use, rhythm of timing and many more.",
+    "wfd": [
+      "They have been struggling since last year to make their service pay.",
+      "Their The placement replacement task test for mathematics and statistics is offered every semester.",
+      "Observers waited nervously and with bated breath for the concert."
+    ],
+    "note": "Exact user-provided control responses, preserved without corrections; audio and question-level accuracy have not been independently verified."
+  }
 }
