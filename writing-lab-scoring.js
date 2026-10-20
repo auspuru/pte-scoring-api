@@ -1,7 +1,7 @@
 'use strict';
 const VERSION = 'exam-practice-2026-10-09.1';
 const SwtForm = require('./swt-form-policy');
-const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis } = require('./swt-scoring-policy');
+const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis, applyScoringPolicy } = require('./swt-scoring-policy');
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
@@ -159,6 +159,35 @@ async function gradeUnifiedEssay(q, text, call) {
   };
 }
 
+async function gradeUnifiedSwt(q, text, judge) {
+  const form = formFor('swt', text);
+  if (!form.score) return {...zeroResult('swt',text,form.reasons),version:SWT_POLICY_VERSION,score_provisional:false};
+  let assessment;
+  try {
+    const raw = await judge(q,text);
+    if (!raw) throw Error('The shared SWT assessment is unavailable.');
+    assessment = applyScoringPolicy(raw,text,q.text);
+    if (assessment.needs_semantic_review || !raw.consistency_reviewed) throw Error('The shared SWT review is incomplete.');
+  } catch (error) { return localGrade(q,text,{reason:error.message}); }
+  const diagnosticScores={content:assessment.content_score,form:form.score,grammar:assessment.grammar_score,vocabulary:assessment.vocabulary_score};
+  const gated=assessment.content_score===0;
+  const scores=gated ? Object.fromEntries(Object.keys(diagnosticScores).map(k=>[k,0])) : diagnosticScores;
+  const a=assessment.summary_assessment;
+  const corrections=[...assessment.grammar_annotations,...assessment.vocabulary_annotations];
+  const language = key => {
+    const items=assessment[key+'_annotations'].filter(item=>item.affects_score);
+    return items.map(item=>item.meaning_effect).filter(Boolean).join(' ') || 'Meaning is clear and preserved.';
+  };
+  return {version:SWT_POLICY_VERSION,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
+    scores,maxima:MAXIMA.swt,total:Object.values(scores).reduce((n,v)=>n+v,0),maximum:Object.values(MAXIMA.swt).reduce((n,v)=>n+v,0),wordCount:form.count,gated,
+    reasons:gated?['The response does not convey the passage’s central message.']:[],...(gated?{diagnosticScores}:{}),
+    summary_assessment:a,full_content_eligible:!gated&&assessment.full_content_eligible,needs_semantic_review:false,
+    consistency_reviewed:true,feedback:{content:assessment.content_reason,form:form.count+' words. Form: 1/1.',grammar:language('grammar'),vocabulary:language('vocabulary')},
+    strengths:a.main_idea_accurate?['The passage’s main message is recognised.']:[],
+    improvements:assessment.content_score<4?[a.next_step || 'Combine and briefly rephrase the essential ideas.']:[],
+    errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};
+}
+
 async function grade(q, text, call) {
   const objective = require('./listening-scoring').grade(q,text);
   if(objective)return objective;
@@ -198,4 +227,4 @@ function gradeDictation(q, text) {
     strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
     wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore };
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedSwt, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore };

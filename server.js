@@ -6322,6 +6322,7 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
   essayGrader,
+  swtGrader: (question,text) => judgeContentWithClaude(text,question.text,{}),
   callModel: async prompt => {
     if (!anthropic) throw new Error('Writing assessment is not configured.');
     const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,

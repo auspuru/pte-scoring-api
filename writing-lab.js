@@ -100,8 +100,10 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
+  const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
+    && (result.score_provisional === true || result.needs_semantic_review === true));
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
   const queue = [], failedAt = new Map();
@@ -113,7 +115,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     }
   }
   function assess(uid, a, index) {
-    if (a.results[index]) return Promise.resolve(a.results[index]);
+    if (a.results[index] && !retryableSwt(a.results[index],a.questions[index])) return Promise.resolve(a.results[index]);
     const key = uid + ':' + a.id + ':' + index;
     if (pending.has(key)) return pending.get(key);
     const task = new Promise((resolve, reject) => {
@@ -131,6 +133,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           });
           if (!current.completed[index]) throw bad('Submit this answer first.', 409);
           let result = current.results[index];
+          if (retryableSwt(result,current.questions[index])) result = null;
           if (!result) {
             const question = current.questions[index];
             if (question.type === 'essay' && essayGrader) {
@@ -145,13 +148,15 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
                 gated: unified.scoreGate?.status && unified.scoreGate.status !== 'valid',
                 reasons: unified.scoreGate?.reason ? [unified.scoreGate.reason] : []
               };
+            } else if (question.type === 'swt' && swtGrader) {
+              result = await scoring.gradeUnifiedSwt(question,current.answers[index],swtGrader);
             } else {
               result = await scoring.grade(question, current.answers[index], callModel);
             }
           }
           const updated = await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
-            value.results[index] ||= result;
+            if (!value.results[index] || retryableSwt(value.results[index],value.questions[index])) value.results[index] = result;
             return value;
           });
           failedAt.delete(key); resolve(updated.results[index]);
@@ -301,7 +306,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const index=Number(req.params.index);
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
-    if(a.results[index]) return res.json(a.results[index]);
+    if(a.results[index] && !retryableSwt(a.results[index],a.questions[index])) return res.json(a.results[index]);
     res.json(await assess(req.labUser, a, index));
   }));
   app.use('/api/writing-lab', router);
