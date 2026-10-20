@@ -106,18 +106,24 @@ test('A failed primary call recovers and still receives the independent review i
   assert.equal(calls, 3);
 });
 
-test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async () => {
+test('An unresponsive provider is aborted within one budget and cannot leave the next attempt stuck', async t => {
+  t.mock.timers.enable({ apis: ['Date', 'setTimeout'], now: 0 });
   let calls = 0, blocked = true, signal;
   const svc = service(async (prompt, timeout, options) => {
     calls++; signal = options.signal;
     return blocked ? new Promise(() => {}) : good();
   }, { totalTimeoutMs: 25 });
-  const started = Date.now();
-  const [a, b] = await Promise.all([invoke(svc), invoke(svc)]);
+  const pending = Promise.all([invoke(svc), invoke(svc)]);
+  await Promise.resolve();
+  assert.equal(calls, 1);
+  // Real timers can fire just before the millisecond deadline. Advance the
+  // clock and timer together so this tests budget exhaustion deterministically.
+  t.mock.timers.tick(25);
+  const [a, b] = await pending;
   assert.equal(a, null); assert.equal(b, null);
   assert.equal(signal.aborted, true);
   assert.equal(calls, 1);
-  assert(Date.now() - started < 1000);
+  assert.equal(Date.now(), 25);
   blocked = false;
   assert.equal((await invoke(svc)).content_score, 4);
   assert.equal(calls, 3);
