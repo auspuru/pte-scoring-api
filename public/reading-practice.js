@@ -4,10 +4,11 @@
     typeof module === 'object' && module.exports ? require('./reading-exam-player') : root.ReadingExamPlayer,
     typeof module === 'object' && module.exports ? require('./reading-session-timing') : root.ReadingSessionTiming,
     typeof module === 'object' && module.exports ? require('./reading-review') : root.ReadingReview,
-    typeof module === 'object' && module.exports ? require('./practice-catalogue') : root.PracticeCatalogue);
+    typeof module === 'object' && module.exports ? require('./practice-catalogue') : root.PracticeCatalogue,
+    typeof module === 'object' && module.exports ? require('./practice-studio') : root.PracticeStudio);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingPractice = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam, timing, review, catalogue) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (mock, exam, timing, review, catalogue, studio) {
   'use strict';
   const labels = { dropdown: 'Dropdown blanks', wordbank: 'Drag-and-drop blanks', reorder: 'Reorder paragraphs', mcsa: 'Single answer', mcma: 'Multiple answers' };
   const taskLabels = { ...labels, ...mock.extraLabels };
@@ -372,10 +373,12 @@
   }
   function libraryList() {
     const questions=libraryQuestions(),page=libraryView.page,pages=Math.max(1,Math.ceil(questions.length/10));
-    return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map((q,i)=>{
+    const numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));
+    return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map(q=>{
       const result=state.practiceResults[q.uid];
+      const number=numbers.get(q.uid);
       const meta=sourceMeta(q);
-      return `<li><div><strong>Question ${page*10+i+1}</strong>${meta?`<span class="reading-source-meta">${escape(meta)}</span>`:''}${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${page*10+i+1}">Practise <span aria-hidden="true">→</span></button></li>`;
+      return `<li><div><strong>Question ${number}${q.title?` · ${escape(q.title)}`:''}</strong><span class="reading-question-id">${escape(q.id)}</span>${meta?`<span class="reading-source-meta">${escape(meta)}</span>`:''}${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${number}">Practise <span aria-hidden="true">→</span></button></li>`;
     }).join('')}</ul>${questions.length?'':'<p>No questions match your search.</p>'}${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-library-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span>${page+1} / ${pages}</span><button class="portal-button" data-library-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}`;
   }
   function browseLibrary(id, query='', page=0) {
@@ -387,7 +390,7 @@
     const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
-    host.innerHTML=`<div class="reading-session-toolbar"><button class="portal-button" data-action="practice-home">← Practice</button></div><div class="reading-home-heading"><h2>${escape(library.name)}</h2></div>${saved}<label class="reading-library-search">Find a question<input type="search" data-library-search value="${escape(query)}" placeholder="Search titles or topics"></label><p data-start-status role="status" aria-live="polite"></p><div data-library-list>${libraryList()}</div>`;
+    host.innerHTML=studio.wrap('reading','reading-'+id,studio.heading('Reading',library.name,'Choose a question, practise at your own pace and review each answer.',library.questions.length+' questions')+`<section class="practice-studio-library">${saved}<label class="reading-library-search">Find a question<input type="search" data-library-search value="${escape(query)}" placeholder="Search titles, topics or question IDs"></label><p data-start-status role="status" aria-live="polite"></p><div data-library-list>${libraryList()}</div></section>`);
   }
   function refreshLibraryList() { const node=host.querySelector('[data-library-list]');if(node)node.innerHTML=libraryList(); }
   function renderHomeView() { if(starting)return;if(libraryView)browseLibrary(libraryView.id,libraryView.query,libraryView.page);else home(); }
@@ -416,14 +419,15 @@
     const libraryQuestions=s.practiceUid?practiceLibraries().find(l=>l.id===q.type)?.questions||[]:s.questions;
     const navigationIndex=s.practiceUid?libraryQuestions.findIndex(item=>item.uid===s.practiceUid):s.index;
     const review=s.done || s.checked.includes(q.uid);
-    host.innerHTML = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer reading-time-mode" data-time-mode>${timeModeText(s)}</span><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
+    const content = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer reading-time-mode" data-time-mode>${timeModeText(s)}</span><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
-      <div class="reading-layout"><aside class="reading-card reading-nav" aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
+      <div class="reading-layout ${s.practiceUid?'reading-individual-layout':''}"><aside class="reading-card reading-nav" ${s.practiceUid?'hidden':''} aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
       <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${navigationIndex+1} of ${libraryQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2>${sourceMeta(q)?`<p class="reading-source-meta">${escape(sourceMeta(q))}</p>`:''}<p>${escape(q.instructions)}</p>
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button primary" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
+      <div class="reading-actions"><button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
+    host.innerHTML=s.practiceUid?studio.wrap('reading','reading-'+q.type,content):content;
   }
   function playback(q) { return { ...mock.audioPlayback(q), hideLabels:exam.isExam(state.session) }; }
   function displayAudioState(item, hideLabels) {
@@ -557,13 +561,14 @@
         if(node)node.outerHTML=question(item);
       }
     }else{
-      host.innerHTML='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+      const content='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
         + practiceNavigation
         + (typeof window !== 'undefined' ? window.PortalExamMode?.reportHTML?.(s.integrity)||'' : '')
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Read the full passages with your answers and corrections in context.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
         + '<div class="reading-complete-review">'+model.map(question).join('')+'</div></section>';
+      host.innerHTML=s.practiceUid?studio.wrap('reading','reading-'+currentQuestion.type,content):content;
     }
     applyReviewFilters(model);
   }

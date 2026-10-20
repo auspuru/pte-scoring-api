@@ -12473,7 +12473,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=20261001-hiw-score2', 'reading review'],
-      ['reading-practice.js?v=20261001-mock-input2', 'reading practice']
+      ['reading-practice.js?v=sha256-017e48e04e61', 'reading practice']
     ];
     for (const [src, key] of modules) await loadDeferredScript(src, key);
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
@@ -12490,7 +12490,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=20261009-content-pending', 'speaking practice')
+  speakingRuntimeLoadPromise = loadDeferredScript('speaking-practice.js?v=sha256-e6822b10e877', 'speaking practice')
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -13761,6 +13761,7 @@ function renderPracticeMain() {
   else if (practiceState.view === 'write') c.innerHTML = writeView();
   else if (practiceState.view === 'loading') c.innerHTML = loadingView();
   else if (practiceState.view === 'results') c.innerHTML = resultsView();
+  c.insertAdjacentHTML('afterbegin', PracticeStudio.heading('Writing', 'Write Essay', 'Choose a topic, build your response and review your feedback.', '200–300 words'));
   c.insertAdjacentHTML('beforeend','<div id="essayQuestionNav">'+essayQuestionNavigation()+'</div>');
   c.dataset.view = practiceState.view;
   c.setAttribute('aria-busy', String(practiceState.view === 'loading'));
@@ -13789,7 +13790,7 @@ function renderPracticeMain() {
 }
 
 function welcomeView() {
-  return `<div class="practice-welcome"><h2>Write Essay</h2><p>200–300 words</p><button class="practice-welcome-cta" onclick="startNewPractice()">Choose a question</button></div>`;
+  return `<div class="practice-welcome"><span class="practice-studio-eyebrow">Your next attempt</span><h3>Make progress, one essay at a time</h3><p>Choose a question from your library or use your own prompt. Write at your own pace, then use your feedback to improve.</p><ol class="practice-studio-steps"><li>Choose a question</li><li>Write your response</li><li>Review and improve</li></ol><button class="practice-welcome-cta" onclick="startNewPractice()">Choose a question</button></div>`;
 }
 
 function startNewPractice() {
@@ -13879,8 +13880,8 @@ function writeView() {
           <div class="practice-step-aux" style="font-size: 12px; color: var(--ink-mute); font-style: italic; font-family: var(--serif);">Choose a saved topic, or write your own custom prompt</div>
         </div>
         <div class="practice-source-tabs" style="display: flex; gap: 4px; margin-bottom: 12px; background: var(--bg); padding: 4px; border-radius: 8px; border: 1px solid var(--line-soft);">
-          <button class="practice-source-tab ${practiceState.questionSource === 'library' ? 'active' : ''}" onclick="setQuestionSource('library')">📖 From your library</button>
-          <button class="practice-source-tab ${practiceState.questionSource === 'custom' ? 'active' : ''}" onclick="setQuestionSource('custom')">✎ Write your own</button>
+          <button class="practice-source-tab ${practiceState.questionSource === 'library' ? 'active' : ''}" onclick="setQuestionSource('library')">Question library</button>
+          <button class="practice-source-tab ${practiceState.questionSource === 'custom' ? 'active' : ''}" onclick="setQuestionSource('custom')">Custom prompt</button>
         </div>
         <div id="practiceQuestionArea">
           ${practiceState.questionSource === 'library' ? libraryPickerHTML() : customPromptHTML()}
@@ -13992,7 +13993,7 @@ function writeView() {
             ← Change Topic / Reset
           </button>
           <button class="practice-submit-btn primary" id="practiceSubmitBtn" onclick="submitPracticeEssay()" disabled style="width: auto; padding: 12px 32px; font-size: 14px; font-weight: 700; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px -3px var(--accent); transition: var(--transition);">
-            🤖 Score my essay
+            Review my essay
           </button>
         </div>
       </div>
@@ -14019,7 +14020,8 @@ function setQuestionSource(src) {
 
 function libraryPickerHTML() {
   return `
-    <input type="text" class="practice-question-search" id="practiceQuestionSearch" placeholder="Search your essay library...">
+    <label class="practice-studio-search" for="practiceQuestionSearch">Find a question</label>
+    <input type="search" class="practice-question-search" id="practiceQuestionSearch" placeholder="Search your essay library…">
     <div class="practice-question-picker" id="practiceQuestionPicker"></div>
   `;
 }
@@ -14341,7 +14343,7 @@ function updateSubmitBtnState() {
     } else if (practiceState.questionText.trim().length < 10) {
       btn.innerHTML = '🤖 Pick or write a question first';
     } else {
-      btn.innerHTML = '🤖 Score my essay';
+      btn.innerHTML = 'Review my essay';
     }
   }
 

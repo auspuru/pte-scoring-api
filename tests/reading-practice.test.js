@@ -40,7 +40,7 @@ function client(){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
  const ctx={currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,portalConfirm:async()=>true};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-quality'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-pattern-bank'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-predictions-sep-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
+ vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-quality'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-pattern-bank'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-studio'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-predictions-sep-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
 }
@@ -937,4 +937,25 @@ test('Reorder practice uses Source/Target panels and supports transfer, ordering
  await h.click({transfer:'source'});assert.deepEqual(snapshot(h).session.answers[q.uid],[keys[0]]);
  await h.click({action:'retry-question'});assert.deepEqual(snapshot(h).session.answers[q.uid],[]);
  assert.match(h.host.innerHTML,/Move paragraphs here/);
+});
+
+test('Reading library search keeps the question number, title and ID used by the answer workspace',async()=>{
+ const h=client(),library=require('../public/practice-catalogue').readingLibraries(bank).find(l=>l.id==='dropdown');
+ await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ const target=library.questions[4],list={innerHTML:''},originalQuery=h.host.querySelector;
+ h.host.querySelector=selector=>selector==='[data-library-list]'?list:originalQuery(selector);
+ h.host.oninput({target:{dataset:{librarySearch:''},value:target.id}});
+ assert.match(list.innerHTML,/Question 5/);
+ assert(list.innerHTML.includes(target.id));
+ assert(list.innerHTML.includes(target.title));
+ await h.click({practiceUid:target.uid});
+ assert.match(h.host.innerHTML,/Question 5 of/);
+ assert.match(h.host.innerHTML,/reading-individual-layout/);
+ assert.match(h.host.innerHTML,/data-studio-route="reading-dropdown" aria-current="page"/);
+ h.host.onchange({target:{dataset:{answer:'0'},value:target.answers[0]}});
+ await h.click({action:'check'});
+ assert.equal(snapshot(h).session.answers[target.uid][0],target.answers[0]);
+ await h.click({action:'submit'});
+ assert.match(h.host.innerHTML,/All answers &amp; feedback/);
+ assert.match(h.host.innerHTML,/data-studio-route="reading-dropdown" aria-current="page"/);
 });
