@@ -84,6 +84,9 @@ let authFlowRevision = 0;       // Invalidates stale saved-session boot work whe
 
 // SWT progress elements
 let passages = [];
+// Navigation uses 1-based visual positions; assessment and saved work use stable passage IDs.
+const swtPassageAt = position => passages[Number(position) - 1] || null;
+const swtPassageStorageId = (position = currentPassageId) => swtPassageAt(position)?.id ?? null;
 let swtResultPassage = null;
 let swtResultSubmission = null;
 let swtGradingPending = false;
@@ -548,9 +551,9 @@ function receiveAccountProgress(remote, initial = false, options = {}) {
       if (currentVocabCategory) renderVocabMain();
       updateVocabProgressSummary();
       const input = document.getElementById('summaryInput');
-      if (input) { input.value = merged.summaries[currentPassageId]?.text || ''; onSummaryInput(); }
+      if (input) { input.value = merged.summaries[swtPassageStorageId()]?.text || ''; onSummaryInput(); }
       const scratch = document.getElementById('scratchInput');
-      if (scratch) scratch.value = merged.scratch[currentPassageId]?.text || '';
+      if (scratch) scratch.value = merged.scratch[swtPassageStorageId()]?.text || '';
       if (practiceState.view === 'write' && !practiceSubmissionPending && window.AccountProgress.time(merged.essayDraft?.updatedAt) > portalDraftRevision) {
         restorePortalEssayDraft();
         if (document.getElementById('practiceScreen')?.classList.contains('show')) renderPracticeMain();
@@ -15193,14 +15196,14 @@ function jumpToResultsPassage(target) {
   if (select2) select2.value = target;
   
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
-  const p = passages.find(x => x.id === target) || passages[target-1];
+  const p = swtPassageAt(target);
   if (!p) return;
   
   switchSection('swt');
-  if (scores[target] && typeof scores[target].overall_score === 'number') {
+  if (p && scores[p.id] && typeof scores[p.id].overall_score === 'number') {
     currentPassageId = target;
     updateResultsNav();
-    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
+    showResults(scores[p.id], p, scores[p.id].__spellData || null, scores[p.id].__text || '');
     showSwtScreen('swtResultsScreen');
   } else {
     loadPassage(target);
@@ -15371,11 +15374,11 @@ async function loadSwtHighlightExercise(id){
     });
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw Error(data.error||'Highlight practice could not load.');
-    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||currentPassageId!==id)return;
+    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||swtPassageStorageId()!==id)return;
     swtHighlightExercise=data.exercise;
     renderSwtHighlightPassage();
   }catch(error){
-    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||currentPassageId!==id)return;
+    if(requestId!==swtHighlightLoadToken||swtPracticeMode!=='highlight'||swtPassageStorageId()!==id)return;
     if(host)host.innerHTML='<p>'+escapeHtml(error.message||'Highlight practice could not load.')+'</p>';
     const status=document.getElementById('swtHighlightStatus');
     if(status)status.textContent='Choose another passage or switch to Full Summary Mode.';
@@ -15386,7 +15389,7 @@ async function checkSwtHighlightSelection(){
   const button=document.getElementById('swtHighlightCheckBtn');
   if(button){button.disabled=true;button.textContent='Checking…';}
   try{
-    const response=await fetch(API_URL+'/api/interventions/swt-selection/practice/'+encodeURIComponent(currentPassageId)+'/check',{
+    const response=await fetch(API_URL+'/api/interventions/swt-selection/practice/'+encodeURIComponent(swtPassageStorageId())+'/check',{
       method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','x-session-token':sessionToken},
       body:JSON.stringify({selected:swtHighlightSelected||[]}),signal:AbortSignal.timeout(15000)
     });
@@ -15404,7 +15407,7 @@ async function checkSwtHighlightSelection(){
 function loadPassage(id){
   if(id < 1 || id > passages.length) return;
   currentPassageId = id;
-  const p = passages.find(x => x.id === id) || passages[id-1];
+  const p = swtPassageAt(id);
   if(!p) return;
 
   const num = String(id).padStart(2,'0');
@@ -15424,7 +15427,7 @@ function loadPassage(id){
   const passageBodyEl = document.getElementById('passageBody');
   if (passageBodyEl) {
     if(swtPracticeMode==='highlight'){
-      loadSwtHighlightExercise(id);
+      loadSwtHighlightExercise(p.id);
     } else {
       ++swtHighlightLoadToken;
       swtHighlightExercise=null;swtHighlightSelected=new Set();swtHighlightResult=null;
@@ -15442,15 +15445,15 @@ function loadPassage(id){
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
   const summaryInputEl = document.getElementById('summaryInput');
-  if (summaryInputEl) summaryInputEl.value = (summaries[id] && summaries[id].text) || '';
+  if (summaryInputEl) summaryInputEl.value = (summaries[p.id] && summaries[p.id].text) || '';
   const scratch = LocalStore.get(getPteStorageKey('scratch')) || {};
   const scratchInputEl = document.getElementById('scratchInput');
-  if (scratchInputEl) scratchInputEl.value = scratch[id] || '';
+  if (scratchInputEl) scratchInputEl.value = scratch[p.id] || '';
 
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
   const prevAnswerBtn = document.getElementById('prevAnswerBtn');
   if (prevAnswerBtn) {
-    prevAnswerBtn.style.display = (scores[id] && typeof scores[id].overall_score === 'number') ? 'inline-flex' : 'none';
+    prevAnswerBtn.style.display = (scores[p.id] && typeof scores[p.id].overall_score === 'number') ? 'inline-flex' : 'none';
   }
 
   switchWriteTab('write');
@@ -15541,8 +15544,9 @@ function onSummaryInput(){
   if (undo) undo.hidden = true;
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  if (String(summaries[currentPassageId]?.text || '') !== text) {
-    summaries[currentPassageId] = { text, timestamp: new Date().toISOString(), score: summaries[currentPassageId]?.score || 0 };
+  const storageId = swtPassageStorageId();
+  if (storageId != null && String(summaries[storageId]?.text || '') !== text) {
+    summaries[storageId] = { text, timestamp: new Date().toISOString(), score: summaries[storageId]?.score || 0 };
     LocalStore.set(getPteStorageKey('summaries'), summaries);
     queueSync();
   }
@@ -15563,7 +15567,7 @@ let swtClearedDraft = null;
 function resetSummary(){
   const input = document.getElementById('summaryInput');
   if (!input || !input.value) return;
-  swtClearedDraft = { text: input.value, passageId: currentPassageId, storageKey: getPteStorageKey('summaries') };
+  swtClearedDraft = { text: input.value, passageId: swtPassageStorageId(), storageKey: getPteStorageKey('summaries') };
   input.value = '';
   onSummaryInput();
   const undo = document.getElementById('swtUndoClear');
@@ -15572,7 +15576,7 @@ function resetSummary(){
 }
 function undoSwtClear(){
   const draft = swtClearedDraft;
-  if (!draft || draft.passageId !== currentPassageId || draft.storageKey !== getPteStorageKey('summaries')) return;
+  if (!draft || draft.passageId !== swtPassageStorageId() || draft.storageKey !== getPteStorageKey('summaries')) return;
   const input = document.getElementById('summaryInput');
   if (!input || input.value) return;
   input.value = draft.text;
@@ -15585,10 +15589,10 @@ function undoSwtClear(){
 document.addEventListener('input', function(e){
   if(e.target && e.target.id === 'scratchInput'){
     const scratch = LocalStore.get(getPteStorageKey('scratch')) || {};
-    scratch[currentPassageId] = e.target.value;
+    scratch[swtPassageStorageId()] = e.target.value;
     LocalStore.set(getPteStorageKey('scratch'), scratch);
     const updated = LocalStore.get(getPteStorageKey('scratchUpdatedAt')) || {};
-    updated[currentPassageId] = Date.now();
+    updated[swtPassageStorageId()] = Date.now();
     LocalStore.set(getPteStorageKey('scratchUpdatedAt'), updated);
     queueSync();
   }
@@ -15677,13 +15681,13 @@ async function scoreSummary(submission = null){
   const summaryInputEl = document.getElementById('summaryInput');
   if (!summaryInputEl && !submission) return;
   const text = (submission ? submission.text : summaryInputEl.value).trim();
-  const passageId = submission ? submission.passageId : currentPassageId;
+  const p = submission ? passages.find(x => x.id === submission.passageId) : swtPassageAt(currentPassageId);
+  const passageId = p?.id;
   if(!text){ toast('Write a summary first.'); return; }
   const words = countWords(text);
   if(words < 5){ toast('Too short — minimum 5 words.'); return; }
   if(words > 75){ toast('Too long — maximum 75 words.'); return; }
 
-  const p = passages.find(x => x.id === passageId);
   if(!p){ toast('Passage not loaded.'); return; }
 
   const owner = { uid: canonicalClientUserId(currentUserId), token: sessionToken };
@@ -15713,7 +15717,7 @@ async function scoreSummary(submission = null){
     }
     attempted.add(passageId);
     populatePassageDropdowns();
-    if (currentPassageId !== passageId) {
+    if (swtPassageStorageId() !== passageId) {
       toast(saved ? 'Feedback saved for ' + (p.title || 'your summary') + '.' : 'Feedback could not be saved. Please retry this summary.');
       return;
     }
@@ -15777,9 +15781,9 @@ async function saveAttempt(pid, text, data, spellData){
 
 function loadPreviousAnswer(){
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
-  const stored = scores[currentPassageId];
+  const stored = scores[swtPassageStorageId()];
   if(!stored){ toast('No previous answer for this passage.'); return; }
-  const p = passages.find(x => x.id === currentPassageId);
+  const p = swtPassageAt(currentPassageId);
   if(!p){ return; }
   const summaryInputEl = document.getElementById('summaryInput');
   if(stored.__text && summaryInputEl){ summaryInputEl.value = stored.__text; onSummaryInput(); }
@@ -16542,17 +16546,19 @@ function applyVocabSwap(original, replacement){
   ta.value = ta.value.replace(re, () => repl);
   onSummaryInput();
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  summaries[currentPassageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[currentPassageId]||{}).score || 0 };
+  const storageId = swtPassageStorageId();
+  if(storageId == null)return;
+  summaries[storageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[storageId]||{}).score || 0 };
   LocalStore.set(getPteStorageKey('summaries'), summaries);
   toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
 }
 
 async function showSample(){
-  const p = passages.find(x => x.id === currentPassageId);
+  const p = swtPassageAt(currentPassageId);
   if(!p){ toast('Passage not loaded.'); return; }
-  const passageId = currentPassageId;
+  const passageId = p.id;
   const sampleText = await fetchSwtSampleText(p);
-  if (currentPassageId !== passageId) return;
+  if (swtPassageStorageId() !== passageId) return;
   if(!sampleText){ toast('No sample available for this passage.'); return; }
   const summaryInputEl = document.getElementById('summaryInput');
   if (summaryInputEl) summaryInputEl.value = sampleText;
@@ -16574,12 +16580,12 @@ function navResultsPassage(delta){
   const positions = swtNavigationPositions(activeResFilter), index = positions.indexOf(currentPassageId), target = positions[index + delta];
   if(index < 0 || target == null) return;
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
-  const p = passages.find(x => x.id === target) || passages[target-1];
+  const p = swtPassageAt(target);
   if(!p) return;
   if(scores[target] && typeof scores[target].overall_score === 'number'){
     currentPassageId = target;
     updateResultsNav();
-    showResults(scores[target], p, scores[target].__spellData || null, scores[target].__text || '');
+    showResults(scores[p.id], p, scores[p.id].__spellData || null, scores[p.id].__text || '');
   } else {
     loadPassage(target);
     showSwtScreen('swtPracticeScreen');
