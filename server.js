@@ -1260,6 +1260,51 @@ const PgPassageAPI = {
 
 const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 
+// Prediction screenshot passages must be additive: existing admin-edited rows
+// remain authoritative, and a new deploy must not bulk-replace the live bank.
+const userSwtPassages = require('./content/user-swt-predictions').passages;
+const userSwtRank = new Map(userSwtPassages.map((p, index) => [p.id, index]));
+const predictionFirst = rows => [...rows].sort((a, b) => {
+  const aRank = userSwtRank.get(Number(a.id)), bRank = userSwtRank.get(Number(b.id));
+  if (aRank === undefined && bRank === undefined) return 0; // preserve old question order
+  if (aRank === undefined) return 1;
+  if (bRank === undefined) return -1;
+  return aRank - bRank;
+});
+
+async function seedUserSwtPredictions() {
+  // Never overwrite a pre-existing question, even on deployments with a volume
+  // containing an older question bank.
+  if (!USE_POSTGRES) {
+    const existing = await PassageAPI.readAll();
+    const ids = new Set(existing.map(p => Number(p.id)));
+    const titles = new Set(existing.map(p => String(p.title || '').toLowerCase()));
+    const additions = userSwtPassages.filter(p => !ids.has(p.id) && !titles.has(p.title.toLowerCase()));
+    if (additions.length) await PassageAPI.writeAll([...existing, ...additions]);
+    return additions.length;
+  }
+  const client = await pgPool.connect();
+  let added = 0;
+  try {
+    await client.query('BEGIN');
+    for (const source of userSwtPassages) {
+      const p = sanitizePassage(source);
+      const result = await client.query(
+        `INSERT INTO passages(id, payload, updated_at)
+         SELECT $1, $2::jsonb, NOW()
+         WHERE NOT EXISTS (SELECT 1 FROM passages WHERE id=$1 OR LOWER(payload->>'title')=LOWER($3))
+         ON CONFLICT (id) DO NOTHING`,
+        [p.id, JSON.stringify(p), p.title]);
+      added += result.rowCount || 0;
+    }
+    await client.query('COMMIT');
+    PgPassageAPI._cache = null;
+    PgPassageAPI._cacheLoaded = false;
+    return added;
+  } catch (e) { await client.query('ROLLBACK'); throw e; }
+  finally { client.release(); }
+}
+
 async function reviseAdvancedSwtPassages() {
   const patches = require('./content/swt-advanced-revisions.json');
   const changes = p => ({text:p.text,keyElements:p.keyElements,sampleResponse:p.sampleResponse,sampleNotes:p.sampleNotes});
@@ -3642,7 +3687,7 @@ app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
 app.get('/api/passages', async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
-    res.json({ passages: all.map(studentPassage), count: all.length });
+    res.json({ passages: predictionFirst(all).map(studentPassage), count: all.length });
   } catch (e) {
     console.error('Read passages failed:', e.message);
     res.status(500).json({ error: 'Failed to load passages', details: e.message });
@@ -6378,6 +6423,9 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     console.error('[service-readiness] initialization failed');
     return;
   }
+
+  try { const count = await seedUserSwtPredictions(); console.log('User SWT predictions added:', count); }
+  catch (e) { console.error('User SWT prediction seed failed:', e.message); }
 
   try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
 
