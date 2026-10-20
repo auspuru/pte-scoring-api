@@ -22,7 +22,12 @@
       "relationships_clear": true,
       "material_meaning_change": false,
       "missing_dependencies": [],
-      "relationship_explanation": "Editors' work on the film and sound affects the audience's experience and how the story unfolds."
+      "relationship_explanation": "Editors' work on the film and sound affects the audience's experience and how the story unfolds.",
+      "synthesis": {
+        "quality": "effective",
+        "evidence": "",
+        "explanation": "Labelled synthesis for this deterministic policy test: the selected ideas are meaningfully combined. This is not a live model judgment or an inferred Pearson item score."
+      }
     }
   },
   {
@@ -48,7 +53,12 @@
       "relationships_clear": true,
       "material_meaning_change": false,
       "missing_dependencies": [],
-      "relationship_explanation": "Caffeine improves bees' memory of flower scents, supporting pollination and plant survival; the local reference to the smell of caffeine is recoverable from the surrounding claims."
+      "relationship_explanation": "Caffeine improves bees' memory of flower scents, supporting pollination and plant survival; the local reference to the smell of caffeine is recoverable from the surrounding claims.",
+      "synthesis": {
+        "quality": "effective",
+        "evidence": "",
+        "explanation": "Labelled synthesis for this deterministic policy test: the selected ideas are meaningfully combined. This is not a live model judgment or an inferred Pearson item score."
+      }
     }
   },
   {
@@ -74,7 +84,12 @@
       "relationships_clear": true,
       "material_meaning_change": false,
       "missing_dependencies": [],
-      "relationship_explanation": "The brain represents smaller quantities more readily, so processing larger quantities is harder."
+      "relationship_explanation": "The brain represents smaller quantities more readily, so processing larger quantities is harder.",
+      "synthesis": {
+        "quality": "effective",
+        "evidence": "",
+        "explanation": "Labelled synthesis for this deterministic policy test: the selected ideas are meaningfully combined. This is not a live model judgment or an inferred Pearson item score."
+      }
     }
   },
   {
@@ -100,7 +115,12 @@
       "relationships_clear": true,
       "material_meaning_change": false,
       "missing_dependencies": [],
-      "relationship_explanation": "Discarding information helps the brain work efficiently, and lifestyle influences what is discarded."
+      "relationship_explanation": "Discarding information helps the brain work efficiently, and lifestyle influences what is discarded.",
+      "synthesis": {
+        "quality": "effective",
+        "evidence": "",
+        "explanation": "Labelled synthesis for this deterministic policy test: the selected ideas are meaningfully combined. This is not a live model judgment or an inferred Pearson item score."
+      }
     }
   }
 ]

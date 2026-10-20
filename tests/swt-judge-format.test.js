@@ -150,3 +150,18 @@ test('Truncated and missing provider responses never become confirmed scores', (
   assert.equal(format.response(envelope(null)), null);
   assert.equal(format.response(envelope('not an assessment')), null);
 });
+
+test('Compact diagnostic labels retain the public per-idea map without changing Content', () => {
+  const raw={...complete(),captured_ideas:['what','result','invented_label']};
+  const parsed=format.response(envelope(raw));
+  assert.equal(parsed.content_score,raw.content_score);
+  assert.deepEqual(parsed.per_idea_scores,{what:1,why:0,how:0,result:1,topic:0,pivot:0,conclusion:0});
+  assert.equal(format.tool.input_schema.properties.captured_ideas.type,'array');
+  assert.equal(format.tool.input_schema.properties.per_idea_scores,undefined);
+});
+
+test('Only a semantic retry selects the stronger reassessment model', () => {
+  const base='claude-haiku-4-5-20251001';
+  assert.equal(format.request('Assess.',base).model,base);
+  assert.equal(format.request('Reassess.',base,{semanticReassessment:true}).model,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6');
+});

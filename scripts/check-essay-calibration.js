@@ -25,7 +25,7 @@ const grader=createEssayGrader(async(prompt,options)=>{
  const started=Date.now();
  try{
   const result=await grader.grade(fixture.question,fixture.essay,'9',{feedbackV3:true,includeSample:false});
-  const report={question:fixture.question,essay:fixture.essay,provenance:fixture.provenance,latestRevisedEssayMock:'pending',calls,durationMs:Date.now()-started,events,candidates,result};
+  const report={question:fixture.question,essay:fixture.essay,provenance:fixture.provenance,latestRevisedEssayMock:fixture.latestRevisedEssayMock,calls,durationMs:Date.now()-started,events,candidates,result};
   fs.writeFileSync(args.output,JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify({scores:result.scores,overallVerdict:result.overallVerdict,issues:result.feedbackIssues,calls}));
  }catch(error){fs.writeFileSync(args.output,JSON.stringify({error:error.message,events,calls,candidates},null,2)+'\n');console.error(error.message);process.exitCode=1;}

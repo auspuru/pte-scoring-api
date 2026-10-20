@@ -1,0 +1,153 @@
+{
+  "provenance": "User-supplied Pearson Scored Practice Test 3 experiment, 19–20 October 2026. Section scores are not individual SWT trait labels.",
+  "controls": "User reports other tasks unchanged; submissions and perfect SST/WFD performance have not been independently verified.",
+  "passages": [
+    {
+      "id": "web",
+      "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live.\nSince the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same.\nThe computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one.\n\"It is amazing how far we've come,\" he says. \"But you're always wondering what's the next crazy idea, and working to make sure the Web stays one web and that the internet stays open. There isn't much time to sit back and reflect.\"\nHe invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised."
+    },
+    {
+      "id": "forecasting",
+      "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely.\n'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers.\nSherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates-although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation."
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "strategy": "original",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 79,
+        "reading": 23
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee has transformed the world more than anyone in past few decades,and as the inventor of the World Wide Web he is also a revolutionary; moreover, he is a cultural guru and a technological guru as well; furthermore, he invented the Web because he was aggravated that he could not find all the information he wanted in one place, and it was an fictional concept that he realised.",
+        "forecasting": "Economists in the corporate sector draw upon a wide range of statistical data to perform economic forecasting; however, it is not precise science; moreover, its track record is rather poor, especially for unstable statistics; nevertheless, they do better for some non-volatile statistics, such as government spending real GNP growth and inflation."
+      },
+      "transcription": "Visual transcription of supplied screenshots; exact punctuation/spelling should be confirmed before treating language differences as controlled."
+    },
+    {
+      "attempt": 2,
+      "strategy": "concise_paraphrase",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 88,
+        "reading": 31
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee invented the World Wide Web because he was frustrated by scattered information, and its global spread has transformed shopping, music and communication while giving individuals access to information previously associated with the elite, fundamentally changing how people think and live.",
+        "forecasting": "Economic forecasting is a key function for corporate economists who draw upon statistical data; however, it is far from a precise science because assumptions vary widely, and its track record is poor, especially for volatile statistics, although forecasts perform better for some stable statistics."
+      }
+    },
+    {
+      "attempt": 3,
+      "strategy": "selected_source_wording",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 83,
+        "reading": 27
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered academic, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been transformed, and an individual can now have the same access to information as the elite; furthermore, he invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data; however, economic forecasting is a long way from a precise science, and their assumptions about how an economy works can vary widely; moreover, the record of economic forecasting is rather poor, especially for volatile statistics, although they do better for some stable statistics."
+      }
+    },
+    {
+      "attempt": 4,
+      "strategy": "five_synonyms",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 83,
+        "reading": 27
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been changed, and a person can now have the same access to information as the elite; furthermore, he created the Web, he says, because he was dissatisfied that he couldn't find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function, and to do the job they draw upon a broad range of statistical data; however, economic forecasting is a long way from an exact science, and their assumptions about how an economy works can differ widely; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      },
+      "scoreReport": {
+        "overall": 29,
+        "listening": 35,
+        "reading": 27,
+        "speaking": 10,
+        "writing": 83,
+        "finishedOn": "2026-10-20",
+        "source": "User-supplied attempt-4 screenshot received 20 October 2026"
+      }
+    },
+    {
+      "attempt": 5,
+      "strategy": "minimal_clause_paraphrase",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 86,
+        "reading": 29
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the Web has changed the way we shop, listen to music and communicate, and a person can now have the same access to information as the elite; furthermore, he created the Web because he was dissatisfied with being unable to find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function that draws upon a broad range of statistical data; however, economic forecasting is far from an exact science, and forecasters can make widely differing assumptions about how an economy works; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      },
+      "scoreReport": {
+        "overall": 29,
+        "listening": 35,
+        "reading": 29,
+        "speaking": 10,
+        "writing": 86,
+        "finishedOn": "2026-10-20",
+        "source": "User-supplied attempt-5 screenshot received 20 October 2026"
+      }
+    },
+    {
+      "attempt": 6,
+      "strategy": "minimal_clause_paraphrase_with_revised_essay",
+      "status": "reported",
+      "sectionScores": {
+        "writing": 86,
+        "reading": 29
+      },
+      "individualTraitScores": null,
+      "responses": {
+        "web": "Sir Tim Berners-Lee may be a mild-mannered scholar, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the Web has changed the way we shop, listen to music and communicate, and a person can now have the same access to information as the elite; furthermore, he created the Web because he was dissatisfied with being unable to find all the information he wanted in one place.",
+        "forecasting": "For economists in the corporate sector, forecasting is generally a key function that draws upon a broad range of statistical data; however, economic forecasting is far from an exact science, and forecasters can make widely differing assumptions about how an economy works; moreover, the record of economic forecasting is rather poor, especially for unstable statistics, although they do better for some stable statistics."
+      },
+      "changedTask": "essay",
+      "essayResponse": "It is often argued that one's hometown plays a crucial role in the upbringing of a person. However, this does not mean that it completely defines a person's future, as many people become successful despite growing up in small towns. In this essay, I will discuss India's Prime Minister, Narendra Modi. Even though he comes from a modest background, he was still able to achieve great feats in his life.\n\nModi comes from Vadnagar, a small town in the state of Gujarat, where he grew up in a family that was not financially well-off. During his childhood, he helped his father sell tea while attending school. This environment may have helped him develop resilience and understand the struggles of ordinary people.\n\nHowever, despite facing these hurdles in his life, he remained consistent and worked really hard. Later, he joined the Rashtriya Swayamsevak Sangh. After spending years in public life, he eventually became the Chief Minister of the state of Gujarat, where he worked towards the development of the state. His early experiences may have influenced his interest in improving the lives of ordinary people there.\n\nAfter becoming a successful Chief Minister, he became the Prime Minister of India in 2014. His work in Gujarat helped him gain recognition across the country. His journey shows that although his hometown helped shape his character, it did not limit what he could achieve.\n\nIn conclusion, from what has been discussed above, it can be concluded that a person's hometown can influence their character without defining their future. With the right mindset, determination and hard work, people can overcome the limitations of the place where they grew up.",
+      "scoreReport": {
+        "overall": 29,
+        "listening": 35,
+        "reading": 29,
+        "speaking": 10,
+        "writing": 86,
+        "source": "User-supplied IMG_2205.jpeg report received 20 October 2026"
+      },
+      "controlNote": "User reports using the same SWT, SST and WFD responses as attempt 5; only the prepared essay was revised."
+    }
+  ],
+  "fixedResponses": {
+    "essay": "It is often argued that hometown plays a crucial role in the upbringing of a person. However, this hypothesis is not entirely true, as there are famous celebrities who became successful in their lives despite being born into poor families. In this essay, I will discuss the current Prime Minister of India, Narendra Modi. Even though he comes from a modest background, he was still able to achieve great feats in his life.\n\nModi comes from a small town in the state of Gujarat, and in his earlier days, he was deprived of education because his family was not financially well-off. Moreover, for most of his life, he earned his living by selling tea at railway stations in Gujarat.\n\nHowever, despite facing these hurdles in his life, he remained consistent and worked really hard. Later, he joined the Rashtriya Swayamsevak Sangh (an organisation that promotes Hinduism). After finishing his training with the RSS, he was later elected as the Chief Minister of the state of Gujarat because of his exemplary hard work and political manifesto of making Gujarat the best state in India, which he later achieved.\n\nAfter becoming a successful Chief Minister, in 2014, he became a candidate for Prime Minister of the country. As the people of the country had already seen his work as Chief Minister, they made him the Prime Minister of the country. To this day, he still remains in that position.\n\nIn conclusion, from what has been discussed above, it can be concluded that with the right mindset, determination, and hard work, nothing is impossible. The place where people are born plays a very small role in deciding a person's future.",
+    "sst": "The speaker discussed the conditions in which species of animals survive and reproduce. Moreover, it depends upon water economy, which is the ability of an animal to regulate their body water. Furthermore, their tolerance of temperature also matters. For example, an Arctic Fox lives in colder climate conditions because of its body size, daily behaviour, habitat use, rhythm of timing and many more.",
+    "wfd": [
+      "They have been struggling since last year to make their service pay.",
+      "Their The placement replacement task test for mathematics and statistics is offered every semester.",
+      "Observers waited nervously and with bated breath for the concert."
+    ],
+    "note": "Exact user-provided control responses, preserved without corrections; audio and question-level accuracy have not been independently verified."
+  },
+  "comparisons": [
+    {
+      "fromAttempt": 5,
+      "toAttempt": 6,
+      "changedTask": "essay",
+      "observedSectionDeltas": {
+        "writing": 0,
+        "reading": 0,
+        "listening": 0
+      },
+      "finding": "No observable section-score gain from the essay revision; this does not establish identical individual essay raw marks."
+    }
+  ]
+}

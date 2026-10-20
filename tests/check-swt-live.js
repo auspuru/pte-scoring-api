@@ -31,7 +31,7 @@ async function request(path, body, { timeoutMs = 70000, signal } = {}) {
       child.on('close', code => {
         try {
           const data = JSON.parse(output);
-          if (code) reject(new Error(data.error?.message || errorOutput || 'Calibration request failed'));
+          if (code) reject(Object.assign(new Error(data.error?.message || errorOutput || 'Calibration request failed'), {status:({invalid_request_error:400,authentication_error:401,permission_error:403})[data.error?.type]}));
           else resolve(data);
         } catch (error) { reject(new Error(errorOutput || error.message)); }
       });
@@ -47,14 +47,14 @@ async function request(path, body, { timeoutMs = 70000, signal } = {}) {
   return data;
 }
 const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt: buildJudgingPrompt,
-  isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review,
-  validationIssues: (j, text) => applyScoringPolicy(j, text).assessment_issues,
+  isComplete: (j, text, passage) => !applyScoringPolicy(j, text, passage).needs_semantic_review,
+  validationIssues: (j, text, passage) => applyScoringPolicy(j, text, passage).assessment_issues,
   onAttemptError: details => console.error(JSON.stringify({ assessmentAttempt: details })),
-  call: async (prompt, timeoutMs, { signal } = {}) => {
+  call: async (prompt, timeoutMs, { signal, semanticReassessment = false } = {}) => {
     // Exercise the same structured response contract as the production grader.
     let response;
     try {
-      response = await request('/api/claude', judgeFormat.request(prompt, args.model || 'claude-haiku-4-5-20251001'), { timeoutMs, signal });
+      response = await request('/api/claude', judgeFormat.request(prompt, args.model || 'claude-haiku-4-5-20251001', {semanticReassessment}), { timeoutMs, signal });
     } catch (error) { console.error('Calibration provider error: ' + error.message); throw error; }
     const result = judgeFormat.response(response);
     if (args.debug) console.error(JSON.stringify({ fixtureAssessment: result }));
@@ -62,10 +62,16 @@ const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt
   }
 });
 async function main() {
-  const [passage8, passage9, passage6, passage7] = await Promise.all([8, 9, 6, 7].map(id => request('/api/passages/' + id)));
-  const cases = [
-    { name: 'Tourism screenshot', p: passage8, text: seeds.find(p => p.id === 8).sampleResponse, full: true },
-    { name: 'Web screenshot', p: passage9, text: seeds.find(p => p.id === 9).sampleResponse, full: true },
+  const [passage8, passage9, passage6, passage7] = args.comparison ? []
+    : await Promise.all([8, 9, 6, 7].map(id => request('/api/passages/' + id)));
+  if (args.comparison && args.mode !== 'proxy') throw Error('Comparison fixtures require proxy mode so the exact screenshot passage is assessed.');
+  const comparison = args.comparison && require('./fixtures/swt-attempt-comparison.json');
+  const cases = comparison ? comparison.attempts.filter(a => a.status === 'reported').flatMap(a => comparison.passages.map(p => ({
+    name: 'Attempt ' + a.attempt + ' ' + p.id, p: { text: p.text, keyElements: {} }, text: a.responses[p.id]
+    // Section results are observations, not asserted item scores or a forced ranking.
+  }))) : [
+    { name: 'Tourism screenshot', p: passage8, text: seeds.find(p => p.id === 8).sampleResponse },
+    { name: 'Web screenshot', p: passage9, text: seeds.find(p => p.id === 9).sampleResponse },
     { name: 'Tourism revised reference', p: passage8, text: studentPassage(passage8).sampleResponse, full: true },
     { name: 'Web revised reference', p: passage9, text: studentPassage(passage9).sampleResponse, full: true },
     { name: 'London compressed cause', p: passage6, full: true, text: 'Although London faced historical setbacks and continues to struggle with high living costs and overloaded infrastructure, deregulation and regulatory advantages have allowed its financial center to surpass global rivals in fund management, foreign exchange trading, and secondary bonds.' },
@@ -87,16 +93,16 @@ async function main() {
           note: data.content_details?.notes, version: data.scoring_version };
       } else {
         const hints = Object.entries(c.p.keyElements || {}).map(([key, value]) => '- ' + key + ': ' + value).join('\n');
-        const j = applyScoringPolicy(await judge.judge(c.text, c.p.text, hints), c.text);
+        const j = applyScoringPolicy(await judge.judge(c.text, c.p.text, hints), c.text, c.p.text);
         assessment = j.summary_assessment;
         assert.equal(j.needs_semantic_review, false, 'Model assessment must be complete');
         result = { content: j.content_score, grammar: j.grammar_score, vocabulary: j.vocabulary_score,
-          note: j.content_reason, reviewed: !!j.consistency_reviewed };
+          synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed };
       }
       console.log(JSON.stringify({ case: c.name, ...result }));
       if (c.full) {
         assert.equal(result.content, 4); assert.equal(result.grammar, 2); assert.equal(result.vocabulary, 2);
-      } else assert(result.content <= (c.max ?? 3), 'Incomplete or false meaning must not earn full content');
+      } else if (c.full === false) assert(result.content <= (c.max ?? 3), 'Incomplete or false meaning must not earn full content');
     } catch (error) {
       failed++;
       console.error(c.name + ': ' + error.message);

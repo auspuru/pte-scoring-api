@@ -163,6 +163,22 @@ test('Contradiction and missing conclusion cannot be rescued by idea counts', ()
   }
 });
 
+test('The grading route keeps an evidenced synthesis cap despite complete idea coverage and correct language', async () => {
+  for (const [quality, expected] of [['partial', 3], ['limited', 2]]) {
+    const fixture = fixtures[1], j = judgment(fixture);
+    j.summary_assessment.synthesis = { quality, evidence: fixture.assessment.main_idea_evidence,
+      explanation: 'Labelled synthesis limitation: the selected excerpt is not efficiently integrated with the other ideas.' };
+    const result = await grade(fixture, j);
+    assert.equal(result.trait_scores.content, expected);
+    assert.equal(result.raw_score, expected + 5);
+    assert.equal(result.trait_scores.grammar, 2);
+    assert.equal(result.trait_scores.vocabulary, 2);
+    assert.equal(result.content_details.full_content_eligible, false);
+    assert.equal(result.content_details.summary_assessment.synthesis.quality, quality);
+    assert.equal(result.score_provisional, false);
+  }
+});
+
 test('An opening-only response stays at most Content 1 even with an optimistic proposed score', () => {
   for (const mainAccurate of [true, false]) {
     const j = judgment();

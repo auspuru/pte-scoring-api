@@ -4061,8 +4061,13 @@ STEP 4 — RATE YOUR CONFIDENCE.
 slightly differently. "low" = genuinely murky — flag for careful human review.
 
 STEP 5 — WRITE A MODEL ANSWER.
-One sentence, 30-50 words, that captures every key idea using academic connectors
-(however / moreover / therefore). This is the Band-90 sample.
+One sentence, preferably 30-50 words and always within 5-75, that synthesises the
+essential ideas accurately. The extracted key elements above remain source quotes,
+but this model answer should remove unnecessary detail and use simple effective
+reformulation: shorten or combine clauses and make a few useful phrase changes.
+Retain names and technical terms. Use connectors that express the real relationships;
+do not simply join every quoted key element or require a fixed synonym count.
+This is a practice reference, not a guaranteed official score.
 
 Respond with ONLY this JSON, no other text:
 {
@@ -4239,18 +4244,18 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
   return swtJudgmentService.judge(studentText, passageText, kpHint, timeoutMs);
 }
 
-async function callSwtJudge(prompt, timeoutMs, { signal } = {}) {
+async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false } = {}) {
   if (!anthropic) return null;
   const format = require('./swt-judge-format');
-  const response = await anthropic.messages.create(format.request(prompt, CLAUDE_MODEL),
+  const response = await anthropic.messages.create(format.request(prompt, CLAUDE_MODEL, {semanticReassessment}),
     { timeout: timeoutMs, maxRetries: 0, signal });
   return format.response(response);
 }
 
 const swtJudgmentService = createJudgmentService({
   call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
-  isComplete: (result, summary) => !applyScoringPolicy(result, summary).needs_semantic_review,
-  validationIssues: (result, summary) => applyScoringPolicy(result, summary).assessment_issues,
+  isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
+  validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
 });
 

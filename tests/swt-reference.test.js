@@ -107,7 +107,7 @@ async function checkReference(stored, judge) {
 function semantic(text) {
   return { content_score: 4, grammar_score: 2, vocabulary_score: 2, cohesion: 'strong',
     grammar_annotations: [], vocabulary_annotations: [], summary_assessment: {
-      main_idea_accurate: true, main_idea_evidence: text.slice(0, 45), supporting_evidence: [text.slice(50, 110)],
+      synthesis: { quality: 'effective', evidence: '', explanation: 'The reference combines the essential ideas.' }, main_idea_accurate: true, main_idea_evidence: text.slice(0, 45), supporting_evidence: [text.slice(50, 110)],
       relationships_clear: true, material_meaning_change: false, conclusion_status: 'captured',
       missing_dependencies: [], relationship_explanation: 'The selected ideas are connected.'
     } };
