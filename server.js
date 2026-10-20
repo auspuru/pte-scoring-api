@@ -6424,10 +6424,12 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     return;
   }
 
+  try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
+
+  // Add teacher screenshots after the existing library is initialized so
+  // legacy / advanced passage IDs remain unchanged on first deployments.
   try { const count = await seedUserSwtPredictions(); console.log('User SWT predictions added:', count); }
   catch (e) { console.error('User SWT prediction seed failed:', e.message); }
-
-  try { await seedAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT seed failed:', e.message); }
 
   try { await reviseSwtSamples(); } catch (e) { console.error('SWT sample revisions failed:', e.message); }
 
