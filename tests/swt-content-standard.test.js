@@ -4,27 +4,29 @@ const assert = require('node:assert/strict');
 const passages = require('../passages.json');
 const writing = require('../content/writing-lab.json');
 const predictions = require('../content/writing-predictions-sep-2026');
+const userSwt = require('../content/user-swt-predictions');
 const { words, validateSwtContent } = require('../scripts/validate-swt-content');
 
-test('all published SWT passages meet the 200–300 word editorial standard', () => {
+test('original SWT passages meet the 200–300 standard and screenshot text is kept verbatim', () => {
   const result = validateSwtContent();
   assert.deepEqual(result, {
-    total: 42,
-    standalone: 20,
+    total: 70,
+    standalone: 34,
     writingLab: 4,
-    prediction: 18,
-    minimum: 200,
-    maximum: 300
+    prediction: 32,
+    minimum: 169,
+    maximum: 341
   });
 });
 
 test('all published SWT reference samples remain one-sentence answers', () => {
   const all = [
     ...passages.map(p => ({ id: 'standalone-' + p.id, sample: p.sampleResponse })),
+    ...userSwt.passages.map(p => ({ id: 'user-standalone-' + p.id, sample: p.sampleResponse })),
     ...writing.mocks.flatMap(m => m.questions.filter(q => q.type === 'swt').map(q => ({ id:q.id, sample:q.sample }))),
     ...predictions.swt.map(q => ({ id:q.id, sample:q.sample }))
   ];
-  assert.equal(all.length, 42);
+  assert.equal(all.length, 70);
   for (const row of all) {
     assert(row.sample && words(row.sample) >= 5 && words(row.sample) <= 75, row.id);
   }
@@ -32,8 +34,21 @@ test('all published SWT reference samples remain one-sentence answers', () => {
 
 test('prediction SWT items keep traceable source metadata', () => {
   for (const q of predictions.swt) {
-    assert.equal(q.predictionSource.provider, 'PTE Nepal');
-    assert.equal(q.predictionSource.week, '21-27 September 2026');
+    if (q.id.startsWith('pred26-user-swt-')) {
+      assert.equal(q.predictionSource.provider, 'User supplied SWT prediction screenshots');
+      assert.equal(q.predictionSource.week, '20 October 2026');
+    } else {
+      assert.equal(q.predictionSource.provider, 'PTE Nepal');
+      assert.equal(q.predictionSource.week, '21-27 September 2026');
+    }
     assert(q.predictionSource.sourceId);
   }
+});
+
+test('user-provided priority SWT bank starts with the two requested passages', () => {
+  assert.deepEqual(userSwt.passages.slice(0,2).map(p => p.sourceNumber), [498, 108]);
+  assert.equal(userSwt.passages.length, 14);
+  assert.deepEqual(predictions.swt.slice(0,14).map(q => Number(q.predictionSource.sourceId)), userSwt.passages.map(p => p.sourceNumber));
+  assert.equal(new Set(userSwt.passages.map(p => p.id)).size, 14);
+  for (const p of userSwt.passages) assert(p.text.length > 800, p.title);
 });
