@@ -23,7 +23,10 @@ function longestCopiedRun(source, sample) {
 }
 
 function validatePredictionSwtSamples(bank = predictions.swt) {
-  if (!Array.isArray(bank) || bank.length !== 18) throw new Error('Expected exactly 18 September SWT prediction items.');
+  if (!Array.isArray(bank) || bank.length !== 32) throw new Error('Expected 14 user SWT predictions and 18 September prediction items.');
+  const user = bank.filter(q => q.predictionSource?.provider === 'User supplied SWT prediction screenshots');
+  const september = bank.filter(q => q.predictionSource?.provider === 'PTE Nepal');
+  if (user.length !== 14 || september.length !== 18) throw new Error('SWT prediction cohorts have unexpected sizes.');
   const seen = new Set();
 
   for (const q of bank) {
@@ -39,10 +42,15 @@ function validatePredictionSwtSamples(bank = predictions.swt) {
       throw new Error(q.id + ' sample should remain concise (25–65 words); found ' + form.count + '.');
     }
 
-    const local = policy.localGrade(q, q.sample, { reason: 'published sample validation' });
-    if (local.scores.content !== 3 || local.scores.form !== 1 || local.scores.grammar !== 2
-      || local.scores.vocabulary !== 2 || local.score_provisional !== true || local.full_content_eligible !== false) {
-      throw new Error(q.id + ' sample failed the provisional coverage/form checks: ' + JSON.stringify(local.scores));
+    // The newly supplied screenshots are preserved verbatim and their drafted
+    // reference answers await teacher review; local keyword matching cannot
+    // be used as an automatic semantic/full-credit claim for this cohort.
+    if (q.predictionSource.provider === 'PTE Nepal') {
+      const local = policy.localGrade(q, q.sample, { reason: 'published sample validation' });
+      if (local.scores.content !== 3 || local.scores.form !== 1 || local.scores.grammar !== 2
+        || local.scores.vocabulary !== 2 || local.score_provisional !== true || local.full_content_eligible !== false) {
+        throw new Error(q.id + ' sample failed the provisional coverage/form checks: ' + JSON.stringify(local.scores));
+      }
     }
 
     const copied = longestCopiedRun(q.text, q.sample);
@@ -53,12 +61,12 @@ function validatePredictionSwtSamples(bank = predictions.swt) {
     }
   }
 
-  return { count: bank.length, provisionalCoverage: bank.length, maxCopiedRun: Math.max(...bank.map(q => longestCopiedRun(q.text, q.sample))) };
+  return { count: bank.length, userScreenshots: user.length, provisionalCoverage: september.length, maxCopiedRun: Math.max(...bank.map(q => longestCopiedRun(q.text, q.sample))) };
 }
 
 if (require.main === module) {
   const result = validatePredictionSwtSamples();
-  console.log('Validated ' + result.count + ' September SWT samples; form and provisional keyword coverage checked (semantic review still required); longest copied run: ' + result.maxCopiedRun + ' words.');
+  console.log('Validated ' + result.count + ' SWT samples (' + result.userScreenshots + ' user screenshots); provisional coverage checks for the 18 September samples only (semantic review still required); longest copied run: ' + result.maxCopiedRun + ' words.');
 }
 
 module.exports = { validatePredictionSwtSamples, longestCopiedRun };
