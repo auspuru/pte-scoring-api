@@ -110,6 +110,44 @@ body.dark #writingLabScreen .listening-studio{color:#20334e}
 @media(max-width:1400px){#writingLabScreen .studio-layout{grid-template-columns:minmax(0,1fr) 220px}#writingLabScreen .studio-task-nav{grid-column:1/-1;display:flex;overflow-x:auto;padding:7px;gap:4px}#writingLabScreen .studio-task-nav button{width:auto;min-width:130px;flex:1;font-size:10px;padding:8px;min-height:48px}#writingLabScreen .studio-task-nav button>span{min-width:25px;height:25px}}
 @media(max-width:1050px){#writingLabScreen .studio-layout{grid-template-columns:1fr}#writingLabScreen .studio-side{display:grid;grid-template-columns:1fr 1fr;gap:15px}#writingLabScreen .studio-side-card{margin:0}#writingLabScreen #studio-question-list{max-height:230px}#writingLabScreen .listening-studio .exam-footer{position:static}}
 @media(max-width:650px){#writingLabScreen .listening-studio{padding:19px 13px 30px}#writingLabScreen .studio-heading{align-items:flex-start;flex-direction:column;gap:15px}#writingLabScreen .studio-heading h1{font-size:26px}#writingLabScreen .studio-modes{width:100%}#writingLabScreen .studio-modes button{flex:1}#writingLabScreen .studio-side{grid-template-columns:1fr}#writingLabScreen .studio-tip{display:none}#writingLabScreen .listening-studio .exam-main{padding:17px}#writingLabScreen .listening-studio .exam-header{padding:15px 17px}#writingLabScreen .listening-studio .exam-strip{padding:16px 17px 0}#writingLabScreen .listening-studio .exam-strip b{font-size:16px}#writingLabScreen .listening-studio .audio-panel{padding:11px;gap:7px 10px}#writingLabScreen .listening-studio .audio-panel #audio-start{font-size:10px;padding:8px;max-width:95px}#writingLabScreen .listening-studio .listening-blank input{width:99px!important}#writingLabScreen .listening-studio .listening-transcript{font-size:15px}#writingLabScreen .studio-library{padding:17px}#writingLabScreen .studio-library .card{flex-wrap:wrap}#writingLabScreen .listening-studio .exam-footer{padding:12px}#writingLabScreen .listening-studio .exam-footer button{padding:9px;font-size:10px}#writingLabScreen .studio-mode-note{font-size:10px}#writingLabScreen .listening-studio .editor-tools{align-items:flex-start;gap:8px}#writingLabScreen .studio-side-card h3 span{font-size:10px}}
+
+/* Individual practice keeps its question in one column; optional tools expand below. */
+#writingLabScreen .studio-focused { max-width: 1200px; }
+#writingLabScreen .studio-focused .studio-layout { display: block; }
+#writingLabScreen .studio-focused .studio-tools { display: flex; align-items: flex-start; gap: 12px; background: #fff; border: 1px solid #dce4ef; border-radius: 12px; padding: 8px 12px; margin-bottom: 24px; }
+#writingLabScreen .studio-focused .studio-home { min-height: 44px; padding: 10px 12px; white-space: nowrap; background: transparent; color: #526680; border: 0; font-size: 14px; font-weight: 600; }
+#writingLabScreen .studio-focused .studio-task-switcher { flex: 1; min-width: 0; }
+#writingLabScreen .studio-focused .studio-task-switcher > summary { width: fit-content; margin-left: auto; padding: 11px 12px; }
+#writingLabScreen .studio-focused .studio-task-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 12px 0 0; margin-top: 8px; overflow: visible; border-top: 1px solid #dce4ef; border-radius: 0; background: transparent; }
+#writingLabScreen .studio-focused .studio-task-nav button { width: 100%; min-width: 0; color: #526680; font-size: 14px; min-height: 44px; padding: 10px; margin: 0; }
+#writingLabScreen .studio-focused .studio-task-nav button > span { background: #edf3ff; color: #2458ce; }
+#writingLabScreen .studio-focused .studio-task-nav button[aria-current] { background: #edf3ff; color: #2458ce; }
+#writingLabScreen .studio-focused .studio-heading { margin-bottom: 22px; }
+#writingLabScreen .studio-focused .studio-heading p { font-size: 12px; letter-spacing: .06em; color: #526680; }
+#writingLabScreen .studio-focused .studio-heading h1 { font-size: clamp(23px, 2.5vw, 29px); line-height: 1.35; }
+#writingLabScreen .studio-focused .studio-modes button { min-height: 44px; font-size: 14px; }
+#writingLabScreen .studio-focused .studio-side { display: block; margin-top: 20px; }
+#writingLabScreen .studio-focused .studio-side-card { padding: 0 16px; margin: 0 0 10px; }
+#writingLabScreen .studio-focused details > summary { min-height: 44px; font-size: 14px; font-weight: 600; padding: 12px 0; cursor: pointer; color: #526680; }
+#writingLabScreen .studio-focused .studio-side-card > summary > span { font-size: 13px; font-weight: 400; margin-left: 8px; }
+#writingLabScreen .studio-focused .studio-side-card p { max-width: 85ch; font-size: 14px; line-height: 1.75; margin: 8px 0 16px; }
+#writingLabScreen .studio-focused .studio-library-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-bottom: 16px; }
+#writingLabScreen .studio-focused .studio-library-controls :is(input, select) { min-height: 44px; font-size: 16px; margin: 0; }
+#writingLabScreen .studio-focused #studio-question-list { grid-column: 1 / -1; max-height: 320px; overflow-y: auto; }
+#writingLabScreen .studio-focused .studio-tip { display: block; }
+#writingLabScreen .studio-focused :is(button, summary, input, select, textarea):focus-visible { outline: 3px solid #2458ce; outline-offset: 3px; }
+#writingLabScreen .studio-focused .instruction { font-size: 15px; }
+#writingLabScreen .studio-focused :is(.answer-label, .editor-tools, .save-status, .audio-meta, .meta) { font-size: 13px; }
+#writingLabScreen .studio-focused textarea#answer { font-size: 17px; }
+#writingLabScreen .studio-focused :is(.exam-footer button, .audio-panel #audio-start, .audio-panel #audio-replay, .studio-library .card-footer button) { min-height: 44px; font-size: 14px; }
+#writingLabScreen .studio-focused .exam-footer { position: static; }
+#writingLabScreen .studio-focused .studio-library .section-heading { margin-bottom: 18px; }
+@media (max-width: 600px) {
+  #writingLabScreen .studio-focused .studio-task-nav, #writingLabScreen .studio-focused .studio-library-controls { grid-template-columns: minmax(0, 1fr); }
+  #writingLabScreen .studio-focused .studio-tools { padding: 8px; gap: 4px; }
+  #writingLabScreen .studio-focused .studio-home { padding-inline: 8px; }
+  #writingLabScreen .studio-focused .exam-footer button { flex: 1; }
+}
 @media(prefers-reduced-motion:reduce){#writingLabScreen .listening-studio *{scroll-behavior:auto!important;transition:none!important}}
 
 #writingLabScreen.listening-mode #lab{scroll-padding-bottom:90px}

@@ -56,6 +56,39 @@ test('Recording locks disable task buttons; delegated clicks reject disabled and
   assert.doesNotMatch(studio.heading('Writing','<img src=x>','A & B'),/<img/);
 });
 
+test('Task chooser starts collapsed and closes on selection or Escape without trapping focus', () => {
+  const html = studio.navigation('reading', 'reading-dropdown');
+  assert.match(html, /<details class="practice-studio-switcher"><summary>Change task<\/summary>/);
+  const calls = [], listeners = {};
+  let focused = false;
+  const chooser = {open:true, querySelector: () => ({focus(){focused=true;}})};
+  const button = {dataset:{studioRoute:'reading-wordbank'}, closest:()=>chooser};
+  studio.install({document:{querySelectorAll:()=>[],addEventListener:(type,fn)=>{listeners[type]=fn;}},switchSection:route=>calls.push(route)});
+  listeners.click({target:{closest:()=>button}});
+  assert.equal(chooser.open,false); assert.deepEqual(calls,['reading-wordbank']);
+  chooser.open=true;
+  listeners.keydown({key:'Tab',target:{closest:()=>chooser}});
+  assert.equal(chooser.open,true);
+  listeners.keydown({key:'Escape',target:{closest:()=>chooser}});
+  assert.equal(chooser.open,false); assert.equal(focused,true);
+});
+
+test('Essay optional panels preserve the saved response, word counter and scoring control outside disclosures', () => {
+  const start=source.indexOf('function writeView()'), end=source.indexOf('\nfunction setQuestionSource(',start);
+  const context={practiceState:{writeStep:2,essayText:'My saved response & example',questionText:'A < B',sampleBand:'8'},
+    PRACTICE_TIMER_LIMIT_MIN:20,escapeHtml:s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'),practiceSampleBand:v=>v};
+  vm.createContext(context); vm.runInContext(source.slice(start,end),context);
+  const html=context.writeView(), panels=[...html.matchAll(/<details\b[^>]*>[\s\S]*?<\/details>/g)].map(m=>m[0]);
+  assert.equal(panels.length,2);
+  assert(panels.every(p=>!/<details[^>]*\bopen\b/.test(p)));
+  assert(panels.some(p=>p.includes('id="practiceSampleBand"')));
+  assert(panels.some(p=>p.includes('id="practiceTemplateOverlapGuidance"')));
+  const main=panels.reduce((remaining,p)=>remaining.replace(p,''),html);
+  assert.match(main,/id="practiceEssayInput"[^>]*>My saved response &amp; example<\/textarea>/);
+  assert.match(main,/id="practiceWordCount"/); assert.match(main,/id="practiceSubmitBtn"/);
+  assert.match(main,/A &lt; B/);
+});
+
 test('Shared UI and deferred practice runtimes are fingerprinted and loaded in dependency order', () => {
   const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
   for(const name of ['practice-studio.js','practice-studio.css','reading-practice.js','speaking-practice.js']) {
