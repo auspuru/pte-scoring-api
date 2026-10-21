@@ -532,28 +532,35 @@ function receiveAccountProgress(remote, initial = false, options = {}) {
   // are partial by design; replacing the baseline with one would make the next
   // queued delta look like the student's entire profile changed.
   if (!options.partial) accountCloudSnapshot.set(canonicalClientUserId(currentUserId), remote);
-  if (userProfile && Number(remote?.studyPlan?.updatedAt || 0) > Number(userProfile.studyPlan?.updatedAt || 0)) {
+  const studyPlanChanged = userProfile && Number(remote?.studyPlan?.updatedAt || 0) > Number(userProfile.studyPlan?.updatedAt || 0);
+  if (studyPlanChanged) {
     userProfile.studyPlan = remote.studyPlan;
     LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_studyPlan`, remote.studyPlan);
   }
   const local = initial ? localAccountProgress() : captureAccountProgress() || localAccountProgress();
   const merged = window.AccountProgress.mergeProgress(remote, local);
-  cacheAccountProgress(merged);
+  const changed = key => !window.AccountProgress.equal(local[key], merged[key]);
+  const progressChanged = !window.AccountProgress.equal(local, merged);
+  if (initial || progressChanged) cacheAccountProgress(merged);
   attempted = new Set(merged.attempted);
   essays = merged.essays;
   if (userProfile) userProfile.vocabProgress = merged.vocabProgress;
-  if (!initial) {
-    window.ReadingPractice?.receiveProgress?.(merged.readingProgress, currentUserId);
+  if (!initial && (progressChanged || studyPlanChanged)) {
+    if (changed('readingProgress')) window.ReadingPractice?.receiveProgress?.(merged.readingProgress, currentUserId);
     const editing = document.activeElement?.matches?.('input,textarea,select,[contenteditable="true"]');
     if (!editing) {
-      if (!currentId || !getCurrent()) currentId = essays[0]?.id || null;
-      renderList(); loadCurrent(); renderPreview();
-      if (currentVocabCategory) renderVocabMain();
-      updateVocabProgressSummary();
+      if (changed('essays') || changed('essayLibraryDeleted')) {
+        if (!currentId || !getCurrent()) currentId = essays[0]?.id || null;
+        renderList(); loadCurrent(); renderPreview();
+      }
+      if (changed('vocabProgress')) {
+        if (currentVocabCategory) renderVocabMain();
+        updateVocabProgressSummary();
+      }
       const input = document.getElementById('summaryInput');
-      if (input) { input.value = merged.summaries[swtPassageStorageId()]?.text || ''; onSummaryInput(); }
+      if (input && changed('summaries')) { input.value = merged.summaries[swtPassageStorageId()]?.text || ''; onSummaryInput(); }
       const scratch = document.getElementById('scratchInput');
-      if (scratch) scratch.value = merged.scratch[swtPassageStorageId()]?.text || '';
+      if (scratch && changed('scratch')) scratch.value = merged.scratch[swtPassageStorageId()]?.text || '';
       if (practiceState.view === 'write' && !practiceSubmissionPending && window.AccountProgress.time(merged.essayDraft?.updatedAt) > portalDraftRevision) {
         restorePortalEssayDraft();
         if (document.getElementById('practiceScreen')?.classList.contains('show')) renderPracticeMain();
@@ -1249,6 +1256,7 @@ async function flushSyncDirect(options = {}) {
     if (response.progress && typeof receiveAccountProgress === 'function') receiveAccountProgress({ ...response.progress,
       practiceHistory: response.practiceHistory, practiceHistoryDeleted: response.practiceHistoryDeleted }, false, { partial: true });
     if (Array.isArray(response.practiceHistory)) {
+      const priorHistory = userProfile?.practiceHistory || [], priorDeleted = practiceHistoryDeleted;
       const serverDeleted = Array.isArray(response.practiceHistoryDeleted) ? response.practiceHistoryDeleted : [];
       practiceHistoryDeleted = mergePracticeDeletedClient(serverDeleted, practiceHistoryDeleted);
       const merged = mergePracticeHistoryClient(response.practiceHistory, userProfile?.practiceHistory || [], practiceHistoryDeleted);
@@ -1256,9 +1264,10 @@ async function flushSyncDirect(options = {}) {
         userProfile.practiceHistory = merged;
         userProfile.practiceHistoryDeleted = practiceHistoryDeleted;
       }
-      if (document.getElementById('practiceHistoryList')) renderPracticeHistory();
-      updatePracticeStats();
-      updateDashboard();
+      if (!window.AccountProgress.equal(priorHistory, merged) || !window.AccountProgress.equal(priorDeleted, practiceHistoryDeleted)) {
+        if (document.getElementById('practiceHistoryList')) renderPracticeHistory();
+        updatePracticeStats(); updateDashboard();
+      }
     }
     if (typeof accountCloudSnapshot !== 'undefined') {
       const nextSnapshot = {
@@ -1331,6 +1340,7 @@ async function refreshPracticeHistory(options = {}) {
       const body = await response.json();
       if (!sameSession() || !userProfile || !body.success || !body.data) return false;
       if (typeof receiveAccountProgress === 'function') receiveAccountProgress(body.data);
+      const priorHistory = getPracticeHistory(), priorDeleted = practiceHistoryDeleted;
       const deleted = mergePracticeDeletedClient(body.data.practiceHistoryDeleted || [], practiceHistoryDeleted);
       const merged = mergePracticeHistoryClient(body.data.practiceHistory || [], getPracticeHistory(), deleted);
       practiceHistoryDeleted = deleted;
@@ -1338,7 +1348,9 @@ async function refreshPracticeHistory(options = {}) {
       userProfile.practiceHistory = merged;
       cachePracticeHistory(merged, deleted, uid);
       lastPracticeRefreshAt = Date.now();
-      renderPracticeHistory(); updatePracticeStats(); updateDashboard();
+      if (!window.AccountProgress.equal(priorHistory, merged) || !window.AccountProgress.equal(priorDeleted, deleted)) {
+        renderPracticeHistory(); updatePracticeStats(); updateDashboard();
+      }
       if (!syncQueued && !syncInFlight) setSync('synced', 'Synced across devices');
       return true;
     } catch (error) {
@@ -12314,19 +12326,13 @@ async function initApp() {
   console.log('[IPT] Integrated app initializing...');
   window.FB = window.FB || { adminEmail: 'admin@ptewriting.com' };
 
-  // Fetch server config (admin email override from Railway env var, if set)
-  try {
-    const res = await fetch(API_URL + '/api/config');
+  // Public display configuration does not need to delay authentication.
+  fetch(API_URL + '/api/config').then(async res => {
     if (res.ok) {
       const cfg = await res.json();
-      if (cfg.adminEmail) {
-        window.FB.adminEmail = cfg.adminEmail;
-        console.log('Admin email source: Railway env var');
-      }
+      if (cfg.adminEmail) window.FB.adminEmail = cfg.adminEmail;
     }
-  } catch (e) {
-    console.log('Could not fetch /api/config — using hardcoded admin email');
-  }
+  }).catch(() => console.log('Could not fetch /api/config — using hardcoded admin email'));
 
   // Check for admin impersonation token
   const urlParams = new URLSearchParams(window.location.search);
@@ -12475,7 +12481,10 @@ function ensureReadingRuntimeLoaded() {
       ['reading-review.js?v=20261001-hiw-score2', 'reading review'],
       ['reading-practice.js?v=sha256-017e48e04e61', 'reading practice']
     ];
-    for (const [src, key] of modules) await loadDeferredScript(src, key);
+    // async=false preserves insertion/execution order while the dependency
+    // downloads overlap. Initialise the practice client only after all succeed.
+    await Promise.all(modules.slice(0,-1).map(([src,key])=>loadDeferredScript(src,key)));
+    await loadDeferredScript(...modules.at(-1));
     if (!window.ReadingPractice) throw new Error('Reading practice did not initialise.');
     return window.ReadingPractice;
   })().catch(error => {
@@ -12579,6 +12588,31 @@ function scheduleInterventionRefresh(options = {}) {
 }
 
 let portalCatalogueProgressCache = { uid:'', at:0, value:null };
+let portalWritingAttemptsCache = null;
+async function getPortalWritingAttempts() {
+  const uid=canonicalClientUserId(currentUserId), token=sessionToken;
+  if (!uid || !token) return [];
+  const prior=portalWritingAttemptsCache;
+  if (prior?.uid===uid && prior.token===token) {
+    if (prior.pending) return prior.pending;
+    if (prior.rows && Date.now()-prior.at<10000) return prior.rows;
+  }
+  const cache={uid,token,at:0,rows:null,pending:null};
+  portalWritingAttemptsCache=cache;
+  cache.pending=(async()=>{
+    const response=await fetch(API_URL+'/api/writing-lab/attempts',{
+      cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}
+    });
+    if (!response.ok) throw Error('Saved attempts could not load.');
+    const rows=await response.json();
+    if (uid!==canonicalClientUserId(currentUserId) || token!==sessionToken) throw Error('Account session changed');
+    cache.rows=Array.isArray(rows)?rows:[];
+    cache.at=Date.now();
+    return cache.rows;
+  })();
+  try { return await cache.pending; }
+  finally { cache.pending=null; }
+}
 function practiceLastTime(value) {
   if (value == null) return 0;
   if (Array.isArray(value)) return value.reduce((max,item)=>Math.max(max,practiceLastTime(item)),0);
@@ -12599,74 +12633,94 @@ function setLatestPracticeMeta(target, route, time) {
 async function getPortalCatalogueProgress() {
   const uid=canonicalClientUserId(currentUserId), token=sessionToken;
   if (!uid) return { practice:{}, mocks:{} };
-  if (portalCatalogueProgressCache.uid===uid && Date.now()-portalCatalogueProgressCache.at<10000 && portalCatalogueProgressCache.value) return portalCatalogueProgressCache.value;
-  const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
-  try { setLatestPracticeMeta(result.practice,'swt',practiceLastTime(LocalStore.get(getPteStorageKey('history'))||{})); } catch (_) {}
-  try { setLatestPracticeMeta(result.practice,'practice',practiceLastTime(getPracticeHistory())); } catch (_) {}
-  try {
-    const response=await fetch(API_URL+'/api/speaking/catalog',{cache:'no-store',signal:AbortSignal.timeout(10000)});
-    if(response.ok){
-      const catalog=await response.json();
-      const routeBySpeakingType={ra:'speaking-ra',rs:'speaking-rs',di:'speaking-di',rl:'speaking-rl',sgd:'speaking-sgd',rts:'speaking-rts'};
-      const counts={};
-      for(const question of Array.isArray(catalog?.questions)?catalog.questions:[]){
-        const route=routeBySpeakingType[question?.type];
-        if(!route)continue;
-        counts[route]=(counts[route]||0)+1;
-      }
-      for(const [route,count] of Object.entries(counts)){
-        result.practice[route] ||= {};
-        result.practice[route].count=count;
-      }
-    }
-  } catch (_) {}
-  try {
-    const packed=localAccountProgress(uid)?.readingProgress;
-    const reading=window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
-    const sessions=[reading?.session,...(reading?.drafts||[]),...(reading?.history||[])].filter(Boolean);
-    const routeByType={dropdown:'reading-dropdown',mcma:'reading-mcma',reorder:'reading-reorder',wordbank:'reading-wordbank',mcsa:'reading-mcsa',hcs:'listening-hcs',hiw:'listening-hiw'};
-    for(const session of sessions){
-      const at=Number(session.finishedAt||session.updatedAt||session.startedAt||0);
-      if(session.practiceUid){
-        const type=session.questions?.[0]?.type,route=routeByType[type];
-        if(route)setLatestPracticeMeta(result.practice,route,at);
-      } else if(session.mode){
-        const current=result.mocks[session.mode], done=!!session.done;
-        if(!current || done || current.status!=='Done') result.mocks[session.mode]={status:done?'Done':'In progress',date:at};
-      }
-    }
-  } catch (_) {}
-  if(token){
-    try{
-      const response=await fetch(API_URL+'/api/speaking/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
-      if(response.ok){
-        const rows=await response.json();
+  if (portalCatalogueProgressCache.uid===uid && portalCatalogueProgressCache.token===token) {
+    if (portalCatalogueProgressCache.pending) return portalCatalogueProgressCache.pending;
+    if (Date.now()-portalCatalogueProgressCache.at<10000 && portalCatalogueProgressCache.value) return portalCatalogueProgressCache.value;
+  }
+  const cache={uid,token,at:0,value:null,pending:null};
+  portalCatalogueProgressCache=cache;
+  cache.pending=(async()=>{
+    // These reads are independent. Share the attempts request with the dashboard
+    // and start all three before awaiting any of them.
+    const read=async(path,privateRead=false)=>{
+      const response=await fetch(API_URL+path,{cache:'no-store',signal:AbortSignal.timeout(10000),
+        ...(privateRead?{headers:{'x-session-token':token}}:{})});
+      if (!response.ok) throw Error('Practice progress could not load.');
+      return response.json();
+    };
+    const [catalogRead,speakingRead,writingRead]=await Promise.allSettled([
+      read('/api/speaking/catalog'),
+      token?read('/api/speaking/attempts',true):Promise.resolve([]),
+      token?getPortalWritingAttempts():Promise.resolve([])
+    ]);
+    if (uid!==canonicalClientUserId(currentUserId) || token!==sessionToken) return {practice:{},mocks:{}};
+    const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
+    try { setLatestPracticeMeta(result.practice,'swt',practiceLastTime(LocalStore.get(getPteStorageKey('history'))||{})); } catch (_) {}
+    try { setLatestPracticeMeta(result.practice,'practice',practiceLastTime(getPracticeHistory())); } catch (_) {}
+    try {
+      if(catalogRead.status==='fulfilled'){
+        const catalog=catalogRead.value;
         const routeBySpeakingType={ra:'speaking-ra',rs:'speaking-rs',di:'speaking-di',rl:'speaking-rl',sgd:'speaking-sgd',rts:'speaking-rts'};
-        for(const attempt of Array.isArray(rows)?rows:[]){
-          const route=routeBySpeakingType[attempt?.type];
-          if(route)setLatestPracticeMeta(result.practice,route,practiceLastTime(attempt));
+        const counts={};
+        for(const question of Array.isArray(catalog?.questions)?catalog.questions:[]){
+          const route=routeBySpeakingType[question?.type];
+          if(!route)continue;
+          counts[route]=(counts[route]||0)+1;
+        }
+        for(const [route,count] of Object.entries(counts)){
+          result.practice[route] ||= {};
+          result.practice[route].count=count;
         }
       }
-    }catch(_){}
-    try{
-      const response=await fetch(API_URL+'/api/writing-lab/attempts',{cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}});
-      if(response.ok){
-        const rows=await response.json();
-        for(const attempt of Array.isArray(rows)?rows:[]){
-          const at=Number(attempt.finishedAt||attempt.updatedAt||attempt._updatedAt||attempt.startedAt||0);
-          if(attempt.kind==='sst')setLatestPracticeMeta(result.practice,'spoken-text',at);
-          if(attempt.kind==='wfd')setLatestPracticeMeta(result.practice,'dictation',at);
-          if(['lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(attempt.kind))setLatestPracticeMeta(result.practice,'listening-'+attempt.kind,at);
-          if(attempt.kind==='mock'&&attempt.testId){
-            const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
-            if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
+    } catch (_) {}
+    try {
+      const packed=localAccountProgress(uid)?.readingProgress;
+      const reading=window.AccountProgress?.unpackReading ? window.AccountProgress.unpackReading(packed) : packed;
+      const sessions=[reading?.session,...(reading?.drafts||[]),...(reading?.history||[])].filter(Boolean);
+      const routeByType={dropdown:'reading-dropdown',mcma:'reading-mcma',reorder:'reading-reorder',wordbank:'reading-wordbank',mcsa:'reading-mcsa',hcs:'listening-hcs',hiw:'listening-hiw'};
+      for(const session of sessions){
+        const at=Number(session.finishedAt||session.updatedAt||session.startedAt||0);
+        if(session.practiceUid){
+          const type=session.questions?.[0]?.type,route=routeByType[type];
+          if(route)setLatestPracticeMeta(result.practice,route,at);
+        } else if(session.mode){
+          const current=result.mocks[session.mode], done=!!session.done;
+          if(!current || done || current.status!=='Done') result.mocks[session.mode]={status:done?'Done':'In progress',date:at};
+        }
+      }
+    } catch (_) {}
+    if(token){
+      try{
+        if(speakingRead.status==='fulfilled'){
+          const rows=speakingRead.value;
+          const routeBySpeakingType={ra:'speaking-ra',rs:'speaking-rs',di:'speaking-di',rl:'speaking-rl',sgd:'speaking-sgd',rts:'speaking-rts'};
+          for(const attempt of Array.isArray(rows)?rows:[]){
+            const route=routeBySpeakingType[attempt?.type];
+            if(route)setLatestPracticeMeta(result.practice,route,practiceLastTime(attempt));
           }
         }
-      }
-    }catch(_){}
-  }
-  portalCatalogueProgressCache={uid,at:Date.now(),value:result};
-  return result;
+      }catch(_){}
+      try{
+        if(writingRead.status==='fulfilled'){
+          const rows=writingRead.value;
+          for(const attempt of Array.isArray(rows)?rows:[]){
+            const at=Number(attempt.finishedAt||attempt.updatedAt||attempt._updatedAt||attempt.startedAt||0);
+            if(attempt.kind==='sst')setLatestPracticeMeta(result.practice,'spoken-text',at);
+            if(attempt.kind==='wfd')setLatestPracticeMeta(result.practice,'dictation',at);
+            if(['lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(attempt.kind))setLatestPracticeMeta(result.practice,'listening-'+attempt.kind,at);
+            if(attempt.kind==='mock'&&attempt.testId){
+              const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
+              if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
+            }
+          }
+        }
+      }catch(_){}
+    }
+    cache.at=Date.now();cache.value=result;
+    return result;
+  })();
+  try { return await cache.pending; }
+  finally {cache.pending=null;}
 }
 
 function initialisePortalWorkspace() {
@@ -13016,14 +13070,10 @@ async function refreshWritingPortalResume(localCandidate) {
   const uid = canonicalClientUserId(currentUserId), token = sessionToken, serial = ++portalResumeFetchSerial;
   if (!uid || !token) return;
   let item = null;
-  if (portalResumeCache.uid === uid && Date.now() - portalResumeCache.at < 15000) item = portalResumeCache.item;
+  if (portalResumeCache.uid === uid && portalResumeCache.token === token && Date.now() - portalResumeCache.at < 10000) item = portalResumeCache.item;
   else {
     try {
-      const response = await fetch(API_URL + '/api/writing-lab/attempts', {
-        cache:'no-store', signal:AbortSignal.timeout(12000), headers:{'x-session-token':token}
-      });
-      if (!response.ok) return;
-      const rows = await response.json();
+      const rows = await getPortalWritingAttempts();
       const active = (Array.isArray(rows) ? rows : []).filter(a => ['active','ready'].includes(a.status))
         .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
       if (active) item = {
@@ -13033,7 +13083,7 @@ async function refreshWritingPortalResume(localCandidate) {
         detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
         subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'
       };
-      portalResumeCache = { uid, at:Date.now(), item };
+      portalResumeCache = { uid, token, at:Date.now(), item };
     } catch (_) { return; }
   }
   if (serial !== portalResumeFetchSerial || uid !== canonicalClientUserId(currentUserId) || token !== sessionToken) return;
@@ -13042,6 +13092,7 @@ async function refreshWritingPortalResume(localCandidate) {
 }
 
 function updatePortalResume() {
+  if (document.body?.dataset?.section && document.body.dataset.section !== 'dashboard') return;
   const local = localPortalResumeCandidate();
   applyPortalResumeCandidate(local);
   refreshWritingPortalResume(local);
@@ -13065,6 +13116,8 @@ function resumePortalActivity() {
 
 window.addEventListener?.('pte:attempt-completed', () => {
   portalResumeCache.at = 0;
+  portalWritingAttemptsCache = null;
+  portalCatalogueProgressCache = {uid:'',at:0,value:null};
   if (document.body?.dataset?.section === 'dashboard') {
     updatePortalResume();
     renderTodayPlan();
@@ -13073,6 +13126,7 @@ window.addEventListener?.('pte:attempt-completed', () => {
 
 // Dashboard statistics renderer
 function updateDashboard() {
+  if (document.body?.dataset?.section && document.body.dataset.section !== 'dashboard') return;
   if (!document.getElementById('dashboardPane')) return;
 
   const total = essays.length;

@@ -9,7 +9,18 @@
   const list = value => Array.isArray(value) ? value : [];
   const copy = value => value == null ? value : JSON.parse(JSON.stringify(value));
   const keys = (a, b) => [...new Set([...Object.keys(object(a)), ...Object.keys(object(b))])].filter(k => !['__proto__', 'constructor', 'prototype'].includes(k)).sort();
-  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  // JSONB and browser objects can contain the same fields in different orders.
+  // Comparing their serialization made unchanged records look like edits and
+  // repeatedly uploaded whole essay libraries. Array order remains meaningful.
+  function equal(a, b) {
+    if (a === b) return true;
+    if (a == null || b == null || typeof a !== 'object' || typeof b !== 'object') return false;
+    if (Array.isArray(a) || Array.isArray(b)) return Array.isArray(a) && Array.isArray(b)
+      && a.length === b.length && a.every((value, index) => equal(value, b[index]));
+    const left = Object.keys(a).filter(key => a[key] !== undefined);
+    const right = Object.keys(b).filter(key => b[key] !== undefined);
+    return left.length === right.length && left.every(key => Object.hasOwn(b, key) && equal(a[key], b[key]));
+  }
   function time(value) {
     if (value == null || value === '') return 0;
     const n = Number(value);

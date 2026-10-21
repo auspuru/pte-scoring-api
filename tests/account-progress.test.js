@@ -7,6 +7,32 @@ const P = require('../public/account-progress');
 const essaySync = require('../essay-attempt-sync');
 const bank = require('../public/reading-bank.json');
 const clone = value => JSON.parse(JSON.stringify(value));
+function databaseKeyOrder(value) {
+  if (Array.isArray(value)) return value.map(databaseKeyOrder);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value)
+    .sort((a,b)=>a.length-b.length || a.localeCompare(b)).map(key=>[key,databaseKeyOrder(value[key])]));
+  return value;
+}
+
+test('JSON field order cannot turn unchanged account records into full-library uploads', () => {
+  const profile=P.mergeProgress({}, {essays:Array.from({length:60},(_,i)=>({id:'essay-'+i,title:'Practice '+i,
+    intro:'A saved essay paragraph. '.repeat(70)})),summaries:{1:{text:'A saved summary.',timestamp:100}},
+    scores:{1:{overall_score:80,trait_scores:{content:4,form:1,grammar:2,vocabulary:2}}}});
+  const database=databaseKeyOrder(profile),local=P.mergeProgress(database,{});
+  assert(P.equal(database,local));
+  assert.deepEqual(P.progressDelta(database,local),{});
+  local.essays[20].intro='One actual paragraph edit.';
+  const delta=P.progressDelta(database,local);
+  assert.deepEqual(Object.keys(delta),['essays']);assert.equal(delta.essays.length,1);
+  assert.equal(delta.essays[0].id,'essay-20');
+  assert(Buffer.byteLength(JSON.stringify(delta))<1000);
+});
+
+test('order-independent equality still detects answer order, deletions and changed values', () => {
+  assert(P.equal({score:0,data:{a:1,b:2}},{data:{b:2,a:1},score:0}));
+  for(const [a,b] of [[[1,2],[2,1]],[{text:'a'},{text:'b'}],[{answer:0},{}],[null,undefined],[[],{}]])assert.equal(P.equal(a,b),false);
+  assert(P.equal({optional:undefined},{}));
+});
 const q = { uid: 'test:q1', id: 'q1', type: 'dropdown', passage: 'One _____.', blanks: [['answer']], answers: ['answer'] };
 function session(id = 'mock-a') {
   return { id, mode: 'mock', name: 'Practice mock test 1', questions: [q, { ...q, uid: 'test:q2' }], index: 0,
@@ -336,6 +362,22 @@ function device(store, owner = 'student') {
   const click = dataset => host.onclick({ target: { closest: () => ({ dataset, disabled: false, setAttribute() {} }) } });
   return { ctx, host, values, requests, statuses, timers, errors, click, offline(value) { offline = value; } };
 }
+
+test('unchanged cloud refreshes do not rebuild editors, history or dashboard', async () => {
+  const store=backend(),browser=device(store);
+  await store.setUserData('student',{essays:[{id:'essay',intro:'Saved introduction'}]});
+  await browser.ctx.refreshPracticeHistory({force:true});
+  let redraws=0;
+  for(const name of ['renderList','loadCurrent','renderPreview','updateDashboard','updatePortalResume','renderPracticeHistory','updatePracticeStats'])browser.ctx[name]=()=>redraws++;
+  await browser.ctx.refreshPracticeHistory({force:true});
+  assert.equal(redraws,0);
+  await store.setUserData('student',{summaries:{1:{text:'A newer summary.',timestamp:Date.now()}}});
+  let libraryRedraws=0;
+  for(const name of ['renderList','loadCurrent','renderPreview'])browser.ctx[name]=()=>libraryRedraws++;
+  await browser.ctx.refreshPracticeHistory({force:true});
+  assert.equal(libraryRedraws,0);
+  assert.equal(browser.ctx.localAccountProgress().summaries[1].text,'A newer summary.');
+});
 
 test('Opening reading with no current session still downloads and uploads cloud progress', async () => {
   const store = backend(), browser = device(store);
