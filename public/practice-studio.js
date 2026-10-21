@@ -11,7 +11,7 @@
     if (!group) return '';
     return '<nav class="practice-studio-taskbar" aria-label="'+esc(group.title)+' tasks">'
       + '<button type="button" class="practice-studio-home" data-studio-route="practice-hub" '+(disabled?'disabled':'')+'>← All practice</button>'
-      + '<div class="practice-studio-tasklinks">'+group.tasks.map(task => '<button type="button" data-studio-route="'+esc(task.route)+'" '+(active===task.route?'aria-current="page" ':'')+(disabled?'disabled':'')+'>'+esc(task.label)+'</button>').join('')+'</div></nav>';
+      + '<details class="practice-studio-switcher"><summary>Change task</summary><div class="practice-studio-tasklinks">'+group.tasks.map(task => '<button type="button" data-studio-route="'+esc(task.route)+'" '+(active===task.route?'aria-current="page" ':'')+(disabled?'disabled':'')+'>'+esc(task.label)+'</button>').join('')+'</div></details></nav>';
   }
   function heading(skill, title, description, badge = '') {
     return '<header class="practice-studio-heading"><div><p class="practice-studio-eyebrow">'+esc(skill)+' practice</p><h2>'+esc(title)+'</h2>'+(description?'<p class="practice-studio-description">'+esc(description)+'</p>':'')+'</div>'+(badge?'<span class="practice-studio-badge">'+esc(badge)+'</span>':'')+'</header>';
@@ -29,7 +29,16 @@
     doc.addEventListener?.('click', event => {
       const button = event.target.closest?.('button[data-studio-route]');
       if (!button || button.disabled || !routes.has(button.dataset.studioRoute)) return;
+      const switcher = button.closest?.('.practice-studio-switcher');
+      if (switcher) switcher.open = false;
       env.switchSection?.(button.dataset.studioRoute);
+    });
+    doc.addEventListener?.('keydown', event => {
+      if (event.key !== 'Escape') return;
+      const switcher = event.target.closest?.('.practice-studio-switcher[open]');
+      if (!switcher) return;
+      switcher.open = false;
+      switcher.querySelector?.('summary')?.focus();
     });
   }
   return { navigation, heading, wrap, install };

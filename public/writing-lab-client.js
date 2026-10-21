@@ -27,9 +27,9 @@
   const supportedPractice=()=>attempt?.kind!=='mock'&&attempt?.mode==='practice';
   const beforeDeadline=()=>attempt?.deadline==null||attempt.deadline>Date.now()+offset;
   function bookmarks(){try{return JSON.parse(storage.get('ipt-listening-bookmarks:'+username)||'[]');}catch(_){return [];}}
-  function studioWrap(content,type,mock=false){
+  function studioWrap(content,type,mock=false,library=false){
     if(!studio)return content;
-    return studio.wrap(content,{type,mock,mode:attempt?.mode||listeningMode,items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),activeId:attempt?.testId,search:studioSearch,filter:studioFilter});
+    return studio.wrap(content,{type,mock,library,mode:attempt?.mode||listeningMode,items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),activeId:attempt?.testId,search:studioSearch,filter:studioFilter});
   }
   function setListeningStyle(enabled){if(enabled)shell.classList.add('listening-mode');else shell.classList.remove('listening-mode');}
   function bindStudioLibrary(){
@@ -183,10 +183,10 @@
     } else {
       const dictation=tab==='wfd', questions=questionsFor(tab);
       libraryPage=Math.min(libraryPage,Math.max(0,Math.ceil(questions.length/12)-1));
-      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(studio?.tasks.find(t=>t[0]===tab)?.[2]||(tab==='wfd'?'Write From Dictation':report.labels[tab])||'Listening practice')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':tab==='sst'?'Listen to a short lecture and write a summary of 50–70 words.':studio?.help[tab]||'Listen and answer the question.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
+      content='<div class="section-heading"><div><p class="eyebrow">Listening Practice</p><h2>'+(studio?'Choose a question':(tab==='wfd'?'Write From Dictation':report.labels[tab])||'Listening practice')+'</h2><p class="muted">'+(dictation?'Listen to a sentence and type exactly what you hear.':tab==='sst'?'Listen to a short lecture and write a summary of 50–70 words.':studio?.help[tab]||'Listen and answer the question.')+'</p></div><button class="secondary" data-tab="history">My attempts</button></div>'+auth
         +'<div class="cards">'+questions.slice(libraryPage*12,libraryPage*12+12).map((q,i)=>'<article class="card">'+(q.prediction?'<p class="eyebrow">Prediction</p>':'')+'<h2>Question '+(libraryPage*12+i+1)+'</h2><div class="card-footer"><span class="meta">'+(studio&&listeningMode==='practice'?'Untimed':q.minutes+' minutes')+'</span><button class="primary" data-start="'+esc(q.id)+'">Practise →</button></div></article>').join('')+'</div><nav class="exam-footer" aria-label="Question pages"><button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Back</button><span>'+ (libraryPage+1)+' / '+Math.max(1,Math.ceil(questions.length/12))+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+((libraryPage+1)*12>=questions.length?'disabled':'')+'>Next</button></nav>';
     }
-    root.innerHTML=(studio&&practiceTypes.includes(tab)?studioWrap('<div class="studio-library"><div class="section-heading">'+back+'</div>'+content+(['hcs','hiw'].includes(tab)?'<p class="studio-legacy"><button class="secondary" data-portal="listening-'+tab+'-bank">Open earlier '+tab.toUpperCase()+' question bank</button></p>':'')+'</div>',tab):'<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>');
+    root.innerHTML=(studio&&practiceTypes.includes(tab)?studioWrap('<div class="studio-library">'+content+(['hcs','hiw'].includes(tab)?'<p class="studio-legacy"><button class="secondary" data-portal="listening-'+tab+'-bank">Open earlier '+tab.toUpperCase()+' question bank</button></p>':'')+'</div>',tab,false,true):'<div class="hub"><div class="section-heading">'+back+'</div>'+content+'</div>');
     setListeningStyle(practiceTypes.includes(tab)||(tab==='history'&&practiceTypes.includes(historyKind)));bindStudioLibrary();
     if(tab==='history') {
       const target=document.getElementById('history-list');

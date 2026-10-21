@@ -113,6 +113,10 @@ test('Practice shows task counts and last attempts while routes remain direct', 
   h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'speaking-ra' } }) } });
   h.practice.onclick({ target: { closest: () => ({ dataset: { practiceRoute: 'dictation' } }) } });
   assert.deepEqual(h.navigations, [['speaking-ra'],['dictation']]); assert.equal(h.calls.length, 2); assert.equal(h.starts.length, 0);
+  const skills=[...h.practice.innerHTML.matchAll(/<details\b([^>]*)>([\s\S]*?)<\/details>/g)];
+  assert.equal(skills.length,4);
+  assert(skills.every(([,attributes])=>attributes.includes('name="practice-skill"')&&!/\bopen\b/.test(attributes)));
+  assert.equal((h.practice.innerHTML.match(/data-practice-route=/g)||[]).length,catalogue.groups.flatMap(g=>g.tasks).length);
 });
 
 test('Mock tabs, filtering and launch show labels and timing without content descriptions', async () => {

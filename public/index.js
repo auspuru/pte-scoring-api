@@ -12515,7 +12515,7 @@ function ensureSpeakingRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-b01bdc99b83b', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-f6c0e85c722f', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -13996,6 +13996,7 @@ function writeView() {
         </div>
         <span id="practiceDraftStatus" class="portal-draft-status" role="status" aria-live="polite">Saving draft on this device…</span>
 
+        <details class="practice-optional"><summary>Template wording check</summary>
         <div id="practiceTemplateOverlap" data-level="low" role="status" aria-live="polite" style="margin-top:14px; background:var(--bg-list); border:1px solid var(--line-soft); border-radius:12px; padding:14px 16px;">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
             <div>
@@ -14012,6 +14013,8 @@ function writeView() {
           </div>
           <p id="practiceTemplateOverlapGuidance" style="font-size:12px; line-height:1.5; color:var(--ink-soft); margin:8px 0 0;">Write at least 20 words to check how much wording matches your saved templates.</p>
         </div>
+
+        </details>
 
         <!-- Dynamic Word Count Progress Visualizer -->
         <div class="practice-progress-container" style="margin-top: 20px; background: var(--bg); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--line-soft);">
@@ -14032,6 +14035,7 @@ function writeView() {
           </div>
         </div>
 
+        <details class="practice-optional"><summary>Sample answer options</summary>
         <div class="practice-sample-band" style="margin-top:20px; padding:16px 18px; background:var(--bg-list); border:1px solid var(--line-soft); border-radius:12px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
           <div style="min-width:220px; flex:1;">
             <label for="practiceSampleBand" style="display:block; font-size:13px; font-weight:700; color:var(--ink); margin-bottom:4px;">Desired sample response band</label>
@@ -14041,6 +14045,8 @@ function writeView() {
             ${['6','7','8','9'].map(b => '<option value="' + b + '" ' + (practiceSampleBand(practiceState.sampleBand) === b ? 'selected' : '') + '>Band ' + b + '</option>').join('')}
           </select>
         </div>
+
+        </details>
 
         <div class="simulator-actions" style="margin-top: 28px; border-top: 1px solid var(--line-soft); padding-top: 20px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
           <button class="practice-back-btn" onclick="resetPracticeSetup()" style="border: 1px solid var(--line-soft); color: var(--ink-soft); background: transparent; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);">

@@ -144,14 +144,14 @@
       try { await Promise.all([load(), refreshProgress()]); }
       catch (error) { host.innerHTML = '<p role="alert">' + esc(error.message) + '</p>'; return; }
       const subjectMark = id => ({ speaking:'SP', writing:'WR', reading:'RD', listening:'LS' }[id] || id.slice(0,2).toUpperCase());
-      host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a task. Saved question totals and your most recent attempt are shown when available.</p></div>'
-        + '<div class="practice-banners">' + groups.map(g => '<section class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><div class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3></div><div class="practice-task-list">'
+      host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a skill, then select a task to begin.</p></div>'
+        + '<div class="practice-banners">' + groups.map(g => '<details name="practice-skill" class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><summary class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3><span class="practice-skill-count">' + g.tasks.length + ' tasks</span><span class="practice-skill-toggle" aria-hidden="true">+</span></summary><div class="practice-task-list">'
           + g.tasks.map(t => {
             const meta=progress.practice?.[t.route] || {}, count=practiceCount(t), last=dateLabel(meta.lastAttempt);
             const countLabel = count ? count + ' question' + (count===1?'':'s') : 'Practice available';
             const lastLabel = last ? 'Last attempt ' + esc(last) : 'Not attempted yet';
             return '<button type="button" data-practice-route="' + t.route + '"><span class="practice-task-copy"><strong>' + esc(t.label) + '</strong><small><span class="practice-task-count">' + countLabel + '</span><span class="practice-task-last">' + lastLabel + '</span></small></span><span class="practice-task-arrow" aria-hidden="true">→</span></button>';
-          }).join('') + '</div></section>').join('') + '</div>';
+          }).join('') + '</div></details>').join('') + '</div>';
       host.onclick = e => { const b = e.target.closest('[data-practice-route]'); if (b) navigate(b.dataset.practiceRoute); };
     }
     function renderList() {
