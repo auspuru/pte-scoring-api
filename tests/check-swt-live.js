@@ -62,11 +62,11 @@ const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt
   }
 });
 async function main() {
-  const [passage8, passage9, passage6, passage7] = args.comparison ? []
+  const [passage8, passage9, passage6, passage7] = args.comparison || args.audit ? []
     : await Promise.all([8, 9, 6, 7].map(id => request('/api/passages/' + id)));
   if (args.comparison && args.mode !== 'proxy') throw Error('Comparison fixtures require proxy mode so the exact screenshot passage is assessed.');
   const comparison = args.comparison && require('./fixtures/swt-attempt-comparison.json');
-  const cases = comparison ? comparison.attempts.filter(a => a.status === 'reported').flatMap(a => comparison.passages.map(p => ({
+  const cases = args.audit ? require('./fixtures/swt-audit-regressions.json') : comparison ? comparison.attempts.filter(a => a.status === 'reported').flatMap(a => comparison.passages.map(p => ({
     name: 'Attempt ' + a.attempt + ' ' + p.id, p: { text: p.text, keyElements: {} }, text: a.responses[p.id]
     // Section results are observations, not asserted item scores or a forced ranking.
   }))) : [
@@ -88,6 +88,8 @@ async function main() {
         const data = await request('/api/grade', { type: 'swt', passageId: c.p.id, text: c.text,
           prompt: c.p.text, keyPoints: c.p.keyElements });
         assert.equal(data.score_provisional, false, 'Model assessment must be complete');
+        assert.equal(data.saved, false, 'Calibration must never save student progress');
+        assert.equal(data.scoring_version, POLICY_VERSION, 'The deployed policy must match the tested rubric');
         result = { content: data.trait_scores.content, grammar: data.trait_scores.grammar,
           vocabulary: data.trait_scores.vocabulary, estimate: data.overall_score,
           note: data.content_details?.notes, version: data.scoring_version };
@@ -100,6 +102,9 @@ async function main() {
           synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed };
       }
       console.log(JSON.stringify({ case: c.name, ...result }));
+      if (c.minimum != null) assert(result.content >= c.minimum, 'Accurate main relationships were under-credited');
+      if (c.grammar != null) assert.equal(result.grammar,c.grammar);
+      if (c.forbiddenFeedback) assert(!new RegExp(c.forbiddenFeedback,'i').test(result.note), 'Feedback imported a claim absent from this response');
       if (c.full) {
         assert.equal(result.content, 4); assert.equal(result.grammar, 2); assert.equal(result.vocabulary, 2);
       } else if (c.full === false) assert(result.content <= (c.max ?? 3), 'Incomplete or false meaning must not earn full content');
@@ -109,7 +114,7 @@ async function main() {
       if (assessment) console.error(JSON.stringify({ case: c.name, assessment }));
     }
   }
-  if (args.mode === 'grade') {
+  if (args.mode === 'grade' && !args.audit) {
     for (const p of [passage8, passage9]) {
       const checked = await request('/api/swt/sample/' + p.id, {});
       try { assert.equal(checked.status, 'verified'); }

@@ -1,0 +1,655 @@
+[
+  {
+    "id": 3,
+    "title": "Sustainable Urban Development Strategies",
+    "text": "The transition toward sustainable urban development requires an integrated planning approach that reconciles economic growth imperatives with environmental stewardship and social equity principles (Campbell, 1996; Register, 2006). Firstly, municipal governments must adopt compact city models that prioritize mixed-use zoning and high-density residential configurations, thereby reducing carbon emissions associated with commuter traffic and urban sprawl. Secondly, infrastructure investments should prioritize green building standards and renewable energy grids, ensuring that new construction adheres to passive design principles and net-zero energy consumption benchmarks. Furthermore, participatory governance mechanisms—incorporating community consultations, citizen science initiatives, and collaborative budgeting processes—foster social cohesion while ensuring that development priorities reflect local demographic needs rather than elite interests (Arnstein, 1969). Consequently, metropolitan regions that institutionalize these sustainability pillars not only mitigate their ecological footprint but also cultivate resilient urban ecosystems capable of adapting to climate variability and demographic shifts.",
+    "keyElements": {
+      "how": "Infrastructure investments must prioritize green building standards and renewable energy grids meeting net-zero energy consumption benchmarks",
+      "why": "Compact city models with mixed-use zoning and high-density configurations reduce carbon emissions from commuter traffic and urban sprawl",
+      "what": "Sustainable urban development requires an integrated planning approach reconciling economic growth with environmental stewardship and social equity",
+      "result": "Participatory governance fosters social cohesion and metropolitan regions cultivate resilient urban ecosystems adapting to climate variability"
+    },
+    "sampleResponse": "Sustainable urban development requires an integrated planning approach that reconciles economic growth with environmental stewardship and social equity; firstly, compact city models with mixed-use zoning reduce carbon emissions; moreover, infrastructure investments must prioritize green building standards and net-zero benchmarks; furthermore, participatory governance fosters social cohesion; consequently, metropolitan regions cultivate resilient urban ecosystems capable of adapting to climate variability.",
+    "sampleNotes": "Verbatim Method — passage lines lifted with minimal swaps but glued by 4 connectors (firstly/moreover/furthermore/consequently). ~58 words.",
+    "keyElementsRationale": {
+      "topic": "This passage outlines how cities can grow without exhausting their environment or fracturing their communities. It moves from the central tension (economic growth vs ecological and social cost), through a design response (compact-city models, green buildings), into a process response (participatory governance), and lands on the systems-level outcome (resilient urban ecosystems).",
+      "elements": {
+        "how": "Participatory governance — the process-level response. Without it the summary describes physical changes but not how they happen.",
+        "why": "Compact city models and green building standards — the design-level response. This is the 'what we change' beat.",
+        "what": "The triple constraint — balancing economic growth, environmental stewardship, and social equity — names the actual problem the passage is solving.",
+        "result": "Resilient urban ecosystems at the metropolitan scale — the outcome that justifies the effort. Skipping it leaves the summary mid-argument."
+      },
+      "importance": "Urban planning passages are dense with overlapping concepts — sustainability, equity, density, governance, infrastructure. A summariser who tries to list them all ends over the 75-word cap or under-specified on each. The four key ideas reduce the passage to its argumentative spine: the problem, the design fix, the governance fix, and the systemic payoff. Other phrases (specific technologies, regional examples if any) are evidence, not load-bearing."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 4,
+    "title": "Scientific Research Protocol",
+    "text": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes (Popper, 1959; Kuhn, 1962). Firstly, researchers must formulate precise research questions grounded in comprehensive literature reviews, identifying gaps in existing knowledge frameworks and articulating testable hypotheses with operationalizable variables. Secondly, study designs must incorporate appropriate control groups, randomization techniques, and statistical power calculations to minimize confounding variables and selection biases that could compromise internal validity. Furthermore, data collection procedures should employ standardized instruments with established psychometric properties, ensuring inter-rater reliability and construct validity across diverse populations and contexts (Cronbach, 1951). Consequently, peer review processes—whether double-blind or open—serve as critical mechanisms for methodological transparency, enabling the identification of analytical errors, replication of findings, and progressive refinement of theoretical frameworks. Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice in applied domains.",
+    "keyElements": {
+      "how": "Researchers must formulate precise questions, incorporate control groups and randomization, employ standardized instruments, and submit work to peer review",
+      "why": "Such protocols ground research in testable hypotheses, minimize confounding variables and biases, and enable methodological transparency",
+      "what": "Rigorous scientific inquiry demands systematic adherence to empirical protocols that ensure validity, reliability, and reproducibility of research outcomes",
+      "result": "Investigations adhering to these standards yield credible evidence that advances disciplinary knowledge and informs evidence-based practice"
+    },
+    "sampleResponse": "Rigorous scientific inquiry demands systematic adherence to empirical protocols ensuring valid and reliable outcomes; firstly, researchers must formulate precise questions through comprehensive literature reviews; moreover, study designs require control groups and randomization to minimize confounding variables; furthermore, peer review ensures methodological transparency and bias identification; consequently, investigations adhering to these standards yield credible evidence that advances disciplinary knowledge.",
+    "sampleNotes": "Verbatim Method — academic passage with sequential structure, glued by firstly/moreover/furthermore/consequently. ~58 words.",
+    "keyElementsRationale": {
+      "topic": "The passage is fundamentally about the requirements and architecture of rigorous scientific research. It opens with a thesis statement (the opening sentence) and then elaborates its components across four ordered steps: formulation, study design, data collection, and peer review. The structure is expository and procedural, not argumentative.",
+      "importance": "The opening sentence and the final sentence are load-bearing because they state the central claim and its consequence. The four body paragraphs (beginning 'Firstly…', 'Secondly…', 'Furthermore…', 'Consequently…') are load-bearing because they outline the mechanism by which rigor is achieved. Citations to Popper, Kuhn, and Cronbach are decoration—they lend authority but are not essential to understanding the argument. Specific examples (e.g., 'double-blind or open' peer review) are illustrative detail that supports but does not define the key ideas."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 5,
+    "title": "Farm Cottage",
+    "text": "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea.",
+    "keyElements": {
+      "pivot": "Despite knowing the disadvantages of country living, there were many advantages.",
+      "topic": "The author had abandoned farm life for city work but later chose to return to farm cottage living.",
+      "conclusion": "The author persuaded his wife that exchanging a warm town house for a windswept farm cottage on lower income was worthwhile."
+    },
+    "sampleResponse": "Having grown up on a farm before moving to the city, the author chose to return to a farm cottage because he valued country living despite its practical disadvantages, and he sought to persuade his pregnant, city-raised wife that the benefits justified reduced comfort and income.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens by establishing the author's initial lifestyle choice and his prior familiarity with farm life, setting up the reversal that follows. The specific details about buses and city ambition are illustrative window-dressing for the core claim: he had left farm life and was now returning.",
+      "elements": {
+        "pivot": "This element is essential because it IS the actual argument of the passage—the complication that justifies the choice. The passage explicitly signals it with 'But' and frames it as the reason for persuading his wife. Without acknowledging both the disadvantages AND the counterbalancing advantages, a summary misses the passage's whole point.",
+        "topic": "This element is load-bearing because the entire passage is structured as a reflection on a deliberate lifestyle choice; without knowing he had left farm life for the city, the pivot ('But there were many advantages') makes no sense. It was chosen over the illustrative detail about 'waving at buses,' which merely flavours the idea rather than stating it.",
+        "conclusion": "This element is load-bearing because it shows the real-world outcome: the author did persuade his wife and made the move despite the hardships. The difficulty of the persuasion (her being 'town born and bred and eight months pregnant') is illustrative context; the key idea is that he judged the trade-off worthwhile and acted on it."
+      },
+      "importance": "The load-bearing sentences are those that state the actual argument: why he made the choice (topic), what complications he acknowledged (pivot), and what conclusion he reached (decision to move with family). Vivid examples like 'escaped farm animals' or 'broken-down machinery' merely illustrate the disadvantages already named; they are decoration. The mid-Seventies date, wife's pregnancy status, and description of the town house as 'warm and large' are contextual but not essential to understanding the core argument."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 6,
+    "title": "London Financial Hub",
+    "text": "Who would have thought back in 1698, as they downed their espressos, that the little band of stockbrokers from Jonathan's Coffee House in Change Alley in the City of London would be the founder-members of what would become the world's mighty money capital? Progress was not entirely smooth. The South Sea Bubble burst in 1720 and the coffee house exchanges burned down in 1748. As late as the Big Bang in 1986, when bowler hats were finally hung up, you would never have expected London to surpass New York, Frankfurt and Tokyo as the international money capital. Yet the 325,000 souls who operate in the UK's financial hub have now overtaken their New York rivals in terms of size of the funds managed. They hold 70% of the global secondary bond market and the City dominates foreign exchange trading. For foreigners in finance, London is now the place to be. It has no Sarbanes-Oxley and no euro to hold it back. Yet the fact that it still flies so high is in some ways against the odds. London is one of the most expensive cities in the world to live in and its transport systems groan under the pressure.",
+    "keyElements": {
+      "pivot": "Despite obstacles and expectations that it would not, London has overtaken rival financial centers and now dominates global markets.",
+      "topic": "London's financial sector originated in 17th-century coffee house exchanges and has faced historical setbacks.",
+      "conclusion": "London remains the international financial hub despite being one of the world's most expensive cities with strained infrastructure."
+    },
+    "sampleResponse": "Originating in seventeenth-century coffee-house exchanges, London's financial sector overcame historical setbacks to surpass rival centres and dominate international markets, retaining its position as a global financial hub despite high living costs and an overburdened transport system.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens with historical origin ('back in 1698... Jonathan's Coffee House') and acknowledges early crises ('South Sea Bubble... coffee house exchanges burned down'). These establish the baseline from which the pivot departs. The specific dates and names (1698, 1720, 1748, Jonathan's) are examples supporting the general principle of London's long and troubled history; the key idea is the historical foundation itself.",
+      "elements": {
+        "pivot": "The passage's core claim appears in 'Yet the 325,000 souls... have now overtaken their New York rivals' and 'London is one of the most expensive cities... Yet the fact that it still flies so high is in some ways against the odds.' The pivot IS the contradiction between expected failure and actual dominance. Rejected: treating individual metrics (70% bond market share, foreign exchange leadership) as separate key ideas—these are evidence for the pivot, not the pivot itself.",
+        "topic": "Opening sentences establish London's origins in 17th-century Change Alley and early setbacks (South Sea Bubble, fire). This is load-bearing because it grounds the surprise—without knowing the humble and disrupted past, the pivot loses force. Rejected: treating specific dates/names as key ideas rather than illustrative examples.",
+        "conclusion": "The final sentence names the unresolved tension: London's high standing persists 'in some ways against the odds' because it is expensive and its infrastructure struggles. This is the landing point—not that the problem is solved, but that London succeeds *despite* it. Rejected: treating infrastructure strain as a separate 'problem' key idea; it functions only as the concession that makes the conclusion paradoxical."
+      },
+      "importance": "The passage's entire argument is structured around contradiction: 'Who would have thought... yet' and 'You would never have expected... Yet the 325,000 souls... have now overtaken.' The load-bearing sentences are those that state the unexpected outcome (London's dominance) and the conditions that make it surprising (expense, infrastructure weakness). Statistics (70% of bond market, foreign exchange dominance) and rhetorical questions are decorative illustrations, not structural claims."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 8,
+    "title": "Travel and Tourism Economic Impact",
+    "text": "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
+    "keyElements": {
+      "how": "Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development",
+      "why": "acts as a catalyst for conservation and maintenance of local diversity and culture",
+      "what": "Travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy",
+      "result": "This growth can be expected to continue"
+    },
+    "sampleResponse": "Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.",
+    "sampleNotes": "Paraphrased Method — large→significant, huge→substantial. 3 connectors. ~64 words.",
+    "keyElementsRationale": {
+      "topic": "Tourism contributes to the economy and employment, with social, environmental, cultural and cost advantages.",
+      "importance": "This is primarily an additive passage. Select representative support and connect the benefits clearly; neither every benefit nor a separate growth projection is compulsory.",
+      "elements": {
+        "what": "Identify tourism’s economic and employment contribution.",
+        "why": "Jobs, training, conservation and cultural benefits offer useful support; do not require all examples.",
+        "how": "Low start-up and running costs explain a possible comparative advantage.",
+        "result": "Expected growth is useful context and can be omitted when the retained central message is complete."
+      }
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 9,
+    "title": "Sir Tim Berners-Lee and the World Wide Web",
+    "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+    "keyElements": {
+      "how": "he invented it because he was frustrated that he couldn't find all the information he wanted in one place",
+      "why": "the Web has transformed the way people shop, listen to music, communicate, and access information across politics, literature, and economics",
+      "what": "Sir Tim Berners-Lee invented the World Wide Web",
+      "result": "society will never be the same"
+    },
+    "sampleResponse": "Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.",
+    "sampleNotes": "Hybrid — captures the inventor (What), his frustration (Why), how he built it (How), and societal impact (Result). 3 connectors. ~68 words.",
+    "keyElementsRationale": {
+      "topic": "Berners-Lee invented the Web to address scattered information, and its spread changed access to information and everyday life.",
+      "importance": "Connect the invention, its motivation and its impact. Biographical anecdotes, named historical comparisons and lists of affected activities are optional.",
+      "elements": {
+        "what": "Identify Berners-Lee and the World Wide Web.",
+        "why": "Convey the Web’s broad impact without listing every activity.",
+        "how": "Difficulty finding information in one place motivated the invention.",
+        "result": "Societal change may be clearly implied by broader access and transformed daily life; no fixed concluding phrase is required."
+      }
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 10,
+    "title": "Economic Forecasting Limitations",
+    "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation.",
+    "keyElements": {
+      "pivot": "Economic forecasting is not a precise science; forecasters' assumptions vary widely, leading to conflicting predictions.",
+      "topic": "Economic forecasting is a key function for corporate economists who draw on statistical data.",
+      "conclusion": "The record of economic forecasting is poor, especially for volatile statistics, though more reliable for stable measures."
+    },
+    "sampleResponse": "Corporate economists use statistical data to forecast economic conditions, but widely differing assumptions make their predictions imprecise, resulting in a poor record for volatile measures such as interest rates and greater reliability for stable measures such as government spending.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "This element is load-bearing because it establishes what forecasting is and why it matters to the corporate sector; without it, the reader doesn't know what the passage is defending or attacking.",
+      "importance": "The structure is clearly tpc because the passage uses 'But' to reverse expectations. The topic sentence is load-bearing because a summary would be incomplete without noting that forecasting IS valued in practice. The pivot is load-bearing because it explains WHY that value is problematic: the science lacks precision and assumptions conflict. The conclusion is load-bearing because it delivers the passage's actual claim about forecasting's track record. Specific names (William Sherden, The Fortune Sellers) and the Nobel Prize quip are decoration—they illustrate disagreement but are not themselves the key idea."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 14,
+    "title": "Product Life Cycle",
+    "text": "His product life cycle has 4 very clearly defined stages, each with its characteristics that mean different things for businesses that are trying to manage the life cycle of their particular products.\n\nIntroduction Stage – This stage of the cycle could be the most expensive for a company launching a new product. The size of the market for the product is small, which means sales are low, although they will be increasing. On the other hand, the cost of things like research and development, consumer testing, and the marketing needed to launch the product can be very high.\n\nGrowth Stage – The growth stage is typically characterized by strong growth in sales and profits, and because the company can start to benefit from economies of scale in production, the profit margins, as well as the overall amount of profit, will increase. This makes it possible for businesses to invest more money in promotional activity to maximize the potential of this growth stage.\n\nMaturity Stage – During the maturity stage, the product is established and the aim for the manufacturer is now to maintain the market share they have built up. This is probably the most competitive time for most products and businesses need to invest wisely in any marketing they undertake. They also need to consider any product modifications or improvements to the production process which might give them a competitive advantage.\n\nDecline Stage – Eventually, the market for a product will start to shrink, and this is what's known as the decline stage. This shrinkage could be due to the market becoming saturated, or because the consumers are switching to a different type of product. While this decline may be inevitable, it may still be possible for companies to make some profit by switching to less expensive production methods and cheaper markets.",
+    "keyElements": {
+      "how": "Businesses must respond differently to each stage—investing heavily in launch and R&D during Introduction, maximizing promotional investment during Growth, investing wisely in marketing and product modification during Maturity, and switching to less expensive production methods during Decline.",
+      "why": "Each stage presents distinct business conditions: the Introduction stage is expensive with low sales; the Growth stage brings strong sales and profits with economies of scale; the Maturity stage requires competitive investment to maintain market share; and the Decline stage involves market shrinkage but potential profit through cost reduction.",
+      "what": "The product life cycle has 4 clearly defined stages, each with characteristics that mean different things for businesses managing their products.",
+      "result": "Understanding and managing these four stages allows businesses to adjust their strategies and investment decisions according to where their product stands in its life cycle."
+    },
+    "sampleResponse": "The product life cycle requires businesses to adapt their strategies as products move from costly introduction and low sales through profitable growth to competitive maturity and eventual decline, using appropriate promotion, product improvement and cheaper production methods to maintain market share or profitability.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "elements": {
+        "how": "The passage dedicates a sentence or clause in each stage section to the strategic action businesses should take (invest in R&D, invest in promotion, invest wisely in marketing, switch to cheaper methods). This mechanism shows the practical application of stage identification and is essential to completeness.",
+        "why": "Each stage description is paired with its distinct business implications (expense, profit growth, competitive pressure, shrinkage). These implications are load-bearing because they explain why managers must know the stages—they face fundamentally different conditions. Decorative elements would be if the passage named a particular company or product; it does not.",
+        "what": "This is the opening claim and thesis; without it, a reader would not know the passage is about a 4-stage cyclical model. It was chosen over any single-stage description because the passage explicitly emphasizes that all four stages together comprise the framework.",
+        "result": "The conclusion is implicit but essential: knowing the life cycle stages enables strategic decision-making. Without this, the four stages would be mere descriptions rather than a management tool. The passage's framing—'each with its characteristics that mean different things for businesses'—signals that the result is differential business behavior."
+      },
+      "importance": "The passage is structured as a definitional framework followed by four parallel descriptions of stages. The load-bearing sentences are those that state the stage name, its defining characteristics, and the business response required. Decorative sentences are specific examples of products (none provided), rhetorical flourishes, or transitional connectors. The passage is designed to teach the model itself, not to argue a position or resolve a tension."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 15,
+    "title": "Handwriting Skills",
+    "text": "Handwriting skills have been on the decline in recent years, due to the increasing use of technology. While technology has many benefits, it is important that we do not forget the importance of handwriting. Handwriting is a complex motor skill that requires coordination, dexterity, and fine muscle control. It is also an important cognitive skill, as it helps to develop hand-eye coordination, spatial awareness, and memory. There are many benefits to having good handwriting. It can help students to learn more effectively, as it allows them to take notes, complete assignments, and express their thoughts and ideas in a clear and concise way. Good handwriting can also make a good impression on potential employers and colleagues. However, many students today are not being taught to write by hand as effectively as they once were. In many schools, handwriting instruction has been reduced or eliminated in favor of computer-based learning. This is a mistake. Handwriting is an essential skill that everyone should have. It is important for both academic and professional success. We need to make sure that all students have the opportunity to learn and practice handwriting skills.",
+    "keyElements": {
+      "pivot": "However, many students today are not being taught to write by hand as effectively as they once were, as handwriting instruction has been reduced or eliminated in favor of computer-based learning.",
+      "topic": "Handwriting is a complex motor and cognitive skill with many benefits for learning and professional success.",
+      "conclusion": "Handwriting is an essential skill that everyone should have, and all students need the opportunity to learn and practice it."
+    },
+    "sampleResponse": "Although technology has contributed to declining handwriting instruction, handwriting develops motor and cognitive abilities and supports learning, clear expression and professional success, so schools should ensure that all students have opportunities to learn and practise it.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens by establishing what handwriting is and why it matters: it develops motor control, hand-eye coordination, memory, and aids academic and professional success. This foundational claim anchors everything that follows.",
+      "elements": {
+        "pivot": "The 'however' signals the passage's central tension: despite handwriting's importance, schools are abandoning it in favor of computers. Without this pivot, the reader would not understand why the passage insists handwriting must be protected. This is chosen over decorative statements about technology's 'many benefits.'",
+        "topic": "The opening sentences establish handwriting as a multifaceted skill with cognitive and motor dimensions; this claim is essential because the conclusion rests on defending this skill against technological displacement. It is chosen over the decorative examples of 'taking notes' or 'completing assignments,' which merely illustrate the principle.",
+        "conclusion": "The conclusion delivers the passage's actual position: handwriting is 'essential' and students must have 'the opportunity to learn and practice it.' This is load-bearing because it is the answer to the problem posed by the pivot; without it, the argument would be incomplete. It is distinct from the intermediate claim that 'this is a mistake,' which is already implicit in the pivot."
+      },
+      "importance": "The pivot is the load-bearing turn because it introduces the problem (decline due to tech, reduced instruction in schools) that justifies the conclusion. The specific examples of benefits (taking notes, completing assignments) are illustrations of the general principle and thus decoration. The conclusion restates the imperative based on the pivot's problem."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 17,
+    "title": "Self-Defense Classes",
+    "text": "Self-defense classes offer many benefits for students, including increased safety, confidence, physical fitness, and self-discipline. Self-defense can teach students how to protect themselves from physical and verbal attacks, which can reduce bullying and other forms of violence in schools. It can also help students to feel more confident and empowered, leading to better academic performance and social relationships. Additionally, self-defense classes often involve physical activity, which can help students to improve their overall health and fitness. Finally, self-defense classes can teach students important life skills such as self discipline, respect for others, and conflict resolution. Self-defense classes can benefit students of all ages and backgrounds. For example, a student who is being bullied may learn how to stand up to the bully and defend themselves. A student who is new to the school may learn how to make friends and avoid dangerous situations. A student who is feeling stressed or anxious may learn how to relax and de-escalate conflict. And a student who is being abused at home may learn how to protect themselves and seek help.",
+    "keyElements": {
+      "how": "Self-defense classes involve physical activity and teach students how to stand up to threats, avoid dangerous situations, and de-escalate conflict.",
+      "why": "Self-defense can teach students how to protect themselves from physical and verbal attacks, which can reduce bullying and other forms of violence in schools, and can teach students important life skills such as self discipline, respect for others, and conflict resolution.",
+      "what": "Self-defense classes offer many benefits for students, including increased safety, confidence, physical fitness, and self-discipline.",
+      "result": "Self-defense classes can benefit students of all ages and backgrounds and can lead to better academic performance and social relationships."
+    },
+    "sampleResponse": "Self-defence classes can improve students' safety, confidence, fitness and self-discipline by teaching protection against attacks, conflict resolution and other life skills, potentially reducing bullying and strengthening academic performance and social relationships among students of varied ages and backgrounds.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage is organized expository-style: it opens with a statement of what self-defense classes are and what benefits they confer, then elaborates across three dimensions (protection/safety, life skills, physical health) and closes by affirming their broad value. The four examples at the end (bullied student, new student, stressed student, abused student) are illustrative cases, not load-bearing claims.",
+      "elements": {
+        "how": "The passage describes the working mechanism via two pathways: physical and psychological. The operative clauses are 'involve physical activity' and implicit teaching methods (how to stand up, avoid danger, de-escalate). These must be captured because they explain *how* the benefits claimed in 'what' actually materialize. Removing 'how' leaves the passage ungrounded.",
+        "why": "The passage offers two major reasons: (1) protective function ('teach students how to protect themselves from physical and verbal attacks, which can reduce bullying') and (2) life-skills function ('teach students important life skills such as self discipline, respect for others, and conflict resolution'). These are load-bearing because they explain the mechanism by which benefits arise. The specific examples (bullied student, new student) illustrate these reasons but do not state them and are therefore decoration.",
+        "what": "The opening claim—'Self-defense classes offer many benefits'—is load-bearing because the entire passage is structured as an elaboration and defense of this core assertion. It was chosen over restatements like 'can benefit students of all ages' because it appears first and anchors all subsequent reasoning.",
+        "result": "The passage closes by restating the beneficiaries ('students of all ages and backgrounds') and earlier states that benefits include 'better academic performance and social relationships.' These are load-bearing because they ground the passage's argument in real outcomes. The four example students are NOT key ideas—they are named instances of the general outcomes already stated. A reader who knows 'self-defense benefits all students and improves academic/social outcomes' understands the passage; one who only knows 'a bullied student can stand up to the bully' does not understand the passage's full scope."
+      },
+      "importance": "Load-bearing sentences are those that make a general, repeated, or foundational claim about self-defense classes themselves. The sentence 'Self-defense classes can benefit students of all ages and backgrounds' is load-bearing because it brackets the whole passage; the opening benefits sentence is load-bearing because the entire middle section elaborates it. The four example cases are DECORATION—they illustrate the general benefits already stated, but removing them does not erase the argument. Similarly, specific details like 'help students to feel more confident and empowered, leading to better academic performance' are load-bearing as outcomes, but the named scenario 'a student who is being bullied may learn how to stand up' is not—it is an instance of the general principle already captured in 'reduce bullying.'"
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 19,
+    "title": "Fake News",
+    "text": "Fake news is false or misleading information that is presented as news. It can be spread intentionally or unintentionally, and it can be difficult to distinguish from real news. Social media platforms are particularly vulnerable to the spread of fake news, as they allow users to share information quickly and easily without verification. There are a number of risks associated with the spread of fake news on social media. One risk is that fake news can mislead people and lead them to make bad decisions. For example, fake news about the COVID-19 pandemic has led some people to refuse to get vaccinated or to wear masks, which has increased the spread of the virus. Another risk is that fake news can be used to manipulate people's opinions and beliefs. For example, foreign governments have been known to use fake news to spread propaganda and sow discord in other countries. Fake news can also be used to harm individuals and businesses. For example, fake news articles have been used to defame people and to damage their reputations. Fake news has also been used to promote scams and to sell fraudulent products.",
+    "keyElements": {
+      "how": "Fake news can mislead people, manipulate opinions and beliefs, and be used to harm individuals and businesses",
+      "why": "Social media platforms are particularly vulnerable to the spread of fake news, as they allow users to share information quickly and easily without verification",
+      "what": "Fake news is false or misleading information presented as news that can be spread intentionally or unintentionally",
+      "result": "Fake news has led people to make bad decisions, and been used to defame, promote scams, and sell fraudulent products"
+    },
+    "sampleResponse": "Fake news is false or misleading information presented as news that spreads especially easily through unverified social-media sharing, potentially distorting decisions and beliefs, damaging reputations and enabling propaganda, scams and fraudulent sales.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage defines and categorises fake news as false or misleading information, then systematically explores its spread, mechanisms, and harms. The structure moves from definition through vulnerability through mechanism to concrete consequences.",
+      "elements": {
+        "how": "This element is load-bearing because it describes the three primary mechanisms by which fake news causes harm: misleading decisions, manipulating beliefs, and enabling fraud and defamation. The passage's argument hinges on showing not just that fake news exists, but how it operates to damage. Specific cases (refusal to vaccinate, foreign governments, named individuals) are decoration; the mechanisms are not.",
+        "why": "This element is load-bearing because it identifies the structural vulnerability that makes fake news a problem: social media's speed and lack of verification. Without explaining why fake news spreads so readily, the passage would be merely descriptive. The specific examples that follow (COVID-19, propaganda) illustrate this risk; they are not themselves key ideas.",
+        "what": "This element is load-bearing because any SWT must establish what fake news IS and that its spread can be both intentional and unintentional. Without this, the reader has no object of analysis. The alternative sentence ('It can be difficult to distinguish from real news') is a supporting observation, not the central claim about what the thing is.",
+        "result": "This element is load-bearing because it establishes the concrete consequences that justify the passage's concern. The passage moves from mechanism to outcome; a summary that omits outcome loses the implicit claim that these mechanisms matter because they produce real harms. Examples (COVID-19, foreign discord, reputational damage) are supporting evidence, not the key idea itself."
+      },
+      "importance": "The core claim is that fake news is a widespread, manipulable form of misinformation; the multiple examples (COVID-19, foreign propaganda, defamation, scams) are illustrations of the general principle, not themselves key ideas. A student must capture the definition and the three layers of risk (how it spreads, how it operates, what harm results) to show understanding of the passage's actual argument."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 21,
+    "title": "Academic Research",
+    "text": "One of the many critiques of academic research that one runs across is that a lot of research done by a faculty at universities across America doesn't 'do' anything: it doesn't lead to some new product that can be marketed; it doesn't create jobs; it doesn't have an obvious social value. After all, people argue, do we really need studies that chart the maturation of catfish? Or that explore the nuances of a minor poet? What is all this for?\nAs a consequence of attitudes like these, many people, particularly politicians and business persons, argue that the research function should be stripped from academia, or at least those parts of academia that aren't the major research institutions. Then universities wouldn't need so many faculties, and costs could be contained.\nAcademics like me offer lots of standard objections to this line of thinking: that research keeps one fresh and up-to-date in the discipline; that the faculty often works with students on their research, thus providing students with invaluable training for their future careers and so on.\nAll of this is true, but I want to add a different point: the power of chance.\nIn 1990, I took an appointment at the University of Huntsville. I had a police officer student who invited me for a ride along. I went - ultimately many times. The book that emerged from the research project I established from that first ride was later included on a list of must-read books on public administration by the Government of Canada.\nI have no problem with accountability. But if you had asked me what my purpose was when I took my first ride, and you had demanded to know what use the research could be put to, I would have told you, \"I have no idea\".",
+    "keyElements": {
+      "pivot": "Yet academic research should not be dismissed because of the power of chance—unforeseen discoveries can emerge from inquiry with no predetermined practical outcome.",
+      "topic": "Academic research lacks obvious practical value and politicians/business persons argue it should be stripped from universities to contain costs.",
+      "conclusion": "Accountability is justified, but demanding advance proof of utility would eliminate the serendipitous breakthroughs that justify the research function."
+    },
+    "sampleResponse": "Although critics argue academic research lacks obvious social utility and should be stripped from universities, the author counters that the unpredictable power of chance—serendipitous discoveries with no predetermined application—justifies protecting the research function despite accountability demands.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage opens with a widespread critique: much academic research 'doesn't do anything' and has no obvious social value, leading stakeholders to argue research should be stripped from universities. This is the initial position the author will complicate.",
+      "elements": {
+        "pivot": "This is the hinge of the passage. The author explicitly signals it ('But if you had asked me… I would have told you, I have no idea'). It represents a new principle—the power of unforeseen outcomes—that the author adds BEYOND the standard academic objections. Without this pivot, the reader would miss the passage's actual point.",
+        "topic": "This is the problem statement the author is addressing. It is stated directly in the opening two paragraphs and is load-bearing because the entire passage is constructed as a response to it. Competing claims ('research keeps one fresh') are the author's own standard objections, which he later sets aside—so they are not the core topic.",
+        "conclusion": "The author accepts accountability but rejects the demand for advance utility justification because it would eliminate serendipitous discovery. This is where the argument lands and is load-bearing because it reconciles the tension between the critique and the counter-argument. The specific Huntsville example is decoration; the general principle is what matters."
+      },
+      "importance": "The topic-sentence and the pivot-sentence carry the load of argument. Rhetorical questions ('Do we really need studies that chart the maturation of catfish?'), the author's own objections ('research keeps one fresh'), and the specific anecdote about Huntsville are ILLUSTRATIONS of the competing claims—not themselves key ideas. A reader needs the general claim (no obvious utility) and the counter-claim (chance matters) to grasp the argument; they do not need the catfish example or the police ride-along details."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 22,
+    "title": "Esports",
+    "text": "In recent years, Esports has become increasingly recognized by schools as an educational opportunity rather than just entertainment. Many high schools and colleges now offer Esports programs, training spaces, and official teams, showing that educators understand the growing influence of gaming in society. These programs also allow students who are not interested in traditional sports to participate in group activities and feel included at school.\nParticipating in Esports can help students build confidence, teamwork skills, and a sense of belonging. Team members learn how to communicate under pressure, practice regularly to improve their performance, and support each other just like athletes in physical sports.\nThese experiences are especially valuable for students who might feel shy or disconnected, and success in competitions often motivates them to be more active and focused in their academic life.\nResearch and school reports show that Esports programs can even improve academic outcomes and increase graduation rates. Students involved in Esports are often more willing to attend classes, maintain passing grades, and plan for their future to stay eligible for the team.\nThis suggests that competitive games are not a distraction, but instead a new pathway to help students stay engaged in school and build long-term goals for their careers.",
+    "keyElements": {
+      "how": "Team members learn to communicate under pressure, practice regularly, and support each other; success in competitions motivates students to be more active and focused academically.",
+      "why": "These programs allow students to participate in group activities, build confidence and teamwork skills, and feel included at school, especially those disconnected from traditional sports.",
+      "what": "Esports has become recognized by schools as an educational opportunity, with programs offering training and official teams.",
+      "result": "Esports programs can improve academic outcomes and increase graduation rates"
+    },
+    "sampleResponse": "School esports programmes can foster confidence, teamwork and inclusion, particularly for students disengaged from traditional sports, while participation and eligibility requirements encourage attendance, academic effort and future planning, potentially improving educational outcomes and graduation rates.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage is structured around a central claim: Esports is now educationally valued, not merely entertainment. It then systematically builds support by explaining benefits, mechanisms, and measurable outcomes. The passage does not contradict or reverse its opening position; it substantiates it.",
+      "elements": {
+        "how": "This element explains the actual mechanism by which Esports delivers its benefits—practice, communication, peer support, and motivation—rather than merely stating that benefits exist. It was chosen over decorative details like specific sports or named school types.",
+        "why": "This element captures the core reasons Esports matters: inclusion, skill-building, and belonging. It was chosen over the sentence about 'confidence, teamwork skills, and sense of belonging' alone because the passage emphasizes the special value for disconnected students, making that population the key justification.",
+        "what": "This element is load-bearing because the passage's entire argument rests on the fact that Esports has shifted from entertainment to recognized educational programming. Competing sentences like 'These programs also allow students who are not interested in traditional sports to participate' are illustrations of benefit, not the central claim itself.",
+        "result": "This element captures the measurable, documented outcomes (academic improvement, graduation rates, attendance, career planning) that justify the entire argument. Without it, the summary would lack the passage's evidence-based conclusion that Esports is genuinely consequential, not anecdotal."
+      },
+      "importance": "Load-bearing sentences are those that establish the general educational claim, the broad benefits, the process by which benefits occur, and the documented consequences. Decoration includes the named example of 'high schools and colleges' and the illustration of students 'maintaining passing grades'—these are instances of the general principle, not the principle itself."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 23,
+    "title": "Electric Cars",
+    "text": "Although electric cars were clean, quiet, and simple to operate, the drawback then, as now, was their limited range and long charging time. After 1915, they fell out of vogue as cars powered by internal-combustion engines and fueled with cheap gasoline gained favor.\nAs concerns in recent years have grown about global warming caused by carbon-dioxide emissions, scientists have begun to reconsider electricity as a fuel for vehicles. But today's drivers (U.S. consumers, based on the article's U.S.-centered context) expect a vehicle that is fuel efficient, and a fuel that is readily available in numerous locations and allows instant refueling.\nAlthough electric cars are fairly efficient, they require frequent refueling, and the process is far from instantaneous. They are expensive, too, since normal use causes their US$2,000 lead-acid batteries to wear out in just a few years. And, ironically, electric cars do very little to reduce carbon dioxide emissions, because most U.S. electricity is generated by burning coal and other fossil fuels.\nTo gain U.S. consumer acceptance, the car of the future will need to balance the benefits of electric cars with U.S. consumers' demands for distance and dynamo. The hybrid electric vehicle holds promise as a solution to both these needs.",
+    "keyElements": {
+      "pivot": "Although climate concerns have prompted reconsideration of electricity as a vehicle fuel, electric cars still face insurmountable barriers: limited range, long charging time, high battery costs, and minimal carbon-dioxide reduction due to coal-powered electricity generation.",
+      "topic": "Electric cars were abandoned after 1915 despite being clean, quiet, and simple to operate, because internal-combustion engines with cheap gasoline gained favor.",
+      "conclusion": "Hybrid electric vehicles hold promise as a solution that can balance the benefits of electric cars with consumer demands for distance and instant refueling."
+    },
+    "sampleResponse": "The passage explains that electric cars lost favour despite their operational advantages and attracted renewed interest because of climate concerns, but limited range, slow charging, battery costs and fossil-fuel-generated electricity constrain their appeal, making hybrids a proposed compromise between environmental benefits and drivers' practical demands.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens with electric cars' historical trajectory—their advantages and their displacement by gasoline cars. This establishes the baseline against which the modern reconsideration will be measured. The opening section is foundational to understanding why the pivot matters.",
+      "elements": {
+        "pivot": "This is the critical turn of the entire passage. The pivot names the modern reawakening of interest but immediately complicates it by listing the persistent practical and environmental barriers. Omitting this would leave a reader thinking electric cars had solved their old problems; the pivot shows they have not. The specific statistics ($2,000 batteries, coal percentages) are examples that support this principle but are not themselves essential.",
+        "topic": "This element is load-bearing because it establishes the historical context and explains why electric cars disappeared—without it, the reader cannot understand what 'reconsideration' means or why it is noteworthy. It was chosen over mere mention of electric cars' existence; the passage emphasizes the REASON for their historical rejection.",
+        "conclusion": "This element is load-bearing because it is the passage's resolution and forward-looking claim. It answers the implicit question raised by the pivot: 'So what is the solution?' Without the conclusion, the passage is merely a problem statement. The conclusion names the hybrid vehicle as the answer, making it indispensable to the argument's architecture."
+      },
+      "importance": "The passage's load-bearing structure turns on the word 'Although' (line 3: 'Although electric cars are fairly efficient...'). The specific details about battery cost ($2,000 lead-acid batteries) and coal-generated electricity are ILLUSTRATIONS of the general barriers; they support but are not themselves the key idea. The key is the PRINCIPLE that today's obstacles mirror historical ones. Vivid examples like the battery lifespan or the coal-power irony are decoration that illustrate already-stated general claims."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 24,
+    "title": "Communication Advantage",
+    "text": "Research indicates that effective communication skills significantly enhance professional outcomes across various domains. However, the role of communication is often misconstrued, with many believing that career achievements precede effective communication. Individuals may think, \"Once I secure a leadership role, my communication skills will naturally improve,\" or \"Once I master technical expertise, I'll excel in conveying ideas.\" Yet, as career goals evolve, so do communication challenges, making sustained success elusive. Contrary to this belief, cultivating strong communication skills serves as a catalyst for career advancement. This phenomenon, termed the \"communication advantage,\" underscores that individuals who prioritize clear and persuasive communication navigate challenges more effectively. As an academic researcher and educator with extensive international experience, I have observed first-hand how adept communication fosters collaboration, innovation, and organizational success. Moreover, empirical studies corroborate this view: meta-analyses by communication scholars such as Deborah Tannen and Robert Krauss demonstrate a causal link between effective communication strategies and enhanced professional outcomes. Dispelling another myth, while genetics and environment influence communication styles, individuals can proactively cultivate effective communication habits. By refining interpersonal interactions, embracing diverse perspectives, and managing stress through effective communication, individuals not only enhance their personal satisfaction but also optimize their professional achievements. Understanding the pivotal role of communication in career success empowers individuals to strategically develop and refine their communication skills for sustained professional growth.",
+    "keyElements": {
+      "pivot": "Cultivating strong communication skills serves as a catalyst for career advancement, not the reverse",
+      "topic": "Many believe career achievements precede effective communication skills",
+      "conclusion": "Individuals can proactively cultivate effective communication habits to enhance personal satisfaction and optimize professional achievements"
+    },
+    "sampleResponse": "Although many mistakenly believe career achievements precede communication skills, cultivating strong communication is actually a catalyst for professional advancement; individuals can proactively develop effective communication habits to enhance personal satisfaction and optimize professional success.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "This element captures the initial (false) position that the passage sets up and then dismantles. It is load-bearing because without knowing what misconception is being challenged, the reader cannot grasp the argumentative structure. It was chosen over the merely illustrative examples ('Once I secure a leadership role...') because those are specific scenarios illustrating the general belief, not the belief itself.",
+      "importance": "The pivot—signaled by 'Yet' and 'Contrary to this belief'—is the load-bearing turn. Without it, the passage is just a description of a false belief. The pivot reveals the passage's actual thesis: that the causal chain is reversed. Sentences about the author's personal observation and meta-analyses by named scholars (Deborah Tannen, Robert Krauss) are EVIDENCE for this pivot, not the pivot itself; they illustrate why the reversed claim is true but are not themselves the claim. The key idea must state the corrected position in the passage's own wording."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 25,
+    "title": "Ageing Population",
+    "text": "We live in an ageing world. While this has been recognized for some time in developed countries, it is only recently that this phenomenon has been fully acknowledged. Global communication is \"shrinking\" the world, and global ageing is \"maturing\" it. The increasing presence of older persons in the world is making people of all ages more aware that we live in a diverse and multi-generational society. It is no longer possible to ignore ageing, regardless of whether one views it positively or negatively.\nDemographers note that if current trends in ageing continue as predicted, a demographic revolution, wherein the proportions of the young and the old will undergo a historic crossover, will be felt in just three generations. This portrait of change in the world's population parallels the magnitude of the industrial revolution: traditionally considered the most significant social and economic breakthrough in the history of humankind since the Neolithic period. It marked the beginning of a sustained movement towards modern economic growth in much the same way that globalisation is today marking an unprecedented and sustained movement toward a \"global culture\".\nWhile the future effects are not known, a likely scenario is one where both the challenges as well as the opportunities will emerge from a vessel into which exploration and research, dialogue and debate are poured. Challenges arise as social and economic structures try to adjust to the simultaneous phenomenon of diminishing young cohorts with rising older ones, and opportunities present themselves in the sheer number of older individuals and the vast resources societies stand to gain from their contribution.\nThis ageing of the population permeates all social, economic and cultural spheres. Revolutionary change calls for new, revolutionary thinking, which can position policy formulation and implementation on a sounder footing.",
+    "keyElements": {
+      "how": "Ageing permeates all social, economic and cultural spheres, creating both challenges as social and economic structures adjust and opportunities from the resources older individuals contribute.",
+      "why": "A demographic revolution is predicted wherein the proportions of the young and old will undergo a historic crossover, a change comparable in magnitude to the Industrial Revolution.",
+      "what": "Global ageing is occurring and can no longer be ignored.",
+      "result": "Revolutionary change calls for new, revolutionary thinking to position policy formulation on a sounder footing."
+    },
+    "sampleResponse": "Global ageing, a demographic revolution comparable to the Industrial Revolution, permeates all social and economic spheres, creating both challenges and opportunities; therefore, revolutionary thinking is required to position policy formulation on a sounder footing.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage announces a central phenomenon—global ageing—and establishes that it is now undeniable across all societies. It is structured as a build from observation (what) through evidence of significance (why), mechanism (how), to implication (result).",
+      "elements": {
+        "how": "The passage describes the mechanism by which ageing operates: 'This ageing of the population permeates all social, economic and cultural spheres.' It also explains that challenges and opportunities emerge from the simultaneous diminishing of young cohorts and rising of older ones, and from the resources older individuals contribute. This is chosen over the decorative vessel metaphor because it states the actual structural effect.",
+        "why": "The passage justifies the importance of ageing by invoking demographers' predictions and the magnitude-comparison to the Industrial Revolution. The sentence 'if current trends in ageing continue as predicted, a demographic revolution, wherein the proportions of the young and the old will undergo a historic crossover, will be felt in just three generations' is load-bearing; it explains what makes ageing more than a curiosity—it is a civilizational shift. This is chosen over the mere observation that older persons are 'increasingly present' because it establishes scale and inevitability.",
+        "what": "This element anchors the passage's central concern. It is stated in the opening paragraph: 'It is no longer possible to ignore ageing, regardless of whether one views it positively or negatively.' This is chosen over the merely descriptive statement that 'we live in an ageing world' because it captures the inevitability and universality that the passage emphasizes.",
+        "result": "The final paragraph explicitly states the implication: 'Revolutionary change calls for new, revolutionary thinking, which can position policy formulation and implementation on a sounder footing.' This consequence—that ageing demands a shift in how policy is conceived—is the passage's closing argument and is load-bearing because it moves from diagnosis to prescription."
+      },
+      "importance": "The load-bearing sentences are those that state the general claim, its historical significance, its pervasive operation, and its policy implication. Decoration includes the opening rhetorical flourish about global communication 'shrinking' the world, the vivid image of a 'vessel,' and the illustration of the Industrial Revolution as a parallel. These do not reframe the argument; they illustrate it."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 26,
+    "title": "Art",
+    "text": "Until the middle of the nineteenth-century art had been regarded as a luxury for the rich dilettante; people heard little of it and thought less. There was a popular belief that beautiful things were expensive. There never was a more erroneous idea. The diligent polish in order to secure nice plain surfaces, or the neat fitting of parts together, is infinitely more difficult than adding a florid casting to conceal clumsy workmanship. The mere fact that a piece of work is decorated does not show that it has cost any more in time and execution than if it were plain — frequently many hours have been saved by the device of covering up defects with cheap ornament.\nA craft may easily be practised without art, and still serve its purpose; the alliance of the two is a means of giving pleasure as well as serving utility. People suppose that because the design is artistic, its technical rendering is any the less important, but they are mistaken. Frequently curious articles are palmed off on us and designated as \"Arts and Crafts\" ornaments, in which neither art nor craft plays its full share. Art does not consist only in original, unusual, or unfamiliar designs; the best art is that which produces designs of grace and appropriateness, whether they are strikingly new or not.\nA medieval artist was usually a craftsman as well. He was not content with furnishing designs alone and then handing them over to men whose hands were trained to their execution. He took his own designs and carried them out. The result was a harmony of intention and execution which is often lacking when two men of differing tastes produce one object.",
+    "keyElements": {
+      "pivot": "A craft may be practised without art and still serve its purpose; the alliance of the two gives pleasure as well as serving utility, and the best art produces designs of grace and appropriateness",
+      "topic": "Popular belief that beautiful things were expensive and that decoration indicates higher cost",
+      "conclusion": "A medieval artist was usually a craftsman as well, carrying out his own designs, resulting in harmony of intention and execution often lacking when two men of differing tastes produce one object"
+    },
+    "sampleResponse": "Although people mistakenly believe beautiful ornamentation indicates expense, art and craft are separate disciplines that when allied produce designs of grace and appropriateness; the medieval practice of a single artist both designing and executing work exemplifies the harmony that results from unified intention and execution.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage begins by identifying a widespread false assumption: that expensive ornamentation proves high cost and that beauty is a luxury. This misconception anchors the entire argument and must be stated to understand what the passage is correcting.",
+      "elements": {
+        "pivot": "This is the hinge of the passage. The sentences introducing the true relationship between craft and art—that they are separate things that can be allied for pleasure and utility—complicate the initial premise and redirect the argument toward a redefinition of what art actually is. This pivot is load-bearing because it transitions from false belief to true principle.",
+        "topic": "This opening claim (beauty = expense) is the erroneous idea the entire passage addresses. It must be captured to make the pivot comprehensible; without it, the reader does not know what belief is being corrected.",
+        "conclusion": "The medieval artist example is the culminating evidence for the redefined art principle. However, the key idea is NOT the historical detail ('medieval') but the general principle it instantiates: that unified authorship of design and execution produces harmony. This principle is load-bearing because it shows the practical consequence of the corrected understanding of art and craft."
+      },
+      "importance": "The specific examples of 'florid casting' and 'cheap ornament concealing defects' are illustrations of the false belief, not key ideas themselves. The load-bearing sentences are those that state the general principle—the belief itself—and those that overturn or refine it. Descriptive flourishes and rhetorical questions are decoration."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 27,
+    "title": "Pascolena Florry",
+    "text": "When Namibia gained independence in 1990, teenager Pascolena Florry was herding goats in the country's dry, desolate northern Savannah. Her job, unpaid and dangerous, was to protect her parents' livestock from preying jackals and leopards. She saw wildlife as the enemy, and many of the other indigenous inhabitants of Namibia's rural communal lands shared her view. Wildlife poaching was commonplace.\nFifteen years later, 31-year-old Pascolena's life and outlook are very different. She has built a previously undreamed of career in tourism and is the first black Namibian to be appointed a manager of a guest lodge. Her village and hundreds of others have directly benefited from government efforts to devolve wildlife management and tourism development on communal lands to conservancies run by indigenous peoples. \"Now we see the wildlife as our way of creating jobs and opportunities as the tourism industry grows,\" she says. \"The future is better with wildlife around, not only for jobs but also for the environment\".",
+    "keyElements": {
+      "pivot": "Her village benefited from government efforts to devolve wildlife management and tourism development on communal lands to conservancies run by indigenous peoples.",
+      "topic": "Pascolena herded goats as a teenager and viewed wildlife as the enemy; wildlife poaching was commonplace.",
+      "conclusion": "Pascolena now sees wildlife as a way of creating jobs and opportunities, and the future is better with wildlife around for both jobs and the environment."
+    },
+    "sampleResponse": "When Namibia devolved wildlife management to indigenous-run conservancies, Pascolena Florry's view of wildlife shifted from enemy to economic opportunity, enabling her career in tourism and her belief that the future is better with wildlife for jobs and environment.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage opens by establishing Pascolena's initial circumstance and worldview: she herded goats unpaid and dangerously, and 'saw wildlife as the enemy.' This baseline position is essential to understanding what changed.",
+      "elements": {
+        "pivot": "This is the causal mechanism of change. The passage explicitly attributes Pascolena's transformation to 'government efforts to devolve wildlife management and tourism development on communal lands to conservancies.' This is the hinge; without naming this policy shift, the summary would lose the explanation for her change.",
+        "topic": "This element captures the initial condition without which the reversal has no force. It is stated directly in the passage's opening sentences and is essential to show what Pascolena's starting point was.",
+        "conclusion": "This element states where Pascolena's outlook lands after the pivot. Her direct quote—'Now we see the wildlife as our way of creating jobs and opportunities'—and her reflection on the future are the passage's final claim and must be included to show the full arc of reversal."
+      },
+      "importance": "The load-bearing sentences are those stating her original job and mindset, the government policy shift, and her new perspective. Vivid details like 'jackals and leopards' and 'dry, desolate northern Savannah' are atmospheric illustration, not essential to the argument. Her title as 'first black Namibian manager' is a success marker but not a reason for the shift."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 28,
+    "title": "First Child",
+    "text": "Parents' own birth order can become an issue when dynamics in the family they are raising replicate the family in which they were raised. Agati notes common examples, such as a firstborn parent getting into \"raging battles\" with a firstborn child. Both are used to getting the last word. Each has to be right. But the parent has to be the grown up and step out of that battle, he advises. When youngest children become parents, Agati cautions that because they \"may not have had high expectations placed on them, they, in turn, may not see their kids for their abilities.\" But he also notes that since youngest children tend to be more social, the youngest parents can be helpful to their firstborn, who may have a harder time with social situations. These parents can help their eldest kids loosen up and not be so hard on themselves. Mum Susan Ritz says her own birth order didn't seem to affect her parenting until the youngest of her three children, Julie, was born. Julie was nine years younger than Ritz's oldest, Joshua, mirroring the age difference between Susan and her own older brother. I would see Joshua do to Julie what my brother did to me, she says of the taunting and teasing by a much older sibling.\nI had to try not to always take Julie's side. Biases can surface no matter what your own birth position was, as Lori Silverstone points out. As a middleman myself, I can be harder on my older daughter. I recall my older sister hitting me,\" she says of her reactions to her daughters' tussles.",
+    "keyElements": {
+      "pivot": "However, birth order can also equip parents with strengths, though biases can surface from any birth position.",
+      "topic": "Parents' own birth order can create problematic family dynamics that replicate their family of origin.",
+      "conclusion": "Awareness of these patterns is necessary because parental biases tied to birth order operate across all positions."
+    },
+    "sampleResponse": "Parents' birth order can reproduce familiar family conflicts and biases in their own parenting while also providing useful strengths, so recognising these influences is important for responding fairly to children's needs rather than repeating patterns from childhood.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens with Agati's observation that birth-order dynamics replicate family patterns; the firstborn-versus-firstborn clash and youngest parents' low expectations establish the initial claim that birth order creates problems.",
+      "elements": {
+        "pivot": "This captures the turning point—signaled by 'But' and 'also'—where the passage complicates its initial negative framing by acknowledging that youngest parents can help firstborns socially, and that biases transcend birth order. This pivot prevents the summary from being one-sided.",
+        "topic": "This is load-bearing because the entire passage is organized around the premise that birth order affects parenting. It was chosen over the specific examples (Joshua/Julie, the brother's teasing) because those are illustrative cases, not the general claim.",
+        "conclusion": "This is load-bearing because it is the final claim that unifies the passage: biases operate 'no matter what your own birth position was,' shifting focus from birth order as the sole cause to a broader recognition that all parents carry unconscious biases. It was chosen over the personal anecdotes (Lori Silverstone's sisters) because those are examples supporting the principle, not the principle itself."
+      },
+      "importance": "The vivid examples (Joshua and Julie, Ritz's brother, Silverstone's daughters) are ILLUSTRATIONS of the general principle—not key ideas themselves. The load-bearing sentences are those that state the general dynamic ('parents' own birth order can become an issue', 'may not see their kids for their abilities', 'biases can surface'). Removing an example does not break the argument; removing the general principle does."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 29,
+    "title": "Supply and Demand",
+    "text": "Supply and demand are equated in a free market through the price mechanism. If buyers wish to purchase more of a good than is available at the prevailing price, they will tend to bid the price up. If they wish to purchase less than is available at the prevailing price, suppliers will bid prices down. The price mechanism thus determines what quantities of goods are to be produced. The price mechanism also determines which goods are to be produced, how the goods are to be produced, and who will get the goods—i.e., how the goods will be distributed. Goods so produced and distributed may be consumer items, services, labour, or other salable commodities. In each case, an increase in demand will lead to the price being bid up, which will induce producers to supply more; a decrease in demand will lead to the price being bid down, which will induce producers to supply less. The price system thus provides a simple scale by which competing demands may be weighed by every consumer or producer.\nThe tendency to move toward the equilibrium price is known as the market mechanism, and the resulting balance between supply and demand is called a market equilibrium.\nAs the price of a good rises, the quantity offered usually increases, and the willingness of consumers to buy the good normally declines, but those changes are not necessarily proportional. The measure of the responsiveness of supply and demand to changes in price is called the price elasticity of supply or demand, calculated as the ratio of the percentage change in quantity supplied or demanded to the percentage change in price.",
+    "keyElements": {
+      "why": "The price mechanism determines what quantities of goods are to be produced, which goods are to be produced, how the goods are to be produced, and who will get the goods.",
+      "what": "Supply and demand are equated in a free market through the price mechanism.",
+      "result": "The tendency to move toward the equilibrium price is known as the market mechanism, and the resulting balance between supply and demand is called market equilibrium."
+    },
+    "sampleResponse": "In free markets, the price mechanism equates supply and demand by adjusting prices in response to demand changes, thereby determining production quantities, distribution, and resource allocation until market equilibrium is reached.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage explains a single central mechanism—the price mechanism in free markets—and how it operates across multiple dimensions (production, distribution, elasticity). It does not pivot or reverse course; it deepens and extends the explanation.",
+      "elements": {
+        "how": "The passage must show the dynamic process—how demand changes trigger price changes, which trigger supply changes. The sentences stating 'an increase in demand will lead to the price being bid up, which will induce producers to supply more' carry this causal chain and were chosen over the illustration about consumer items, services, etc., because they state the general mechanism, not examples of goods.",
+        "why": "The passage must explain WHY the price mechanism matters—i.e., what role it plays. The sentence 'The price mechanism thus determines what quantities of goods are to be produced...how the goods will be distributed' captures this load-bearing scope. Without it, a reader would not understand the mechanism's importance to the entire economy.",
+        "what": "The opening claim that supply and demand are 'equated through the price mechanism' is load-bearing because without it, the reader does not know what the passage is fundamentally about. It was chosen over later restatements because it is the earliest and most direct definition.",
+        "result": "The passage concludes by naming the equilibrium concept and the formal term 'market mechanism.' This is load-bearing because it shows the consequence of the dynamic process and provides the formal framework within which the mechanism operates. It was chosen over the elasticity paragraph because elasticity is a secondary measure of *responsiveness*, not the primary outcome."
+      },
+      "importance": "The load-bearing sentences are those that state the mechanism's core function (first paragraph opening), its range of effects (first paragraph second sentence), the dynamic process (first paragraph third and fourth sentences), and the formal outcome (second paragraph). The third paragraph on elasticity is a secondary refinement of the mechanism, not a reversal or essential reframing. Specific illustrations (consumer items, services, labour) and mathematical definitions (ratio of percentage changes) are decoration; the general principle is what matters."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 30,
+    "title": "Human Remains",
+    "text": "Human remains are a fundamental part of the archaeological record, offering unique insights into the lives of individuals and populations in the past. Recently a new set of challenges to the study of human remains has emerged from a rather unexpected direction: the British government revised its interpretation of nineteenth-century burial legislation in a way that would drastically curtail the ability of archaeologists to study human remains of any age excavated in England and Wales. This paper examines these extraordinary events and the legal, political and ethical questions that they raise.\nIn April 2008 the British government announced that, henceforth, all human remains archaeologically excavated in England and Wales should be reburied after a two-year period of scientific analysis. Not only would internationally important prehistoric remains have to be returned to the ground, removing them from public view, but also there would no longer be any possibility of long-term scientific investigation as new techniques and methods emerged and developed in the future. Thus, while faunal remains, potsherds, artifacts and environmental samples could be analyzed and re-analyzed in future years, human remains were to be effectively removed from the curation process. Archaeologists and other scientists were also concerned that this might be the first step towards a policy of reburying all human remains held in museum collections in England and Wales including prehistoric, Roman, Saxon, Viking and Medieval as well as more recent remains.",
+    "keyElements": {
+      "pivot": "The British government announced that all human remains excavated in England and Wales should be reburied after two years of analysis, preventing long-term scientific investigation and removal from museum curation",
+      "topic": "Human remains are fundamental to archaeological study and offer unique insights into past lives",
+      "conclusion": "This policy raises extraordinary legal, political, and ethical questions and risks extending to rebury all human remains in museum collections"
+    },
+    "sampleResponse": "Although human remains are fundamental to archaeological study, the British government's 2008 policy mandating reburial after two years prevents long-term scientific investigation, raising legal and ethical concerns and potentially extending to all museum collections.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage opens by establishing the positive value of human remains to archaeology. This baseline is necessary for the reader to understand why the subsequent government policy is problematic and 'extraordinary.'",
+      "elements": {
+        "pivot": "This element uses the passage's own key terms—'April 2008,' 'reburied after a two-year period,' 'no longer be any possibility of long-term scientific investigation'—to capture the substance of the reversal. The example of 'internationally important prehistoric remains' is trimmed because the general principle (reburial of remains, loss of future analysis) is what matters. This was chosen over any single illustration because the policy's scope and its mechanism (the two-year window, removal from curation) are central to the argument.",
+        "topic": "This sentence captures the initial, uncontested position from the passage's own opening: 'Human remains are a fundamental part of the archaeological record, offering unique insights into the lives of individuals and populations in the past.' It was chosen over the decorative detail that remains 'offer unique insights' because the summary must establish why the reversal matters.",
+        "conclusion": "The passage ends by naming the 'legal, political and ethical questions' raised and warning of possible extension to museum collections. This conclusion is load-bearing because it frames the policy as not merely a single rule but a precedent raising systemic concerns. It was chosen over the intermediate concern about 'faunal remains vs. human remains' because the final move—toward broader reburial—is where the argument settles."
+      },
+      "importance": "The opening sentence and the announcement of the 2008 policy are load-bearing; the specific examples of 'prehistoric remains' and 'faunal remains, potsherds, artifacts' are illustrations of the general principle and not themselves key ideas. The 'extraordinary events' framing signals that the pivot—not the initial premise—is the passage's argument."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 31,
+    "title": "Carbon Neutrality",
+    "text": "Carbon neutrality is a state of net zero carbon dioxide emissions. This can be achieved by ending the use of coal, oil and gas to the extent that there is dramatically reduced emissions of carbon dioxide and removal carbon dioxide from the atmosphere. The term is used in the context of carbon dioxide-releasing processes associated with transport, energy production, agriculture, and industry.\nYou used to think that being green was a luxury for your company, but climate change has made you realise that you can no longer ignore it. The buzz is about becoming carbon-neutral, but where do you start?\nConsider your drivers. Do you want to become carbon-neutral for marketing reasons, for financial reasons, or just to save the planet? Says Mark Armitage of the CarbonNeutral Company: 'Your drivers will help to tailor your carbon-reduction programme and determine key performance indicators.' Build a case for going carbon-neutral.\nMeasure it. First, measure your current carbon footprint — or get a specialist to do it for you. That primarily means taking account of your energy usage and emissions caused through travel. Before you begin, think about whether you're collecting the right data and whether it's readily accessible.\nWhen implementing any energy reduction measures, ensure you engage with your staff. \"It's much better if your people decide for themselves when it's sensible for them to travel.\" Says Armitage. You'll also need them to participate in switching off the lights and other energy-saving measures. Set targets and show it's not a one-off exercise.",
+    "keyElements": {
+      "how": "Implementation requires measuring current carbon footprint, identifying drivers for the programme, engaging staff in energy-saving measures, and setting targets.",
+      "why": "Climate change has made it necessary for companies to pursue carbon neutrality rather than treat it as a luxury.",
+      "what": "Carbon neutrality is a state of net zero carbon dioxide emissions achieved by ending the use of coal, oil and gas and removing carbon dioxide from the atmosphere.",
+      "result": "Following these steps establishes carbon-reduction as an ongoing exercise rather than a one-off initiative."
+    },
+    "sampleResponse": "Carbon neutrality, achieved by ending fossil fuel use and removing atmospheric carbon dioxide, has become a business imperative due to climate change; companies must measure their footprint, engage staff in energy reduction, and establish sustained targets rather than one-off initiatives.",
+    "sampleNotes": "",
+    "keyElementsRationale": {
+      "topic": "The passage opens with a technical definition of carbon neutrality and then pivots to business practice—why and how companies should achieve it. The passage is structured as a how-to guide for corporate carbon-reduction, moving from concept to actionable steps.",
+      "elements": {
+        "how": "The passage outlines a three-step process: measure (carbon footprint), engage (staff in decision-making), and set targets. These are the operational spine of the text; they answer 'where do you start?' and are presented as sequential, concrete actions. This was chosen over the rhetorical scaffolding and named examples.",
+        "why": "The passage explicitly states that 'climate change has made you realise that you can no longer ignore it'—this is the motivational pivot from luxury to necessity. Without this, the urgency and justification for the entire process would be unclear.",
+        "what": "The opening sentence provides the authoritative definition; without it, a reader would not know what carbon neutrality actually means. This was chosen over later contextual remarks because the definition is the anchor for everything that follows.",
+        "result": "The final clause—'Set targets and show it's not a one-off exercise'—signals the intended outcome: a sustained, systematic commitment rather than a one-time gesture. This completes the logical chain and is essential to understanding what the passage is urging companies to achieve."
+      },
+      "importance": "The core argument rests on: (1) what carbon neutrality actually is (the definition), (2) why it has become urgent (climate change as driver), (3) the concrete process for achieving it (measurement, staff engagement, targets), and (4) the mindset shift it requires (from one-off to sustained). The rhetorical questions ('where do you start?'), the quoted attribution to Mark Armitage, and the specific examples of 'switching off the lights' are decorative—they illustrate but do not add to the load-bearing claim. A reader needs the four WWHR elements; they do not need Armitage's name or the light-switching example."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 32,
+    "title": "NSW Police",
+    "text": "Armed police have been brought into NSW schools to reduce crime rates and educate students. The 40 School Liaison Police (SLP) officers have been allocated to public and private high schools across the state.\nOrganisers say the officers, who began work last week, will build positive relationships between police and students. But parent groups warned of potential dangers of armed police working at schools in communities where police relations were already under strain.\nAmong their duties, the SLPs will conduct crime prevention workshops, talking to students about issues including shoplifting, offensive behaviour, graffiti and drugs and alcohol. They can also advise school principals. One SLP, Constable Ben Purvis, began work in the inner Sydney region last week, including at Alexandria Park Community School's senior campus. Previously stationed as a crime prevention officer at The Rocks, he now has 27 schools under his jurisdiction in areas including The Rocks, Redfern and Kings Cross.\nConstable Purvis said the full-time position would see him working on the broader issues of crime prevention. \"I am not a security guard,\" he said. \"I am not there to patrol the school\". We want to improve relationships between police and schoolchildren, to have a positive interaction. We are coming to the school and giving them knowledge to improve their own safety.\" The use of fake ID among older students is among the issues he has already discussed with principals.",
+    "keyElements": {
+      "pivot": "Parent groups warned of potential dangers of armed police working at schools in communities where police relations were already under strain",
+      "topic": "Armed police officers allocated to NSW schools to reduce crime rates and build positive police-student relationships",
+      "conclusion": "SLP officers emphasize they are educators conducting crime prevention workshops and advising principals, not security guards or school patrol enforcers"
+    },
+    "sampleResponse": "Armed School Liaison Police officers were introduced into NSW schools to prevent crime and improve relationships with students, but parent groups expressed concern about their presence in communities with strained police relations, while officers emphasised their educational and advisory role rather than security patrol duties.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "The passage opens by stating what the SLP scheme is and its stated aims: 40 officers in high schools to reduce crime and build relationships. This is the initiating claim.",
+      "elements": {
+        "pivot": "This element is load-bearing because it is the passage's own turn—the 'but' signals it explicitly—and without capturing the parent concern, the summary would miss the tension that makes the passage argumentative.",
+        "topic": "This element is load-bearing because it establishes what the scheme is and why it was created; without it, the pivot has no context.",
+        "conclusion": "This element is load-bearing because Constable Purvis's clarification ('I am not a security guard') and the emphasis on education, prevention, and advisory roles constitute the passage's landing point and implicit answer to the parent concern. It was chosen over the specific example of fake ID, which merely illustrates the educator role."
+      },
+      "importance": "Constable Purvis's quote ('I am not a security guard, I am not there to patrol the school') and the emphasis on crime prevention education and advisory work are load-bearing because they are the passage's own rebuttal to the parent concern. Specific examples like 'fake ID' and named locations (Alexandria Park, The Rocks) are decoration illustrating the officer's work; the general principle that SLPs are educators, not enforcers, is the conclusion."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  },
+  {
+    "id": 33,
+    "title": "Twins",
+    "text": "UCLA neurology professor Paul Thompson and his colleagues scanned the brains of 23 sets of identical twins and 23 sets of fraternal twins. Since identical twins share the same genes while fraternal twins share about half their genes, the researchers were able to compare each group to show that myelin integrity was determined genetically in many parts of the brain that are key for intelligence. These include the parietal lobes, which are responsible for spatial reasoning, visual processing and logic, and the corpus callosum, which pulls together information from both sides of the body. The researchers used a faster version of a type of scanner called a HARDI (high-angular resolution diffusion imaging) think of an MRI machine on steroids that takes scans of the brain at a much higher resolution than a standard MRI. While an MRI scan shows the volume of different tissues in the brain by measuring the amount of water present, HARDI tracks how to water diffuses through the brain's white matter as a way to measure the quality of its myelin. \"HARDI measures water diffusion,\" said Thompson, who is also a member of the UCLA Laboratory of Neuroimaging. If the water diffuses rapidly in a specific direction, it tells us that the brain has very fast connections. If it diffuses more broadly, that's an indication of slower signalling and lower intelligence.",
+    "keyElements": {
+      "how": "HARDI tracks how water diffuses through the brain's white matter as a way to measure the quality of its myelin; rapid diffusion indicates fast connections, while broader diffusion indicates slower signalling",
+      "why": "identical twins share the same genes while fraternal twins share about half their genes, allowing researchers to show genetic determination",
+      "result": "water diffusion patterns reveal the speed of brain connections and correlate with intelligence"
+    },
+    "sampleResponse": "By comparing identical and fraternal twins using HARDI scans, researchers found genetic influences on myelin integrity in brain regions associated with intelligence, with directional water diffusion indicating faster neural connections and more broadly dispersed diffusion indicating slower signalling.",
+    "sampleNotes": "Sample summary: connects the main idea, relevant support and conclusion.",
+    "keyElementsRationale": {
+      "topic": "This passage reports a neuroscience study examining the genetic basis of brain structure and its relationship to intelligence. It is structured as a classic research communication: research question and design → mechanism of measurement → interpretation of findings.",
+      "elements": {
+        "how": "The HARDI mechanism and the water-diffusion measurement are load-bearing because they explain how intelligence-related brain quality is actually measured and interpreted. Without understanding that rapid diffusion = fast connections and broader diffusion = slower signalling, a reader cannot grasp what the scan results mean. This is not decoration; it is the technical foundation of the result.",
+        "why": "The twin-comparison design is the evidentiary backbone: it is the methodological reason readers should believe the genetic claim. This justifies why the researchers chose to scan twins rather than a general population. It answers 'on what basis do they make this claim?'",
+        "what": "This is the central finding—that genetic factors control myelin quality in intelligence-related brain regions. Without this claim, the entire passage loses its purpose. It was chosen over specific region names because the passage's argument is about the genetic determination of myelin, not about cataloging particular lobes.",
+        "result": "The correlation between water-diffusion patterns and intelligence (fast connections = higher intelligence; slow = lower) is the practical implication of the study. It explains what the HARDI measurements actually tell us about cognition. Without this interpretive step, the technique would be orphaned from meaning."
+      },
+      "importance": "The load-bearing sentences are those that state the general claim (genetic determination of myelin), justify the research design (twin comparison), explain the technical method (HARDI and water diffusion), and interpret the results (diffusion patterns predict cognitive speed). Specific examples like 'parietal lobes' and 'corpus callosum' illustrate which brain regions matter but are not themselves the key idea—the general principle (genetically determined regions key for intelligence) is. Thompson's quoted explanation of HARDI is a restatement of the 'how' already present in the preceding sentences, so it is not separately load-bearing."
+    },
+    "editorialReview": {
+      "standard": "swt-preserved-legacy",
+      "automatedValidation": "required",
+      "humanReview": "pending",
+      "note": "Preserved live source snapshot from the 21 October 2026 audit; no length padding or external fact-verification claim."
+    }
+  }
+]

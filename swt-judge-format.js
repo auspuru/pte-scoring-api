@@ -34,7 +34,7 @@ const tool = {
       // A compact wire contract avoids the provider's strict-grammar limit.
       // The server materialises the public synthesis object and exact quote.
       missing_dependencies: { type: 'array', items: { type: 'object', additionalProperties: false, properties: {
-        effect: text, missing_context: text, explanation: text
+        effect: { ...text, description: 'A contiguous exact quote from the STUDENT summary whose meaning genuinely needs missing context. Never quote a claim the student did not make.' }, missing_context: text, explanation: text
       }, required: ['effect', 'missing_context', 'explanation'] } },
       relationship_explanation: { type: 'string', description: 'In 1–2 short sentences explain both the relationships and synthesis. A deduction needs a specific evidenced weakness, not a synonym count.' },
       next_step: text, repair: text

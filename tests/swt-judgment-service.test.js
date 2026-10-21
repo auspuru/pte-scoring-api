@@ -72,7 +72,7 @@ test('A disputed relationship gets an independent review, not an automatic full-
 test('A genuine missing cause confirmed by the review stays below full content', async () => {
   const disputed = good();
   Object.assign(disputed.summary_assessment, { relationships_clear: false,
-    missing_dependencies: [{ effect: 'pollination', missing_context: 'The necessary memory mechanism is missing.' }] });
+    missing_dependencies: [{ effect: 'pollination', missing_context: 'The necessary memory mechanism is missing.', explanation:'Pollination needs its causal mechanism in the selected claim.' }] });
   disputed.content_score = 3;
   let calls = 0;
   const svc = service(async () => { calls++; return disputed; });
@@ -81,6 +81,20 @@ test('A genuine missing cause confirmed by the review stays below full content',
   assert.equal(result.content_score, 3);
   assert.equal(result.grammar_score, 2);
   assert.equal(result.full_content_eligible, false);
+});
+
+test('material meaning disputes use the stronger reviewer without adding a paid call or forcing a score', async () => {
+  const disputed=good();disputed.content_score=2;
+  disputed.summary_assessment.material_meaning_change=true;
+  disputed.summary_assessment.relationships_clear=false;
+  const stages=[];
+  const svc=service(async (prompt,timeout,options)=>{stages.push(options);return disputed;});
+  const result=applyScoringPolicy(await invoke(svc),fixture.summary);
+  assert.equal(stages.length,2);
+  assert.equal(stages[0].semanticReassessment,false);
+  assert.equal(stages[1].semanticReassessment,true);
+  assert.equal(result.content_score,2);
+  assert.equal(result.needs_semantic_review,false);
 });
 
 test('Unavailable second review is provisional and is not cached as a confirmed deduction', async () => {
@@ -281,7 +295,7 @@ test('Indexed citations preserve original whitespace and cannot fabricate or sil
 test('Indexed evidence retains genuine omissions and language deductions rather than forcing full marks',async()=>{
   const deduction=good();deduction.content_score=3;
   deduction.summary_assessment.relationships_clear=false;
-  deduction.summary_assessment.missing_dependencies=[{effect:'pollination',missing_context:'The mechanism is missing.'}];
+  deduction.summary_assessment.missing_dependencies=[{effect:'pollination',missing_context:'The mechanism is missing.',explanation:'The selected effect lacks its necessary mechanism.'}];
   const svc=service(async()=>indexed(deduction));
   const actual=applyScoringPolicy(await invoke(svc),fixture.summary),expected=applyScoringPolicy(deduction,fixture.summary);
   assert.equal(actual.needs_semantic_review,false);assert.equal(actual.content_score,expected.content_score);

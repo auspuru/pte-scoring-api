@@ -53,6 +53,10 @@ function fallbackSample(passage) {
     return { sampleResponse: normalize(seed.sampleResponse), sampleNotes: normalize(seed.sampleNotes) };
   }
 
+  const preserved = require('./content/swt-legacy.json').find(p => Number(p.id) === Number(passage?.id)
+    && normalize(p.title) === normalize(passage?.title) && normalize(p.text) === normalize(passage?.text));
+  if (preserved) return { sampleResponse: preserved.sampleResponse, sampleNotes: preserved.sampleNotes };
+
   // Advanced rows receive dynamic database IDs, so identify them by canonical
   // title + text. Prefer the revised bank when available.
   const revisedAdvanced = advancedRevisions.find(p => normalize(p.title) === normalize(passage?.title)

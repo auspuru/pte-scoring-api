@@ -10,11 +10,13 @@ const { words, validateSwtContent } = require('../scripts/validate-swt-content')
 test('original SWT passages meet the 200–300 standard and screenshot text is kept verbatim', () => {
   const result = validateSwtContent();
   assert.deepEqual(result, {
-    total: 70,
+    total: 114,
     standalone: 34,
     writingLab: 4,
     prediction: 32,
-    minimum: 169,
+    advanced: 20,
+    legacy: 24,
+    minimum: 110,
     maximum: 341
   });
 });
@@ -22,11 +24,14 @@ test('original SWT passages meet the 200–300 standard and screenshot text is k
 test('all published SWT reference samples remain one-sentence answers', () => {
   const all = [
     ...passages.map(p => ({ id: 'standalone-' + p.id, sample: p.sampleResponse })),
+    ...require('../content/swt-legacy.json').map(p => ({id:'legacy-'+p.id,sample:p.sampleResponse})),
+    ...require('../content/swt-advanced.json').map(p => ({id:p.title,sample:p.sampleResponse})),
+    ...require('../content/swt-advanced-revisions.json').map(p => ({id:p.title,sample:p.sampleResponse})),
     ...userSwt.passages.map(p => ({ id: 'user-standalone-' + p.id, sample: p.sampleResponse })),
     ...writing.mocks.flatMap(m => m.questions.filter(q => q.type === 'swt').map(q => ({ id:q.id, sample:q.sample }))),
     ...predictions.swt.map(q => ({ id:q.id, sample:q.sample }))
   ];
-  assert.equal(all.length, 70);
+  assert.equal(all.length, 114);
   for (const row of all) {
     assert(row.sample && words(row.sample) >= 5 && words(row.sample) <= 75, row.id);
   }

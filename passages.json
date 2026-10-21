@@ -3,23 +3,23 @@
     "id": 1,
     "title": "Climate Change Economics",
     "category": "Environment/Economics",
-    "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+    "text": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment.",
     "keyElements": {
-      "what": "Climate change could cause a 10% loss of global GDP by 2050",
-      "why": "Coastal cities face $1 trillion in annual damages and developing nations bear 75% of costs despite contributing less than 10% of emissions",
-      "how": "The renewable energy transition offers hope as solar costs have dropped 89% and wind 70% since 2010",
-      "result": "Scaling the transition requires $4 trillion in annual investment, less than 5% of global military spending"
+      "what": "Climate change threatens substantial economic losses.",
+      "why": "Developing nations bear disproportionately high costs despite low historical emissions.",
+      "how": "Falling renewable-energy costs offer a response.",
+      "result": "Large-scale annual investment is needed for the renewable transition."
     },
-    "sampleResponse": "Climate change could trigger a 10% loss of global GDP by 2050 with coastal cities facing $1 trillion in annual damages; however, developing nations contribute under 10% of emissions yet bear 75% of the costs; moreover, the renewable energy transition offers hope as solar costs have dropped 89%; therefore, $4 trillion of annual investment is required, less than 5% of global military spending.",
-    "sampleNotes": "Captures the cost (What), the inequity (Why), the renewable transition (How), and the investment scale (Result). Uses 3 connectors with semicolons. ~63 words.",
+    "sampleResponse": "Climate change threatens substantial economic losses, with developing nations bearing disproportionate costs despite contributing relatively little to historical emissions, while falling renewable energy costs offer a way to limit the damage, provided sufficient annual investment enables the transition to expand quickly enough.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "keyElementsRationale": {
-      "topic": "This passage is about the economic stakes of climate change — using GDP impact, regional inequity, and the cost of the renewable energy transition as the core argument. It is structured around a central claim (the economic damage), evidence (specific damage figures and emissions inequity), a proposed mechanism (renewables and their falling costs), and the implied call to action (the scale of investment needed).",
-      "importance": "Many sentences in this passage are colour — direct quotes from named experts, rhetorical questions, dramatic phrasing. A summariser must filter past those to the structural backbone. The four key ideas below are the load-bearing claims; everything else (Chen's exact wording, the insurance industry's 340% surge, the Okafor quote about 'justice') is illustration, not argument. Capturing the elaborations instead of the structure produces a long, vivid, but low-scoring summary.",
+      "topic": "Climate change threatens economic output and imposes unequal costs, while renewable energy offers a response requiring substantial investment.",
+      "importance": "Select the main economic risk, useful support and the proposed response. Diagnostic labels guide selection; exact figures, named quotations and every example are not compulsory.",
       "elements": {
-        "what": "The headline economic claim (10% of global GDP by 2050) — without this, the summary has no thesis. Other large figures in the passage (the 25% agricultural drop, the 46% increase in weather events) are downstream consequences, not the central economic claim.",
-        "why": "The inequity figure (developing nations bearing 75% of the cost despite contributing under 10% of emissions) — this is the moral and political weight of the topic. The $1 trillion coastal-damage figure is part of this same 'why' because it grounds the cost claim in concrete impact.",
-        "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) — this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
-        "result": "The $4 trillion annual investment requirement, framed against military spending — this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
+        "what": "Convey the economic threat; the exact GDP percentage and date are optional.",
+        "why": "Explain the unequal burden on developing nations; precise percentages are optional.",
+        "how": "Falling renewable-energy costs support the proposed response.",
+        "result": "Substantial investment is needed for the transition; combine this with the response where natural."
       }
     },
     "editorialReview": {
@@ -39,8 +39,8 @@
       "how": "AI could reduce US healthcare costs by $150 billion annually with humans focusing on complex cases while AI handles routine ones",
       "result": "Patient acceptance has grown to 58% trusting AI-assisted diagnoses, up from 23% five years ago"
     },
-    "sampleResponse": "AI diagnostic tools achieve 94.7% accuracy in detecting early-stage cancers compared to 86.3% for human specialists; however, 23 documented diagnostic errors and concerns over privacy have raised ethical questions; moreover, AI could reduce healthcare costs by $150 billion annually; therefore, patient acceptance has grown from 23% to 58% as humans focus on complex cases while AI handles routine diagnostics.",
-    "sampleNotes": "Accuracy figures (What), ethical concerns (Why), cost savings (How), patient acceptance trend (Result). 3 connectors. ~59 words.",
+    "sampleResponse": "Although AI offers more accurate early cancer detection and potential healthcare savings by handling routine cases alongside human specialists, diagnostic errors, privacy concerns and uncertainty about who benefits require attention, even as patient trust in AI-assisted diagnoses continues to grow.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "keyElementsRationale": {
       "topic": "This passage describes AI's role in medical diagnostics, weighing its accuracy advantage against ethical and adoption concerns. The argument moves from a performance claim (AI vs human accuracy), to scale of adoption, to ethical caveats, to economic implication.",
       "importance": "The passage mixes hard numbers (94.7%, 86.3%, 67%, 23, $150 billion) with cautionary framing. The trap is treating every statistic as equally important. Only four numbers carry the argument: the accuracy comparison (the claim), the adoption rate (the scale), the diagnostic errors (the caveat), and the cost savings (the stake). The rest are texture.",
@@ -116,8 +116,8 @@
       "how": "He told his town-born wife about the many advantages of the farm cottage",
       "result": "He tried to convince his wife that exchanging the town house for a farm cottage on a lower income was a good idea"
     },
-    "sampleResponse": "The author made a lifestyle decision to exchange a city terrace for a farm cottage, and he knew it was a good decision because he had been there in the past; however, he was aware of the minor downsides of country living; moreover, there were several benefits; therefore, he tried to convince his wife that exchanging a warm large town house for a windswept farm cottage on a lower income was a good idea.",
-    "sampleNotes": "Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "sampleResponse": "Having grown up on a farm, the author valued country living despite its inconveniences and sought to persuade his city-raised wife to exchange their comfortable town house for a farm cottage on a lower income, although the unfamiliar difficulties required greater trust from her.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "officialCalibration": {
       "source": "Pearson official mock test supplied by the user",
       "expectedBand": "Band 9",
@@ -141,8 +141,8 @@
       "how": "London became a dominant global financial centre by overtaking rivals, holding 70% of the global secondary bond market or dominating foreign exchange trading",
       "result": "London remains the place to be for foreigners in finance despite being one of the most expensive cities with transport systems groaning under pressure"
     },
-    "sampleResponse": "The little band of stockbrokers from Jonathan's Coffee House in the City of London became the founder-members of the world's mighty money capital; however, the progress was not completely smooth; moreover, the United Kingdom's financial hub has overtaken their New York rivals in terms of funds managed; furthermore, it is one of the most expensive cities in the world to settle in and its transport system groan.",
-    "sampleNotes": "Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "sampleResponse": "Despite historical setbacks and continuing high costs and congestion, London became a leading international financial centre through market growth and regulatory advantages, although sustaining its success requires workers, firms and infrastructure to cope with the pressures it creates.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "officialCalibration": {
       "source": "Pearson official mock test supplied by the user",
       "expectedBand": "Band 9",
@@ -166,8 +166,8 @@
       "how": "The IPCC also concludes Greenland's current rate of melting would add just eight centimetres to sea level rise by century's end",
       "result": "Global warming may actually save lives because rising temperatures reduce deadly cold spells, with fewer people dying from cold than the additional deaths caused by heat"
     },
-    "sampleResponse": "The Nobel peace prize rewards IPCC scientists for careful climate research grounded in study; however, Al Gore predicts five-metre sea-level rises while the IPCC concludes only twelve to fifty centimetres; moreover, Greenland's melting would add just eight centimetres by century's end; therefore, although heat will claim 400,000 more lives by 2050, 1.8 million fewer will die from cold, meaning global warming actually saves lives.",
-    "sampleNotes": "Hybrid — captures the prize/contrast (What), the figures (Why/How), and the surprising lives-saved conclusion (Result). 3 connectors. ~64 words. Polished teaching sample; see officialCalibration for the exact Pearson-scored response.",
+    "sampleResponse": "The passage contrasts the IPCC's carefully researched climate projections with Al Gore's more alarming claims about sea levels and Greenland's melting, and argues that fewer deaths from cold could outweigh additional heat-related deaths, supporting its conclusion that warming could produce a net reduction in mortality.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "officialCalibration": {
       "source": "Pearson official mock test supplied by the user",
       "expectedBand": "Band 9",
@@ -235,8 +235,8 @@
       "how": "Differences in beliefs are so enormous that two economists can get a Nobel Prize for saying exactly the opposite thing",
       "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
     },
-    "sampleResponse": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
-    "sampleNotes": "Verbatim Method — passage lines lifted with minor swaps (win→earn) and 3 connectors creating logical flow. ~73 words.",
+    "sampleResponse": "Corporate economists use statistical data to forecast economic conditions, but widely differing assumptions make their predictions imprecise, resulting in a poor record for volatile measures such as interest rates and greater reliability for stable measures such as government spending.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
@@ -254,8 +254,8 @@
       "how": "News of Lilienthal's death in 1896 sparked their serious interest in flight, leading them to exhaust the local library and contact the Smithsonian",
       "result": "They corresponded with Octave Chanute, a civil engineer and aviation authority who supported them through the critical years 1900 to 1905"
     },
-    "sampleResponse": "The Wright brothers opened a bicycle shop in 1892 and began building bicycles in 1896; however, profits from this business funded their aeronautical experiments from 1899 to 1905; moreover, news of Lilienthal's death in 1896 sparked their serious interest in flight; therefore, they corresponded with Octave Chanute, an aviation authority who supported them through the critical years from 1900 to 1905.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 61 words.",
+    "sampleResponse": "The Wright brothers' bicycle and printing businesses financed their aviation experiments, while building lightweight precision machines provided relevant engineering experience, and their growing interest in flight led them to pursue aeronautical knowledge through reading, the Smithsonian Institution and support from Octave Chanute.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
@@ -266,15 +266,15 @@
     "id": 12,
     "title": "The New Woman",
     "category": "Social/History",
-    "text": "The concept of the \"New Woman\" emerged in Britain and North America during a time of social and cultural transformation. This idea was notably advanced by a writer named Sarah, who authored a book that sparked significant debate among commentators. Her work explored the shifting roles and expectations of middle-class women, focusing on key areas such as financial independence, employment opportunities, and the nature of marriage. Sarah's arguments emphasized the need to protect and uplift women's status in society, highlighting the challenges they faced in a male-dominated structure.\n\nAlthough her ideas received mixed responses, with some embracing the push for gender equality while others criticized or resisted the change, the impact of her book was undeniable. It contributed to broader discussions about women's rights, autonomy, and social roles. Sarah's advocacy was part of a larger movement that sought to redefine the place of women not only in the domestic sphere but also in public and professional life.\n\nDespite the resistance and the fact that her vision wasn't fully at the time, the notion of the \"New Woman\" left a lasting impression and has since been commemorated as an important milestone in the history of women's movements. It represented a growing awareness of gender inequality and laid the groundwork for future reforms and feminist thought.",
+    "text": "The concept of the \"New Woman\" emerged in Britain and North America during a time of social and cultural transformation. This idea was notably advanced by a writer named Sarah, who authored a book that sparked significant debate among commentators. Her work explored the shifting roles and expectations of middle-class women, focusing on key areas such as financial independence, employment opportunities, and the nature of marriage. Sarah's arguments emphasized the need to protect and uplift women's status in society, highlighting the challenges they faced in a male-dominated structure.\n\nAlthough her ideas received mixed responses, with some embracing the push for gender equality while others criticized or resisted the change, the impact of her book was undeniable. It contributed to broader discussions about women's rights, autonomy, and social roles. Sarah's advocacy was part of a larger movement that sought to redefine the place of women not only in the domestic sphere but also in public and professional life.\n\nDespite the resistance and the fact that her vision wasn't fully realised at the time, the notion of the \"New Woman\" left a lasting impression and has since been commemorated as an important milestone in the history of women's movements. It represented a growing awareness of gender inequality and laid the groundwork for future reforms and feminist thought.",
     "keyElements": {
       "what": "The concept of the New Woman emerged in Britain and North America during a period of social and cultural transformation, advanced by a writer named Sarah",
       "why": "Her book emphasized the need to protect and uplift women's status in a male-dominated society, focusing on financial independence, employment, and marriage",
       "how": "Although her ideas received mixed responses, her advocacy contributed to broader discussions about women's rights and autonomy as part of a larger movement",
       "result": "The notion left a lasting impression and has been commemorated as an important milestone that laid the groundwork for future reforms and feminist thought"
     },
-    "sampleResponse": "The concept of the New Woman emerged in Britain and North America, advanced by a writer named Sarah; however, her book emphasized the need to uplift women's status in a male-dominated society; moreover, although her ideas received mixed responses, her advocacy contributed to broader discussions about women's rights; therefore, the notion has been commemorated as a milestone that laid the groundwork for future feminist thought.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 65 words.",
+    "sampleResponse": "Emerging in Britain and North America, the New Woman concept challenged women's restricted financial, professional and marital roles through Sarah's writing, and although her proposals met resistance and were not fully realised, they influenced debate and laid foundations for later reforms and feminist thought.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
@@ -368,8 +368,8 @@
       "how": "Classes involve physical activity that improves overall health and fitness, while also teaching important life skills such as respect for others and conflict resolution",
       "result": "Classes can benefit students of all ages and backgrounds, from those being bullied to those feeling stressed or being abused at home"
     },
-    "sampleResponse": "Self-defense classes offer many benefits for students, including increased safety, confidence, fitness, and self-discipline; however, they teach students how to protect themselves from attacks, which can reduce bullying in schools; moreover, classes involve physical activity that improves health and teach life skills like respect and conflict resolution; therefore, they can benefit students of all ages, from those being bullied to those feeling stressed or abused at home.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 67 words.",
+    "sampleResponse": "Self-defence classes can improve students’ safety, confidence, fitness and social skills through protection and conflict resolution, but effective programmes also require awareness, de-escalation, qualified instruction and safeguarding rather than relying on physical techniques alone.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
@@ -387,8 +387,8 @@
       "how": "Residents meet their own basic needs such as generating electricity and water, growing food, and maintaining the home, which builds valuable self-sufficiency skills",
       "result": "Although off-grid living requires careful planning and preparation, the benefits in health, cost savings, and freedom to live and work as one chooses can be significant"
     },
-    "sampleResponse": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, and greater freedom; however, off-grid homes produce their own energy and water, reducing reliance on fossil fuels and lowering carbon footprint; moreover, residents meet their own basic needs such as generating electricity, growing food, and maintaining the home, which builds valuable self-sufficiency skills; therefore, although off-grid living requires careful planning, the benefits can be significant.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 68 words.",
+    "sampleResponse": "Although living off-grid requires careful planning and preparation, producing essential resources and meeting one's own needs can reduce environmental impact and living costs, develop self-reliance, improve health and provide greater freedom from public infrastructure.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
@@ -406,8 +406,8 @@
       "how": "Fake news can mislead people into making bad decisions, such as refusing COVID-19 vaccinations, and can be used by foreign governments to spread propaganda",
       "result": "Fake news can also harm individuals and businesses by defaming people, damaging reputations, and promoting scams or fraudulent products"
     },
-    "sampleResponse": "Fake news is false or misleading information presented as news, which can be spread intentionally or unintentionally; however, social media platforms are particularly vulnerable because they allow users to share information without verification; moreover, fake news can mislead people into bad decisions such as refusing COVID-19 vaccinations and can be used by foreign governments to spread propaganda; therefore, it also harms individuals and businesses by defaming people, damaging reputations, and promoting scams.",
-    "sampleNotes": "Captures all four key ideas (W·W·H·R) with 3 formal connectors. 72 words.",
+    "sampleResponse": "Fake news spreads easily through unverified social-media sharing and can distort decisions, manipulate beliefs, damage reputations and enable fraud, so reducing these harms requires routine source and evidence checks supported by clearer provenance, corrections and media literacy.",
+    "sampleNotes": "Reference answer aligned with this source version; relevant, connected ideas and useful phrase changes matter, with no full-paraphrase requirement.",
     "editorialReview": {
       "standard": "swt-200-300",
       "automatedValidation": "required",
