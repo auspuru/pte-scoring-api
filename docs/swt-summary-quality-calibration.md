@@ -19,19 +19,19 @@ The exact prepared responses, passages, controls and reports are retained in `te
 
 ## Scoring behavior
 
-- Effective selection and meaningful phrase/clause reformulation can meet the full Content gate when the main message, support and necessary relationships are also accurate.
-- Connected excerpts with inefficient reformulation are strong partial Content, capped at 3/4. Effortful, poorly selected excerpts with limited synthesis are capped at 2/4. A source phrase or repeated connector alone does not trigger either cap.
-- Small useful changes are enough when they genuinely condense or recast the ideas. Technical terminology can stay. Isolated synonym substitutions do not earn an automatic bonus.
-- The grader must show its reasoning: an exact source span, a student span, and the kind of reformulation. An unchanged quote or punctuation-only difference cannot certify effective reformulation. Invalid proof requires reassessment, not a confirmed deduction.
-- Source and student quotations are constructed from separate numbered word data. This avoids fabricated, joined or reordered source quotations.
+- As requested on 21 October 2026, policy 20.3.12 prioritises relevant ideas and clear connections. Useful phrase or clause changes can strengthen a response and are sufficient when the other full-Content conditions are met. The engine does not assess whether the summary is completely paraphrased.
+- There is no mandatory transformation operation, paired source quotation, clause-by-clause rewrite audit or overlap percentage. Accurate source wording may remain in a full-Content response. No operation label automatically increases or caps the score.
+- A genuinely partial assessment remains capped at 3/4, and limited synthesis at 2/4, but the explanation must identify an actual omission, vague connection, repetition, unnecessary detail or poorly selected excerpt. Retaining source wording alone is not a deduction.
+- Technical terminology can stay. Isolated synonym substitutions do not earn an automatic bonus or repair missing meaning.
+- The grader shows its reasoning using exact student spans. Invalid student evidence requires reassessment, not a confirmed deduction. Legacy optional source quotations remain checked for accuracy when supplied, but are not required to prove paraphrasing.
 - Standalone SWT, reference verification and Writing Lab share the guidance and caps. Historical assessments remain unchanged; the new policy version invalidates assessment caches.
 - Feedback gives one manageable next action. Synthesis concerns affect Content; they do not automatically reduce Grammar or Vocabulary. Existing meaning-error, off-topic and Form checks remain in force.
 
-The strict provider schema uses a compact list of captured diagnostic labels, materialised back to the existing public per-idea map. This leaves room for the new evidence fields within the provider's grammar limit. Diagnostic labels do not determine Content. The normal assessment still uses two independent model calls. A contradictory reformulation review uses its existing retry with the stronger reassessment model; it does not add a new retry or change the shared deadline.
+The strict provider schema uses a compact list of captured diagnostic labels, materialised back to the existing public per-idea map. Diagnostic labels do not determine Content. The source transformation span and operation fields have been removed from the provider contract. The normal assessment still uses two independent model calls. An invalid review uses its existing bounded retry; no new retry or longer shared deadline is introduced.
 
 ## Verification
 
-Contract tests cover effective/partial/limited caps, exact quotations, false full-score proof, retained technical terms, five synonyms without an automatic upgrade, invalid assessments not being cached, Writing Lab consistency, and the unchanged attempt-6 result. These tests verify policy behavior, not semantic model accuracy.
+Contract tests cover effective/partial/limited judgments, full Content without transformation proof, exact student citations, retained technical terms, five synonyms without an automatic upgrade, invented optional quotations, invalid assessments not being cached, Writing Lab consistency, and the unchanged attempt-6 result. These tests verify policy behavior, not semantic model accuracy.
 
 Opt-in paid checks use the exact passage/response fixtures without account progress writes:
 
