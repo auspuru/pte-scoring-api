@@ -202,7 +202,7 @@ test('New feedback caches deduplicate concurrent calls, isolate policy/revision 
 
 test('Failed feedback formatting retries only the affected stage and never fabricates a successful score',async()=>{
  let count=0;const grader=createEssayGrader(async()=>{count++;return {...raw(),feedbackIssues:undefined};});
- await assert.rejects(grader.grade(question,essay,'9',{feedbackV3:true,includeSample:false}),{code:'feedback_contract'});assert.equal(count,2);
+ await assert.rejects(grader.grade(question,essay,'9',{feedbackV3:true,includeSample:false}),{code:'feedback_contract'});assert.equal(count,4); // Both independent readers fail, with at most two attempts each.
 });
 
 test('New tool schemas carry grouped ids, issues and revision decisions, with numbered-word citations',()=>{
@@ -259,7 +259,7 @@ test('Only malformed feedback is repaired; a repair cannot change scores or cove
   if(o.stage==='feedback-repair')return {...reviewFrom(raw()),scores:{content:0,linguistic:0,coherence:0},promptCoverage:[],feedbackIssues:[],revisionDecisions:[]};
   return reviewFrom(raw());
  },{feedbackV3:true});
- assert.deepEqual(stages,['assessment','feedback-repair','subjective-review']);assert.equal(assessment.scores.content,6);assert.equal(assessment.promptCoverage.length,F.requirements(question).length);
+ assert.deepEqual(stages,['assessment','subjective-review','feedback-repair']);assert.equal(assessment.scores.content,6);assert.equal(assessment.promptCoverage.length,F.requirements(question).length);
  assert.equal(format.toolFor('feedback-repair',{feedbackV3:true}).strict,true);
 });
 
@@ -337,7 +337,7 @@ test('An exhausted semantic assessment suppresses immediate duplicate paid retri
  inconsistent.promptCoverage[0]={...inconsistent.promptCoverage[0],status:'partial',nextStep:'Explain the reason.'};
  let calls=0;const grader=createEssayGrader(async()=>{calls++;return inconsistent;});
  for(let i=0;i<2;i++)await assert.rejects(grader.grade(question,essay,'9',{feedbackV3:true,includeSample:false}),{code:'feedback_contract',retryable:false});
- assert.equal(calls,2);
+ assert.equal(calls,4); // Two bounded attempts in each parallel reader; the duplicate submission adds none.
 });
 
 test('Omitted revision decisions receive feedback-only repair with exact previous IDs and unchanged scores',async()=>{
@@ -349,7 +349,7 @@ test('Omitted revision decisions receive feedback-only repair with exact previou
   }
   return o.stage==='assessment'?raw():reviewFrom(raw());
  },{feedbackV3:true,revisionContext:{issues:[prior]}});
- assert.deepEqual(stages,['assessment','feedback-repair','subjective-review','feedback-repair']);
+ assert.deepEqual(stages,['assessment','subjective-review','feedback-repair','feedback-repair']);
  assert.equal(assessment.scores.content,6);assert.equal(assessment.revisionDecisions[0].status,'resolved');
  const a=raw();a.revisionDecisions=[{priorIssueId:'shortened-id'}];
  assert.throws(()=>F.normalize(a,essay,question,a.scores,{previous:{issues:[prior]}}),{code:'feedback_contract'});
@@ -374,7 +374,7 @@ for (const stage of ['assessment','subjective-review','subjective-resolver']) {
     }
     return o.stage==='assessment'?a:reviewFrom(a);
    },{feedbackV3:true});
-   const expected=stage==='assessment'?['assessment','assessment','subjective-review']:
+   const expected=stage==='assessment'?['assessment','subjective-review','assessment']:
     stage==='subjective-review'?['assessment','subjective-review','subjective-review']:
     ['assessment','subjective-review','subjective-resolver','subjective-resolver'];
    assert.deepEqual(stages,expected);
@@ -399,7 +399,7 @@ test('Persistently omitted coverage fails closed after two assessments and never
  await assert.rejects(assessEssay(question,essay,async(_p,o)=>{
   stages.push(o.stage);const a=raw();a.promptCoverage.pop();return a;
  },{feedbackV3:true}),{code:'feedback_contract',feedbackSemanticConflict:true});
- assert.deepEqual(stages,['assessment','assessment']);
+ assert.deepEqual(stages,['assessment','subjective-review','assessment','subjective-review']);
 });
 
 for(const stage of ['assessment','subjective-review','subjective-resolver'])test(`${stage} retry identifies the rejected full-Content and partial-coverage contradiction`,async()=>{

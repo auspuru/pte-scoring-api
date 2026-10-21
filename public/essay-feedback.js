@@ -86,15 +86,17 @@ For revisionDecisions, assess current text independently first; previous issues 
     return '\n\n' + GUIDANCE + '\nCanonical requirements (exact prompt data): ' + JSON.stringify(requirements(question)) +
       '\nPrevious issues for revision comparison only (no previous scores): ' + JSON.stringify(previous?.issues || []);
   }
-  function enrichPrompt(prompt, question) {
+  function enrichPrompt(prompt, question, {independentReview=false} = {}) {
     // Keep the prose's output example in sync with the forced tool schema.
     // Otherwise models follow the earlier legacy example and omit new fields.
     return prompt.replace(/(\nReturn[^\n]*:\n)(\{[\s\S]*?\n\})/, (all,lead,json)=>{
       try {
         const schema=JSON.parse(json.replace(/,\s*}/g,'}'));
         schema.feedbackIssues=[];schema.revisionDecisions=[];
-        schema.strengths=schema.strengths || ['specific strength'];
-        schema.overallVerdict=schema.overallVerdict || 'brief final assessment consistent with the current scores and issues';
+        if (!independentReview) {
+          schema.strengths=schema.strengths || ['specific strength'];
+          schema.overallVerdict=schema.overallVerdict || 'brief final assessment consistent with the current scores and issues';
+        }
         if(Array.isArray(schema.promptCoverage)) {
           const canonical=requirements(question), example=schema.promptCoverage[0] || {};
           schema.promptCoverage=canonical.length

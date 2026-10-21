@@ -70,3 +70,15 @@ test('Each structured judgement binds coverage ids and cardinality to the curren
  for(const stage of ['evidence-repair','feedback-repair'])assert.equal(format.toolFor(stage,{feedbackV3:true,requirements}).input_schema.properties.promptCoverage,undefined);
  assert.deepEqual(format.toolFor('feedback-repair',{feedbackV3:true,requirements}).input_schema.properties.feedbackIssues.items.properties.requirementId.enum,['','req_1','req_2']);
 });
+
+test('subjective readers cannot return vocabulary issues that require another formatting call',()=>{
+ const requirements=[{id:'req_1',label:'Discuss the effects.'}];
+ for(const stage of ['subjective-review','subjective-resolver']) {
+  const schema=format.toolFor(stage,{feedbackV3:true,requirements}).input_schema;
+  assert.deepEqual(schema.properties.feedbackIssues.items.properties.trait.enum,['content','linguistic','coherence']);
+ }
+ assert(!format.toolFor('subjective-review',{feedbackV3:true}).input_schema.required.includes('overallVerdict'));
+ assert(format.toolFor('subjective-resolver',{feedbackV3:true}).input_schema.required.includes('overallVerdict'));
+ assert(format.toolFor('assessment',{feedbackV3:true,requirements}).input_schema.properties.feedbackIssues.items.properties.trait.enum.includes('vocabulary'));
+ assert.match(format.request('Assess this essay.','judge-model',{stage:'assessment'}).messages[0].content,/CONCISE OUTPUT/);
+});

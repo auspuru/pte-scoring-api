@@ -28,6 +28,7 @@ function createEssayGradeHandler({grader,verifyToken,getUserData,env=process.env
       res.json(essayResultForClient(feedback.scope(result,{attemptId,parent}),req.get('x-essay-scoring-version') || '',req.get('x-essay-sample-contract') || ''));
     } catch(error) {
       onError(error);
+      if(['ESSAY_ASSESSMENT_TIMEOUT','ESSAY_CALL_BUDGET'].includes(error.code)) return res.status(503).json({code:error.code,retryable:false,error:'The assessment took too long to verify. Your writing is safe; please try again shortly.'});
       if(error.retryable===false) return res.status(503).json({code:'ESSAY_EVIDENCE_VALIDATION_FAILED',retryable:false,error:'The assessment evidence could not be verified. Your writing is safe. Please wait before submitting again.'});
       res.status(503).json({error:'The essay assessment could not be completed. Your writing is safe; please try again.'});
     }
