@@ -23,10 +23,8 @@ const tool = {
     vocabulary_score: { type: 'number', description: 'Vocabulary score from 0 to 2.' },
     cohesion: { type: 'string', enum: ['strong', 'adequate', 'weak'] },
     summary_assessment: { type: 'object', additionalProperties: false, properties: {
-      synthesis_source_span: { $ref: '#/$defs/span', description: 'Two SOURCE word numbers for one short clause that the student usefully compressed or recast. Cite a clause, not the whole passage or several paragraphs. [] allowed for partial/limited only.' },
       synthesis_span: { $ref: '#/$defs/span' },
-      synthesis_operation: { ...text, description: 'Exactly clause_recast, compression, selection_only, word_substitution_only or none. Removing sentence stops, inserting connectors, and isolated synonym swaps are not clause_recast or compression. Cite the changed student phrase in synthesis_span; punctuation changes alone are insufficient.' },
-      synthesis_quality: { ...text, description: 'Exactly effective, partial or limited. Effective requires a real useful clause_recast/compression shown by the source quote and student span; accuracy and connections alone do not establish reformulation.' },
+      synthesis_quality: { ...text, description: 'Exactly effective, partial or limited. Assess relevant selection, clear connections and useful phrasal changes. Small changes can suffice; do not require complete paraphrasing or source-to-student transformation proof.' },
       main_idea_accurate: { type: 'boolean' },
       main_idea_span: { type: 'array', items: { type: 'integer' },
         description: 'Two inclusive student word numbers, or [] if no accurate main idea is present.' },
@@ -40,7 +38,7 @@ const tool = {
       }, required: ['effect', 'missing_context', 'explanation'] } },
       relationship_explanation: { type: 'string', description: 'In 1–2 short sentences explain both the relationships and synthesis. A deduction needs a specific evidenced weakness, not a synonym count.' },
       next_step: text, repair: text
-    }, required: ['synthesis_source_span', 'synthesis_span', 'synthesis_operation', 'synthesis_quality', 'main_idea_accurate', 'main_idea_span', 'supporting_spans', 'conclusion_status', 'relationships_clear', 'material_meaning_change', 'missing_dependencies', 'relationship_explanation', 'next_step', 'repair'] },
+    }, required: ['synthesis_span', 'synthesis_quality', 'main_idea_accurate', 'main_idea_span', 'supporting_spans', 'conclusion_status', 'relationships_clear', 'material_meaning_change', 'missing_dependencies', 'relationship_explanation', 'next_step', 'repair'] },
     grammar_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
     vocabulary_annotations: { type: 'array', items: { $ref: '#/$defs/annotation' } },
     captured_ideas: { type: 'array', items: text, description: 'Diagnostic labels present in the response: choose only supplied what, why, how, result, topic, pivot, conclusion; [] when none. These labels never determine holistic Content.' },

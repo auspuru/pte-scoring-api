@@ -106,7 +106,8 @@ test('The independent review assesses synthesis without being anchored to the fi
     isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review,
     call: async prompt => {
       if (++calls === 2) {
-        assert.match(prompt, /Coverage and faithful relationships do not alone establish effective synthesis/);
+        assert.match(prompt, /Prioritise relevant ideas and clear connections/);
+        assert.match(prompt, /Do not check whether the summary is completely paraphrased/);
         return judgment('partial');
       }
       return judgment();
@@ -122,6 +123,8 @@ test('Structured output requires synthesis and the rubric never turns section re
   assert(schema.required.includes('synthesis_quality'));
   assert(schema.required.includes('synthesis_span'));
   assert.equal(schema.properties.synthesis_span.$ref, '#/$defs/span');
+  assert.equal(schema.properties.synthesis_source_span, undefined);
+  assert.equal(schema.properties.synthesis_operation, undefined);
   const prompt = buildJudgingPrompt(summary, 'Source.', {});
   assert.match(prompt, /section totals cannot establish individual SWT trait scores/);
   assert.match(prompt, /Small|SMALL/);
@@ -197,7 +200,7 @@ test('Standalone SWT and Writing Lab use the same reformulation and fair-source-
   const lab = require('../writing-lab-scoring');
   for (const prompt of [buildJudgingPrompt(summary,'A source.',{}),lab.buildPrompt({type:'swt',text:'A source.',keyPoints:[]},summary)]) {
     assert(prompt.includes(SYNTHESIS_GUIDANCE));
-    assert.match(prompt,/actual useful compression, combination or change of construction/);
+    assert.match(prompt,/Do not check whether the summary is completely paraphrased/);
     assert.match(prompt,/Small, useful phrase or clause changes can be sufficient/);
     assert.match(prompt,/not automatically limited or wrong/);
     assert(!prompt.includes('Writing 88'));
@@ -205,7 +208,7 @@ test('Standalone SWT and Writing Lab use the same reformulation and fair-source-
   }
 });
 
-test('New full-synthesis proof requires a real source-to-summary change, not a repeated quotation', () => {
+test('Useful phrasing can earn full Content without a transformation proof or operation gate', () => {
   const passage='Corporate economists perform forecasting as an important part of their work.';
   const raw=judgment();
   raw.summary_assessment.synthesis={quality:'effective',operation:'clause_recast',sourceQuote:passage,
@@ -213,19 +216,25 @@ test('New full-synthesis proof requires a real source-to-summary change, not a r
   assert.equal(applyScoringPolicy(raw,summary,passage).content_score,4);
   assert.equal(applyScoringPolicy(raw,summary,passage).needs_semantic_review,false);
   for(const change of [
-    {sourceQuote:'An invented source quotation.'},
-    {sourceQuote:raw.summary_assessment.synthesis.evidence},
+    {sourceQuote:''},
+    {sourceQuote:undefined},
+    {operation:'phrase_change'},
     {operation:'selection_only'},
     {operation:'word_substitution_only'},
-    {operation:'none'},
-    {evidence:''},
-    {sourceQuote:undefined}
+    {operation:'none'}
   ]) {
     const changed=structuredClone(raw);Object.assign(changed.summary_assessment.synthesis,change);
     const result=applyScoringPolicy(changed,summary,passage);
-    assert.equal(result.full_content_eligible,false);
-    assert.equal(result.needs_semantic_review,true);
+    assert.equal(result.full_content_eligible,true);
+    assert.equal(result.needs_semantic_review,false);
+    assert.equal(result.content_score,4);
   }
+  const retained=structuredClone(raw);
+  retained.summary_assessment.synthesis.sourceQuote=retained.summary_assessment.synthesis.evidence;
+  assert.equal(applyScoringPolicy(retained,summary,summary).content_score,4);
+  const invented=structuredClone(raw);
+  invented.summary_assessment.synthesis.sourceQuote='An invented source quotation.';
+  assert.equal(applyScoringPolicy(invented,summary,passage).needs_semantic_review,true);
   raw.summary_assessment.synthesis.quality='partial';
   raw.summary_assessment.synthesis.operation='selection_only';
   assert.equal(applyScoringPolicy(raw,summary,passage).content_score,3);
@@ -245,19 +254,48 @@ test('An invalid source proof cannot be confirmed or cached by the independent r
   assert.equal(calls,6);
 });
 
-test('A contradictory synthesis review uses its existing retry for semantic reassessment', async () => {
+test('An invalid student citation uses the existing review retry without a paraphrasing audit', async () => {
   const bad=judgment();bad.summary_assessment.synthesis={...bad.summary_assessment.synthesis,
-    operation:'selection_only',sourceQuote:'A source clause.',evidence:'Economic forecasting is a key function for corporate economists'};
+    evidence:'Student evidence that was never submitted'};
   let calls=0;
   const svc=createJudgmentService({policyVersion:POLICY_VERSION,buildPrompt:()=>'',
     isComplete:(j,t,s)=>!applyScoringPolicy(j,t,s).needs_semantic_review,
     validationIssues:(j,t,s)=>applyScoringPolicy(j,t,s).assessment_issues,
     call:async(prompt,timeout,options)=>{
       calls++;
-      if(calls===3){assert.equal(options.semanticReassessment,true);assert.match(prompt,/selection_only/);return judgment('partial');}
+      if(calls===3){assert.equal(options.semanticReassessment,true);assert.match(prompt,/do not introduce a complete-paraphrasing requirement/);return judgment('partial');}
       assert.equal(options.semanticReassessment,false);return calls===1?judgment('partial'):bad;
     }});
   const result=await svc.judge(summary,'A source clause.','');
   assert.equal(calls,3);assert.equal(result.consistency_reviewed,true);
   assert.equal(applyScoringPolicy(result,summary).content_score,3);
+});
+
+test('The provider confirms small phrase changes using student evidence without source-pair fields', async () => {
+  let calls=0;
+  const service=createJudgmentService({policyVersion:POLICY_VERSION,buildPrompt:buildJudgingPrompt,
+    isComplete:(j,t,s)=>!applyScoringPolicy(j,t,s).needs_semantic_review,
+    call:async prompt=>{
+      calls++;
+      assert(!prompt.includes('Classify synthesis_operation'));
+      assert(!prompt.includes('Source word data'));
+      assert.match(prompt,/Do not check whether the summary is completely paraphrased/);
+      const j=judgment();
+      delete j.summary_assessment.synthesis;
+      Object.assign(j.summary_assessment,{synthesis_quality:'effective',synthesis_span:[1,10]});
+      return j;
+    }});
+  const raw=await service.judge(summary,'Corporate economists use forecasting as a key part of their work.','');
+  const result=applyScoringPolicy(raw,summary);
+  assert.equal(calls,2);
+  assert.equal(raw.consistency_reviewed,true);
+  assert.equal(result.content_score,4);
+  assert.equal(result.needs_semantic_review,false);
+  assert.equal(result.summary_assessment.synthesis.operation,undefined);
+  assert.equal(result.summary_assessment.synthesis.sourceQuote,undefined);
+  for(const span of [[],[0,2],[1,999]]){
+    const invalid=judgment();delete invalid.summary_assessment.synthesis;
+    Object.assign(invalid.summary_assessment,{synthesis_quality:'effective',synthesis_span:span});
+    assert.equal(applyScoringPolicy(materialiseEvidence(invalid,summary),summary).needs_semantic_review,true);
+  }
 });
