@@ -1,0 +1,75 @@
+[
+  {
+    "name": "Audit forecasting without invented GNP grouping",
+    "p": {
+      "text": "For economists in the corporate sector, forecasting is usually a key function, and to do the job they draw upon a wide range of statistical data. But economic forecasting is a long way from a precise science. Forecasters must, after all, start somewhere and their assumptions about how an economy works can vary widely. 'The differences in beliefs are enormous; so varied and conflicting that economics is jokingly said to be the only field in which two people can get a Nobel Prize for saying exactly the opposite thing,' says William Sherden, author of the highly-regarded The Fortune Sellers. Sherden argues that the record of economic forecasting is rather poor, especially for volatile statistics such as interest rates—although they do better for some stable statistics, such as government spending, and about the same for statistics such as real GNP growth and inflation. Forecasts are especially vulnerable when unexpected events change behaviour, policy or financial conditions in ways that historical data cannot represent well. Small differences in assumptions can also compound over time, producing widely separated projections from models that initially appear similar. For this reason, responsible forecasters often present ranges, scenarios and the assumptions behind them rather than treating one numerical estimate as certain. The value of forecasting lies in supporting decisions under uncertainty, not in eliminating uncertainty altogether.",
+      "keyElements": {
+        "what": "For economists in the corporate sector, forecasting is a key function drawing on a wide range of statistical data",
+        "why": "Economic forecasting is a long way from a precise science because forecasters' assumptions about how an economy works can vary widely",
+        "how": "Differences in beliefs are so enormous that two economists can get a Nobel Prize for saying exactly the opposite thing",
+        "result": "The record of forecasting is poor for volatile statistics like interest rates but better for stable ones like government spending"
+      }
+    },
+    "text": "Economic forecasting is usually a key function for corporate economists who draw upon a wide range of statistical data; however, it is a long way from a precise science as forecasters' assumptions about how an economy works can vary widely; moreover, two economists can earn Nobel Prizes for saying exactly the opposite thing; therefore, the record is rather poor for volatile statistics like interest rates but better for stable ones like government spending.",
+    "minimum": 3,
+    "grammar": 2,
+    "forbiddenFeedback": "GNP|inflation"
+  },
+  {
+    "name": "Audit Off-Grid locally stated environmental cause",
+    "p": {
+      "text": "Living off-grid can be a rewarding and fulfilling experience, offering a number of benefits, including reduced environmental impact, greater self-reliance, improved health, reduced cost of living, and greater freedom and flexibility. Off-grid homes typically produce their own energy and water, which reduces their reliance on fossil fuels and other resources. This can help to reduce your carbon footprint and protect the environment. When you live off-grid, you are responsible for meeting your own basic needs, such as generating your own electricity and water, growing your own food, and maintaining your home. This can teach you valuable skills and help you to become more self-sufficient. Living off-grid often involves spending more time outdoors and eating fresh, healthy food, which can lead to a number of health benefits, such as improved cardiovascular health, reduced stress levels, and increased energy levels. Additionally, off-grid homes typically have lower utility bills than traditional homes, and many people who live off-grid choose to grow their own food, which can further reduce their cost of living. Finally, living off-grid gives you the freedom to live where you want and how you want, and you are not bound by the constraints of public utilities or infrastructure. Additionally, living off-grid can give you the flexibility to work from home or to pursue other activities that are difficult to do when living in a traditional community. While living off-grid is not without its challenges, it requires careful planning and preparation, the benefits can be significant. If you are considering living off-grid, there are a number of resources available to help you get started.",
+      "keyElements": {
+        "what": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, lower cost of living, and greater freedom",
+        "why": "Off-grid homes produce their own energy and water, reducing reliance on fossil fuels and helping to lower carbon footprint",
+        "how": "Residents meet their own basic needs such as generating electricity and water, growing food, and maintaining the home, which builds valuable self-sufficiency skills",
+        "result": "Although off-grid living requires careful planning and preparation, the benefits in health, cost savings, and freedom to live and work as one chooses can be significant"
+      }
+    },
+    "text": "Living off-grid offers numerous benefits, including reduced environmental impact, greater self-reliance, improved health, and greater freedom; however, off-grid homes produce their own energy and water, reducing reliance on fossil fuels and lowering carbon footprint; moreover, residents meet their own basic needs such as generating electricity, growing food, and maintaining the home, which builds valuable self-sufficiency skills; therefore, although off-grid living requires careful planning, the benefits can be significant.",
+    "minimum": 3,
+    "grammar": 2
+  },
+  {
+    "name": "Audit Natural Resources revised conclusion",
+    "p": {
+      "text": "Industrial growth and rising consumption have increased pressure on forests, minerals, fresh water and fossil fuels in many parts of the world. Extracting these resources can support jobs and development, but poorly managed production may also cause pollution, habitat loss, soil damage and greenhouse emissions. Scarcity can raise costs for households and industries while creating competition between regions that depend on the same limited materials. Recycling, efficient product design and renewable energy can reduce demand for some finite resources without requiring societies to stop economic activity altogether. Governments and businesses also need better monitoring so environmental costs are considered when investment and production decisions are made. Long-term resource security depends on using materials more efficiently and protecting natural systems that cannot easily be restored once damaged. Resource efficiency also matters after products have been sold. Goods that are durable, repairable and recyclable can reduce the need for repeated extraction, while wasteful designs shift environmental costs to future production. Policy can influence these choices through standards, pricing and disclosure, but households and firms also respond to convenience and cost. Sustainable resource management therefore requires changes across extraction, manufacturing, consumption and recovery rather than relying on a single technology or asking one group to carry the entire burden.",
+      "keyElements": [
+        "Industrial growth and rising consumption have increased pressure on forests, minerals, fresh water and fossil fuels in many parts of the world.",
+        "Extracting these resources can support jobs and development, but poorly managed production may also cause pollution, habitat loss, soil damage and greenhouse emissions.",
+        "Scarcity can raise costs for households and industries while creating competition between regions that depend on the same limited materials.",
+        "Recycling, efficient product design and renewable energy can reduce demand for some finite resources without requiring societies to stop economic activity altogether."
+      ]
+    },
+    "text": "Industrial growth and consumption increase pressure on finite resources, while poorly managed extraction causes environmental damage and scarcity raises costs, so sustainable management requires efficient design, recycling, renewable energy and shared responsibility across production, consumption and recovery, supported by monitoring that includes environmental costs in decisions.",
+    "full": true
+  },
+  {
+    "name": "Audit Farm Cottage expanded-source reference",
+    "p": {
+      "text": "Half a lifetime ago I made a lifestyle choice to exchange a city terrace for a farm cottage. I knew it was a good idea because I had been there before. Born and reared on a farm, I had been seduced for a few years by the idea of being a big shot who lived and worked in a city rather than only going for the day to wave at the buses. That also meant I was familiar with some of the minor disadvantages of country living, such as an uncertain water supply, the absence of central heating in most farm houses and a single-track road, easily blocked by snow, broken-down machinery or escaped farm animals. But there were many advantages as I told my young wife back in the mid-Seventies. She might have been hard to persuade as she was town born and bred and eight months pregnant. I was trying to persuade her that exchanging a warm, large town house for a windswept farm cottage on a much lower income was a good idea. The decision therefore involved more than choosing a different house; it meant accepting inconvenience in exchange for a way of life I already understood and valued. Familiarity with farming made the risks seem manageable, but for my wife the move required greater trust because the isolation, lower income and practical difficulties were new.",
+      "keyElements": {
+        "what": "The author made a lifestyle choice to exchange a city terrace for a farm cottage, having been born and reared on a farm",
+        "why": "He was familiar with the minor disadvantages of country living such as uncertain water supply and lack of central heating",
+        "how": "He told his town-born wife about the many advantages of the farm cottage",
+        "result": "He tried to convince his wife that exchanging the town house for a farm cottage on a lower income was a good idea"
+      }
+    },
+    "text": "Having grown up on a farm, the author valued country living despite its inconveniences and sought to persuade his city-raised wife to exchange their comfortable town house for a farm cottage on a lower income, although the unfamiliar difficulties required greater trust from her.",
+    "full": true
+  },
+  {
+    "name": "Audit Web reversed cause negative",
+    "p": {
+      "text": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+      "keyElements": {
+        "how": "he invented it because he was frustrated that he couldn't find all the information he wanted in one place",
+        "why": "the Web has transformed the way people shop, listen to music, communicate, and access information across politics, literature, and economics",
+        "what": "Sir Tim Berners-Lee invented the World Wide Web",
+        "result": "society will never be the same"
+      }
+    },
+    "text": "Sir Tim Berners-Lee invented the World Wide Web because its global transformation of shopping and communication had already given everyone equal access to information, causing his frustration with scattered information.",
+    "full": false
+  }
+]

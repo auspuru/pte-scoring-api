@@ -160,7 +160,7 @@ test('Compact diagnostic labels retain the public per-idea map without changing 
   assert.equal(format.tool.input_schema.properties.per_idea_scores,undefined);
 });
 
-test('Only a semantic retry selects the stronger reassessment model', () => {
+test('A semantic reassessment selects the stronger reviewer while ordinary assessments retain the base model', () => {
   const base='claude-haiku-4-5-20251001';
   assert.equal(format.request('Assess.',base).model,base);
   assert.equal(format.request('Reassess.',base,{semanticReassessment:true}).model,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6');

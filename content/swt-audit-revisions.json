@@ -1,0 +1,118 @@
+[
+  {
+    "id": 1,
+    "title": "Climate Change Economics",
+    "sourceText": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+    "fields": {
+      "text": {
+        "before": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment. \"Is that a lot?\" asks Chen. \"It's less than 5% of global military spending.\"",
+        "after": "Have you ever wondered what the true economic cost of climate change really is? \"We are looking at a potential loss of 10% of global GDP by 2050 if we fail to act,\" warns Dr. Sarah Chen, lead economist at the International Climate Research Institute. Her team's analysis reveals that coastal cities alone face damages exceeding $1 trillion annually by 2040. \"The question is not whether we can afford to address climate change,\" Chen emphasizes, \"but whether we can afford not to?\" The data paints a stark picture: agricultural yields in developing nations could drop by 25% within two decades, while extreme weather events have already increased by 46% since 2000. \"Every degree of warming matters,\" states the report. \"At 1.5°C, we lose 70% of coral reefs. At 2°C, we lose 99%.\" The insurance industry reports that climate-related claims have surged by 340% in the past decade. \"Is this sustainable?\" asks Michael Torres, CEO of Global Insurance Partners. \"Absolutely not.\" Developing nations, despite contributing less than 10% of historical emissions, will bear 75% of the costs. \"Where is the justice in that?\" demands Dr. Amara Okafor, climate justice advocate. The renewable energy transition, however, offers hope. \"We have seen solar costs drop by 89% and wind by 70% since 2010,\" reports the International Energy Agency. \"Can we scale fast enough?\" The answer, according to their models, requires $4 trillion in annual investment."
+      },
+      "keyElements": {
+        "before": {
+          "how": "The renewable energy transition offers hope as solar costs have dropped 89% and wind 70% since 2010",
+          "why": "Coastal cities face $1 trillion in annual damages and developing nations bear 75% of costs despite contributing less than 10% of emissions",
+          "what": "Climate change could cause a 10% loss of global GDP by 2050",
+          "result": "Scaling the transition requires $4 trillion in annual investment, less than 5% of global military spending"
+        },
+        "after": {
+          "what": "Climate change threatens substantial economic losses.",
+          "why": "Developing nations bear disproportionately high costs despite low historical emissions.",
+          "how": "Falling renewable-energy costs offer a response.",
+          "result": "Large-scale annual investment is needed for the renewable transition."
+        }
+      },
+      "keyElementsRationale": {
+        "before": {
+          "topic": "This passage is about the economic stakes of climate change — using GDP impact, regional inequity, and the cost of the renewable energy transition as the core argument. It is structured around a central claim (the economic damage), evidence (specific damage figures and emissions inequity), a proposed mechanism (renewables and their falling costs), and the implied call to action (the scale of investment needed).",
+          "elements": {
+            "how": "The renewable transition (solar 89% cheaper, wind 70% cheaper) — this is the mechanism the passage offers as the solution. Without it, the summary describes only the problem.",
+            "why": "The inequity figure (developing nations bearing 75% of the cost despite contributing under 10% of emissions) — this is the moral and political weight of the topic. The $1 trillion coastal-damage figure is part of this same 'why' because it grounds the cost claim in concrete impact.",
+            "what": "The headline economic claim (10% of global GDP by 2050) — without this, the summary has no thesis. Other large figures in the passage (the 25% agricultural drop, the 46% increase in weather events) are downstream consequences, not the central economic claim.",
+            "result": "The $4 trillion annual investment requirement, framed against military spending — this is the actionable scale. Skipping it leaves the summary diagnostic, not prescriptive."
+          },
+          "importance": "Many sentences in this passage are colour — direct quotes from named experts, rhetorical questions, dramatic phrasing. A summariser must filter past those to the structural backbone. The four key ideas below are the load-bearing claims; everything else (Chen's exact wording, the insurance industry's 340% surge, the Okafor quote about 'justice') is illustration, not argument. Capturing the elaborations instead of the structure produces a long, vivid, but low-scoring summary."
+        },
+        "after": {
+          "topic": "Climate change threatens economic output and imposes unequal costs, while renewable energy offers a response requiring substantial investment.",
+          "importance": "Select the main economic risk, useful support and the proposed response. Diagnostic labels guide selection; exact figures, named quotations and every example are not compulsory.",
+          "elements": {
+            "what": "Convey the economic threat; the exact GDP percentage and date are optional.",
+            "why": "Explain the unequal burden on developing nations; precise percentages are optional.",
+            "how": "Falling renewable-energy costs support the proposed response.",
+            "result": "Substantial investment is needed for the transition; combine this with the response where natural."
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": 8,
+    "title": "Travel and Tourism Economic Impact",
+    "sourceText": "This paper highlights that travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy, which can be expected to continue to grow. Jobs generated by travel and tourism are spread across the economy, employ a large proportion of women, minority groups and young people, and offer good training and transferability. There are numerous good examples of tourism acting as a catalyst for conservation and improvement of the environment and maintenance of local diversity and culture. Tourism has a comparative advantage in that its start-up and running costs can be low compared to many other forms of industry development.",
+    "fields": {
+      "keyElementsRationale": {
+        "before": {
+          "topic": "The passage's central argument is that travel and tourism is a significant economic and social force. It is structured as a list of reasons why tourism matters: its economic output, employment characteristics, environmental and cultural benefits, and cost efficiency.",
+          "elements": {
+            "how": "This element explains the mechanism by which tourism can succeed as an economic strategy: low relative costs. It is essential because understanding cost advantage is part of why tourism is attractive and expected to grow. It was chosen over any named industry comparison because it captures the comparative principle itself.",
+            "why": "This element captures the passage's reasoning for why tourism matters—its distributional and social benefits plus environmental and cultural value. It was chosen over decorative examples because it states the general principle (employment breadth, training value, conservation catalysis) that the passage uses to justify tourism's importance.",
+            "what": "This is the opening claim and the passage's subject. Without it, a reader would not know what the passage is fundamentally about. It was chosen over any subordinate clause or statistic because it names the central phenomenon.",
+            "result": "This element captures the forward-looking claim ('can be expected to continue to grow') that completes the argument. Without it, the summary would omit the passage's own statement of trajectory and implication."
+          },
+          "importance": "The load-bearing sentences are those that state general claims about tourism's role and benefits. Decorative elements include any specific statistics (e.g. 'large proportion of women') that merely illustrate a broader claim already counted (employment diversity), and examples of conservation (e.g. specific locations or incidents), which illustrate the general principle that tourism can act as a conservation catalyst."
+        },
+        "after": {
+          "topic": "Tourism contributes to the economy and employment, with social, environmental, cultural and cost advantages.",
+          "importance": "This is primarily an additive passage. Select representative support and connect the benefits clearly; neither every benefit nor a separate growth projection is compulsory.",
+          "elements": {
+            "what": "Identify tourism’s economic and employment contribution.",
+            "why": "Jobs, training, conservation and cultural benefits offer useful support; do not require all examples.",
+            "how": "Low start-up and running costs explain a possible comparative advantage.",
+            "result": "Expected growth is useful context and can be omitted when the retained central message is complete."
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": 9,
+    "title": "Sir Tim Berners-Lee and the World Wide Web",
+    "sourceText": "He is the man who has changed the world more than anyone else in the past hundred years. Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary. Along with Galileo, William Caxton and Sir Isaac Newton, he is a scientist who has altered the way people think as well as the way they live. Since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed. There are implications for politics, literature, economics - even terrorism - because an individual can now have the same access to information as the elite. Society will never be the same. The computer scientist from Oxford, who built his own computer from a television screen and spare parts after he was banned from one of the university computers, is a cultural guru as much as a technological one. He invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place. It was an imaginary concept that he realised.",
+    "fields": {
+      "keyElementsRationale": {
+        "before": {
+          "topic": "The passage is fundamentally about Sir Tim Berners-Lee's invention of the World Wide Web and its revolutionary impact on society. It moves from identifying who he is, to explaining why the Web matters, to describing his motivation, to concluding with societal transformation.",
+          "elements": {
+            "how": "This element captures the creative mechanism and motivation behind the invention, distinguishing it as a solution-driven creation. It was chosen over the anecdote about building his computer from spare parts, which is a biographical illustration rather than a load-bearing explanation of the Web's genesis.",
+            "why": "This element is load-bearing because it answers why Berners-Lee's invention matters—its broad transformative reach across multiple domains. It was chosen over the specific examples (shopping, music, communication) which are illustrations of the general principle of transformed access and interaction.",
+            "what": "This element is essential because without identifying what Berners-Lee invented, the reader cannot understand what the passage is fundamentally about. It was chosen over biographical details and character description, which are illustrative rather than constitutive.",
+            "result": "This element is indispensable because it articulates the ultimate consequence of the invention—permanent societal transformation. Without this conclusion, the reader would not grasp the magnitude and irreversibility of the Web's impact."
+          },
+          "importance": "The passage's core argument rests on four load-bearing claims: the identity and nature of the invention, the scope of its transformative impact, the reasoning behind its creation, and the ultimate consequence for society. Decorative elements include biographical details ('mild-mannered academic living in Boston'), specific comparisons to historical figures (Galileo, Newton), anecdotes about building his own computer, and particular domains affected (terrorism, literature)—these illustrate but do not constitute the central argument."
+        },
+        "after": {
+          "topic": "Berners-Lee invented the Web to address scattered information, and its spread changed access to information and everyday life.",
+          "importance": "Connect the invention, its motivation and its impact. Biographical anecdotes, named historical comparisons and lists of affected activities are optional.",
+          "elements": {
+            "what": "Identify Berners-Lee and the World Wide Web.",
+            "why": "Convey the Web’s broad impact without listing every activity.",
+            "how": "Difficulty finding information in one place motivated the invention.",
+            "result": "Societal change may be clearly implied by broader access and transformed daily life; no fixed concluding phrase is required."
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": 12,
+    "title": "The New Woman",
+    "sourceText": "The concept of the \"New Woman\" emerged in Britain and North America during a time of social and cultural transformation. This idea was notably advanced by a writer named Sarah, who authored a book that sparked significant debate among commentators. Her work explored the shifting roles and expectations of middle-class women, focusing on key areas such as financial independence, employment opportunities, and the nature of marriage. Sarah's arguments emphasized the need to protect and uplift women's status in society, highlighting the challenges they faced in a male-dominated structure.\n\nAlthough her ideas received mixed responses, with some embracing the push for gender equality while others criticized or resisted the change, the impact of her book was undeniable. It contributed to broader discussions about women's rights, autonomy, and social roles. Sarah's advocacy was part of a larger movement that sought to redefine the place of women not only in the domestic sphere but also in public and professional life.\n\nDespite the resistance and the fact that her vision wasn't fully at the time, the notion of the \"New Woman\" left a lasting impression and has since been commemorated as an important milestone in the history of women's movements. It represented a growing awareness of gender inequality and laid the groundwork for future reforms and feminist thought.",
+    "fields": {
+      "text": {
+        "before": "The concept of the \"New Woman\" emerged in Britain and North America during a time of social and cultural transformation. This idea was notably advanced by a writer named Sarah, who authored a book that sparked significant debate among commentators. Her work explored the shifting roles and expectations of middle-class women, focusing on key areas such as financial independence, employment opportunities, and the nature of marriage. Sarah's arguments emphasized the need to protect and uplift women's status in society, highlighting the challenges they faced in a male-dominated structure.\n\nAlthough her ideas received mixed responses, with some embracing the push for gender equality while others criticized or resisted the change, the impact of her book was undeniable. It contributed to broader discussions about women's rights, autonomy, and social roles. Sarah's advocacy was part of a larger movement that sought to redefine the place of women not only in the domestic sphere but also in public and professional life.\n\nDespite the resistance and the fact that her vision wasn't fully at the time, the notion of the \"New Woman\" left a lasting impression and has since been commemorated as an important milestone in the history of women's movements. It represented a growing awareness of gender inequality and laid the groundwork for future reforms and feminist thought.",
+        "after": "The concept of the \"New Woman\" emerged in Britain and North America during a time of social and cultural transformation. This idea was notably advanced by a writer named Sarah, who authored a book that sparked significant debate among commentators. Her work explored the shifting roles and expectations of middle-class women, focusing on key areas such as financial independence, employment opportunities, and the nature of marriage. Sarah's arguments emphasized the need to protect and uplift women's status in society, highlighting the challenges they faced in a male-dominated structure.\n\nAlthough her ideas received mixed responses, with some embracing the push for gender equality while others criticized or resisted the change, the impact of her book was undeniable. It contributed to broader discussions about women's rights, autonomy, and social roles. Sarah's advocacy was part of a larger movement that sought to redefine the place of women not only in the domestic sphere but also in public and professional life.\n\nDespite the resistance and the fact that her vision wasn't fully realised at the time, the notion of the \"New Woman\" left a lasting impression and has since been commemorated as an important milestone in the history of women's movements. It represented a growing awareness of gender inequality and laid the groundwork for future reforms and feminist thought."
+      }
+    }
+  }
+]

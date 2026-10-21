@@ -1415,15 +1415,46 @@ async function seedAdvancedSwtPassages() {
 function bundledSwtSampleReferences() {
   return [
     ...require('./passages.json'),
+    ...require('./content/swt-legacy.json'),
     ...require('./content/swt-advanced.json'),
     ...require('./content/swt-advanced-revisions.json')
   ];
 }
 
-// Restore samples that are missing from persisted canonical SWT passages.
-// A passage is eligible only when its title + full source text still match a
-// bundled reference exactly, so teacher-edited content is never paired with an
-// unrelated model answer. Existing non-empty samples are always preserved.
+// Correct only the source versions and individual field values in the audit.
+// Lock affected rows so a concurrent teacher edit cannot be overwritten.
+async function reviseAuditedSwtContent() {
+  const { applySwtAuditRevision } = require('./swt-audit-revisions');
+  if (!USE_POSTGRES) {
+    let changed = 0;
+    for (const passage of await PassageAPI.readAll()) {
+      const next = applySwtAuditRevision(passage);
+      if (next) { await PassageAPI.upsert(next); changed++; }
+    }
+    return changed;
+  }
+  const ids = require('./content/swt-audit-revisions.json').map(p => p.id);
+  const client = await pgPool.connect();
+  try {
+    await client.query('BEGIN');
+    const rows = await client.query('SELECT id,payload FROM passages WHERE id=ANY($1::int[]) FOR UPDATE', [ids]);
+    let changed = 0;
+    for (const row of rows.rows) {
+      const next = applySwtAuditRevision(row.payload);
+      if (!next) continue;
+      await client.query('UPDATE passages SET payload=$1::jsonb,updated_at=NOW() WHERE id=$2', [JSON.stringify(next), row.id]);
+      changed++;
+    }
+    await client.query('COMMIT');
+    PgPassageAPI._cache = null;
+    PgPassageAPI._cacheLoaded = false;
+    return changed;
+  } catch (error) { await client.query('ROLLBACK'); throw error; }
+  finally { client.release(); }
+}
+
+// Restore absent samples only for an exact canonical title + source match.
+// Existing non-empty database samples remain authoritative.
 async function restoreMissingSwtSamples() {
   const current = await PassageAPI.readAll();
   const initial = repairMissingSwtSamples(current, bundledSwtSampleReferences());
@@ -6439,6 +6470,9 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   try { await reviseSwtSamples(); } catch (e) { console.error('SWT sample revisions failed:', e.message); }
 
   try { await reviseAdvancedSwtPassages(); } catch (e) { console.error('Advanced SWT revisions failed:', e.message); }
+
+  try { console.log('Audited SWT content corrections applied:', await reviseAuditedSwtContent()); }
+  catch (e) { console.error('Audited SWT content corrections failed:', e.message); }
 
   try {
     const restored = await restoreMissingSwtSamples();

@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.12';
+const POLICY_VERSION = '20.3.13';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -101,7 +101,7 @@ function annotationsWithImpact(annotations, summary) {
   return (Array.isArray(annotations) ? annotations : [])
     .filter(a => a && textPresent(summary, a.phrase) && typeof a.fix === 'string')
     .map(a => {
-      const connectionOnly = connectorOnlyEdit(a) || ['connector', 'cohesion', 'discourse', 'linking'].includes(a.type);
+      const connectionOnly = connectorOnlyEdit(a) || /\b(connector|cohesion|discourse|linking)\b/i.test(String(a.type || ''));
       const affectsMeaning = !connectionOnly && ['changed', 'obscured'].includes(a.meaning_impact)
         && typeof a.meaning_effect === 'string' && a.meaning_effect.trim().length > 0;
       return { ...a, affects_score: affectsMeaning,
@@ -149,7 +149,10 @@ function applyScoringPolicy(judgment, summary, passage = '') {
     semantic_flags: ['main_idea_accurate', 'relationships_clear', 'material_meaning_change'].every(k => typeof assessment[k] === 'boolean'),
     supporting_evidence: Array.isArray(assessment.supporting_evidence) && assessment.supporting_evidence.every(phrase => textPresent(summary, phrase)),
     main_idea_evidence: assessment.main_idea_accurate !== true || textPresent(summary, assessment.main_idea_evidence),
-    missing_dependencies: Array.isArray(assessment.missing_dependencies),
+    missing_dependencies: Array.isArray(assessment.missing_dependencies)
+      && assessment.missing_dependencies.every(item => item && textPresent(summary, item.effect)
+        && typeof item.missing_context === 'string' && item.missing_context.trim()
+        && typeof item.explanation === 'string' && item.explanation.trim()),
     conclusion_status: conclusionStatuses.includes(assessment.conclusion_status),
     cohesion: ['strong', 'adequate', 'weak'].includes(result.cohesion),
     grammar_annotations: validAnnotations(result.grammar_annotations),
@@ -220,9 +223,9 @@ FULL MARKS:
 - A conclusion may be naturally combined with another idea or clearly implied. Do not demand a separate concluding clause, a rigid order, every detail, or every diagnostic headline.
 - All necessary relationships must be understandable from the summary itself. If a selected effect depends on a cause, antecedent, qualification or earlier fact, that context must be included or clearly recoverable in the summary.
 - An effect with a missing necessary cause, an unexplained 'this/they', reversed causality, or misleadingly joined claims prevents full Content even when many keywords or headline ideas are present.
-- Compression is valid: do not require every intermediate step when the stated cause and outcome have a clear, faithful connection. Do not invent a causal chain in a descriptive, additive or contrastive passage.
+- Compression is valid: do not require every intermediate step when the stated cause and outcome have a clear, faithful connection. Read each local clause before interpreting a distant connector: participles such as 'reducing reliance' can already state the mechanism. A loose 'however' does not negate the affirmative clause after it. Do not invent a causal chain in a descriptive, additive or contrastive passage.
 - Before listing a missing dependency, reread the exact summary and check whether its scope or reason is already supplied. Never claim an answer treats all cases equally when it explicitly limits its claim (for example, to 'volatile statistics'). A secondary contrast is not a missing dependency merely because the passage contains it. Distinguish an essential unstated cause from an optional elaboration of an already understandable connection.
-- Distinguish omitting a secondary contrast from misstating one. If the response explicitly groups examples into a performance category, check every selected example against the source; do not excuse a false grouping merely because its broad headline is accurate. In forecasting, saying performance improves for government spending, real GNP growth AND inflation changes the passage's distinction between doing better and doing about the same. Omitting these examples can be valid; stating the wrong relationship is a Content issue.
+- Distinguish omitting a secondary contrast from misstating one. Check only examples actually selected in the STUDENT summary against the supplied source. Never import examples, groupings or mistakes from a calibration note or another response. Quote the student's actual assertion before alleging an incorrect grouping; omitting an example is not an assertion about it.
 - Category-level paraphrase is enough when it preserves the passage's proposition and relationship. For example, "regulatory advantages allowed London to surpass rivals" can accurately compress the passage's named examples (no Sarbanes-Oxley and no euro); do not require those examples or call the relationship disconnected merely because they are omitted. Do not demand a named example when the summary's scope, cause and effect are already clear.
 - Judge what the connections mean. 'And', relative clauses and semicolons can work; 'therefore' or 'moreover' cannot repair missing information by themselves.
 - Interpret pronouns across the WHOLE sentence. A pronoun may refer back to its named topic rather than the nearest noun. In 'he invented the Web because he was frustrated ...; therefore, it has transformed communication', 'it' refers to the Web, NOT his frustration: motivation → invention → impact is preserved. Do not invent a reversal by ignoring the explicit invention.

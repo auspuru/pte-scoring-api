@@ -103,14 +103,21 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
             + 'Independently reassess this response from the passage, including synthesis quality. Prioritise relevant ideas and clear connections; useful phrase or clause changes can be sufficient. Do not check whether the summary is completely paraphrased or require transformation proof. Pay particular attention to category-level paraphrases, pronoun referents, locally stated reasons, and additive versus causal links. Confirm a synthesis deduction only with exact student evidence of a real omission, vague connection, repetition, unnecessary detail or poorly selected excerpts; retained source wording and a synonym count do not establish a weakness. A regulatory advantage can explain competitive dominance without naming individual laws; a named invention can be the referent of it despite an intervening clause about motivation. Keep stylistic refinements optional. Do not assume any benchmark guarantees a score. Return a fresh complete JSON assessment with mutually consistent numerical scores, synthesis assessment, semantic flags and short actionable feedback. If the relationships are faithful, set relationships_clear true and material_meaning_change false; assess synthesis separately rather than inventing a meaning error to justify its score. Copy main_idea_evidence and each supporting_evidence as a CONTIGUOUS EXACT substring of the student summary: no inserted brackets, ellipses, paraphrases or altered verb forms.';
           const issues = validationIssues(result, summary, passage);
+          // Material relationship disputes need a stronger independent reading.
+          // Repeating the same small model can reproduce a connector-based
+          // false accusation. This changes the reviewer, never the score.
+          const disputedMeaning = result.summary_assessment?.material_meaning_change === true
+            || result.summary_assessment?.main_idea_accurate === false
+            || (result.summary_assessment?.missing_dependencies?.length || 0) > 0;
           let reviewed = await read(reviewPrompt + (issues.length ? '\nCorrect these invalid fields: ' + issues.join(', ') + '.' : '')
-            + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review');
+            + '\nUse main_idea_span and supporting_spans word numbers for the corrected evidence. Do not retype the quotations.', 'review',
+            {semanticReassessment:disputedMeaning});
           if (!reviewed || !isComplete(reviewed, summary, passage)) {
             const reviewIssues = reviewed ? validationIssues(reviewed, summary, passage) : [];
             reviewed = await read(reviewPrompt + '\nVALIDATION RETRY: The independent review was incomplete. Return the full assessment, including both top-level annotation arrays (use [] only when no correction is needed).'
               + (reviewIssues.length ? '\nCorrect these invalid fields: ' + reviewIssues.join(', ') + '.' : '')
               + '\nUse numbered student word spans for citations. Reassess the actual ideas and connections; do not introduce a complete-paraphrasing requirement or an operation-label gate.', 'review-retry',
-              {semanticReassessment:reviewIssues.some(issue=>issue==='synthesis' || issue.startsWith('synthesis:'))});
+              {semanticReassessment:disputedMeaning || reviewIssues.some(issue=>issue==='synthesis' || issue.startsWith('synthesis:'))});
           }
           if (reviewed && isComplete(reviewed, summary, passage)) result = { ...reviewed, consistency_reviewed: true };
           else result = { ...result, review_unavailable: true };
