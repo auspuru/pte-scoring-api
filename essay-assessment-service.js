@@ -3,6 +3,7 @@
 const policy = require('./public/essay-scoring');
 const essayEvidence = require('./essay-evidence');
 const feedbackPolicy = require('./public/essay-feedback');
+const { createEssayCallBudget } = require('./essay-call-budget');
 
 const SUBJECTIVE = ['content', 'linguistic', 'coherence'];
 const MAXIMUM = Object.values(policy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
@@ -31,6 +32,7 @@ ${options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext)
 
 EVIDENCE
 For every addressed or partial prompt requirement, quote a short contiguous phrase from the original essay. For linguisticExamples and developmentEvidence, quote short contiguous phrases from the essay. A 6/6 in Linguistic or Coherence requires at least two valid examples.
+${options.feedbackV3 ? '\nThis independent reader supplies scores, rationale, coverage, evidence, issues and revision decisions. The primary assessment or final resolver supplies the student-facing strengths and overall verdict; do not generate another copy here.' : ''}
 
 Return:
 {
@@ -45,7 +47,7 @@ DATA:
 ${JSON.stringify({ question, essay, wordCount: form.count, formScore: form.score })}`;
 }
 
-function normalizeReview(raw, essay, { requireTaskRelevance = false, feedbackV3 = false, question = '', revisionContext = null } = {}) {
+function normalizeReview(raw, essay, { requireTaskRelevance = false, feedbackV3 = false, question = '', revisionContext = null, requireVerdict = true } = {}) {
   if (!raw || typeof raw !== 'object' || !raw.scores || !Array.isArray(raw.promptCoverage)
     || !raw.promptCoverage.length || !raw.scoringEvidence) {
     const error = new Error('Incomplete subjective essay review.');
@@ -129,7 +131,7 @@ function normalizeReview(raw, essay, { requireTaskRelevance = false, feedbackV3 
     throw error;
   }
 
-  if (feedbackV3 && (!String(raw.overallVerdict || '').trim() || SUBJECTIVE.some(key=>!String(raw.rationale?.[key] || '').trim()))) {
+  if (feedbackV3 && ((requireVerdict && !String(raw.overallVerdict || '').trim()) || SUBJECTIVE.some(key=>!String(raw.rationale?.[key] || '').trim()))) {
     const error = new Error('Final essay feedback lacks a trait rationale or overall assessment.');
     error.code = 'feedback_contract';
     error.validationHint = 'Return a specific rationale for each subjective trait and an overallVerdict consistent with the final issues.';
@@ -194,6 +196,29 @@ function relevanceCandidate(primary, review) {
 
 function buildResolverPrompt(question, essay, primary, review, options = {}) {
   const candidate = relevanceCandidate(primary, review);
+  // Send the decisions and their evidence once, without derived client ids,
+  // character offsets, duplicated requirement definitions or transport spans.
+  const judgment = value => ({
+    scores: Object.fromEntries(SUBJECTIVE.map(key => [key, (value.diagnosticScores || value.scores)[key]])),
+    taskRelevance: value.taskRelevance && {
+      status: value.taskRelevance.status, evidence: value.taskRelevance.evidence, reason: value.taskRelevance.reason
+    },
+    promptCoverage: value.promptCoverage?.map(({requirementId, requirement, status, evidence, nextStep}) =>
+      ({requirementId, requirement, status, evidence, nextStep})),
+    scoringEvidence: {
+      linguisticExamples: value.scoringEvidence?.linguisticExamples,
+      developmentEvidence: value.scoringEvidence?.developmentEvidence
+    },
+    rationale: value.rationale || Object.fromEntries(SUBJECTIVE.map(key => [key, value.feedback?.[key]])),
+    feedbackIssues: value.feedbackIssues?.filter(i => SUBJECTIVE.includes(i.trait)).map(i => ({
+      code:i.code, category:i.category, priority:i.priority, requirementId:i.requirementId,
+      trait:i.trait, affectsScore:i.affectsScore,
+      evidence:{essayQuote:i.evidence.essayQuote, promptQuote:i.evidence.promptQuote},
+      explanation:i.explanation, suggestedChange:i.suggestedChange, scoreRationale:i.scoreRationale
+    })),
+    revisionDecisions: value.revisionDecisions,
+    needsSemanticResolver: value.needsSemanticResolver
+  });
   return `Resolve a disagreement between two independent essay assessments. Judge the essay itself, not which reviewer is "right". Return JSON only with the same three subjective scores, promptCoverage and evidence.
 
 CANDIDATE RELEVANCE CHECK — do this FIRST, independently of overall task completion:
@@ -214,10 +239,10 @@ ${policy.HOLISTIC_TRAIT_GUIDANCE}
 ${options.feedbackV3 ? feedbackPolicy.context(question, options.revisionContext) : ""}
 
 PRIMARY REVIEW:
-${JSON.stringify({ scores: { content: (primary.diagnosticScores || primary.scores).content, linguistic: (primary.diagnosticScores || primary.scores).linguistic, coherence: (primary.diagnosticScores || primary.scores).coherence }, taskRelevance: primary.taskRelevance, promptCoverage: primary.promptCoverage, scoringEvidence: primary.scoringEvidence, feedbackIssues: primary.feedbackIssues, needsSemanticResolver:primary.needsSemanticResolver })}
+${JSON.stringify(judgment(primary))}
 
 INDEPENDENT REVIEW:
-${JSON.stringify(review)}
+${JSON.stringify(judgment(review))}
 
 Return:
 {
@@ -357,11 +382,11 @@ function zeroFormAssessment(essay) {
   };
 }
 
-async function withFeedbackRepair(raw, scores, question, essay, call, options, {subjectiveOnly=false} = {}) {
+async function withFeedbackRepair(raw, scores, question, essay, call, options, {subjectiveOnly=false, requireVerdict=true} = {}) {
   if (!options.feedbackV3) return raw;
   const check = value => {
     feedbackPolicy.normalize(value,essay,question,scores,{subjectiveOnly,previous:options.revisionContext});
-    if (subjectiveOnly && (!String(value.overallVerdict || '').trim() || SUBJECTIVE.some(key=>!String(value.rationale?.[key] || '').trim()))) {
+    if (subjectiveOnly && ((requireVerdict && !String(value.overallVerdict || '').trim()) || SUBJECTIVE.some(key=>!String(value.rationale?.[key] || '').trim()))) {
       const e=Error('Final feedback needs its rationale.');e.code='feedback_contract';e.validationHint='Return a specific rationale for each subjective trait and an overallVerdict consistent with the final issues.';throw e;
     }
     return value;
@@ -377,11 +402,11 @@ ${feedbackPolicy.context(question,options.revisionContext)}
 DATA:
 ${JSON.stringify({question,essay,assessment:raw,subjectiveOnly})}`;
     try {
-      const repair=await call(prompt,{stage:'feedback-repair',feedbackV3:true});
+      const repair=await call(prompt,{stage:'feedback-repair',feedbackV3:true,repairCode:error.code});
       // A formatting operation has no authority to change the judgement or text.
       return check({...raw,feedbackIssues:repair.feedbackIssues,revisionDecisions:repair.revisionDecisions,
         rationale:repair.rationale,strengths:repair.strengths,overallVerdict:repair.overallVerdict});
-    } catch(repairError) {if(!repairError.feedbackSemanticConflict)repairError.feedbackRepairExhausted=true;throw repairError;}
+    } catch(repairError) {if(repairError.retryable!==false && !repairError.feedbackSemanticConflict)repairError.feedbackRepairExhausted=true;throw repairError;}
   }
 }
 
@@ -416,7 +441,7 @@ async function callAndNormalizePrimary(question, essay, call, onAttemptError, op
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'assessment', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
-      if(error.feedbackRepairExhausted)break;
+      if(error.retryable===false || error.feedbackRepairExhausted)break;
     }
   }
   throw lastError || new Error('Essay assessment unavailable.');
@@ -431,15 +456,15 @@ async function callAndNormalizeReview(question, essay, call, onAttemptError, opt
       let raw = await call(buildReviewPrompt(question, essay, options) + retry, { stage: 'subjective-review', feedbackV3:options.feedbackV3, semanticReassessment:!!lastError?.feedbackSemanticConflict });
       lastRaw = raw;
       const validated = normalizeCandidate(raw,essay,normalizeReview,options);
-      raw = await withFeedbackRepair(raw,validated.scores,question,essay,call,options,{subjectiveOnly:true});
+      raw = await withFeedbackRepair(raw,validated.scores,question,essay,call,options,{subjectiveOnly:true,requireVerdict:false});
       if(validated.needsSemanticResolver) {
         return {...validated,...feedbackPolicy.normalize(raw,essay,question,validated.scores,{subjectiveOnly:true,previous:options.revisionContext}),rationale:raw.rationale,strengths:raw.strengths,overallVerdict:raw.overallVerdict};
       }
-      return normalizeReview(raw,essay,{requireTaskRelevance:true,...options,question});
+      return normalizeReview(raw,essay,{requireTaskRelevance:true,...options,question,requireVerdict:false});
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-review', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
-      if(error.feedbackRepairExhausted)break;
+      if(error.retryable===false || error.feedbackRepairExhausted)break;
     }
   }
   throw lastError || new Error('Essay subjective review unavailable.');
@@ -477,56 +502,61 @@ async function callAndNormalizeResolver(question, essay, primary, review, call, 
     } catch (error) {
       lastError = error;
       onAttemptError({ stage: 'subjective-resolver', attempt: attempt + 1, code: error.code || error.name || 'unknown', validationHint:error.validationHint || '' });
-      if(error.feedbackRepairExhausted)break;
+      if(error.retryable===false || error.feedbackRepairExhausted)break;
     }
   }
   throw lastError || new Error('Essay subjective resolver unavailable.');
 }
 
-async function assessEssay(question, essay, call, { onAttemptError = () => {}, feedbackV3 = false, revisionContext = null } = {}) {
+async function assessEssay(question, essay, call, { onAttemptError = () => {}, feedbackV3 = false, revisionContext = null,
+  totalTimeoutMs = 120000, maxProviderCalls = 8 } = {}) {
   const options = {feedbackV3, revisionContext};
   question = String(question || '').trim();
   essay = String(essay || '').trim();
   const form = policy.formFor(essay);
   if (!form.score) return { assessment: zeroFormAssessment(essay), primaryRaw: null };
-  const providerCall = call;
+  const budget = createEssayCallBudget(call, {timeoutMs:totalTimeoutMs, maxCalls:maxProviderCalls});
+  const providerCall = budget.call;
   const requirements = feedbackV3 ? feedbackPolicy.requirements(question) : undefined;
   const previousIssueIds = feedbackV3 ? (revisionContext?.issues || []).map(issue=>issue.id) : undefined;
-  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question) : prompt, essay,
+  call = async (prompt, callOptions) => essayEvidence.callWithRepair(providerCall, feedbackV3 ? feedbackPolicy.enrichPrompt(prompt, question, {independentReview:callOptions?.stage==='subjective-review'}) : prompt, essay,
     feedbackV3 ? {...callOptions, requirements, previousIssueIds} : callOptions);
 
-  const { assessment: primary, raw: primaryRaw } = await callAndNormalizePrimary(question, essay, call, onAttemptError, options);
+  try {
+    // Neither reader consumes the other's output, so run them together. Final
+    // scores still require BOTH validated results and any necessary resolver.
+    const [{ assessment: primary, raw: primaryRaw }, review] = await Promise.all([
+      callAndNormalizePrimary(question, essay, call, onAttemptError, options),
+      callAndNormalizeReview(question, essay, call, onAttemptError, options)
+    ]);
 
-  // Final scores require the independent assessment. A failed review remains
-  // retryable and must not publish or cache a primary-only score.
-  const review = await callAndNormalizeReview(question, essay, call, onAttemptError, options);
+    if (!needsResolver(primary, review)) {
+      const agreed = applySubjectiveDecision(primary, {
+        scores: {
+          content: primary.diagnosticScores?.content ?? primary.scores.content,
+          linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
+          coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
+        },
+        ...(feedbackV3 ? {feedbackVersion:primary.feedbackVersion, promptRequirements:primary.promptRequirements, feedbackIssues:primary.feedbackIssues.filter(i=>SUBJECTIVE.includes(i.trait)), revisionDecisions:primary.revisionDecisions, strengths:primary.strengths, overallVerdict:primary.overallVerdict} : {}),
+        taskRelevance: primary.taskRelevance,
+        promptCoverage: primary.promptCoverage,
+        scoringEvidence: {
+          linguisticExamples: primary.scoringEvidence?.linguisticExamples || [],
+          developmentEvidence: primary.scoringEvidence?.developmentEvidence || []
+        }
+      }, 'agreement');
+      agreed.subjectiveReview.independent = review.scores;
+      agreed.subjectiveReview.independentRelevance = review.taskRelevance;
+      return { assessment: feedbackPolicy.reconcileRevisions(agreed, revisionContext), primaryRaw };
+    }
 
-  if (!needsResolver(primary, review)) {
-    const agreed = applySubjectiveDecision(primary, {
-      scores: {
-        content: primary.diagnosticScores?.content ?? primary.scores.content,
-        linguistic: primary.diagnosticScores?.linguistic ?? primary.scores.linguistic,
-        coherence: primary.diagnosticScores?.coherence ?? primary.scores.coherence
-      },
-      ...(feedbackV3 ? {feedbackVersion:primary.feedbackVersion, promptRequirements:primary.promptRequirements, feedbackIssues:primary.feedbackIssues.filter(i=>SUBJECTIVE.includes(i.trait)), revisionDecisions:primary.revisionDecisions, strengths:primary.strengths, overallVerdict:primary.overallVerdict} : {}),
-      taskRelevance: primary.taskRelevance,
-      promptCoverage: primary.promptCoverage,
-      scoringEvidence: {
-        linguisticExamples: primary.scoringEvidence?.linguisticExamples || [],
-        developmentEvidence: primary.scoringEvidence?.developmentEvidence || []
-      }
-    }, 'agreement');
-    agreed.subjectiveReview.independent = review.scores;
-    agreed.subjectiveReview.independentRelevance = review.taskRelevance;
-    return { assessment: feedbackPolicy.reconcileRevisions(agreed, revisionContext), primaryRaw };
-  }
-
-  // Material disagreement must be resolved before a final score is released.
-  const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError, options);
-  const assessment = applySubjectiveDecision(primary, resolved, 'resolver');
-  assessment.subjectiveReview.independent = review.scores;
-  assessment.subjectiveReview.independentRelevance = review.taskRelevance;
-  return { assessment: feedbackPolicy.reconcileRevisions(assessment, revisionContext), primaryRaw };
+    // Material disagreement must be resolved before a final score is released.
+    const resolved = await callAndNormalizeResolver(question, essay, primary, review, call, onAttemptError, options);
+    const assessment = applySubjectiveDecision(primary, resolved, 'resolver');
+    assessment.subjectiveReview.independent = review.scores;
+    assessment.subjectiveReview.independentRelevance = review.taskRelevance;
+    return { assessment: feedbackPolicy.reconcileRevisions(assessment, revisionContext), primaryRaw };
+  } finally { budget.close(); }
 }
 
 module.exports = {

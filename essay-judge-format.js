@@ -67,9 +67,11 @@ schemas['feedback-repair']=feedbackRepair;
 function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = {}) {
   let schema = schemas[stage];
   if (schema && feedbackV3 && !['evidence-repair','feedback-repair'].includes(stage)) {
+    const issueSchema = stage === 'assessment' ? feedbackIssue : object({...feedbackIssue.properties,
+      trait:{type:'string',enum:traits,description:'Review only Content, Linguistic Range and Coherence. Vocabulary, spelling and grammar belong to the primary assessment.'}});
     schema = object({...schema.properties,
-      feedbackIssues:{type:'array',items:feedbackIssue,description:'Authoritative specific corrections, not generic improvement tips. Required for each missing or partial canonical requirement and actual material weaknesses. Each scoring issue must explain the actual gap using current evidence. Return [] when no genuine correction is needed, even if a holistic language-range mark is not perfect. Do not invent weaknesses or demand extra sentence techniques to populate this array.'}, revisionDecisions:{type:'array',items:revisionDecision},
-      ...(stage==='assessment' ? {} : {strengths:texts,overallVerdict:text})});
+      feedbackIssues:{type:'array',items:issueSchema,description:'Authoritative specific corrections, not generic improvement tips. Required for each missing or partial canonical requirement and actual material weaknesses. Each scoring issue must explain the actual gap using current evidence. Return [] when no genuine correction is needed, even if a holistic language-range mark is not perfect. Do not invent weaknesses or demand extra sentence techniques to populate this array.'}, revisionDecisions:{type:'array',items:revisionDecision},
+      ...(stage==='subjective-resolver' ? {strengths:texts,overallVerdict:text} : {})});
   }
   if (!schema) return null;
   if (feedbackV3 && Array.isArray(previousIssueIds) && schema.properties.revisionDecisions) {
@@ -85,7 +87,7 @@ function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = 
   const judgement = !['evidence-repair','feedback-repair'].includes(stage);
   if (canonical && schema.properties.feedbackIssues) {
     schema = {...schema,properties:{...schema.properties,feedbackIssues:{...schema.properties.feedbackIssues,
-      items:object({...feedbackIssue.properties,requirementId:{...text,enum:['',...canonical.map(r=>r.id)]}})}}};
+      items:object({...schema.properties.feedbackIssues.items.properties,requirementId:{...text,enum:['',...canonical.map(r=>r.id)]}})}}};
   }
   if (canonical && judgement) {
     schema = {...schema, properties:{...schema.properties,
@@ -107,6 +109,7 @@ function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = 
 
 function request(prompt, model, options = {}) {
   const tool = toolFor(options.stage, options);
+  if (tool && !['evidence-repair','feedback-repair'].includes(options.stage)) prompt += '\n\nCONCISE OUTPUT: Return the complete structured assessment with short, specific explanations. Use one sentence per trait rationale, issue explanation, suggested change and verdict where sufficient; do not repeat the same advice across fields. Cite only the shortest useful supporting spans. Include every genuine distinct correction and every canonical requirement; do not invent extra issues or optional rewrites to fill the response. Independent review and resolution assess only Content, Linguistic Range and Coherence, leaving primary spelling, grammar and vocabulary unchanged.';
   return { model:modelFor(model,options,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6'), temperature: 0, max_tokens: options.feedbackV3 ? 9000 : 6000,
     messages: [{ role: 'user', content: prompt }],
     ...(tool ? { tools: [tool], tool_choice: { type: 'tool', name: tool.name } } : {}) };

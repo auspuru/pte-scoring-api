@@ -8,7 +8,7 @@ async function start(t,{env={ESSAY_FEEDBACK_V3:'true',ESSAY_FEEDBACK_V3_PERCENT:
  const app=express();app.use(express.json());app.post('/grade',createEssayGradeHandler({env,
   verifyToken:token=>({'signed-a':'student-a','signed-b':'student-b'}[token]||null),
   getUserData:async uid=>{lookups.push(uid);return {practiceHistory:uid==='student-a'?[parent]:[]};},
-  grader:{grade:async(...args)=>{calls.push(args);if(fail)throw Error('Provider failed');return {feedbackVersion:args[3].feedbackV3?F.VERSION:undefined,feedbackIssues:[],revisionDecisions:[],scores:{total:24},improvements:[]};}}
+  grader:{grade:async(...args)=>{calls.push(args);if(fail)throw (fail instanceof Error ? fail : Error('Provider failed'));return {feedbackVersion:args[3].feedbackV3?F.VERSION:undefined,feedbackIssues:[],revisionDecisions:[],scores:{total:24},improvements:[]};}}
  }));
  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>new Promise(r=>server.close(r)));
  const post=async(body={},token='signed-a')=>{const res=await fetch('http://127.0.0.1:'+server.address().port+'/grade',{method:'POST',headers:{'content-type':'application/json','x-session-token':token},body:JSON.stringify({question:'Do you agree?',essay:'Current essay.',attemptId:'revision',includeSample:false,...body})});return {status:res.status,body:await res.json()};};
@@ -39,4 +39,11 @@ test('Feedback failures return an honest unavailable response instead of an inve
 });
 test('Invalid prompt and sample options stop before provider calls',async t=>{
  const h=await start(t);assert.equal((await h.post({question:''})).status,400);assert.equal((await h.post({sampleBand:'10'})).status,400);assert.equal(h.calls.length,0);
+});
+test('an exhausted assessment budget stops automatic whole-assessment retries and never returns scores',async t=>{
+ for(const code of ['ESSAY_ASSESSMENT_TIMEOUT','ESSAY_CALL_BUDGET']) {
+  const h=await start(t,{fail:Object.assign(Error('Assessment budget exhausted.'),{code,retryable:false})});
+  const result=await h.post();assert.equal(result.status,503);assert.equal(result.body.code,code);
+  assert.equal(result.body.retryable,false);assert.equal(result.body.scores,undefined);assert.match(result.body.error,/writing is safe/);
+ }
 });

@@ -245,7 +245,7 @@ const essayJudgeFormat = require('./essay-judge-format');
 const essayGrader = createEssayGrader(async (prompt, options) => {
   if (!anthropic) throw new Error('Essay grader unavailable');
   const response = await anthropic.messages.create(essayJudgeFormat.request(prompt, CLAUDE_MODEL, options),
-    { timeout: 85000, maxRetries: 0 });
+    { timeout: options?.timeoutMs || 85000, maxRetries: 0, ...(options?.signal ? {signal:options.signal} : {}) });
   return essayJudgeFormat.response(response, options);
 }, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)),
   onAssessment: details => console.info('[essay-assessment-metric]', JSON.stringify(details)) });

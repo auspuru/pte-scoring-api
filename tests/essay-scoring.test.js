@@ -406,7 +406,7 @@ test('Incomplete model output gets one retry; only validated assessments are cac
   let failures = 0;
   const broken = createEssayGrader(async () => { failures++; throw new Error('provider failed'); });
   await assert.rejects(() => broken.grade(question, essay));
-  assert.equal(failures, 2, 'A failed assessment is retried, not converted into a fabricated local score.');
+  assert.equal(failures, 4, 'Each independent reader retries once; neither failure becomes a fabricated local score.');
 });
 
 test('A malformed independent review keeps the essay pending instead of releasing a primary-only score', async () => {
@@ -564,7 +564,8 @@ test('A failed sample preserves the grade and a later retry does not rescore it'
 
 test('Assessment validation failures return a retryable failure instead of a fabricated local score', async () => {
   let calls = 0;
-  const grader = createEssayGrader(async prompt => {
+  const grader = createEssayGrader(async (prompt, options) => {
+    if (options.stage === 'subjective-review') return standardModelResponse(prompt);
     calls++;
     if (calls > 1) assert.match(prompt, /VALIDATION RETRY:/);
     const raw = good();

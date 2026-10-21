@@ -104,8 +104,9 @@ test('A temporary citation-repair outage does not lock a recoverable essay for a
 
 test('exhausted evidence repair suppresses identical submissions without publishing a score', async () => {
   let calls = 0;
-  const grader = createEssayGrader(async prompt => {
+  const grader = createEssayGrader(async (prompt, options) => {
     calls++;
+    if (options.stage === 'subjective-review') return review;
     if (prompt.startsWith('Repair ONLY')) return { repairs: [] };
     const raw = structuredClone(primary);
     raw.promptCoverage[0].evidence = 'Invented unsupported passage';
@@ -115,7 +116,7 @@ test('exhausted evidence repair suppresses identical submissions without publish
   const question = 'Discuss transport priorities.';
   await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
   await assert.rejects(grader.grade(question, essay), error => error.retryable === false);
-  assert.equal(calls, 4);
+  assert.equal(calls, 5); // Four primary/repair calls plus the independent parallel review; no duplicate grading.
 });
 
 test('an unsupported review judgement gets one reassessment and still requires a resolver for disagreement', async () => {

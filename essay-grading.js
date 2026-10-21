@@ -24,8 +24,17 @@ function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () 
     if (!assessmentPending.has(key)) {
       const task = (async () => {
         let assessed, calls = 0;
+        const stages = [];
         const started = Date.now();
-        const measuredCall = async (...args) => { calls++; return call(...args); };
+        const measuredCall = async (prompt, callOptions) => {
+          calls++;
+          const callStarted = Date.now();
+          const timing = {stage:callOptions?.stage || 'sample', startMs:callStarted-started};
+          stages.push(timing);
+          try { const result = await call(prompt, callOptions); timing.status='complete'; return result; }
+          catch(error) {timing.status='failed';timing.code=error.code || error.name || 'unknown';throw error;}
+          finally {timing.durationMs=Date.now()-callStarted;}
+        };
         try { assessed = await assessEssay(question, essay, measuredCall, { onAttemptError, ...options }); }
 
         catch (error) {
@@ -34,10 +43,10 @@ function createEssayGrader(call, { onAttemptError = () => {}, onAssessment = () 
             validationFailures.set(key, { code: error.code || 'evidence_validation', expires: Date.now() + 60000 });
             while (validationFailures.size > 100) validationFailures.delete(validationFailures.keys().next().value);
           }
-          onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,status:'failed',code:error.code || 'unknown'});
+          onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,stages,status:'failed',code:error.code || 'unknown'});
           throw error;
         }
-        onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,status:'complete'});
+        onAssessment({feedbackVersion:options.feedbackV3 ? feedbackPolicy.VERSION : 'legacy',durationMs:Date.now()-started,providerCalls:calls,stages,status:'complete'});
         assessmentCache.set(key, {
           assessment: structuredClone(assessed.assessment),
           expires: Date.now() + 20 * 60 * 1000
