@@ -23,10 +23,10 @@ function longestCopiedRun(source, sample) {
 }
 
 function validatePredictionSwtSamples(bank = predictions.swt) {
-  if (!Array.isArray(bank) || bank.length !== 32) throw new Error('Expected 14 user SWT predictions and 18 September prediction items.');
+  if (!Array.isArray(bank) || bank.length !== 35) throw new Error('Expected 17 user SWT predictions and 18 September prediction items.');
   const user = bank.filter(q => q.predictionSource?.provider === 'User supplied SWT prediction screenshots');
   const september = bank.filter(q => q.predictionSource?.provider === 'PTE Nepal');
-  if (user.length !== 14 || september.length !== 18) throw new Error('SWT prediction cohorts have unexpected sizes.');
+  if (user.length !== 17 || september.length !== 18) throw new Error('SWT prediction cohorts have unexpected sizes.');
   const seen = new Set();
 
   for (const q of bank) {
