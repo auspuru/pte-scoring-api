@@ -30,7 +30,7 @@ test('bundled Writing audio is bound to transcripts, duration metadata and decod
 test('prediction/original content exposes freshness and unique-bank metadata', () => {
   const stats=metadata.validateContentMetadata();
   assert.deepEqual(stats.readingPrediction,{dropdown:30,wordbank:30});
-  assert.equal(stats.writingPrediction.swt,32);
+  assert.equal(stats.writingPrediction.swt,35);
   assert.equal(stats.writingPrediction.sst,30);
   assert.equal(stats.writingPrediction.wfd,69);
   assert.equal(stats.patternOriginal.dropdown,32);

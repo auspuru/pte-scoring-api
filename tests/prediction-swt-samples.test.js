@@ -5,10 +5,10 @@ const predictions = require('../content/writing-predictions-sep-2026');
 const policy = require('../writing-lab-scoring');
 const { validatePredictionSwtSamples, longestCopiedRun } = require('../scripts/validate-prediction-swt-samples');
 
-test('all 32 SWT samples have valid form and September samples retain provisional coverage checks', () => {
+test('all 35 SWT samples have valid form and September samples retain provisional coverage checks', () => {
   const result = validatePredictionSwtSamples();
-  assert.equal(result.count, 32);
-  assert.equal(result.userScreenshots, 14);
+  assert.equal(result.count, 35);
+  assert.equal(result.userScreenshots, 17);
   assert.equal(result.provisionalCoverage, 18);
 
   for (const q of predictions.swt) {
@@ -49,7 +49,7 @@ test('valid 5–75-word Form is accepted without an extra 25–65 authoring gate
 
 test('Published sample validation rejects unrelated content in the reviewed September cohort', () => {
   const index = predictions.swt.findIndex(q => q.predictionSource.provider === 'PTE Nepal');
-  assert(index >= 14);
+  assert(index >= 17);
   for (const sample of [Array(30).fill('astronaut').join(' ') + '.', predictions.swt[index].sample.toUpperCase()]) {
     const items = structuredClone(predictions.swt);
     items[index].sample = sample;

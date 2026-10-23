@@ -1,12 +1,17 @@
 'use strict';
 
 // SWT passages transcribed from the user's prediction screenshots supplied
-// on 20 October 2026. Sequence is deliberate: Origin of Species first,
-// Working Nine to Five / Independent Work second, then the remaining uploads.
+// on 20 and 23 October 2026. Sequence is deliberate: the first two originals,
+// then Olympics, Image of Africa and Geothermal Energy, then the other uploads.
 // Source text is preserved verbatim; reference summaries are draft teaching aids.
-const passages = Object.freeze([
+const originalPassages = [
   ...require('./user-swt-predictions-part1'),
   ...require('./user-swt-predictions-part2')
+].map((row, i) => ({ ...row, predictionId: 'pred26-user-swt-' + String(i + 1).padStart(2, '0') }));
+const passages = Object.freeze([
+  ...originalPassages.slice(0, 2),
+  ...require('./user-swt-predictions-oct23'),
+  ...originalPassages.slice(2)
 ].map(row => ({
   ...row,
   sampleNotes: 'Teacher-editable draft SWT reference; human review pending.',
@@ -26,8 +31,8 @@ const source = Object.freeze({
   task: 'swt'
 });
 
-const swt = Object.freeze(passages.map((row, i) => ({
-  id: 'pred26-user-swt-' + String(i + 1).padStart(2, '0'),
+const swt = Object.freeze(passages.map(row => ({
+  id: row.predictionId,
   type: 'swt',
   title: row.title,
   minutes: 10,
@@ -43,6 +48,7 @@ const swt = Object.freeze(passages.map((row, i) => ({
   editorialReview: row.editorialReview,
   predictionSource: {
     ...source,
+    ...(row.sourceDate ? { week: row.sourceWeek, checkedAt: row.sourceDate, lastReviewed: row.sourceDate } : {}),
     sourceId: String(row.sourceNumber),
     sourceTitle: row.sourceNumber === 108 ? 'Independent Work' : row.title
   }
