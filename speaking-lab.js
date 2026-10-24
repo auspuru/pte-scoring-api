@@ -119,7 +119,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
         if(!previous || next.scoringMode!=='local'||next.version!==previous.version) {
           // Content retries must retain the independent assessment of the same audio.
           const savedDelivery={};
-          for(const key of ['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons'])
+          for(const key of ['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory'])
             if(previous&&Object.prototype.hasOwnProperty.call(previous,key))savedDelivery[key]=previous[key];
           a.result={...next,...savedDelivery};
         }
@@ -136,9 +136,14 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
             const comparisons={...a.result.deliveryComparisons};
             if(a.result.deliveryProvider==='azure-speech-pronunciation'&&!comparisons.azure)comparisons.azure=snapshot({pronunciation:a.result.pronunciation,fluency:a.result.fluency,deliveryVersion:a.result.deliveryVersion,deliveryProvider:a.result.deliveryProvider},a.recording.hash);
             const assessed=await primaryAudio(req.speakingUser,a,q);
+            const history={...a.result.deliveryComparisonHistory};
+            if(comparisons.gpt&&comparisons.gpt.deliveryVersion!==gptDelivery.VERSION)history.gpt=[...(history.gpt||[]),comparisons.gpt].slice(-5);
+            if(comparisons.azure?.status==='assessed'&&comparisons.azure.deliveryVersion!==delivery.VERSION){
+              history.azure=[...(history.azure||[]),comparisons.azure].slice(-5);delete comparisons.azure;
+            }
             comparisons.gpt=snapshot(assessed,a.recording.hash);
             comparisons.azure ||= {status:azureComparisonAvailable?'pending':'not-configured',recordingHash:a.recording.hash};
-            a.result={...a.result,...assessed,deliveryComparisons:comparisons};
+            a.result={...a.result,...assessed,deliveryComparisons:comparisons,...(Object.keys(history).length?{deliveryComparisonHistory:history}:{})};
           } else {
             const assessed=await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe});
             if(assessed)a.result={...a.result,...assessed};

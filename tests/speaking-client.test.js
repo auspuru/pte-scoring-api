@@ -45,15 +45,30 @@ function harness({includePredictions=false}={}) {
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
 
-test('RL shows GPT as current and renders paired provider scores with escaped metadata',async()=>{
+test('RL shows both provider scores openly and does not trust provider metadata',async()=>{
   const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={rl:version};
   await h.controller.open('rl');await h.click({speakingQuestion:'rl-1'});
   const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
   a.result={total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:version,deliveryModel:'<img src=x onerror=alert(1)>',
     pronunciation:{score:5,maximum:5},fluency:{score:4,maximum:5},deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:4}},azure:{status:'pending'}}};
   await h.click({speakingAttempt:a.id});
-  assert.match(h.host.innerHTML,/Compare audio scorers/);assert.match(h.host.innerHTML,/5\/5/);assert.match(h.host.innerHTML,/Azure/);assert.match(h.host.innerHTML,/pending/);
-  assert.doesNotMatch(h.host.innerHTML,/Delivery scoring has been recalibrated/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);assert.match(h.host.innerHTML,/&lt;img src=x/);
+  assert.match(h.host.innerHTML,/<section class="speaking-provider-scores"/);assert.match(h.host.innerHTML,/Scores from both providers/);assert.match(h.host.innerHTML,/5\/5/);assert.match(h.host.innerHTML,/Azure Speech/);assert.match(h.host.innerHTML,/Assessing audio/);
+  assert.doesNotMatch(h.host.innerHTML,/<summary>Compare audio scorers/);assert.doesNotMatch(h.host.innerHTML,/Delivery scoring has been recalibrated/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);
+  const before=h.requests.length,uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length;
+  a.result.deliveryComparisons.azure={status:'assessed',pronunciation:{score:3},fluency:{score:4}};
+  h.tick(3000);await flush();
+  assert.match(h.nodes.get('speaking-provider-scores').innerHTML,/3\/5/);assert.match(h.nodes.get('speaking-provider-scores').innerHTML,/Complete/);
+  assert.equal(h.requests.slice(before).filter(r=>r.url.endsWith('/'+a.id)&&!r.body).length,1);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
+  const done=h.requests.length;h.tick(3000);await flush();assert.equal(h.requests.length,done,'Stop polling after the comparison completes.');
+});
+
+test('Leaving a result cancels pending comparison polling',async()=>{
+  const h=harness();await h.controller.open('rl');await h.click({speakingQuestion:'rl-1'});
+  const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
+  a.result={total:6,maximum:6,overview:'Saved.',strengths:[],improvements:[],deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'pending'}}};
+  await h.click({speakingAttempt:a.id});h.controller.leave();const requests=h.requests.length;
+  h.tick(3000);await flush();assert.equal(h.requests.length,requests);
 });
 
 test('Describe Image renders quoted Keep/Change/Try coaching safely and refreshes saved feedback without recording again',async()=>{

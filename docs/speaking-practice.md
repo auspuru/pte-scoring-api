@@ -25,8 +25,9 @@ When Azure Speech pronunciation assessment is configured, the saved recording ca
 also receive pronunciation and oral-fluency practice estimates on a 0–5 scale plus
 0–100 diagnostic detail. Those delivery scores come from the audio, never from the
 confirmed transcript alone, and are labelled as practice estimates. Pronunciation
-uses pronunciation accuracy plus prosody when available; oral fluency uses Azure's
-fluency signal plus prosody when available. The portal uses a conservative mapping
+uses Azure's pronunciation accuracy; oral fluency uses Azure's separate fluency
+signal. Prosody and weak-word flags remain diagnostic and do not create extra
+trait deductions. The portal uses a conservative mapping
 from Azure's 0–100 signals to the six Pearson-style descriptor levels rather than
 treating Azure percentages as Pearson marks. Without Azure
 configuration, delivery remains available for teacher review. If the semantic
@@ -126,12 +127,30 @@ percentages or Pearson /90 conversion are fabricated.
 Azure remains available and assesses the same recording in the background. Its
 result cannot delay or overwrite GPT's displayed scores. Provider/model, version,
 assessment time, recording hash and separate scores are stored in each private
-attempt's `deliveryComparisons`. Reopening a result shows the latest comparison;
+attempt's `deliveryComparisons`. Both providers are visible in an open score table.
+A bounded read-only poll updates pending Azure scores without restarting playback,
+uploading audio or regrading. Polling stops on completion, leaving the result, an
+account change, an error or after three minutes. Reopening shows the latest result;
 pending comparisons interrupted by a restart can resume when the attempt is opened.
 Unavailable comparisons remain visibly unavailable. Existing successful Azure
-assessments are preserved when updating a saved attempt to GPT. Successful provider
-results are reused on repeat submissions, including content retries. Content
-policies and other tasks' Azure delivery routes retain their existing behavior.
+assessments are preserved when updating a saved attempt to GPT. Successful current
+provider results are reused on repeat submissions, including content retries.
+Explicit updates under a new policy retain earlier provider snapshots in a bounded
+history before refreshing the pair. Content policies and task-to-provider routes
+retain their existing behavior.
+
+The Academy's `intelligibility-delivery-v3` instructions, timestamp bounds and
+score-impact checks are ported from `auspuru/Describe/backend/audio-scoring.js`
+(source blob `48abed5def063388005e4a650fe044163244b710`). Clear accents, harmless
+isolated slips, natural boundary pauses and smooth recovery are allowed at the
+top band. GPT deductions require timestamped audible evidence and a real effect
+on clarity or connected flow. Optional polish cannot justify a deduction; an
+unsupported trait is withheld while a valid companion score survives. There are
+no paid repair calls or automatic score bonuses. Azure applies the independent
+trait policy by removing its extra prosody weighting; native accuracy and fluency
+signals still use the disclosed acoustic mapping. Its numbers remain acoustic
+practice estimates, not independently verified listener-impact judgments. The
+providers are never forced to agree and GPT does not adjust Azure's marks.
 
 The GPT-4o audio preview is retired; the user selected its supported replacement,
 GPT Audio 1.5. Reference: https://developers.openai.com/api/docs/deprecations and
@@ -167,7 +186,7 @@ are configured. The UI discloses before submission that the saved recording will
 sent to Azure for pronunciation and oral-fluency practice feedback. Audio is converted
 with ffmpeg to 16 kHz mono PCM WAV and split into segments of at most 28 seconds to
 stay within the short-audio pronunciation-assessment limit. Each segment is assessed
-with Comprehensive HundredMark pronunciation assessment and prosody enabled. The
+with Comprehensive HundredMark pronunciation assessment and prosody enabled for diagnostics. The
 confirmed transcript is used directly for a single segment; longer recordings use
 segment transcription when available and fall back to sequential slices of the
 confirmed transcript. Provider failures never remove a successfully generated
