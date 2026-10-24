@@ -1,0 +1,422 @@
+[
+  {
+    "id": "rts-original-20261024-01",
+    "title": "Assignment upload problem",
+    "text": "You finished your assignment before the deadline, but the university website stopped working when you tried to upload it. You saved a screenshot showing the error and the time. You need help submitting your work without a late penalty. What would you say to your lecturer?",
+    "sample": "Excuse me, I finished my assignment on time, but the upload website stopped working. I have a screenshot showing the error and time. Could you let me submit it another way and consider the technical problem before applying a late penalty?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-02",
+    "title": "Shared kitchen",
+    "text": "You share a student apartment with two other people. Recently, dirty dishes have been left in the sink overnight, making it difficult for you to prepare breakfast before class. You want to agree on a fair cleaning arrangement. What would you say to your flatmates?",
+    "sample": "Hi everyone, could we agree on cleaning up our dishes before bed? The full sink makes it difficult for me to prepare breakfast before class. We could each wash what we use, or agree on another arrangement that works for everyone.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-03",
+    "title": "Group presentation rehearsal",
+    "text": "Your group presentation is on Friday, but two members want to rehearse at a time when you have a compulsory laboratory class. You still want to take part and need to suggest another way to practise together. What would you say to your group?",
+    "sample": "Hi everyone, I have a compulsory lab during the proposed rehearsal, but I would really like to practise with you. Could we choose another time? If that is difficult, I could rehearse my part with you on a short call afterwards.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-04",
+    "title": "Study room booking",
+    "text": "You booked a library study room for a group meeting, but another group is using it when you arrive. They believe they also have a booking. You have the confirmation on your phone and approach the library staff for help. What would you say to them?",
+    "sample": "Hello, I booked this study room, but another group believes they have booked it too. Here is my confirmation. Could you check the bookings and help us find a room without interrupting anyone unnecessarily?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-05",
+    "title": "Changing a tutorial",
+    "text": "You have been assigned to a Tuesday afternoon tutorial, but it overlaps with a compulsory subject in your course. There is another tutorial on Thursday morning that you could attend. You want to change groups. What would you say to the course administrator?",
+    "sample": "Hello, my Tuesday tutorial clashes with another compulsory subject. I can attend the Thursday morning group instead. Would it be possible to transfer me, or let me know what I need to do to request the change?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-06",
+    "title": "Food for a club event",
+    "text": "You are organising lunch for your university photography club. One member has told you that they cannot eat certain foods, but you are unsure which foods they need to avoid. You need to check their dietary requirements before ordering. What would you say to this member?",
+    "sample": "Hi, I am organising our photography club lunch and want to make sure there is something suitable for you. Could you tell me which foods you need to avoid and whether there is anything else I should check with the caterer?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-07",
+    "title": "Missed safety training",
+    "text": "You missed the laboratory safety session because you were attending a medical appointment. You have been told that you cannot join practical classes until you complete the training. You want to explain your absence and arrange to catch up. What would you say to the laboratory coordinator?",
+    "sample": "Excuse me, I missed the safety session because of a medical appointment. I understand I need the training before joining practical classes. Could you tell me when I can complete it or whether there is a catch-up session?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-08",
+    "title": "Duplicate membership payment",
+    "text": "You joined a university sports club and paid the membership fee online. Your bank statement now shows that the fee was charged twice. You have receipts for both payments and want the duplicate payment refunded. What would you say to the club administrator?",
+    "sample": "Hello, I paid my sports club membership online, but my statement shows two charges. I have both receipts here. Could you check the payments and arrange a refund of the duplicate charge, please?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-09",
+    "title": "Wrong takeaway order",
+    "text": "You bought a vegetarian sandwich from the campus cafe, but after opening the bag you noticed that it contains a chicken sandwich. Your next class starts in ten minutes, and you need a suitable replacement before you leave. What would you say to the cafe staff?",
+    "sample": "Excuse me, I ordered a vegetarian sandwich, but this one contains chicken. My class starts in ten minutes. Could you replace it with a vegetarian option before I leave, please?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-10",
+    "title": "A parcel at the wrong door",
+    "text": "A parcel addressed to another student has been delivered outside your room in university accommodation. You recognise the student from the floor above, but you have never spoken to them. You want to introduce yourself and return the parcel. What would you say to the student?",
+    "sample": "Hi, I live on the floor below. This parcel has your name on it, but it was left outside my room. I kept it safe and wanted to return it. Would now be a convenient time to hand it over?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-11",
+    "title": "Interview during a field trip",
+    "text": "You have been invited to an internship interview on Wednesday morning. You have just learned that your course has a compulsory field trip at the same time. You want to explain the clash and request a different interview time. What would you say to the internship coordinator?",
+    "sample": "Hello, thank you for inviting me to the internship interview. Unfortunately, it clashes with a compulsory field trip on Wednesday morning. Would another interview time be possible? I am still very interested and happy to discuss available alternatives.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-12",
+    "title": "Quiet time for an interview",
+    "text": "You have an important online interview tomorrow morning. Your housemate usually practises the guitar in the room next to yours at that time. You want to ask them to practise later that day so you can have a quiet interview. What would you say to your housemate?",
+    "sample": "Hi, I have an online interview tomorrow morning, which is when you usually practise guitar. Could you practise later that day so I have a quiet space for the call? I would appreciate it, and we can work out a time together.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-13",
+    "title": "Unexpected transport delay",
+    "text": "Your train has stopped between stations, and you will not reach campus in time for your scheduled presentation. You have the presentation file on your phone. You need to explain the delay and ask to present later or online. What would you say to your lecturer?",
+    "sample": "Hello, my train has stopped between stations and I will not reach campus in time for my presentation. I have the file on my phone. Could I present later or join online? Please let me know which option would work best.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-14",
+    "title": "Lost USB drive",
+    "text": "You used a computer in the university library yesterday and think you left your USB drive there. It contains the latest version of your research project. You want to find out whether anyone has handed it in and where you should check. What would you say to the library assistant?",
+    "sample": "Hello, I think I left my USB drive at a library computer yesterday. It contains my latest research project. Has anyone handed one in? I can describe it and show you where I was sitting. Where else should I check?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-15",
+    "title": "An expensive celebration",
+    "text": "Your classmates want to celebrate the end of exams at an expensive restaurant. You would like to join them, but the suggested cost is beyond your budget. You want to suggest a more affordable way to celebrate together. What would you say to your classmates?",
+    "sample": "Hi everyone, I would love to celebrate with you, but that restaurant is beyond my budget. Could we choose somewhere more affordable or have a picnic together? I would still really like to join the celebration.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-16",
+    "title": "Help with a volunteer stall",
+    "text": "You are helping at a university charity stall on Saturday, but another volunteer has cancelled. You need someone to help for two hours in the afternoon. You want to explain the role to a friend and ask them to help. What would you say to your friend?",
+    "sample": "Hi, would you be able to help at our university charity stall for two hours on Saturday afternoon? Another volunteer has cancelled. You would help welcome visitors and run the stall with us. I can explain the details if you are available.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-17",
+    "title": "A work roster conflict",
+    "text": "Your manager has scheduled you to work on Monday evening, although you previously explained that you have a university class then. You are available on Wednesday instead and want to request a shift change. What would you say to your manager?",
+    "sample": "Hi, I noticed I am rostered on Monday evening, when I have my university class. I mentioned that conflict earlier, and I am available on Wednesday instead. Could we change the shift, please? I am happy to discuss another suitable time too.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-18",
+    "title": "Unclear assignment feedback",
+    "text": "Your tutor returned your assignment with a comment saying that your evidence needs to be stronger. You are unsure whether this means using more sources or explaining your examples more clearly. You need clarification so you can improve your next assignment. What would you say to your tutor?",
+    "sample": "Excuse me, could you clarify your comment about stronger evidence in my assignment? Should I use more sources, or explain my examples in more detail? Looking at one section together would help me understand what to improve next time.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-19",
+    "title": "A leak in student housing",
+    "text": "The tap in your student apartment has been leaking for several days. You reported it online, but nobody has contacted you, and water is now collecting under the sink. You call the accommodation office to request a repair. What would you say to the staff member?",
+    "sample": "Hello, I reported a leaking tap online several days ago, but have not heard back. Water is now collecting under the sink. Could you arrange a repair and tell me when someone can come? Please let me know what I should do meanwhile.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-20",
+    "title": "An accessible event venue",
+    "text": "You are organising a student society meeting and discover that the booked room can only be reached by stairs. One member uses a wheelchair and plans to attend. You need to request a room that everyone can access. What would you say to the events officer?",
+    "sample": "Hello, the room booked for our society meeting is only accessible by stairs, and one member uses a wheelchair. Could you help us move the meeting to an accessible room so everyone can attend?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-21",
+    "title": "Incorrect attendance record",
+    "text": "Your online attendance record shows that you missed last Friday's tutorial, but you attended and took part in the group activity. You are concerned because attendance affects your course requirements. You want to explain the error and have the record corrected. What would you say to your tutor?",
+    "sample": "Excuse me, my attendance record says I missed Friday's tutorial, but I attended and participated in the group activity. Could you check the record and help correct it? I am concerned because attendance affects my course requirements.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-22",
+    "title": "Borrowing a camera",
+    "text": "You need a camera for a university project this weekend. The equipment office has none available, but a classmate has offered to lend you theirs. You want to thank them and arrange when to collect and return the camera. What would you say to your classmate?",
+    "sample": "Hi, thank you for offering to lend me your camera. It would really help with my weekend project. When would be convenient for me to collect it, and when do you need it back? I will take care of it and follow your instructions.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-23",
+    "title": "A workshop has moved",
+    "text": "You are helping run a university workshop. The original room has become unavailable, so the session has moved to a building five minutes away and will start fifteen minutes later. Several students are waiting outside the original room. What would you say to explain the new arrangements to them?",
+    "sample": "Hi everyone, our workshop has moved because this room is unavailable. It will now be in another building about five minutes away and start fifteen minutes later. I can show you where to go. Thank you for your patience.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-24",
+    "title": "A friend asks for notes",
+    "text": "A classmate who missed two lectures has asked to borrow your notes. You are happy to help, but you need your notebook tonight to study for a quiz. You want to suggest a way to share your notes while keeping the notebook. What would you say to your classmate?",
+    "sample": "Hi, I am happy to share my lecture notes, but I need the notebook tonight for my quiz revision. Would photos of the relevant pages work for you? That way you can catch up and I can still use my notebook.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-25",
+    "title": "A scholarship reference",
+    "text": "You are applying for a scholarship and need a reference from a lecturer who knows your work. The application closes in ten days. You want to explain the opportunity and ask for a reference before the deadline. What would you say to your lecturer?",
+    "sample": "Excuse me, I am applying for a scholarship and wondered whether you would be willing to provide a reference. The application closes in ten days. I can send the scholarship details and any information you need. Would that deadline be manageable for you?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-26",
+    "title": "An overdue equipment return",
+    "text": "You borrowed a voice recorder from your department and were supposed to return it yesterday. You forgot because you were preparing for an exam, and you have brought it back today. You need to apologise and check whether anything else is required. What would you say to the staff member at the equipment desk?",
+    "sample": "Hello, I am sorry I am returning this recorder a day late. I forgot while preparing for an exam. I have brought it back now. Could you let me know whether there is a return form or anything else I need to do?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-27",
+    "title": "Changing a meeting format",
+    "text": "Your project group has arranged to meet on campus tomorrow. You have injured your ankle and cannot travel easily, but you have completed your research and want to contribute. You want to ask if you can join by video call. What would you say to your group?",
+    "sample": "Hi everyone, I have injured my ankle and will find it difficult to travel to campus tomorrow. My research is ready and I still want to contribute. Could I join our meeting by video call? I can share my work beforehand.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-28",
+    "title": "A tutor runs out of time",
+    "text": "You stayed after class to ask your tutor about a difficult topic, but the tutor now needs to leave for another lecture. You still need guidance before next week's test and want to arrange another time or way to get help. What would you say to your tutor?",
+    "sample": "Excuse me, I understand you need to leave for your next lecture. I still need some help with this topic before the test. Could we arrange another time, or could I send you my question to discuss during your consultation hours?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-29",
+    "title": "Disagreeing about a project topic",
+    "text": "Your project partner wants to choose a broad topic that would require collecting a large amount of data. You are worried that your group cannot finish the work within two weeks. You want to suggest narrowing the topic while keeping their main idea. What would you say to your partner?",
+    "sample": "Hi, I like your main idea, but I am worried the amount of data needed will be too much for two weeks. Could we focus on one part of the topic? That would keep your idea while giving us a more manageable project.",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  },
+  {
+    "id": "rts-original-20261024-30",
+    "title": "An event runs beyond your availability",
+    "text": "You agreed to help at the university open day until three o'clock. The organiser has now asked you to stay until five, but you have a work shift starting at four. You want to explain your availability and offer help before leaving. What would you say to the organiser?",
+    "sample": "Hi, I can help until three as agreed, but I cannot stay until five because my work shift starts at four. I am happy to finish priority tasks before leaving or help hand over to someone else. Which tasks would be most useful?",
+    "facts": [
+      "Communicate the purpose of the situation directly to the intended person.",
+      "Offer a relevant request, explanation or practical response consistent with the situation."
+    ],
+    "contentOrigin": "original-practice",
+    "practiceSet": "Original situation practice - October 2026",
+    "audioPrompt": false,
+    "instruction": "Read the situation. Speak directly to the person indicated and respond to the final question."
+  }
+]

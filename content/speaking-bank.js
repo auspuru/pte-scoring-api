@@ -123,9 +123,10 @@ add('rts', [
     facts: ['Politely explain that the booked room’s projector will not turn on.', 'State the need to rehearse a group presentation this afternoon.', 'Ask for technical help or an available alternative room or equipment.', 'Respect existing bookings and consider a practical backup.'],
     sample: 'Hello, our group has booked a study room for a presentation rehearsal this afternoon, but the projector won’t switch on. Could someone check it for us? If it cannot be fixed soon, is there an available room or a portable projector we could use? We don’t want to interfere with anyone else’s booking. If there is no alternative, we can rehearse from a laptop, but working projection equipment would be very helpful.' }
 ]);
+questions.push(...require('./rts-original-practice.json').map(q => ({type:'rts', ...types.rts, ...q})));
 for (const q of questions) {
   if (q.turns) q.text = q.turns.map(([speaker, text]) => speaker + ': ' + text).join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
 }
-module.exports = { version: 2, types, questions,
+module.exports = { version: 3, types, questions,
   source: 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf' };

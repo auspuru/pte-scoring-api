@@ -2,9 +2,9 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
-test('There are five original questions for each supported Speaking task, with samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:79,recordings:20});
-  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,79);
+test('Speaking questions include the original situation practice set, samples and verified audio',()=>{
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:109,recordings:20});
+  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,109);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
 test('Read Aloud checks omissions, insertions and replacements without inventing a delivery score',()=>{
@@ -143,7 +143,7 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
-  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,79);
+  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,109);
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
   assert.equal((await request('/attempts',undefined,'')).status,401);
@@ -234,4 +234,9 @@ test('Supplied image questions serve their real asset path and reveal reference 
  assert.equal(after.sample,item.sample);assert.deepEqual(after.facts,item.facts);
  assert.equal(before.predictionSource.sourceId,item.predictionSource.sourceId);
  }
+});
+
+test("Original situation questions expose the complete question without a missing audio URL",()=>{
+ const rows=require("../content/rts-original-practice.json");assert.equal(rows.length,30);
+ for(const row of rows){const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.match(q.text,/What would you say[^?]*\?$/);const shown=question(q);assert.equal(shown.text,row.text);assert.equal(shown.audioUrl,undefined);assert.equal(shown.preparation,10);assert.equal(shown.seconds,40);}
 });

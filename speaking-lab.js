@@ -5,7 +5,7 @@ const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
 const gptDelivery=require('./gpt-speaking-delivery');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
-const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type);
+const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
 function question(q,reveal=false) {
   return {id:q.id,type:q.type,name:q.name,title:q.title,instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
     ...(['ra','rts'].includes(q.type)?{text:q.text}:{}),

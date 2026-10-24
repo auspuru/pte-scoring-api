@@ -276,3 +276,13 @@ composition previews are removed. Dictation/SST catalogues show 12 items per pag
 Individual submissions proceed directly; saved answers and Back/Next remain.
 Writing history retains up to 250 attempts and only reconciles expired timers,
 avoiding writes for each saved result when navigating.
+
+## Original situation practice expansion
+
+Added 30 original Respond to a Situation questions from the revised teaching
+booklet, each ending in a direct question such as "What would you say to your
+manager?" Existing questions and IDs are retained. Each addition has a sample
+response. The additions use a displayed-text prompt with the existing
+10-second preparation and 40-second response flow; they do not request a missing
+audio asset. Existing audio prompts are retained. These are original practice
+scenarios, not claimed exam predictions or copied question-bank content.
