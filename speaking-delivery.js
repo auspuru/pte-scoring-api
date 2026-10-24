@@ -6,7 +6,8 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-09-30.4';
+const VERSION = 'azure-delivery-2026-10-24.1';
+const DELIVERY_RUBRIC_VERSION = require('./delivery-rubric').RUBRIC_VERSION;
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
 const CONTENT_TYPE = 'audio/wav; codecs=audio/pcm; samplerate=16000';
@@ -163,12 +164,11 @@ function aggregate(chunks,{evidence}={}) {
   const accuracy=average('accuracy'),fluency=average('fluency'),prosody=average('prosody'),completeness=average('completeness');
   // Pearson's Pronunciation and Oral Fluency are distinct traits. Keep them
   // separate instead of using Azure PronScore, which also mixes completeness.
-  const pronunciationRaw=Number.isFinite(accuracy)
-    ? round1(Number.isFinite(prosody)?accuracy*0.85+prosody*0.15:accuracy)
-    : null;
-  const fluencyRaw=Number.isFinite(fluency)
-    ? round1(Number.isFinite(prosody)?fluency*0.80+prosody*0.20:fluency)
-    : null;
+  // Apply the Academy's independent-trait policy: a secondary prosody signal
+  // must not create another penalty for otherwise clear sounds or connected flow.
+  // Preserve native evidence and the disclosed acoustic mapping; no score bonus.
+  const pronunciationRaw=accuracy;
+  const fluencyRaw=fluency;
   const issues=[];
   for(const item of usable)for(const word of item.words||[]) {
     if(word.errorType!=='None'||(Number.isFinite(word.accuracy)&&word.accuracy<70))issues.push(word);
@@ -182,6 +182,8 @@ function aggregate(chunks,{evidence}={}) {
     : '';
   return {
     deliveryVersion:VERSION,
+    deliveryRubricVersion:DELIVERY_RUBRIC_VERSION,
+    deliveryCalibration:'Independent Azure trait signals; prosody and weak-word flags are diagnostic only.',
     pronunciation:{
       score:enough?band5(pronunciationRaw):null,maximum:5,raw:pronunciationRaw,
       descriptor:enough?descriptor('pronunciation',band5(pronunciationRaw)):'',

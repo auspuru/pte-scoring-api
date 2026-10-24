@@ -23,6 +23,7 @@
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
+    let comparisonTimer,comparisonBusy=false;
     const libraryFilters=new Map(),pageSize=20;
     const filters=()=>{if(!libraryFilters.has(activeType))libraryFilters.set(activeType,{search:'',category:'all',page:0});return libraryFilters.get(activeType);};
     const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};
@@ -75,10 +76,12 @@
     }
     function releasePlayback(){if(playbackUrl)env.URL.revokeObjectURL(playbackUrl);playbackUrl='';}
     function reset() {
+      stopComparisonPoll();
       cacheDraft();serial++;visible=false;owner='';attempt=null;activeType='';libraryFilters.clear();clearAudio();pendingUploads.clear();releasePlayback();uploadBlob=null;phase='idle';busy=false;
       if(host)host.replaceChildren();
     }
     function leave() {
+      stopComparisonPoll();
       cacheDraft();if(attempt?.status==='draft'&&!busy)saveTranscript().catch(()=>{});
       visible=false;serial++;clearAudio();if(phase==='preparing'||phase==='listening')phase='idle';
     }
@@ -124,11 +127,13 @@
       try{const history=await api('/attempts');if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.result?(a.result.scoringMode==='local'||a.result.score_provisional||a.result.total==null?'Content review pending':a.result.total+'/'+a.result.maximum+' content'):a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
     async function start(questionId) {
+      stopComparisonPoll();
       if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
       try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id) {
+      stopComparisonPoll();
       if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false,shouldAssess=false;
       try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted')await loadPlayback();else if(a.recording)shouldAssess=true;else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldAssess&&valid(ticket,user)&&attempt?.status==='draft'&&attempt.recording)await submit();
@@ -183,7 +188,36 @@
       chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+number+'</h2></div>'+(submitted?'<button class="portal-button" data-speaking-action="list">My questions</button>':'')+'</div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
         +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<img class="speaking-image" src="'+q.imageUrl+'" alt="'+esc(q.title)+' — describe the visual and its labelled data">':'')
         +examPanel+review+questionNavigation());
-      if(submitted)mountPlayback();refreshControls();
+      if(submitted){mountPlayback();pollComparison();}refreshControls();
+    }
+    function stopComparisonPoll(){env.clearInterval(comparisonTimer);comparisonTimer=null;}
+    function providerScores(r) {
+      const paired=r?.deliveryComparisons;if(!paired)return '';
+      const statuses={pending:'Assessing audio…',assessed:'Complete',unavailable:'Unavailable','not-configured':'Not available'};
+      const rows=[['GPT Audio',paired.gpt],['Azure Speech',paired.azure]].map(([name,row])=>{
+        const score=trait=>row?.[trait]?.score==null?'—':row[trait].score+'/5';
+        const missing=[row?.pronunciation?.score,row?.fluency?.score].filter(score=>score==null).length;
+        const assessed=row?.status==='assessed'&&missing?(missing===2?'Not assessed':'Partly assessed'):statuses[row?.status]||'Not assessed';
+        return '<tr><th scope="row">'+name+'</th><td>'+esc(score('pronunciation'))+'</td><td>'+esc(score('fluency'))+'</td><td>'+esc(assessed)+'</td></tr>';
+      }).join('');
+      return '<h4>Scores from both providers</h4><p class="speaking-footnote">Same recording · separate audio assessments</p><div class="speaking-score-table-wrap"><table class="speaking-score-table"><thead><tr><th>Scorer</th><th>Pronunciation</th><th>Oral fluency</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="speaking-footnote">Minor slips and natural pauses are not automatic deductions. Each provider assesses the audio independently.</p>';
+    }
+    function pollComparison() {
+      if(comparisonTimer||attempt?.result?.deliveryComparisons?.azure?.status!=='pending')return;
+      const id=attempt.id,ticket=serial,user=owner,until=now()+180000;
+      comparisonTimer=env.setInterval(async()=>{
+        if(!valid(ticket,user)||!visible||attempt?.id!==id||now()>until){stopComparisonPoll();return;}
+        if(doc.hidden||busy||comparisonBusy)return;
+        comparisonBusy=true;
+        try {
+          const updated=await api('/attempts/'+id);
+          if(!valid(ticket,user)||!visible||attempt?.id!==id)return;
+          attempt.result=updated.result;
+          const panel=doc.getElementById('speaking-provider-scores');if(panel)panel.innerHTML=providerScores(updated.result);
+          if(updated.result?.deliveryComparisons?.azure?.status!=='pending')stopComparisonPoll();
+        } catch {stopComparisonPoll();}
+        finally {comparisonBusy=false;}
+      },3000);
     }
     function describeImageCoaching(r) {
       if(attempt?.question.type!=='di'||r.scoringMode==='local'||r.score_provisional===true)return '';
@@ -236,7 +270,7 @@
             +'</div>'
             +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words worth practising</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
             +'</details>'
-          : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>Not enough speech for a reliable delivery score</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
+          : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>'+(r.deliveryFailureTraits?.length?'Some audio feedback could not be verified':'Not enough speech for a reliable delivery score')+'</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
       const contentFallback=contentPending
         ? '<div class="speaking-delivery-callout speaking-content-fallback"><div><strong>Content review pending</strong><p>The semantic reviewer could not complete this assessment. Your transcript and audio feedback are retained; retry content review without re-recording.</p></div><button class="portal-button" data-speaking-action="submit">Retry content review</button></div>'
         : '';
@@ -248,20 +282,17 @@
           +(mistakes.length?'<div class="speaking-word-diff speaking-word-errors">'+mistakes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):'Extra: '+esc(c.actual))+'</span>').join('')+'</div>':'<p class="speaking-success-note">All reference words matched.</p>')
           +'<details class="speaking-inner-details"><summary>View full word-by-word comparison</summary><div class="speaking-word-diff">'+r.changes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):c.kind==='insertion'?'Extra: '+esc(c.actual):esc(c.actual))+'</span>').join('')+'</div></details></div>'
         : '';
-      const paired=r.deliveryComparisons;
-      const providerComparison=paired?'<details class="speaking-inner-details"><summary>Compare audio scorers</summary><p>Main delivery scorer: '+esc(r.deliveryRequestedModel||r.deliveryModel||r.deliveryProvider)+'</p><table><thead><tr><th>Scorer</th><th>Pronunciation</th><th>Fluency</th><th>Status</th></tr></thead><tbody>'
-        +[['GPT',paired.gpt],['Azure',paired.azure]].map(([name,row])=>'<tr><td>'+name+'</td><td>'+esc(row?.pronunciation?.score==null?'—':row.pronunciation.score+'/5')+'</td><td>'+esc(row?.fluency?.score==null?'—':row.fluency.score+'/5')+'</td><td>'+esc(row?.status||'unavailable')+'</td></tr>').join('')
-        +'</tbody></table><p>Both assess the same saved recording. Reopen this attempt to see a pending comparison when it finishes.</p></details>':'';
+      const providerComparison=r.deliveryComparisons?'<section class="speaking-provider-scores" id="speaking-provider-scores" aria-live="polite">'+providerScores(r)+'</section>':'';
       return '<div class="speaking-result-head"><div><span class="speaking-kicker">Your result</span><h3>'+esc(r.overview)+'</h3></div><span class="speaking-result-label">Practice estimate</span></div>'
         +'<div class="speaking-metrics">'
           +scoreCard('Content',{score:r.total,maximum:r.maximum},'content')
           +scoreCard('Pronunciation',pronunciationCurrent,'pronunciation',pronunciationDetail)
           +scoreCard('Oral fluency',fluencyCurrent,'fluency',fluencyDetail)
         +'</div>'
+        +providerComparison
         +contentFallback
         +imageCoaching
         +deliveryStatus
-        +providerComparison
         +(hasImageCoaching?'':'<div class="speaking-feedback-grid">'
           +(r.strengths.length?'<section><h4>Content strengths</h4>'+list(r.strengths)+'</section>':'')
           +(r.improvements.length?'<section><h4>Highest-value content improvement</h4>'+list(r.improvements)+'</section>':'')

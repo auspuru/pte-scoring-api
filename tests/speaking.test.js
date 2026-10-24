@@ -48,7 +48,7 @@ test('Delivery feedback includes actionable coaching and filters noisy numeric/f
   const r=delivery.aggregate([{accuracy:95,fluency:86,prosody:69,weight:39,words:[
     {word:'for',accuracy:4,errorType:'Mispronunciation'},{word:'120',accuracy:17,errorType:'Mispronunciation'},{word:'transport',accuracy:62,errorType:'Mispronunciation'}
   ]}],{evidence});
-  assert.equal(r.pronunciation.score,4);assert.equal(r.fluency.score,3);
+  assert.equal(r.pronunciation.score,5);assert.equal(r.fluency.score,4);
   assert.match(r.pronunciation.coaching,/stress|emphasis/i);assert.match(r.fluency.coaching,/meaning groups|steady pace|pause/i);
   assert.deepEqual(r.pronunciation.words.map(w=>w.word),['transport']);
 });
