@@ -24,7 +24,7 @@ function harness({includePredictions=false}={}) {
   env.fetch=async(url,options={})=>{
     requests.push({url,body:options.body});const route=url.replace('/api/speaking',''),parts=route.split('/').filter(Boolean),body=typeof options.body==='string'?JSON.parse(options.body):options.body;
     const reply=(data,ok=true)=>({ok,json:async()=>data,blob:async()=>new Blob([Buffer.alloc(300)])});
-    if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:includePredictions?bank.questions:bank.questions.filter(q=>!q.predictionSource),transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery'});
+    if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:includePredictions?bank.questions:bank.questions.filter(q=>!q.predictionSource),transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery',deliveryVersions:env.deliveryVersions||{}});
     if(route==='/attempts'&&!body)return reply([...attempts.values()].map(a=>({...a,title:bank.questions.find(q=>q.id===a.questionId).title,type:bank.questions.find(q=>q.id===a.questionId).type})));
     if(route==='/attempts'){const a={id:body.id,questionId:body.questionId,status:'draft',revision:0,transcript:'',startedAt:now};attempts.set(a.id,a);return reply(present(a));}
     const a=attempts.get(parts[1]);assert(a,route);
@@ -44,6 +44,17 @@ function harness({includePredictions=false}={}) {
     click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}})};
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
+
+test('RL shows GPT as current and renders paired provider scores with escaped metadata',async()=>{
+  const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={rl:version};
+  await h.controller.open('rl');await h.click({speakingQuestion:'rl-1'});
+  const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
+  a.result={total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:version,deliveryModel:'<img src=x onerror=alert(1)>',
+    pronunciation:{score:5,maximum:5},fluency:{score:4,maximum:5},deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:4}},azure:{status:'pending'}}};
+  await h.click({speakingAttempt:a.id});
+  assert.match(h.host.innerHTML,/Compare audio scorers/);assert.match(h.host.innerHTML,/5\/5/);assert.match(h.host.innerHTML,/Azure/);assert.match(h.host.innerHTML,/pending/);
+  assert.doesNotMatch(h.host.innerHTML,/Delivery scoring has been recalibrated/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);assert.match(h.host.innerHTML,/&lt;img src=x/);
+});
 
 test('Describe Image renders quoted Keep/Change/Try coaching safely and refreshes saved feedback without recording again',async()=>{
  const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-1'});await h.click({speakingAction:'skip'});await h.click({speakingAction:'finish'});await flush();

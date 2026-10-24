@@ -210,7 +210,8 @@
           +(ready?'<div class="speaking-metric-value"><strong>'+esc(value.score)+'</strong><span>/ '+esc(value.maximum||5)+'</span></div>':'<div class="speaking-metric-value speaking-metric-pending">—</div>')
           +(detail?'<small>'+detail+'</small>':'')+'</article>';
       };
-      const staleDelivery=!!(catalog.deliveryVersion&&r.deliveryVersion&&catalog.deliveryVersion!==r.deliveryVersion);
+      const expectedDeliveryVersion=catalog.deliveryVersions?.[attempt?.question.type]||catalog.deliveryVersion;
+      const staleDelivery=!!(expectedDeliveryVersion&&r.deliveryVersion&&expectedDeliveryVersion!==r.deliveryVersion);
       const pronunciationCurrent=!staleDelivery?r.pronunciation:null,fluencyCurrent=!staleDelivery?r.fluency:null;
       const pronunciationReady=!!(pronunciationCurrent&&pronunciationCurrent.score!==null&&pronunciationCurrent.score!==undefined&&Number.isFinite(Number(pronunciationCurrent.score)));
       const fluencyReady=!!(fluencyCurrent&&fluencyCurrent.score!==null&&fluencyCurrent.score!==undefined&&Number.isFinite(Number(fluencyCurrent.score)));
@@ -247,6 +248,10 @@
           +(mistakes.length?'<div class="speaking-word-diff speaking-word-errors">'+mistakes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):'Extra: '+esc(c.actual))+'</span>').join('')+'</div>':'<p class="speaking-success-note">All reference words matched.</p>')
           +'<details class="speaking-inner-details"><summary>View full word-by-word comparison</summary><div class="speaking-word-diff">'+r.changes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):c.kind==='insertion'?'Extra: '+esc(c.actual):esc(c.actual))+'</span>').join('')+'</div></details></div>'
         : '';
+      const paired=r.deliveryComparisons;
+      const providerComparison=paired?'<details class="speaking-inner-details"><summary>Compare audio scorers</summary><p>Main delivery scorer: '+esc(r.deliveryRequestedModel||r.deliveryModel||r.deliveryProvider)+'</p><table><thead><tr><th>Scorer</th><th>Pronunciation</th><th>Fluency</th><th>Status</th></tr></thead><tbody>'
+        +[['GPT',paired.gpt],['Azure',paired.azure]].map(([name,row])=>'<tr><td>'+name+'</td><td>'+esc(row?.pronunciation?.score==null?'—':row.pronunciation.score+'/5')+'</td><td>'+esc(row?.fluency?.score==null?'—':row.fluency.score+'/5')+'</td><td>'+esc(row?.status||'unavailable')+'</td></tr>').join('')
+        +'</tbody></table><p>Both assess the same saved recording. Reopen this attempt to see a pending comparison when it finishes.</p></details>':'';
       return '<div class="speaking-result-head"><div><span class="speaking-kicker">Your result</span><h3>'+esc(r.overview)+'</h3></div><span class="speaking-result-label">Practice estimate</span></div>'
         +'<div class="speaking-metrics">'
           +scoreCard('Content',{score:r.total,maximum:r.maximum},'content')
@@ -256,6 +261,7 @@
         +contentFallback
         +imageCoaching
         +deliveryStatus
+        +providerComparison
         +(hasImageCoaching?'':'<div class="speaking-feedback-grid">'
           +(r.strengths.length?'<section><h4>Content strengths</h4>'+list(r.strengths)+'</section>':'')
           +(r.improvements.length?'<section><h4>Highest-value content improvement</h4>'+list(r.improvements)+'</section>':'')
