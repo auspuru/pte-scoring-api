@@ -124,6 +124,7 @@ add('rts', [
     sample: 'Hello, our group has booked a study room for a presentation rehearsal this afternoon, but the projector won’t switch on. Could someone check it for us? If it cannot be fixed soon, is there an available room or a portable projector we could use? We don’t want to interfere with anyone else’s booking. If there is no alternative, we can rehearse from a laptop, but working projection equipment would be very helpful.' }
 ]);
 questions.push(...require('./rts-original-practice.json').map(q => ({type:'rts', ...types.rts, ...q})));
+questions.push(...require('./user-speaking-oct24.json').map(q=>({...types[q.type],...q})));
 for (const q of questions) {
   if (q.turns) q.text = q.turns.map(([speaker, text]) => speaker + ': ' + text).join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;

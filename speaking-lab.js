@@ -168,7 +168,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   app.get('/speaking-image/:id.svg',(req,res)=>{const q=bank.questions.find(q=>q.id===req.params.id&&q.visual&&!q.imageUrl);if(!q)return res.sendStatus(404);res.type('image/svg+xml').set('Cache-Control','public,max-age=3600').send(require('./speaking-visuals').render(q.visual));});
   app.get('/speaking-audio/:id.mp3',wrap(async(req,res)=>{
     const q=bank.questions.find(q=>q.id===req.params.id&&hasPrompt(q));if(!q)throw fail('Recording not found.',404);
-    const folder=path.join(__dirname,'content','speaking-audio'),manifest=JSON.parse(await fs.readFile(path.join(folder,'manifest.json'),'utf8')),entry=manifest[q.id];
+    const folder=path.join(__dirname,'content','speaking-audio'),manifest=require('./content/speaking-audio-manifest')(),entry=manifest[q.id];
     if(!entry||entry.textSha256!==crypto.createHash('sha256').update(q.text).digest('hex'))throw fail('This prompt recording is unavailable. Please retry later.',503);
     res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(path.join(folder,q.id+'.mp3'));
   }));
