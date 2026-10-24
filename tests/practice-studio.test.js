@@ -23,14 +23,15 @@ test('Delegated navigation reaches the actual portal dispatcher, including all s
     if (!nodes.has(id)) nodes.set(id, {innerHTML:''}); return nodes.get(id);
   }};
   let active;
-  const context = {PortalWorkspace: workspace, window:{}, document:doc, savePortalEssayDraft(){},
+  const context = {currentUserId:'pppp', PortalWorkspace: workspace, window:{}, document:doc, savePortalEssayDraft(){},
     portalWorkspace:{activate(route){active=route;return route;},current:()=>active},
     ensureReadingRuntimeLoaded:async()=>({open:request=>calls.push(['reading',request.libraryId])}),
     ensureSpeakingRuntimeLoaded:async()=>({open:type=>calls.push(['speaking',type])}),
     openPractice:()=>calls.push(['essay']), portalCatalogue:{openPractice:()=>calls.push(['hub'])}, toast(error){throw Error(error);}};
   vm.createContext(context);
   const start=source.indexOf('function switchSection('),end=source.indexOf('\n}\n',start);
-  vm.runInContext(source.slice(start,end+2),context);
+  const helper=source.indexOf('function canUseSpeaking(');
+  vm.runInContext(source.slice(helper,source.indexOf('\n',helper))+'\n'+source.slice(start,end+2),context);
   studio.install({document:doc,switchSection:route=>context.switchSection(route)});
   for (const group of catalogue.groups.filter(g=>g.id!=='listening')) for (const task of group.tasks) {
     const button={disabled:false,dataset:{studioRoute:task.route}};

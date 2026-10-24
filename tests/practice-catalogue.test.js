@@ -73,7 +73,7 @@ test('The single catalogue exposes 15 exam-shaped Reading practice mocks without
   assert.equal(catalogue.filterMocks(items, { module:'writing', search: 'Writing Sectional Mock 33' })[0].id, 'writing-33');
 });
 
-function harness() {
+function harness(options={}) {
   const nodes = new Map(), modes = [], calls = [], navigations = [], starts = [];
   class Element {
     constructor(id) { this.id = id; this.dataset = {}; this.attrs = {}; this.value = ''; this.hidden = false; nodes.set(id, this); }
@@ -93,7 +93,7 @@ function harness() {
   const practice = new Element('practiceHubPane'), mocks = new Element('mockTestsPane');
   const document = { getElementById: id => nodes.get(id), querySelectorAll: () => modes };
   let fail = false;
-  const controller = catalogue.createController({ document, navigate: (...args) => navigations.push(args),
+  const controller = catalogue.createController({ document, canAccessSpeaking:()=>options.speaking!==false, navigate: (...args) => navigations.push(args),
     launchReading: id => starts.push(['reading', id]), launchWriting: id => starts.push(['writing', id]),
     getProgress: async () => ({ practice:{ swt:{count:18,lastAttempt:1000}, practice:{count:36}, dictation:{lastAttempt:2000} }, mocks:{'practice-mock-1':{status:'In progress',date:3000},'practice-mock-2':{status:'Done',date:4000},'writing-1':{status:'Done',date:4000}} }),
     fetch: async url => { calls.push(url); return { ok: !fail, json: async () => url.includes('reading-bank') ? bank : writing }; } });
@@ -205,3 +205,5 @@ test('Leaving Reading parks practice timers while protected mocks keep their dea
   assert.equal(park(protectedMock),false);assert.equal(protectedMock.deadline,60000);assert.equal(protectedMock.stage.deadline,60000);
   assert.equal(protectedMock.pausedRemainingSeconds,undefined);
 });
+
+test('Other accounts have no speaking practice group, mock filter or history link',async()=>{const h=harness({speaking:false});await h.controller.openPractice();assert(!h.practice.innerHTML.includes('Speaking Practice'));await h.controller.openMocks();assert(!h.mocks.innerHTML.includes('value="speaking"'));assert(!h.mocks.innerHTML.includes('data-mock-history="speaking"'));});
