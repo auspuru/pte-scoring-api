@@ -9,7 +9,10 @@
     const now=()=>env.Date?.now?.()||Date.now(),identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
     const key=(id,index)=>owner+':'+id+':'+index;
-    const token=()=>env.sessionStorage?.getItem('pte_impersonate_token')||env.localStorage?.getItem('pte_session_token')||'';
+    const token=()=>{
+      try{const current=env.sessionStorage?.getItem('pte_impersonate_token')||env.sessionStorage?.getItem('pte_session_token');if(current)return current;}catch{}
+      try{return env.localStorage?.getItem('pte_session_token')||'';}catch{return '';}
+    };
     async function api(route,body,raw=false){
       const headers={'x-session-token':token()};if(body!==undefined)headers['Content-Type']=raw?body.type.split(';')[0]:'application/json';
       const response=await env.fetch('/api/speaking-mocks'+route,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:raw?body:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(30000)});

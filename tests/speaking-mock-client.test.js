@@ -63,6 +63,11 @@ test('Saved history opens a completed mock without microphone access or a new su
   const h=await harness(t);await h.controller.open({history:true});assert.match(h.host.innerHTML,/Your saved attempts/);assert.equal(h.permissions(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);
 });
 
+test('A fresh session token takes priority over stale local authentication',async t=>{
+  const h=await harness(t);h.env.localStorage.getItem=()=> 'stale-token';h.env.sessionStorage.getItem=key=>key==='pte_session_token'?'alice':null;
+  await h.controller.open({history:true});assert.match(h.host.innerHTML,/Your saved attempts/);assert(h.requests.every(r=>r.headers['x-session-token']==='alice'));
+});
+
 test('The final in-flight recording is saved before a whole-test deadline submits the mock',async t=>{
   const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
   await h.tick(28100);assert.equal(h.starts(),1);
