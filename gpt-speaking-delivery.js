@@ -7,7 +7,7 @@ const run = promisify(require('node:child_process').execFile);
 const azure = require('./speaking-delivery');
 const rubric = require('./delivery-rubric');
 const MODEL = process.env.OPENAI_SPEAKING_AUDIO_MODEL || 'gpt-audio-1.5';
-const VERSION = 'gpt-delivery-2026-10-24.2:' + MODEL;
+const VERSION = 'gpt-delivery-2026-10-24.3:' + MODEL;
 const TASKS = Object.freeze(['rl','sgd','rts']);
 const applies = question => TASKS.includes(question?.type);
 const isConfigured = (env=process.env) => !!String(env.OPENAI_API_KEY||'').trim();
@@ -68,8 +68,8 @@ async function assessRecording(recording,{question,transcript='',apiKey=process.
     deliveryStatus:'Not enough speech for a reliable GPT delivery estimate.',deliveryAssessment:'Delivery scores are withheld when there is insufficient speech.'};
   const response=await request('https://api.openai.com/v1/chat/completions',{
     method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},signal:AbortSignal.timeout(45000),
-    body:JSON.stringify({model,modalities:['text'],temperature:0,max_completion_tokens:1800,store:false,
-      tools:[{type:'function',function:{name:'record_delivery_assessment',description:'Return independent audio-based pronunciation and fluency scores with timestamped strengths, optional refinements and explicit audible impacts for deductions.',parameters:rubric.deliverySchema(seconds)}}],
+    body:JSON.stringify({model,modalities:['text'],temperature:0,max_completion_tokens:2400,store:false,
+      tools:[{type:'function',function:{name:'record_delivery_assessment',description:'Judge the whole recording for each trait: ignore minor slips with smooth recovery; identify a recurring or sustained difficulty and overall listener impact before lowering a mark. Give distinct timestamped evidence for a recurring pattern.',parameters:rubric.deliverySchema(seconds)}}],
       tool_choice:{type:'function',function:{name:'record_delivery_assessment'}},parallel_tool_calls:false,messages:[
       {role:'system',content:PROMPT},
       {role:'user',content:[{type:'text',text:'DATA='+JSON.stringify({task:question?.type,durationSeconds:seconds})},

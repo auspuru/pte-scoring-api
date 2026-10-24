@@ -151,8 +151,8 @@ functional-communication content policy; the provider comparison concerns only
 pronunciation and fluency. Previously scored Azure-only RTS attempts offer an
 explicit audio update to add GPT, preserving the existing Azure assessment.
 
-The Academy's `intelligibility-delivery-v3` instructions, timestamp bounds and
-score-impact checks are ported from `auspuru/Describe/backend/audio-scoring.js`
+The base Academy `intelligibility-delivery-v3` instructions, timestamp bounds and
+score-impact checks were ported from `auspuru/Describe/backend/audio-scoring.js`
 (source blob `48abed5def063388005e4a650fe044163244b710`). Clear accents, harmless
 isolated slips, natural boundary pauses and smooth recovery are allowed at the
 top band. GPT deductions require timestamped audible evidence and a real effect
@@ -163,6 +163,26 @@ trait policy by removing its extra prosody weighting; native accuracy and fluenc
 signals still use the disclosed acoustic mapping. Its numbers remain acoustic
 practice estimates, not independently verified listener-impact judgments. The
 providers are never forced to agree and GPT does not adjust Azure's marks.
+
+The portal's current `intelligibility-delivery-v4` policy distinguishes generally
+clear delivery with minor slips from recurring or sustained difficulty across the
+whole recording. Clear speech, isolated intelligible slips, natural pauses and
+smooth recovery can receive 5/5. GPT records a separate pattern and overall impact
+for each trait before its mark. Lower marks require a recurring/sustained difficulty
+and actual listener impact. A recurring pattern needs at least two distinct,
+non-overlapping timestamped problem occurrences; a single genuine extended breakdown
+can support a sustained-difficulty assessment. A lone weak word or brief hesitation
+does not establish a recurring weakness. Unsupported deductions are withheld per
+trait, preserving a valid companion score, without extra paid repair calls.
+Each recording earns its own marks; prior attempts and assumed student ability
+cannot lower the current response's score. The UI explains the overall pattern and
+keeps one targeted action per trait instead of adding generic mandatory drills.
+Azure retains its independent whole-response acoustic aggregation and band mapping;
+individual word flags never add deductions, and coaching distinguishes an isolated
+flag from a recurring problem. Its acoustic estimate does not establish a human
+listener-impact judgment. Earlier GPT methods are labelled in the comparison table;
+an explicit update assesses the saved audio under the new method and retains the
+earlier snapshot, while an unchanged current Azure result is reused.
 
 The GPT-4o audio preview is retired; the user selected its supported replacement,
 GPT Audio 1.5. Reference: https://developers.openai.com/api/docs/deprecations and

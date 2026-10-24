@@ -68,14 +68,14 @@ function coaching(kind,{score,accuracy,fluency,prosody,words=[]}={}) {
   if(kind==='pronunciation'){
     const practice=(words||[]).filter(w=>/[A-Za-z]/.test(w.word)&&!/^(the|and|for|was|are|is|to|of|a|an|in|on|at)$/i.test(w.word)).slice(0,3).map(w=>w.word);
     if(score>=5)return 'Maintain this clarity. Shadow one model sentence once, matching word stress and sentence stress rather than speaking faster.';
-    if(score===4&&Number.isFinite(prosody)&&Number.isFinite(accuracy)&&prosody+10<accuracy)return 'Your sounds are clear; the main gain is stress and emphasis. Mark 3–4 key words in a sentence, stress them clearly, reduce the small connecting words, then shadow the sentence twice.';
-    if(score===4)return practice.length?'Keep your clarity and polish the weakest words: '+practice.join(', ')+'. Say each word slowly, then in a phrase, then in the full sentence.':'Keep your clarity and focus on consistent word stress. Shadow short phrases and copy the stressed syllables exactly.';
+    if(score===4&&practice.length===1)return 'Check '+practice[0]+' in the recording. One flagged word does not establish a recurring pronunciation problem. If it is readily understood, treat word practice as optional; focus on a sound only if the same difficulty recurs across phrases.';
+    if(score===4)return practice.length?'Check whether the same sound or stress difficulty recurs across phrases. Words worth reviewing: '+practice.join(', ')+'. If these are isolated clear slips, practice is optional. For a recurring difficulty, repeat one phrase and check that it is readily understood.':'Review clarity and useful stress across the whole response. If the message is clear and any slips are isolated, keep those refinements optional.';
     if(score===3)return practice.length?'Work on clarity before speed. Practise '+practice.join(', ')+' slowly, then repeat each inside a short phrase without changing the vowel or final consonant.':'Work on clarity before speed. Use short phrases, open the vowel sounds fully, and make final consonants audible.';
     if(score===2)return 'Slow down slightly and make each stressed syllable clear. Practise one sentence at a time: listen, mark the stressed syllables, then repeat it three times.';
     return 'Build intelligibility first. Use short model sentences, repeat them slowly, and focus on one difficult sound or stressed syllable at a time.';
   }
   if(score>=5)return 'Maintain the same steady pace and phrasing. Keep pausing only at natural idea boundaries.';
-  if(score===4)return 'Aim for one smooth phrase per idea. Keep a steady pace, pause briefly at punctuation or meaning changes, and continue after small mistakes instead of restarting.';
+  if(score===4)return 'Listen for recurring mid-phrase stops that make ideas hard to follow. Natural pauses and an occasional stumble with smooth recovery are acceptable. If disruption recurs, practise joining one affected phrase, then record it once and check the recovery.';
   if(score===3)return 'Use 4–6 word meaning groups. Pause only between ideas, avoid restarting a sentence after a small mistake, and practise one 30-second response with a steady pace.';
   if(score===2)return 'Slow down enough to keep phrases connected. Speak in short meaning groups, reduce long silent pauses, and replace repeated restarts with a brief pause and continuation.';
   return 'First build continuous speech. Practise 10–15 second chunks without stopping, then connect two chunks while keeping a comfortable, even pace.';
