@@ -6,15 +6,21 @@ const top=()=>({status:'scored',pattern:'minor_slips',overallImpact:'none',score
 const raw=()=>({assessable:true,overallScore:90,summary:'Generally clear and connected speech throughout the mock.',pronunciation:top(),fluency:top()});
 
 test('The speaking paper has full task counts, an unscored introduction and only existing verified audio',async()=>{
-  const p=bank.papers[0];assert.equal(p.questionCount,27);assert.equal(p.questions.length,28);
+  assert.equal(bank.papers.length,3);
+  for(const p of bank.papers){assert.equal(p.questionCount,27);assert.equal(p.questions.length,28);
   assert.deepEqual(Object.fromEntries(Object.keys(require('../content/speaking-bank').types).map(type=>[type,p.questions.filter(q=>q.type===type).length])),{ra:6,rs:10,di:5,rl:2,sgd:2,rts:2});
   assert.equal(new Set(p.questions.map(q=>q.id)).size,28);
   for(const q of p.questions){
     assert(q.instruction);assert(q.seconds>0);
+    if(q.type==='ra')assert(q.text.split(/\s+/u).length<=60);
+    if(q.imageUrl)assert((await fs.stat(path.join(__dirname,'..','public',q.imageUrl))).size>100);
     if(q.audioSource){const file=path.join(__dirname,'..','content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');assert((await fs.stat(file)).size>100);}
     const shown=bank.publicQuestion(q);assert.equal(shown.facts,undefined);assert.equal(shown.reference,undefined);assert.equal(shown.sample,undefined);
     if(['rs','rl','sgd'].includes(q.type))assert.equal(shown.text,undefined);
   }
+  }
+  for(const type of ['ra','rs','di']){const items=bank.papers.flatMap(p=>p.questions.filter(q=>q.type===type));assert.equal(new Set(items.map(q=>q.id)).size,items.length);}
+  assert(bank.catalogue().every(p=>!p.questions));
   for(const type of ['ra','rs','di','rl','sgd','rts'])assert(gpt.applies({type}));
 });
 
@@ -58,6 +64,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal(a.overall,null);assert.equal(a.responses,undefined);assert.equal(a.question.type,'intro');
   assert.equal((await request('/attempts/'+id,undefined,'bob')).status,404);assert.equal((await request('/attempts/'+id,undefined,'')).status,401);
   assert.equal((await request('/attempts/'+id+'/recordings/0',Buffer.alloc(200,1),'alice',true)).status,409);
+  assert.equal((await request('/attempts/'+id+'/reattempt',{id:crypto.randomUUID()})).status,409);
   for(let index=0;index<a.totalItems;index++){
     a=(await request('/attempts/'+id+'/begin',{index})).body;now=a.timing.recordingAt+500;
     const data=Buffer.alloc(200,index+1);
@@ -72,7 +79,20 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal(a.responses[1].providers.azure.pronunciation.score,4);assert.equal(a.responses[1].providers.gpt.pronunciation.score,5);
   await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,1,'A successful overall assessment is never called again.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
   assert.equal((await request('/attempts/'+id+'/recordings/2',Buffer.alloc(200,99),'alice',true)).status,409);
-  const saved=await store.update('alice',id,value=>value);assert(saved.responses.every(r=>r.recording.hash));
+  const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';return value;});assert(saved.responses.every(r=>r.recording.hash));
+  const before=JSON.stringify(saved),newId=crypto.randomUUID();now+=10000;
+  assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId},'bob')).status,404);
+  assert.equal((await request('/attempts/'+id+'/reattempt',{id})).status,409);
+  assert.equal((await request('/attempts/'+id+'/reattempt',{})).status,400);
+  const fresh=(await request('/attempts/'+id+'/reattempt',{id:newId,overallScore:90})).body;
+  assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
+  assert.equal(fresh.deadline-fresh.startedAt,saved.deadline-saved.startedAt);assert(fresh.startedAt>saved.startedAt);
+  const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,saved.questions);assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
+  assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
+  assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
+  assert.equal(itemCalls,27);assert.equal(overallCalls,1);
+  for(const paper of bank.papers.slice(1)){const created=(await request('/attempts',{id:crypto.randomUUID(),paperId:paper.id})).body;assert.equal(created.paperId,paper.id);assert.equal(created.questionCount,27);}
+
 });
 
 test('The mock clock follows preparation, saved audio, response time and completion',()=>{

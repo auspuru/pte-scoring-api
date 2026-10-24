@@ -18,7 +18,7 @@ function reconcile(a,now=Date.now()){
 function present(a,now=Date.now()){
   const submitted=a.status==='submitted';
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,integrity:a.integrity,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
@@ -90,6 +90,18 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const a=await store.update(req.mockUser,req.body.id,old=>{
       if(old){if(old.paperId!==paper.id)throw fail('This attempt belongs to another paper.',409);return old;}
       return {id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
+    });res.json(present(a,now()));
+  }));
+  router.post('/attempts/:id/reattempt',limiter,wrap(async(req,res)=>{
+    const original=await read(req.mockUser,req.params.id);
+    if(original.status!=='submitted')throw fail('Finish this mock before reattempting it.',409);
+    if(req.body?.id===original.id)throw fail('Use a new attempt for the reattempt.',409);
+    const a=await store.update(req.mockUser,req.body?.id,old=>{
+      if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
+      const startedAt=now();
+      return {id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
+        questions:structuredClone(original.questions),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
+        deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
     });res.json(present(a,now()));
   }));
   router.get('/attempts/:id',wrap(async(req,res)=>{const a=await read(req.mockUser,req.params.id);res.json(present(a,now()));queue(req.mockUser,a);}));

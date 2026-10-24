@@ -51,6 +51,20 @@ test('One complete mock runs timed recording, reuses saved audio, hides feedback
   assert.match(h.nodes.get('sm-result-rows').innerHTML,/5\/5/);assert.match(h.nodes.get('sm-result-rows').innerHTML,/4\/5/);
   assert(h.requests.filter(r=>r.method==='POST'&&r.url.includes('/recordings/')).every(r=>r.headers['x-session-token']==='alice'));
   assert(h.audios.every(a=>a.url.startsWith('/speaking-mock-audio/')));
+  assert.match(h.host.innerHTML,/Reattempt this mock/);
+  const original=await h.active(),before=JSON.stringify(original);
+  await h.controller.open({history:true});assert.match(h.host.innerHTML,/data-sm="reattempt"/);
+  const prepare=h.env.PortalExamMode.prepare,posts=h.requests.filter(r=>r.method==='POST').length;
+  h.env.PortalExamMode.prepare=async()=>false;await h.click({sm:'reattempt',id:original.id});
+  assert.equal(h.requests.filter(r=>r.method==='POST').length,posts);assert.equal(h.permissions(),1);
+  h.env.PortalExamMode.prepare=prepare;await h.click({sm:'reattempt',id:original.id});
+  const creation=h.requests.findLast(r=>r.method==='POST'&&r.url.endsWith('/reattempt')),freshId=JSON.parse(creation.body).id;
+  assert(creation.url.includes(original.id));assert.notEqual(freshId,original.id);
+  const fresh=await h.lab.store.update('alice',freshId,a=>a);assert.equal(fresh.index,0);assert.deepEqual(fresh.responses,[]);assert.deepEqual(fresh.questions,original.questions);
+  await h.tick(28100);assert.equal(h.starts(),29,'A reattempt can record the same introduction again.');await h.click({sm:'next'});
+  assert.equal((await h.lab.store.update('alice',freshId,a=>a)).index,1);
+  assert.equal(JSON.stringify(await h.lab.store.update('alice',original.id,a=>a)),before);
+
 });
 
 test('An interrupted upload reuses the captured recording rather than recording the response again',async t=>{
