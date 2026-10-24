@@ -47,6 +47,16 @@ These matching details are disclosed as approximations, not Pearson's algorithm.
 DI receives AI content feedback /6 using Pearson-style content descriptors.
 RL and SGD use the institute's connected-meaning practice policy /6, described below.
 RTS uses the functional communication practice policy /6, also described below.
+
+RL, SGD and RTS content reviews use a forced structured assessment, following the
+same output approach as SWT. Required semantic judgments remain independently
+validated. Evidence uses numbered student word spans which the server converts
+back to exact transcript quotations. The one permitted retry receives the failed
+assessment and a specific validation repair instruction. Persistent failures
+withhold the content mark and log a diagnostic code without student text. The
+saved response can be retried without recording again or replacing its existing
+GPT and Azure audio assessments.
+
 DI/RL/SGD content feedback includes an explanation, strengths, actionable improvements and a
 covered/partial/missing/inaccurate breakdown with literal student evidence. Poor
 provider output fails visibly rather than displaying fabricated feedback.
