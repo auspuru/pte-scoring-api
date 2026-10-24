@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import sys
 
 import edge_tts
 import edge_tts.communicate
@@ -20,11 +21,12 @@ async def main():
         edge_tts.communicate._SSL_CTX.load_verify_locations(os.environ['SSL_CERT_FILE'])
     bank = json.loads(subprocess.check_output(['node', '-e', 'console.log(JSON.stringify(require("./content/speaking-bank")))'], cwd=ROOT))
     DEST.mkdir(parents=True, exist_ok=True)
-    manifest_path = DEST / 'manifest.json'
+    user_imports = '--user-imports' in sys.argv
+    manifest_path = DEST / ('user-manifest.json' if user_imports else 'manifest.json')
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
     limit = asyncio.Semaphore(3)
     async def generate(q):
-        if q['type'] not in ('rs', 'rl', 'sgd', 'rts'):
+        if q.get('audioPrompt') is False or (user_imports and q.get('source', {}).get('kind') != 'user-supplied-transcript') or q['type'] not in ('rs', 'rl', 'sgd', 'rts'):
             return
         async with limit:
             target = DEST / (q['id'] + '.mp3')
@@ -37,7 +39,7 @@ async def main():
                 parts = []
                 for i, (_, text) in enumerate(q.get('turns', [['Narrator', q['text']]])):
                     part = Path(temporary) / (str(i) + '.mp3')
-                    await asyncio.wait_for(edge_tts.Communicate(text, VOICES[i % 3], rate='-3%').save(str(part)), 55)
+                    await asyncio.wait_for(edge_tts.Communicate(text, VOICES[i % 3], rate=q.get('audioRate', '-3%')).save(str(part)), 55)
                     parts.append(str(part))
                 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', 'concat:' + '|'.join(parts), '-ac', '1', '-ar', '24000', '-b:a', '48k', str(target)], check=True)
             seconds = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', str(target)]))
