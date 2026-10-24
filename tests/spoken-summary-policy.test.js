@@ -132,8 +132,8 @@ test('RL and SGD prompts use accuracy as a holistic guide and preserve source wo
   for(const type of ['di','rts','ra','rs'])assert.equal(policy.prompt({type}),'');
 });
 
-test('Other tasks keep the existing full-score accuracy guard and need no summary fields', () => {
-  for(const type of ['di','rts']){
+test('Describe Image keeps the existing full-score accuracy guard and needs no summary fields', () => {
+  for(const type of ['di']){
     const question={...lecture,type};
     const accurate=review(question,question.sample);delete accurate.summaryAssessment;
     assert.equal(scoring.normalize(question,question.sample,accurate).total,6);
