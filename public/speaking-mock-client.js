@@ -49,16 +49,16 @@
       a=null;release();stopPolling();env.PortalExamMode?.set(OWNER,false,host);
       shell('<div class="sm-hub"><h2>'+(options.history?'Saved speaking mocks':'Speaking mock test')+'</h2><p>A timed speaking paper with saved prompt recordings and one chance to record each answer.</p>'
         +(options.history?'':catalog.papers.filter(p=>!options.paperId||p.id===options.paperId).map(p=>'<article class="sm-paper"><h3>'+esc(p.title)+'</h3><p>'+esc(p.scope)+'</p><p>'+p.questionCount+' scored questions · about '+p.minutes+' minutes · unscored introduction</p><p>Use headphones and a working microphone. Questions play once. Individual feedback appears after the test; your overall speaking estimate is assessed across the full set of recordings.</p><button class="portal-button primary" data-sm="start" data-paper="'+esc(p.id)+'">Start speaking mock</button></article>').join(''))
-        +'<h3>Your saved attempts</h3>'+history.map(row=>'<article class="sm-history"><div><strong>'+esc(row.title)+'</strong><p>'+esc(new Date(row.startedAt).toLocaleString())+' · '+(row.status==='active'?'In progress':row.overall?.overallScore!=null?esc(row.overall.overallScore)+'/90 speaking estimate':row.grading?.status==='complete'?'Review available':'Assessment in progress')+'</p></div><button class="portal-button" data-sm="resume" data-id="'+esc(row.id)+'">'+(row.status==='active'?'Continue':'Review')+'</button></article>').join('')+'<p id="sm-notice" role="status"></p></div>');
+        +'<h3>Your saved attempts</h3>'+history.map(row=>'<article class="sm-history"><div><strong>'+esc(row.title)+'</strong><p>'+esc(new Date(row.startedAt).toLocaleString())+' · '+(row.status==='active'?'In progress':row.overall?.overallScore!=null?esc(row.overall.overallScore)+'/90 speaking estimate':row.grading?.status==='complete'?'Review available':'Assessment in progress')+'</p></div><button class="portal-button" data-sm="resume" data-id="'+esc(row.id)+'">'+(row.status==='active'?'Continue':'Review')+'</button>'+(row.status==='submitted'?'<button class="portal-button" data-sm="reattempt" data-id="'+esc(row.id)+'">Reattempt</button>':'')+'</article>').join('')+'<p id="sm-notice" role="status"></p></div>');
     }
     async function microphone(){
       if(stream)return;if(!env.MediaRecorder||!env.navigator?.mediaDevices?.getUserMedia)throw Error('This browser cannot record microphone audio. Use a supported browser for the speaking mock.');stream=await env.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
       try{const Context=env.AudioContext||env.webkitAudioContext;if(Context){context=new Context();await context.resume();const source=context.createMediaStreamSource(stream);analyser=context.createAnalyser();analyser.fftSize=256;source.connect(analyser);}}catch{analyser=null;}
     }
-    async function start(paperId){
+    async function start(paperId,reattemptId){
       if(busy)return;busy=true;const ticket=serial;
       try{const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
-        a=await api('/attempts',{id:env.crypto.randomUUID(),paperId});if(!valid(ticket))return;selected=null;await begin();
+        const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
       }catch(error){message(error.message||'Microphone access is required to start the speaking mock.');env.PortalExamMode?.set(OWNER,false,host);release();}
       finally{busy=false;}
     }
@@ -160,7 +160,7 @@
     function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5';}
     function results(){
       env.PortalExamMode?.set(OWNER,false,host);stopTimer();stopPrompt();
-      shell('<div class="sm-results"><div class="sm-results-heading"><h2>'+esc(a.title)+' · Results</h2><button class="portal-button" data-sm="history">Saved speaking mocks</button></div><div id="sm-results-summary" aria-live="polite"></div>'
+      shell('<div class="sm-results"><div class="sm-results-heading"><h2>'+esc(a.title)+' · Results</h2><div class="sm-results-actions"><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button><button class="portal-button" data-sm="history">Saved speaking mocks</button></div></div><div id="sm-results-summary" aria-live="polite"></div>'
         +'<h3>Individual question feedback</h3><p>Content follows the same practice rules as individual questions. Azure and GPT independently assess each recording.</p><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th>Question</th><th>Content</th><th>GPT pronunciation / fluency</th><th>Azure pronunciation / fluency</th><th>Review</th></tr></thead><tbody id="sm-result-rows"></tbody></table></div>'
         +'<div id="sm-review-details"></div><p id="sm-notice" role="status"></p><button class="portal-button" data-sm="retry">Retry unavailable scores</button><p class="sm-footnote">Independent practice estimates, not Pearson scores. The whole-test delivery estimate is assessed from your recordings, not averaged from the question marks above.</p></div>');
       updateResults();if(selected!==null)review(selected);pollResults();
@@ -191,6 +191,7 @@
     }
     async function click(event){const button=event.target.closest('[data-sm]');if(!button||button.disabled)return;const data=button.dataset;
       if(data.sm==='start')return start(data.paper);
+      if(data.sm==='reattempt')return start(null,data.id);
       if(data.sm==='resume')return resume(data.id);
       if(data.sm==='next')return next();
       if(data.sm==='review')return review(Number(data.index));

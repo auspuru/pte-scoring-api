@@ -1,6 +1,6 @@
-# Speaking Mock 1
+# Speaking mocks
 
-The paper contains an unscored personal introduction and 27 speaking-scored items:
+Each of the three papers contains an unscored personal introduction and 27 speaking-scored items:
 6 Read Aloud, 10 Repeat Sentence, 5 Describe Image, 2 Retell Lecture,
 2 Summarise Group Discussion and 2 Respond to a Situation. It is a speaking-only
 practice paper, not a complete Speaking & Writing section. Answer Short Question
@@ -9,6 +9,20 @@ assigns ASQ to Listening. No new prompt audio is generated. Five additional RS
 items use existing verified dictation recordings. The sixth RA uses an existing
 archive passage; RA needs no prompt recording. Discussion recordings retain their
 existing lengths, which are shorter than some current Pearson discussion prompts.
+
+Mock 1 retains its original questions. Mocks 2 and 3 use different existing SST
+passage excerpts for Read Aloud, saved dictation audio for Repeat Sentence, and
+saved prediction images for Describe Image. These three item sets do not overlap
+across the papers. The saved bank has five original lectures, discussions and
+situations, so one recording of each type is shared across the three papers.
+
+Reattempt is available on submitted results and in saved history. It copies the
+exact stored question snapshot into a new owned attempt with an independent timer,
+empty recordings and new scoring. It never resets or overwrites the previous
+attempt. Fullscreen and microphone preflight still happen before creating the
+reattempt, and duplicate creation retries with the same ID are idempotent. Speaking
+practice, all three mocks, and reattempts remain limited to pppp and mehakbir1 by
+the existing server access gate.
 
 ## Test experience
 

@@ -2,7 +2,7 @@
 const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const speakingAudio=require('./speaking-audio/manifest.json'),writingAudio=require('./writing-audio/manifest.json');
-const VERSION='speaking-mock-2026-10-24.1';
+const VERSION='speaking-mock-2026-10-25.1';
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function source(q,folder,id=q.id){
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];
@@ -20,12 +20,30 @@ questions.push(...bank.questions.filter(q=>q.type==='rs').map(q=>source(q,'speak
 for(const q of writing.dictation.slice(0,5))questions.push(source({id:'mock-rs-'+q.id,type:'rs',...bank.types.rs,title:'Repeat Sentence',text:q.text,sourceId:q.id},'writing',q.id));
 questions.push(...[1,2,3,4,5].map(n=>pick('di-'+n)));
 for(const type of ['rl','sgd','rts'])questions.push(...[1,2].map(n=>source(pick(type+'-'+n),'speaking')));
-const scored=questions.filter(q=>q.type!=='intro');
-const seconds=questions.reduce((sum,q)=>sum+3+(q.audioSeconds||0)+q.preparation+q.seconds,0);
-const papers=[{id:'speaking-mock-1',title:'Speaking Mock 1',minutes:Math.ceil(seconds/60)+3,
-  questionCount:scored.length,description:'A complete speaking practice paper using saved portal recordings, with an unscored introduction.',
-  scope:'6 Read Aloud · 10 Repeat Sentence · 5 Describe Image · 2 Retell Lecture · 2 Group Discussion · 2 Respond to a Situation',
-  questions}];
+function paper(number,items){
+  const seconds=items.reduce((sum,q)=>sum+3+(q.audioSeconds||0)+q.preparation+q.seconds,0);
+  return {id:'speaking-mock-'+number,title:'Speaking Mock '+number,minutes:Math.ceil(seconds/60)+3,
+    questionCount:items.filter(q=>q.type!=='intro').length,description:'A complete speaking practice paper using saved portal recordings, with an unscored introduction.',
+    scope:'6 Read Aloud · 10 Repeat Sentence · 5 Describe Image · 2 Retell Lecture · 2 Group Discussion · 2 Respond to a Situation',questions:items};
+}
+function readAloud(q){
+  let text='';for(const sentence of q.text.split(/(?<=[.!?])\s+/u)){const candidate=(text+' '+sentence).trim();if(candidate.split(/\s+/u).length>60)break;text=candidate;}
+  if(!text)throw Error('No complete Read Aloud passage: '+q.id);
+  return {id:'mock-ra-'+q.id,type:'ra',...bank.types.ra,title:q.title,text,sample:text,sourceId:q.id};
+}
+function repeatSentence(q){return source({id:'mock-rs-'+q.id,type:'rs',...bank.types.rs,title:'Repeat Sentence',text:q.text,sample:q.text,sourceId:q.id},'writing',q.id);}
+const images=bank.questions.filter(q=>q.type==='di'&&q.imageUrl);
+const sentences=writing.dictation.filter(q=>writingAudio[q.id]?.seconds>=3&&writingAudio[q.id]?.seconds<=9);
+const papers=[paper(1,questions)];
+for(const [number,passages,sentenceStart,imageStart,lectureIds,discussionIds,situationIds] of [
+  [2,writing.spoken.slice(0,6),5,0,['rl-3','rl-4'],['sgd-3','sgd-4'],['rts-3','rts-4']],
+  [3,[...writing.spoken.slice(6,9),...writing.spoken.slice(10,13)],15,5,['rl-5','rl-2'],['sgd-5','sgd-1'],['rts-5','rts-1']]
+]){
+  const items=[structuredClone(questions[0]),...passages.map(readAloud),...sentences.slice(sentenceStart,sentenceStart+10).map(repeatSentence),
+    ...structuredClone(images.slice(imageStart,imageStart+5)),...[...lectureIds,...discussionIds,...situationIds].map(id=>source(pick(id),'speaking'))];
+  if(items.length!==28||new Set(items.map(q=>q.id)).size!==28)throw Error('Incomplete speaking mock '+number);
+  papers.push(paper(number,items));
+}
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(['intro','ra','rts'].includes(q.type)?{text:q.text}:{}),
