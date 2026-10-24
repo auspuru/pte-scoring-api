@@ -106,14 +106,14 @@
       && (!query || [m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query)))
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
-  function createController({ document: doc, navigate, launchReading, launchWriting, launchSpeaking, fetch: get = fetch, getProgress = async () => ({}) }) {
+  function createController({ document: doc, navigate, launchReading, launchWriting, launchSpeaking, canAccessSpeaking=()=>true, getSessionToken=()=>'', fetch: get = fetch, getProgress = async () => ({}) }) {
     let data, loading, page = 0, progress = { practice: {}, mocks: {} };
     const filters = { mode: 'sectional', module: 'all', search: '' };
     let pageSize = 12;
     async function load() {
       if (data) return data;
       if (!loading) loading = Promise.all(['reading-bank.json?v=8', '/api/writing-lab/catalog'].map(async url => {
-        const r = await get(url, { signal: AbortSignal.timeout(15000) });
+        const r = await get(url, { signal: AbortSignal.timeout(15000), headers:{'x-session-token':getSessionToken()} });
         if (!r.ok) throw Error('The catalogue could not load. Please retry.');
         return r.json();
       })).then(([reading, writing]) => (data = { reading, writing, mocks: mockItems(reading, writing) }))
@@ -146,7 +146,7 @@
       catch (error) { host.innerHTML = '<p role="alert">' + esc(error.message) + '</p>'; return; }
       const subjectMark = id => ({ speaking:'SP', writing:'WR', reading:'RD', listening:'LS' }[id] || id.slice(0,2).toUpperCase());
       host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a skill, then select a task to begin.</p></div>'
-        + '<div class="practice-banners">' + groups.map(g => '<details name="practice-skill" class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><summary class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3><span class="practice-skill-count">' + g.tasks.length + ' tasks</span><span class="practice-skill-toggle" aria-hidden="true">+</span></summary><div class="practice-task-list">'
+        + '<div class="practice-banners">' + groups.filter(g=>g.id!=='speaking'||canAccessSpeaking()).map(g => '<details name="practice-skill" class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><summary class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3><span class="practice-skill-count">' + g.tasks.length + ' tasks</span><span class="practice-skill-toggle" aria-hidden="true">+</span></summary><div class="practice-task-list">'
           + g.tasks.map(t => {
             const meta=progress.practice?.[t.route] || {}, count=practiceCount(t), last=dateLabel(meta.lastAttempt);
             const countLabel = count ? count + ' question' + (count===1?'':'s') : 'Practice available';
@@ -158,7 +158,7 @@
     function renderList() {
       const board = doc.getElementById('catalogue-board');
       if (!board || !data) return;
-      const items = filterMocks(data.mocks, filters), pages = Math.max(1, Math.ceil(items.length / pageSize));
+      const items = filterMocks(data.mocks.filter(m=>m.module!=='speaking'||canAccessSpeaking()), filters), pages = Math.max(1, Math.ceil(items.length / pageSize));
       page = Math.min(page, pages - 1);
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
       board.innerHTML = shown.map(m => {
@@ -179,6 +179,7 @@
     }
     async function openMocks(options = {}) {
       const host = doc.getElementById('mockTestsPane');
+      if(!canAccessSpeaking()&&filters.module==='speaking')filters.module='all';
       if (options.module) { filters.module = options.module; filters.mode = 'sectional'; page = 0; }
       if (!data) host.innerHTML = '<p role="status">Loading mock tests…</p>';
       try { await Promise.all([load(), refreshProgress()]); } catch (error) {
@@ -187,8 +188,8 @@
       }
       host.innerHTML = '<div class="catalogue-heading"><span class="mock-catalogue-shell-kicker">Timed practice</span><h2>Mock Tests</h2><p>Choose a practice or sectional mock, continue an unfinished attempt, or review your saved test history.</p></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span></div>'
-        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option><option value="speaking">Speaking</option><option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label></div>'
-        + '<div class="catalogue-saved"><span>Saved mock attempts</span><button type="button" data-mock-history="speaking">Speaking</button><button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button><button type="button" data-mock-history="listening">Listening</button></div>'
+        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option>' + (canAccessSpeaking()?'<option value="speaking">Speaking</option>':'') + '<option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label></div>'
+        + '<div class="catalogue-saved"><span>Saved mock attempts</span>' + (canAccessSpeaking()?'<button type="button" data-mock-history="speaking">Speaking</button>':'') + '<button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button><button type="button" data-mock-history="listening">Listening</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
       doc.getElementById('catalogue-module').value = filters.module;
       host.onclick = e => {

@@ -192,7 +192,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return account && !account.blocked ? uid : null;
   };
   router.get('/catalog', (req,res) => res.json({ version:bank.version,
-    speakingMocks:require('./content/speaking-mocks').catalogue(),
+    speakingMocks:require('./speaking-access').allowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
