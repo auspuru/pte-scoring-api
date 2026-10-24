@@ -43,10 +43,46 @@ practice estimate for ordered word recovery. Filler pauses and leading/trailing
 material are ignored; "almost nothing" is operationalised as 0–1 matched words.
 These matching details are disclosed as approximations, not Pearson's algorithm.
 
-DI, RL, SGD and RTS receive AI content feedback /6, using Pearson's current content
-descriptors. It includes an explanation, strengths, actionable improvements and a
+DI and RTS receive AI content feedback /6 using Pearson-style content descriptors.
+RL and SGD use the institute's connected-meaning practice policy /6, described below.
+Content feedback includes an explanation, strengths, actionable improvements and a
 covered/partial/missing/inaccurate breakdown with literal student evidence. Poor
 provider output fails visibly rather than displaying fabricated feedback.
+
+### Retell Lecture and Group Discussion content calibration
+
+RL and SGD prioritise relevant connected meaning over exhaustive coverage. The
+quality order is template-only filler (0), isolated relevant keywords (1), fragmented
+phrases (2), connected ideas with substantive inaccuracies or gaps (3–5), and a
+sufficiently developed, connected, mostly accurate summary (6). A template can still
+be useful scaffolding when the actual ideas are meaningfully connected.
+
+Connected responses with minor inaccuracies and equivalent connected responses
+without inaccuracies belong in the same top category. Roughly 80–90% accuracy of
+meaningful content can be enough for 6/6 when the main message, essential
+relationships and useful support remain intact. This is an institute practice
+calibration, not a verified Pearson threshold, a coverage/keyword percentage or a
+guarantee of an overall 90. Optional details need not be included. A sparse response
+does not earn full marks merely because its few assertions are accurate.
+
+The same model request returns a holistic summary assessment and literal student
+evidence. Minor secondary imprecision is distinguished from material changes to a
+main claim, causal relationship, negation, conclusion or important speaker position.
+Only material inaccuracies prevent an otherwise eligible summary from receiving
+full marks. Source wording, simple connectors, optional omissions and harmless
+grammar slips do not impose deductions. SGD requires clear main positions and
+important relationships between them, not speaker names, every turn or a fixed
+number of points per speaker. A minor attribution slip about an incidental detail
+can be tolerated; inventing agreement or swapping an important position cannot.
+
+The validator checks score/assessment consistency, exact quotations and error impact
+without converting fact counts into marks. The existing maximum of two content
+attempts remains. A valid minor-error full-score response needs only one content
+request. Contradictory or unsupported feedback is retried and then withheld if it
+still cannot be validated. Other task policies, Azure delivery scores and existing
+saved assessments are unchanged; new RL/SGD assessments record their policy version.
+Regression fixtures simulate provider output and verify these contracts; they do
+not claim live model calibration or Pearson score equivalence.
 
 ## Recording, privacy and transcription
 

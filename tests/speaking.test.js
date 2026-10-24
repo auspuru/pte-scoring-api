@@ -25,7 +25,8 @@ test('Repeat Sentence uses ordered content and ignores filler and peripheral mat
   assert.equal(scoring.exact(q,'library').total,0);
   assert(scoring.exact(q,words.reverse().join(' ')).total<3);
 });
-function modelResult(q,text) {return {total:6,overview:'The response develops the main ideas accurately and connects them well.',strengths:['The main topic is clear.'],improvements:['Keep the important ideas connected.'],coverage:q.facts.map((point,i)=>({point:i,status:'covered',evidence:text.slice(0,20),feedback:'This relevant idea is represented in the response.'}))};}
+function modelResult(q,text) {return {total:6,overview:'The response develops the main ideas accurately and connects them well.',strengths:['The main topic is clear.'],improvements:['Keep the important ideas connected.'],coverage:q.facts.map((point,i)=>({point:i,status:'covered',evidence:text.slice(0,20),feedback:'This relevant idea is represented in the response.'})),
+  ...(['rl','sgd'].includes(q.type)?{summaryAssessment:{responseForm:'connected',mainMessageAccurate:true,relationshipsClear:true,sufficientSubstance:true,mostlyAccurate:true,materialMeaningChange:false,speakerAttributionClear:true,evidence:text.split('. ')[0],reason:'The main ideas are connected with useful support.'}}:{})};}
 test('Meaning feedback validates every coverage item and rejects invented student quotations',async()=>{
   for(const q of bank.questions.filter(q=>q.facts)) {
     const r=await scoring.grade(q,q.sample,async prompt=>{assert(prompt.includes('CONTENT ONLY'));assert(prompt.includes('Never score or comment on pronunciation'));return modelResult(q,q.sample);});
