@@ -45,9 +45,9 @@ function harness({includePredictions=false}={}) {
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
 
-test('RL shows both provider scores openly and does not trust provider metadata',async()=>{
-  const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={rl:version};
-  await h.controller.open('rl');await h.click({speakingQuestion:'rl-1'});
+for(const type of ['rl','sgd','rts'])test(`${type}: both provider scores are shown openly without trusting provider metadata`,async()=>{
+  const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={[type]:version};
+  await h.controller.open(type);await h.click({speakingQuestion:bank.questions.find(q=>q.type===type).id});
   const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
   a.result={total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:version,deliveryModel:'<img src=x onerror=alert(1)>',
     pronunciation:{score:5,maximum:5},fluency:{score:4,maximum:5},deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:4}},azure:{status:'pending'}}};
