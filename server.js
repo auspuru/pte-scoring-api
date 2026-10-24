@@ -6340,6 +6340,7 @@ async function speakingContentModel(prompt,context) {
   const response=await anthropic.messages.create(format.request(prompt,CLAUDE_MODEL,context),{timeout:60000,maxRetries:0});
   return format.response(response,context);
 }
+app.use(['/api/speaking','/api/speaking-mocks'],require('./speaking-access').gate(token=>verifySessionToken(token)||verifyImpersonationToken(token)));
 const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),

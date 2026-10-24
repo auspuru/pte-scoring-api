@@ -12656,7 +12656,7 @@ async function getPortalCatalogueProgress() {
       return response.json();
     };
     const [catalogRead,speakingRead,writingRead,speakingMockRead]=await Promise.allSettled([
-      read('/api/speaking/catalog'),
+      read('/api/speaking/catalog',true),
       token?read('/api/speaking/attempts',true):Promise.resolve([]),
       token?getPortalWritingAttempts():Promise.resolve([]),
       token?read('/api/speaking-mocks/attempts',true):Promise.resolve([])
@@ -12736,7 +12736,7 @@ function initialisePortalWorkspace() {
   if (portalWorkspace) return;
   portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
   portalCatalogue = PracticeCatalogue.createController({
-    document, navigate: switchSection,
+    document, navigate: switchSection, canAccessSpeaking:canUseSpeaking, getSessionToken:()=>sessionToken,
     launchSpeaking: paperId => switchSection('speaking-run', {mockRequest:{paperId}}),
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
     launchWriting: testId => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', { labRequest: { testId } }),
@@ -12802,7 +12802,9 @@ function launchAssignedQuestion(item) {
   if (item.route) switchSection(item.route);
 }
 
+function canUseSpeaking(){return ['pppp','mehakbir1'].includes(String(currentUserId||'').trim().toLowerCase());}
 function switchSection(section, options = {}) {
+  if(String(section).startsWith('speaking-')&&!canUseSpeaking())section='dashboard';
   if (window.PortalExamMode?.isActive()) {
     portalWorkspace?.activate(section, { history:'replace', focus:false });
     return;
