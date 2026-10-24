@@ -8,7 +8,8 @@ const azure = require('./speaking-delivery');
 const rubric = require('./delivery-rubric');
 const MODEL = process.env.OPENAI_SPEAKING_AUDIO_MODEL || 'gpt-audio-1.5';
 const VERSION = 'gpt-delivery-2026-10-24.2:' + MODEL;
-const applies = question => ['rl','sgd'].includes(question?.type);
+const TASKS = Object.freeze(['rl','sgd','rts']);
+const applies = question => TASKS.includes(question?.type);
 const isConfigured = (env=process.env) => !!String(env.OPENAI_API_KEY||'').trim();
 
 const PROMPT = rubric.instructions;
@@ -81,4 +82,4 @@ async function assessRecording(recording,{question,transcript='',apiKey=process.
   return normalize(raw,evidence,{model});
 }
 
-module.exports={MODEL,VERSION,PROMPT,applies,isConfigured,wavDuration,toWav,normalize,assessRecording};
+module.exports={MODEL,VERSION,PROMPT,TASKS,applies,isConfigured,wavDuration,toWav,normalize,assessRecording};

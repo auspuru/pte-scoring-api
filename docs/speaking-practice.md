@@ -124,10 +124,10 @@ situations, alternative solutions, evidence validation and saved-score reuse.
 
 ## Recording, privacy and transcription
 
-### RL/SGD audio provider comparison
+### RL/SGD/RTS audio provider comparison
 
-With the existing OpenAI key configured, new Retell Lecture and Summarise Group
-Discussion audio assessments use `gpt-audio-1.5` as the displayed pronunciation and
+With the existing OpenAI key configured, new Retell Lecture, Summarise Group
+Discussion and Respond to a Situation audio assessments use `gpt-audio-1.5` as the displayed pronunciation and
 fluency practice scorer. `OPENAI_SPEAKING_AUDIO_MODEL` can override that model.
 The complete saved recording is converted to WAV and sent in one bounded audio
 request; delivery is judged from audio, not inferred from transcript text. Minor
@@ -146,8 +146,10 @@ Unavailable comparisons remain visibly unavailable. Existing successful Azure
 assessments are preserved when updating a saved attempt to GPT. Successful current
 provider results are reused on repeat submissions, including content retries.
 Explicit updates under a new policy retain earlier provider snapshots in a bounded
-history before refreshing the pair. Content policies and task-to-provider routes
-retain their existing behavior.
+history before refreshing the pair. Respond to a Situation keeps its flexible
+functional-communication content policy; the provider comparison concerns only
+pronunciation and fluency. Previously scored Azure-only RTS attempts offer an
+explicit audio update to add GPT, preserving the existing Azure assessment.
 
 The Academy's `intelligibility-delivery-v3` instructions, timestamp bounds and
 score-impact checks are ported from `auspuru/Describe/backend/audio-scoring.js`

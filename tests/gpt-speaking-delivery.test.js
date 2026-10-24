@@ -46,7 +46,7 @@ test('Malformed GPT marks and provider failures remain failures without paid rep
   assert.equal(partial.pronunciation.score,null);assert.equal(partial.fluency.score,4);
   let calls=0;
   await assert.rejects(gpt.assessRecording({mime:'audio/wav',data:'saved'},{apiKey:'test-only',question:{type:'sgd'},transcript,convert:async()=>({wav:wav(),seconds:8}),request:async()=>{calls++;return {ok:false,status:429};}}),/temporarily unavailable/);
-  assert.equal(calls,1);assert.equal(gpt.applies({type:'rts'}),false);assert.equal(gpt.applies({type:'di'}),false);
+  assert.equal(calls,1);assert.equal(gpt.applies({type:'rts'}),true);assert.equal(gpt.applies({type:'di'}),false);
 });
 
 async function harness(t,{failGpt=false,failAzure=false,existingAzure=false}={}){
@@ -75,7 +75,7 @@ async function harness(t,{failGpt=false,failAzure=false,existingAzure=false}={})
   return {request,seed,release,store,calls:()=>({primaryCalls,comparisonCalls})};
 }
 
-for(const type of ['rl','sgd'])test(`${type}: GPT is immediate, Azure runs in the background, and both scores persist on the same recording`,async t=>{
+for(const type of ['rl','sgd','rts'])test(`${type}: GPT is immediate, Azure runs in the background, and both scores persist on the same recording`,async t=>{
   const h=await harness(t),id=await h.seed(type);
   const catalog=(await h.request('/catalog')).body;assert.equal(catalog.deliveryVersions[type],gpt.VERSION);assert.equal(catalog.deliveryVersions.di,undefined);
   const first=await h.request('/attempts/'+id+'/submit',{});
@@ -92,8 +92,8 @@ for(const type of ['rl','sgd'])test(`${type}: GPT is immediate, Azure runs in th
   assert.equal(saved.result.total,6);assert.equal(saved.transcript,transcript);assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:1});
 });
 
-test('Updating an old Azure attempt retains its original comparison without assessing that audio again',async t=>{
-  const h=await harness(t,{existingAzure:true}),id=await h.seed();
+for(const type of ['rl','rts'])test(`${type}: updating an old Azure attempt retains its original comparison without assessing that audio again`,async t=>{
+  const h=await harness(t,{existingAzure:true}),id=await h.seed(type);
   const result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
   assert.equal(result.pronunciation.score,5);assert.equal(result.deliveryComparisons.azure.pronunciation.score,3);
   assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:0});
