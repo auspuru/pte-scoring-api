@@ -6339,11 +6339,11 @@ const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
   essayGrader,
-  callModel: async prompt => {
+  callModel: async (prompt,context) => {
     if (!anthropic) throw new Error('Speaking content assessment is not configured.');
-    const response = await anthropic.messages.create({model:CLAUDE_MODEL,temperature:0,max_tokens:3200,messages:[{role:'user',content:prompt}]},{timeout:60000,maxRetries:0});
-    if (response.stop_reason === 'max_tokens') throw new Error('Incomplete content assessment.');
-    return JSON.parse(response.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').match(/\{[\s\S]*\}/)?.[0] || 'null');
+    const format=require('./speaking-judge-format');
+    const response=await anthropic.messages.create(format.request(prompt,CLAUDE_MODEL,context),{timeout:60000,maxRetries:0});
+    return format.response(response,context);
   }
 });
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
