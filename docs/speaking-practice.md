@@ -113,6 +113,33 @@ situations, alternative solutions, evidence validation and saved-score reuse.
 
 ## Recording, privacy and transcription
 
+### RL/SGD audio provider comparison
+
+With the existing OpenAI key configured, new Retell Lecture and Summarise Group
+Discussion audio assessments use `gpt-audio-1.5` as the displayed pronunciation and
+fluency practice scorer. `OPENAI_SPEAKING_AUDIO_MODEL` can override that model.
+The complete saved recording is converted to WAV and sent in one bounded audio
+request; delivery is judged from audio, not inferred from transcript text. Minor
+intelligible pronunciation slips and natural pauses are accepted. No acoustic
+percentages or Pearson /90 conversion are fabricated.
+
+Azure remains available and assesses the same recording in the background. Its
+result cannot delay or overwrite GPT's displayed scores. Provider/model, version,
+assessment time, recording hash and separate scores are stored in each private
+attempt's `deliveryComparisons`. Reopening a result shows the latest comparison;
+pending comparisons interrupted by a restart can resume when the attempt is opened.
+Unavailable comparisons remain visibly unavailable. Existing successful Azure
+assessments are preserved when updating a saved attempt to GPT. Successful provider
+results are reused on repeat submissions, including content retries. Content
+policies and other tasks' Azure delivery routes retain their existing behavior.
+
+The GPT-4o audio preview is retired; the user selected its supported replacement,
+GPT Audio 1.5. Reference: https://developers.openai.com/api/docs/deprecations and
+https://developers.openai.com/api/docs/guides/audio-chat-completions . Regression
+providers are simulated; a successful deployment does not establish provider
+agreement or which score better matches Pearson. That comparison requires reviewing
+real saved attempts with a teacher or an independent benchmark.
+
 Selecting a question is the user action that starts the exam-style flow. The browser
 requests microphone permission, audio prompts play automatically where required,
 the preparation countdown runs automatically, and the microphone opens when the
