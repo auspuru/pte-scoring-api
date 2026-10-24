@@ -6334,17 +6334,23 @@ async function getPracticeAccount(uid) {
   return account;
 }
 
+async function speakingContentModel(prompt,context) {
+  if (!anthropic) throw new Error('Speaking content assessment is not configured.');
+  const format=require('./speaking-judge-format');
+  const response=await anthropic.messages.create(format.request(prompt,CLAUDE_MODEL,context),{timeout:60000,maxRetries:0});
+  return format.response(response,context);
+}
 const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
   essayGrader,
-  callModel: async (prompt,context) => {
-    if (!anthropic) throw new Error('Speaking content assessment is not configured.');
-    const format=require('./speaking-judge-format');
-    const response=await anthropic.messages.create(format.request(prompt,CLAUDE_MODEL,context),{timeout:60000,maxRetries:0});
-    return format.response(response,context);
-  }
+  callModel:speakingContentModel
+});
+const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
+  pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),
+  verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),
+  getAccount:getPracticeAccount,callModel:speakingContentModel
 });
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
 const writingLab = require('./writing-lab').installWritingLab(app, {
@@ -6451,7 +6457,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   if (!storageInitialized) return;
   try {
     await ensureDataDir();
-    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise()]);
+    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise()]);
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
   } catch (error) {

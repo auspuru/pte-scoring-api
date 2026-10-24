@@ -12512,6 +12512,13 @@ function ensureSpeakingRuntimeLoaded() {
   return speakingRuntimeLoadPromise;
 }
 
+let speakingMockRuntimeLoadPromise=null;
+function ensureSpeakingMockRuntimeLoaded() {
+  if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=loadDeferredScript('/speaking-mock-client.js?v=sha256-325881fca86b','speaking mock').then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  return speakingMockRuntimeLoadPromise;
+}
+
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
@@ -12648,10 +12655,11 @@ async function getPortalCatalogueProgress() {
       if (!response.ok) throw Error('Practice progress could not load.');
       return response.json();
     };
-    const [catalogRead,speakingRead,writingRead]=await Promise.allSettled([
+    const [catalogRead,speakingRead,writingRead,speakingMockRead]=await Promise.allSettled([
       read('/api/speaking/catalog'),
       token?read('/api/speaking/attempts',true):Promise.resolve([]),
-      token?getPortalWritingAttempts():Promise.resolve([])
+      token?getPortalWritingAttempts():Promise.resolve([]),
+      token?read('/api/speaking-mocks/attempts',true):Promise.resolve([])
     ]);
     if (uid!==canonicalClientUserId(currentUserId) || token!==sessionToken) return {practice:{},mocks:{}};
     const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
@@ -12716,6 +12724,7 @@ async function getPortalCatalogueProgress() {
         }
       }catch(_){}
     }
+    if(speakingMockRead.status==='fulfilled')for(const a of speakingMockRead.value||[]){const prior=result.mocks[a.paperId],at=Number(a.startedAt||0);if(!prior||at>prior.date)result.mocks[a.paperId]={status:a.status==='active'?'In progress':'Done',date:at};}
     cache.at=Date.now();cache.value=result;
     return result;
   })();
@@ -12728,6 +12737,7 @@ function initialisePortalWorkspace() {
   portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
   portalCatalogue = PracticeCatalogue.createController({
     document, navigate: switchSection,
+    launchSpeaking: paperId => switchSection('speaking-run', {mockRequest:{paperId}}),
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
     launchWriting: testId => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', { labRequest: { testId } }),
     getProgress: getPortalCatalogueProgress
@@ -12870,6 +12880,7 @@ function switchSection(section, options = {}) {
       .catch(error => { if (portalWorkspace.current() === active) toast(error.message || 'My Next Steps could not load.', true); });
   }
   if (active === 'practice-hub') portalCatalogue.openPractice();
+  if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
   if (activeRoute?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();

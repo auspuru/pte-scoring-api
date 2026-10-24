@@ -3,9 +3,9 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
 function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
-  if (!['writing_lab_attempts','speaking_lab_attempts'].includes(table)) throw Error('Invalid attempt table.');
-  const namespace = table === 'writing_lab_attempts' ? 'writing-lab' : 'speaking-lab';
-  const indexName = table === 'writing_lab_attempts' ? 'writing_lab_user_idx' : 'speaking_lab_user_idx';
+  if (!['writing_lab_attempts','speaking_lab_attempts','speaking_mock_attempts'].includes(table)) throw Error('Invalid attempt table.');
+  const namespace = table === 'writing_lab_attempts' ? 'writing-lab' : table==='speaking_mock_attempts'?'speaking-mock':'speaking-lab';
+  const indexName = table === 'writing_lab_attempts' ? 'writing_lab_user_idx' : table==='speaking_mock_attempts'?'speaking_mock_user_idx':'speaking_lab_user_idx';
   let ready;
   const locks = new Map();
   async function initialise() {
@@ -120,8 +120,8 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
   }
   async function list(uid) {
     await initialise();
-    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : 'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table === 'speaking_lab_attempts' ? 50 : 250}`, [uid])).rows.map(r => r.data);
-    const dir = folder(uid), limit = table === 'speaking_lab_attempts' ? 50 : 250;
+    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : table==='speaking_mock_attempts'?"data - 'responses' - 'questions'":'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table.startsWith('speaking_') ? 50 : 250}`, [uid])).rows.map(r => r.data);
+    const dir = folder(uid), limit = table.startsWith('speaking_') ? 50 : 250;
     let files;
     try { files = await fs.readdir(dir); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
     // Match the PostgreSQL path's "most recently updated" semantics without

@@ -8,7 +8,7 @@ const azure = require('./speaking-delivery');
 const rubric = require('./delivery-rubric');
 const MODEL = process.env.OPENAI_SPEAKING_AUDIO_MODEL || 'gpt-audio-1.5';
 const VERSION = 'gpt-delivery-2026-10-24.3:' + MODEL;
-const TASKS = Object.freeze(['rl','sgd','rts']);
+const TASKS = Object.freeze(['ra','rs','di','rl','sgd','rts']);
 const applies = question => TASKS.includes(question?.type);
 const isConfigured = (env=process.env) => !!String(env.OPENAI_API_KEY||'').trim();
 

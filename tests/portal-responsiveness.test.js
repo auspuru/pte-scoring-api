@@ -26,16 +26,18 @@ test('simultaneous catalogue and dashboard refreshes share reads and start indep
   const {ctx,requests,resumes}=harness();
   const tasks=Array.from({length:25},()=>ctx.getPortalCatalogueProgress());
   tasks.push(...Array.from({length:25},()=>ctx.refreshWritingPortalResume(null)));
-  assert.deepEqual(requests.map(r=>r.url).sort(),['/api/speaking/attempts','/api/speaking/catalog','/api/writing-lab/attempts']);
+  assert.deepEqual(requests.map(r=>r.url).sort(),['/api/speaking-mocks/attempts','/api/speaking/attempts','/api/speaking/catalog','/api/writing-lab/attempts']);
   for(const request of requests)request.reply(request.url.endsWith('/catalog')?{questions:[{type:'di'}]}:
-    request.url.includes('writing-lab')?[{id:'saved',kind:'sst',status:'active',startedAt:100}]:[]);
+    request.url.includes('writing-lab')?[{id:'saved',kind:'sst',status:'active',startedAt:100}]:
+    request.url.includes('speaking-mocks')?[{id:'mock',paperId:'speaking-mock-1',status:'submitted',startedAt:200}]:[]);
   const values=await Promise.all(tasks);
-  assert.equal(requests.length,3);
+  assert.equal(requests.length,4);
   assert.equal(values[0].practice['speaking-di'].count,1);
   assert.equal(values[0].practice['spoken-text'].lastAttempt,100);
+  assert.equal(values[0].mocks['speaking-mock-1'].status,'Done');
   assert.equal(resumes.at(-1).id,'saved');
   await ctx.getPortalWritingAttempts();await ctx.getPortalCatalogueProgress();
-  assert.equal(requests.length,3);
+  assert.equal(requests.length,4);
 });
 test('a failed attempts read is retryable and never cached as an empty successful response',async()=>{
   const {ctx,requests}=harness();
