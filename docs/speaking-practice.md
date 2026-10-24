@@ -43,9 +43,10 @@ practice estimate for ordered word recovery. Filler pauses and leading/trailing
 material are ignored; "almost nothing" is operationalised as 0–1 matched words.
 These matching details are disclosed as approximations, not Pearson's algorithm.
 
-DI and RTS receive AI content feedback /6 using Pearson-style content descriptors.
+DI receives AI content feedback /6 using Pearson-style content descriptors.
 RL and SGD use the institute's connected-meaning practice policy /6, described below.
-Content feedback includes an explanation, strengths, actionable improvements and a
+RTS uses the functional communication practice policy /6, also described below.
+DI/RL/SGD content feedback includes an explanation, strengths, actionable improvements and a
 covered/partial/missing/inaccurate breakdown with literal student evidence. Poor
 provider output fails visibly rather than displaying fabricated feedback.
 
@@ -83,6 +84,32 @@ still cannot be validated. Other task policies, Azure delivery scores and existi
 saved assessments are unchanged; new RL/SGD assessments record their policy version.
 Regression fixtures simulate provider output and verify these contracts; they do
 not claim live model calibration or Pearson score equivalence.
+
+### Respond to a Situation: functional communication
+
+RTS rewards relevant, understandable communication rather than matching sample ideas.
+A basic response that communicates the intended purpose effectively can earn 6/6;
+a mostly effective response with a small actual communication gap earns 5/6.
+Simple language, concise requests, suitable informal wording, minor slips and valid
+alternative solutions are accepted. Persuasive development, every contextual detail,
+an apology, a particular greeting or a fixed number of supporting ideas are not
+required. Clear conventional indirect requests can work as well as direct requests.
+
+The reviewer receives only the original situation and the student's transcript.
+Teaching samples and the bank's fact list are excluded from the RTS scoring request.
+The same content request returns an evidence-backed communication judgment instead
+of an idea-coverage checklist. Its communicative level must agree with the /6 mark;
+a material problem blocking the basic purpose prevents 5–6. Relevant fragments,
+generic requests without a situational message, mere scenario retelling and off-topic
+responses remain below the good-score range. Minor inaccuracies and optional
+refinements must not be presented as barriers to full marks.
+
+RTS results show communication strengths and useful next steps without a missing
+sample-ideas checklist. The policy version and judgment are saved with each new
+assessment. This is the institute's practice calibration, not a verified Pearson
+score conversion. Existing saved marks and the independent audio-delivery policy
+are retained. Regression checks use simulated providers, including all five original
+situations, alternative solutions, evidence validation and saved-score reuse.
 
 ## Recording, privacy and transcription
 
