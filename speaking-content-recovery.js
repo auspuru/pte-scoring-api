@@ -2,14 +2,16 @@
 const crypto=require('node:crypto'),bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring');
 const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&!r.score_provisional&&!r.needs_semantic_review;
 const deliveryKeys=['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory','deliveryRequestedModel'];
-async function recoverLatest({username,operation,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}){
+async function recoverLatest({username,operation,attemptId,kind,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}){
  if(!require('./speaking-access').allowed(username)||!operation||operation.length>120)throw Error('Invalid content repair scope.');
  const lists=await Promise.all([practiceStore.list(username),mockStore.list(username)]);
  const completed=lists.flat().find(a=>a.contentRecovery?.operation===operation);
  if(completed){logger.info('[speaking-content-recovery]',JSON.stringify({operation,attemptId:completed.id,status:'already-run'}));return completed.contentRecovery;}
  const choices=lists.flatMap((rows,kind)=>rows.filter(a=>a.status==='submitted').map(a=>({kind,id:a.id,startedAt:a.startedAt}))).sort((a,b)=>b.startedAt-a.startedAt);
  if(!choices.length){logger.info('[speaking-content-recovery]',JSON.stringify({operation,status:'no-submitted-attempt'}));return;}
- const chosen=choices[0],store=chosen.kind===0?practiceStore:mockStore,claim=crypto.randomUUID();let claimed=false;
+ const chosen=attemptId?choices.find(a=>a.id===attemptId&&(!kind||(a.kind===0?'practice':'mock')===kind)):choices[0];
+ if(!chosen)throw Error('The requested submitted attempt was not found.');
+ const store=chosen.kind===0?practiceStore:mockStore,claim=crypto.randomUUID();let claimed=false;
  let saved=await store.update(username,chosen.id,a=>{claimed=false;if(a.contentRecovery?.operation===operation)return a;claimed=true;a.contentRecovery={operation,claim,status:'processing',startedAt:now()};return a;});
  if(!claimed){logger.info('[speaking-content-recovery]',JSON.stringify({operation,attemptId:chosen.id,status:'already-run'}));return saved.contentRecovery;}
  const report={operation,attemptId:chosen.id,kind:chosen.kind===0?'practice':'mock',startedAt:chosen.startedAt,reviewed:0,recovered:0,unavailable:0,scores:[],existing:[],issues:[]};
@@ -21,7 +23,7 @@ async function recoverLatest({username,operation,practiceStore,mockStore,callMod
    if(!q){report.unavailable++;continue;}
    let text=r.transcript||'';if(!text.trim()&&r.recording&&transcribe)text=await transcribe(r.recording);
    if(!text.trim()){report.unavailable++;continue;}
-   const assessed=await scoring.grade(q,text,callModel);if(!confirmed(assessed)){report.unavailable++;report.issues.push({index,type:q.type,issue:String(assessed.fallbackReason||'').includes('contradicts')?'score_conflict':'review_unavailable'});continue;}
+   const assessed=await scoring.grade(q,text,callModel);if(!confirmed(assessed)){report.unavailable++;report.issues.push({index,type:q.type,issue:String(assessed.fallbackReason||'').includes('contradicts')?'score_conflict':'review_unavailable',diagnostic:assessed.contentReviewDiagnostic});continue;}
    let written=false;
    await store.update(username,chosen.id,a=>{
     written=false;if(a.contentRecovery?.claim!==claim)return a;
