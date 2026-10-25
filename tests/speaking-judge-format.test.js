@@ -96,9 +96,37 @@ test('Truncated and missing tool responses cannot become confirmed marks',()=>{
   assert.throws(()=>format.response({content:[{type:'text',text:'6'}]},{question,transcript}),/Incomplete content/);
 });
 
-test('Describe Image keeps its existing JSON and coaching path',()=>{
-  const q={type:'di'},req=format.request('Existing image review','test-model',{question:q});
-  assert.equal(req.tools,undefined);assert.equal(req.max_tokens,3200);
-  const raw={total:5,coaching:{priority:'expression'}};
-  assert.deepEqual(format.response({content:[{type:'text',text:JSON.stringify(raw)}]},{question:q}),raw);
+const imageQuestion={type:'di',title:'Energy sources',facts:['The chart shows energy sources.','Solar accounts for 30%.','Wind accounts for 20%.']};
+const imageText='The chart shows energy sources. Solar accounts for 30%, while wind represents 20%.';
+function imageReview(){return {total:5,overview:'The main categories and comparison are accurate.',strengths:['Accurate figures.'],improvements:[],
+  coverage:imageQuestion.facts.map((_,point)=>({point,status:'covered',evidence_span:[[1,5],[6,9],[11,13]][point],feedback:'Accurate relevant meaning.',errorImpact:'none'})),
+  coaching:{priority:'none',strength:{quote_span:[6,13],why:'A clear comparison.'},changes:[],revisedResponse:imageText,rewriteFactIndices:[0,1,2],tip:'Keep the comparison clear.',nextTry:'Describe another energy chart.'}};}
+
+test('Describe Image forces word spans for content and coaching without a summary assessment',async()=>{
+  const context={question:imageQuestion,transcript:imageText},req=format.request(scoring.prompt(imageQuestion,imageText),'test-model',context);
+  assert.deepEqual(req.tool_choice,{type:'tool',name:format.NAME});assert.equal(req.tools[0].strict,true);
+  const props=req.tools[0].input_schema.properties;assert(props.coverage);assert(props.coaching);assert(!props.summaryAssessment);
+  assert.match(req.messages[0].content,/replace coaching quotes with quote_span/);
+  const result=await scoring.grade(imageQuestion,imageText,async()=>format.response(envelope(imageReview()),context));
+  assert.equal(result.contentStatus,'assessed');assert.equal(result.total,5);assert.equal(result.coachingStatus,'assessed');
+  assert.equal(result.coverage[1].evidence,'Solar accounts for 30%,');
+  assert.equal(result.coaching.strength.quote,'Solar accounts for 30%, while wind represents 20%.');
+});
+
+test('Describe Image missing facts have empty spans and invalid coaching cannot discard content',()=>{
+  const context={question:imageQuestion,transcript:imageText},raw=imageReview();
+  raw.coverage[2]={...raw.coverage[2],status:'missing',evidence_span:[]};
+  raw.coaching.strength.quote_span=[1,999];
+  const result=scoring.normalize(imageQuestion,imageText,format.response(envelope(raw),context));
+  assert.equal(result.total,5);assert.equal(result.coverage[2].evidence,'');assert.equal(result.coachingStatus,'unavailable');
+  raw.coverage[0].evidence_span=[1,999];
+  assert.throws(()=>format.response(envelope(raw),context),/Unsupported assessment evidence/);
+});
+
+test('Describe Image accepts no strength when a supported coaching edit is supplied',()=>{
+  const raw=imageReview(),context={question:imageQuestion,transcript:imageText};
+  raw.coaching.strength={quote_span:[],why:''};raw.coaching.priority='expression';
+  raw.coaching.changes=[{quote_span:[6,13],rewrite:'Solar accounts for 30%, compared with 20% for wind.',why:'A shorter comparison.',factIndices:[1,2]}];
+  const result=scoring.normalize(imageQuestion,imageText,format.response(envelope(raw),context));
+  assert.equal(result.coachingStatus,'assessed');assert.equal(result.coaching.strength,null);assert.equal(result.coaching.changes.length,1);
 });

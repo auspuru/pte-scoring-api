@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = 'speaking-content-2026-10-25.1';
+const VERSION = 'speaking-content-2026-10-25.2';
 const localEngine = require('./local-scoring-engine');
 const describeFeedback = require('./describe-image-feedback');
 const spokenSummary = require('./spoken-summary-policy');

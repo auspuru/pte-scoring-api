@@ -2,7 +2,9 @@
 const crypto=require('node:crypto'),bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring');
 const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&!r.score_provisional&&!r.needs_semantic_review;
 const deliveryKeys=['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory','deliveryRequestedModel'];
-async function recoverLatest({username,operation,attemptId,kind,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}){
+async function recoverLatest(options){
+ if(options.scope==='recent')return recoverRecent({...options,scope:undefined});
+ const {username,operation,attemptId,kind,questionTypes,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}=options;
  if(!require('./speaking-access').allowed(username)||!operation||operation.length>120)throw Error('Invalid content repair scope.');
  const lists=await Promise.all([practiceStore.list(username),mockStore.list(username)]);
  const completed=lists.flat().find(a=>a.contentRecovery?.operation===operation);
@@ -19,6 +21,7 @@ async function recoverLatest({username,operation,attemptId,kind,practiceStore,mo
  try{
   const entries=chosen.kind===0?[{index:null,q:bank.questions.find(q=>q.id===saved.questionId),r:saved,result:saved.result}]:saved.questions.flatMap((q,index)=>q.type!=='intro'&&saved.responses[index]?.recording?[{index,q,r:saved.responses[index],result:saved.responses[index].content}]:[]);
   for(const {index,q,r,result} of entries){
+   if(questionTypes&&!questionTypes.includes(q?.type))continue;
    if(confirmed(result)){report.existing.push({index,questionId:q?.id,total:result.total,maximum:result.maximum});continue;}report.reviewed++;
    if(!q){report.unavailable++;continue;}
    let text=r.transcript||'';if(!text.trim()&&r.recording&&transcribe)text=await transcribe(r.recording);
@@ -41,4 +44,24 @@ async function recoverLatest({username,operation,attemptId,kind,practiceStore,mo
  await store.update(username,chosen.id,a=>{if(a.contentRecovery?.claim===claim)a.contentRecovery={...a.contentRecovery,...report,finishedAt:now()};return a;});
  logger.info('[speaking-content-recovery]',JSON.stringify(report));return report;
 }
-module.exports={recoverLatest,confirmed};
+// Bounded recovery of a fixed historical window. Each attempt has its own
+// operation marker, so restarts cannot regrade it or consume more provider calls.
+async function recoverRecent(options){
+ const {username,operation,questionTypes,startedAfter,startedBefore,limit=20,practiceStore,mockStore,logger=console}=options;
+ if(!require('./speaking-access').allowed(username)||!operation||operation.length>65
+   ||!Array.isArray(questionTypes)||!questionTypes.length||questionTypes.some(type=>!['di','rl','sgd','rts'].includes(type))
+   ||!Number.isFinite(startedAfter)||!Number.isFinite(startedBefore)||startedBefore<startedAfter
+   ||!Number.isInteger(limit)||limit<1||limit>50)throw Error('Invalid historical content repair scope.');
+ const lists=await Promise.all([practiceStore.list(username),mockStore.list(username)]);
+ const selected=lists.flatMap((rows,i)=>rows.filter(a=>a.status==='submitted'&&a.startedAt>=startedAfter&&a.startedAt<=startedBefore
+   &&(i===1||questionTypes.includes(bank.questions.find(q=>q.id===a.questionId)?.type)))
+   .map(a=>({id:a.id,kind:i===0?'practice':'mock',startedAt:a.startedAt}))).sort((a,b)=>b.startedAt-a.startedAt);
+ const report={operation,username,questionTypes,candidates:selected.length,inspected:0,reviewed:0,recovered:0,unavailable:0};
+ for(const candidate of selected.slice(0,limit)){
+   const result=await recoverLatest({...options,attemptId:candidate.id,kind:candidate.kind,operation:operation+':'+candidate.id});
+   report.inspected++;for(const key of ['reviewed','recovered','unavailable'])report[key]+=result?.[key]||0;
+ }
+ report.status=selected.length>limit?'limited':report.unavailable?'needs-review':'complete';
+ logger.info('[speaking-content-recovery-batch]',JSON.stringify(report));return report;
+}
+module.exports={recoverLatest,recoverRecent,confirmed};
