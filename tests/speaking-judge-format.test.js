@@ -71,7 +71,7 @@ test('The second review receives the actual invalid assessment and a specific re
   let calls=0;
   const result=await scoring.grade(question,transcript,async(prompt,context)=>{
     calls++;
-    if(calls===2){assert.match(prompt,/numeric total contradicted summaryAssessment/);assert.match(prompt,/PREVIOUS_ASSESSMENT_DATA/);assert.match(prompt,/"materialMeaningChange":true/);}
+    if(calls===2){assert.match(prompt,/numeric total contradicted summaryAssessment/);assert.match(prompt,/PREVIOUS_ASSESSMENT_DATA/);assert.match(prompt,/"materialMeaningChange":true/);assert.match(prompt,/VALIDATION_FAILURE_DATA/);assert.match(prompt,/"fullEligible":false/);assert.match(prompt,/Do not change flags/);}
     const raw=review();if(calls===1)raw.summaryAssessment.materialMeaningChange=true;
     return format.response(envelope(raw),context);
   });

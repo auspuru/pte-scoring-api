@@ -53,7 +53,11 @@ function normalize(question, text, raw, coverage, locateEvidence) {
   // full-qualified review must not disappear because the model suggested 5.
   const policyTotal=full&&raw.total===5?6:raw.total;
   if ((policyTotal === 6) !== full || (!full && raw.total > cap)) {
-    throw Error('Content score contradicts the connected-meaning assessment. Please retry.');
+    throw Object.assign(Error('Content score contradicts the connected-meaning assessment. Please retry.'),{
+      contentDiagnostic:{proposedTotal:raw.total,fullEligible:full,ceiling:full?6:cap,
+        conditions:{responseForm:assessment.responseForm,...Object.fromEntries(flags.map(key=>[key,assessment[key]])),
+          hasCoveredIdea:coverage.some(item=>item.status==='covered'),hasMaterialCoverageError:coverage.some(item=>item.errorImpact==='material')}}
+    });
   }
   return { ...Object.fromEntries(['responseForm', ...flags].map(key => [key, assessment[key]])), evidence, reason:assessment.reason.trim(), ...(policyTotal!==raw.total?{policyTotal,modelSuggestedTotal:raw.total}:{}) };
 }

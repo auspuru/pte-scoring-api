@@ -16,6 +16,8 @@ test('Repair targets the latest submitted practice response once and preserves a
  assert.equal((await s.practiceStore.update(uid,older,a=>a)).result.total,null);assert.deepEqual(saved.contentScoreHistory[0].previous,result);
  const later=id();await s.practiceStore.update(uid,later,()=>({id:later,questionId:q.id,status:'submitted',startedAt:3,transcript:text,result:pending()}));
  await recoverLatest(options);assert.equal(calls,1,'An unchanged repair flag must never process a later attempt on restart.');assert.equal((await s.practiceStore.update(uid,later,a=>a)).result.total,null);
+ await recoverLatest({...options,operation:'pinned-repair',attemptId:older,kind:'practice'});assert.equal(calls,2);assert.equal((await s.practiceStore.update(uid,older,a=>a)).result.total,6);assert.equal((await s.practiceStore.update(uid,later,a=>a)).result.total,null);
+
 });
 test('Mock repair fills only missing content, retaining recordings, both providers and the whole-test assessment',async t=>{
  const s=await setup(t),mock=id(),overall={overallScore:80},providers={gpt:{pronunciation:{score:4}},azure:{fluency:{score:5}}};
