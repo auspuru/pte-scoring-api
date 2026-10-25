@@ -41,7 +41,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   }
   const snapshot=(result,recording)=>({...result,status:'assessed',recordingHash:recording.hash,assessedAt:now()});
   const unavailable=()=>({status:'unavailable'});
-  async function score(uid,id){
+  async function score(uid,id,{overallOnly=false}={}){
     let claimed=false;
     let a=await store.update(uid,id,a=>{
       claimed=false;
@@ -53,6 +53,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     async function save(fn){return store.update(uid,id,current=>{if(current.lease?.owner!==instance)return current;fn(current);if(current.lease?.owner===instance)current.lease.expiresAt=now()+120000;return current;});}
     const heartbeat=setInterval(()=>save(()=>{}).catch(()=>{}),20000);heartbeat.unref?.();
     async function grade(i){
+      if(overallOnly)return;
       const q=a.questions[i],r=a.responses[i];if(!r?.recording||q.type==='intro')return;
       const patch=async value=>{a=await save(current=>{Object.assign(current.responses[i],value);});};
       if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!gptAvailable||r.gpt?.status==='assessed')&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(q,r.recording,r));return;}
@@ -67,23 +68,47 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       await Promise.allSettled(tasks);
     }
     const overallJob=(async()=>{
-      if(a.overall&&a.overall.status!=='unavailable')return;
+      if(a.overall&&a.overall.status!=='unavailable'&&(!overallOnly||a.overall.status==='assessed'&&Number.isInteger(a.overall.overallScore)&&a.overall.overallScore>=10&&a.overall.overallScore<=90))return;
       if(!gptAvailable){await save(current=>{current.overall={status:'unavailable',summary:'Whole-test audio assessment is not configured.'};});return;}
       // Deliberate boundary: no question, transcript, mark or feedback enters
       // the blind overall scorer. It receives only the saved student audio.
-      const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[r.recording]:[]);
+      const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
       try{const result=await assessOverall(recordings,{expectedCount:a.questionCount});await save(current=>{current.overall=result;});}
-      catch{await save(current=>{current.overall={status:'unavailable',summary:'The whole-test audio review could not finish. Retry this saved mock without recording again.'};});}
+      catch(error){const failure=whole.diagnostic(error);console.warn('[speaking-mock-overall]',JSON.stringify({status:'unavailable',...failure}));await save(current=>{current.overall={status:'unavailable',failure,summary:'The whole-test audio review could not finish. Retry this saved mock without recording again.'};});}
     })();
     let cursor=0;
     const worker=async()=>{while(cursor<a.questions.length){const i=cursor++;try{await grade(i);}catch{await save(current=>{current.responses[i]||={};current.responses[i].gradingError=true;});}}};
     try{await Promise.allSettled([overallJob,worker(),worker()]);await save(current=>{current.grading={status:'complete'};delete current.lease;});}
     finally{clearInterval(heartbeat);}
   }
-  function queue(uid,a){
-    if(a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status)||jobs.has(a.id)||jobs.size>=2)return;
-    const job=score(uid,a.id);jobs.set(a.id,job);
+  function queue(uid,a,options){
+    if(jobs.has(a.id))return jobs.get(a.id);
+    if(a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status)||jobs.size>=2)return;
+    const job=score(uid,a.id,options);jobs.set(a.id,job);
     job.catch(()=>console.warn('[speaking-mock] Assessment interrupted; saved stages can resume.')).finally(()=>jobs.delete(a.id));
+    return job;
+  }
+  async function recoverOverall({username,attemptId,operation,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
+    if(!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid overall repair scope.');
+    let a=await read(username,attemptId);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);
+    const confirmed=value=>value?.status==='assessed'&&Number.isInteger(value.overallScore)&&value.overallScore>=10&&value.overallScore<=90;
+    const report=()=>({operation,attemptId,status:confirmed(a.overall)?'complete':'needs-review',overallStatus:a.overall?.status||'missing',
+      overallScore:confirmed(a.overall)?a.overall.overallScore:null,pronunciation:a.overall?.pronunciation?.score??null,fluency:a.overall?.fluency?.score??null,
+      recordingCount:a.overall?.recordingCount??a.completedCount??0,...(a.overall?.failure?{failure:a.overall.failure}:{})});
+    if(confirmed(a.overall)||a.overallRecovery?.operation===operation){const result=report();console.info('[speaking-overall-recovery]',JSON.stringify({...result,existing:true}));return result;}
+    console.info('[speaking-overall-recovery]',JSON.stringify({operation,attemptId,status:'started'}));
+    // Respect an assessment already in flight, including an old deployment's
+    // still-valid lease. Do not start a second paid whole-test review.
+    for(let n=0;n<8;n++){
+      if(jobs.has(attemptId))await jobs.get(attemptId);
+      a=await read(username,attemptId);if(confirmed(a.overall))break;
+      if(a.lease?.expiresAt>now()||jobs.size>=2){await wait(Math.min(30000,Math.max(1000,(a.lease?.expiresAt||now()+30000)-now()+50)));continue;}
+      a=await store.update(username,attemptId,current=>{if(current.lease?.expiresAt>now())return current;current.grading={status:'pending'};current.overallRecovery={operation,status:'processing',startedAt:now()};return current;});
+      const job=queue(username,a,{overallOnly:true});if(!job){await wait(1000);continue;}await job;a=await read(username,attemptId);
+      if(a.overallRecovery?.operation===operation)break;
+    }
+    const result=report();await store.update(username,attemptId,current=>{if(current.overallRecovery?.operation===operation)current.overallRecovery={...current.overallRecovery,...result,finishedAt:now()};return current;});
+    console.info('[speaking-overall-recovery]',JSON.stringify(result));return result;
   }
   router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
   router.use(async(req,res,next)=>{
@@ -156,6 +181,6 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const file=path.join(__dirname,'content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');
     await fs.access(file);res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(file);
   }));
-  return {store,waitForJobs:()=>Promise.allSettled([...jobs.values()])};
+  return {store,recoverOverall,waitForJobs:()=>Promise.allSettled([...jobs.values()])};
 }
 module.exports={timing,reconcile,present,installSpeakingMock};

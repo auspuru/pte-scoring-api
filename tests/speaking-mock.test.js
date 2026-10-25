@@ -46,6 +46,26 @@ test('One weak answer cannot substantiate a recurring whole-test difficulty',()=
   value.fluency.evidence[1].end=9;assert.throws(()=>whole.normalize(value,[8,8,8]),/Unsupported/);
 });
 
+test('Complete audio tool calls and JSON replies with finish_reason stop retain the validated overall score',()=>{
+ const durations=[8,8,8],call={type:'function',function:{name:'record_mock_delivery',arguments:JSON.stringify(raw())}};
+ for(const choice of [
+   {finish_reason:'tool_calls',message:{tool_calls:[call]}},
+   {finish_reason:'stop',message:{tool_calls:[call]}},
+   {finish_reason:'stop',message:{content:'```json\n'+JSON.stringify(raw())+'\n```'}}
+ ])assert.equal(whole.parseReview(choice,durations).overallScore,90);
+ assert.throws(()=>whole.parseReview({finish_reason:'length',message:{tool_calls:[call]}},durations),{code:'WHOLE_TRUNCATED'});
+ assert.throws(()=>whole.parseReview({finish_reason:'stop',message:{tool_calls:[{...call,function:{...call.function,name:'wrong_function'}}]}},durations),{code:'WHOLE_INCOMPLETE'});
+ const invalid=raw();invalid.pronunciation.evidence[0].end=99;
+ assert.throws(()=>whole.parseReview({finish_reason:'stop',message:{content:JSON.stringify(invalid)}},durations),{code:'WHOLE_VALIDATION'});
+});
+
+test('Overall provider failures retain safe request details while redacting credentials and audio',async()=>{
+ await assert.rejects(whole.assess(Array.from({length:8},()=>({data:'test'})),{apiKey:'test-only',convert:async()=>({data:'test',seconds:8}),request:async()=>({ok:false,status:400,json:async()=>({error:{code:'invalid_request',param:'tools[0]',message:'Invalid request sk-secret-key '+ 'a'.repeat(100)}})})}),error=>{
+   const info=whole.diagnostic(error);assert.equal(info.providerStatus,400);assert.equal(info.providerCode,'invalid_request');assert.equal(info.providerParam,'tools[0]');
+   assert(!JSON.stringify(info).includes('sk-secret-key'));assert(!JSON.stringify(info).includes('a'.repeat(100)));return true;
+ });
+});
+
 test('Missing recording evidence withholds an overall score without paid calls',async()=>{
   const result=await whole.assess([{data:'one'}],{expectedCount:27,apiKey:'test',request:()=>{throw Error('Must not call');}});
   assert.equal(result.status,'unassessed');assert.equal(result.overallScore,null);
@@ -119,4 +139,39 @@ test('Default assessment persists successful stages and retries only a failed au
   assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,2,2,1]);
   await fetch(url+'/retry',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});await lab.waitForJobs();saved=await lab.store.update('alice',id,a=>a);
   assert.equal(saved.responses[1].gpt.status,'assessed');assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,3,2,1]);
+});
+
+async function overallRecoveryFixture(t,{existing=null,fail=false}={}){
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'mock-overall-repair-')),app=express();let calls=0;
+ const lab=installSpeakingMock(app,{directory,getAccount:async()=>({}),verifyToken:()=> 'mahabir1',gptAvailable:true,azureAvailable:true,
+   transcribe:async()=>{throw Error('Do not transcribe during overall recovery.');},callModel:async()=>{throw Error('Do not regrade content.');},
+   assessGpt:async()=>{throw Error('Do not repeat individual GPT audio.');},assessAzure:async()=>{throw Error('Do not repeat Azure.');},
+   assessOverall:async(recordings,options)=>{calls++;assert.equal(recordings.length,27);assert.equal(options.expectedCount,27);assert(recordings.every(r=>Object.keys(r).sort().join(',')==='data,hash,mime'));
+     if(fail)throw Object.assign(Error('Provider failed'),{code:'WHOLE_PROVIDER',providerStatus:503});return whole.normalize(raw(),Array(27).fill(8));}});
+ t.after(async()=>{await lab.waitForJobs();await fs.rm(directory,{recursive:true,force:true});});
+ const id=crypto.randomUUID(),questions=structuredClone(bank.papers[0].questions),responses=questions.map((q,i)=>({recording:{mime:'audio/webm',hash:'saved-'+i,data:'saved-audio-'+i},transcript:'Saved response '+i,content:{scoringMode:'ai',total:5,maximum:6},gpt:{status:'assessed',pronunciation:{score:4}},azure:{status:'assessed',fluency:{score:4}}}));
+ await lab.store.update('mahabir1',id,()=>({id,status:'submitted',startedAt:1,deadline:2,index:28,questionCount:27,completedCount:27,questions,responses,overall:existing||{status:'unavailable'},grading:{status:'complete'}}));
+ return {...lab,id,calls:()=>calls,responses,request:{username:'mahabir1',attemptId:id,operation:'overall-repair-test'}};
+}
+
+test('Pinned overall recovery assesses original recordings once and preserves every individual score',async t=>{
+ const h=await overallRecoveryFixture(t),report=await h.recoverOverall(h.request);
+ assert.equal(report.status,'complete');assert.equal(report.overallScore,90);assert.equal(h.calls(),1);
+ const saved=await h.store.get('mahabir1',h.id);assert.deepEqual(saved.responses,h.responses);assert.equal(saved.grading.status,'complete');assert.equal(saved.overallRecovery.status,'complete');
+ await h.recoverOverall(h.request);assert.equal(h.calls(),1);
+ await assert.rejects(h.recoverOverall({...h.request,username:'another-user'}),/Invalid overall/);
+});
+
+test('Existing overall results are retained, while failed recovery never invents a mark or repeats automatically',async t=>{
+ const existing=whole.normalize(raw(),Array(27).fill(8)),ready=await overallRecoveryFixture(t,{existing});
+ assert.equal((await ready.recoverOverall(ready.request)).overallScore,90);assert.equal(ready.calls(),0);
+ const h=await overallRecoveryFixture(t,{fail:true});const report=await h.recoverOverall(h.request);
+ assert.equal(report.status,'needs-review');assert.equal(report.overallScore,null);assert.equal(report.failure.providerStatus,503);
+ assert.deepEqual((await h.store.get('mahabir1',h.id)).responses,h.responses);await h.recoverOverall(h.request);assert.equal(h.calls(),1);
+});
+
+test('Overall recovery respects another worker lease and reuses the result that worker saves',async t=>{
+ const h=await overallRecoveryFixture(t);await h.store.update('mahabir1',h.id,a=>{a.lease={owner:'another-worker',expiresAt:Date.now()+30000};return a;});
+ let waits=0;const report=await h.recoverOverall({...h.request,wait:async()=>{waits++;await h.store.update('mahabir1',h.id,a=>{a.overall=whole.normalize(raw(),Array(27).fill(8));delete a.lease;return a;});}});
+ assert.equal(waits,1);assert.equal(h.calls(),0);assert.equal(report.overallScore,90);assert.deepEqual((await h.store.get('mahabir1',h.id)).responses,h.responses);
 });

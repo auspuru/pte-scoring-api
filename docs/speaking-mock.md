@@ -85,6 +85,14 @@ only status and bounded error codes, never transcripts or credentials. A pinned
 content-repair operation can fill missing DI marks once without repeating any
 completed content, audio-provider or whole-test assessment.
 
+An operator can also pin a one-time overall-only recovery to a saved submitted
+mock. It reuses the normal job/lease guards, sends only original recordings to
+the blind whole-test scorer, and leaves all individual content and provider
+results intact. Confirmed overall results are reused. Recovery reports the saved
+overall and trait scores or a specific safe failure; a failed operation does not
+buy repeated reviews on restart. Complete audio function calls labeled `stop`
+and valid JSON replies are accepted only after the same full evidence validation.
+
 ## Sources and validation
 
 - Pearson speaking format: https://www.pearsonpte.com/pte-academic/test-format/speaking-writing/
