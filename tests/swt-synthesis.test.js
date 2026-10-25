@@ -100,7 +100,7 @@ test('Genuine missing context remains higher priority than synthesis advice', ()
   assert.equal(feedback.priorities[0].title, 'Connect the idea to its missing context');
 });
 
-test('The independent review assesses synthesis without being anchored to the first score', async () => {
+test('The independent review stays blind and a synthesis disagreement is adjudicated', async () => {
   let calls = 0;
   const service = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt: buildJudgingPrompt,
     isComplete: (j, text) => !applyScoringPolicy(j, text).needs_semantic_review,
@@ -110,10 +110,14 @@ test('The independent review assesses synthesis without being anchored to the fi
         assert.match(prompt, /Do not check whether the summary is completely paraphrased/);
         return judgment('partial');
       }
+      if (calls === 3) {
+        assert.match(prompt, /INTERPRETATION DISPUTE/);
+        return judgment('partial');
+      }
       return judgment();
     } });
   const result = applyScoringPolicy(await service.judge(summary, 'A source passage for the labelled assessment.', {}), summary);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
   assert.equal(result.content_score, 3);
   assert.equal(result.summary_assessment.material_meaning_change, false);
 });
@@ -264,7 +268,7 @@ test('An invalid student citation uses the existing review retry without a parap
     call:async(prompt,timeout,options)=>{
       calls++;
       if(calls===3){assert.equal(options.semanticReassessment,true);assert.match(prompt,/do not introduce a complete-paraphrasing requirement/);return judgment('partial');}
-      assert.equal(options.semanticReassessment,false);return calls===1?judgment('partial'):bad;
+      assert.equal(options.semanticReassessment,calls!==1);return calls===1?judgment('partial'):bad;
     }});
   const result=await svc.judge(summary,'A source clause.','');
   assert.equal(calls,3);assert.equal(result.consistency_reviewed,true);

@@ -60,11 +60,11 @@ test('A disputed relationship gets an independent review, not an automatic full-
   const svc = service(async prompt => {
     calls++;
     if (calls === 1) return disputed;
-    assert.match(prompt, /SECOND-PASS CONSISTENCY CHECK/);
+    assert.match(prompt, calls === 2 ? /SECOND-PASS CONSISTENCY CHECK/ : /INTERPRETATION DISPUTE/);
     return good();
   });
   const result = await invoke(svc);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
   assert.equal(result.consistency_reviewed, true);
   assert.equal(applyScoringPolicy(result, fixture.summary).content_score, 4);
 });
@@ -229,7 +229,7 @@ test('Meaning-changing language allegations are reviewed even when content was m
   let calls = 0;
   const svc = service(async () => ++calls === 1 ? j : good());
   const result = await invoke(svc);
-  assert.equal(calls, 2);
+  assert.equal(calls, 3);
   assert.equal(applyScoringPolicy(result, fixture.summary).grammar_score, 2);
 });
 
@@ -270,11 +270,11 @@ test('Indexed citations repair the repeated supporting-evidence failure without 
     return calls===1?disputed:reviewed;
   });
   const result=await invoke(svc),actual=applyScoringPolicy(result,fixture.summary),expected=applyScoringPolicy(good(),fixture.summary);
-  assert.equal(calls,2);assert(result.consistency_reviewed);assert.equal(actual.needs_semantic_review,false);
+  assert.equal(calls,3);assert(result.consistency_reviewed);assert.equal(actual.needs_semantic_review,false);
   assert(actual.summary_assessment.supporting_evidence.every(quote=>fixture.summary.includes(quote)));
   assert.equal(actual.summary_assessment.supporting_evidence.length,expected.summary_assessment.supporting_evidence.length);
   assert.equal(actual.content_score,expected.content_score);assert.equal(actual.grammar_score,expected.grammar_score);assert.equal(actual.vocabulary_score,expected.vocabulary_score);
-  await invoke(svc);assert.equal(calls,2,'Only the complete, verified assessment may be cached');
+  await invoke(svc);assert.equal(calls,3,'Only the complete, verified assessment may be cached');
 });
 
 test('Indexed citations preserve original whitespace and cannot fabricate or silently drop invalid evidence',()=>{

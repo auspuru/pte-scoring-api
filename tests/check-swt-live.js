@@ -99,7 +99,8 @@ async function main() {
         assessment = j.summary_assessment;
         assert.equal(j.needs_semantic_review, false, 'Model assessment must be complete');
         result = { content: j.content_score, grammar: j.grammar_score, vocabulary: j.vocabulary_score,
-          synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed };
+          synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed,
+          interpretationReview: j.interpretation_review || null };
       }
       console.log(JSON.stringify({ case: c.name, ...result }));
       if (c.minimum != null) assert(result.content >= c.minimum, 'Accurate main relationships were under-credited');
