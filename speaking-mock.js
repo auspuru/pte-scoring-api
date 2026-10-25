@@ -33,6 +33,12 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
+  async function readResults(uid,id){
+    const a=await store.get(uid,id,{omitMockAudio:true});if(!a)throw fail('Mock attempt not found.',404);
+    // Only an expired active attempt needs a write to submit it. Saved results
+    // are read-only; polling must not compete with background assessment saves.
+    return a.status==='active'&&now()>=a.deadline?read(uid,id):a;
+  }
   const snapshot=(result,recording)=>({...result,status:'assessed',recordingHash:recording.hash,assessedAt:now()});
   const unavailable=()=>({status:'unavailable'});
   async function score(uid,id){
@@ -105,7 +111,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
     });res.json(present(a,now()));
   }));
-  router.get('/attempts/:id',wrap(async(req,res)=>{const a=await read(req.mockUser,req.params.id);res.json(present(a,now()));queue(req.mockUser,a);}));
+  router.get('/attempts/:id',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(present(a,now()));queue(req.mockUser,a);}));
   router.post('/attempts/:id/begin',limiter,wrap(async(req,res)=>{
     const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active')throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);a.questionStartedAt||=now();return a;});res.json(present(a,now()));
   }));

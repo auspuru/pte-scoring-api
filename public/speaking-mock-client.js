@@ -5,7 +5,7 @@
   const labels={intro:'Introduction',ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
     const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map();
-    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,notice='',selected=null,context,analyser,silence=0,heard=false;
+    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,context,analyser,silence=0,heard=false;
     const now=()=>env.Date?.now?.()||Date.now(),identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
     const key=(id,index)=>owner+':'+id+':'+index;
@@ -15,8 +15,13 @@
     };
     async function api(route,body,raw=false){
       const headers={'x-session-token':token()};if(body!==undefined)headers['Content-Type']=raw?body.type.split(';')[0]:'application/json';
-      const response=await env.fetch('/api/speaking-mocks'+route,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:raw?body:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(30000)});
-      const data=await response.json();if(!response.ok)throw Error(data.error||'The mock could not finish this action.');return data;
+      try{
+        const response=await env.fetch('/api/speaking-mocks'+route,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:raw?body:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(30000)});
+        const data=await response.json();if(!response.ok)throw Object.assign(Error(data.error||'The mock could not finish this action.'),{status:response.status,retryable:response.status===408||response.status===429||response.status>=500});return data;
+      }catch(error){
+        if(error.status)throw error;
+        throw Object.assign(Error('The connection was interrupted. Your saved mock is safe; please retry.'),{retryable:true});
+      }
     }
     async function pending(action,id,value){
       if(action==='put')memory.set(id,value);if(action==='delete')memory.delete(id);
@@ -40,7 +45,7 @@
     function shell(html){host.innerHTML=html;host.onclick=click;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
-      if(owner&&owner!==identity())reset();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
+      if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
       shell('<p role="status">Loading speaking mocks…</p>');
       try{const values=await Promise.all([api('/catalog'),api('/attempts')]);if(!valid(ticket))return;catalog=values[0];hub(values[1],options);}
       catch(error){if(valid(ticket))shell('<p role="alert">'+esc(error.message)+'</p><button class="portal-button" data-sm="reload">Retry</button>');}
@@ -184,9 +189,10 @@
     }
     function pollResults(){
       if(a.grading?.status==='complete'){stopPolling();return;}if(poller)return;pollUntil=now()+20*60000;
-      poller=env.setInterval(async()=>{if(pollBusy||doc.hidden)return;if(now()>pollUntil){stopPolling();return;}const ticket=serial,id=a.id;pollBusy=true;
-        try{const saved=await api('/attempts/'+id);if(!valid(ticket)||a.id!==id)return;a=saved;updateResults();if(a.grading?.status==='complete')stopPolling();}
-        catch(error){stopPolling();message(error.message);}finally{pollBusy=false;}
+      pollFailures=0;nextPollAt=0;
+      poller=env.setInterval(async()=>{if(pollBusy||doc.hidden||now()<nextPollAt)return;if(now()>pollUntil){stopPolling();message('Your recordings are saved. Reopen these results to check for the remaining scores.');return;}const ticket=serial,id=a.id,version=resultVersion;pollBusy=true;
+        try{const saved=await api('/attempts/'+id);if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;a=saved;updateResults();if(pollFailures)message('');pollFailures=0;if(a.grading?.status==='complete')stopPolling();}
+        catch(error){if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;if(error.retryable){nextPollAt=now()+Math.min(30000,3000*2**Math.min(pollFailures++,4));message('Connection interrupted. Your recordings are saved; retrying results automatically…');}else{stopPolling();message(error.message);}}finally{pollBusy=false;}
       },3000);
     }
     async function click(event){const button=event.target.closest('[data-sm]');if(!button||button.disabled)return;const data=button.dataset;
@@ -197,7 +203,12 @@
       if(data.sm==='review')return review(Number(data.index));
       if(data.sm==='play'){played='';return playPrompt();}
       if(data.sm==='upload'){const blob=await pending('get',key(a.id,a.index));if(blob)try{await upload(blob,a.id,a.index);}catch(error){message(error.message);}return;}
-      if(data.sm==='retry'){try{a=await api('/attempts/'+a.id+'/retry',{});updateResults();pollResults();}catch(error){message(error.message);}return;}
+      if(data.sm==='retry'){
+        if(busy||!a)return;busy=true;button.disabled=true;stopPolling();const ticket=serial,id=a.id,version=++resultVersion;
+        try{const saved=await api('/attempts/'+id+'/retry',{});if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;a=saved;message('');updateResults();pollResults();}
+        catch(error){if(valid(ticket)&&a?.id===id&&version===resultVersion){message(error.retryable?'The retry request was interrupted. Your recordings are saved; checking the results automatically…':error.message);if(error.retryable)pollResults();}}
+        finally{busy=false;button.disabled=false;}return;
+      }
       if(data.sm==='history'||data.sm==='reload')return open({history:data.sm==='history'});
     }
     return {open,leave,reset};
