@@ -162,7 +162,7 @@
       }catch(error){message(error.message);}finally{busy=false;}
     }
     async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'){release();results();}else{renderExam();protectedMode();tick();}}
-    function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5';}
+    function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5'+(trait.manualOverride?' (manual override)':'');}
     function results(){
       env.PortalExamMode?.set(OWNER,false,host);stopTimer();stopPrompt();
       shell('<div class="sm-results"><div class="sm-results-heading"><h2>'+esc(a.title)+' · Results</h2><div class="sm-results-actions"><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button><button class="portal-button" data-sm="history">Saved speaking mocks</button></div></div><div id="sm-results-summary" aria-live="polite"></div>'

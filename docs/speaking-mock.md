@@ -99,6 +99,14 @@ validation diagnostic added; no prior mark or individual-question result is sent
 Provider failures are never automatically retried. A second invalid review still
 withholds the overall mark.
 
+An instructor-authorized, pinned manual operation can award 5/5 only to missing
+Repeat Sentence pronunciation/fluency fields in one saved mock. These values live
+in a separate, recording-bound override map with an operation ID, timestamp,
+instructor attribution and the prior trait state. Original GPT/Azure results are
+retained, existing marks are preserved, and non-RS questions, content and the
+independent overall remain unchanged. Results and review label each overridden
+trait as a manual override. Reattempts do not inherit the overrides.
+
 ## Sources and validation
 
 - Pearson speaking format: https://www.pearsonpte.com/pte-academic/test-format/speaking-writing/
