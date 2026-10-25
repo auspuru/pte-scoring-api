@@ -48,8 +48,12 @@ const tool = {
     feedback_note: { ...text, description: 'Plain student-facing feedback only. This is the final field; never place other JSON fields inside this string.' }
   }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'captured_ideas', 'recommended_swaps', 'feedback_note'] }
 };
-function request(prompt, model, {semanticReassessment=false} = {}) {
-  return { model:semanticReassessment ? (process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6') : model, max_tokens: 4000, temperature: 0, tools: [tool],
+const DEFAULT_SCORING_MODEL = 'claude-sonnet-4-6';
+// SWT scoring and its feedback share one dedicated model selection. A global
+// low-cost model used by other tasks must not silently select the SWT scorer.
+function scoringModel() { return process.env.SWT_CLAUDE_MODEL || DEFAULT_SCORING_MODEL; }
+function request(prompt, model = scoringModel(), {semanticReassessment=false} = {}) {
+  return { model:semanticReassessment ? (process.env.SWT_REVIEW_MODEL || scoringModel()) : model, max_tokens: 4000, temperature: 0, tools: [tool],
     tool_choice: { type: 'tool', name: tool.name }, messages: [{ role: 'user', content: prompt
       + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Keep relationship_explanation under 60 words, next_step to one achievable action, and recommended_swaps to at most three useful optional suggestions. Write feedback_note last as short plain feedback, never as escaped JSON containing other fields.' }] };
 }
@@ -95,7 +99,7 @@ function response(value) {
   if (!result || typeof result !== 'object' || Array.isArray(result)) return null;
   const recovered = recoverFeedbackFields(result);
   const labels = ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'];
-  return { ...recovered, ...(Array.isArray(recovered.captured_ideas)
+  return { ...recovered, ...(typeof value.model === 'string' ? { assessment_model: value.model } : {}), ...(Array.isArray(recovered.captured_ideas)
     ? {per_idea_scores:Object.fromEntries(labels.map(label=>[label,recovered.captured_ideas.includes(label)?1:0]))} : {}), source:'claude' };
 }
-module.exports = { tool, request, response };
+module.exports = { tool, request, response, scoringModel, DEFAULT_SCORING_MODEL };

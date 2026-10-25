@@ -9,7 +9,7 @@ const q={type:'swt',text:fixture.passage,keyPoints:['main idea']};
 function judgment(quality='effective'){
  const a=structuredClone(fixture.assessment);
  a.synthesis={quality,evidence:quality==='effective'?'':a.main_idea_evidence,explanation:'The selected ideas are connected; the expression can be condensed.'};
- return {content_score:4,grammar_score:2,vocabulary_score:2,cohesion:'strong',summary_assessment:a,grammar_annotations:[],vocabulary_annotations:[],consistency_reviewed:true};
+ return {content_score:4,grammar_score:2,vocabulary_score:2,cohesion:'strong',summary_assessment:a,grammar_annotations:[],vocabulary_annotations:[],consistency_reviewed:true,assessment_model:'claude-sonnet-4-6'};
 }
 test('The mock adapter preserves the shared Content judgment and independent language traits',async()=>{
  for(const [quality,content] of [['effective',4],['partial',3],['limited',2]]){
@@ -18,6 +18,7 @@ test('The mock adapter preserves the shared Content judgment and independent lan
   assert.equal(result.scores.grammar,2);assert.equal(result.scores.vocabulary,2);
   assert.equal(result.total,content+5);assert.equal(result.maximum,9);
   assert.equal(result.score_provisional,false);assert.equal(result.consistency_reviewed,true);
+  assert.equal(result.scoring_model,'claude-sonnet-4-6');
   assert.equal(result.full_content_eligible,quality==='effective');
  }
 });
@@ -43,6 +44,7 @@ test('Writing Mock SWT submissions share the standalone grader and persist one c
  assert.equal(calls,1);assert.deepEqual(results[0],results[1]);
  assert.equal(results[0].assessmentType,'Unified SWT practice assessment');assert.equal(results[0].version,POLICY_VERSION);
  assert.equal(results[0].scores.content,3);assert.equal(results[0].score_provisional,false);
+ assert.equal(results[0].scoring_model,'claude-sonnet-4-6');
  const again=await fetch(base+'/attempts/'+id+'/score/0',{method:'POST',headers,body:'{}'});assert.equal(again.status,200);assert.equal(calls,1);
  await store.update('tester',id,a=>{a.results[0]={score_provisional:true,needs_semantic_review:true,scoringMode:'local',scores:{content:0},total:0};return a;});
  const retry=await fetch(base+'/attempts/'+id+'/score/0',{method:'POST',headers,body:'{}'});assert.equal(retry.status,200);

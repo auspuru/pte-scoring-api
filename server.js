@@ -4278,7 +4278,7 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
 async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false } = {}) {
   if (!anthropic) return null;
   const format = require('./swt-judge-format');
-  const response = await anthropic.messages.create(format.request(prompt, CLAUDE_MODEL, {semanticReassessment}),
+  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment}),
     { timeout: timeoutMs, maxRetries: 0, signal });
   return format.response(response);
 }
@@ -4872,6 +4872,7 @@ app.post('/api/grade', async (req, res) => {
       // F1 (v19.17): true when Claude was unavailable and the local fallback
       // produced the scores (no grammar annotations / vocab swaps available).
       ai_feedback_degraded: aiFeedbackDegraded,
+      scoring_model: llmJudgment?.assessment_model || null,
       score_provisional: scoreProvisional,
       content_gate_triggered: contentGated,
       score_gate: { status: contentGated ? 'zero_content' : 'valid',

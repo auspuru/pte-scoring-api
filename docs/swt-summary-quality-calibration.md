@@ -66,6 +66,38 @@ meaning-reversing responses without progress writes.
 
 ## Verification
 
+### Sonnet scoring and feedback (policy 20.3.16)
+
+SWT now defaults to `claude-sonnet-4-6` for the initial assessment, independent
+review and interpretation adjudication. Each assessment includes Content,
+Grammar, Vocabulary, exact evidence and student feedback; the stronger model
+is no longer used only when a cheaper primary scorer proposes a deduction.
+Production standalone grading, reference checks and Writing Mock SWT all use
+the shared service. Opt-in live checks select the same default.
+
+`SWT_CLAUDE_MODEL` can explicitly override SWT's primary model;
+`SWT_REVIEW_MODEL` can explicitly override the semantic reviewer, which
+otherwise inherits SWT's model. Global `CLAUDE_MODEL` and
+`CLAUDE_REASSESSMENT_MODEL` no longer implicitly select the SWT scorer or
+reviewer. No provider credentials are changed. The existing two-pass assessment,
+bounded dispute adjudication, maximum four calls and shared deadline remain.
+
+Provider responses retain the actual reported model as `assessment_model`;
+standalone and unified mock results expose it as `scoring_model`. Missing
+provider identity stays unknown rather than being inferred. The scoring-policy
+version invalidates new-assessment caches; historical confirmed attempts are
+not rewritten. Switching models is not a guarantee of higher marks or measured
+Pearson parity.
+
+Selected real Sonnet checks credited the Natural Resources summary at Content
+4 / Grammar 2 / Vocabulary 2 and the original geothermal summary at 3 / 2 / 2.
+The explicit discontinued-operation control consistently received Content 0,
+but its diagnostic Grammar varied: one run returned 1.5, and a repeat returned
+2 with no grammar annotations. The first run failed the retained Grammar-2
+assertion; the repeat passed. This variation is a known semantic-model
+limitation, not a reason to remove the assertion or claim an accuracy rate.
+Content 0 still awards no task points under the existing gate.
+
 ### Contextual tense interpretation (policy 20.3.15)
 
 A user-supplied geothermal response says water "is converted into steam, which

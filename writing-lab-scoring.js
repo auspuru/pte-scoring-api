@@ -182,7 +182,8 @@ async function gradeUnifiedSwt(q, text, judge) {
     scores,maxima:MAXIMA.swt,total:Object.values(scores).reduce((n,v)=>n+v,0),maximum:Object.values(MAXIMA.swt).reduce((n,v)=>n+v,0),wordCount:form.count,gated,
     reasons:gated?['The response does not convey the passage’s central message.']:[],...(gated?{diagnosticScores}:{}),
     summary_assessment:a,full_content_eligible:!gated&&assessment.full_content_eligible,needs_semantic_review:false,
-    consistency_reviewed:true,feedback:{content:assessment.content_reason,form:form.count+' words. Form: 1/1.',grammar:language('grammar'),vocabulary:language('vocabulary')},
+    consistency_reviewed:true,scoring_model:assessment.assessment_model||null,
+    feedback:{content:assessment.content_reason,form:form.count+' words. Form: 1/1.',grammar:language('grammar'),vocabulary:language('vocabulary')},
     strengths:a.main_idea_accurate?['The passage’s main message is recognised.']:[],
     improvements:assessment.content_score<4?[a.next_step || 'Combine and briefly rephrase the essential ideas.']:[],
     errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};
