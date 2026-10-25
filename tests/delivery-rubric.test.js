@@ -6,8 +6,8 @@ const item=(kind,observation,impact='')=>({start:.1,end:.8,kind,phrase:'trees sh
 const top=()=>({status:'scored',pattern:'clear',overallImpact:'none',score:5,reason:'Clear connected speech overall.',nextStep:'Keep this natural phrase stress.',evidence:[item('strength','The phrase is clear and naturally connected.')]});
 
 test('The Academy rubric permits minor slips, clear accents, natural pauses and smooth recovery at the top band',()=>{
-  assert.equal(rubric.RUBRIC_VERSION,'intelligibility-delivery-v4');
-  for(const phrase of ['regional and national accents','not an automatic deduction','Natural sentence/phrase-boundary pauses','smooth recovery','task time limit','not automatically a pronunciation error'])assert(gpt.PROMPT.includes(phrase));
+  assert.equal(rubric.RUBRIC_VERSION,'intelligibility-delivery-v5');
+  for(const phrase of ['regional and national accents','must not deduct marks','Natural sentence/phrase-boundary pauses','smooth recovery','task time limit','not automatically a pronunciation error'])assert(gpt.PROMPT.includes(phrase));
   const pronunciation=top();pronunciation.evidence.push(item('refinement','An optional isolated sound refinement leaves the word clear.'));
   const result=gpt.normalize({pronunciation,fluency:top()},evidence);
   assert.equal(result.pronunciation.score,5);assert.equal(result.fluency.score,5);

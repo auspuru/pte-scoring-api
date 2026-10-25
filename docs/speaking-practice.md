@@ -164,7 +164,7 @@ signals still use the disclosed acoustic mapping. Its numbers remain acoustic
 practice estimates, not independently verified listener-impact judgments. The
 providers are never forced to agree and GPT does not adjust Azure's marks.
 
-The portal's current `intelligibility-delivery-v4` policy distinguishes generally
+The portal's current `intelligibility-delivery-v5` policy distinguishes generally
 clear delivery with minor slips from recurring or sustained difficulty across the
 whole recording. Clear speech, isolated intelligible slips, natural pauses and
 smooth recovery can receive 5/5. GPT records a separate pattern and overall impact
@@ -318,3 +318,11 @@ response. The additions use a displayed-text prompt with the existing
 10-second preparation and 40-second response flow; they do not request a missing
 audio asset. Existing audio prompts are retained. These are original practice
 scenarios, not claimed exam predictions or copied question-bank content.
+
+The same GPT delivery rubric applies to all six speaking tasks and the independent
+whole-test review. Harmless sound/stress inaccuracies, clear accent variations,
+minor hesitations and smooth recoveries must not deduct pronunciation or fluency
+marks, even if similar harmless variations recur. Only an audible recurring or
+sustained effect on clarity or connected delivery supports a deduction. Content
+accuracy is judged separately. Azure retains its native acoustic comparison; it
+is not relabelled as a GPT holistic judgment.
