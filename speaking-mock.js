@@ -3,6 +3,7 @@ const express=require('express'),crypto=require('node:crypto'),path=require('nod
 const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),gpt=require('./gpt-speaking-delivery'),azure=require('./speaking-delivery'),whole=require('./speaking-mock-overall');
 const academy=require('./describe-image-academy');
 const manualDelivery=require('./speaking-manual-delivery');
+const azureWhole=require('./speaking-mock-azure');
 const {createStore}=require('./writing-lab-store'),{transcribeRecording}=require('./speaking-lab');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 function timing(a,now=Date.now()){
@@ -20,7 +21,7 @@ function reconcile(a,now=Date.now()){
 function present(a,now=Date.now()){
   const submitted=a.status==='submitted';
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,integrity:a.integrity,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
@@ -30,7 +31,8 @@ function present(a,now=Date.now()){
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
   assessGpt=gpt.assessRecording,assessAzure=azure.assessRecording,assessOverall=whole.assess,gradeResponse,
-  gptAvailable=gpt.isConfigured(),azureAvailable=azure.isConfigured(),now=Date.now}={}){
+  gptAvailable=gpt.isConfigured(),azureAvailable=azure.isConfigured(),
+  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),now=Date.now}={}){
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
@@ -42,7 +44,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   }
   const snapshot=(result,recording)=>({...result,status:'assessed',recordingHash:recording.hash,assessedAt:now()});
   const unavailable=()=>({status:'unavailable'});
-  async function score(uid,id,{overallOnly=false,reassessOverall=false,operation}={}){
+  async function score(uid,id,{overallOnly=false,reassessOverall=false,azureOverallOnly=false,operation}={}){
     let claimed=false;
     let a=await store.update(uid,id,a=>{
       claimed=false;
@@ -54,7 +56,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     async function save(fn){return store.update(uid,id,current=>{if(current.lease?.owner!==instance)return current;fn(current);if(current.lease?.owner===instance)current.lease.expiresAt=now()+120000;return current;});}
     const heartbeat=setInterval(()=>save(()=>{}).catch(()=>{}),20000);heartbeat.unref?.();
     async function grade(i){
-      if(overallOnly)return;
+      if(overallOnly||azureOverallOnly)return;
       const q=a.questions[i],r=a.responses[i];if(!r?.recording||q.type==='intro')return;
       const patch=async value=>{a=await save(current=>{Object.assign(current.responses[i],value);});};
       if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!gptAvailable||r.gpt?.status==='assessed')&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(q,r.recording,r));return;}
@@ -69,6 +71,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       await Promise.allSettled(tasks);
     }
     const overallJob=(async()=>{
+      if(azureOverallOnly)return;
       if(!reassessOverall&&a.overall&&a.overall.status!=='unavailable'&&(!overallOnly||a.overall.status==='assessed'&&Number.isInteger(a.overall.overallScore)&&a.overall.overallScore>=10&&a.overall.overallScore<=90))return;
       if(!gptAvailable){await save(current=>{
         if(reassessOverall)current.overallRecovery={...current.overallRecovery,status:'failed',failure:{code:'WHOLE_NOT_CONFIGURED'}};
@@ -95,9 +98,22 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         else current.overall={status:'unavailable',failure,summary:'The whole-test audio review could not finish. Retry this saved mock without recording again.'};
       });}
     })();
+    const azureOverallJob=(async()=>{
+      if(overallOnly&&!azureOverallOnly||!azureOverallAvailable||a.overallAzure?.status==='assessed')return;
+      const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
+      try{
+        const result=await assessAzureOverall(recordings,{expectedCount:a.questionCount});
+        if(result?.status!=='assessed'||!Number.isFinite(result.pronunciation?.raw)||!Number.isFinite(result.fluency?.raw))throw Error('Azure overall was not confirmed.');
+        await save(current=>{current.overallAzure={...result,assessedAt:now(),...(operation?{operation}:{})};});
+      }catch(error){
+        const failure={code:'AZURE_OVERALL_UNAVAILABLE',...(Number.isInteger(error.providerStatus)?{providerStatus:error.providerStatus}:{})};
+        console.warn('[speaking-azure-overall]',JSON.stringify(failure));
+        await save(current=>{current.overallAzure={status:'unavailable',failure,summary:'The Azure audio summary could not finish. Your saved recordings and GPT result are unchanged.'};});
+      }
+    })();
     let cursor=0;
     const worker=async()=>{while(cursor<a.questions.length){const i=cursor++;try{await grade(i);}catch{await save(current=>{current.responses[i]||={};current.responses[i].gradingError=true;});}}};
-    try{await Promise.allSettled([overallJob,worker(),worker()]);await save(current=>{current.grading={status:'complete'};delete current.lease;});}
+    try{await Promise.allSettled([overallJob,azureOverallJob,worker(),worker()]);await save(current=>{current.grading={status:'complete'};delete current.lease;});}
     finally{clearInterval(heartbeat);}
   }
   function queue(uid,a,options){
@@ -107,8 +123,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     job.catch(()=>console.warn('[speaking-mock] Assessment interrupted; saved stages can resume.')).finally(()=>jobs.delete(a.id));
     return job;
   }
-  async function recoverOverall({username,attemptId,operation,reassess=false,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
-    if(typeof reassess!=='boolean'||!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid overall repair scope.');
+  async function recoverOverall({username,attemptId,operation,provider='gpt',reassess=false,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
+    if(provider==='azure')return recoverAzureOverall({username,attemptId,operation,wait});
+    if(provider!=='gpt'||typeof reassess!=='boolean'||!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid overall repair scope.');
     let a=await read(username,attemptId);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);
     const confirmed=value=>value?.status==='assessed'&&Number.isInteger(value.overallScore)&&value.overallScore>=10&&value.overallScore<=90;
     const completed=()=>confirmed(a.overall)&&(!reassess||a.overall.reassessmentOperation===operation);
@@ -133,13 +150,36 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const result=report();await store.update(username,attemptId,current=>{if(current.overallRecovery?.operation===operation)current.overallRecovery={...current.overallRecovery,...result,finishedAt:now()};return current;});
     console.info('[speaking-overall-recovery]',JSON.stringify(result));return result;
   }
-  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
+  async function recoverAzureOverall({username,attemptId,operation,wait}={}){
+    if(!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid Azure overall scope.');
+    if(!azureOverallAvailable)throw fail('Azure whole-test assessment is not configured.',503);
+    let a=await read(username,attemptId);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);
+    const report=()=>({operation,attemptId,status:a.overallAzure?.status==='assessed'?'complete':'needs-review',
+      pronunciation:a.overallAzure?.pronunciation?.raw??null,fluency:a.overallAzure?.fluency?.raw??null,nativeMaximum:100,
+      pronunciationBand:a.overallAzure?.pronunciation?.score??null,fluencyBand:a.overallAzure?.fluency?.score??null,
+      recordingCount:a.overallAzure?.recordingCount??0,chunkCount:a.overallAzure?.chunkCount??0,version:a.overallAzure?.version||null,
+      gptOverallScore:a.overall?.overallScore??null,...(a.overallAzure?.failure?{failure:a.overallAzure.failure}:{})});
+    if(a.overallAzure?.status==='assessed'||a.overallAzureRecovery?.operation===operation){const result=report();console.info('[speaking-azure-overall-recovery]',JSON.stringify({...result,existing:true}));return result;}
+    console.info('[speaking-azure-overall-recovery]',JSON.stringify({operation,attemptId,status:'started'}));
+    for(let n=0;n<8;n++){
+      if(jobs.has(attemptId))await jobs.get(attemptId);
+      a=await read(username,attemptId);if(a.overallAzure?.status==='assessed'||a.overallAzureRecovery?.operation===operation)break;
+      if(a.lease?.expiresAt>now()||jobs.size>=2){await wait(Math.min(30000,Math.max(1000,(a.lease?.expiresAt||now()+30000)-now()+50)));continue;}
+      let scheduled=false;
+      a=await store.update(username,attemptId,current=>{scheduled=false;if(current.lease?.expiresAt>now()||current.overallAzureRecovery?.operation===operation)return current;scheduled=true;current.grading={status:'pending'};current.overallAzureRecovery={operation,status:'processing',startedAt:now()};return current;});
+      if(!scheduled)continue;
+      const job=queue(username,a,{azureOverallOnly:true,operation});if(!job)continue;await job;a=await read(username,attemptId);break;
+    }
+    const result=report();await store.update(username,attemptId,current=>{if(current.overallAzureRecovery?.operation===operation)current.overallAzureRecovery={...current.overallAzureRecovery,...result,finishedAt:now()};return current;});
+    console.info('[speaking-azure-overall-recovery]',JSON.stringify(result));return result;
+  }
+  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,azureOverallAvailable,describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
   router.use(async(req,res,next)=>{
     try{const uid=verifyToken(req.headers['x-session-token']||''),account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.mockUser=uid;res.set('Cache-Control','no-store');next();}
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser)).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,overall:a.overall||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser)).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{

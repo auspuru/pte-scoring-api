@@ -145,3 +145,11 @@ test('Instructor overrides are labeled beside the RS scores in the results table
  assert.equal((h.nodes.get('sm-result-rows').innerHTML.match(/5\/5 \(manual override\)/g)||[]).length,4);
  assert.match(h.nodes.get('sm-results-summary').innerHTML,/75/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/manual override/);
 });
+
+test('Whole-mock Azure acoustic scores appear beside GPT with their native scale and separate attribution',async t=>{
+ const h=await harness(t),id=require('node:crypto').randomUUID(),q=require('../content/speaking-mocks').papers[0].questions.find(q=>q.type==='rs');
+ await h.lab.store.update('alice',id,()=>({id,title:'Saved mock',status:'submitted',startedAt:1,deadline:2,index:1,questionCount:1,questions:[q],responses:[{}],grading:{status:'complete'},overall:{overallScore:85,pronunciation:{score:5},fluency:{score:5}},overallAzure:{status:'assessed',summary:'Fresh audio assessment.',pronunciation:{raw:96,score:5},fluency:{raw:92,score:4}}}));
+ await h.controller.open({history:true});await h.click({sm:'resume',id});
+ const summary=h.nodes.get('sm-results-summary').innerHTML;
+ for(const text of ['GPT Audio','Azure Speech','85','96/100','92/100','not a PTE score out of 90'])assert(summary.includes(text));
+});
