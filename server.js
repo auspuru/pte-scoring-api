@@ -6461,6 +6461,13 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise()]);
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
+    if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_CONTENT_REPAIR){
+      setImmediate(async()=>{try{
+        const request=JSON.parse(process.env.IPT_SPEAKING_CONTENT_REPAIR);
+        await require('./speaking-content-recovery').recoverLatest({...request,practiceStore:speakingLab.store,mockStore:speakingMock.store,
+          callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording});
+      }catch{console.warn('[speaking-content-recovery] Repair could not start.');}});
+    }
   } catch (error) {
     serviceReadiness.markFailed();
     console.error('[service-readiness] initialization failed');

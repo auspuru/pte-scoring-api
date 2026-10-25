@@ -97,19 +97,11 @@ test('Material reversals and important speaker mix-ups cannot be called minor fu
   assert.throws(()=>scoring.normalize(discussion,discussion.sample,mixed),/score contradicts/);
 });
 
-test('A connected minor-error summary is not relegated to 5 when all full-score conditions hold', async () => {
+test('A full-qualified semantic review resolves a suggested 5 in one request', async () => {
   let calls=0;
-  const text=lecture.sample;
-  const result=await scoring.grade(lecture,text,async prompt=>{
-    calls++;
-    if(calls===1)return review(lecture,text,{total:5});
-    assert.match(prompt,/RETRY NOTE/);
-    assert.match(prompt,/SAME 6\/6/);
-    assert.doesNotMatch(prompt,/no inaccurate facts/);
-    return review(lecture,text);
-  });
-  assert.equal(calls,2);
-  assert.equal(result.total,6);
+  const result=await scoring.grade(lecture,lecture.sample,async()=>{calls++;return review(lecture,lecture.sample,{total:5});});
+  assert.equal(calls,1);assert.equal(result.total,6);assert.equal(result.modelSuggestedTotal,5);
+  assert.equal(result.scoringMode,'ai');assert.match(result.contentPolicyNote,/Full semantic qualification/);
 });
 
 test('Repeated contradictory reviews withhold marks rather than awarding keyword-based fallback scores', async () => {
@@ -128,6 +120,7 @@ test('RL and SGD prompts use accuracy as a holistic guide and preserve source wo
     assert.match(prompt,/not a claim about Pearson/);
     assert.match(prompt,/Names, every turn, every detail and a fixed number of points per speaker are not required/);
     assert.doesNotMatch(prompt,/accurate comprehensive main ideas/);
+    assert.doesNotMatch(prompt,/Describe Image: 6=/);
   }
   for(const type of ['di','rts','ra','rs'])assert.equal(policy.prompt({type}),'');
 });
