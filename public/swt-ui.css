@@ -102,7 +102,7 @@ body.dark #swtPane {
 #swtPane .results-hero-body { min-width: 0; }
 #swtPane .results-hero-body .display { font-family: var(--sans); font-size: 25px; line-height: 1.3; margin-bottom: 12px; }
 #swtPane .results-hero-body .display em { font-size: 17px; font-style: normal; color: var(--swt-muted); white-space: nowrap; }
-#swtPane .result-summary { color: var(--swt-muted); font-size: 16px; max-width: none; margin-bottom: 18px; }
+#swtPane .result-summary { color: var(--swt-muted); font-size: 16px; max-width: none; margin-bottom: 18px; overflow-wrap: anywhere; }
 #swtPane .trait-chips { gap: 8px; margin-top: 18px; }
 #swtPane .trait-chip { border-radius: 8px; font-size: 13px; font-weight: 650; letter-spacing: 0; color: var(--swt-text); background: var(--swt-soft); border: 1px solid var(--swt-border); padding: 6px 10px; }
 #swtPane .ai-degraded-notice { color: var(--swt-warn); background: var(--swt-soft); font-size: 14px; max-width: none; }

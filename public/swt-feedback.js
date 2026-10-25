@@ -7,7 +7,9 @@
   'use strict';
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const list = value => Array.isArray(value) ? value : [];
-  const compact = (value, max = Infinity) => { const text = clean(value).replace(/\s+/g, ' '); return Number.isFinite(max) && text.length > max ? text.slice(0, Math.max(0, max - 1)).trimEnd() + '…' : text; };
+  // Normalise spacing without discarding the end of an explanation or repair.
+  // These cards expand with their text, including saved assessment feedback.
+  const compact = value => clean(value).replace(/\s+/g, ' ');
   function build(data) {
     const traits = data.trait_scores || {};
     const content = data.content_details || {};
@@ -31,7 +33,7 @@
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
     const priorities = [];
     const optional = [];
-    const add = (title, detail, repair) => priorities.push({ title, detail: compact(detail, 280), repair: compact(repair, 220) });
+    const add = (title, detail, repair) => priorities.push({ title, detail: compact(detail), repair: compact(repair) });
     const languageDetail = (annotations, fallback) => {
       const issues = annotations.filter(a => a && a.affects_score === true && clean(a.meaning_effect));
       return compact(issues.slice(0, 2).map(a => '“' + clean(a.phrase) + '” → “' + clean(a.fix) + '”. ' + clean(a.meaning_effect)).join(' ') || fallback);
@@ -48,7 +50,7 @@
         if (dependencies.length) {
           const first = dependencies[0];
           add('Connect the idea to its missing context', clean(assessment.next_step) ||
-            (clean(first.effect) ? '“' + compact(first.effect, 100) + '” needs this context: ' : '') + clean(first.missing_context), assessment.repair);
+            (clean(first.effect) ? '“' + compact(first.effect) + '” needs this context: ' : '') + clean(first.missing_context), assessment.repair);
         } else if (synthesisNeedsWork) {
           add('Combine and briefly rephrase the main ideas',
             clean(assessment.next_step) || clean(synthesis.explanation) || 'Remove unnecessary detail and combine the main ideas into a concise summary. Start with one short clause; keep accurate technical terms.', assessment.repair);
@@ -71,7 +73,7 @@
       : provisional ? 'This result is provisional. A complete assessment of meaning and connections is still needed.'
       : degraded && data.mode === 'local' ? 'This score was produced by the local practice engine. Detailed AI semantic annotations are unavailable, but the local score remains usable.'
       : full ? 'Your summary captures the main message, relevant support and conclusion with clear connections. Minor slips that preserve meaning do not reduce your marks.'
-      : compact(clean(content.feedback_note) || clean(content.notes) || 'Review the priorities below to see what held this response back and what to change next.', 300);
+      : compact(clean(content.feedback_note) || clean(content.notes) || 'Review the priorities below to see what held this response back and what to change next.');
     return { summary, priorities: priorities.slice(0, 3), optional: optional.slice(0, 8), full, provisional, degraded, formValid, contentGated };
   }
   // Recompute presentation from traits, including previously saved attempts.
