@@ -48,7 +48,7 @@ function request(prompt,model,context={}){
 }
 function response(value,context={}){
   const academy=require('./describe-image-academy');
-  if(academy.applies(context))return academy.response(value);
+  if(academy.applies(context))return academy.response(value,context);
   const {question,transcript=''}=context;
   if(value?.stop_reason==='max_tokens')throw Object.assign(Error('Incomplete content assessment.'),{code:'SPEAKING_TRUNCATED'});
   if(!applies(question))return JSON.parse(value.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').match(/\{[\s\S]*\}/)?.[0]||'null');

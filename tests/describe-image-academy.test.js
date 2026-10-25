@@ -24,8 +24,8 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
     assert.match(prompt,/A formal concluding sentence is optional/);
     const request=format.request(prompt,'test-model',context),schema=request.tools[0].input_schema;
     assert.equal(request.tools[0].strict,true);assert.equal(request.tool_choice.name,academy.NAME);
-    assert(schema.$defs.learnerQuote.enum.every(quote=>text.includes(quote)));
-    assert.deepEqual(schema.$defs.factIndex.enum,[0,1]);
+    assert.equal(schema.$defs,undefined);
+    assert.deepEqual(schema.properties.judgment.properties.otherEvidence.items.properties.factIndices.items.enum,[0,1]);
     assert.deepEqual(schema.properties.judgment.properties.score.enum,[0,1,2,3,4,5,6,null]);
     assert.equal(schema.properties.coverage,undefined,'The holistic mark does not count every bank fact.');
     return format.response(envelope(wire()),context);
@@ -37,7 +37,7 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
 });
 
 test('Every full-mock DI request fits the Claude strict-schema subset without changing the Academy validator',()=>{
-  const forbidden=['maxItems','minimum','maximum','minLength','maxLength','uniqueItems','oneOf'];
+  const forbidden=['maxItems','minimum','maximum','minLength','maxLength','uniqueItems','oneOf','$ref','$defs'];
   for(const question of require('../content/speaking-mocks').papers.flatMap(p=>p.questions.filter(q=>q.type==='di'))){
     const words=question.sample||text,request=academy.request('test-model',{question,transcript:words});let unions=0;
     function inspect(value){
@@ -49,7 +49,7 @@ test('Every full-mock DI request fits the Claude strict-schema subset without ch
       for(const child of Object.values(value))if(child&&typeof child==='object')Array.isArray(child)?child.forEach(inspect):inspect(child);
     }
     inspect(request.tools[0].input_schema);assert(unions<=4,question.id+' has a bounded grammar');
-    assert(request.tools[0].input_schema.$defs.learnerQuote.enum.every(quote=>words.includes(quote)));
+    assert.match(request.messages[0].content,/NUMBERED_LEARNER_WORDS=1:/);
     assert.equal(request.tools[0].strict,true);assert(request.max_tokens>=3200);
   }
 });
@@ -71,6 +71,17 @@ test('Provider failure diagnostics expose status and safe codes without request 
   assert.equal(academy.diagnostic({name:'APIConnectionTimeoutError'}).code,'provider_timeout');
   assert.equal(academy.diagnostic({contentValidationCode:'unsupported-deduction'}).code,'unsupported-deduction');
   assert.throws(()=>academy.response({stop_reason:'max_tokens'}),{code:'ACADEMY_TRUNCATED'});
+  const detail=academy.diagnostic({status:400,error:{error:{type:'invalid_request_error',message:'Invalid schema for student phrase: sk-secret-key'}}},'student phrase');
+  assert(!JSON.stringify(detail).includes('student'));assert(!JSON.stringify(detail).includes('phrase'));assert(!JSON.stringify(detail).includes('sk-secret-key'));
+});
+
+test('Word-span transport restores the exact Academy evidence and rejects invented or out-of-range spans',async()=>{
+  const raw=wire(),tokens=text.split(/\s+/),last=tokens.length;
+  raw.judgment.requiredEvidence={quote_span:[1,last],factIndices:[0],kind:'relationship'};raw.judgment.inaccuracy=null;
+  const context={question:q,transcript:text,contentPolicy:academy.VERSION};
+  const restored=format.response(envelope(raw),context);assert.equal(restored.evidence[0].quote,text);
+  assert.equal((await academy.grade(q,text,async()=>restored)).total,6);
+  for(const span of [[0,2],[2,1],[1,last+1],[1],[1,'2']]){raw.judgment.requiredEvidence.quote_span=span;assert.throws(()=>format.response(envelope(raw),context),{code:'ACADEMY_EVIDENCE_SPAN'});}
 });
 
 test('Optional polish, fabricated errors and unsupported high marks are withheld without paid repairs',async()=>{
