@@ -66,6 +66,24 @@ meaning-reversing responses without progress writes.
 
 ## Verification
 
+### Contextual tense interpretation (policy 20.3.15)
+
+A user-supplied geothermal response says water "is converted into steam, which
+used to drive turbines and produce electricity". Earlier feedback treated the
+missing auxiliary as a definite past-habit reversal. Judging instructions now
+require reading the entire present-tense process explanation before making that
+claim. The recoverable "which is used to" correction remains optional when the
+intended mechanism is clear. This does not waive explicit past-only claims such
+as "formerly drove turbines but no longer does"; those can contradict the source
+under Content even when their grammar is correct.
+
+`tests/fixtures/swt-grammar-regressions.js` preserves the exact 74-word response,
+its 75-word auxiliary correction, and an explicit discontinued-operation
+negative control. Route/presentation tests retain partial Content independently
+of optional grammar advice. Opt-in audit checks require Grammar 2 on the
+recoverable response and low Content on the genuine contradiction; the checks
+do not infer official Pearson item marks or guarantee full Content.
+
 Contract tests cover effective/partial/limited judgments, full Content without transformation proof, exact student citations, retained technical terms, five synonyms without an automatic upgrade, invented optional quotations, invalid assessments not being cached, Writing Lab consistency, and the unchanged attempt-6 result. These tests verify policy behavior, not semantic model accuracy.
 
 Opt-in paid checks use the exact passage/response fixtures without account progress writes:
