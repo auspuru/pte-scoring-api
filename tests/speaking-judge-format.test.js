@@ -71,8 +71,8 @@ test('The second review receives the actual invalid assessment and a specific re
   let calls=0;
   const result=await scoring.grade(question,transcript,async(prompt,context)=>{
     calls++;
-    if(calls===2){assert.match(prompt,/numeric total contradicted summaryAssessment/);assert.match(prompt,/PREVIOUS_ASSESSMENT_DATA/);assert.match(prompt,/"total":5/);}
-    const raw=review();if(calls===1)raw.total=5;
+    if(calls===2){assert.match(prompt,/numeric total contradicted summaryAssessment/);assert.match(prompt,/PREVIOUS_ASSESSMENT_DATA/);assert.match(prompt,/"materialMeaningChange":true/);}
+    const raw=review();if(calls===1)raw.summaryAssessment.materialMeaningChange=true;
     return format.response(envelope(raw),context);
   });
   assert.equal(calls,2);assert.equal(result.total,6);
@@ -82,7 +82,7 @@ test('Unrepaired semantic contradictions still withhold content and log a safe, 
   const saved=console.warn,logs=[];console.warn=(...args)=>logs.push(args.join(' '));
   try{
     const result=await scoring.grade(question,transcript,async(prompt,context)=>{
-      const raw=review();raw.total=5;return format.response(envelope(raw),context);
+      const raw=review();raw.summaryAssessment.materialMeaningChange=true;return format.response(envelope(raw),context);
     });
     assert.equal(result.total,null);assert.equal(result.contentStatus,'unavailable');
     assert.match(logs.join('\n'),/"issue":"summary_score_conflict"/);

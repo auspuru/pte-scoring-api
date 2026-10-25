@@ -1,6 +1,6 @@
 'use strict';
 
-const VERSION = 'connected-spoken-summary-2026-10-24.1';
+const VERSION = 'connected-spoken-summary-2026-10-25.1';
 const applies = question => ['rl', 'sgd'].includes(question.type);
 
 function prompt(question) {
@@ -49,10 +49,13 @@ function normalize(question, text, raw, coverage, locateEvidence) {
     && coverage.some(item => item.status === 'covered')
     && !coverage.some(item => item.errorImpact === 'material');
   const cap = { template_only:0, keywords:1, fragments:2, connected:5 }[assessment.responseForm];
-  if ((raw.total === 6) !== full || (!full && raw.total > cap)) {
+  // The semantic qualification is the agreed policy: an otherwise valid
+  // full-qualified review must not disappear because the model suggested 5.
+  const policyTotal=full&&raw.total===5?6:raw.total;
+  if ((policyTotal === 6) !== full || (!full && raw.total > cap)) {
     throw Error('Content score contradicts the connected-meaning assessment. Please retry.');
   }
-  return { ...Object.fromEntries(['responseForm', ...flags].map(key => [key, assessment[key]])), evidence, reason:assessment.reason.trim() };
+  return { ...Object.fromEntries(['responseForm', ...flags].map(key => [key, assessment[key]])), evidence, reason:assessment.reason.trim(), ...(policyTotal!==raw.total?{policyTotal,modelSuggestedTotal:raw.total}:{}) };
 }
 
 module.exports = { VERSION, applies, prompt, normalize };
