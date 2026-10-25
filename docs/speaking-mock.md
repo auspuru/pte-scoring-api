@@ -92,6 +92,12 @@ results intact. Confirmed overall results are reused. Recovery reports the saved
 overall and trait scores or a specific safe failure; a failed operation does not
 buy repeated reviews on restart. Complete audio function calls labeled `stop`
 and valid JSON replies are accepted only after the same full evidence validation.
+Each audio clip is labeled with its recording number and duration so evidence
+timestamps are local to the correct file. One failed evidence validation may buy
+one independent repair across the same complete audio set, with only the exact
+validation diagnostic added; no prior mark or individual-question result is sent.
+Provider failures are never automatically retried. A second invalid review still
+withholds the overall mark.
 
 ## Sources and validation
 
