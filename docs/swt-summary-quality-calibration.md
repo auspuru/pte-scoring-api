@@ -84,6 +84,12 @@ of optional grammar advice. Opt-in audit checks require Grammar 2 on the
 recoverable response and low Content on the genuine contradiction; the checks
 do not infer official Pearson item marks or guarantee full Content.
 
+Real proxy checks returned Content 3 / Grammar 2 / Vocabulary 2 for both the
+original and auxiliary-corrected response. After explicitly separating a
+well-formed false statement from a grammar error, the discontinued-operation
+control returned Content 0 / Grammar 2 / Vocabulary 2. These are selected
+calibration cases, not a measured accuracy rate on unseen responses.
+
 Contract tests cover effective/partial/limited judgments, full Content without transformation proof, exact student citations, retained technical terms, five synonyms without an automatic upgrade, invented optional quotations, invalid assessments not being cached, Writing Lab consistency, and the unchanged attempt-6 result. These tests verify policy behavior, not semantic model accuracy.
 
 Opt-in paid checks use the exact passage/response fixtures without account progress writes:
