@@ -46,6 +46,35 @@ test('One weak answer cannot substantiate a recurring whole-test difficulty',()=
   value.fluency.evidence[1].end=9;assert.throws(()=>whole.normalize(value,[8,8,8]),/Unsupported/);
 });
 
+test('Whole-test timestamps remain local and numeric strings cannot corrupt offsets',()=>{
+ const value=raw();value.pronunciation.evidence[0]={...top().evidence[0],recording:2,start:'1',end:'2'};
+ const result=whole.normalize(value,[8,8,8]);assert.equal(result.pronunciation.score,5);assert.equal(result.pronunciation.evidence[0].start,1);assert.equal(result.pronunciation.evidence[0].end,2);
+ value.pronunciation.evidence[0].end=99;
+ assert.throws(()=>whole.normalize(value,[8,8,8]),error=>{assert.deepEqual(error.evidenceIssue,{trait:'pronunciation',recording:2,start:1,end:99,durationSeconds:8,reason:'timestamp_range'});return true;});
+});
+
+test('Overall review labels every clip and permits one evidence-only repair without individual marks',async()=>{
+ let calls=0;const recordings=Array.from({length:8},(_,i)=>({data:'clip-'+i,individualScore:90,transcript:'PRIVATE_TRANSCRIPT'}));
+ const result=await whole.assess(recordings,{apiKey:'test-only',convert:async r=>({data:r.data,seconds:8}),request:async(_,args)=>{
+   calls++;const body=JSON.parse(args.body),content=body.messages[1].content;
+   assert.equal(content.filter(c=>c.type==='input_audio').length,8);
+   const labels=content.filter(c=>c.type==='text'&&c.text.includes('start_of_this_recording'));assert.equal(labels.length,8);
+   assert.deepEqual(labels.map(c=>JSON.parse(c.text).recording),[1,2,3,4,5,6,7,8]);assert(!args.body.includes('PRIVATE_TRANSCRIPT'));assert(!args.body.includes('individualScore'));
+   if(calls===2){assert.match(content.at(-1).text,/timestamp_range/);assert.match(content.at(-1).text,/No prior score is supplied/);assert(!content.at(-1).text.includes('overallScore'));}
+   const value=raw();if(calls===1)value.pronunciation.evidence[0].end=99;
+   return {ok:true,json:async()=>({choices:[{finish_reason:'stop',message:{tool_calls:[{function:{name:'record_mock_delivery',arguments:JSON.stringify(value)}}]}}]})};
+ }});
+ assert.equal(result.overallScore,90);assert.equal(result.providerCalls,2);assert.equal(calls,2);
+});
+
+test('Unrepaired overall evidence fails closed after two calls and provider errors never trigger a paid retry',async()=>{
+ let calls=0;
+ await assert.rejects(whole.assess(Array.from({length:8},()=>({data:'clip'})),{apiKey:'test-only',convert:async()=>({data:'clip',seconds:8}),request:async()=>{
+   calls++;const value=raw();value.pronunciation.evidence[0].end=99;return {ok:true,json:async()=>({choices:[{finish_reason:'tool_calls',message:{tool_calls:[{function:{name:'record_mock_delivery',arguments:JSON.stringify(value)}}]}}]})};
+ }}),{code:'WHOLE_VALIDATION'});assert.equal(calls,2);
+ calls=0;await assert.rejects(whole.assess(Array.from({length:8},()=>({data:'clip'})),{apiKey:'test-only',convert:async()=>({data:'clip',seconds:8}),request:async()=>{calls++;return {ok:false,status:429,json:async()=>({error:{code:'insufficient_quota'}})};}}),{providerStatus:429});assert.equal(calls,1);
+});
+
 test('Complete audio tool calls and JSON replies with finish_reason stop retain the validated overall score',()=>{
  const durations=[8,8,8],call={type:'function',function:{name:'record_mock_delivery',arguments:JSON.stringify(raw())}};
  for(const choice of [

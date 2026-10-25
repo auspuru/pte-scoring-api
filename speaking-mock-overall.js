@@ -19,19 +19,24 @@ function schema(durations){
   const total=durations.reduce((s,n)=>s+n,0),base=rubric.deliverySchema(total);
   const trait=structuredClone(base.properties.pronunciation);
   const item=trait.properties.evidence.items;
-  item.properties.recording={type:'integer',minimum:1,maximum:durations.length};item.required.push('recording');
+  item.properties.recording={type:'integer',enum:durations.map((_,i)=>i+1),description:'The numbered student recording containing this evidence; use its local start/end times.'};item.required.push('recording');
+  for(const name of ['start','end'])item.properties[name].description='Seconds from the start of this numbered recording, bounded by that recording duration. Never use the cumulative time of the complete mock.';
   return {type:'object',additionalProperties:false,required:['assessable','overallScore','summary','pronunciation','fluency'],properties:{
     assessable:{type:'boolean'},overallScore:{type:['integer','null'],minimum:10,maximum:90},summary:{type:'string',maxLength:1000},pronunciation:trait,fluency:trait
   }};
 }
 function normalize(raw,durations){
   if(typeof raw?.assessable!=='boolean'||typeof raw.summary!=='string'||!raw.summary.trim()||raw.summary.length>1000)throw Error('Incomplete whole-test audio review.');
-  const total=durations.reduce((s,n)=>s+n,0),assessment={};
+  const total=durations.reduce((s,n)=>s+n,0),assessment={},prepared=rubric.normalizeDelivery(raw);
   for(const name of ['pronunciation','fluency']){
-    const trait=raw[name];if(!trait||!Array.isArray(trait.evidence))throw Error('Incomplete whole-test audio review.');
+    const trait=prepared[name];if(!trait||!Array.isArray(trait.evidence))throw Error('Incomplete whole-test audio review.');
     const clips=new Set();
     const evidence=trait.evidence.map(e=>{
-      const i=e.recording-1;if(!Number.isInteger(i)||i<0||i>=durations.length||e.start<0||e.end>durations[i]+.01)throw Error('Unsupported whole-test audio evidence.');
+      const i=e?.recording-1;
+      if(!Number.isInteger(i)||i<0||i>=durations.length||!Number.isFinite(e.start)||!Number.isFinite(e.end)||e.start<0||e.end<=e.start||e.end>durations[i]+.01){
+        const number=value=>Number.isFinite(value)?value:null;
+        throw Object.assign(Error('Unsupported whole-test audio evidence.'),{code:'WHOLE_VALIDATION',evidenceIssue:{trait:name,recording:number(i+1),start:number(e?.start),end:number(e?.end),durationSeconds:number(durations[i]),reason:!Number.isInteger(i)||i<0||i>=durations.length?'recording_index':'timestamp_range'}});
+      }
       if(e.kind==='score-impact')clips.add(i);
       const offset=durations.slice(0,i).reduce((s,n)=>s+n,0);return {...e,start:e.start+offset,end:e.end+offset};
     });
@@ -43,7 +48,7 @@ function normalize(raw,durations){
   if(!raw.assessable&&(raw.overallScore!==null||validated.pronunciation.score!==null||validated.fluency.score!==null))throw Error('Unverified whole-test speaking estimate.');
   return {...validated,scope:'whole-test',version:VERSION,status:raw.assessable?'assessed':'unassessed',overallScore:raw.overallScore,maximum:90,summary:raw.summary,
     assessment:'Independent whole-test speaking-delivery estimate; not Pearson scoring.',recordingCount:durations.length,
-    ...Object.fromEntries(['pronunciation','fluency'].map(name=>[name,{...validated[name],evidence:raw[name].evidence}]))};
+    ...Object.fromEntries(['pronunciation','fluency'].map(name=>[name,{...validated[name],evidence:prepared[name].evidence}]))};
 }
 function parseReview(choice,durations){
   if(choice?.message?.refusal)throw Object.assign(Error('The whole-test audio review was not completed.'),{code:'WHOLE_REFUSAL'});
@@ -62,6 +67,7 @@ function diagnostic(error){
     ...(Number.isInteger(error?.providerStatus)?{providerStatus:error.providerStatus}:{}),
     ...(safe(error?.providerCode)?{providerCode:error.providerCode}:{}),...(safe(error?.providerParam)?{providerParam:error.providerParam}:{}),
     ...(error?.providerMessage?{providerMessage:error.providerMessage}:{}),
+    ...(error?.evidenceIssue?{evidenceIssue:error.evidenceIssue}:{}),
     ...(error?.code==='WHOLE_VALIDATION'?{validationIssue:/single answer/.test(error.message)?'single_answer_pattern':/evidence/.test(error.message)?'audio_evidence':'assessment_contract'}:{})};
 }
 async function assess(recordings,{expectedCount=recordings.length,apiKey=process.env.OPENAI_API_KEY,request=fetch,convert=compress}={}){
@@ -71,11 +77,17 @@ async function assess(recordings,{expectedCount=recordings.length,apiKey=process
   if(clips.reduce((s,c)=>s+c.seconds,0)<60)return {version:VERSION,status:'unassessed',overallScore:null,summary:'There is too little recorded speech for a reliable whole-test speaking estimate.'};
   if(clips.reduce((s,c)=>s+c.data.length,0)>24*1024*1024)throw Error('The saved mock audio is too large for one complete review.');
   const durations=clips.map(c=>c.seconds);
-  const response=await request('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},signal:AbortSignal.timeout(180000),
-    body:JSON.stringify({model:gpt.MODEL,modalities:['text'],temperature:0,max_completion_tokens:3600,store:false,
+  const audioContent=[{type:'text',text:JSON.stringify({recordingDurations:durations})},...clips.flatMap((c,i)=>[
+    {type:'text',text:JSON.stringify({recording:i+1,durationSeconds:c.seconds,timeOrigin:'start_of_this_recording'})},
+    {type:'input_audio',input_audio:{data:c.data,format:'mp3'}}
+  ])];
+  let correction;
+  for(let attempt=0;attempt<2;attempt++){
+   const response=await request('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},signal:AbortSignal.timeout(180000),
+    body:JSON.stringify({model:gpt.MODEL,modalities:['text'],temperature:0,max_completion_tokens:attempt?5400:3600,store:false,
       tools:[{type:'function',function:{name:'record_mock_delivery',description:'Assess the complete set of original audio responses holistically, without question marks or metadata.',parameters:schema(durations)}}],
       tool_choice:{type:'function',function:{name:'record_mock_delivery'}},parallel_tool_calls:false,
-      messages:[{role:'system',content:PROMPT},{role:'user',content:[{type:'text',text:JSON.stringify({recordingDurations:durations})},...clips.map(c=>({type:'input_audio',input_audio:{data:c.data,format:'mp3'}}))]}]})});
+      messages:[{role:'system',content:PROMPT},{role:'user',content:[...audioContent,...(correction?[{type:'text',text:correction}]:[])]}]})});
   if(!response.ok){
     const error=Object.assign(Error('Whole-test audio assessment is temporarily unavailable.'),{code:'WHOLE_PROVIDER',providerStatus:response.status});
     try{const body=await response.json(),detail=body?.error;
@@ -83,6 +95,14 @@ async function assess(recordings,{expectedCount=recordings.length,apiKey=process
       if(typeof detail?.message==='string')error.providerMessage=detail.message.replace(/(?:sk-|Bearer\s+)[A-Za-z0-9_-]+/g,'[credential]').replace(/[A-Za-z0-9+/=]{50,}/g,'[audio-data]').slice(0,500);
     }catch{}throw error;
   }
-  const data=await response.json();return parseReview(data.choices?.[0],durations);
+   const data=await response.json();
+   try{return {...parseReview(data.choices?.[0],durations),providerCalls:attempt+1};}
+   catch(error){
+     if(attempt||error.code!=='WHOLE_VALIDATION')throw error;
+     const issue=diagnostic(error);
+     console.warn('[speaking-mock-overall-repair]',JSON.stringify({attempt:attempt+1,...issue}));
+     correction='VALIDATION REPAIR: The prior whole-test review was not saved because its audio evidence failed validation: '+JSON.stringify(issue)+'. Reassess ALL the supplied recordings independently. No prior score is supplied. A validation failure is not a speaking weakness. Use each recording label and exact duration. Evidence start/end are seconds local to that numbered recording, never cumulative across files. Cite only brief audible passages inside those bounds. Preserve the whole-test rubric, and do not infer an overall mark from individual question metadata.';
+   }
+  }
 }
 module.exports={VERSION,PROMPT,compress,schema,normalize,parseReview,diagnostic,assess};
