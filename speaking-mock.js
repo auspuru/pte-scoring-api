@@ -2,6 +2,7 @@
 const express=require('express'),crypto=require('node:crypto'),path=require('node:path'),fs=require('node:fs/promises');
 const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),gpt=require('./gpt-speaking-delivery'),azure=require('./speaking-delivery'),whole=require('./speaking-mock-overall');
 const academy=require('./describe-image-academy');
+const manualDelivery=require('./speaking-manual-delivery');
 const {createStore}=require('./writing-lab-store'),{transcribeRecording}=require('./speaking-lab');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 function timing(a,now=Date.now()){
@@ -24,7 +25,7 @@ function present(a,now=Date.now()){
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
-        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{gpt:academy.deliveryForClient(r.content,r.gpt)||null,azure:academy.deliveryForClient(r.content,r.azure)||null}};
+        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{gpt:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'gpt'):r.gpt)||null,azure:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
@@ -63,8 +64,8 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       }
       const current=a.responses[i],tasks=[];
       if(q.type==='di'?academy.needsReview(current.content):!current.content||current.content.scoringMode==='local')tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
-      if(gptAvailable&&current.gpt?.status!=='assessed')tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:snapshot(result,r.recording)}),()=>patch({gpt:unavailable()})));
-      if(azureAvailable&&current.azure?.status!=='assessed')tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?snapshot(result,r.recording):unavailable()}),()=>patch({azure:unavailable()})));
+      if(gptAvailable&&current.gpt?.status!=='assessed'&&!(q.type==='rs'&&manualDelivery.complete(current,'gpt')))tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:snapshot(result,r.recording)}),()=>patch({gpt:unavailable()})));
+      if(azureAvailable&&current.azure?.status!=='assessed'&&!(q.type==='rs'&&manualDelivery.complete(current,'azure')))tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?snapshot(result,r.recording):unavailable()}),()=>patch({azure:unavailable()})));
       await Promise.allSettled(tasks);
     }
     const overallJob=(async()=>{

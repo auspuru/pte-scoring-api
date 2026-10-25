@@ -6465,6 +6465,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
       setImmediate(async()=>{try{
         const request=JSON.parse(process.env.IPT_SPEAKING_CONTENT_REPAIR);
         if(request.scope==='overall')await speakingMock.recoverOverall(request);
+        else if(request.scope==='manual-rs-delivery')await require('./speaking-manual-delivery').fillMissingRepeatSentence({...request,mockStore:speakingMock.store});
         else await require('./speaking-content-recovery').recoverLatest({...request,practiceStore:speakingLab.store,mockStore:speakingMock.store,
           callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording});
       }catch{console.warn('[speaking-content-recovery] Repair could not start.');}});

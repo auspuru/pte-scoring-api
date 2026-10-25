@@ -136,3 +136,12 @@ test('A late polling failure cannot alter the history screen after leaving resul
   const polling=h.tick(3000);await h.controller.open({history:true});rejectRead(Error('Fetch is aborted'));await polling;
   assert.match(h.host.innerHTML,/Your saved attempts/);assert.equal(h.nodes.get('sm-notice').textContent,'');
 });
+
+test('Instructor overrides are labeled beside the RS scores in the results table',async t=>{
+ const h=await harness(t),id=require('node:crypto').randomUUID(),q=require('../content/speaking-mocks').papers[0].questions.find(q=>q.type==='rs');
+ const trait={score:5,maximum:5,source:'instructor_override',recordingHash:'saved-rs',reason:'Assigned manually by the instructor.'};
+ await h.lab.store.update('alice',id,()=>({id,title:'Saved mock',status:'submitted',startedAt:1,deadline:2,index:1,questionCount:1,questions:[q],responses:[{recording:{hash:'saved-rs'},manualDeliveryOverrides:{gpt:{pronunciation:trait,fluency:trait},azure:{pronunciation:trait,fluency:trait}}}],grading:{status:'complete'},overall:{overallScore:75,pronunciation:{score:4},fluency:{score:4}}}));
+ await h.controller.open({history:true});await h.click({sm:'resume',id});
+ assert.equal((h.nodes.get('sm-result-rows').innerHTML.match(/5\/5 \(manual override\)/g)||[]).length,4);
+ assert.match(h.nodes.get('sm-results-summary').innerHTML,/75/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/manual override/);
+});
