@@ -32,7 +32,10 @@ function tool(q){
   return {name:NAME,strict:true,description:'Return the complete content assessment using the supplied institute policy. This tool records assessment data only; it performs no external action. Evaluate meaning before choosing the score.',input_schema:object(properties)};
 }
 function words(text){return Array.from(text.matchAll(/\S+/gu),m=>({word:m[0],start:m.index,end:m.index+m[0].length}));}
-function request(prompt,model,{question,transcript='',validationDiagnostic}={}){
+function request(prompt,model,context={}){
+  const academy=require('./describe-image-academy');
+  if(academy.applies(context))return academy.request(model,context);
+  const {question,transcript='',validationDiagnostic}=context;
   if(!applies(question))return {model,temperature:0,max_tokens:3200,messages:[{role:'user',content:prompt}]};
   const specification=tool(question);
   if(validationDiagnostic?.fullEligible===false&&Number.isInteger(validationDiagnostic.ceiling)){
@@ -43,7 +46,10 @@ function request(prompt,model,{question,transcript='',validationDiagnostic}={}){
   return {model,temperature:0,max_tokens:4000,tools:[specification],tool_choice:{type:'tool',name:NAME},
     messages:[{role:'user',content:prompt+'\n\nSTRUCTURED OUTPUT: Use submit_speaking_content instead of the earlier JSON-only or no-tool-call output instruction. Return every required field. In this wire format replace each evidence quotation with evidence_span from NUMBERED_STUDENT_WORDS below; replace coaching quotes with quote_span using the SAME student word numbers. The server restores the exact original words. Keep quotations short and contiguous (under 500 characters). Missing coverage uses []. A coaching strength with no real quote uses quote_span=[] and why="". Never use source/sample word numbers. Keep strengths, improvements and coaching changes to at most two each. Choose total consistently with the semantic assessment flags and the institute policy.\nNUMBERED_STUDENT_WORDS='+numbered}]};
 }
-function response(value,{question,transcript=''}={}){
+function response(value,context={}){
+  const academy=require('./describe-image-academy');
+  if(academy.applies(context))return academy.response(value);
+  const {question,transcript=''}=context;
   if(value?.stop_reason==='max_tokens')throw Object.assign(Error('Incomplete content assessment.'),{code:'SPEAKING_TRUNCATED'});
   if(!applies(question))return JSON.parse(value.content.filter(item=>item.type==='text').map(item=>item.text).join('\n').match(/\{[\s\S]*\}/)?.[0]||'null');
   const raw=value?.content?.find(item=>item.type==='tool_use'&&item.name===NAME)?.input;

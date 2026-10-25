@@ -1,6 +1,7 @@
 'use strict';
 const express=require('express'),crypto=require('node:crypto'),path=require('node:path'),fs=require('node:fs/promises');
 const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),gpt=require('./gpt-speaking-delivery'),azure=require('./speaking-delivery'),whole=require('./speaking-mock-overall');
+const academy=require('./describe-image-academy');
 const {createStore}=require('./writing-lab-store'),{transcribeRecording}=require('./speaking-lab');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 function timing(a,now=Date.now()){
@@ -23,7 +24,7 @@ function present(a,now=Date.now()){
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
-        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{gpt:r.gpt||null,azure:r.azure||null}};
+        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{gpt:academy.deliveryForClient(r.content,r.gpt)||null,azure:academy.deliveryForClient(r.content,r.azure)||null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
@@ -54,7 +55,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         catch{await patch({transcriptionStatus:'unavailable'});return;}
       }
       const current=a.responses[i],tasks=[];
-      if(!current.content||current.content.scoringMode==='local')tasks.push(scoring.grade(q,current.transcript,callModel).then(content=>patch({content})));
+      if(q.type==='di'?academy.needsReview(current.content):!current.content||current.content.scoringMode==='local')tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
       if(gptAvailable&&current.gpt?.status!=='assessed')tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:snapshot(result,r.recording)}),()=>patch({gpt:unavailable()})));
       if(azureAvailable&&current.azure?.status!=='assessed')tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?snapshot(result,r.recording):unavailable()}),()=>patch({azure:unavailable()})));
       await Promise.allSettled(tasks);
@@ -78,7 +79,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const job=score(uid,a.id);jobs.set(a.id,job);
     job.catch(()=>console.warn('[speaking-mock] Assessment interrupted; saved stages can resume.')).finally(()=>jobs.delete(a.id));
   }
-  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
   router.use(async(req,res,next)=>{
     try{const uid=verifyToken(req.headers['x-session-token']||''),account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.mockUser=uid;res.set('Cache-Control','no-store');next();}
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
