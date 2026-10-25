@@ -120,3 +120,14 @@ verified reused audio, hidden future prompts, private account ownership, locked 
 idempotent recordings, server clocks, protected-screen cancellation, recording upload
 recovery, both providers, and the blind overall scoring boundary. These tests do
 not establish empirical agreement with Pearson's scoring.
+
+A pinned instructor request can set `scope: "overall", reassess: true` with a new
+operation ID to reassess an already scored mock from all original recordings.
+The normal missing-result recovery and student retry do not force reassessment.
+A successful reassessment archives the prior overall, while failures retain it
+and are reported as needing review. Repeated startup requests for the same
+operation never buy another assessment. Individual marks, content and manual
+overrides are preserved. The new overall shares delivery rubric v5 with every
+GPT question assessment: harmless slips and inaccuracies do not deduct marks.
+A whole-test review with both traits at 5 and no impact must remain in its own
+85–90 top band; inconsistent output is rejected, never automatically raised.

@@ -27,6 +27,20 @@ test('GPT receives actual WAV audio, uses the confirmed model and makes one boun
   assert.equal(result.pronunciation.accuracy,undefined,'Do not fabricate Azure-like acoustic percentages.');
 });
 
+test('Every speaking task sends the same no-deduction policy for harmless inaccuracies and recovered slips',async()=>{
+  for(const type of gpt.TASKS){
+    const spoken=transcript+' They also make local neighbourhoods healthier.';
+    const value={pronunciation:{...top(),pattern:'minor_slips'},fluency:{...top(),pattern:'minor_slips'}};
+    const result=await gpt.assessRecording({mime:'audio/wav',data:'saved'},{question:{type,text:spoken},transcript:spoken,apiKey:'test-only',convert:async()=>({wav:wav(20),seconds:20}),request:async(_,args)=>{
+      const prompt=JSON.parse(args.body).messages[0].content;
+      assert.equal(prompt,require('../delivery-rubric').instructions);
+      for(const phrase of ['must not deduct marks','Repetition of a harmless sound variation','same rule applies to every speaking task','separate content assessment'])assert(prompt.includes(phrase));
+      return {ok:true,json:async()=>({choices:[{finish_reason:'tool_calls',message:{tool_calls:[{type:'function',function:{name:'record_delivery_assessment',arguments:JSON.stringify(value)}}]}}]})};
+    }});
+    assert.equal(result.pronunciation.score,5,type);assert.equal(result.fluency.score,5,type);
+  }
+});
+
 test('Conversion preserves the complete response and parses ffmpeg WAV metadata',async()=>{
   const recording={mime:'audio/wav',data:wav().toString('base64')};
   const converted=await gpt.toWav(recording);

@@ -46,6 +46,14 @@ test('One weak answer cannot substantiate a recurring whole-test difficulty',()=
   value.fluency.evidence[1].end=9;assert.throws(()=>whole.normalize(value,[8,8,8]),/Unsupported/);
 });
 
+test('A clear independent whole-test review cannot claim a lower overall band with no score-impact evidence',()=>{
+  const value=raw();value.overallScore=75;
+  assert.throws(()=>whole.normalize(value,[8,8,8]),{validationIssue:'overall_band_conflict'});
+  for(const score of [85,88,90]){value.overallScore=score;assert.equal(whole.normalize(value,[8,8,8]).overallScore,score);}
+  assert(whole.PROMPT.startsWith(require('../delivery-rubric').instructions));
+  assert.match(whole.PROMPT,/must not lower either trait or the overall band/);
+});
+
 test('Whole-test timestamps remain local and numeric strings cannot corrupt offsets',()=>{
  const value=raw();value.pronunciation.evidence[0]={...top().evidence[0],recording:2,start:'1',end:'2'};
  const result=whole.normalize(value,[8,8,8]);assert.equal(result.pronunciation.score,5);assert.equal(result.pronunciation.evidence[0].start,1);assert.equal(result.pronunciation.evidence[0].end,2);
@@ -203,4 +211,27 @@ test('Overall recovery respects another worker lease and reuses the result that 
  const h=await overallRecoveryFixture(t);await h.store.update('mahabir1',h.id,a=>{a.lease={owner:'another-worker',expiresAt:Date.now()+30000};return a;});
  let waits=0;const report=await h.recoverOverall({...h.request,wait:async()=>{waits++;await h.store.update('mahabir1',h.id,a=>{a.overall=whole.normalize(raw(),Array(27).fill(8));delete a.lease;return a;});}});
  assert.equal(waits,1);assert.equal(h.calls(),0);assert.equal(report.overallScore,90);assert.deepEqual((await h.store.get('mahabir1',h.id)).responses,h.responses);
+});
+
+test('An explicit overall reassessment replaces a confirmed result once, preserves history and never touches question scores',async t=>{
+ const old={...whole.normalize(raw(),Array(27).fill(8)),overallScore:75};
+ const h=await overallRecoveryFixture(t,{existing:old}),request={...h.request,reassess:true};
+ const [report]=await Promise.all([h.recoverOverall(request),h.recoverOverall(request)]);
+ assert.equal(h.calls(),1);
+ const saved=await h.store.get('mahabir1',h.id);
+ assert.equal(saved.overall.overallScore,90);assert.equal(saved.overall.reassessmentOperation,request.operation);
+ assert.deepEqual(saved.overallHistory,[{operation:request.operation,replacedAt:saved.overall.assessedAt,assessment:old}]);
+ assert.deepEqual(saved.responses,h.responses);assert.equal(saved.overallRecovery.status,'complete');
+ assert.equal((await h.recoverOverall(request)).status,'complete');assert.equal(h.calls(),1);
+ assert.equal(report.reassessment,true);
+ await assert.rejects(h.recoverOverall({...request,reassess:'true',operation:'bad'}),/Invalid overall/);
+});
+
+test('A failed explicit reassessment retains the prior overall and is not retried on restart',async t=>{
+ const old={...whole.normalize(raw(),Array(27).fill(8)),overallScore:75};
+ const h=await overallRecoveryFixture(t,{existing:old,fail:true}),request={...h.request,reassess:true};
+ const report=await h.recoverOverall(request);
+ assert.equal(report.status,'needs-review');assert.equal(report.overallScore,75);assert.equal(report.failure.providerStatus,503);
+ const saved=await h.store.get('mahabir1',h.id);assert.deepEqual(saved.overall,old);assert.equal(saved.overallHistory,undefined);assert.deepEqual(saved.responses,h.responses);
+ await h.recoverOverall(request);assert.equal(h.calls(),1);
 });
