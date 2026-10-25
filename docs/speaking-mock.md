@@ -152,3 +152,8 @@ the comparison; a pinned `scope: "overall", provider: "azure"` operation can
 fill an existing mock once. The same operation is idempotent even after failure.
 
 Microsoft reference: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment
+
+Short final audio sections are joined to their preceding section when the result
+remains below 30 seconds; otherwise the final two sections are balanced. Every
+PCM sample is preserved. This avoids orphaned sub-second sections triggering an
+Azure initial-silence timeout while retaining the complete recorded response.

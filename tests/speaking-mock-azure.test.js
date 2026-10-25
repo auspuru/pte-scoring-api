@@ -18,6 +18,17 @@ test('Every original recording is assessed without reference text, earlier resul
  assert.equal(calls,8);assert.equal(result.recordingCount,8);assert.equal(result.chunkCount,8);assert.equal(result.pronunciation.raw,96);assert.equal(result.fluency.raw,90);
 });
 
+test('Short final sections retain every audio sample and enough recognition context without exceeding 30 seconds',async()=>{
+ for(const tail of [.72,3]){
+  const parts=[wav(28),wav(tail)],balanced=whole.balanceTail(parts);
+  assert.deepEqual(Buffer.concat(balanced.map(whole.pcm)),Buffer.concat(parts.map(whole.pcm)));
+  assert(balanced.every(p=>azure.wavSeconds(p)>=4&&azure.wavSeconds(p)<30));
+ }
+ let calls=0;const result=await whole.assess(Array.from({length:3},()=>({mime:'audio/wav',data:'audio'})),{split:async()=>[wav(28),wav(.72)],measure:async audio=>{
+  calls++;assert(azure.wavSeconds(audio)>28);return {accuracy:95,fluency:96,duration:28.72e7};
+ }});assert.equal(calls,3);assert.equal(result.recordingCount,3);assert.equal(result.chunkCount,3);
+});
+
 test('Azure whole-mock assessment withholds incomplete coverage and never substitutes partial success',async()=>{
  const recordings=Array.from({length:8},()=>({mime:'audio/wav',data:'audio'}));
  let i=0;await assert.rejects(whole.assess(recordings,{split:async()=>[++i===8?wav(8,false):wav()],measure:async()=>({accuracy:95,fluency:95})}),/every saved response/);
