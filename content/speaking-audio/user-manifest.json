@@ -1,0 +1,47 @@
+{
+  "rl-user-wages-debt": {
+    "textSha256": "96771991f537ff676025eb712c85a27fb784b71db8730dbcd5a12db4310e26b4",
+    "audioSha256": "1086ca909e0fc9a7407cc2aff7ac16126550b05a022bc880c80245fd16228681",
+    "bytes": 801408,
+    "seconds": 50.088,
+    "voices": [
+      "production-recording"
+    ]
+  },
+  "rl-user-black-carbon": {
+    "textSha256": "3fa9736d3ddeb623902b58fd9286d9ec3a752d50feda74fda2855a8fc3f59af6",
+    "audioSha256": "e20da12bd178b43142c1de85f2b94b673b3f8c6a51d3419b9b286cffa1987414",
+    "bytes": 1082496,
+    "seconds": 67.656,
+    "voices": [
+      "production-recording"
+    ]
+  },
+  "rl-user-civilisation-ship": {
+    "textSha256": "8e1d514283391317a1585d14bb5b465deb77b51159de668abef4a2bbdb35af58",
+    "audioSha256": "62e48a546e294554e35fb2315369495b4750e2d4a5609aae0e823c5fc31ef79d",
+    "bytes": 960384,
+    "seconds": 60.024,
+    "voices": [
+      "production-recording"
+    ]
+  },
+  "rl-user-morton-prince": {
+    "textSha256": "9fded7a27fff09cd4d8a8d6d389fc06b9d9834bba6cadcbab394b1e8ff75a15a",
+    "audioSha256": "c7388c7d5c34f9b28e6b306637392182579c107d38b8a4fdb137458e7b163ce2",
+    "bytes": 976896,
+    "seconds": 61.056,
+    "voices": [
+      "production-recording"
+    ]
+  },
+  "rts-user-tom-book": {
+    "textSha256": "f7a9e44b7563d2877ef00b9c2480f9c486cebc1b4d8f52e8c9160ce8519272dd",
+    "audioSha256": "db7438137551695e91c0ff3cc88a356aacd3911e6581ba737bbb05fa7ba4b8e3",
+    "bytes": 174720,
+    "seconds": 10.92,
+    "voices": [
+      "production-recording"
+    ]
+  }
+}

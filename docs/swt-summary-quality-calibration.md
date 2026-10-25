@@ -27,7 +27,42 @@ The exact prepared responses, passages, controls and reports are retained in `te
 - Standalone SWT, reference verification and Writing Lab share the guidance and caps. Historical assessments remain unchanged; the new policy version invalidates assessment caches.
 - Feedback gives one manageable next action. Synthesis concerns affect Content; they do not automatically reduce Grammar or Vocabulary. Existing meaning-error, off-topic and Form checks remain in force.
 
-The strict provider schema uses a compact list of captured diagnostic labels, materialised back to the existing public per-idea map. Diagnostic labels do not determine Content. The source transformation span and operation fields have been removed from the provider contract. The normal assessment still uses two independent model calls. An invalid review uses its existing bounded retry; no new retry or longer shared deadline is introduced.
+The strict provider schema uses a compact list of captured diagnostic labels, materialised back to the existing public per-idea map. Diagnostic labels do not determine Content. The source transformation span and operation fields have been removed from the provider contract.
+
+## Interpretation disputes (policy 20.3.14)
+
+The second independent reading no longer silently replaces a conflicting valid
+first reading. Compare policy-adjusted Content, Grammar and Vocabulary decisions,
+main-idea/relationship/meaning flags, conclusion adequacy and synthesis quality.
+Optional language suggestions and differently worded explanations do not count
+as scoring disagreements. An incomplete assessment is not a competing valid vote.
+
+- The blind second pass remains independent of the first result. Any proposed
+  deduction, including synthesis or meaning-changing language, selects the
+  existing stronger reviewer rather than only escalating selected meaning flags.
+- When two valid readings disagree, a stronger adjudicator rereads the source
+  and response and checks the contested propositions. Exact student quotations
+  establish what was written; they do not establish that a deduction is correct.
+  The adjudicator must distinguish optional detail or style from a genuinely
+  missing central idea, changed qualifier, comparison or causal relationship.
+- The adjudicator returns a fresh evidence-validated assessment. Neither the
+  maximum nor the average of the previous scores is used; a justified lower score
+  can be upheld. Prior readings are supplied as untrusted opinions, not as labels
+  or expected marks. No section scores enter the judging prompt.
+- Unresolved disputes remain provisional through `review_unavailable` and are
+  not cached as confirmed assessments. Valid resolved results carry an internal
+  `interpretation_review` status and the disputed decision fields.
+- Agreement still uses two calls. Disagreement normally uses three, with at
+  most one validation retry if budget remains. The total remains capped at four
+  provider calls and the existing 90-second shared deadline; earlier retries can
+  exhaust that budget. No student-history scores are rewritten.
+
+Service regression tests exercise disagreement in both score directions,
+synthesis and language deductions, optional advice, invalid evidence, concurrent
+requests, cache isolation, exhausted retries and an aborted adjudicator. These
+tests verify safeguards against inconsistent judgments, not general semantic
+accuracy or Pearson score parity. Live checks must separately test valid and
+meaning-reversing responses without progress writes.
 
 ## Verification
 
@@ -40,3 +75,11 @@ node tests/check-swt-live.js --url=https://swt.up.railway.app --mode=proxy --com
 ```
 
 Live response observations are recorded in the release description. Section totals never enter the judging prompt and no exact Pearson mark is inferred from them.
+
+On 25 October 2026, opt-in proxy checks of policy 20.3.14 against the configured
+provider completed for three existing audit cases: forecasting without the
+invented GNP grouping received Content 4, the locally stated off-grid mechanism
+received Content 3, and the reversed-causality Web control received Content 1.
+All three passed their existing case assertions with complete independent
+reviews and no progress writes. These selected-case observations do not measure
+Pearson agreement or guarantee full marks for every accurate summary.
