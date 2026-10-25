@@ -26,7 +26,7 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
     assert.equal(request.tools[0].strict,true);assert.equal(request.tool_choice.name,academy.NAME);
     assert(schema.$defs.learnerQuote.enum.every(quote=>text.includes(quote)));
     assert.deepEqual(schema.$defs.factIndex.enum,[0,1]);
-    assert(schema.properties.judgment.anyOf.every(branch=>!branch.properties.score.enum?.includes(5)||branch.properties.accuracy.enum[0]!=='major-errors'));
+    assert.deepEqual(schema.properties.judgment.properties.score.enum,[0,1,2,3,4,5,6,null]);
     assert.equal(schema.properties.coverage,undefined,'The holistic mark does not count every bank fact.');
     return format.response(envelope(wire()),context);
   },{academyDescribeImage:true});
@@ -34,6 +34,43 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
   assert.equal(result.contentPolicyVersion,academy.VERSION);assert.equal(result.academyPolicyVersion,'meaning-first-40s-v5');
   assert.equal(result.academyAssessment.scoreImpact,null);assert.equal(result.contentStatus,'assessed');
   assert.equal(result.academyAssessment.evidence[0].quote,'trips rising from 200 to 450');
+});
+
+test('Every full-mock DI request fits the Claude strict-schema subset without changing the Academy validator',()=>{
+  const forbidden=['maxItems','minimum','maximum','minLength','maxLength','uniqueItems','oneOf'];
+  for(const question of require('../content/speaking-mocks').papers.flatMap(p=>p.questions.filter(q=>q.type==='di'))){
+    const words=question.sample||text,request=academy.request('test-model',{question,transcript:words});let unions=0;
+    function inspect(value){
+      if(!value||typeof value!=='object')return;
+      for(const name of forbidden)assert.equal(Object.hasOwn(value,name),false,question.id+' unsupported '+name);
+      if(value.minItems!==undefined)assert([0,1].includes(value.minItems));
+      if(value.anyOf||Array.isArray(value.type))unions++;
+      if(value.properties){assert.equal(value.additionalProperties,false);assert.deepEqual(value.required,Object.keys(value.properties));}
+      for(const child of Object.values(value))if(child&&typeof child==='object')Array.isArray(child)?child.forEach(inspect):inspect(child);
+    }
+    inspect(request.tools[0].input_schema);assert(unions<=4,question.id+' has a bounded grammar');
+    assert(request.tools[0].input_schema.$defs.learnerQuote.enum.every(quote=>words.includes(quote)));
+    assert.equal(request.tools[0].strict,true);assert(request.max_tokens>=3200);
+  }
+});
+
+test('The flat provider format restores nullable evidence and keeps unsupported high marks unavailable',async()=>{
+  const raw=wire();raw.judgment.inaccuracy=null;
+  assert.equal((await academy.grade(q,text,async()=>academy.response(envelope(raw)))).total,6);
+  raw.judgment.requiredEvidence=null;
+  assert.equal((await academy.grade(q,text,async()=>academy.response(envelope(raw)))).total,null);
+  raw.judgment.requiredEvidence={quote:text,factIndices:[0],kind:'relationship'};
+  raw.judgment.accuracy='major-errors';raw.judgment.inaccuracy={quote:'The image',factIndices:[0]};
+  assert.equal((await academy.grade(q,text,async()=>academy.response(envelope(raw)))).total,null);
+});
+
+test('Provider failure diagnostics expose status and safe codes without request content or credentials',()=>{
+  const error=Object.assign(Error('student transcript and secret-key must stay private'),{status:400,name:'BadRequestError',error:{message:'a private request body'}});
+  assert.deepEqual(academy.diagnostic(error),{code:'provider_request',providerStatus:400,errorType:'BadRequestError'});
+  assert.equal(academy.diagnostic({status:429}).code,'provider_rate_limit');
+  assert.equal(academy.diagnostic({name:'APIConnectionTimeoutError'}).code,'provider_timeout');
+  assert.equal(academy.diagnostic({contentValidationCode:'unsupported-deduction'}).code,'unsupported-deduction');
+  assert.throws(()=>academy.response({stop_reason:'max_tokens'}),{code:'ACADEMY_TRUNCATED'});
 });
 
 test('Optional polish, fabricated errors and unsupported high marks are withheld without paid repairs',async()=>{

@@ -46,3 +46,21 @@ test('Failed semantic reviews and changed transcripts never become fabricated or
  const r2=await recoverLatest({...s,operation:'test-repair-2',callModel:async()=>{await s.practiceStore.update(uid,a,a=>({...a,transcript:'A newer edit.'}));return review();}});
  assert.equal(r2.status,'needs-review');const saved=await s.practiceStore.update(uid,a,a=>a);assert.equal(saved.transcript,'A newer edit.');assert.equal(saved.result.total,null);
 });
+
+test('Pinned DI recovery uses the provider-compatible Academy request and preserves all completed assessments',async t=>{
+ const s=await setup(t),mock=id(),question={id:'saved-di',type:'di',title:'Trips',imageCategory:'line',facts:['Trips rose from 20 to 80.']};
+ const words='Trips rose from 20 to 80.',overall={status:'assessed',overallScore:80},gpt={status:'assessed',pronunciation:{score:4}},azure={status:'assessed',fluency:{score:5}},recording={hash:'saved-original',data:'saved-original-audio'};
+ const existing={total:4,maximum:6,scoringMode:'ai'};
+ await s.mockStore.update(uid,mock,()=>({id:mock,status:'submitted',startedAt:10,questions:[question,question],overall,responses:[
+   {recording,transcript:words,content:{total:null,scoringMode:'unavailable',contentStatus:'unavailable'},gpt,azure},
+   {recording,transcript:words,content:existing,gpt,azure}]}));
+ const academy=require('../describe-image-academy'),format=require('../speaking-judge-format');let calls=0;
+ const options={...s,attemptId:mock,kind:'mock',questionTypes:['di'],callModel:async(prompt,context)=>{
+   calls++;const request=format.request(prompt,'test-model',context);assert(!JSON.stringify(request.tools[0].input_schema).includes('maxItems'));
+   return format.response({stop_reason:'tool_use',content:[{type:'tool_use',name:academy.NAME,input:{judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,requiredEvidence:{quote:words,factIndices:[0],kind:'relationship'},inaccuracy:null,otherEvidence:[]},reason:'The main increase is accurate and connected.',nextStep:'Keep the clear comparison.'}}]},context);
+ }};
+ const report=await recoverLatest(options);assert.equal(report.recovered,1);assert.equal(report.unavailable,0);assert.equal(report.scores[0].total,6);
+ const saved=await s.mockStore.get(uid,mock);assert.deepEqual(saved.overall,overall);assert.deepEqual(saved.responses[1].content,existing);
+ assert.deepEqual(saved.responses[0].recording,recording);assert.deepEqual(saved.responses[0].gpt,gpt);assert.deepEqual(saved.responses[0].azure,azure);
+ await recoverLatest(options);assert.equal(calls,1,'A restart cannot buy the same recovery again.');
+});

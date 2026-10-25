@@ -76,6 +76,15 @@ result requests retain the current scores and retry with a bounded backoff; expi
 authentication stops polling. Retry actions are single-flight, and a failed retry
 request resumes read-only checks without automatically resubmitting assessment.
 
+The Academy content adapter uses a compact Claude-compatible strict tool schema.
+It retains the Academy rubric, exact transcript quotes, image-fact references and
+all server validation of score-impacting evidence. OpenAI-only array bounds and
+score-branch expansion are kept out of Claude requests; the original validator
+still enforces the bounds and score/evidence relationships. Provider failures log
+only status and bounded error codes, never transcripts or credentials. A pinned
+content-repair operation can fill missing DI marks once without repeating any
+completed content, audio-provider or whole-test assessment.
+
 ## Sources and validation
 
 - Pearson speaking format: https://www.pearsonpte.com/pte-academic/test-format/speaking-writing/
