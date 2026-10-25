@@ -45,6 +45,25 @@ function normalize(raw,durations){
     assessment:'Independent whole-test speaking-delivery estimate; not Pearson scoring.',recordingCount:durations.length,
     ...Object.fromEntries(['pronunciation','fluency'].map(name=>[name,{...validated[name],evidence:raw[name].evidence}]))};
 }
+function parseReview(choice,durations){
+  if(choice?.message?.refusal)throw Object.assign(Error('The whole-test audio review was not completed.'),{code:'WHOLE_REFUSAL'});
+  const calls=choice?.message?.tool_calls;let text;
+  // Audio models can label a complete function call with finish_reason=stop.
+  // Match the individual audio scorer and still validate the complete judgment.
+  if(['stop','tool_calls'].includes(choice?.finish_reason)&&calls?.length===1&&calls[0]?.function?.name==='record_mock_delivery')text=calls[0].function.arguments;
+  else if(choice?.finish_reason==='stop'&&!calls?.length&&typeof choice?.message?.content==='string')text=choice.message.content.trim().replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i,'$1');
+  else throw Object.assign(Error('Incomplete whole-test audio review.'),{code:choice?.finish_reason==='length'?'WHOLE_TRUNCATED':'WHOLE_INCOMPLETE'});
+  try{return normalize(JSON.parse(text),durations);}
+  catch(error){error.code||='WHOLE_VALIDATION';throw error;}
+}
+function diagnostic(error){
+  const safe=value=>typeof value==='string'&&/^[a-zA-Z0-9_.\[\]-]{1,100}$/.test(value)?value:undefined;
+  return {code:safe(error?.code)||safe(error?.name)||'unknown',
+    ...(Number.isInteger(error?.providerStatus)?{providerStatus:error.providerStatus}:{}),
+    ...(safe(error?.providerCode)?{providerCode:error.providerCode}:{}),...(safe(error?.providerParam)?{providerParam:error.providerParam}:{}),
+    ...(error?.providerMessage?{providerMessage:error.providerMessage}:{}),
+    ...(error?.code==='WHOLE_VALIDATION'?{validationIssue:/single answer/.test(error.message)?'single_answer_pattern':/evidence/.test(error.message)?'audio_evidence':'assessment_contract'}:{})};
+}
 async function assess(recordings,{expectedCount=recordings.length,apiKey=process.env.OPENAI_API_KEY,request=fetch,convert=compress}={}){
   if(!apiKey)throw Error('Whole-test audio review is not configured.');
   if(!recordings.length||recordings.length<Math.ceil(expectedCount*.8))return {version:VERSION,status:'unassessed',overallScore:null,summary:'There are too few saved responses for a reliable whole-test speaking estimate.'};
@@ -57,9 +76,13 @@ async function assess(recordings,{expectedCount=recordings.length,apiKey=process
       tools:[{type:'function',function:{name:'record_mock_delivery',description:'Assess the complete set of original audio responses holistically, without question marks or metadata.',parameters:schema(durations)}}],
       tool_choice:{type:'function',function:{name:'record_mock_delivery'}},parallel_tool_calls:false,
       messages:[{role:'system',content:PROMPT},{role:'user',content:[{type:'text',text:JSON.stringify({recordingDurations:durations})},...clips.map(c=>({type:'input_audio',input_audio:{data:c.data,format:'mp3'}}))]}]})});
-  if(!response.ok)throw Error('Whole-test audio assessment is temporarily unavailable.');
-  const data=await response.json(),choice=data.choices?.[0],calls=choice?.message?.tool_calls;
-  if(choice?.finish_reason!=='tool_calls'||calls?.length!==1||calls[0]?.function?.name!=='record_mock_delivery')throw Error('Incomplete whole-test audio review.');
-  return normalize(JSON.parse(calls[0].function.arguments),durations);
+  if(!response.ok){
+    const error=Object.assign(Error('Whole-test audio assessment is temporarily unavailable.'),{code:'WHOLE_PROVIDER',providerStatus:response.status});
+    try{const body=await response.json(),detail=body?.error;
+      error.providerCode=detail?.code;error.providerParam=detail?.param;
+      if(typeof detail?.message==='string')error.providerMessage=detail.message.replace(/(?:sk-|Bearer\s+)[A-Za-z0-9_-]+/g,'[credential]').replace(/[A-Za-z0-9+/=]{50,}/g,'[audio-data]').slice(0,500);
+    }catch{}throw error;
+  }
+  const data=await response.json();return parseReview(data.choices?.[0],durations);
 }
-module.exports={VERSION,PROMPT,compress,schema,normalize,assess};
+module.exports={VERSION,PROMPT,compress,schema,normalize,parseReview,diagnostic,assess};
