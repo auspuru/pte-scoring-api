@@ -69,6 +69,13 @@ consume paid calls. Recording and account data stay private, using the existing
 session or authorized admin impersonation. The new `speaking_mock_attempts` store
 is separate from individual speaking attempts; history queries omit recording data.
 
+Result-detail polling also omits base64 audio inside the database query while
+preserving recording metadata and all saved marks. It uses a read-only path except
+when an expired active attempt must be submitted. Interrupted or temporarily failed
+result requests retain the current scores and retry with a bounded backoff; expired
+authentication stops polling. Retry actions are single-flight, and a failed retry
+request resumes read-only checks without automatically resubmitting assessment.
+
 ## Sources and validation
 
 - Pearson speaking format: https://www.pearsonpte.com/pte-academic/test-format/speaking-writing/

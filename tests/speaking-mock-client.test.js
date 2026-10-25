@@ -94,3 +94,45 @@ test('The final in-flight recording is saved before a whole-test deadline submit
   const finalRead=h.requests.findLastIndex(r=>r.method==='GET'&&r.url.endsWith('/attempts/'+attempt.id));
   assert(upload>=0&&upload<finalRead,'The final upload precedes submission reconciliation.');
 });
+
+async function savedReview(h){
+  const id=require('node:crypto').randomUUID(),paper=require('../content/speaking-mocks').papers[0];
+  await h.lab.store.update('alice',id,()=>({id,title:paper.title,paperId:paper.id,status:'submitted',index:28,
+    questions:structuredClone(paper.questions),responses:[],questionCount:27,startedAt:1,deadline:2,
+    grading:{status:'processing'},lease:{owner:'other-worker',expiresAt:h.env.Date.now()+1000000},integrity:{events:[]}}));
+  await h.controller.open({history:true});await h.click({sm:'resume',id});return id;
+}
+
+test('An aborted result fetch keeps saved results visible and automatically recovers polling',async t=>{
+  const h=await harness(t),id=await savedReview(h),request=h.env.fetch;let failed=false;
+  h.env.fetch=async(url,args)=>{if(!failed&&url.endsWith('/attempts/'+id)){failed=true;throw new DOMException('Fetch is aborted','AbortError');}return request(url,args);};
+  await h.tick(3000);assert.match(h.nodes.get('sm-notice').textContent,/retrying results automatically/);
+  assert.doesNotMatch(h.nodes.get('sm-notice').textContent,/Fetch is aborted/);assert.match(h.host.innerHTML,/Individual question feedback/);
+  await h.lab.store.update('alice',id,a=>{a.grading.status='complete';a.overall={overallScore:82,summary:'Saved complete assessment.'};return a;});
+  await h.tick(3000);assert.match(h.nodes.get('sm-results-summary').innerHTML,/82/);assert.equal(h.nodes.get('sm-notice').textContent,'');
+  const reads=h.requests.length;await h.tick(30000);assert.equal(h.requests.length,reads,'Completed results stop polling.');
+});
+
+test('Transient server errors back off, while an expired sign-in stops result polling',async t=>{
+  const h=await harness(t),id=await savedReview(h),request=h.env.fetch;let calls=0;
+  h.env.fetch=async(url,args)=>{if(url.endsWith('/attempts/'+id)){calls++;return {ok:false,status:calls<3?503:401,json:async()=>({error:calls<3?'Temporarily unavailable':'Please sign in again.'})};}return request(url,args);};
+  await h.tick(3000);assert.equal(calls,1);await h.tick(3000);assert.equal(calls,2);
+  await h.tick(3000);assert.equal(calls,2,'Repeated failures wait longer.');await h.tick(3000);assert.equal(calls,3);
+  assert.equal(h.nodes.get('sm-notice').textContent,'Please sign in again.');await h.tick(30000);assert.equal(calls,3);
+});
+
+test('Repeated retry clicks send one action and a disconnected retry resumes read-only polling',async t=>{
+  const h=await harness(t);await savedReview(h);const request=h.env.fetch;let rejectRetry,calls=0;
+  h.env.fetch=async(url,args)=>{if(url.endsWith('/retry')){calls++;return new Promise((resolve,reject)=>{rejectRetry=reject;});}return request(url,args);};
+  const first=h.click({sm:'retry'});await h.click({sm:'retry'});assert.equal(calls,1);
+  rejectRetry(new DOMException('Fetch is aborted','AbortError'));await first;
+  assert.match(h.nodes.get('sm-notice').textContent,/checking the results automatically/);
+  const reads=h.requests.length;await h.tick(3000);assert.equal(h.requests.length,reads+1);assert.equal(calls,1,'Polling never resubmits a paid assessment action.');
+});
+
+test('A late polling failure cannot alter the history screen after leaving results',async t=>{
+  const h=await harness(t),id=await savedReview(h),request=h.env.fetch;let rejectRead;
+  h.env.fetch=async(url,args)=>url.endsWith('/attempts/'+id)?new Promise((resolve,reject)=>{rejectRead=reject;}):request(url,args);
+  const polling=h.tick(3000);await h.controller.open({history:true});rejectRead(Error('Fetch is aborted'));await polling;
+  assert.match(h.host.innerHTML,/Your saved attempts/);assert.equal(h.nodes.get('sm-notice').textContent,'');
+});

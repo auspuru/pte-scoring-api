@@ -104,3 +104,21 @@ test('slow Postgres attempt updates expose optimistic retry timing without loggi
   assert.match(source, /conflicts/);
   assert.doesNotMatch(source, /JSON\.stringify\(\{ namespace, uid/);
 });
+
+test('result reads preserve recording metadata and leave persisted audio untouched', async t => {
+  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'mock-result-read-'));
+  t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+  const store=createStore(null,directory,{table:'speaking_mock_attempts'}),id=require('node:crypto').randomUUID();
+  await store.update('alice',id,()=>({id,status:'submitted',responses:[null,{recording:{data:'private-audio',mime:'audio/mp4',hash:'saved-hash'},content:{total:5}},{}]}));
+  const result=await store.get('alice',id,{omitMockAudio:true});
+  assert.equal(result.responses[1].recording.data,undefined);assert.equal(result.responses[1].recording.hash,'saved-hash');assert.equal(result.responses[1].content.total,5);
+  assert.equal((await store.get('alice',id)).responses[1].recording.data,'private-audio');assert.equal(await store.get('bob',id,{omitMockAudio:true}),null);
+});
+
+test('Postgres result reads project audio before transfer and enforce account ownership', async () => {
+  const id='12345678-1234-4123-8123-123456789abc',queries=[];
+  const store=createStore({query:async(sql,params)=>{queries.push({sql,params});return {rows:[]};},connect:()=>{throw Error('Result reads must not enter an optimistic write.');}},'/unused',{table:'speaking_mock_attempts'});
+  assert.equal(await store.get('alice',id,{omitMockAudio:true}),null);
+  const query=queries.at(-1);assert.match(query.sql,/jsonb_array_elements/);assert.match(query.sql,/\(response->'recording'\) - 'data'/);
+  assert.match(query.sql,/ORDER BY position/);assert.match(query.sql,/WHERE id=\$1 AND username=\$2/);assert.deepEqual(query.params,[id,'alice']);
+});
