@@ -172,13 +172,35 @@ test('Semantic evidence keeps coverage rows consistent with the written explanat
   assert(!/^.*Not selected.*Not selected.*Not selected.*Not selected/s.test(target.innerHTML));
 });
 
-test('Long model explanations are compacted in the student priority card', () => {
+test('The Olympics result, next step and suggested revision retain their complete endings', () => {
   const data = full();
-  data.trait_scores.content = 2;
-  data.content_details.notes = Array(80).fill('The summary omits an optional named example.').join(' ');
+  data.trait_scores.content = 3;
+  data.content_details.full_content_eligible = false;
+  const overview = 'Good work capturing the core idea: sporting events are joining a climate network to neutralise their carbon footprint and inspire wider environmental action. The Sochi investment figure is relevant. However, the geographic description of the Black Sea and Caucasus Mountains is peripheral background. Replace it with how the investment improves transport infrastructure, offsets emissions, supports reforestation and develops urban green belts.';
+  const nextStep = 'Keep the climate-network purpose and the role of sport in inspiring global action. Replace the geographic setting description with a brief explanation of what the investment will fund: energy conservation, renewable energy, transport infrastructure, reforestation and greenhouse gas emissions offsets. This makes the selected details support the central environmental message.';
+  const repair = 'Major sporting events are joining a climate network to neutralise their carbon footprint and inspire global environmental action, and organisers of the 2014 Sochi Olympic and Paralympic Winter Games plan to invest $1.75 billion in energy conservation, renewable energy, transport improvements, reforestation, urban green belts and offsetting greenhouse gas emissions.';
+  data.content_details.feedback_note = overview;
+  Object.assign(data.content_details.summary_assessment, {next_step: nextStep,repair,
+    synthesis:{quality:'partial',evidence:'geographic description',explanation:'Select the environmental investment purpose instead of the setting.'}});
   const result = build(data);
-  assert(result.priorities[0].detail.length <= 421);
-  assert(result.priorities[0].detail.endsWith('…'));
+  assert(overview.length > 300 && nextStep.length > 280 && repair.length > 220);
+  assert.equal(result.summary,overview);
+  assert.equal(result.priorities[0].detail,nextStep);
+  assert.equal(result.priorities[0].repair,repair);
+  assert(result.summary.endsWith('urban green belts.'));
+  assert(result.priorities[0].repair.endsWith('greenhouse gas emissions.'));
+  assert.equal(require('../public/swt-feedback').presentation(data).estimate,79);
+});
+
+test('Saved notes and long quoted dependencies remain readable without another assessment', () => {
+  const data = full(); data.trait_scores.content = 3;
+  const notes = Array(30).fill('The important relationship needs supporting context.').join(' ') + ' Keep this final explanation visible.';
+  data.content_details.notes = notes;
+  const effect = Array(25).fill('an exact student phrase').join(' ');
+  data.content_details.summary_assessment.missing_dependencies = [{effect,missing_context:'The full supporting context.'}];
+  const result = build(data);
+  assert.equal(result.summary,notes);
+  assert.equal(result.priorities[0].detail,'“'+effect+'” needs this context: The full supporting context.');
 });
 
 test('A Content-zero gate preserves valid-form guidance without inventing language deductions', () => {
