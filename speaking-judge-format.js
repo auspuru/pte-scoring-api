@@ -25,10 +25,15 @@ function tool(q){
   return {name:NAME,strict:true,description:'Return the complete content assessment using the supplied institute policy. This tool records assessment data only; it performs no external action. Evaluate meaning before choosing the score.',input_schema:object(properties)};
 }
 function words(text){return Array.from(text.matchAll(/\S+/gu),m=>({word:m[0],start:m.index,end:m.index+m[0].length}));}
-function request(prompt,model,{question,transcript=''}={}){
+function request(prompt,model,{question,transcript='',validationDiagnostic}={}){
   if(!applies(question))return {model,temperature:0,max_tokens:3200,messages:[{role:'user',content:prompt}]};
+  const specification=tool(question);
+  if(validationDiagnostic?.fullEligible===false&&Number.isInteger(validationDiagnostic.ceiling)){
+    const ceiling=Math.max(0,Math.min(5,validationDiagnostic.ceiling));
+    specification.input_schema.properties.total.enum=Array.from({length:ceiling+1},(_,i)=>i);
+  }
   const numbered=words(transcript).map((w,i)=>`${i+1}:${w.word}`).join(' ');
-  return {model,temperature:0,max_tokens:4000,tools:[tool(question)],tool_choice:{type:'tool',name:NAME},
+  return {model,temperature:0,max_tokens:4000,tools:[specification],tool_choice:{type:'tool',name:NAME},
     messages:[{role:'user',content:prompt+'\n\nSTRUCTURED OUTPUT: Use submit_speaking_content instead of the earlier JSON-only output instruction. Return every required field. In this wire format replace each evidence quotation with evidence_span from NUMBERED_STUDENT_WORDS below; the server restores the exact original words. Keep quotations short and contiguous (under 500 characters). Missing coverage uses []. Never use source/sample word numbers. Keep strengths and improvements to at most two each. Choose total consistently with the semantic assessment flags and the institute policy.\nNUMBERED_STUDENT_WORDS='+numbered}]};
 }
 function response(value,{question,transcript=''}={}){
