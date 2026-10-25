@@ -66,7 +66,7 @@ async function main() {
     : await Promise.all([8, 9, 6, 7].map(id => request('/api/passages/' + id)));
   if (args.comparison && args.mode !== 'proxy') throw Error('Comparison fixtures require proxy mode so the exact screenshot passage is assessed.');
   const comparison = args.comparison && require('./fixtures/swt-attempt-comparison.json');
-  const cases = args.audit ? require('./fixtures/swt-audit-regressions.json') : comparison ? comparison.attempts.filter(a => a.status === 'reported').flatMap(a => comparison.passages.map(p => ({
+  const cases = args.audit ? [...require('./fixtures/swt-audit-regressions.json'), ...require('./fixtures/swt-grammar-regressions')] : comparison ? comparison.attempts.filter(a => a.status === 'reported').flatMap(a => comparison.passages.map(p => ({
     name: 'Attempt ' + a.attempt + ' ' + p.id, p: { text: p.text, keyElements: {} }, text: a.responses[p.id]
     // Section results are observations, not asserted item scores or a forced ranking.
   }))) : [
@@ -81,7 +81,7 @@ async function main() {
   ];
   let failed = 0;
   for (const c of cases.filter(c => !args.cases || args.cases.split(',').some(name => c.name.includes(name)))) {
-    let assessment;
+    let assessment, languageAnnotations;
     try {
       let result;
       if (args.mode === 'grade') {
@@ -93,10 +93,12 @@ async function main() {
         result = { content: data.trait_scores.content, grammar: data.trait_scores.grammar,
           vocabulary: data.trait_scores.vocabulary, estimate: data.overall_score,
           note: data.content_details?.notes, version: data.scoring_version };
+        languageAnnotations = data.grammar_details?.grammar_annotations || [];
       } else {
         const hints = Object.entries(c.p.keyElements || {}).map(([key, value]) => '- ' + key + ': ' + value).join('\n');
         const j = applyScoringPolicy(await judge.judge(c.text, c.p.text, hints), c.text, c.p.text);
         assessment = j.summary_assessment;
+        languageAnnotations = j.grammar_annotations;
         assert.equal(j.needs_semantic_review, false, 'Model assessment must be complete');
         result = { content: j.content_score, grammar: j.grammar_score, vocabulary: j.vocabulary_score,
           synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed,
@@ -105,6 +107,9 @@ async function main() {
       console.log(JSON.stringify({ case: c.name, ...result }));
       if (c.minimum != null) assert(result.content >= c.minimum, 'Accurate main relationships were under-credited');
       if (c.grammar != null) assert.equal(result.grammar,c.grammar);
+      if (c.forbiddenLanguageFeedback) {
+        assert(!new RegExp(c.forbiddenLanguageFeedback, 'i').test(JSON.stringify(languageAnnotations || [])), 'Feedback invented a tense reversal from a recoverable slip');
+      }
       if (c.forbiddenFeedback) assert(!new RegExp(c.forbiddenFeedback,'i').test(result.note), 'Feedback imported a claim absent from this response');
       if (c.full) {
         assert.equal(result.content, 4); assert.equal(result.grammar, 2); assert.equal(result.vocabulary, 2);

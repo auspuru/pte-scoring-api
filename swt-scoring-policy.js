@@ -2,7 +2,7 @@
 
 // This is the institute's practice-scoring policy, calibrated against examples
 // supplied by the user. It does not claim to reproduce Pearson's scoring engine.
-const POLICY_VERSION = '20.3.14';
+const POLICY_VERSION = '20.3.15';
 const SCORING_CRITERIA = Object.freeze({
   profile: 'Content 4 + Form 1 + Grammar 2 + Vocabulary 2',
   content: Object.freeze({
@@ -249,6 +249,8 @@ GRAMMAR (0, 0.5, 1, 1.5, 2):
 Give 2/2 if meaning remains clear and unchanged, including a few article, agreement, tense, punctuation, spelling or repetition slips. A noticeable or 'major' grammar label alone is not a deduction.
 Deduct ONLY for an actual grammatical error that changes or obscures meaning. Quote it and explain the specific change in actor, action, negation, timing, reference or relationship. A missing content idea alone is NOT a grammar error.
 Discourse-marker preferences, semicolon style and the placement of background facts are not grammatical meaning errors. Do not label 'moreover' a grammar error for adding a related biographical fact. Resolve 'it/this' using the named topic and surrounding clauses before alleging ambiguity. A genuinely false causal assertion is assessed under Content; do not deduct Grammar again for the same connector.
+Judge tense and missing auxiliaries in the WHOLE sentence, not by an isolated phrase's other possible dictionary reading. In an otherwise present-tense process explanation such as "water is converted into steam, which used to drive turbines and produce electricity", "which is used to drive" is a recoverable missing-auxiliary correction. The preceding present-tense conversion and continuing process make the intended mechanism clear. Keep that correction optional with meaning_impact 'none'; do not invent a past habit, a formerly operating turbine or a reversal of meaning solely from the missing 'is'. This is not a blanket exemption for "used to": explicit claims such as "steam formerly drove turbines but no longer does" really assert past-only operation and must be compared with the source under Content. A changed central proposition is still a content error even when its grammar is well formed. Never deduct Grammar again simply for that same factual mismatch.
+A grammatically well-formed false statement is not a grammatical error: "steam formerly drove turbines but no longer does" correctly expresses past-only operation, so it can receive Grammar 2/2 while losing Content for contradicting this passage. Changing "no longer" to a source-correct claim repairs the fact, not the sentence structure. Do not invent a grammar annotation or lower Grammar solely because a well-formed negation, tense or proposition is factually false. Quote an actual language-form error before applying a Grammar deduction.
 Use 1.5 or 1 for a local meaning problem, 0.5 for widespread obscurity and 0 when the sentence cannot convey a usable meaning.
 Keep harmless corrections as optional feedback, with meaning_impact 'none'. Do not invent mistakes to fill the annotations.
 

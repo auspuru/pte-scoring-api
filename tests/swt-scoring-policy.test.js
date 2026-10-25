@@ -103,6 +103,49 @@ for (const fixture of fixtures) {
   });
 }
 
+test('A recoverable geothermal auxiliary correction stays optional through the route and student feedback', async () => {
+  // Supplied semantic labels test policy/presentation, not model accuracy.
+  // The live fixtures separately exercise how Claude interprets the sentence.
+  const cases = require('./fixtures/swt-grammar-regressions');
+  const { build, presentation } = require('../public/swt-feedback');
+  for (const c of cases.slice(0, 2)) {
+    const raw = judgment();
+    raw.content_score = 3;
+    Object.assign(raw.summary_assessment, {
+      main_idea_evidence: 'geothermal energy is the solution for increasing energy demands',
+      supporting_evidence: ["60% of Kenya's power comes from hydroelectric sources but these are proving increasingly unreliable", 'water is converted into steam'],
+      relationship_explanation: 'The response preserves demand, unreliable hydropower and the heat-to-steam mechanism.',
+      synthesis: { quality: 'partial', evidence: 'locals have been utilizing geothermal energy for centuries in various ways',
+        explanation: 'The local-use detail makes the summary less focused.' }
+    });
+    raw.grammar_annotations = c === cases[0] ? [annotation('which used to', 'which is used to')] : [];
+    const result = await grade({ summary: c.text, passage: c.p.text }, raw);
+    assert.equal(result.trait_scores.grammar, 2);
+    assert.equal(result.trait_scores.content, 3, 'Optional grammar advice must not force full Content');
+    assert.equal(result.overall_score, 79);
+    const feedback = build(result);
+    assert(!feedback.priorities.some(x => /grammar/i.test(x.title)));
+    if (c === cases[0]) assert(feedback.optional.some(x => x.phrase === 'which used to'));
+    assert.equal(presentation(result).estimate, 79);
+  }
+});
+
+test('Explicit discontinued geothermal operation remains a meaning error even with valid grammar', async () => {
+  const c = require('./fixtures/swt-grammar-regressions')[2];
+  const raw = judgment(); raw.content_score = 2;
+  Object.assign(raw.summary_assessment, { main_idea_accurate: false,
+    main_idea_evidence: 'East Africa can no longer use geothermal heat to generate electricity',
+    supporting_evidence: ['underground steam formerly drove turbines but no longer does'],
+    relationships_clear: false, material_meaning_change: true,
+    relationship_explanation: 'The passage presents an available mechanism; the response explicitly claims it no longer works.',
+    synthesis: { quality: 'limited', evidence: c.text, explanation: 'The central proposition is contradicted.' }
+  });
+  const result = await grade({ summary: c.text, passage: c.p.text }, raw);
+  assert.equal(result.trait_scores.grammar, 2);
+  assert.equal(result.trait_scores.content, 2);
+  assert(result.overall_score <= 65);
+});
+
 test('Article, agreement and spelling feedback never deduct marks without meaning impact', async () => {
   const fixture = fixtures[3];
   const result = await grade(fixture, judgment(fixture, {
