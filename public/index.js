@@ -12802,7 +12802,7 @@ function launchAssignedQuestion(item) {
   if (item.route) switchSection(item.route);
 }
 
-function canUseSpeaking(){return ['pppp','mehakbir1'].includes(String(currentUserId||'').trim().toLowerCase());}
+function canUseSpeaking(){return ['pppp','mehakbir1','mahabir1'].includes(String(currentUserId||'').trim().toLowerCase());}
 function switchSection(section, options = {}) {
   if(String(section).startsWith('speaking-')&&!canUseSpeaking())section='dashboard';
   if (window.PortalExamMode?.isActive()) {
