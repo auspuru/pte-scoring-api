@@ -26,7 +26,7 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
     assert.equal(request.tools[0].strict,true);assert.equal(request.tool_choice.name,academy.NAME);
     assert.equal(schema.$defs,undefined);
     assert.deepEqual(schema.properties.judgment.properties.otherEvidence.items.properties.factIndices.items.enum,[0,1]);
-    assert.deepEqual(schema.properties.judgment.properties.score.enum,[0,1,2,3,4,5,6,null]);
+    assert.deepEqual(schema.properties.judgment.properties.score.anyOf,[{type:'integer',enum:[0,1,2,3,4,5,6]},{type:'null'}]);
     assert.equal(schema.properties.coverage,undefined,'The holistic mark does not count every bank fact.');
     return format.response(envelope(wire()),context);
   },{academyDescribeImage:true});
@@ -44,6 +44,7 @@ test('Every full-mock DI request fits the Claude strict-schema subset without ch
       if(!value||typeof value!=='object')return;
       for(const name of forbidden)assert.equal(Object.hasOwn(value,name),false,question.id+' unsupported '+name);
       if(value.minItems!==undefined)assert([0,1].includes(value.minItems));
+      if(value.enum)assert(!Array.isArray(value.type),'Provider rejects enum values against a type array.');
       if(value.anyOf||Array.isArray(value.type))unions++;
       if(value.properties){assert.equal(value.additionalProperties,false);assert.deepEqual(value.required,Object.keys(value.properties));}
       for(const child of Object.values(value))if(child&&typeof child==='object')Array.isArray(child)?child.forEach(inspect):inspect(child);

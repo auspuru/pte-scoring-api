@@ -36,7 +36,7 @@ function wireSchema(question,text){
   const impact=object({kind:{type:'string',enum:['accuracy','main-feature','relationship','clarity','relevance']},quote_span,
     factIndices:{...refs,minItems:1},observation:{type:'string'},impact:{type:'string'}});
   const inaccuracy=nullable(object({quote_span,factIndices:{...refs,minItems:1}}));
-  return {...object({judgment:object({score:{type:['integer','null'],enum:[0,1,2,3,4,5,6,null]},
+  return {...object({judgment:object({score:nullable({type:'integer',enum:[0,1,2,3,4,5,6]}),
     relevance:structuredClone(content.schema.properties.relevance),accuracy:structuredClone(content.schema.properties.accuracy),
     scoreImpact:nullable(impact),requiredEvidence:nullable(evidence),inaccuracy,
     otherEvidence:{type:'array',items:evidence,description:'At most six total evidence items including requiredEvidence and inaccuracy. Use [] when these already supply the evidence.'}}),
