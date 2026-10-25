@@ -130,6 +130,14 @@ test('A recoverable geothermal auxiliary correction stays optional through the r
   }
 });
 
+test('The standalone result reports the actual assessment model without changing reviewed feedback', async () => {
+  const raw = judgment(); raw.assessment_model = 'claude-sonnet-4-6';
+  const result = await grade(fixtures[1],raw);
+  assert.equal(result.scoring_model,'claude-sonnet-4-6');
+  assert.equal(result.content_details.notes,raw.summary_assessment.relationship_explanation);
+  assert.equal(result.trait_scores.content,4);
+});
+
 test('Explicit discontinued geothermal operation remains a meaning error even with valid grammar', async () => {
   const c = require('./fixtures/swt-grammar-regressions')[2];
   const raw = judgment(); raw.content_score = 2;

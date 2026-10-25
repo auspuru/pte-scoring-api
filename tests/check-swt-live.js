@@ -54,7 +54,7 @@ const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt
     // Exercise the same structured response contract as the production grader.
     let response;
     try {
-      response = await request('/api/claude', judgeFormat.request(prompt, args.model || 'claude-haiku-4-5-20251001', {semanticReassessment}), { timeoutMs, signal });
+      response = await request('/api/claude', judgeFormat.request(prompt, args.model || judgeFormat.scoringModel(), {semanticReassessment}), { timeoutMs, signal });
     } catch (error) { console.error('Calibration provider error: ' + error.message); throw error; }
     const result = judgeFormat.response(response);
     if (args.debug) console.error(JSON.stringify({ fixtureAssessment: result }));
@@ -92,7 +92,7 @@ async function main() {
         assert.equal(data.scoring_version, POLICY_VERSION, 'The deployed policy must match the tested rubric');
         result = { content: data.trait_scores.content, grammar: data.trait_scores.grammar,
           vocabulary: data.trait_scores.vocabulary, estimate: data.overall_score,
-          note: data.content_details?.notes, version: data.scoring_version };
+          note: data.content_details?.notes, version: data.scoring_version, model: data.scoring_model };
         languageAnnotations = data.grammar_details?.grammar_annotations || [];
       } else {
         const hints = Object.entries(c.p.keyElements || {}).map(([key, value]) => '- ' + key + ': ' + value).join('\n');
@@ -102,7 +102,7 @@ async function main() {
         assert.equal(j.needs_semantic_review, false, 'Model assessment must be complete');
         result = { content: j.content_score, grammar: j.grammar_score, vocabulary: j.vocabulary_score,
           synthesis: j.summary_assessment?.synthesis, note: j.content_reason, reviewed: !!j.consistency_reviewed,
-          interpretationReview: j.interpretation_review || null };
+          interpretationReview: j.interpretation_review || null, model: j.assessment_model || null };
       }
       console.log(JSON.stringify({ case: c.name, ...result }));
       if (c.minimum != null) assert(result.content >= c.minimum, 'Accurate main relationships were under-credited');
@@ -118,6 +118,7 @@ async function main() {
       failed++;
       console.error(c.name + ': ' + error.message);
       if (assessment) console.error(JSON.stringify({ case: c.name, assessment }));
+      if (languageAnnotations) console.error(JSON.stringify({ case: c.name, grammarAnnotations: languageAnnotations }));
     }
   }
   if (args.mode === 'grade' && !args.audit) {

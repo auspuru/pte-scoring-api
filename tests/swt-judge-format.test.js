@@ -163,5 +163,37 @@ test('Compact diagnostic labels retain the public per-idea map without changing 
 test('A semantic reassessment selects the stronger reviewer while ordinary assessments retain the base model', () => {
   const base='claude-haiku-4-5-20251001';
   assert.equal(format.request('Assess.',base).model,base);
-  assert.equal(format.request('Reassess.',base,{semanticReassessment:true}).model,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6');
+  assert.equal(format.request('Reassess.',base,{semanticReassessment:true}).model,process.env.SWT_REVIEW_MODEL || format.scoringModel());
+});
+
+test('SWT defaults to Sonnet for scoring and review independently of the global low-cost model', () => {
+  const { execFileSync } = require('node:child_process');
+  const models = overrides => {
+    const env = { ...process.env };
+    for (const key of ['SWT_CLAUDE_MODEL','SWT_REVIEW_MODEL','CLAUDE_REASSESSMENT_MODEL']) delete env[key];
+    Object.assign(env, {CLAUDE_MODEL:'claude-haiku-4-5-20251001'}, overrides);
+    return JSON.parse(execFileSync(process.execPath, ['-e',
+      "const f=require('./swt-judge-format'); console.log(JSON.stringify([f.scoringModel(),f.request('Score.').model,f.request('Review.',undefined,{semanticReassessment:true}).model]))"],
+    { cwd: require('node:path').join(__dirname,'..'), env, encoding:'utf8' }));
+  };
+  assert.deepEqual(models({}), ['claude-sonnet-4-6','claude-sonnet-4-6','claude-sonnet-4-6']);
+  assert.deepEqual(models({SWT_CLAUDE_MODEL:'custom-swt-model'}), ['custom-swt-model','custom-swt-model','custom-swt-model']);
+  assert.deepEqual(models({SWT_REVIEW_MODEL:'custom-review-model'}), ['claude-sonnet-4-6','claude-sonnet-4-6','custom-review-model']);
+  assert.deepEqual(models({CLAUDE_REASSESSMENT_MODEL:'legacy-review-model'}), ['claude-sonnet-4-6','claude-sonnet-4-6','claude-sonnet-4-6']);
+});
+
+test('The production SWT call selects the dedicated scorer and retains the provider model identity', async () => {
+  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+  const source = fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
+  const start = source.indexOf('async function callSwtJudge('), end = source.indexOf('\n}',start)+2;
+  let request;
+  const context = { CLAUDE_MODEL:'claude-haiku-4-5-20251001',require:()=>format,
+    anthropic:{messages:{create:async body=>{request=body;return {...envelope(complete()),model:body.model};}}} };
+  vm.createContext(context);vm.runInContext(source.slice(start,end),context);
+  const result = await context.callSwtJudge('Assess this summary.',1000,{});
+  assert.equal(request.model,format.scoringModel());
+  assert.equal(result.assessment_model,request.model);
+  assert.equal(result.feedback_note,complete().feedback_note);
+  const missingModel = format.response(envelope(complete()));
+  assert.equal(missingModel.assessment_model,undefined,'Do not invent the provider model when it was not reported');
 });
