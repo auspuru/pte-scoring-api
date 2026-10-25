@@ -106,7 +106,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         if(result?.status!=='assessed'||!Number.isFinite(result.pronunciation?.raw)||!Number.isFinite(result.fluency?.raw))throw Error('Azure overall was not confirmed.');
         await save(current=>{current.overallAzure={...result,assessedAt:now(),...(operation?{operation}:{})};});
       }catch(error){
-        const failure={code:'AZURE_OVERALL_UNAVAILABLE',...(Number.isInteger(error.providerStatus)?{providerStatus:error.providerStatus}:{})};
+        const failure={code:/^AZURE_[A-Z_]+$/.test(error.code||'')?error.code:'AZURE_OVERALL_UNAVAILABLE',...(Number.isInteger(error.providerStatus)?{providerStatus:error.providerStatus}:{}),
+          ...(['NoMatch','InitialSilenceTimeout','BabbleTimeout','EndOfDictation','Error'].includes(error.recognitionStatus)?{recognitionStatus:error.recognitionStatus}:{}),
+          ...(error.audioSection?{audioSection:error.audioSection}:{}),...(error.coverage?{coverage:error.coverage}:{})};
         console.warn('[speaking-azure-overall]',JSON.stringify(failure));
         await save(current=>{current.overallAzure={status:'unavailable',failure,summary:'The Azure audio summary could not finish. Your saved recordings and GPT result are unchanged.'};});
       }

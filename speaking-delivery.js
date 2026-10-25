@@ -260,7 +260,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
     throw error;
   }
   const json=await response.json();
-  if(json?.RecognitionStatus&&json.RecognitionStatus!=='Success')throw Error('Azure Speech could not assess this audio.');
+  if(json?.RecognitionStatus&&json.RecognitionStatus!=='Success')throw Object.assign(Error('Azure Speech could not assess this audio.'),{code:'AZURE_RECOGNITION',recognitionStatus:json.RecognitionStatus});
   return extractAssessment(json);
 }
 
