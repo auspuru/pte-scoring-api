@@ -131,3 +131,24 @@ overrides are preserved. The new overall shares delivery rubric v5 with every
 GPT question assessment: harmless slips and inaccuracies do not deduct marks.
 A whole-test review with both traits at 5 and no impact must remain in its own
 85–90 top band; inconsistent output is rejected, never automatically raised.
+
+## Azure whole-mock comparison
+
+Azure now supplies a separate whole-test acoustic summary from fresh processing
+of every original scored recording. Only audio enters this assessment: no
+reference prompts, transcripts, saved provider marks or instructor overrides.
+Each recording is converted to PCM and processed in sections below 30 seconds,
+without joining separate answers or counting inter-question gaps. The summary
+weights new Azure AccuracyScore and FluencyScore measurements by assessed audio
+duration. Digital-silence-only sections are excluded; every recorded response
+must contribute usable measurements, and a failed request withholds the summary.
+There are at most two simultaneous requests and no automatic provider retries.
+
+The UI discloses native /100 values and the existing portal /5 acoustic bands.
+This is an acoustic aggregation, not the independent holistic GPT judgment,
+not an average of saved question marks and not a Pearson /90 score. The GPT
+overall and all individual results remain unchanged. New submissions generate
+the comparison; a pinned `scope: "overall", provider: "azure"` operation can
+fill an existing mock once. The same operation is idempotent even after failure.
+
+Microsoft reference: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-pronunciation-assessment

@@ -43,6 +43,7 @@ function configurationSummary(env=process.env) {
 }
 
 function band5(raw) {
+  if(raw==null||raw==='')return null;
   const value=Number(raw);
   if(!Number.isFinite(value)) return null;
   // Conservative practice calibration. Azure's 0-100 acoustic scale is not
@@ -87,6 +88,7 @@ function usefulPracticeWords(words) {
 }
 
 function round1(value) {
+  if(value==null||value==='')return null;
   const n=Number(value);
   return Number.isFinite(n)?Math.round(n*10)/10:null;
 }
@@ -228,17 +230,17 @@ async function splitToWav(recording,{directory,ffmpeg='ffmpeg'}={}) {
   }
 }
 
-async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',scripted=false,request=fetch}={}) {
+async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,endpoint=endpointFromEnv(),locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',scripted=false,unscripted=false,request=fetch}={}) {
   if(!apiKey||!endpoint)throw Error('Azure Speech pronunciation assessment is not configured.');
   const config={
     ReferenceText:String(reference||'').trim(),
     GradingSystem:'HundredMark',
     Granularity:'Word',
     Dimension:'Comprehensive',
-    EnableProsodyAssessment:'True',
+    ...(!unscripted?{EnableProsodyAssessment:'True'}:{}),
     ...(scripted?{EnableMiscue:true}:{})
   };
-  if(!config.ReferenceText)throw Error('No spoken words were available for delivery assessment.');
+  if(!config.ReferenceText&&!unscripted)throw Error('No spoken words were available for delivery assessment.');
   const url=endpoint+(endpoint.includes('?')?'&':'?')+'language='+encodeURIComponent(String(locale||'en-AU'))+'&format=detailed';
   const response=await request(url,{
     method:'POST',
