@@ -25,6 +25,12 @@ test('Azure whole-mock assessment withholds incomplete coverage and never substi
  assert.equal(whole.silent(wav(1,false)),true);assert.equal(whole.silent(wav(1)),false);
 });
 
+test('Azure timeout diagnostics identify the affected audio section without modifying read-only provider errors',async()=>{
+ await assert.rejects(whole.assess(Array.from({length:8},()=>({mime:'audio/wav',data:'audio'})),{split:async()=>[wav()],measure:async()=>{throw new DOMException('Timed out','TimeoutError');}}),error=>{
+  assert.equal(error.code,'AZURE_TIMEOUT');assert(Number.isInteger(error.audioSection.recording));assert.equal(error.audioSection.seconds,8);return true;
+ });
+});
+
 test('Azure unscripted wire requests have no reference text, miscue or unsupported prosody requirement',async()=>{
  const result=await azure.azureAssess(wav(),'',{apiKey:'test-only',endpoint:'https://example.test/speech',unscripted:true,request:async(_,args)=>{
   const config=JSON.parse(Buffer.from(args.headers['Pronunciation-Assessment'],'base64').toString());
