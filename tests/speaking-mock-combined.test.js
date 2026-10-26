@@ -11,7 +11,7 @@ function attempt(){
     overall:{status:'assessed',overallScore:82,recordingCount:6,pronunciation:{score:4},fluency:{score:4}}};
 }
 function judgment(rows,score=5){return {score,summary:'Generally effective task fulfilment across all six task types.',strengths:['Relevant connected responses.'],nextSteps:['Retain important supporting details.'],
-  coverage:rows.map(r=>({index:r.index,outcome:r.student.trim()?'adequate':'unanswered',materialError:false,evidence_span:r.student.trim()?[1,5]:[],reason:r.student.trim()?'The relevant task content is expressed.':'No response was recorded.'}))};}
+  coverage:Object.fromEntries(rows.map(r=>['q'+r.index,{outcome:r.student.trim()?'adequate':'unanswered',materialError:false,evidence_id:r.student.trim()?1:0,reason:r.student.trim()?'The relevant task content is expressed.':'No response was recorded.'}]))};}
 async function setup(t){const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-combined-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
   const mockStore=createStore(null,path.join(directory,'mock'),{table:'speaking_mock_attempts'}),practiceStore=createStore(null,path.join(directory,'practice'),{table:'speaking_lab_attempts'});
   return {username:'mahdis',operation:'pilot-test',startedBefore:100,mockStore,practiceStore,logger:quiet};}
@@ -29,11 +29,18 @@ test('Complete raw responses enter a blind-to-marks whole content review, with t
 test('Every question requires correctly indexed literal student evidence',()=>{
   const rows=combined.entries(attempt()),raw=judgment(rows);
   assert.equal(combined.normalize(raw,rows).coverage[0].evidence,'The cost of travel increased.');
-  for(const mutate of [r=>r.coverage.pop(),r=>r.coverage.reverse(),r=>r.coverage[1].evidence_span=[1,999],r=>r.coverage[0].outcome='unanswered',r=>r.coverage[0].index=999]){
+  for(const mutate of [r=>delete r.coverage.q5,r=>r.coverage.extra={},r=>r.coverage.q1.evidence_id=999,r=>r.coverage.q0.outcome='unanswered',r=>{r.coverage.q999=r.coverage.q5;delete r.coverage.q5;}]){
     const edited=structuredClone(raw);mutate(edited);assert.throws(()=>combined.normalize(edited,rows));
   }
   raw.score=0;assert.throws(()=>combined.normalize(raw,rows),/could not be verified/);
-  raw.score=6;raw.coverage[0].materialError=true;raw.coverage[1].materialError=true;assert.throws(()=>combined.normalize(raw,rows));
+  raw.score=6;raw.coverage.q0.materialError=true;raw.coverage.q1.materialError=true;assert.throws(()=>combined.normalize(raw,rows));
+});
+test('Each question has its own forced evidence choices, including a single valid empty-answer choice',()=>{
+ const rows=combined.entries(attempt());rows[1].student='Yes.';rows[2].student='';
+ const request=combined.request('test-model',{wholeMockEntries:rows}),properties=request.tools[0].input_schema.properties.coverage.properties;
+ assert.deepEqual(properties.q1.properties.evidence_id.enum,[1]);assert.deepEqual(properties.q2.properties.evidence_id.enum,[0]);assert.deepEqual(properties.q2.properties.outcome.enum,['unanswered']);
+ const raw=judgment(rows);raw.coverage.q1.evidence_id=2;assert.throws(()=>combined.normalize(raw,rows));
+ for(const row of rows)for(const option of combined.quoteOptions(row.student))assert(row.student.includes(option.quote));
 });
 test('Combined scores use whole traits only and prevent fluent unrelated content earning a high mark',()=>{
   const a=attempt();assert.equal(combined.combine({score:5},a.overall).overallScore,75);

@@ -4,7 +4,7 @@
 const crypto=require('node:crypto');
 const scoring=require('./speaking-scoring');
 const {confirmed,recoverLatest}=require('./speaking-content-recovery');
-const VERSION='whole-speaking-combined-2026-10-26.2';
+const VERSION='whole-speaking-combined-2026-10-26.3';
 const NAME='submit_whole_mock_content';
 const TYPES=['ra','rs','di','rl','sgd','rts'];
 const bad=code=>Object.assign(Error('The complete mock assessment could not be verified.'),{code});
@@ -15,7 +15,7 @@ Read Aloud and Repeat Sentence require accurate reproduction of the original wor
 Describe Image follows Visual Academy's meaning-first policy: accurate main features, important relationships and selected supporting values within 40 seconds. Optional totals, all data points, formal conclusions, elaborate vocabulary and a particular template are not required. Valid self-corrections and harmless incidental slips do not lose marks. Printed main figures, units and trends remain important.
 Retell Lecture and Group Discussion prioritize connected, sufficiently developed, mostly accurate meaning. Minor secondary inaccuracies and optional omissions can still receive full credit; reversal of the main message, essential relationships or a speaker's important position is material. Do not demand all details, examples, names, a fixed number of points or a formal conclusion.
 Respond to a Situation prioritizes an understandable relevant message achieving the purpose. Simple language and a suitable alternative request/solution are valid. No mandatory greeting, apology, fixed word count or match to a sample answer. Minor grammar slips that preserve meaning do not reduce content.
-Whole-mock content scale: 6 = consistently effective task fulfilment across the task types, accurate reproduction and sufficient connected relevant meaning, allowing isolated weak responses and harmless slips; 5 = generally effective with a substantive but limited recurring gap; 4 = broadly relevant but uneven fulfilment or important supporting gaps; 3 = meaningful relevant responses but substantial recurring inaccuracies, essential omissions or incomplete tasks; 2 = mainly fragmented, limited relevant content; 1 = mainly isolated relevant words; 0 = no meaningful relevant content throughout. Do not lower the whole score for optional polish. Support every substantive limitation using the actual response. A coverage outcome is adequate, partial, irrelevant or unanswered; adequate can still contain harmless minor slips. materialError means an actual important meaning/reproduction error, never optional polish. Return exactly one observation for EVERY supplied question in order. Select a short evidence_span [first,last] from that question's numbered STUDENT words. Only unanswered responses have an empty evidence span. Give a concise summary, at most two strengths and two next steps. The complete set of coverage observations must agree with the whole judgment.`;
+Whole-mock content scale: 6 = consistently effective task fulfilment across the task types, accurate reproduction and sufficient connected relevant meaning, allowing isolated weak responses and harmless slips; 5 = generally effective with a substantive but limited recurring gap; 4 = broadly relevant but uneven fulfilment or important supporting gaps; 3 = meaningful relevant responses but substantial recurring inaccuracies, essential omissions or incomplete tasks; 2 = mainly fragmented, limited relevant content; 1 = mainly isolated relevant words; 0 = no meaningful relevant content throughout. Do not lower the whole score for optional polish. Support every substantive limitation using the actual response. A coverage outcome is adequate, partial, irrelevant or unanswered; adequate can still contain harmless minor slips. materialError means an actual important meaning/reproduction error, never optional polish. Return exactly one observation for EVERY supplied question under its supplied coverageKey. Select evidence_id from that question's literal evidenceOptions; do not count word numbers, create a quotation or use another question's evidence. Only a completely empty student response is unanswered and uses evidence_id=0. Any nonempty response has literal evidence; use irrelevant when it supplies no meaningful relevant content. Give a concise summary, at most two strengths and two next steps. The complete set of coverage observations must agree with the whole judgment. A score of 6 cannot coexist with more than one materialError, irrelevant or unanswered coverage observation.`;
 
 function entries(attempt){
   return attempt.questions.flatMap((q,index)=>q.type==='intro'?[]:[{index,type:q.type,prompt:q.text||'',facts:q.facts||[],visual:q.visual||null,student:attempt.responses[index]?.transcript||''}]);
@@ -32,14 +32,25 @@ function audit(a){
     complete:rows.length===a.questionCount&&TYPES.every(type=>rows.some(r=>r.type===type))&&!missingRecordings.length&&!missingTranscripts.length&&!missingContent.length};
 }
 function request(model,{wholeMockEntries:rows,wholeMockDiagnostic}={}){
-  const observation=object({index:{type:'integer',enum:rows.map(r=>r.index)},outcome:{type:'string',enum:['adequate','partial','irrelevant','unanswered']},
-    materialError:{type:'boolean'},evidence_span:{type:'array',items:{type:'integer'}},reason:text});
-  const schema=object({score:{type:'integer',enum:[0,1,2,3,4,5,6]},summary:text,strengths:{type:'array',items:text},nextSteps:{type:'array',items:text},coverage:{type:'array',items:observation}});
+  const coverage=object(Object.fromEntries(rows.map(r=>['q'+r.index,object({outcome:{type:'string',enum:r.student.trim()?['adequate','partial','irrelevant']:['unanswered']},
+    materialError:{type:'boolean'},evidence_id:{type:'integer',enum:quoteOptions(r.student).map(q=>q.id)},reason:text})])));
+  const schema=object({score:{type:'integer',enum:[0,1,2,3,4,5,6]},summary:text,strengths:{type:'array',items:text},nextSteps:{type:'array',items:text},coverage});
   // Whitelist raw inputs: saved content/provider marks and feedback cannot enter.
-  const data=rows.map(r=>({index:r.index,type:r.type,prompt:r.prompt,facts:r.facts,visual:r.visual,
-    studentWords:Array.from(r.student.matchAll(/\S+/gu),m=>m[0]).map((word,i)=>`${i+1}:${word}`).join(' ')}));
+  const data=rows.map(r=>({index:r.index,coverageKey:'q'+r.index,type:r.type,prompt:r.prompt,facts:r.facts,visual:r.visual,
+    student:r.student,evidenceOptions:quoteOptions(r.student)}));
   return {model,temperature:0,max_tokens:8500,tools:[{name:NAME,strict:true,description:'Record one independent content judgment with evidence for every mock question.',input_schema:schema}],
     tool_choice:{type:'tool',name:NAME},messages:[{role:'user',content:INSTRUCTIONS+'\nDATA='+JSON.stringify(data)+(wholeMockDiagnostic?'\nVALIDATION_DIAGNOSTIC='+wholeMockDiagnostic+' Recheck the complete set and return a consistent, fully evidenced assessment.':'')}]};
+}
+function quoteOptions(student){
+  const words=Array.from(student.matchAll(/\S+/gu),m=>({start:m.index,end:m.index+m[0].length}));
+  if(!words.length)return [{id:0,quote:''}];
+  const result=[];
+  for(let start=0;start<words.length;start+=8){
+    const end=Math.min(start+14,words.length)-1;
+    result.push({id:result.length+1,quote:student.slice(words[start].start,words[end].end).slice(0,500)});
+    if(end===words.length-1)break;
+  }
+  return result;
 }
 function response(value){
   if(value?.stop_reason==='max_tokens')throw bad('COMBINED_TRUNCATED');
@@ -50,18 +61,13 @@ function response(value){
 function normalize(raw,rows){
   const bounded=(v,max)=>typeof v==='string'&&!!v.trim()&&v.length<=max;
   const list=v=>Array.isArray(v)&&v.length<=2&&v.every(s=>bounded(s,600));
-  if(!Number.isInteger(raw?.score)||raw.score<0||raw.score>6||!bounded(raw.summary,1600)||!list(raw.strengths)||!list(raw.nextSteps)||raw.coverage?.length!==rows.length)throw bad('COMBINED_COVERAGE');
-  const coverage=raw.coverage.map((item,i)=>{
-    const row=rows[i],span=item.evidence_span,words=Array.from(row.student.matchAll(/\S+/gu),m=>({start:m.index,end:m.index+m[0].length}));
-    if(item.index!==row.index||!['adequate','partial','irrelevant','unanswered'].includes(item.outcome)||typeof item.materialError!=='boolean'||!bounded(item.reason,900))throw bad('COMBINED_COVERAGE');
-    let evidence='';
-    if(item.outcome==='unanswered'){
-      if(row.student.trim()||!Array.isArray(span)||span.length)throw bad('COMBINED_EVIDENCE');
-    }else{
-      if(!Array.isArray(span)||span.length!==2||!span.every(Number.isInteger)||span[0]<1||span[1]<span[0]||span[1]>words.length)throw bad('COMBINED_EVIDENCE');
-      evidence=row.student.slice(words[span[0]-1].start,words[span[1]-1].end);
-      if(evidence.length>500)throw bad('COMBINED_EVIDENCE');
-    }
+  if(!Number.isInteger(raw?.score)||raw.score<0||raw.score>6||!bounded(raw.summary,1600)||!list(raw.strengths)||!list(raw.nextSteps)||!raw.coverage||Array.isArray(raw.coverage)||Object.keys(raw.coverage).length!==rows.length)throw bad('COMBINED_COVERAGE');
+  const coverage=rows.map(row=>{
+    const item=raw.coverage['q'+row.index];
+    if(!item||!['adequate','partial','irrelevant','unanswered'].includes(item.outcome)||typeof item.materialError!=='boolean'||!bounded(item.reason,900))throw bad('COMBINED_COVERAGE');
+    const selected=quoteOptions(row.student).find(q=>q.id===item.evidence_id);
+    if(!Number.isInteger(item.evidence_id)||!selected||(item.outcome==='unanswered')!==!row.student.trim())throw bad('COMBINED_EVIDENCE');
+    const evidence=selected.quote;
     return {index:row.index,type:row.type,outcome:item.outcome,materialError:item.materialError,evidence,reason:item.reason};
   });
   const relevant=coverage.filter(c=>['adequate','partial'].includes(c.outcome));
@@ -138,4 +144,4 @@ async function recover({username,operation,attemptId,startedBefore,mockStore,pra
   }finally{clearInterval(heartbeat);}
   const result=report(a,operation);logger.info('[speaking-combined-recovery]',JSON.stringify(result));return result;
 }
-module.exports={VERSION,NAME,INSTRUCTIONS,TYPES,entries,audit,request,response,normalize,combine,fingerprint,recover};
+module.exports={VERSION,NAME,INSTRUCTIONS,TYPES,entries,audit,quoteOptions,request,response,normalize,combine,fingerprint,recover};
