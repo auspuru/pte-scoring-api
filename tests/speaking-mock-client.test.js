@@ -9,7 +9,7 @@ async function harness(t,{prepare=true,failUpload=false}={}){
   class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);}async play(){this.played=true;}pause(){this.paused=true;}}
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-ui-')),app=require('express')();app.use(require('express').json());
   const lab=installSpeakingMock(app,{directory,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
-    gradeResponse:async()=>({transcript:'A clear response.',content:{total:6,maximum:6,scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}),
+    gradeResponse:async q=>({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}),
     assessOverall:async()=>({status:'assessed',overallScore:90,summary:'Clear across the mock.',pronunciation:{score:5},fluency:{score:5}})});
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port;
@@ -109,7 +109,7 @@ test('An aborted result fetch keeps saved results visible and automatically reco
   await h.tick(3000);assert.match(h.nodes.get('sm-notice').textContent,/retrying results automatically/);
   assert.doesNotMatch(h.nodes.get('sm-notice').textContent,/Fetch is aborted/);assert.match(h.host.innerHTML,/Individual question feedback/);
   await h.lab.store.update('alice',id,a=>{a.grading.status='complete';a.overall={overallScore:82,summary:'Saved complete assessment.'};return a;});
-  await h.tick(3000);assert.match(h.nodes.get('sm-results-summary').innerHTML,/82/);assert.equal(h.nodes.get('sm-notice').textContent,'');
+  await h.tick(3000);assert.match(h.nodes.get('sm-results-summary').innerHTML,/Overall pending/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>82</);assert.equal(h.nodes.get('sm-notice').textContent,'');
   const reads=h.requests.length;await h.tick(30000);assert.equal(h.requests.length,reads,'Completed results stop polling.');
 });
 
@@ -140,10 +140,10 @@ test('A late polling failure cannot alter the history screen after leaving resul
 test('Instructor overrides are labeled beside the RS scores in the results table',async t=>{
  const h=await harness(t),id=require('node:crypto').randomUUID(),q=require('../content/speaking-mocks').papers[0].questions.find(q=>q.type==='rs');
  const trait={score:5,maximum:5,source:'instructor_override',recordingHash:'saved-rs',reason:'Assigned manually by the instructor.'};
- await h.lab.store.update('alice',id,()=>({id,title:'Saved mock',status:'submitted',startedAt:1,deadline:2,index:1,questionCount:1,questions:[q],responses:[{recording:{hash:'saved-rs'},manualDeliveryOverrides:{gpt:{pronunciation:trait,fluency:trait},azure:{pronunciation:trait,fluency:trait}}}],grading:{status:'complete'},overall:{overallScore:75,pronunciation:{score:4},fluency:{score:4}}}));
+ await h.lab.store.update('alice',id,()=>({id,title:'Saved mock',status:'submitted',startedAt:1,deadline:2,index:1,questionCount:1,questions:[q],responses:[{recording:{hash:'saved-rs'},content:{total:3,maximum:3,scoringMode:'exact'},manualDeliveryOverrides:{gpt:{pronunciation:trait,fluency:trait},azure:{pronunciation:trait,fluency:trait}}}],grading:{status:'complete'},overall:{overallScore:75,pronunciation:{score:4},fluency:{score:4}}}));
  await h.controller.open({history:true});await h.click({sm:'resume',id});
  assert.equal((h.nodes.get('sm-result-rows').innerHTML.match(/5\/5 \(manual override\)/g)||[]).length,4);
- assert.match(h.nodes.get('sm-results-summary').innerHTML,/75/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/manual override/);
+ assert.match(h.nodes.get('sm-results-summary').innerHTML,/>90</);assert.match(h.nodes.get('sm-results-summary').innerHTML,/Includes instructor-assigned delivery marks for 1 answer/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>75</);
 });
 
 test('Whole-mock Azure acoustic scores appear beside GPT with their native scale and separate attribution',async t=>{
@@ -151,25 +151,25 @@ test('Whole-mock Azure acoustic scores appear beside GPT with their native scale
  await h.lab.store.update('alice',id,()=>({id,title:'Saved mock',status:'submitted',startedAt:1,deadline:2,index:1,questionCount:1,questions:[q],responses:[{}],grading:{status:'complete'},overall:{overallScore:85,pronunciation:{score:5},fluency:{score:5}},overallAzure:{status:'assessed',summary:'Fresh audio assessment.',pronunciation:{raw:96,score:5},fluency:{raw:92,score:4}}}));
  await h.controller.open({history:true});await h.click({sm:'resume',id});
  const summary=h.nodes.get('sm-results-summary').innerHTML;
- for(const text of ['GPT Audio','Azure Speech','85','96/100','92/100','not a PTE score out of 90'])assert(summary.includes(text));
+ for(const text of ['OpenAI-based overall','Saved Azure whole-mock audio','96/100','92/100','not a PTE score out of 90'])assert(summary.includes(text));assert.doesNotMatch(summary,/>85</);
 });
 
 async function sampleReport(h,{paperIndex=0,processing=false}={}){
  const id=require('node:crypto').randomUUID(),paper=require('../content/speaking-mocks').papers[paperIndex],questions=structuredClone(paper.questions);
- const responses=questions.map((q,i)=>({...(q.type==='di'?{recording:{mime:'audio/webm',hash:'saved-'+i,data:Buffer.alloc(200,2).toString('base64')}}:{}),transcript:q.type==='di'?'My description of '+q.title:'',content:{scoringMode:'ai',total:5,maximum:6,overview:'Saved content feedback.',strengths:['The main idea is clear.'],improvements:['Include one useful comparison.']},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}));
- await h.lab.store.update('alice',id,()=>({id,title:paper.title,paperId:paper.id,status:'submitted',index:28,questions,responses,questionCount:27,completedCount:5,startedAt:1,deadline:2,grading:{status:processing?'processing':'complete'},...(processing?{lease:{owner:'other-worker',expiresAt:h.env.Date.now()+1000000}}:{}),integrity:{events:[]},overall:{overallScore:85,pronunciation:{score:5},fluency:{score:5}}}));
+ const responses=questions.map((q,i)=>({recording:{mime:'audio/webm',hash:'saved-'+i,data:Buffer.alloc(200,2).toString('base64')},transcript:q.type==='di'?'My description of '+q.title:'A saved response.',content:{scoringMode:'ai',total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),overview:'Saved content feedback.',strengths:['The main idea is clear.'],improvements:['Include one useful comparison.']},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}));
+ await h.lab.store.update('alice',id,()=>({id,title:paper.title,paperId:paper.id,status:'submitted',index:28,questions,responses,questionCount:27,completedCount:27,startedAt:1,deadline:2,grading:{status:processing?'processing':'complete'},...(processing?{lease:{owner:'other-worker',expiresAt:h.env.Date.now()+1000000}}:{}),integrity:{events:[]},overall:{overallScore:85,pronunciation:{score:5},fluency:{score:5}}}));
  await h.controller.open({history:true});await h.click({sm:'resume',id});return {id,questions};
 }
 const escaped=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-test('A combined report shows all three whole-mock traits and keeps polling until the named recovery finishes',async t=>{
- const h=await harness(t),{id}=await sampleReport(h);
- await h.lab.store.update('alice',id,a=>{a.combinedRecovery={status:'processing'};return a;});
- await h.click({sm:'resume',id});assert.match(h.nodes.get('sm-assessment-status').textContent,/checking every question/);
- await h.lab.store.update('alice',id,a=>{a.combinedRecovery.status='complete';a.combinedOverall={status:'assessed',overallScore:75,content:{score:5,nextSteps:['Preserve the main positions.']},pronunciation:{score:4},fluency:{score:4},summary:'Connected relevant content.',questionCount:27,contentReviewedCount:27};return a;});
+test('Task-weighted reports update with question marks and never fall back to a legacy whole score',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h,{processing:true});
+ await h.lab.store.update('alice',id,a=>{a.responses[1].gpt.fluency.score=null;return a;});
+ await h.click({sm:'resume',id});assert.match(h.nodes.get('sm-results-summary').innerHTML,/Overall pending/);
+ await h.lab.store.update('alice',id,a=>{a.grading.status='complete';a.responses[1].gpt.fluency.score=5;a.combinedOverall={status:'assessed',overallScore:75};return a;});
  await h.tick(3000);const html=h.nodes.get('sm-results-summary').innerHTML;
- for(const text of ['Overall Speaking','75','Content 5/6','27 of 27 questions reviewed','GPT Audio','37.5%','31.25%'])assert(html.includes(text));
- assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
+ for(const text of ['OpenAI-based overall','Azure-based overall','90','Content + pronunciation + oral fluency','27 of 27 questions accounted for','Task weights and marks','31%','101%'])assert(html.includes(text));
+ assert.doesNotMatch(html,/37\.5%|31\.25%|>75</);assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
 });
 
 test('Provider comparison shows two explicitly labeled totals using the same content and each provider audio traits',async t=>{
@@ -183,7 +183,7 @@ test('Provider comparison shows two explicitly labeled totals using the same con
   a.providerComparisonRecovery={status:'complete'};return a;
  });
  await h.click({sm:'resume',id});const html=h.nodes.get('sm-results-summary').innerHTML;
- for(const text of ['OpenAI-based overall','Azure-based overall','Shared content 4/6','80','70','same confirmed content assessment'])assert(html.includes(text));
+ for(const text of ['OpenAI-based overall','Azure-based overall','90','85','same confirmed question content marks','Saved overall content feedback','Broadly relevant responses.'])assert(html.includes(text));assert.doesNotMatch(html,/Shared content 4\/6|content ceiling/);
  assert.equal((html.match(/class="sm-overall sm-combined-summary sm-provider-combined"/g)||[]).length,2);
 });
 

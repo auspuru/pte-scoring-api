@@ -1,5 +1,9 @@
 # Speaking mocks
 
+Active overall model (27 October 2026): [task-weighted Speaking](speaking-task-weighted-overall.md).
+The previous blind whole-audio and 6:5:5 blended totals are legacy diagnostics,
+not the active report score.
+
 Each of the three papers contains an unscored personal introduction and 27 speaking-scored items:
 6 Read Aloud, 10 Repeat Sentence, 5 Describe Image, 2 Retell Lecture,
 2 Summarise Group Discussion and 2 Respond to a Situation. It is a speaking-only
@@ -41,29 +45,25 @@ After interruption the remaining audio can resume at its current position, witho
 replaying the elapsed portion. Captured pending audio is kept in IndexedDB when
 available and can be uploaded again without recording again.
 
-## Two independent levels of scoring
+## Question assessment and task-weighted overall
 
 Individual content uses the existing speaking content engine and policies. GPT
 Audio and Azure assess pronunciation and fluency separately for all six types,
 including RA, RS and DI. Successful stages are persisted and reused. The introduction
 is never scored or included in the overall audio review.
 
-The overall /90 is a separate, blind GPT Audio assessment of every saved scored
-response. Its boundary accepts recording objects only. The model receives compressed
-audio clips in order and their measured durations, with no question text, type,
-reference, transcript, content marks, delivery marks, earlier feedback, student
-identity or integrity metadata. It judges the complete set directly; it never sums
-or averages question marks or maps their totals to /90. A lower whole-test trait
-requires evidence across distinct recordings. An isolated poor response does not
-establish a whole-test weakness. The same v4 minor-slip and smooth-recovery rules
-apply. Too little evidence withholds an overall estimate. This is a holistic
-speaking-delivery practice estimate, not a calibrated Pearson score prediction;
-content accuracy is reported per question. Azure remains an independent acoustic
-comparison per question: no fabricated Azure /90 is made by averaging its marks.
+The active overall combines each question's native content, pronunciation and
+fluency points within its task type, then applies the published relative Speaking
+contributions: RA 9, RS 16, DI 31, RL 13, SGD 19 and RTS 13. The rounded values total
+101, so their ratios are normalised by 101. OpenAI and Azure totals are separate.
+Content-zero answers and unanswered questions keep zero credit; missing or invalid
+assessments keep that provider's overall pending. Scores are provisional practice
+estimates; Pearson's item difficulty and scaling are proprietary. See the linked
+model document for exact practice assumptions, coverage and override handling.
 
 Background assessment is bounded to two mocks, with two item workers per mock.
-The independent overall review can finish before item feedback. Database leases
-and per-stage saves permit interrupted work to resume without repeating confirmed
+The overall recalculates from completed question marks without another model
+call. Database leases and per-stage saves permit interrupted work to resume without repeating confirmed
 assessments. Completed failures require an explicit retry; reads do not continually
 consume paid calls. Recording and account data stay private, using the existing
 session or authorized admin impersonation. The new `speaking_mock_attempts` store
@@ -85,7 +85,10 @@ only status and bounded error codes, never transcripts or credentials. A pinned
 content-repair operation can fill missing DI marks once without repeating any
 completed content, audio-provider or whole-test assessment.
 
-An operator can also pin a one-time overall-only recovery to a saved submitted
+### Legacy whole-audio diagnostic operations
+
+The following operations retain historical whole-mock feedback only; they never
+supply the active task-weighted score. An operator can pin a one-time overall-only recovery to a saved submitted
 mock. It reuses the normal job/lease guards, sends only original recordings to
 the blind whole-test scorer, and leaves all individual content and provider
 results intact. Confirmed overall results are reused. Recovery reports the saved
@@ -103,8 +106,9 @@ An instructor-authorized, pinned manual operation can award 5/5 only to missing
 Repeat Sentence pronunciation/fluency fields in one saved mock. These values live
 in a separate, recording-bound override map with an operation ID, timestamp,
 instructor attribution and the prior trait state. Original GPT/Azure results are
-retained, existing marks are preserved, and non-RS questions, content and the
-independent overall remain unchanged. Results and review label each overridden
+retained, existing marks are preserved, and non-RS questions, content and legacy
+whole-audio feedback remain unchanged. The active task-weighted overall honours
+recording-matched overrides and discloses their inclusion. Results and review label each overridden
 trait as a manual override. Reattempts do not inherit the overrides.
 
 ## Sources and validation
@@ -241,8 +245,8 @@ The approved report has Overview, Answers and Next steps sections. Answer review
 uses compact task/question selectors, Previous/Next, original question audio,
 the learner recording, and Feedback/Transcript/Sample tabs. Image zoom uses the
 saved question asset. Provider selection changes presentation only: GPT /5,
-Azure native /100, existing Azure practice /5, and combined whole-mock estimates
-retain their separate labels and saved values. Compare both exposes the full
+Azure native /100, existing Azure practice /5, retain their separate labels and saved values; the active combined total uses
+the task-weighted calculation. Compare both exposes the full
 provider comparison. Switching providers or feedback tabs does not replace the
 recording player, start an assessment, or change marks. Next steps reuse the
 selected answer's existing feedback rather than inventing new deductions.

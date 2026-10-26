@@ -112,6 +112,8 @@ test('result reads preserve recording metadata and leave persisted audio untouch
   await store.update('alice',id,()=>({id,status:'submitted',responses:[null,{recording:{data:'private-audio',mime:'audio/mp4',hash:'saved-hash'},content:{total:5}},{}]}));
   const result=await store.get('alice',id,{omitMockAudio:true});
   assert.equal(result.responses[1].recording.data,undefined);assert.equal(result.responses[1].recording.hash,'saved-hash');assert.equal(result.responses[1].content.total,5);
+  const history=await store.list('alice',{omitMockAudio:true});
+  assert.deepEqual(history[0],result);assert.equal(history[0].responses[1].recording.data,undefined);
   assert.equal((await store.get('alice',id)).responses[1].recording.data,'private-audio');assert.equal(await store.get('bob',id,{omitMockAudio:true}),null);
 });
 
@@ -121,4 +123,7 @@ test('Postgres result reads project audio before transfer and enforce account ow
   assert.equal(await store.get('alice',id,{omitMockAudio:true}),null);
   const query=queries.at(-1);assert.match(query.sql,/jsonb_array_elements/);assert.match(query.sql,/\(response->'recording'\) - 'data'/);
   assert.match(query.sql,/ORDER BY position/);assert.match(query.sql,/WHERE id=\$1 AND username=\$2/);assert.deepEqual(query.params,[id,'alice']);
+  assert.deepEqual(await store.list('alice',{omitMockAudio:true}),[]);
+  const history=queries.at(-1);assert.match(history.sql,/\(response->'recording'\) - 'data'/);
+  assert.match(history.sql,/WHERE username=\$1 ORDER BY updated_at DESC LIMIT 50/);assert.deepEqual(history.params,['alice']);
 });

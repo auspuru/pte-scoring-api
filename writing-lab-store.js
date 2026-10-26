@@ -19,6 +19,12 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     return ready;
   }
   const folder = uid => path.join(directory, createHash('sha256').update(uid).digest('hex'));
+  const mockResultsProjection = `jsonb_set(data, '{responses}', COALESCE((
+        SELECT jsonb_agg(CASE WHEN response ? 'recording'
+          THEN jsonb_set(response, '{recording}', (response->'recording') - 'data')
+          ELSE response END ORDER BY position)
+        FROM jsonb_array_elements(data->'responses') WITH ORDINALITY AS items(response, position)
+      ), '[]'::jsonb))`;
   async function get(uid, id, { omitMockAudio = false } = {}) {
     await initialise();
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw Object.assign(Error('Invalid attempt.'), { status: 400 });
@@ -26,12 +32,7 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     if (pool) {
       // Result polling needs marks and recording metadata, not every base64 clip.
       // Project in PostgreSQL so the full audio never crosses the DB connection.
-      const data = projected ? `jsonb_set(data, '{responses}', COALESCE((
-        SELECT jsonb_agg(CASE WHEN response ? 'recording'
-          THEN jsonb_set(response, '{recording}', (response->'recording') - 'data')
-          ELSE response END ORDER BY position)
-        FROM jsonb_array_elements(data->'responses') WITH ORDINALITY AS items(response, position)
-      ), '[]'::jsonb))` : 'data';
+      const data = projected ? mockResultsProjection : 'data';
       return (await pool.query(`SELECT ${data} AS data FROM ${table} WHERE id=$1 AND username=$2`, [id, uid])).rows[0]?.data || null;
     }
     await locks.get(uid + ':' + id)?.catch(() => {});
@@ -140,9 +141,10 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     locks.set(key, task);
     try { return await task; } finally { if (locks.get(key) === task) locks.delete(key); }
   }
-  async function list(uid) {
+  async function list(uid, { omitMockAudio = false } = {}) {
     await initialise();
-    if (pool) return (await pool.query(`SELECT ${table === 'speaking_lab_attempts' ? "data - 'recording'" : table==='speaking_mock_attempts'?"data - 'responses' - 'questions'":'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table.startsWith('speaking_') ? 50 : 250}`, [uid])).rows.map(r => r.data);
+    const projected=omitMockAudio&&table==='speaking_mock_attempts';
+    if (pool) return (await pool.query(`SELECT ${projected?mockResultsProjection:table === 'speaking_lab_attempts' ? "data - 'recording'" : table==='speaking_mock_attempts'?"data - 'responses' - 'questions'":'data'} AS data FROM ${table} WHERE username=$1 ORDER BY updated_at DESC LIMIT ${table.startsWith('speaking_') ? 50 : 250}`, [uid])).rows.map(r => r.data);
     const dir = folder(uid), limit = table.startsWith('speaking_') ? 50 : 250;
     let files;
     try { files = await fs.readdir(dir); } catch(e) { if(e.code === 'ENOENT') return []; throw e; }
@@ -162,7 +164,9 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
       try { return JSON.parse(await fs.readFile(path.join(dir,file),'utf8')); }
       catch (e) { if (e.code === 'ENOENT') return null; throw e; }
     }));
-    return entries.filter(Boolean);
+    const values=entries.filter(Boolean);
+    if(projected)for(const value of values)for(const response of value.responses||[])if(response?.recording)delete response.recording.data;
+    return values;
   }
   return { update, get, list, initialise };
 }

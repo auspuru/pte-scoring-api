@@ -5,6 +5,7 @@ const academy=require('./describe-image-academy');
 const manualDelivery=require('./speaking-manual-delivery');
 const azureWhole=require('./speaking-mock-azure');
 const combined=require('./speaking-mock-combined');
+const speakingReport=require('./speaking-mock-report');
 const {createStore}=require('./writing-lab-store'),{transcribeRecording}=require('./speaking-lab');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 function timing(a,now=Date.now()){
@@ -21,8 +22,11 @@ function reconcile(a,now=Date.now()){
 }
 function present(a,now=Date.now()){
   const submitted=a.status==='submitted';
+  const savedContent=a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
     reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
+    speakingReport:submitted?speakingReport.summarize(a):null,
+    overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
     combinedComparisons:a.providerComparisonRecovery?combined.providerComparisons(a):null,providerComparisonStatus:a.providerComparisonRecovery?.status||null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
@@ -67,13 +71,25 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         catch{await patch({transcriptionStatus:'unavailable'});return;}
       }
       const current=a.responses[i],tasks=[];
-      if(q.type==='di'?academy.needsReview(current.content):!current.content||current.content.scoringMode==='local')tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
-      if(gptAvailable&&current.gpt?.status!=='assessed'&&!(q.type==='rs'&&manualDelivery.complete(current,'gpt')))tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:snapshot(result,r.recording)}),()=>patch({gpt:unavailable()})));
-      if(azureAvailable&&current.azure?.status!=='assessed'&&!(q.type==='rs'&&manualDelivery.complete(current,'azure')))tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?snapshot(result,r.recording):unavailable()}),()=>patch({azure:unavailable()})));
+      const contentGated=speakingReport.validContent(q,current.content)&&current.content.total===0;
+      const retainDelivery=(provider,result)=>{
+        const value=snapshot(result,r.recording);
+        const prior=speakingReport.deliveryTraits({...current,manualDeliveryOverrides:undefined},provider);
+        const next=speakingReport.deliveryTraits({recording:r.recording,[provider]:value},provider);
+        // A partial retry cannot erase an independently verified companion trait.
+        for(const name of ['pronunciation','fluency'])if(next[name]===null&&prior[name]!==null)value[name]=current[provider][name];
+        return value;
+      };
+      const providerFailure=provider=>current[provider]?.status==='assessed'?{...current[provider],retryStatus:'unavailable'}:unavailable();
+      if(!speakingReport.validContent(q,current.content)||(q.type==='di'&&academy.needsReview(current.content)))tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
+      if(!contentGated&&gptAvailable&&speakingReport.deliveryTraits(current,'gpt').missing.length)tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:retainDelivery('gpt',result)}),()=>patch({gpt:providerFailure('gpt')})));
+      if(!contentGated&&azureAvailable&&speakingReport.deliveryTraits(current,'azure').missing.length)tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?retainDelivery('azure',result):providerFailure('azure')}),()=>patch({azure:providerFailure('azure')})));
       await Promise.allSettled(tasks);
     }
     const overallJob=(async()=>{
-      if(azureOverallOnly)return;
+      // Legacy whole-audio reviews are explicit diagnostic repairs only.
+      // New mock totals come from the task-weighted report, without an API call.
+      if(!overallOnly||azureOverallOnly)return;
       if(!reassessOverall&&a.overall&&a.overall.status!=='unavailable'&&(!overallOnly||a.overall.status==='assessed'&&Number.isInteger(a.overall.overallScore)&&a.overall.overallScore>=10&&a.overall.overallScore<=90))return;
       if(!gptAvailable){await save(current=>{
         if(reassessOverall)current.overallRecovery={...current.overallRecovery,status:'failed',failure:{code:'WHOLE_NOT_CONFIGURED'}};
@@ -101,7 +117,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       });}
     })();
     const azureOverallJob=(async()=>{
-      if(overallOnly&&!azureOverallOnly||!azureOverallAvailable||a.overallAzure?.status==='assessed')return;
+      if(!azureOverallOnly||!azureOverallAvailable||a.overallAzure?.status==='assessed')return;
       const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
       try{
         const items=a.questions.flatMap((q,i)=>q.type==='intro'?[]:[{index:i,response:a.responses[i]}]);
@@ -183,13 +199,13 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const result=report();await store.update(username,attemptId,current=>{if(current.overallAzureRecovery?.operation===operation)current.overallAzureRecovery={...current.overallAzureRecovery,...result,finishedAt:now()};return current;});
     console.info('[speaking-azure-overall-recovery]',JSON.stringify(result));return result;
   }
-  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,azureOverallAvailable,describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.VERSION,papers:bank.catalogue(),gptAvailable,azureAvailable,azureOverallAvailable,speakingScoring:{version:speakingReport.VERSION,weights:speakingReport.WEIGHTS,calibration:'uncalibrated'},describeImageScoring:{source:'Describe Image Academy',version:academy.VERSION,sourceCommit:academy.SOURCE_COMMIT}}));
   router.use(async(req,res,next)=>{
     try{const uid=verifyToken(req.headers['x-session-token']||''),account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.mockUser=uid;res.set('Cache-Control','no-store');next();}
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser)).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,speakingReport:a.status==='submitted'?speakingReport.summarize(a):null,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{

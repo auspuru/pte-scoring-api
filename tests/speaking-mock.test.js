@@ -112,7 +112,7 @@ test('Missing recording evidence withholds an overall score without paid calls',
 test('Full speaking mock persists recordings, isolates accounts, locks responses and grades independently',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-')),app=express();app.use(express.json());let now=1000000,itemCalls=0,overallCalls=0;
   const {store,waitForJobs}=installSpeakingMock(app,{directory,verifyToken:token=>['alice','bob'].includes(token)?token:null,getAccount:async()=>({}),now:()=>now,gptAvailable:true,azureAvailable:true,
-    gradeResponse:async(q,recording)=>{itemCalls++;return {transcript:'Saved student speech.',content:{scoringMode:'ai',total:itemCalls===1?0:6,maximum:6},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:4}}};},
+    gradeResponse:async(q,recording)=>{itemCalls++;return {transcript:'Saved student speech.',content:{scoringMode:'ai',total:itemCalls===1?0:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q)},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:4}}};},
     assessOverall:async(recordings,options)=>{overallCalls++;assert.equal(recordings.length,27);assert.equal(options.expectedCount,27);assert(recordings.every(r=>Object.keys(r).sort().join(',')==='data,hash,mime'));return {status:'assessed',overallScore:90};}});
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   t.after(async()=>{await waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
@@ -132,10 +132,10 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
     a=(await request('/attempts/'+id+'/next',{index,overallScore:90})).body;
   }
   assert.equal(a.status,'submitted');await waitForJobs();
-  a=(await request('/attempts/'+id)).body;assert.equal(a.overall.overallScore,90);assert.equal(a.grading.status,'complete');assert.equal(itemCalls,27);assert.equal(overallCalls,1);
+  a=(await request('/attempts/'+id)).body;assert.equal(a.overall,null);assert.equal(a.speakingReport.openai.assessedCount,27);assert(a.speakingReport.openai.overallScore<90);assert.equal(a.grading.status,'complete');assert.equal(itemCalls,27);assert.equal(overallCalls,0);
   assert.equal(a.responses.filter(r=>r.question.type!=='intro').length,27);assert.equal(a.responses[0].content,null);assert.equal(a.responses[1].content.total,0);
   assert.equal(a.responses[1].providers.azure.pronunciation.score,4);assert.equal(a.responses[1].providers.gpt.pronunciation.score,5);
-  await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,1,'A successful overall assessment is never called again.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
+  await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,0,'Task-weighted totals never request a separate whole-audio judgment.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
   assert.equal((await request('/attempts/'+id+'/recordings/2',Buffer.alloc(200,99),'alice',true)).status,409);
   const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';return value;});assert(saved.responses.every(r=>r.recording.hash));
   const before=JSON.stringify(saved),newId=crypto.randomUUID();now+=10000;
@@ -148,7 +148,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,saved.questions);assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
-  assert.equal(itemCalls,27);assert.equal(overallCalls,1);
+  assert.equal(itemCalls,27);assert.equal(overallCalls,0);
   for(const paper of bank.papers.slice(1)){const created=(await request('/attempts',{id:crypto.randomUUID(),paperId:paper.id})).body;assert.equal(created.paperId,paper.id);assert.equal(created.questionCount,27);}
 
 });
@@ -174,9 +174,9 @@ test('Default assessment persists successful stages and retries only a failed au
   const url='http://127.0.0.1:'+server.address().port+'/api/speaking-mocks/attempts/'+id;
   await fetch(url);await lab.waitForJobs();let saved=await lab.store.update('alice',id,a=>a);
   assert.equal(saved.grading.status,'complete');assert.equal(saved.responses[1].gpt.status,'unavailable');assert.equal(saved.responses[1].azure.status,'assessed');assert(saved.responses[1].content);
-  assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,2,2,1]);
+  assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,2,2,0]);
   await fetch(url+'/retry',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});await lab.waitForJobs();saved=await lab.store.update('alice',id,a=>a);
-  assert.equal(saved.responses[1].gpt.status,'assessed');assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,3,2,1]);
+  assert.equal(saved.responses[1].gpt.status,'assessed');assert.deepEqual([transcripts,gptCalls,azureCalls,overallCalls],[2,3,2,0]);
 });
 
 async function overallRecoveryFixture(t,{existing=null,fail=false}={}){
