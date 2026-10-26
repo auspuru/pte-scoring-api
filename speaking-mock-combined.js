@@ -4,7 +4,7 @@
 const crypto=require('node:crypto');
 const scoring=require('./speaking-scoring');
 const {confirmed,recoverLatest}=require('./speaking-content-recovery');
-const VERSION='whole-speaking-combined-2026-10-26.1';
+const VERSION='whole-speaking-combined-2026-10-26.2';
 const NAME='submit_whole_mock_content';
 const TYPES=['ra','rs','di','rl','sgd','rts'];
 const bad=code=>Object.assign(Error('The complete mock assessment could not be verified.'),{code});
@@ -22,11 +22,13 @@ function entries(attempt){
 }
 function audit(a){
   const rows=a.questions.flatMap((q,index)=>q.type==='intro'?[]:[{index,type:q.type,r:a.responses[index]}]);
-  const missingRecordings=rows.filter(({r})=>!r?.recording).map(({index})=>index);
-  const missingTranscripts=rows.filter(({r})=>!r?.transcript?.trim()).map(({index})=>index);
+  const isUnanswered=r=>!r?.recording&&r?.skipped===true&&!r?.transcript?.trim();
+  const unanswered=rows.filter(({r})=>isUnanswered(r)).map(({index})=>index);
+  const missingRecordings=rows.filter(({r})=>!r?.recording&&!isUnanswered(r)).map(({index})=>index);
+  const missingTranscripts=rows.filter(({r})=>!r?.transcript?.trim()&&!isUnanswered(r)).map(({index})=>index);
   const missingContent=rows.filter(({r})=>!confirmed(r?.content)||!Number.isFinite(r.content.maximum)||r.content.maximum<=0||r.content.total<0||r.content.total>r.content.maximum).map(({index})=>index);
-  return {expected:a.questionCount,questions:rows.length,recordings:rows.length-missingRecordings.length,confirmedContent:rows.length-missingContent.length,
-    taskCounts:Object.fromEntries(TYPES.map(type=>[type,rows.filter(r=>r.type===type).length])),missingRecordings,missingTranscripts,missingContent,
+  return {expected:a.questionCount,questions:rows.length,recordings:rows.filter(({r})=>r?.recording).length,confirmedContent:rows.length-missingContent.length,
+    taskCounts:Object.fromEntries(TYPES.map(type=>[type,rows.filter(r=>r.type===type).length])),unanswered,missingRecordings,missingTranscripts,missingContent,
     complete:rows.length===a.questionCount&&TYPES.every(type=>rows.some(r=>r.type===type))&&!missingRecordings.length&&!missingTranscripts.length&&!missingContent.length};
 }
 function request(model,{wholeMockEntries:rows,wholeMockDiagnostic}={}){
@@ -104,8 +106,8 @@ async function recover({username,operation,attemptId,startedBefore,mockStore,pra
   let heartbeat;
   try{
     const initial=audit(a);
-    if(initial.questions!==initial.expected||initial.missingRecordings.length||TYPES.some(type=>!initial.taskCounts[type]))throw bad('COMBINED_RECORDING_COVERAGE');
-    const validDelivery=a.overall?.status==='assessed'&&a.overall.recordingCount===a.questionCount&&[a.overall.pronunciation?.score,a.overall.fluency?.score].every(Number.isInteger);
+    if(initial.questions!==initial.expected||TYPES.some(type=>!initial.taskCounts[type]))throw bad('COMBINED_RECORDING_COVERAGE');
+    const validDelivery=a.overall?.status==='assessed'&&a.overall.recordingCount===initial.recordings&&initial.recordings>=Math.ceil(initial.expected*.8)&&[a.overall.pronunciation?.score,a.overall.fluency?.score].every(Number.isInteger);
     if(!validDelivery){await ensureDelivery({username,attemptId:a.id,operation:operation+':audio',reassess:a.overall?.status==='assessed'});a=await mockStore.get(username,a.id);}
     let locked=false;
     a=await mockStore.update(username,a.id,current=>{locked=false;if(current.combinedRecovery?.claim!==claim||current.lease?.expiresAt>now())return current;
@@ -115,7 +117,7 @@ async function recover({username,operation,attemptId,startedBefore,mockStore,pra
     await recoverLatest({username,attemptId:a.id,kind:'mock',operation:operation+':content',mockStore,practiceStore,callModel:(prompt,context)=>callModel(prompt,{...context,recoveryReview:true}),transcribe,logger,now});
     a=await mockStore.get(username,a.id);
     if(!audit(a).complete)throw bad('COMBINED_CONTENT_COVERAGE');
-    if(a.overall?.recordingCount!==a.questionCount)throw bad('COMBINED_DELIVERY_COVERAGE');
+    if(a.overall?.recordingCount!==audit(a).recordings)throw bad('COMBINED_DELIVERY_COVERAGE');
     const source=fingerprint(a),rows=entries(a);let content,diagnostic;
     for(let n=0;n<2;n++){
       // Provider failures do not trigger automatic paid retries. One validation

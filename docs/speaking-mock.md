@@ -183,8 +183,12 @@ It names an exact attempt or selects the latest submitted mock before a fixed
 a newer attempt or buying repeated reviews. No automatic rollout to other users
 or new mocks occurs.
 
-Before publication every scored question must have its original recording, a
-nonempty transcript and confirmed content. The unscored introduction is excluded.
+Before publication every scored question must be accounted for: a recorded answer
+needs its original recording, a nonempty transcript and confirmed content. An
+explicitly saved skipped answer with no recording/transcript receives zero content
+and is passed to the whole review as unanswered. An unexplained missing recording
+still blocks publication. No missing audio is fabricated. The unscored introduction
+is excluded.
 Missing content is recovered with Claude Sonnet 4.6 using the existing task policy
 and evidence validators. All questions are counted; transcription/provider errors
 on one question do not prevent attempts to recover subsequent questions. Existing
@@ -197,8 +201,10 @@ holistic content judgment /6 and an indexed, literal-evidence observation for ev
 question. RA/RS retain reproduction requirements; DI uses the Academy meaning-first
 policy; summaries and situations retain the institute's harmless-slip tolerance.
 The existing blind whole-audio pronunciation and fluency /5 are reused only when
-their recording coverage equals the entire mock. Otherwise a pinned audio recovery
-uses every original recording. A fingerprint and lease prevent stale publication.
+their recording coverage equals all saved recordings and the existing evidence
+minimum is met. Otherwise a pinned audio recovery uses every original recording.
+Unanswered questions remain visible to content review and cannot disappear from
+the combined assessment. A fingerprint and lease prevent stale publication.
 
 The combined practice estimate is `round(10 + 80 × (C + P + F) / 16)`, using three
 whole-mock judgments, never averaged question marks. Content levels 0, 1, 2, 3 and

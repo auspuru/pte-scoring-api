@@ -11,7 +11,7 @@ function attempt(){
     overall:{status:'assessed',overallScore:82,recordingCount:6,pronunciation:{score:4},fluency:{score:4}}};
 }
 function judgment(rows,score=5){return {score,summary:'Generally effective task fulfilment across all six task types.',strengths:['Relevant connected responses.'],nextSteps:['Retain important supporting details.'],
-  coverage:rows.map(r=>({index:r.index,outcome:'adequate',materialError:false,evidence_span:[1,5],reason:'The relevant task content is expressed.'}))};}
+  coverage:rows.map(r=>({index:r.index,outcome:r.student.trim()?'adequate':'unanswered',materialError:false,evidence_span:r.student.trim()?[1,5]:[],reason:r.student.trim()?'The relevant task content is expressed.':'No response was recorded.'}))};}
 async function setup(t){const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-combined-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
   const mockStore=createStore(null,path.join(directory,'mock'),{table:'speaking_mock_attempts'}),practiceStore=createStore(null,path.join(directory,'practice'),{table:'speaking_lab_attempts'});
   return {username:'mahdis',operation:'pilot-test',startedBefore:100,mockStore,practiceStore,logger:quiet};}
@@ -62,6 +62,17 @@ test('Missing recordings or task types withhold the pilot instead of silently sk
     const report=await combined.recover({...s,callModel:async()=>{calls++;throw Error('Should not run');}});
     assert.equal(report.status,'needs-review');assert.equal(report.overallScore,null);assert.equal(calls,0);
   }
+});
+test('A complete 27-question assessment includes two explicitly skipped RS answers as zero content, with all 25 original recordings retained',async t=>{
+  const s=await setup(t),a=attempt();
+  while(a.questions.length<27){a.questions.push({...a.questions[1],id:'extra-'+a.questions.length});a.responses.push(structuredClone(a.responses[1]));}
+  a.questionCount=27;for(const index of [11,16])a.responses[index]={skipped:true};a.overall.recordingCount=25;
+  await s.mockStore.update('mahdis',a.id,()=>a);let calls=0;
+  const report=await combined.recover({...s,callModel:async(prompt,context)=>{calls++;assert.equal(context.wholeMockEntries.length,27);return judgment(context.wholeMockEntries);}});
+  assert.equal(report.status,'complete');assert.equal(report.coverage.confirmedContent,27);assert.equal(report.coverage.recordings,25);assert.deepEqual(report.coverage.unanswered,[11,16]);assert.equal(calls,1);
+  const saved=await s.mockStore.get('mahdis',a.id);for(const index of [11,16]){assert.equal(saved.responses[index].content.total,0);assert.equal(saved.responses[index].content.maximum,3);assert.equal(saved.responses[index].recording,undefined);}
+  assert.equal(saved.combinedOverall.contentReviewedCount,27);assert.equal(saved.combinedOverall.recordingCount,25);
+  assert.equal(saved.combinedOverall.content.coverage.filter(c=>c.outcome==='unanswered').length,2);
 });
 test('Missing content is genuinely recovered with the stronger reviewer before the independent whole review',async t=>{
   const s=await setup(t),a=attempt();a.responses[5].content={total:null,scoringMode:'local'};await s.mockStore.update('mahdis',a.id,()=>a);

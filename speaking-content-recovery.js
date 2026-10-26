@@ -22,7 +22,20 @@ async function recoverLatest(options){
   const entries=chosen.kind===0?[{index:null,q:bank.questions.find(q=>q.id===saved.questionId),r:saved,result:saved.result}]:saved.questions.flatMap((q,index)=>q.type!=='intro'?[{index,q,r:saved.responses[index]||{},result:saved.responses[index]?.content}]:[]);
   for(const {index,q,r,result} of entries){
    if(questionTypes&&!questionTypes.includes(q?.type))continue;
-   if(chosen.kind===1&&!r.recording){report.reviewed++;report.unavailable++;report.issues.push({index,type:q?.type,issue:'missing_recording'});continue;}
+   if(chosen.kind===1&&!r.recording){
+    if(r.skipped===true&&!r.transcript?.trim()&&q){
+     if(confirmed(result)){report.existing.push({index,questionId:q.id,total:result.total,maximum:result.maximum});continue;}
+     report.reviewed++;let written=false;
+     const maximum=q.type==='rs'?3:q.type==='ra'?scoring.tokens(q.text).length:6;
+     await store.update(username,chosen.id,a=>{written=false;const target=a.responses[index];
+      if(a.contentRecovery?.claim!==claim||!target||target.recording||target.skipped!==true||confirmed(target.content))return a;
+      target.content={total:0,maximum,scoringMode:'unanswered',contentStatus:'assessed',assessment:'Saved unanswered question',
+       overview:'No response was recorded for this question. It is included as unanswered with zero content credit.',strengths:[],improvements:['Record a response when reattempting this mock.'],zeroEvidence:'saved-skipped-response'};
+      written=true;return a;});
+     if(written){report.recovered++;report.scores.push({index,questionId:q.id,total:0,maximum,unanswered:true});}else report.unavailable++;
+    }else{report.reviewed++;report.unavailable++;report.issues.push({index,type:q?.type,issue:'missing_recording'});}
+    continue;
+   }
    if(confirmed(result)){report.existing.push({index,questionId:q?.id,total:result.total,maximum:result.maximum});continue;}report.reviewed++;
    if(!q){report.unavailable++;continue;}
    try{
