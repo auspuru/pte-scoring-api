@@ -39,7 +39,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
     await Promise.allSettled(tasks);
     return disposition(ctx.data,['gpt','azure'].every(p=>report.questionResult({status:'submitted'},q,response(),d.index,p).total!==null),now);
   }});
-  async function ensure(uid,a){if(!a)return;for(let i=0;i<a.questions.length;i++){const r=a.responses[i];if(a.questions[i].type==='intro'||!r?.recording||!missing(a,i))continue;
+  async function ensure(uid,a){if(!a||a.lease?.expiresAt>now())return;for(let i=0;i<a.questions.length;i++){const r=a.responses[i];if(a.questions[i].type==='intro'||!r?.recording||!missing(a,i))continue;
     const patch={};for(const name of ['transcript','transcriptionStatus','content','gpt','azure'])if(r[name]!=null)patch[name]=r[name];
     await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),patch,stages:{},version:VERSION}});
   }await publish(uid,a.id);await worker.wake();}
