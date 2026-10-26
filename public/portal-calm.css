@@ -48,7 +48,7 @@ body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(.audio-pan
 body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(#audio-start,.primary){background:#243f48;border-color:#243f48;color:#fff}
 body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(.studio-modes button[aria-pressed=true],.studio-task-nav button[aria-current=page]){background:var(--bg-card);color:var(--accent)}
 body:not(.portal-exam-active) :is(.reading-results-view,#writingLabScreen .results){
-  --result-navy:#243f48;--result-blue:#34655a;--result-ink:var(--ink);--result-muted:var(--ink-soft);--result-line:var(--line);--result-white:var(--bg-card);--result-canvas:var(--bg);--result-blue-wash:var(--accent-soft);--result-green:#34634f;--result-green-wash:#e8f2ed;
+  --result-navy:#243f48;--result-blue:#34655a;--result-ink:var(--ipt-ink);--result-muted:var(--ipt-ink-soft);--result-line:var(--ipt-line);--result-white:var(--ipt-surface);--result-canvas:var(--ipt-page);--result-blue-wash:var(--ipt-blue-100);--result-green:#34634f;--result-green-wash:#e8f2ed;
 }
 body:not(.portal-exam-active) :is(.reading-results-view .reading-review-overview,#writingLabScreen .results .score-banner){background:#243f48;border-left-color:#87ab99;color:#fff;box-shadow:none}
 body:not(.portal-exam-active) :is(.reading-results-view .reading-review-question,#writingLabScreen .results .review-card){border-radius:15px;border-color:var(--line);box-shadow:none}
