@@ -3575,9 +3575,12 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+const speakingAccess = require('./speaking-access').install(app, { pool:pgPool, directory:path.join(DATA_DIR,'speaking-access'),
+  verify:token=>verifySessionToken(token)||verifyImpersonationToken(token), getAccount:getPracticeAccount, requireAdmin });
+
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-  try { res.json(await AuthAPI.listUsers()); }
+  try { res.json(await speakingAccess.decorate(await AuthAPI.listUsers())); }
   catch (e) { res.status(500).json({ error: 'Failed to list users' }); }
 });
 
@@ -6342,7 +6345,7 @@ async function speakingContentModel(prompt,context) {
   const response=await anthropic.messages.create(format.request(prompt,model,context),{timeout:context?.wholeMockEntries?120000:60000,maxRetries:0});
   return format.response(response,context);
 }
-app.use(['/api/speaking','/api/speaking-mocks'],require('./speaking-access').gate(token=>verifySessionToken(token)||verifyImpersonationToken(token)));
+app.use(['/api/speaking','/api/speaking-mocks'],require('./speaking-access').gate(token=>verifySessionToken(token)||verifyImpersonationToken(token),speakingAccess.allowed));
 const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
@@ -6357,6 +6360,7 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
 });
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
 const writingLab = require('./writing-lab').installWritingLab(app, {
+  speakingAllowed:speakingAccess.allowed,
   pool: pgPool,
   directory: path.join(DATA_DIR, 'writing-lab'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),

@@ -23,7 +23,7 @@ test('Delegated navigation reaches the actual portal dispatcher, including all s
     if (!nodes.has(id)) nodes.set(id, {innerHTML:''}); return nodes.get(id);
   }};
   let active;
-  const context = {currentUserId:'pppp', PortalWorkspace: workspace, window:{}, document:doc, savePortalEssayDraft(){},
+  const context = {speakingAccessUser:'pppp',speakingAccessEnabled:true,currentUserId:'pppp', PortalWorkspace: workspace, window:{}, document:doc, savePortalEssayDraft(){},
     portalWorkspace:{activate(route){active=route;return route;},current:()=>active},
     ensureReadingRuntimeLoaded:async()=>({open:request=>calls.push(['reading',request.libraryId])}),
     ensureSpeakingRuntimeLoaded:async()=>({open:type=>calls.push(['speaking',type])}),

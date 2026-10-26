@@ -102,7 +102,7 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null, speakingAllowed = require('./speaking-access').allowed }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   const reviewer = overall.createReviewer({ store, callModel:overallGrader });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
@@ -195,8 +195,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const account = await getAccount(uid);
     return account && !account.blocked ? uid : null;
   };
-  router.get('/catalog', (req,res) => res.json({ version:bank.version,
-    speakingMocks:require('./speaking-access').allowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
+  router.get('/catalog', route(async(req,res) => res.json({ version:bank.version,
+    speakingMocks:await speakingAllowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
@@ -206,7 +206,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);
         return questions.length ? [{type,label,count:questions.length,minutes:questions[0].minutes,shared:!!questions[0].timeGroup}] : [];
-      }) })) }));
+      }) })) })));
   router.get('/session', route(async(req,res) => { res.set('Cache-Control','no-store'); res.json({ username:await identify(req) }); }));
   router.use(async(req,res,next) => {
     try {

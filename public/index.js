@@ -943,6 +943,7 @@ async function enterApp(uid) {
   practiceState = emptyPracticeState();
   uid = canonicalClientUserId(uid);
   currentUserId = uid;
+  await refreshSpeakingAccess(uid);
   offlineMode = false;
   currentUser = { uid: uid, email: uid.includes('@') ? uid : (uid + '@ptewriting.com') };
   LocalStore.setUserId(uid);
@@ -12802,7 +12803,17 @@ function launchAssignedQuestion(item) {
   if (item.route) switchSection(item.route);
 }
 
-function canUseSpeaking(){return ['pppp','mehakbir1','mahabir1','mahdis','sukhpal'].includes(String(currentUserId||'').trim().toLowerCase());}
+let speakingAccessUser = '', speakingAccessEnabled = false;
+async function refreshSpeakingAccess(uid) {
+  speakingAccessUser='';speakingAccessEnabled=false;
+  const ownerToken=sessionToken;
+  try {
+    const response=await fetch(API_URL+'/api/speaking-access',{headers:{'x-session-token':ownerToken},cache:'no-store',signal:AbortSignal.timeout(10000)});
+    const data=response.ok?await response.json():null;
+    if(currentUserId===uid && sessionToken===ownerToken){speakingAccessUser=uid;speakingAccessEnabled=data?.enabled===true;}
+  } catch (_) { /* Retry on the next sign-in or refresh. */ }
+}
+function canUseSpeaking(){return speakingAccessUser===currentUserId && speakingAccessEnabled;}
 function switchSection(section, options = {}) {
   if(String(section).startsWith('speaking-')&&!canUseSpeaking())section='dashboard';
   if (window.PortalExamMode?.isActive()) {
