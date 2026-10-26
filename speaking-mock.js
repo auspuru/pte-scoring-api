@@ -20,11 +20,13 @@ function reconcile(a,now=Date.now()){
   if(a.status==='active'&&now>=a.deadline){a.status='submitted';a.finishedAt=now;a.grading={status:'pending'};}
   return a;
 }
-function present(a,now=Date.now()){
+function present(a,now=Date.now(),{completeOnly=false,progress}={}){
+  if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
+
   const submitted=a.status==='submitted';
   const savedContent=a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
     speakingReport:submitted?speakingReport.summarize(a):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
     combinedComparisons:a.providerComparisonRecovery?combined.providerComparisons(a):null,providerComparisonStatus:a.providerComparisonRecovery?.status||null,integrity:a.integrity,
@@ -38,8 +40,12 @@ function present(a,now=Date.now()){
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
   assessGpt=gpt.assessRecording,assessAzure=azure.assessRecording,assessOverall=whole.assess,gradeResponse,
   gptAvailable=gpt.isConfigured(),azureAvailable=azure.isConfigured(),
-  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),now=Date.now}={}){
+  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,now=Date.now}={}){
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
+  const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
+  const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
+  const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
+  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,diBackend:'academy',requiredProviders:['gpt','azure']}}:{};
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
   async function readResults(uid,id){
@@ -143,6 +149,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     finally{clearInterval(heartbeat);}
   }
   function queue(uid,a,options){
+    if(useProgressive(a)&&!options?.overallOnly&&!options?.azureOverallOnly){const task=progressive.ensure(uid,a);task.catch(()=>console.warn('[speaking-mock] Saved answers will resume in the recovery scan.'));return task;}
     if(jobs.has(a.id))return jobs.get(a.id);
     if(a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status)||jobs.size>=2)return;
     const job=score(uid,a.id,options);jobs.set(a.id,job);
@@ -205,13 +212,13 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,speakingReport:a.status==='submitted'?speakingReport.summarize(a):null,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>{const value=view(a);return{id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:value.grading,resultsReady:value.resultsReady,resultStatus:value.resultStatus,speakingReport:value.speakingReport,overall:value.overall,overallAzure:value.overallAzure,combinedOverall:value.combinedOverall,completedCount:a.completedCount||0,questionCount:a.questionCount};}))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{
       if(old){if(old.paperId!==paper.id)throw fail('This attempt belongs to another paper.',409);return old;}
-      return {id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
-    });res.json(present(a,now()));
+      return {...profile(req.mockUser),id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
+    });res.json(view(a));
   }));
   router.post('/attempts/:id/reattempt',limiter,wrap(async(req,res)=>{
     const original=await read(req.mockUser,req.params.id);
@@ -220,14 +227,15 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const a=await store.update(req.mockUser,req.body?.id,old=>{
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
-      return {id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
+      return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
         questions:structuredClone(original.questions),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
-    });res.json(present(a,now()));
+    });res.json(view(a));
   }));
-  router.get('/attempts/:id',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(present(a,now()));queue(req.mockUser,a);}));
+  router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));
+  router.get('/attempts/:id',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(view(a));queue(req.mockUser,a);}));
   router.post('/attempts/:id/begin',limiter,wrap(async(req,res)=>{
-    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active')throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);a.questionStartedAt||=now();return a;});res.json(present(a,now()));
+    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active')throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);a.questionStartedAt||=now();return a;});res.json(view(a));
   }));
   router.post('/attempts/:id/recordings/:index',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'3mb'}),wrap(async(req,res)=>{
     const index=Number(req.params.index),mime=String(req.headers['content-type']||'').split(';')[0],data=req.body;
@@ -240,10 +248,10 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       const clock=timing(a,now());if(now()<clock.recordingAt)throw fail('The recording period has not begun.',409);
       if(now()>clock.endsAt+90000)throw fail('The recording period has expired. Continue to the next question.',409);
       a.responses[index]={recording:{mime,data:data.toString('base64'),hash},savedAt:now()};a.completedCount=a.responses.filter((r,i)=>r?.recording&&a.questions[i].type!=='intro').length;return a;
-    });res.json(present(a,now()));
+    });res.json(view(a));queue(req.mockUser,a);
   }));
   router.get('/attempts/:id/recordings/:index',wrap(async(req,res)=>{
-    const a=await read(req.mockUser,req.params.id),r=a.responses[Number(req.params.index)];if(!r?.recording)throw fail('Recording not found.',404);
+    const a=await readResults(req.mockUser,req.params.id);if(useProgressive(a)&&a.status==='submitted'&&!require('./speaking-mock-jobs').complete(a))throw fail('Your results are being prepared.',409);const full=await store.getResponse(req.mockUser,req.params.id,Number(req.params.index)),r=full?.response;if(!r?.recording)throw fail('Recording not found.',404);
     res.type(r.recording.mime).set('X-Content-Type-Options','nosniff').send(Buffer.from(r.recording.data,'base64'));
   }));
   router.post('/attempts/:id/next',limiter,wrap(async(req,res)=>{
@@ -254,10 +262,10 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(!a.responses[a.index]?.recording&&!req.body.skip)throw fail('Save your response before continuing.');
       a.responses[a.index]||={skipped:true};a.index++;delete a.questionStartedAt;
       if(a.index===a.questions.length){a.status='submitted';a.finishedAt=now();a.grading={status:'pending'};}return a;
-    });res.json(present(a,now()));queue(req.mockUser,a);
+    });res.json(view(a));queue(req.mockUser,a);
   }));
   router.post('/attempts/:id/retry',limiter,wrap(async(req,res)=>{
-    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);if(a.grading?.status!=='processing')a.grading={status:'pending'};return a;});res.json(present(a,now()));queue(req.mockUser,a);
+    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);if(a.grading?.status!=='processing')a.grading={status:'pending'};return a;});res.json(view(a));queue(req.mockUser,a);
   }));
   router.post('/attempts/:id/integrity',wrap(async(req,res)=>{
     const events=req.body?.events;if(!Array.isArray(events)||events.length>20||events.some(e=>!e||typeof e.id!=='string'||e.id.length>80||!['tab-hidden','window-blur','fullscreen-exit','fullscreen-required','external-paste-blocked','external-drop-blocked'].includes(e.reason)||!Number.isFinite(e.at)))throw fail('Invalid interruption record.');
@@ -270,6 +278,6 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const file=path.join(__dirname,'content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');
     await fs.access(file);res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(file);
   }));
-  return {store,recoverOverall,waitForJobs:()=>Promise.allSettled([...jobs.values()])};
+  return {store,recoverOverall,progressive,start:()=>progressive.start(),stop:()=>progressive.stop(),waitForJobs:async()=>{await Promise.allSettled([...jobs.values()]);await progressive.wait();}};
 }
 module.exports={timing,reconcile,present,installSpeakingMock};

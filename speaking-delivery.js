@@ -242,7 +242,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
   };
   if(!config.ReferenceText&&!unscripted)throw Error('No spoken words were available for delivery assessment.');
   const url=endpoint+(endpoint.includes('?')?'&':'?')+'language='+encodeURIComponent(String(locale||'en-AU'))+'&format=detailed';
-  const response=await request(url,{
+  let response;try{response=await request(url,{
     method:'POST',
     headers:{
       'Ocp-Apim-Subscription-Key':apiKey,
@@ -252,7 +252,7 @@ async function azureAssess(wav,reference,{apiKey=process.env.AZURE_SPEECH_KEY,en
     },
     body:wav,
     signal:AbortSignal.timeout(45000)
-  });
+  });}catch{throw Object.assign(Error('Azure audio request could not be confirmed.'),{uncertain:true});}
   if(!response.ok){
     console.warn('[speaking-delivery-provider]',JSON.stringify({status:response.status}));
     const error=Error('Audio delivery assessment is temporarily unavailable.');
@@ -273,7 +273,8 @@ async function assessRecording(recording,{
   request=fetch,
   locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',
   ffmpeg='ffmpeg',
-  directory
+  directory,
+  chunkCache={},checkpointChunk=async()=>{}
 }={}) {
   if(!recording?.data||!recording?.mime)throw Error('A saved recording is required for delivery assessment.');
   if(!apiKey||!endpoint)return null;
@@ -281,11 +282,12 @@ async function assessRecording(recording,{
   const scriptedReference=['ra','rs'].includes(question?.type)?String(question?.text||'').trim():'';
   const results=[];let fallbackCursor=0,totalSeconds=0;
   for(let i=0;i<chunks.length;i++){
-    const wav=chunks[i];let reference='',scripted=false;
+    const wav=chunks[i],chunkHash=require('node:crypto').createHash('sha256').update(wav).digest('hex'),cached=chunkCache[chunkHash]||{};let reference=cached.transcript||'',scripted=false;
     const seconds=wavSeconds(wav)||1;totalSeconds+=seconds;
+    if(cached.result){results.push({...cached.result,weight:seconds});continue;}
     if(chunks.length===1&&scriptedReference){reference=scriptedReference;scripted=true;}
     else if(chunks.length===1&&confirmed)reference=confirmed;
-    else if(typeof transcribe==='function'){
+    else if(!reference&&typeof transcribe==='function'){
       try{reference=String(await transcribe({mime:WAV_MIME,data:wav.toString('base64')})).trim();}catch{}
     }
     if(!reference&&confirmedWords.length){
@@ -293,7 +295,9 @@ async function assessRecording(recording,{
       reference=confirmedWords.slice(fallbackCursor,fallbackCursor+take).join(' ');fallbackCursor+=take;
     }
     if(!reference)continue;
+    await checkpointChunk(chunkHash,{transcript:reference});
     const assessed=await azureAssess(wav,reference,{apiKey,endpoint,locale,scripted,request});
+    await checkpointChunk(chunkHash,{transcript:reference,result:assessed});
     assessed.weight=seconds;
     results.push(assessed);
   }

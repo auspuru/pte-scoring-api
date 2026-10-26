@@ -66,7 +66,7 @@ async function assessRecording(recording,{question,transcript='',apiKey=process.
   if(!evidence.sufficient)return {deliveryVersion:VERSION,deliveryProvider:'openai-gpt-audio',deliveryModel:model,
     pronunciation:{score:null,maximum:5},fluency:{score:null,maximum:5},deliveryEvidence:evidence,
     deliveryStatus:'Not enough speech for a reliable GPT delivery estimate.',deliveryAssessment:'Delivery scores are withheld when there is insufficient speech.'};
-  const response=await request('https://api.openai.com/v1/chat/completions',{
+  let response;try{response=await request('https://api.openai.com/v1/chat/completions',{
     method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},signal:AbortSignal.timeout(45000),
     body:JSON.stringify({model,modalities:['text'],temperature:0,max_completion_tokens:2400,store:false,
       tools:[{type:'function',function:{name:'record_delivery_assessment',description:'Judge the whole recording for each trait: ignore minor slips with smooth recovery; identify a recurring or sustained difficulty and overall listener impact before lowering a mark. Give distinct timestamped evidence for a recurring pattern.',parameters:rubric.deliverySchema(seconds)}}],
@@ -75,7 +75,7 @@ async function assessRecording(recording,{question,transcript='',apiKey=process.
       {role:'user',content:[{type:'text',text:'DATA='+JSON.stringify({task:question?.type,durationSeconds:seconds})},
         {type:'input_audio',input_audio:{data:wav.toString('base64'),format:'wav'}}]}
     ]})
-  });
+  });}catch{throw Object.assign(Error('The audio request could not be confirmed.'),{uncertain:true});}
   if(!response.ok){const error=Error('GPT audio assessment is temporarily unavailable.');error.providerStatus=response.status;throw error;}
   const json=await response.json(),choice=json?.choices?.[0];
   const raw=rubric.deliveryData(choice);

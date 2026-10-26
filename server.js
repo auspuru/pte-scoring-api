@@ -6356,8 +6356,10 @@ const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
 const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),
   verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),
-  getAccount:getPracticeAccount,callModel:speakingContentModel
+  getAccount:getPracticeAccount,callModel:speakingContentModel,backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
 });
+app.get('/api/admin/speaking-mocks/:username/:id/scoring',requireAdmin,async(req,res)=>{try{const value=await speakingMock.progressive.diagnostics(req.params.username,req.params.id);res.set('Cache-Control','no-store').status(value?200:404).json(value||{error:'Mock attempt not found.'});}catch{res.status(503).json({error:'Scoring diagnostics temporarily unavailable.'});}});
+app.post('/api/admin/speaking-mocks/:username/:id/scoring/retry',requireAdmin,async(req,res)=>{try{res.set('Cache-Control','no-store').json(await speakingMock.progressive.repair(req.params.username,req.params.id,req.body||{}));}catch(e){res.status(e.status||503).json({error:e.status?e.message:'Scoring repair temporarily unavailable.'});}});
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
 const writingLab = require('./writing-lab').installWritingLab(app, {
   speakingAllowed:speakingAccess.allowed,
@@ -6471,6 +6473,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   try {
     await ensureDataDir();
     await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise()]);
+    await speakingMock.start();
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_CONTENT_REPAIR){
@@ -6537,6 +6540,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
 installGracefulShutdown(httpServer, {
   onShutdown: () => serviceReadiness.stop(),
   cleanup: async () => {
+    await speakingMock.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([
       browserInstance ? browserInstance.close() : Promise.resolve(),

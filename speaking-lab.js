@@ -27,7 +27,7 @@ async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,
   form.append('file',new Blob([Buffer.from(recording.data,'base64')],{type:recording.mime}),'response.'+suffix);
   form.append('language','en');
   // Never supply the reference answer: it could bias the transcript toward words not spoken.
-  const response=await request('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+apiKey},body:form,signal:AbortSignal.timeout(60000)});
+  let response;try{response=await request('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{Authorization:'Bearer '+apiKey},body:form,signal:AbortSignal.timeout(60000)});}catch{throw Object.assign(fail('Automatic transcription could not be confirmed.',503),{uncertain:true});}
   if(!response.ok){
     const body=await response.json().catch(()=>({}));
     // Log only provider status/codes, never keys, audio, transcripts or raw error messages.
@@ -40,7 +40,7 @@ async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,
       :response.status===400||response.status===422?'The transcription service could not read this audio. Try a new recording or upload a WAV or MP3 file.'
       :response.status===404?'The configured transcription model is unavailable. The administrator needs to check the model setting.'
       :'Automatic transcription is temporarily unavailable. Please retry.';
-    throw fail(reason+' Your recording is saved; you can enter your spoken words manually to get content feedback. [Transcription '+(response.status||503)+': '+code+']',503);
+    throw Object.assign(fail(reason+' Your recording is saved; you can enter your spoken words manually to get content feedback. [Transcription '+(response.status||503)+': '+code+']',503),{providerStatus:response.status});
   }
   const data=await response.json();if(typeof data.text!=='string'||data.text.length>6000)throw fail('The transcript could not be read. Enter your spoken words manually.',503);
   return data.text;

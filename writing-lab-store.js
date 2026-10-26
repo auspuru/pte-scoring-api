@@ -168,6 +168,18 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     if(projected)for(const value of values)for(const response of value.responses||[])if(response?.recording)delete response.recording.data;
     return values;
   }
-  return { update, get, list, initialise };
+  async function getResponse(uid,id,index){
+    await initialise();if(!Number.isInteger(index)||index<0||index>100)throw Error('Invalid answer index.');
+    if(!pool){const a=await get(uid,id);return a?{question:a.questions?.[index],response:a.responses?.[index],profile:a.assessmentProfile}:null;}
+    const row=(await pool.query(`SELECT data->'questions'->($3::int) AS question,data->'responses'->($3::int) AS response,data->'assessmentProfile' AS profile FROM ${table} WHERE username=$1 AND id=$2`,[uid,id,index])).rows[0];return row||null;
+  }
+  // Cursor scanning prevents a slow/held attempt from starving later mocks.
+  async function scanForScoring(cursor='',limit=20){
+    await initialise();if(table!=='speaking_mock_attempts')return[];
+    if(pool)return(await pool.query(`SELECT username,${mockResultsProjection} AS data FROM ${table} WHERE id::text>$1 AND data->>'status' IN ('active','submitted') AND COALESCE(data->'assessment'->>'status','')<>'ready' AND (data->'assessmentProfile'->>'mode'='progressive-v1' OR data->'grading'->>'status' IN ('pending','processing')) ORDER BY id LIMIT $2`,[cursor,limit])).rows;
+    const values=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;for(const f of await fs.readdir(path.join(directory,dir.name))){if(!f.endsWith('.json')||f.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,f),'utf8'));if(a.assessmentProfile?.owner&&a.grading?.status!=='complete')values.push({username:a.assessmentProfile.owner,data:a});}}
+    return values.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);
+  }
+  return { update, get, list, initialise, getResponse, scanForScoring };
 }
 module.exports = { createStore };

@@ -1,15 +1,15 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {createController}=require('../public/speaking-mock-client'),{installSpeakingMock}=require('../speaking-mock');
-async function harness(t,{prepare=true,failUpload=false}={}){
+async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve()}={}){
   let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[];let seq=0;
   class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
   class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
   class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);}async play(){this.played=true;}pause(){this.paused=true;}}
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-ui-')),app=require('express')();app.use(require('express').json());
-  const lab=installSpeakingMock(app,{directory,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
-    gradeResponse:async q=>({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}),
+  const lab=installSpeakingMock(app,{directory,backgroundEnabled,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
+    gradeResponse:async q=>{await gradeGate;return({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}});},
     assessOverall:async()=>({status:'assessed',overallScore:90,summary:'Clear across the mock.',pronunciation:{score:5},fluency:{score:5}})});
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port;
@@ -30,6 +30,14 @@ async function harness(t,{prepare=true,failUpload=false}={}){
     active:async()=>{const [row]=await lab.store.list('alice');return row&&lab.store.update('alice',row.id,a=>a);},
     starts:()=>recorderStarts,permissions:()=>permissionCalls,protected:()=>full,user:value=>uid=value};
 }
+
+test('background results show only a preparing banner, poll automatically and open the complete report',async t=>{
+  let release;const gradeGate=new Promise(resolve=>release=resolve),h=await harness(t,{backgroundEnabled:true,gradeGate}),paper=require('../content/speaking-mocks').papers[0],id=require('node:crypto').randomUUID();
+  const questions=structuredClone(paper.questions),index=questions.length-1,responses=questions.map(()=>({skipped:true}));responses[index]={recording:{mime:'audio/webm',data:Buffer.alloc(200,7).toString('base64'),hash:'saved'},transcript:'Saved response.'};
+  await h.lab.store.update('alice',id,()=>({id,paperId:paper.id,title:paper.title,status:'submitted',questions,responses,questionCount:27,index:questions.length,startedAt:1,deadline:2,grading:{status:'pending'},assessmentProfile:{mode:'progressive-v1',owner:'alice',diBackend:'academy'},integrity:{events:[]}}));
+  await h.controller.open({history:true});await h.click({sm:'resume',id});assert.match(h.host.innerHTML,/Preparing your results/);assert.match(h.host.innerHTML,/5–10 minutes/);assert.doesNotMatch(h.host.innerHTML,/Retry unavailable|Individual question feedback|Sample answer|Your transcript/);
+  await h.tick(3000);assert(h.requests.some(r=>r.url.endsWith('/status')));release();await h.lab.waitForJobs();await h.tick(3000);assert.match(h.host.innerHTML,/Speaking score report/);assert.doesNotMatch(h.host.innerHTML,/Retry unavailable/);assert(h.nodes.get('sm-results-summary').innerHTML.includes('/90'));
+});
 
 test('Cancelling protected-screen preflight creates no attempt and does not open the microphone',async t=>{
   const h=await harness(t,{prepare:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
