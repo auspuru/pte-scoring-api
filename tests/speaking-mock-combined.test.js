@@ -18,7 +18,7 @@ async function setup(t){const directory=await fs.mkdtemp(path.join(os.tmpdir(),'
 
 test('Complete raw responses enter a blind-to-marks whole content review, with task-specific policies',()=>{
   const a=attempt(),rows=combined.entries(a),request=format.request('ignored','test-model',{wholeMockEntries:rows.map(r=>({...r,score:0,feedback:'secret old feedback'}))});
-  assert.equal(request.tools[0].name,combined.NAME);assert.equal(request.tools[0].strict,true);
+  assert.equal(request.tools[0].name,combined.NAME);assert.equal(request.tools[0].strict,undefined);assert.deepEqual(request.tool_choice,{type:'tool',name:combined.NAME});
   const serialized=JSON.stringify(request);assert(!serialized.includes('secret old feedback'));assert(!serialized.includes('original-audio'));
   for(const r of rows)assert(serialized.includes('"index":'+r.index)||serialized.includes('\\"index\\":'+r.index));
   assert.match(request.messages[0].content,/accurate reproduction/);assert.match(request.messages[0].content,/Visual Academy/);assert.match(request.messages[0].content,/Minor secondary inaccuracies/);
@@ -41,6 +41,16 @@ test('Each question has its own forced evidence choices, including a single vali
  assert.deepEqual(properties.q1.properties.evidence_id.enum,[1]);assert.deepEqual(properties.q2.properties.evidence_id.enum,[0]);assert.deepEqual(properties.q2.properties.outcome.enum,['unanswered']);
  const raw=judgment(rows);raw.coverage.q1.evidence_id=2;assert.throws(()=>combined.normalize(raw,rows));
  for(const row of rows)for(const option of combined.quoteOptions(row.student))assert(row.student.includes(option.quote));
+});
+test('One targeted evidence repair retains the same full raw set and all local validation',async t=>{
+ const s=await setup(t),a=attempt();await s.mockStore.update('mahdis',a.id,()=>a);let calls=0;
+ const result=await combined.recover({...s,callModel:async(prompt,context)=>{
+   calls++;const raw=judgment(context.wholeMockEntries);
+   if(calls===1)raw.coverage.q1.evidence_id=999;
+   else{const issue=JSON.parse(context.wholeMockDiagnostic);assert.equal(issue.code,'COMBINED_EVIDENCE');assert.equal(issue.issue.questionIndex,1);assert.deepEqual(issue.issue.allowedEvidenceIds,[1]);assert.equal(context.wholeMockEntries.length,6);}
+   return raw;
+ }});
+ assert.equal(result.status,'complete');assert.equal(calls,2);
 });
 test('Combined scores use whole traits only and prevent fluent unrelated content earning a high mark',()=>{
   const a=attempt();assert.equal(combined.combine({score:5},a.overall).overallScore,75);
