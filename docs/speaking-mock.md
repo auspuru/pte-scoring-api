@@ -157,3 +157,20 @@ Short final audio sections are joined to their preceding section when the result
 remains below 30 seconds; otherwise the final two sections are balanced. Every
 PCM sample is preserved. This avoids orphaned sub-second sections triggering an
 Azure initial-silence timeout while retaining the complete recorded response.
+
+## Results review and Describe Image samples
+
+The score report shows the GPT delivery estimate and Azure acoustic scores in
+separate overview cards. Task filters and a question navigator open one answer
+at a time, with Previous/Next within the selected task. The full provider score
+table remains available under Detailed score breakdown.
+
+Describe Image reviews show the question image, a full-size image link and the
+original saved sample response beside the student's recording, transcript and
+feedback. Samples are examples, not the only valid wording or guaranteed marks.
+All three papers use their own matching saved images and samples. Existing
+submitted attempts have these fields already, so no reassessment, new sample
+generation or provider calls are needed. Active tests still hide samples.
+
+Polling updates the selected answer's feedback without replacing its audio
+player. A late recording response cannot overwrite another selected question.
