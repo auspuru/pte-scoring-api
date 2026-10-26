@@ -21,7 +21,7 @@ exact stored question snapshot into a new owned attempt with an independent time
 empty recordings and new scoring. It never resets or overwrites the previous
 attempt. Fullscreen and microphone preflight still happen before creating the
 reattempt, and duplicate creation retries with the same ID are idempotent. Speaking
-practice, all three mocks, and reattempts remain limited to pppp, mehakbir1 and mahabir1 by
+practice, all three mocks, and reattempts remain limited to pppp, mehakbir1, mahabir1 and mahdis by
 the existing server access gate.
 
 ## Test experience
