@@ -197,7 +197,7 @@
         const all=await api('/attempts');listeningHistory=all;
         if(!target.isConnected) return;
         const history=all.filter(a=>a.kind===historyKind && (historyKind!=='mock'||(a.module||'writing')===mockModule));
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 practice estimate')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' native marks'+(a.score90==null?'':' · '+a.score90+'/90 '+(a.weighting?'weighted Writing practice estimate':'practice estimate'))):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
   }
@@ -527,6 +527,7 @@
   }
   const retryableSwt = index => attempt?.questions[index]?.type==='swt'
     && (attempt.results[index]?.score_provisional===true || attempt.results[index]?.needs_semantic_review===true);
+  const retryableAssessment = index => retryableSwt(index) || (report.isWritingMock(attempt) && report.needsReview(attempt.results[index],attempt.questions[index]));
   const writingOverview = () => attempt?.kind==='mock' && attempt.module!=='listening'
     && attempt.questions.every(q=>['swt','essay','sst','wfd'].includes(q.type));
   function overallHTML() {
@@ -573,17 +574,18 @@
   function renderResults() {
     setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
-    const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
+    const summary=report.summarize(attempt.questions,attempt.results,attempt), scored=summary.complete;
+    const scoreNote=summary.weighting ? 'Weighted Writing practice estimate · '+(scored?summary.weighting.performancePercent.toFixed(1)+'% weighted accuracy. ':'')+'Provisional; not calibrated to Pearson scores.'+(summary.weighting.fullProfile?'':' This saved mock covers only part of the Writing task profile.') : (attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.');
     const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    const resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?(attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    const resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+(summary.weighting?' · '+Number(g.normalizedWeight.toFixed(1))+'% mock weight':'')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);
     root.innerHTML=studio&&listeningOnly?studioWrap(resultsHTML,attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
     root.focus();
     const overallTarget=document.getElementById('overall-feedback');
     if(overallTarget){overallTarget.innerHTML=overallHTML();bindOverall();}
-    if(attempt.questions.some((q,i)=>retryableSwt(i)) && !grading.has(attempt.id)) {
+    if(attempt.questions.some((q,i)=>retryableAssessment(i)) && !grading.has(attempt.id)) {
       const status=document.getElementById('scoring-status');
-      if(status) status.innerHTML='Some SWT estimates are provisional. <button class="secondary" id="retry-scores">Request a complete assessment</button>';
+      if(status) status.innerHTML='Some writing assessments are provisional. <button class="secondary" id="retry-scores">Request a complete assessment</button>';
       document.getElementById('retry-scores')?.addEventListener('click',scoreRemaining);
     } else if(!scored && !grading.has(attempt.id)) scoreRemaining();
   }
@@ -591,8 +593,8 @@
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
     if(listeningTasks?.isObjective(q))return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?r.total+'/'+r.maximum+' points':'Awaiting assessment')+'</strong></div><p class="muted">'+esc(report.labels[q.type])+'</p>'+(listeningTasks.review?listeningTasks.review(q,attempt.answers[i]):'<h3>Your response</h3><div class="response">'+esc(listeningTasks.response(q,attempt.answers[i]))+'</div><h3>Correct answer</h3><div class="response sample">'+esc(listeningTasks.correct(q))+'</div>')+'<p>'+esc(q.explanation)+'</p><details><summary>Review recording and transcript</summary><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio><div class="response">'+esc(q.text)+'</div></details></article>';
     const structured = q.type==='essay' && !!r?.feedbackVersion && r.feedbackVersion===window.EssayFeedback?.VERSION;
-    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(retryableSwt(i)?'Provisional ':'')+'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
-      (r? (r.gated&&!retryableSwt(i)?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
+    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(retryableAssessment(i)?'Provisional ':'')+'Estimate '+report.score90(r.total,r.maximum)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
+      (r? (r.gated&&!retryableAssessment(i)?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.score90(r.total,r.maximum)) : '')+
       (dictation&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+(r.wordFeedback||[]).map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
@@ -611,13 +613,13 @@
     try {
       for(let i=0;i<questionCount;i++) {
         if(attempt?.id!==id) return;
-        if(attempt.results[i] && !retryableSwt(i)) continue;
+        if(attempt.results[i] && !retryableAssessment(i)) continue;
         const status=document.getElementById('scoring-status');
         if(status) status.textContent='Assessing question '+(i+1)+' of '+questionCount+'… Waiting for the final reviewed result. Your submitted answers are saved.';
         try {
           const result=await api('/attempts/'+id+'/score/'+i,{});
           if(attempt?.id!==id) return;
-          attempt.results[i]=result; if(retryableSwt(i)) failed=true; renderResults();
+          attempt.results[i]=result; if(retryableAssessment(i)) failed=true; renderResults();
         } catch(e) { failed=true; }
       }
       if(failed && attempt?.id===id) {

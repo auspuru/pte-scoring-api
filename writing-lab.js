@@ -90,7 +90,7 @@ function reconcile(a, now = Date.now()) {
   return a;
 }
 function present(a) {
-  const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
+  const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
   result.overallFeedback = overall.view(a);
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
@@ -107,6 +107,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const reviewer = overall.createReviewer({ store, callModel:overallGrader });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
+  const retryableResult = (result,question,attempt) => retryableSwt(result,question)
+    || (report.isWritingMock(attempt) && report.needsReview(result,question));
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
   const queue = [], failedAt = new Map();
@@ -118,7 +120,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     }
   }
   function assess(uid, a, index) {
-    if (a.results[index] && !retryableSwt(a.results[index],a.questions[index])) return Promise.resolve(a.results[index]);
+    if (a.results[index] && !retryableResult(a.results[index],a.questions[index],a)) return Promise.resolve(a.results[index]);
     const key = uid + ':' + a.id + ':' + index;
     if (pending.has(key)) return pending.get(key);
     const task = new Promise((resolve, reject) => {
@@ -136,7 +138,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           });
           if (!current.completed[index]) throw bad('Submit this answer first.', 409);
           let result = current.results[index];
-          if (retryableSwt(result,current.questions[index])) result = null;
+          if (retryableResult(result,current.questions[index],current)) result = null;
           if (!result) {
             const question = current.questions[index];
             if (question.type === 'essay' && essayGrader) {
@@ -159,7 +161,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           }
           const updated = await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
-            if (!value.results[index] || retryableSwt(value.results[index],value.questions[index])) value.results[index] = result;
+            if (!value.results[index] || retryableResult(value.results[index],value.questions[index],value)) value.results[index] = result;
             return value;
           });
           failedAt.delete(key); resolve(updated.results[index]);
@@ -226,12 +228,12 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const entries = [];
     for (const a of all) {
       const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
-      const summary = report.summarize(current.questions, current.results);
+      const summary = report.summarize(current.questions, current.results, current);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
-        byType:summary.byType, integrity:current.integrity || null });
+        byType:summary.byType, weighting:summary.weighting || null, integrity:current.integrity || null });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
@@ -313,7 +315,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const index=Number(req.params.index);
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
-    if(a.results[index] && !retryableSwt(a.results[index],a.questions[index])) return res.json(a.results[index]);
+    if(a.results[index] && !retryableResult(a.results[index],a.questions[index],a)) return res.json(a.results[index]);
     res.json(await assess(req.labUser, a, index));
   }));
   router.post('/attempts/:id/overall-feedback', route(async(req,res) => {

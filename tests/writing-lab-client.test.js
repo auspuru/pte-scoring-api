@@ -600,3 +600,16 @@ test('Unavailable writing overview offers a separate retry without rerunning ind
  assert.match(h.requests.at(-1).url,/\/overall-feedback$/);assert.deepEqual(h.requests.at(-1).body,{});
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
 });
+
+test('Writing results use the weighted score and show task weights beside the independent overall feedback',()=>{
+ const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.questions=structuredClone(bank.mocks[0].questions);
+ const texts=['Classical mechanics is sometimes considered as a branch of applied mathematics.','Coursework gives students the chance to thoroughly explore the subject.','In my view the damaged car should be repaired as soon as possible.'];
+ texts.forEach((text,i)=>a.questions[i+4].text=text);
+ a.results=[8,7,16,9,8,7,12].map((total,i)=>({total,maximum:report.maximumFor(a.questions[i]),maxima:{content:report.maximumFor(a.questions[i])},scores:{content:total},feedback:{content:'Saved feedback.'},reasons:[]}));
+ h.hooks.set(a);h.hooks.renderResults();const html=h.nodes.get('lab').innerHTML;
+ assert.match(html,/class="score-total">69<small>/);assert.match(html,/Weighted Writing practice estimate/);
+ assert.match(html,/74\.2% weighted accuracy/);assert.match(html,/not calibrated to Pearson scores/);
+ for(const weight of [28,31,18,23])assert.match(html,new RegExp(weight+'% mock weight'));
+ assert(h.nodes.get('overall-feedback').innerHTML.includes('Overall writing feedback'));
+ assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+});

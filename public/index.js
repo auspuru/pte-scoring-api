@@ -12523,7 +12523,7 @@ function ensureSpeakingMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-570a4e124c85', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-b22366360ecf', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12538,7 +12538,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-404d7ae371bf', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-2bf749615512', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;

@@ -9,6 +9,18 @@ const html = fs.readFileSync(require.resolve('../public/index.html'), 'utf8');
 const writingClient = fs.readFileSync(require.resolve('../public/writing-lab-client'), 'utf8');
 const server = fs.readFileSync(require.resolve('../server'), 'utf8');
 
+test('My Progress shows the weighted Writing estimate as the primary result without changing legacy scales',()=>{
+ const source=fs.readFileSync(require.resolve('../public/student-progress'),'utf8'),ctx={};ctx.globalThis=ctx;
+ vm.createContext(ctx);vm.runInContext(source,ctx);
+ const mocks=ctx.StudentProgress.model({reading:{},swt:{},essays:[]},[
+   {id:'weighted',title:'Writing mock',kind:'mock',status:'submitted',startedAt:2,total:67,maximum:90,score90:69,weighting:{profile:'writing'}},
+   {id:'legacy',title:'Legacy result',kind:'mock',status:'submitted',startedAt:1,total:8,maximum:10,score90:74}
+ ]).mocks;
+ assert.equal(mocks[0].score,69);assert.equal(mocks[0].unit,'/90');assert.equal(mocks[0].nativeTotal,67);
+ assert.match(mocks[0].detail,/Weighted Writing practice estimate/);assert.equal(mocks[0].estimate90,null);
+ assert.equal(mocks[1].score,8);assert.equal(mocks[1].unit,'/10');assert.equal(mocks[1].estimate90,74);
+});
+
 test('study targets are editable, synced and used by Today’s plan', () => {
   assert.match(html, /id="todayPlanCard"/);
   assert.match(html, /id="studyTargetScore"/);
