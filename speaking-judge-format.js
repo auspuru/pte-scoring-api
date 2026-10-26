@@ -33,6 +33,7 @@ function tool(q){
 }
 function words(text){return Array.from(text.matchAll(/\S+/gu),m=>({word:m[0],start:m.index,end:m.index+m[0].length}));}
 function request(prompt,model,context={}){
+  if(context.wholeMockEntries)return require('./speaking-mock-combined').request(model,context);
   const academy=require('./describe-image-academy');
   if(academy.applies(context))return academy.request(model,context);
   const {question,transcript='',validationDiagnostic}=context;
@@ -47,6 +48,7 @@ function request(prompt,model,context={}){
     messages:[{role:'user',content:prompt+'\n\nSTRUCTURED OUTPUT: Use submit_speaking_content instead of the earlier JSON-only or no-tool-call output instruction. Return every required field. In this wire format replace each evidence quotation with evidence_span from NUMBERED_STUDENT_WORDS below; replace coaching quotes with quote_span using the SAME student word numbers. The server restores the exact original words. Keep quotations short and contiguous (under 500 characters). Missing coverage uses []. A coaching strength with no real quote uses quote_span=[] and why="". Never use source/sample word numbers. Keep strengths, improvements and coaching changes to at most two each. Choose total consistently with the semantic assessment flags and the institute policy.\nNUMBERED_STUDENT_WORDS='+numbered}]};
 }
 function response(value,context={}){
+  if(context.wholeMockEntries)return require('./speaking-mock-combined').response(value);
   const academy=require('./describe-image-academy');
   if(academy.applies(context))return academy.response(value,context);
   const {question,transcript=''}=context;

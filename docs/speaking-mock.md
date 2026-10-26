@@ -174,3 +174,37 @@ generation or provider calls are needed. Active tests still hide samples.
 
 Polling updates the selected answer's feedback without replacing its audio
 player. A late recording response cannot overwrite another selected question.
+
+## Mahdis combined-score pilot
+
+An instructor-triggered `scope: "combined"` operation is restricted to `mahdis`.
+It names an exact attempt or selects the latest submitted mock before a fixed
+`startedBefore` timestamp. Its operation marker prevents a restart from assessing
+a newer attempt or buying repeated reviews. No automatic rollout to other users
+or new mocks occurs.
+
+Before publication every scored question must have its original recording, a
+nonempty transcript and confirmed content. The unscored introduction is excluded.
+Missing content is recovered with Claude Sonnet 4.6 using the existing task policy
+and evidence validators. All questions are counted; transcription/provider errors
+on one question do not prevent attempts to recover subsequent questions. Existing
+content, GPT/Azure delivery marks, recordings and instructor overrides remain
+intact. Regular semantic-validation repairs also use the stronger reviewer.
+
+A separate whole-content review receives only the complete raw question/source
+and response set, without stored question scores or feedback. It gives one
+holistic content judgment /6 and an indexed, literal-evidence observation for every
+question. RA/RS retain reproduction requirements; DI uses the Academy meaning-first
+policy; summaries and situations retain the institute's harmless-slip tolerance.
+The existing blind whole-audio pronunciation and fluency /5 are reused only when
+their recording coverage equals the entire mock. Otherwise a pinned audio recovery
+uses every original recording. A fingerprint and lease prevent stale publication.
+
+The combined practice estimate is `round(10 + 80 × (C + P + F) / 16)`, using three
+whole-mock judgments, never averaged question marks. Content levels 0, 1, 2, 3 and
+4 have ceilings of 10, 39, 59, 74 and 84 respectively; levels 5–6 permit 90. These
+pilot safeguards prevent clear but irrelevant/fragmented content earning a high
+estimate. They are institute choices, not Pearson's conversion or calibrated
+predictions. The report exposes the formula and all three components, with the
+existing independent GPT and Azure delivery cards retained. All-question coverage
+must pass before a combined score can appear.

@@ -1,6 +1,6 @@
 'use strict';
 const crypto=require('node:crypto'),bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring');
-const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&!r.score_provisional&&!r.needs_semantic_review;
+const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&r.contentStatus!=='unavailable'&&!r.score_provisional&&!r.needs_semantic_review;
 const deliveryKeys=['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory','deliveryRequestedModel'];
 async function recoverLatest(options){
  if(options.scope==='recent')return recoverRecent({...options,scope:undefined});
@@ -11,7 +11,7 @@ async function recoverLatest(options){
  if(completed){logger.info('[speaking-content-recovery]',JSON.stringify({operation,attemptId:completed.id,status:'already-run'}));return completed.contentRecovery;}
  const choices=lists.flatMap((rows,kind)=>rows.filter(a=>a.status==='submitted').map(a=>({kind,id:a.id,startedAt:a.startedAt}))).sort((a,b)=>b.startedAt-a.startedAt);
  if(!choices.length){logger.info('[speaking-content-recovery]',JSON.stringify({operation,status:'no-submitted-attempt'}));return;}
- const chosen=attemptId?choices.find(a=>a.id===attemptId&&(!kind||(a.kind===0?'practice':'mock')===kind)):choices[0];
+ const chosen=attemptId?choices.find(a=>a.id===attemptId&&(!kind||(a.kind===0?'practice':'mock')===kind)):choices.find(a=>!kind||(a.kind===0?'practice':'mock')===kind);
  if(!chosen)throw Error('The requested submitted attempt was not found.');
  const store=chosen.kind===0?practiceStore:mockStore,claim=crypto.randomUUID();let claimed=false;
  let saved=await store.update(username,chosen.id,a=>{claimed=false;if(a.contentRecovery?.operation===operation)return a;claimed=true;a.contentRecovery={operation,claim,status:'processing',startedAt:now()};return a;});
@@ -19,13 +19,15 @@ async function recoverLatest(options){
  const report={operation,attemptId:chosen.id,kind:chosen.kind===0?'practice':'mock',startedAt:chosen.startedAt,reviewed:0,recovered:0,unavailable:0,scores:[],existing:[],issues:[]};
  logger.info('[speaking-content-recovery]',JSON.stringify({...report,status:'started'}));
  try{
-  const entries=chosen.kind===0?[{index:null,q:bank.questions.find(q=>q.id===saved.questionId),r:saved,result:saved.result}]:saved.questions.flatMap((q,index)=>q.type!=='intro'&&saved.responses[index]?.recording?[{index,q,r:saved.responses[index],result:saved.responses[index].content}]:[]);
+  const entries=chosen.kind===0?[{index:null,q:bank.questions.find(q=>q.id===saved.questionId),r:saved,result:saved.result}]:saved.questions.flatMap((q,index)=>q.type!=='intro'?[{index,q,r:saved.responses[index]||{},result:saved.responses[index]?.content}]:[]);
   for(const {index,q,r,result} of entries){
    if(questionTypes&&!questionTypes.includes(q?.type))continue;
+   if(chosen.kind===1&&!r.recording){report.reviewed++;report.unavailable++;report.issues.push({index,type:q?.type,issue:'missing_recording'});continue;}
    if(confirmed(result)){report.existing.push({index,questionId:q?.id,total:result.total,maximum:result.maximum});continue;}report.reviewed++;
    if(!q){report.unavailable++;continue;}
+   try{
    let text=r.transcript||'';if(!text.trim()&&r.recording&&transcribe)text=await transcribe(r.recording);
-   if(!text.trim()){report.unavailable++;continue;}
+   if(!text.trim()){report.unavailable++;report.issues.push({index,type:q.type,issue:'missing_transcript'});continue;}
    const assessed=await scoring.grade(q,text,callModel,{academyDescribeImage:chosen.kind===1});if(!confirmed(assessed)){report.unavailable++;report.issues.push({index,type:q.type,issue:String(assessed.fallbackReason||'').includes('contradicts')?'score_conflict':assessed.contentReviewIssue||'review_unavailable',diagnostic:assessed.contentReviewDiagnostic});continue;}
    let written=false;
    await store.update(username,chosen.id,a=>{
@@ -38,6 +40,7 @@ async function recoverLatest(options){
     target.transcript=text;written=true;return a;
    });
    if(written){report.recovered++;report.scores.push({index,questionId:q.id,total:assessed.total,maximum:assessed.maximum});}else report.unavailable++;
+   }catch(error){report.unavailable++;report.issues.push({index,type:q.type,issue:'assessment_unavailable',code:String(error.code||error.name||'error').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,60)});}
   }
   report.status=report.unavailable?'needs-review':'complete';
  }catch(e){report.status='interrupted';report.failure=String(e.code||e.name||'error').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,60);}

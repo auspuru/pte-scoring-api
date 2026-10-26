@@ -162,6 +162,16 @@ async function sampleReport(h,{paperIndex=0,processing=false}={}){
 }
 const escaped=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+test('A combined report shows all three whole-mock traits and keeps polling until the named recovery finishes',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h);
+ await h.lab.store.update('alice',id,a=>{a.combinedRecovery={status:'processing'};return a;});
+ await h.click({sm:'resume',id});assert.match(h.nodes.get('sm-assessment-status').textContent,/checking every question/);
+ await h.lab.store.update('alice',id,a=>{a.combinedRecovery.status='complete';a.combinedOverall={status:'assessed',overallScore:75,content:{score:5,nextSteps:['Preserve the main positions.']},pronunciation:{score:4},fluency:{score:4},summary:'Connected relevant content.',questionCount:27,contentReviewedCount:27};return a;});
+ await h.tick(3000);const html=h.nodes.get('sm-results-summary').innerHTML;
+ for(const text of ['Overall Speaking','75','Content 5/6','27 of 27 questions reviewed','GPT Audio','37.5%','31.25%'])assert(html.includes(text));
+ assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
+});
+
 test('Every mock exposes each saved Describe Image sample beside its matching image after submission',async t=>{
  const h=await harness(t);
  for(const paperIndex of [0,1,2]){

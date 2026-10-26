@@ -21,7 +21,7 @@ function reconcile(a,now=Date.now()){
 function present(a,now=Date.now()){
   const submitted=a.status==='submitted';
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,integrity:a.integrity,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
@@ -181,7 +181,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser)).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser)).map(a=>({id:a.id,paperId:a.paperId,title:a.title,status:a.status,index:a.index,startedAt:a.startedAt,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,completedCount:a.completedCount||0,questionCount:a.questionCount})))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{

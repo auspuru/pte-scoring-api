@@ -64,3 +64,12 @@ test('Pinned DI recovery uses the provider-compatible Academy request and preser
  assert.deepEqual(saved.responses[0].recording,recording);assert.deepEqual(saved.responses[0].gpt,gpt);assert.deepEqual(saved.responses[0].azure,azure);
  await recoverLatest(options);assert.equal(calls,1,'A restart cannot buy the same recovery again.');
 });
+
+test('Mock recovery reports missing recordings and continues after a transcription failure',async t=>{
+ const s=await setup(t),mock=id();
+ await s.mockStore.update(uid,mock,()=>({id:mock,status:'submitted',startedAt:10,questions:[q,q,q],responses:[{},
+   {recording:{hash:'failed'}},{recording:{hash:'valid'},transcript:text,content:pending()}]}));
+ const r=await recoverLatest({...s,kind:'mock',transcribe:async()=>{throw Error('Transcription failed');},callModel:async()=>review()});
+ assert.equal(r.reviewed,3);assert.equal(r.unavailable,2);assert.equal(r.recovered,1);assert.equal(r.status,'needs-review');
+ assert.equal(r.issues[0].issue,'missing_recording');assert.equal((await s.mockStore.get(uid,mock)).responses[2].content.total,6);
+});

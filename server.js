@@ -6338,7 +6338,8 @@ async function getPracticeAccount(uid) {
 async function speakingContentModel(prompt,context) {
   if (!anthropic) throw new Error('Speaking content assessment is not configured.');
   const format=require('./speaking-judge-format');
-  const response=await anthropic.messages.create(format.request(prompt,CLAUDE_MODEL,context),{timeout:60000,maxRetries:0});
+  const model=context?.recoveryReview||context?.wholeMockEntries||context?.validationDiagnostic?'claude-sonnet-4-6':CLAUDE_MODEL;
+  const response=await anthropic.messages.create(format.request(prompt,model,context),{timeout:context?.wholeMockEntries?120000:60000,maxRetries:0});
   return format.response(response,context);
 }
 app.use(['/api/speaking','/api/speaking-mocks'],require('./speaking-access').gate(token=>verifySessionToken(token)||verifyImpersonationToken(token)));
@@ -6466,6 +6467,8 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
       setImmediate(async()=>{try{
         const request=JSON.parse(process.env.IPT_SPEAKING_CONTENT_REPAIR);
         if(request.scope==='overall')await speakingMock.recoverOverall(request);
+        else if(request.scope==='combined')await require('./speaking-mock-combined').recover({...request,mockStore:speakingMock.store,practiceStore:speakingLab.store,
+          callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording,ensureDelivery:speakingMock.recoverOverall});
         else if(request.scope==='manual-rs-delivery')await require('./speaking-manual-delivery').fillMissingRepeatSentence({...request,mockStore:speakingMock.store});
         else await require('./speaking-content-recovery').recoverLatest({...request,practiceStore:speakingLab.store,mockStore:speakingMock.store,
           callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording});
