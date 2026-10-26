@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {createController}=require('../public/speaking-mock-client'),{installSpeakingMock}=require('../speaking-mock');
 async function harness(t,{prepare=true,failUpload=false}={}){
   let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[];let seq=0;
-  class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
+  class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
   class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
   class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);}async play(){this.played=true;}pause(){this.paused=true;}}
@@ -152,4 +152,53 @@ test('Whole-mock Azure acoustic scores appear beside GPT with their native scale
  await h.controller.open({history:true});await h.click({sm:'resume',id});
  const summary=h.nodes.get('sm-results-summary').innerHTML;
  for(const text of ['GPT Audio','Azure Speech','85','96/100','92/100','not a PTE score out of 90'])assert(summary.includes(text));
+});
+
+async function sampleReport(h,{paperIndex=0,processing=false}={}){
+ const id=require('node:crypto').randomUUID(),paper=require('../content/speaking-mocks').papers[paperIndex],questions=structuredClone(paper.questions);
+ const responses=questions.map((q,i)=>({...(q.type==='di'?{recording:{mime:'audio/webm',hash:'saved-'+i,data:Buffer.alloc(200,2).toString('base64')}}:{}),transcript:q.type==='di'?'My description of '+q.title:'',content:{scoringMode:'ai',total:5,maximum:6,overview:'Saved content feedback.',strengths:['The main idea is clear.'],improvements:['Include one useful comparison.']},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}}));
+ await h.lab.store.update('alice',id,()=>({id,title:paper.title,paperId:paper.id,status:'submitted',index:28,questions,responses,questionCount:27,completedCount:5,startedAt:1,deadline:2,grading:{status:processing?'processing':'complete'},...(processing?{lease:{owner:'other-worker',expiresAt:h.env.Date.now()+1000000}}:{}),integrity:{events:[]},overall:{overallScore:85,pronunciation:{score:5},fluency:{score:5}}}));
+ await h.controller.open({history:true});await h.click({sm:'resume',id});return {id,questions};
+}
+const escaped=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+test('Every mock exposes each saved Describe Image sample beside its matching image after submission',async t=>{
+ const h=await harness(t);
+ for(const paperIndex of [0,1,2]){
+  const {id,questions}=await sampleReport(h,{paperIndex}),images=questions.filter(q=>q.type==='di');
+  await h.click({sm:'filter',type:'di'});
+  assert.equal((h.nodes.get('sm-question-list').innerHTML.match(/data-sm="review"/g)||[]).length,5);
+  for(let i=0;i<images.length;i++){
+   const details=h.nodes.get('sm-review-details').innerHTML,q=images[i];
+   assert(details.includes(escaped(q.sample)));assert(details.includes(escaped(q.imageUrl||'/speaking-image/'+q.id+'.svg')));
+   assert.match(details,/Sample response/);assert.match(details,/Other accurate descriptions are valid/);
+   assert.match(details,/Open full-size image/);assert.match(details,/rel="noopener noreferrer"/);
+   if(i<images.length-1)await h.click({sm:'review-step',step:'1'});
+  }
+  await h.click({sm:'review-step',step:'-1'});assert(h.nodes.get('sm-review-details').innerHTML.includes(escaped(images[3].title)));
+  await h.click({sm:'filter',type:'ra'});assert.match(h.nodes.get('sm-review-details').innerHTML,/Reference wording/);assert.doesNotMatch(h.nodes.get('sm-review-details').innerHTML,/sm-image-sample/);
+  const saved=await h.lab.store.get('alice',id);assert.deepEqual(saved.questions,questions);
+ }
+ assert.equal(h.permissions(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0,'Reviewing examples never starts a recording, reattempt or paid assessment.');
+});
+
+test('New feedback arrives in place without replacing the current audio player or reloading its recording',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h,{processing:true});await h.click({sm:'filter',type:'di'});
+ for(let n=0;n<100&&!h.nodes.get('sm-review-audio').innerHTML.includes('<audio');n++)await new Promise(resolve=>setTimeout(resolve,2));
+ const audio=h.nodes.get('sm-review-audio'),markup=audio.innerHTML;
+ assert.match(markup,/<audio controls/);
+ await h.tick(3000);assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);
+ await h.lab.store.update('alice',id,a=>{a.responses[17].content.overview='The latest content review has arrived.';a.responses[17].transcript='Updated student words.';return a;});
+ await h.tick(3000);assert.match(h.nodes.get('sm-review-feedback').innerHTML,/latest content review has arrived/);assert.match(h.nodes.get('sm-review-feedback').innerHTML,/Updated student words/);
+ assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/recordings/17')).length,1);
+});
+
+test('A delayed recording from the previous question cannot replace the selected question audio',async t=>{
+ const h=await harness(t);await sampleReport(h);const request=h.env.fetch;let resolveAudio;
+ h.env.fetch=(url,args)=>url.endsWith('/recordings/17')?new Promise(resolve=>{resolveAudio=resolve;}):request(url,args);
+ await h.click({sm:'filter',type:'di'});assert(resolveAudio);await h.click({sm:'review-step',step:'1'});await h.flush();
+ const audio=h.nodes.get('sm-review-audio'),markup=audio.innerHTML;
+ resolveAudio({ok:true,blob:async()=>new Blob(['old audio'])});await h.flush();
+ assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.match(h.nodes.get('sm-review-details').innerHTML,/student’s monthly budget/);
 });

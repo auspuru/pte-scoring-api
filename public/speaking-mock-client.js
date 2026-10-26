@@ -5,7 +5,7 @@
   const labels={intro:'Introduction',ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
     const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map();
-    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,context,analyser,silence=0,heard=false;
+    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,context,analyser,silence=0,heard=false;
     const now=()=>env.Date?.now?.()||Date.now(),identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
     const key=(id,index)=>owner+':'+id+':'+index;
@@ -41,7 +41,7 @@
     function stopPolling(){env.clearInterval(poller);poller=null;}
     function release(){stopTimer();stopPrompt();if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
     function leave(){stopPolling();release();serial++;}
-    function reset(){leave();a=null;owner='';selected=null;for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
+    function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
     function shell(html){host.innerHTML=html;host.onclick=click;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
@@ -71,7 +71,7 @@
       if(busy)return;busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
         if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
-        a=saved;selected=null;
+        a=saved;selected=null;reportFilter='all';reviewSignature='';
         if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else results();
       }catch(error){message(error.message);env.PortalExamMode?.set(OWNER,false,host);}
       finally{busy=false;}
@@ -163,32 +163,68 @@
     }
     async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'){release();results();}else{renderExam();protectedMode();tick();}}
     function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5'+(trait.manualOverride?' (manual override)':'');}
+    const setMarkup=(node,markup)=>{if(node&&node.innerHTML!==markup)node.innerHTML=markup;};
+    const answers=()=>a?.responses?.filter(r=>r.question.type!=='intro')||[];
+    const visibleAnswers=()=>answers().filter(r=>reportFilter==='all'||r.question.type===reportFilter);
+    function answerLabel(response){
+      const number=answers().filter(r=>r.question.type===response.question.type).findIndex(r=>r.index===response.index)+1;
+      return labels[response.question.type]+' '+number;
+    }
     function results(){
       env.PortalExamMode?.set(OWNER,false,host);stopTimer();stopPrompt();
-      shell('<div class="sm-results"><div class="sm-results-heading"><h2>'+esc(a.title)+' · Results</h2><div class="sm-results-actions"><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button><button class="portal-button" data-sm="history">Saved speaking mocks</button></div></div><div id="sm-results-summary" aria-live="polite"></div>'
-        +'<h3>Individual question feedback</h3><p>Content follows the same practice rules as individual questions. Azure and GPT independently assess each recording.</p><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th>Question</th><th>Content</th><th>GPT pronunciation / fluency</th><th>Azure pronunciation / fluency</th><th>Review</th></tr></thead><tbody id="sm-result-rows"></tbody></table></div>'
-        +'<div id="sm-review-details"></div><p id="sm-notice" role="status"></p><button class="portal-button" data-sm="retry">Retry unavailable scores</button><p class="sm-footnote">Independent practice estimates, not Pearson scores. The whole-test delivery estimate is assessed from your recordings, not averaged from the question marks above.</p></div>');
-      updateResults();if(selected!==null)review(selected);pollResults();
+      shell('<div class="sm-results"><header class="sm-results-heading"><div><p class="sm-eyebrow">Speaking score report</p><h2>'+esc(a.title)+'</h2><p class="sm-muted">Review your delivery, then compare each answer with its feedback.</p></div><div class="sm-results-actions"><button class="portal-button" data-sm="history">Saved speaking mocks</button><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button></div></header>'
+        +'<div id="sm-results-summary" class="sm-summary-grid" aria-live="polite"></div><p id="sm-assessment-status" class="sm-assessment-status" role="status"></p>'
+        +'<section class="sm-answer-review" aria-labelledby="sm-answers-heading"><div class="sm-review-toolbar"><div><h3 id="sm-answers-heading">Individual question feedback</h3><p class="sm-muted">Choose a question to see your response and feedback.</p></div>'+(answers().some(r=>r.question.type==='di')?'<button class="portal-button" data-sm="filter" data-type="di">Describe Image samples</button>':'')+'</div><div id="sm-task-filters" class="sm-task-filters" role="group" aria-label="Filter questions by task"></div>'
+        +'<div class="sm-review-layout"><aside class="sm-question-nav" aria-label="Questions in this mock"><p id="sm-question-count" class="sm-muted"></p><div id="sm-question-list"></div></aside><div id="sm-review-details"></div></div></section>'
+        +'<details class="sm-score-breakdown"><summary>Detailed score breakdown</summary><p class="sm-muted">GPT pronunciation / fluency and Azure pronunciation / fluency are independent assessments of each answer.</p><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th scope="col">Question</th><th scope="col">Content</th><th scope="col">GPT pronunciation / fluency</th><th scope="col">Azure pronunciation / fluency</th><th scope="col">Review</th></tr></thead><tbody id="sm-result-rows"></tbody></table></div></details>'
+        +'<footer class="sm-report-footer"><p id="sm-notice" role="status"></p><button class="portal-button" data-sm="retry">Retry unavailable scores</button><p class="sm-footnote">Independent practice estimates, not Pearson scores. The whole-test delivery estimate is assessed from your recordings, not averaged from the question marks above.</p></footer></div>');
+      updateResults();pollResults();
+    }
+    function updateQuestionNavigation(){
+      const all=answers(),visible=visibleAnswers(),filters=doc.getElementById('sm-task-filters'),list=doc.getElementById('sm-question-list'),count=doc.getElementById('sm-question-count');
+      setMarkup(filters,[['all','All questions',all.length],...Object.entries(labels).filter(([type])=>type!=='intro').map(([type,label])=>[type,label,all.filter(r=>r.question.type===type).length])].filter(([, ,n])=>n).map(([type,label,n])=>'<button type="button" class="sm-task-filter" data-sm="filter" data-type="'+type+'" aria-pressed="'+(reportFilter===type)+'">'+esc(label)+' <span>'+n+'</span></button>').join(''));
+      if(count)count.textContent=visible.length+' question'+(visible.length===1?'':'s')+(reportFilter==='all'?' in this mock':' in this task');
+      setMarkup(list,visible.map(r=>'<button type="button" class="sm-question-link" data-sm="review" data-index="'+r.index+'" aria-current="'+(selected===r.index?'true':'false')+'"><span><strong>'+esc(answerLabel(r))+'</strong><small>'+esc(r.question.title||labels[r.question.type])+'</small></span><span class="sm-content-badge">'+(r.content?.total==null?(r.recording?(a.grading?.status==='complete'?'Unavailable':'Pending'):'Skipped'):esc(r.content.total)+'/'+esc(r.content.maximum))+'</span></button>').join(''));
     }
     function updateResults(){
-      const overall=a.overall,azure=a.overallAzure,summary=doc.getElementById('sm-results-summary');
+      const overall=a.overall,azure=a.overallAzure,summary=doc.getElementById('sm-results-summary'),status=doc.getElementById('sm-assessment-status');
       const native=trait=>trait?.raw==null?'—':esc(trait.raw)+'/100';
-      const azureSummary=!azure&&!catalog?.azureOverallAvailable?'':'<section class="sm-overall"><div><span>Whole-mock acoustic summary · Azure Speech</span><strong>'+native(azure?.pronunciation)+'</strong><span>Pronunciation accuracy</span></div><div><p>Oral fluency '+native(azure?.fluency)+'</p><p>Portal practice bands: pronunciation '+score(azure?.pronunciation)+' · fluency '+score(azure?.fluency)+'</p><p>'+esc(azure?.summary||(a.grading?.status==='complete'?'Azure whole-mock scores are not available yet. Use Retry unavailable scores to assess the saved audio.':'Azure is assessing your saved recordings.'))+'</p><p>Native Azure acoustic scores, not a PTE score out of 90.</p></div></section>';
-
-      if(summary)summary.innerHTML='<section class="sm-overall"><div><span>Overall speaking delivery · GPT Audio</span><strong>'+(overall?.overallScore==null?'—':esc(overall.overallScore)+'<small>/90</small>')+'</strong></div><div><p>'+esc(overall?.summary||'Your full set of recordings is being reviewed together.')+'</p><p>Pronunciation '+score(overall?.pronunciation)+' · Oral fluency '+score(overall?.fluency)+'</p>'+[overall?.pronunciation,overall?.fluency].filter(Boolean).map(t=>'<p>'+esc(t.reason)+' '+esc(t.coaching||t.nextStep||'')+'</p>').join('')+'</div></section>'+azureSummary+'<p>'+(a.grading?.status==='complete'?'Assessment finished. Any unavailable score can be retried using this saved mock.':'Assessment in progress. Your recordings are saved; you can leave and return to these results.')+'</p>';
-      const rows=doc.getElementById('sm-result-rows');if(rows)rows.innerHTML=(a.responses||[]).filter(r=>r.question.type!=='intro').map(r=>'<tr><th>'+esc(labels[r.question.type])+' · '+esc(r.index)+'</th><td>'+(r.content?.total==null?'—':esc(r.content.total)+'/'+esc(r.content.maximum))+'</td><td>'+score(r.providers.gpt?.pronunciation)+' / '+score(r.providers.gpt?.fluency)+'</td><td>'+score(r.providers.azure?.pronunciation)+' / '+score(r.providers.azure?.fluency)+'</td><td><button class="portal-button" data-sm="review" data-index="'+r.index+'">Review</button></td></tr>').join('');
+      const overallNotes=[...new Set([overall?.pronunciation,overall?.fluency].filter(Boolean).map(t=>[t.reason,t.coaching||t.nextStep].filter(Boolean).join(' ')).filter(Boolean))];
+      const azureSummary=!azure&&!catalog?.azureOverallAvailable?'':'<section class="sm-overall sm-azure-summary" aria-label="Azure whole-mock delivery"><p class="sm-provider-label">Azure Speech · whole-mock audio</p><div class="sm-native-scores"><div><span>Pronunciation accuracy</span><strong>'+native(azure?.pronunciation)+'</strong></div><div><span>Oral fluency</span><strong>'+native(azure?.fluency)+'</strong></div></div><p class="sm-trait-line">Portal practice bands: pronunciation '+score(azure?.pronunciation)+' · fluency '+score(azure?.fluency)+'</p><details><summary>About the Azure scores</summary><p>'+esc(azure?.summary||(a.grading?.status==='complete'?'Azure whole-mock scores are not available yet. Use Retry unavailable scores to assess the saved audio.':'Azure is assessing your saved recordings.'))+'</p><p>Native Azure acoustic scores, not a PTE score out of 90.</p></details></section>';
+      setMarkup(summary,'<section class="sm-overall sm-gpt-summary" aria-label="GPT overall delivery"><p class="sm-provider-label">GPT Audio · overall speaking delivery</p><strong class="sm-total-score">'+(overall?.overallScore==null?'—':esc(overall.overallScore)+'<small>/90</small>')+'</strong><p class="sm-trait-line">Pronunciation '+score(overall?.pronunciation)+' · Oral fluency '+score(overall?.fluency)+'</p><p>'+esc(overall?.summary||'Your full set of recordings is being reviewed together.')+'</p>'+(overallNotes.length?'<details><summary>Overall delivery feedback</summary>'+overallNotes.map(note=>'<p>'+esc(note)+'</p>').join('')+'</details>':'')+'</section>'+azureSummary);
+      if(status)status.textContent=a.grading?.status==='complete'?'Assessment finished · '+(a.completedCount??answers().filter(r=>r.recording).length)+' of '+a.questionCount+' responses recorded.':'Assessment in progress. Your recordings are saved; you can leave and return to this report.';
+      const rows=doc.getElementById('sm-result-rows');setMarkup(rows,answers().map(r=>'<tr><th scope="row">'+esc(answerLabel(r))+'</th><td>'+(r.content?.total==null?'—':esc(r.content.total)+'/'+esc(r.content.maximum))+'</td><td>'+score(r.providers.gpt?.pronunciation)+' / '+score(r.providers.gpt?.fluency)+'</td><td>'+score(r.providers.azure?.pronunciation)+' / '+score(r.providers.azure?.fluency)+'</td><td><button class="portal-button" data-sm="review" data-index="'+r.index+'">Review</button></td></tr>').join(''));
+      const visible=visibleAnswers();if(!visible.some(r=>r.index===selected)&&visible.length)review(visible[0].index);else{updateQuestionNavigation();refreshReviewFeedback();}
     }
-    async function review(index){
-      selected=index;const response=a.responses.find(r=>r.index===index),node=doc.getElementById('sm-review-details');if(!response||!node)return;
-      const content=response.content;
-      node.innerHTML='<section class="sm-question-review"><h3>'+esc(labels[response.question.type])+' · '+esc(response.question.title)+'</h3><div id="sm-review-audio"></div><p>'+esc(content?.overview||'Content review is unavailable for this response.')+'</p>'
-        +[content?.strengths,content?.improvements].filter(Array.isArray).map(list=>'<ul>'+list.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>').join('')
-        +'<details><summary>Transcript</summary><p>'+esc(response.transcript||'No transcript available.')+'</p></details><details><summary>Reference</summary><p>'+esc(response.question.reference||response.question.sample||'')+'</p></details>'
-        +['gpt','azure'].map(provider=>'<h4>'+esc(provider==='gpt'?'GPT Audio':'Azure Speech')+'</h4>'+['pronunciation','fluency'].map(kind=>{const t=response.providers[provider]?.[kind];return '<p><strong>'+esc(kind==='fluency'?'Oral fluency':'Pronunciation')+' '+score(t)+'</strong> '+esc(t?.reason||'')+' '+esc(t?.coaching||'')+'</p>';}).join('')).join('')+'</section>';
+    function reviewFeedback(response){
+      const content=response.content,lists=[['What worked',content?.strengths],['Next step',content?.improvements]].filter(([,list])=>Array.isArray(list)&&list.length);
+      const unique=values=>[...new Set(values.filter(Boolean))];
+      return '<div class="sm-review-score-strip"><span>Content <strong>'+(content?.total==null?'—':esc(content.total)+'/'+esc(content.maximum))+'</strong></span><span>GPT pronunciation / fluency <strong>'+score(response.providers.gpt?.pronunciation)+' / '+score(response.providers.gpt?.fluency)+'</strong></span><span>Azure pronunciation / fluency <strong>'+score(response.providers.azure?.pronunciation)+' / '+score(response.providers.azure?.fluency)+'</strong></span></div>'
+        +'<section class="sm-student-transcript"><h4>Your transcript</h4><p>'+esc(response.transcript||'No transcript available for this response.')+'</p></section><section class="sm-content-feedback"><h4>Content feedback</h4><p>'+esc(content?.overview||'Content review is unavailable for this response.')+'</p><div class="sm-feedback-columns">'+lists.map(([title,list])=>'<div><h5>'+title+'</h5><ul>'+unique(list).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>').join('')+'</div></section>'
+        +'<details class="sm-provider-details"><summary>Pronunciation and fluency feedback</summary><div class="sm-provider-feedback">'+['gpt','azure'].map(provider=>'<section><h4>'+esc(provider==='gpt'?'GPT Audio':'Azure Speech')+'</h4>'+['pronunciation','fluency'].map(kind=>{const t=response.providers[provider]?.[kind];return '<h5>'+esc(kind==='fluency'?'Oral fluency':'Pronunciation')+' · '+score(t)+'</h5><p>'+esc(unique([t?.reason,t?.coaching||t?.nextStep]).join(' ')||'No delivery feedback available.')+'</p>';}).join('')+'</section>').join('')+'</div></details>';
+    }
+    function refreshReviewFeedback(){
+      const response=answers().find(r=>r.index===selected),node=doc.getElementById('sm-review-feedback');if(!response||!node)return;
+      const signature=JSON.stringify([response.content,response.providers,response.transcript]);if(signature===reviewSignature)return;
+      const expanded=node.querySelector?.('.sm-provider-details')?.open;
+      node.innerHTML=reviewFeedback(response);if(expanded){const details=node.querySelector?.('.sm-provider-details');if(details)details.open=true;}reviewSignature=signature;
+    }
+    async function review(index,{focus=false}={}){
+      const response=answers().find(r=>r.index===index),node=doc.getElementById('sm-review-details');if(!response||!node)return;
+      selected=index;reviewSignature='';const audioTicket=++reviewAudioTicket,ticket=serial,id=a.id;
+      const visible=visibleAnswers(),position=visible.findIndex(r=>r.index===index),q=response.question;
+      const image=q.type==='di'&&typeof q.imageUrl==='string'&&/^\/(?!\/)/.test(q.imageUrl)?q.imageUrl:'';
+      const sample=q.type==='di'?'<section class="sm-sample-response" aria-label="Describe Image sample response"><p class="sm-eyebrow">Compare and practise</p><h4>Sample response</h4><p>'+esc(q.sample||'A sample response is not available for this image yet.')+'</p><small>One possible response. Other accurate descriptions are valid.</small></section>':'';
+      node.innerHTML='<section class="sm-question-review"><header class="sm-review-heading"><div><p class="sm-eyebrow">'+esc(answerLabel(response))+'</p><h3 id="sm-review-heading" tabindex="-1">'+esc(q.title||labels[q.type])+'</h3></div><nav class="sm-review-pagination" aria-label="Review another question"><button class="portal-button" data-sm="review-step" data-step="-1"'+(position<=0?' disabled':'')+'>Previous</button><button class="portal-button" data-sm="review-step" data-step="1"'+(position>=visible.length-1?' disabled':'')+'>Next</button></nav></header>'
+        +(q.type==='di'?'<div class="sm-image-sample">'+(image?'<figure><img src="'+esc(image)+'" alt="'+esc(q.title||'Image for this Describe Image question')+'"><figcaption><a href="'+esc(image)+'" target="_blank" rel="noopener noreferrer">Open full-size image</a></figcaption></figure>':'')+sample+'</div>':'')
+        +'<section class="sm-student-audio"><h4>Your recording</h4><div id="sm-review-audio">'+(response.recording?'<p class="sm-muted">Loading your recording…</p>':'<p class="sm-muted">No recording was saved for this question.</p>')+'</div></section><div id="sm-review-feedback">'+reviewFeedback(response)+'</div>'
+        +(q.type!=='di'?'<details class="sm-reference"><summary>'+(['ra','rs'].includes(q.type)?'Reference wording':'Sample response')+'</summary><p>'+esc((['ra','rs'].includes(q.type)?q.reference||q.sample:q.sample||q.reference)||'No reference is available for this question.')+'</p></details>'+(!['ra','rs'].includes(q.type)&&q.reference&&q.reference!==q.sample?'<details class="sm-reference"><summary>Original prompt / transcript</summary><p>'+esc(q.reference)+'</p></details>':''):'')+'</section>';
+      reviewSignature=JSON.stringify([response.content,response.providers,response.transcript]);updateQuestionNavigation();
+      if(focus){node.scrollIntoView?.({behavior:env.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});doc.getElementById('sm-review-heading')?.focus?.({preventScroll:true});}
       if(response.recording){try{
-        const audioKey=key(a.id,index);let url=urls.get(audioKey);if(!url){const reply=await env.fetch('/api/speaking-mocks/attempts/'+a.id+'/recordings/'+index,{headers:{'x-session-token':token()},cache:'no-store'});if(!reply.ok)throw Error('Recording could not load.');url=env.URL.createObjectURL(await reply.blob());urls.set(audioKey,url);}
-        if(selected===index)doc.getElementById('sm-review-audio').innerHTML='<audio controls src="'+esc(url)+'" aria-label="Your recorded response"></audio>';
-      }catch(error){message(error.message);}}
+        const audioKey=key(id,index);let url=urls.get(audioKey);if(!url){const reply=await env.fetch('/api/speaking-mocks/attempts/'+id+'/recordings/'+index,{headers:{'x-session-token':token()},cache:'no-store'});if(!reply.ok)throw Error('Recording could not load.');const blob=await reply.blob();if(!valid(ticket)||a?.id!==id||selected!==index||audioTicket!==reviewAudioTicket)return;url=env.URL.createObjectURL(blob);urls.set(audioKey,url);}
+        if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<audio controls preload="metadata" src="'+esc(url)+'" aria-label="Your recorded response"></audio>';}
+      }catch(error){if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<p class="sm-muted">Your recording could not load. Select this question again to retry.</p>';}}}
     }
     function pollResults(){
       if(a.grading?.status==='complete'){stopPolling();return;}if(poller)return;pollUntil=now()+20*60000;
@@ -203,7 +239,12 @@
       if(data.sm==='reattempt')return start(null,data.id);
       if(data.sm==='resume')return resume(data.id);
       if(data.sm==='next')return next();
-      if(data.sm==='review')return review(Number(data.index));
+      if(data.sm==='review'){
+        const response=answers().find(r=>r.index===Number(data.index));if(response&&reportFilter!=='all'&&response.question.type!==reportFilter)reportFilter=response.question.type;
+        return review(Number(data.index),{focus:true});
+      }
+      if(data.sm==='filter'){reportFilter=Object.hasOwn(labels,data.type)&&data.type!=='intro'?data.type:'all';updateResults();return;}
+      if(data.sm==='review-step'){const list=visibleAnswers(),position=list.findIndex(r=>r.index===selected),next=list[position+Number(data.step)];if(next)return review(next.index);return;}
       if(data.sm==='play'){played='';return playPrompt();}
       if(data.sm==='upload'){const blob=await pending('get',key(a.id,a.index));if(blob)try{await upload(blob,a.id,a.index);}catch(error){message(error.message);}return;}
       if(data.sm==='retry'){
