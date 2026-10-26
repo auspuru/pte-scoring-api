@@ -14,6 +14,7 @@ test('The speaking paper has full task counts, an unscored introduction and only
     assert(q.instruction);assert(q.seconds>0);
     if(q.type==='ra')assert(q.text.split(/\s+/u).length<=60);
     if(q.imageUrl)assert((await fs.stat(path.join(__dirname,'..','public',q.imageUrl))).size>100);
+    if(q.type==='di'){assert.match(q.imageUrl,/^\/assets\/di-predictions-\d{8}\//);assert(q.predictionSource?.sourceId);assert(q.sample);assert(q.facts?.length);assert.equal(bank.publicQuestion(q).imageUrl,q.imageUrl);}
     if(q.audioSource){const file=path.join(__dirname,'..','content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');assert((await fs.stat(file)).size>100);}
     const shown=bank.publicQuestion(q);assert.equal(shown.facts,undefined);assert.equal(shown.reference,undefined);assert.equal(shown.sample,undefined);
     if(['rs','rl','sgd'].includes(q.type))assert.equal(shown.text,undefined);

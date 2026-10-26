@@ -1,0 +1,59 @@
+/* Approved shared portal presentation. Timed mock geometry remains independent. */
+:root,body.light-mode{
+  --ipt-ink:#223c43;--ipt-ink-soft:#596b70;--ipt-ink-muted:#66767a;
+  --ipt-page:#f5f7f3;--ipt-surface:#fff;--ipt-surface-soft:#f8faf7;
+  --ipt-blue-950:#243f48;--ipt-blue-900:#294c50;--ipt-blue-800:#315b57;
+  --ipt-blue-700:#34655a;--ipt-blue-600:#3c7164;--ipt-blue-500:#548276;--ipt-blue-100:#e8f2ed;
+  --ipt-line:#dbe5e0;--ipt-line-strong:#bdcec5;
+  --ipt-card-shadow:0 3px 16px #203d4305;--ipt-glass-shadow:0 10px 32px #203d430a;
+  --bg:#f5f7f3;--bg-card:#fff;--bg-hover:#edf3ee;--ink:#223c43;--ink-soft:#596b70;--ink-mute:#66767a;
+  --accent:#34655a;--accent-hover:#284f47;--accent-soft:#e8f2ed;--line:#dbe5e0;--line-soft:#e6ece7;
+  --good:#34634f;--shadow:0 3px 16px #203d4305;--shadow-lg:0 10px 32px #203d430a;
+}
+body.dark{
+  --ipt-ink:#e6efea;--ipt-ink-soft:#baccc3;--ipt-ink-muted:#a3b7ad;
+  --ipt-page:#142121;--ipt-surface:#1d2e2e;--ipt-surface-soft:#233735;
+  --ipt-line:#405752;--ipt-blue-100:#294a40;
+  --bg:#142121;--bg-card:#1d2e2e;--bg-hover:#294139;--ink:#e6efea;--ink-soft:#baccc3;--ink-mute:#a3b7ad;
+  --accent:#a4d1bc;--accent-hover:#c6e3d5;--accent-soft:#294a40;--line:#405752;--line-soft:#344b45;--good:#a4d1bc;
+}
+.ambient-glow-blob{display:none}
+body:not(.portal-exam-active) #lab{background:var(--bg);color:var(--ink)}
+body:not(.portal-exam-active) #lab .review-card{background:var(--bg-card);color:var(--ink);border-color:var(--line);box-shadow:none}
+body:not(.portal-exam-active) #lab .score-banner{background:#243f48;color:#fff;box-shadow:none}
+body:not(.portal-exam-active) .practice-banner{--practice-accent:var(--accent);--practice-soft:var(--accent-soft)}
+#appShell,.practice-studio-surface{background:var(--bg);color:var(--ink)}
+#portalSidebar,.topbar{background:var(--bg-card);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:var(--line)}
+#portalSidebar .brand-mark{background:#243f48}
+#portalSidebar .nav-item{border-radius:10px;min-height:46px}
+#portalSidebar .nav-item.active{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+#appShell .portal-button,#practiceScreen .portal-button{min-height:44px;line-height:1.45;border-color:var(--line);border-radius:9px;box-shadow:none}
+#appShell .portal-button.primary,#practiceScreen .portal-button.primary{background:#243f48!important;border-color:#243f48!important;color:#fff!important;box-shadow:none!important}
+body.dark #appShell .portal-button.primary,body.dark #practiceScreen .portal-button.primary{background:#a4d1bc!important;color:#18382e!important;border-color:#a4d1bc!important}
+body:not(.portal-exam-active) :is(#appShell,#practiceScreen) :is(button,select,input,textarea,a):focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.practice-studio,.practice-studio-surface{
+  --practice-blue:var(--accent);--practice-navy:#243f48;--practice-canvas:var(--bg);--practice-surface:var(--bg-card);
+  --practice-line:var(--line);--practice-ink:var(--ink);--practice-muted:var(--ink-soft);--practice-tint:var(--accent-soft);
+}
+body.dark :is(.practice-studio,.practice-studio-surface){--practice-navy:#1d2e2e;--practice-blue:var(--accent);--practice-canvas:var(--bg);--practice-surface:var(--bg-card);--practice-line:var(--line);--practice-ink:var(--ink);--practice-muted:var(--ink-soft);--practice-tint:var(--accent-soft)}
+body:not(.portal-exam-active) #appShell :is(.card,.mock-catalogue-card,.reading-mock-card,.sm-paper,.sm-history,.history-row,.next-step-plan){border-color:var(--line);background:var(--bg-card);border-radius:15px;box-shadow:var(--shadow)}
+body:not(.portal-exam-active) :is(.portal-task-toolbar,.practice-studio-taskbar,.reading-library-toolbar,.practice-catalogue-toolbar){gap:12px;flex-wrap:wrap;border-color:var(--line);background:var(--bg-card);box-shadow:none}
+body:not(.portal-exam-active) :is(.practice-studio,.practice-studio-surface) :is(.btn,.portal-button,.practice-action-btn).primary{background:#243f48!important;border-color:#243f48!important;color:#fff!important}
+body:not(.portal-exam-active) #writingLabScreen.listening-mode,body:not(.portal-exam-active) #writingLabScreen.listening-mode #lab{background:var(--bg);color:var(--ink)}
+body:not(.portal-exam-active) #writingLabScreen .studio-task-nav{background:#243f48}
+body:not(.portal-exam-active) #writingLabScreen :is(.studio-mode-note,.studio-practice-guide,.studio-sidebar-card,.review-card,.card){background:var(--bg-card);border-color:var(--line);color:var(--ink);box-shadow:none}
+body:not(.portal-exam-active) #writingLabScreen :is(.studio-heading h1,.studio-heading p,.instruction,.answer-label,.exam-strip,.exam-header strong){color:var(--ink)}
+body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(.exam,.exam-header,.exam-strip,.exam-footer){background:var(--bg-card);border-color:var(--line);color:var(--ink)}
+body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(.audio-panel,.timer-wrap,.studio-modes){background:var(--accent-soft);border-color:var(--line);color:var(--ink)}
+body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(#audio-start,.primary){background:#243f48;border-color:#243f48;color:#fff}
+body:not(.portal-exam-active) #writingLabScreen .listening-studio :is(.studio-modes button[aria-pressed=true],.studio-task-nav button[aria-current=page]){background:var(--bg-card);color:var(--accent)}
+body:not(.portal-exam-active) :is(.reading-results-view,#writingLabScreen .results){
+  --result-navy:#243f48;--result-blue:#34655a;--result-ink:var(--ipt-ink);--result-muted:var(--ipt-ink-soft);--result-line:var(--ipt-line);--result-white:var(--ipt-surface);--result-canvas:var(--ipt-page);--result-blue-wash:var(--ipt-blue-100);--result-green:#34634f;--result-green-wash:#e8f2ed;
+}
+body:not(.portal-exam-active) :is(.reading-results-view .reading-review-overview,#writingLabScreen .results .score-banner){background:#243f48;border-left-color:#87ab99;color:#fff;box-shadow:none}
+body:not(.portal-exam-active) :is(.reading-results-view .reading-review-question,#writingLabScreen .results .review-card){border-radius:15px;border-color:var(--line);box-shadow:none}
+body:not(.portal-exam-active) :is(.reading-results-view,#writingLabScreen .results) :is(.response.sample,.reading-review-source){background:var(--accent-soft);color:var(--ink);border-color:var(--line)}
+body:not(.portal-exam-active) .sm-hub .sm-paper{padding:25px;margin:20px 0}
+body:not(.portal-exam-active) .sm-hub .sm-paper p{max-width:85ch;line-height:1.8}
+@media(max-width:700px){body:not(.portal-exam-active) #appShell .pane{padding-inline:16px}.portal-task-toolbar .portal-button{flex-shrink:0}.practice-studio-taskbar{gap:10px}.sm-hub .sm-paper{padding:20px!important}}
+@media(prefers-reduced-motion:reduce){#appShell *,#practiceScreen *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
