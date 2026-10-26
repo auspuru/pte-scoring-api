@@ -1,6 +1,6 @@
 'use strict';
 // Instructor-triggered pilot. Existing blind delivery and individual marks remain
-// independent; only the explicitly named Mahdis attempt receives a combined mark.
+// independent; only explicitly authorized, pinned student attempts are assessed.
 const crypto=require('node:crypto');
 const scoring=require('./speaking-scoring');
 const {confirmed,recoverLatest}=require('./speaking-content-recovery');
@@ -97,7 +97,7 @@ function report(a,operation){return {operation,attemptId:a.id,status:a.combinedR
   pronunciation:a.combinedOverall?.pronunciation?.score??null,fluency:a.combinedOverall?.fluency?.score??null,
   ...(a.combinedRecovery?.failure?{failure:a.combinedRecovery.failure}:{})};}
 async function recover({username,operation,attemptId,startedBefore,mockStore,practiceStore,callModel,transcribe,ensureDelivery,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms)),logger=console,now=Date.now}={}){
-  if(username!=='mahdis'||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,90}$/.test(operation)||(!attemptId&&!Number.isFinite(startedBefore)))throw bad('COMBINED_SCOPE');
+  if(!['mahdis','mahabir1'].includes(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,90}$/.test(operation)||(!attemptId&&!Number.isFinite(startedBefore)))throw bad('COMBINED_SCOPE');
   const history=await mockStore.list(username),previous=history.find(a=>a.combinedRecovery?.operation===operation);
   const chosen=previous||history.filter(a=>a.status==='submitted'&&(attemptId?a.id===attemptId:a.startedAt<=startedBefore)).sort((a,b)=>b.startedAt-a.startedAt)[0];
   if(!chosen)throw bad('COMBINED_ATTEMPT');

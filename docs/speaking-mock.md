@@ -175,9 +175,10 @@ generation or provider calls are needed. Active tests still hide samples.
 Polling updates the selected answer's feedback without replacing its audio
 player. A late recording response cannot overwrite another selected question.
 
-## Mahdis combined-score pilot
+## Authorized combined-score pilot
 
-An instructor-triggered `scope: "combined"` operation is restricted to `mahdis`.
+An instructor-triggered `scope: "combined"` operation is restricted to `mahdis`
+and `mahabir1`, the two explicitly authorized students.
 It names an exact attempt or selects the latest submitted mock before a fixed
 `startedBefore` timestamp. Its operation marker prevents a restart from assessing
 a newer attempt or buying repeated reviews. No automatic rollout to other users

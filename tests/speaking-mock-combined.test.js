@@ -70,7 +70,16 @@ test('Pilot includes every question, preserves original results, is private and 
   const client=present(saved);assert.equal(client.combinedOverall.overallScore,75);assert(!JSON.stringify(client).includes('original-audio'));
   const later={...attempt(),startedAt:20};await s.mockStore.update('mahdis',later.id,()=>later);
   await combined.recover(options);assert.equal(calls,1);assert.equal((await s.mockStore.get('mahdis',later.id)).combinedOverall,undefined);
-  await assert.rejects(combined.recover({...options,username:'mahabir1'}),/could not be verified/);
+  await assert.rejects(combined.recover({...options,username:'mehakbir1'}),/could not be verified/);
+});
+test('The explicitly authorized Mahabir pilot uses the same rubric without modifying Mahdis results',async t=>{
+ const s=await setup(t),mahdis=attempt(),mahabir=attempt();
+ await s.mockStore.update('mahdis',mahdis.id,()=>mahdis);await s.mockStore.update('mahabir1',mahabir.id,()=>mahabir);
+ const before=await s.mockStore.get('mahdis',mahdis.id);
+ const result=await combined.recover({...s,username:'mahabir1',operation:'mahabir-pilot',callModel:async(prompt,context)=>judgment(context.wholeMockEntries)});
+ assert.equal(result.status,'complete');assert.equal(result.overallScore,75);assert.equal(result.coverage.confirmedContent,6);
+ assert.deepEqual(await s.mockStore.get('mahdis',mahdis.id),before);
+ assert.equal((await s.mockStore.get('mahabir1',mahabir.id)).combinedOverall.version,combined.VERSION);
 });
 test('Missing recordings or task types withhold the pilot instead of silently skipping questions',async t=>{
   for(const fault of ['recording','task','count']){
