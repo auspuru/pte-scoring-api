@@ -172,6 +172,21 @@ test('A combined report shows all three whole-mock traits and keeps polling unti
  assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
 });
 
+test('Provider comparison shows two explicitly labeled totals using the same content and each provider audio traits',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h),combined=require('../speaking-mock-combined');
+ await h.lab.store.update('alice',id,a=>{
+  for(const [i,r] of a.responses.entries()){r.recording={mime:'audio/webm',hash:'saved-'+i,data:Buffer.alloc(200,2).toString('base64')};r.transcript='A saved response.';}
+  a.completedCount=27;a.overall={status:'assessed',recordingCount:27,overallScore:85,pronunciation:{score:5},fluency:{score:5}};
+  a.overallAzure={status:'assessed',recordingCount:27,pronunciation:{score:4,raw:82},fluency:{score:4,raw:82}};
+  const content={score:4,maximum:6,summary:'Broadly relevant responses.',nextSteps:[],coverage:combined.entries(a).map(r=>({index:r.index}))};
+  a.combinedOverall={...combined.combine(content,a.overall),questionCount:27,recordingCount:27,contentReviewedCount:27,sourceFingerprint:combined.fingerprint(a)};
+  a.providerComparisonRecovery={status:'complete'};return a;
+ });
+ await h.click({sm:'resume',id});const html=h.nodes.get('sm-results-summary').innerHTML;
+ for(const text of ['OpenAI-based overall','Azure-based overall','Shared content 4/6','80','70','same confirmed content assessment'])assert(html.includes(text));
+ assert.equal((html.match(/class="sm-overall sm-combined-summary sm-provider-combined"/g)||[]).length,2);
+});
+
 test('Every mock exposes each saved Describe Image sample beside its matching image after submission',async t=>{
  const h=await harness(t);
  for(const paperIndex of [0,1,2]){

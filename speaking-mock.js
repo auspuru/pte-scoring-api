@@ -4,6 +4,7 @@ const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scori
 const academy=require('./describe-image-academy');
 const manualDelivery=require('./speaking-manual-delivery');
 const azureWhole=require('./speaking-mock-azure');
+const combined=require('./speaking-mock-combined');
 const {createStore}=require('./writing-lab-store'),{transcribeRecording}=require('./speaking-lab');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 function timing(a,now=Date.now()){
@@ -21,7 +22,8 @@ function reconcile(a,now=Date.now()){
 function present(a,now=Date.now()){
   const submitted=a.status==='submitted';
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,integrity:a.integrity,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
+    combinedComparisons:a.providerComparisonRecovery?combined.providerComparisons(a):null,providerComparisonStatus:a.providerComparisonRecovery?.status||null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
@@ -102,9 +104,15 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(overallOnly&&!azureOverallOnly||!azureOverallAvailable||a.overallAzure?.status==='assessed')return;
       const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
       try{
-        const result=await assessAzureOverall(recordings,{expectedCount:a.questionCount});
+        const items=a.questions.flatMap((q,i)=>q.type==='intro'?[]:[{index:i,response:a.responses[i]}]);
+        const unanswered=items.filter(({response:r})=>!r?.recording&&r?.skipped===true&&!r?.transcript?.trim());
+        const unexplained=items.filter(({response:r})=>!r?.recording&&!(r?.skipped===true&&!r?.transcript?.trim()));
+        if(items.length!==a.questionCount||unexplained.length)throw Object.assign(Error('A saved response recording is missing.'),{code:'AZURE_COVERAGE',coverage:{recordingCount:recordings.length,expectedCount:a.questionCount,missingQuestions:unexplained.map(r=>r.index)}});
+        // Every actual recording is required. Explicit unanswered questions are
+        // accounted for by content; they cannot create nonexistent audio files.
+        const result=await assessAzureOverall(recordings,{expectedCount:recordings.length});
         if(result?.status!=='assessed'||!Number.isFinite(result.pronunciation?.raw)||!Number.isFinite(result.fluency?.raw))throw Error('Azure overall was not confirmed.');
-        await save(current=>{current.overallAzure={...result,assessedAt:now(),...(operation?{operation}:{})};});
+        await save(current=>{current.overallAzure={...result,questionCount:a.questionCount,unansweredCount:unanswered.length,assessedAt:now(),...(operation?{operation}:{})};});
       }catch(error){
         const failure={code:/^AZURE_[A-Z_]+$/.test(error.code||'')?error.code:'AZURE_OVERALL_UNAVAILABLE',...(Number.isInteger(error.providerStatus)?{providerStatus:error.providerStatus}:{}),
           ...(['NoMatch','InitialSilenceTimeout','BabbleTimeout','EndOfDictation','Error'].includes(error.recognitionStatus)?{recognitionStatus:error.recognitionStatus}:{}),

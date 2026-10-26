@@ -52,13 +52,14 @@ test('Azure unscripted wire requests have no reference text, miscue or unsupport
  assert.equal(azure.band5(null),null);
 });
 
-async function fixture(t,{failure=false}={}){
+async function fixture(t,{failure=false,skipped=[],missing=[]}={}){
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'mock-azure-')),app=require('express')();let calls=0;
  const lab=installSpeakingMock(app,{directory,getAccount:async()=>({}),verifyToken:()=> 'mahabir1',azureOverallAvailable:true,
   transcribe:async()=>{throw Error('Do not transcribe again');},assessGpt:async()=>{throw Error('Do not regrade questions');},assessAzure:async()=>{throw Error('Do not regrade questions');},assessOverall:async()=>{throw Error('Do not reassess GPT overall');},
-  assessAzureOverall:async(recordings,options)=>{calls++;assert.equal(recordings.length,27);assert.equal(options.expectedCount,27);assert(recordings.every(r=>Object.keys(r).sort().join(',')==='data,hash,mime'));if(failure)throw Object.assign(Error('Unavailable'),{providerStatus:429});return whole.summarize([{accuracy:96,fluency:92,seconds:180}],{recordingCount:27,expectedCount:27,assessedRecordings:27,audioSeconds:200});}});
+  assessAzureOverall:async(recordings,options)=>{calls++;const count=27-skipped.length-missing.length;assert.equal(recordings.length,count);assert.equal(options.expectedCount,count);assert(recordings.every(r=>Object.keys(r).sort().join(',')==='data,hash,mime'));if(failure)throw Object.assign(Error('Unavailable'),{providerStatus:429});return whole.summarize([{accuracy:96,fluency:92,seconds:180}],{recordingCount:count,expectedCount:count,assessedRecordings:count,audioSeconds:200});}});
  t.after(async()=>{await lab.waitForJobs();await fs.rm(directory,{recursive:true,force:true});});
  const id=crypto.randomUUID(),questions=structuredClone(bank.papers[0].questions),responses=questions.map((_,i)=>({recording:{mime:'audio/wav',data:'saved-'+i,hash:'hash-'+i},transcript:'saved',gpt:{score:5},azure:{score:5},manualDeliveryOverrides:{gpt:{fluency:{score:5}}}})),overall={status:'assessed',overallScore:85,pronunciation:{score:5},fluency:{score:5}};
+ for(const index of skipped)responses[index]={skipped:true};for(const index of missing)responses[index]={};
  await lab.store.update('mahabir1',id,()=>({id,status:'submitted',questions,responses,questionCount:27,completedCount:27,grading:{status:'complete'},overall}));
  return {...lab,id,calls:()=>calls,responses,overall,request:{provider:'azure',username:'mahabir1',attemptId:id,operation:'azure-whole-test'}};
 }
@@ -73,4 +74,15 @@ test('Pinned Azure recovery saves a separate result exactly once and preserves e
 test('Azure recovery failures retain GPT results and are not repeated on restart',async t=>{
  const h=await fixture(t,{failure:true}),report=await h.recoverOverall(h.request);assert.equal(report.status,'needs-review');assert.equal(report.failure.providerStatus,429);
  const saved=await h.store.get('mahabir1',h.id);assert.deepEqual(saved.overall,h.overall);assert.deepEqual(saved.responses,h.responses);await h.recoverOverall(h.request);assert.equal(h.calls(),1);
+});
+
+test('Azure assesses all 25 real recordings while accounting separately for two saved unanswered questions',async t=>{
+ const h=await fixture(t,{skipped:[11,16]}),result=await h.recoverOverall(h.request);
+ assert.equal(result.status,'complete');assert.equal(h.calls(),1);assert.equal(result.recordingCount,25);
+ const saved=await h.store.get('mahabir1',h.id);assert.equal(saved.overallAzure.questionCount,27);assert.equal(saved.overallAzure.unansweredCount,2);
+ assert.deepEqual(saved.responses,h.responses);assert.deepEqual(saved.overall,h.overall);
+});
+test('Azure never hides an unexplained missing recording by lowering the expected count',async t=>{
+ const h=await fixture(t,{missing:[11]}),result=await h.recoverOverall(h.request);
+ assert.equal(result.status,'needs-review');assert.equal(h.calls(),0);assert.equal(result.failure.code,'AZURE_COVERAGE');assert.deepEqual(result.failure.coverage.missingQuestions,[11]);
 });

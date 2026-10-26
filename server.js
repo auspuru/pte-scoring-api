@@ -6467,6 +6467,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
       setImmediate(async()=>{try{
         const request=JSON.parse(process.env.IPT_SPEAKING_CONTENT_REPAIR);
         if(request.scope==='overall')await speakingMock.recoverOverall(request);
+        else if(request.scope==='provider-comparisons')await require('./speaking-mock-combined').recoverComparisons({...request,mockStore:speakingMock.store,ensureDelivery:speakingMock.recoverOverall});
         else if(request.scope==='combined')await require('./speaking-mock-combined').recover({...request,mockStore:speakingMock.store,practiceStore:speakingLab.store,
           callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording,ensureDelivery:speakingMock.recoverOverall});
         else if(request.scope==='manual-rs-delivery')await require('./speaking-manual-delivery').fillMissingRepeatSentence({...request,mockStore:speakingMock.store});

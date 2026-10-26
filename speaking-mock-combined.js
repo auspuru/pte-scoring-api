@@ -80,15 +80,15 @@ function normalize(raw,rows){
   if(raw.score===6&&coverage.filter(c=>c.materialError||['irrelevant','unanswered'].includes(c.outcome)).length>1)throw bad('COMBINED_SCORE_CONFLICT');
   return {score:raw.score,maximum:6,summary:raw.summary,strengths:raw.strengths,nextSteps:raw.nextSteps,coverage};
 }
-function combine(content,delivery){
+function combine(content,delivery,{provider='openai'}={}){
   const c=content?.score,p=delivery?.pronunciation?.score,f=delivery?.fluency?.score;
   if(delivery?.status!=='assessed'||!Number.isInteger(c)||c<0||c>6||![p,f].every(v=>Number.isInteger(v)&&v>=0&&v<=5))throw bad('COMBINED_DELIVERY');
   const ungatedScore=Math.round(10+80*(c+p+f)/16);
   const contentCeiling=[10,39,59,74,84,90,90][c];
   return {status:'assessed',version:VERSION,scope:'whole-speaking-content-and-delivery',overallScore:Math.min(ungatedScore,contentCeiling),maximum:90,
-    content,pronunciation:structuredClone(delivery.pronunciation),fluency:structuredClone(delivery.fluency),
+    content,pronunciation:structuredClone(delivery.pronunciation),fluency:structuredClone(delivery.fluency),deliveryProvider:provider,
     summary:content.summary,method:{formula:'round(10 + 80 × (whole content + whole pronunciation + whole fluency) / 16)',weights:{content:6/16,pronunciation:5/16,fluency:5/16},
-      contentCeiling,ungatedScore,deliverySource:'independent-blind-whole-mock-audio',questionMarksUsed:false},
+      contentCeiling,ungatedScore,deliverySource:provider==='azure'?'whole-mock-azure-acoustic-summary':'independent-blind-whole-mock-audio',questionMarksUsed:false},
     assessment:'Institute speaking practice estimate, not a calibrated Pearson score prediction.'};
 }
 const fingerprint=a=>crypto.createHash('sha256').update(JSON.stringify({questions:a.questions,responses:a.responses.map(r=>r?{hash:r.recording?.hash,transcript:r.transcript,content:r.content}:null),overall:a.overall})).digest('hex');
@@ -149,4 +149,56 @@ async function recover({username,operation,attemptId,startedBefore,mockStore,pra
   }finally{clearInterval(heartbeat);}
   const result=report(a,operation);logger.info('[speaking-combined-recovery]',JSON.stringify(result));return result;
 }
-module.exports={VERSION,NAME,INSTRUCTIONS,TYPES,entries,audit,quoteOptions,request,response,normalize,combine,fingerprint,recover};
+function providerComparisons(a){
+  const coverage=audit(a),shared=a.combinedOverall;
+  if(!coverage.complete||shared?.status!=='assessed'||shared.questionCount!==a.questionCount||shared.recordingCount!==coverage.recordings
+    ||shared.contentReviewedCount!==a.questionCount||shared.content?.coverage?.length!==a.questionCount||shared.sourceFingerprint!==fingerprint(a))return null;
+  const decorate=(value,provider)=>({...shared,...value,deliveryProvider:provider,recordingCount:coverage.recordings,unansweredCount:coverage.unanswered.length});
+  let openai,azure;
+  try{if(a.overall?.recordingCount!==coverage.recordings)throw bad('COMPARISON_AUDIO_COVERAGE');openai=decorate(combine(shared.content,a.overall,{provider:'openai'}),'openai');}catch{return null;}
+  try{
+    if(a.overallAzure?.recordingCount!==coverage.recordings||![a.overallAzure?.pronunciation?.raw,a.overallAzure?.fluency?.raw].every(v=>Number.isFinite(v)&&v>=0&&v<=100))throw bad('COMPARISON_AZURE_COVERAGE');
+    azure=decorate(combine(shared.content,a.overallAzure,{provider:'azure'}),'azure');
+  }catch{azure={status:a.providerComparisonRecovery?.status==='processing'?'processing':'unavailable',overallScore:null,deliveryProvider:'azure',summary:'The Azure whole-recording assessment is still needed.'};}
+  return {version:'speaking-provider-comparison-2026-10-26.1',status:azure.status==='assessed'?'complete':'partial',sharedContentScore:shared.content.score,
+    questionCount:a.questionCount,recordingCount:coverage.recordings,unansweredCount:coverage.unanswered.length,openai,azure};
+}
+async function recoverComparisons({targets,operation,mockStore,ensureDelivery,logger=console,now=Date.now}={}){
+  if(typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,80}$/.test(operation)||!Array.isArray(targets)||!targets.length||targets.length>2
+    ||new Set(targets.map(t=>t.username)).size!==targets.length||targets.some(t=>!['mahdis','mahabir1'].includes(t.username)||typeof t.attemptId!=='string'))throw bad('COMPARISON_SCOPE');
+  const results=[];
+  for(const {username,attemptId} of targets){
+    const report=a=>{const c=providerComparisons(a);return {operation,username,attemptId,status:c?.status==='complete'?'complete':'needs-review',coverage:audit(a),
+      openaiOverall:c?.openai?.overallScore??null,azureOverall:c?.azure?.overallScore??null,content:c?.sharedContentScore??null,
+      openaiPronunciation:c?.openai?.pronunciation?.score??null,openaiFluency:c?.openai?.fluency?.score??null,
+      azurePronunciation:a.overallAzure?.pronunciation?.raw??null,azureFluency:a.overallAzure?.fluency?.raw??null,
+      azurePronunciationBand:a.overallAzure?.pronunciation?.score??null,azureFluencyBand:a.overallAzure?.fluency?.score??null,
+      ...(a.providerComparisonRecovery?.failure?{failure:a.providerComparisonRecovery.failure}:{})};};
+    let a=await mockStore.get(username,attemptId);
+    if(!a||a.status!=='submitted')throw bad('COMPARISON_ATTEMPT');
+    if(a.providerComparisonRecovery?.operation===operation){const result=report(a);results.push(result);logger.info('[speaking-provider-comparison]',JSON.stringify({...result,existing:true}));continue;}
+    const claim=crypto.randomUUID();let claimed=false;
+    a=await mockStore.update(username,attemptId,current=>{claimed=false;if(current.providerComparisonRecovery?.operation===operation)return current;
+      claimed=true;current.providerComparisonRecovery={operation,claim,status:'processing',startedAt:now()};return current;});
+    if(!claimed){const result=report(a);results.push(result);continue;}
+    logger.info('[speaking-provider-comparison]',JSON.stringify({operation,username,attemptId,status:'started',coverage:audit(a)}));
+    try{
+      if(!providerComparisons(a))throw bad('COMPARISON_CONTENT_STALE');
+      await ensureDelivery({username,attemptId,provider:'azure',operation:operation+':'+username+':azure'});
+      a=await mockStore.get(username,attemptId);
+      const comparisons=providerComparisons(a);
+      if(comparisons?.status!=='complete')throw Object.assign(bad('COMPARISON_AZURE_UNAVAILABLE'),{azureFailure:a.overallAzure?.failure});
+      a=await mockStore.update(username,attemptId,current=>{
+        if(current.providerComparisonRecovery?.claim!==claim)return current;
+        const confirmed=providerComparisons(current);if(confirmed?.status!=='complete')throw bad('COMPARISON_STALE');
+        current.combinedComparisons=confirmed;current.providerComparisonRecovery={...current.providerComparisonRecovery,status:'complete',finishedAt:now()};return current;
+      });
+    }catch(error){
+      const failure={code:/^[A-Z][A-Z0-9_]{0,70}$/.test(error.code||'')?error.code:'COMPARISON_UNAVAILABLE',...(error.azureFailure?{azure:error.azureFailure}:{})};
+      a=await mockStore.update(username,attemptId,current=>{if(current.providerComparisonRecovery?.claim===claim)current.providerComparisonRecovery={...current.providerComparisonRecovery,status:'needs-review',failure,finishedAt:now()};return current;});
+    }
+    const result=report(a);results.push(result);logger.info('[speaking-provider-comparison]',JSON.stringify(result));
+  }
+  return results;
+}
+module.exports={VERSION,NAME,INSTRUCTIONS,TYPES,entries,audit,quoteOptions,request,response,normalize,combine,fingerprint,recover,providerComparisons,recoverComparisons};

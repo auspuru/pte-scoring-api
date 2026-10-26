@@ -215,3 +215,22 @@ estimate. They are institute choices, not Pearson's conversion or calibrated
 predictions. The report exposes the formula and all three components, with the
 existing independent GPT and Azure delivery cards retained. All-question coverage
 must pass before a combined score can appear.
+
+## OpenAI and Azure combined-score comparison
+
+An instructor-pinned `provider-comparisons` operation can generate both estimates
+for the authorized Mahdis and Mahabir attempts. Both use the same confirmed whole
+content judgment and the same 6:5:5 formula and content ceilings. OpenAI supplies
+the blind whole-audio delivery traits; Azure supplies its separately assessed
+whole-audio acoustic traits mapped through the existing portal /5 bands. These
+are institute estimates, not native Azure /90 scores or Pearson predictions.
+Question marks and instructor overrides never enter either whole-provider score.
+
+Every actual saved recording is required by Azure. Explicitly unanswered questions
+are counted separately and retain zero content; an unexplained missing recording
+still withholds Azure assessment. This permits Mahdis's 25 saved recordings and
+two unanswered RS questions to be assessed without requiring nonexistent audio.
+The response counts, original provider results and original combined estimate are
+preserved. Comparison reads reuse saved judgments and perform no paid assessment.
+Both provider totals are labeled separately in the report. Recovery operations
+are idempotent, retain partial failure diagnostics and reject stale source data.
