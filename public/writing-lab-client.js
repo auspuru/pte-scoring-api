@@ -19,6 +19,8 @@
   let workspaceVisible = true, navigationSerial = 0, pendingRequest = null, handledRequest = null, historyKind = 'mock';
   let timer, saveTimer, noticeTimer, offset = 0, saving = Promise.resolve(), moving = false, expiryBusy = false, saveConflict = false;
   const grading = new Set();
+  let overallTimer, overallPollId = null, overallPollCount = 0;
+  const overallPending = new Set();
   let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(q.type);
@@ -525,15 +527,60 @@
   }
   const retryableSwt = index => attempt?.questions[index]?.type==='swt'
     && (attempt.results[index]?.score_provisional===true || attempt.results[index]?.needs_semantic_review===true);
+  const writingOverview = () => attempt?.kind==='mock' && attempt.module!=='listening'
+    && attempt.questions.every(q=>['swt','essay','sst','wfd'].includes(q.type));
+  function overallHTML() {
+    if(!writingOverview())return '';
+    const feedback=attempt.overallFeedback;
+    let content;
+    if(feedback?.status==='complete') {
+      const points=items=>items.map(p=>'<li><b>'+esc(p.title)+'</b> — '+esc(p.advice)+' <small>('+p.questionIndices.map(i=>'<a href="#review-'+i+'">Q'+(i+1)+'</a>').join(', ')+')</small></li>').join('');
+      content='<p>'+esc(feedback.summary)+'</p>'+(feedback.strengths.length?'<h3>What worked well</h3><ul>'+points(feedback.strengths)+'</ul>':'')+
+        '<h3>Focus on next</h3><ol>'+points(feedback.nextSteps)+'</ol><details><summary>Review of all '+feedback.questionCount+' questions'+(feedback.unansweredCount?' · '+feedback.unansweredCount+' unanswered':'')+'</summary>'+feedback.coverage.map(q=>'<div><h3><a href="#review-'+q.index+'">Q'+(q.index+1)+'. '+esc(q.title)+'</a>'+(q.status==='unanswered'?' · Unanswered':'')+'</h3><p>'+esc(q.observation)+'</p>'+(q.quote?'<blockquote>'+esc(q.quote)+'</blockquote>':'')+'</div>').join('')+'</details>';
+    } else {
+      const unavailable=feedback?.status==='unavailable';
+      content='<p class="muted" role="status">'+(unavailable?'Overall feedback could not be completed. Your answers and individual assessments are saved.':'Preparing feedback for the complete mock, including every submitted or unanswered question…')+'</p>'+((unavailable||overallPollCount>=36)?'<button class="secondary" id="retry-overall-feedback">'+(unavailable?'Retry overall feedback':'Check feedback again')+'</button>':'');
+    }
+    return '<article class="review-card overall-feedback" aria-labelledby="writing-overall-title"><h2 id="writing-overall-title">Overall writing feedback</h2>'+content+'</article>';
+  }
+  function bindOverall() {
+    clearTimeout(overallTimer);
+    document.getElementById('retry-overall-feedback')?.addEventListener('click',()=>refreshOverall(true));
+    if(!writingOverview() || attempt.overallFeedback?.status==='complete' || attempt.overallFeedback?.status==='unavailable')return;
+    if(overallPollId!==attempt.id){overallPollId=attempt.id;overallPollCount=0;}
+    if(overallPollCount<36)overallTimer=setTimeout(()=>refreshOverall(false),5000);
+  }
+  async function refreshOverall(retry) {
+    if(!workspaceVisible || !writingOverview() || attempt.status!=='submitted' || overallPending.has(attempt.id))return;
+    const id=attempt.id, serial=navigationSerial, ownerToken=token();
+    overallPending.add(id); overallPollCount++;
+    const button=document.getElementById('retry-overall-feedback');if(button)button.disabled=true;
+    try {
+      const value=await api('/attempts/'+id+(retry?'/overall-feedback':''),retry?{}:undefined);
+      if(attempt?.id!==id || navigationSerial!==serial || token()!==ownerToken || !workspaceVisible)return;
+      attempt.overallFeedback=retry?value:value.overallFeedback;
+      if(retry)overallPollCount=0;
+    } catch(e) {
+      if(attempt?.id===id && navigationSerial===serial && token()===ownerToken)attempt.overallFeedback={status:'unavailable'};
+    } finally {
+      overallPending.delete(id);
+      if(attempt?.id===id && navigationSerial===serial && workspaceVisible) {
+        const target=document.getElementById('overall-feedback');
+        if(target){target.innerHTML=overallHTML();bindOverall();}
+      }
+    }
+  }
   function renderResults() {
     setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results), scored=summary.complete;
     const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    const resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?(attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    const resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?(attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.'):'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
     const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);
     root.innerHTML=studio&&listeningOnly?studioWrap(resultsHTML,attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
     root.focus();
+    const overallTarget=document.getElementById('overall-feedback');
+    if(overallTarget){overallTarget.innerHTML=overallHTML();bindOverall();}
     if(attempt.questions.some((q,i)=>retryableSwt(i)) && !grading.has(attempt.id)) {
       const status=document.getElementById('scoring-status');
       if(status) status.innerHTML='Some SWT estimates are provisional. <button class="secondary" id="retry-scores">Request a complete assessment</button>';

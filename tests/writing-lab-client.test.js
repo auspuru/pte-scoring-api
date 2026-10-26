@@ -78,7 +78,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
   context.window.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
     { ...extra, fetch: context.fetch, wait: async () => {} }) };
   vm.createContext(context);
-  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
+  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,overallHTML,refreshOverall,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
   vm.runInContext(instrumented,context);
   if(protectedMode)context.window.PortalExamMode=createController(document,context.window);
   const hooks=context.window.testApi;
@@ -565,4 +565,38 @@ test('Explicit exam-style individual listening has no practice hints or replay c
  const h=harness({studioMode:true,portal:true}),q=bank.dictation[0];h.hooks.setCatalog({mocks:[],spoken:[],dictation:[q]});
  const a=present({id:'exam-attempt',testId:q.id,title:q.title,kind:'wfd',module:'listening',mode:'exam',index:0,status:'active',startedAt:100000,deadline:220000,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});
  open(h,a);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/id="audio-replay"|class="studio-help"/);assert.match(h.nodes.get('lab').innerHTML,/data-listening-mode="exam" aria-pressed="true"/);
+});
+
+test('Writing overview renders grounded strengths, priorities and all-question coverage with safe HTML',()=>{
+ const h=harness(),a=attempt();a.status='submitted';a.module='writing';
+ a.overallFeedback={status:'complete',summary:'Relevant ideas <script>bad()</script>',questionCount:7,unansweredCount:1,
+   strengths:[{title:'Clear position',advice:'Your essay states an opinion.',questionIndices:[2]}],
+   nextSteps:[{title:'Finish each response',advice:'Leave time for dictation.',questionIndices:[6]}],
+   coverage:a.questions.map((q,i)=>({index:i,title:q.title,status:i===6?'unanswered':'reviewed',observation:'Specific observation '+i,quote:i===6?'':'Exact response <text>'}))};
+ h.hooks.set(a);const html=h.hooks.overallHTML();
+ assert.match(html,/Overall writing feedback/);assert.match(html,/Focus on next/);
+ assert.match(html,/Review of all 7 questions · 1 unanswered/);assert.match(html,/href="#review-6"/);
+ assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
+ for(let i=0;i<7;i++)assert.match(html,new RegExp('Specific observation '+i));
+ a.module='listening';h.hooks.set(a);assert.equal(h.hooks.overallHTML(),'');
+});
+
+test('Overall feedback refresh preserves individual results and ignores responses after navigation',async()=>{
+ const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.results[0]={total:7};h.hooks.set(a);
+ h.context.reply={...a,results:[{total:1}],overallFeedback:{status:'complete',summary:'Finished'}};
+ await h.hooks.refreshOverall(false);assert.equal(h.hooks.current().results[0].total,7);assert.equal(h.hooks.current().overallFeedback.status,'complete');
+ assert.match(h.requests.at(-1).url,/\/attempts\/test-id$/);
+ let resolve;h.context.fetch=()=>new Promise(r=>resolve=r);
+ const request=h.hooks.refreshOverall(false);await flush();
+ const next={...a,id:'other-attempt',overallFeedback:{status:'processing'}};h.hooks.set(next);
+ resolve({ok:true,json:async()=>({overallFeedback:{status:'complete',summary:'Old review'}})});await request;
+ assert.equal(h.hooks.current().id,'other-attempt');assert.equal(h.hooks.current().overallFeedback.status,'processing');
+});
+
+test('Unavailable writing overview offers a separate retry without rerunning individual grades',async()=>{
+ const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.overallFeedback={status:'unavailable'};h.hooks.set(a);
+ assert.match(h.hooks.overallHTML(),/Retry overall feedback/);
+ h.context.reply={status:'processing'};await h.hooks.refreshOverall(true);
+ assert.match(h.requests.at(-1).url,/\/overall-feedback$/);assert.deepEqual(h.requests.at(-1).body,{});
+ assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
 });

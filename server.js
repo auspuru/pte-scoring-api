@@ -6363,6 +6363,12 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   getAccount: getPracticeAccount,
   essayGrader,
   swtGrader: (question,text) => judgeContentWithClaude(text,question.text,{}),
+  overallGrader: async attempt => {
+    if (!anthropic) throw new Error('Overall writing assessment is not configured.');
+    const overall = require('./writing-mock-overall');
+    const response = await anthropic.messages.create(overall.request(attempt,'claude-sonnet-4-6'), { timeout:120000, maxRetries:0 });
+    return overall.response(response);
+  },
   callModel: async prompt => {
     if (!anthropic) throw new Error('Writing assessment is not configured.');
     const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,

@@ -5,6 +5,7 @@ const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const listeningScoring = require('./listening-scoring');
 const report = require('./public/writing-lab-report');
+const overall = require('./writing-mock-overall');
 const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
@@ -90,6 +91,7 @@ function reconcile(a, now = Date.now()) {
 }
 function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results) : null };
+  result.overallFeedback = overall.view(a);
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(listeningScoring.TYPES.has(q.type) ? {maximum:listeningScoring.maximum(q)} : {}),
@@ -100,8 +102,9 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
+  const reviewer = overall.createReviewer({ store, callModel:overallGrader });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
   // A submitted answer is immutable. Assess outside the answer-save transaction,
@@ -174,6 +177,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return task;
   }
   function assessSubmitted(uid, a) {
+    reviewer.ensure(uid,a).catch(error => console.warn('[writing-mock-overall]', error.message));
     a.questions.forEach((q, index) => {
       const key = uid + ':' + a.id + ':' + index;
       if (a.completed[index] && !a.results[index] && Date.now() - (failedAt.get(key) || 0) > 60000)
@@ -215,6 +219,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     message:{error:'Please wait before starting another attempt.'}}));
   router.post('/attempts/:id/score/:index', rateLimit({windowMs:60000,max:20,standardHeaders:true,legacyHeaders:false,
     message:{error:'Please wait a minute before requesting more scores.'}}));
+  router.post('/attempts/:id/overall-feedback', rateLimit({windowMs:60000,max:3,keyGenerator:req=>req.labUser,standardHeaders:true,legacyHeaders:false,
+    message:{error:'Please wait a minute before requesting more overall feedback.'}}));
   router.get('/attempts', route(async(req,res) => {
     const all = await store.list(req.labUser);
     const entries = [];
@@ -309,6 +315,14 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
     if(a.results[index] && !retryableSwt(a.results[index],a.questions[index])) return res.json(a.results[index]);
     res.json(await assess(req.labUser, a, index));
+  }));
+  router.post('/attempts/:id/overall-feedback', route(async(req,res) => {
+    const a = await store.get(req.labUser,req.params.id);
+    if (!a) throw bad('Attempt not found.',404);
+    if (!overall.eligible(a)) throw bad('Finish a writing mock before requesting overall feedback.',409);
+    if (!overallGrader) throw bad('Overall writing feedback is not configured.',503);
+    const feedback = await reviewer.ensure(req.labUser,a,{retry:true});
+    res.set('Cache-Control','no-store'); res.json(feedback || {status:'processing'});
   }));
   app.use('/api/writing-lab', router);
   return { store };
