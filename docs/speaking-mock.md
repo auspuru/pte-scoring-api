@@ -234,3 +234,29 @@ The response counts, original provider results and original combined estimate ar
 preserved. Comparison reads reuse saved judgments and perform no paid assessment.
 Both provider totals are labeled separately in the report. Recovery operations
 are idempotent, retain partial failure diagnostics and reject stale source data.
+
+## Report presentation and prediction images (26 October 2026)
+
+The approved report has Overview, Answers and Next steps sections. Answer review
+uses compact task/question selectors, Previous/Next, original question audio,
+the learner recording, and Feedback/Transcript/Sample tabs. Image zoom uses the
+saved question asset. Provider selection changes presentation only: GPT /5,
+Azure native /100, existing Azure practice /5, and combined whole-mock estimates
+retain their separate labels and saved values. Compare both exposes the full
+provider comparison. Switching providers or feedback tabs does not replace the
+recording player, start an assessment, or change marks. Next steps reuse the
+selected answer's existing feedback rather than inventing new deductions.
+
+The shared `portal-calm.css` applies the approved restrained palette and control
+styling to portal navigation, the dashboard, practice and result surfaces. Timed
+mock geometry and exam controls retain their existing behavior.
+
+All new speaking papers require a sourced prediction image and a saved matching
+sample/facts for every Describe Image question. Mock 1 now uses original assets
+3000411, 3000392, 3000375, 3000469 and 3000561, visually checked for readable
+labels and matching samples. Mocks 2 and 3 retain their distinct prediction sets.
+Unclear source crops must be excluded until a better original is available;
+zoom does not reconstruct missing labels. These are prediction-bank materials,
+not claimed official Pearson questions. Saved attempts keep their question
+snapshots, including legacy generated images, and reattempts clone that saved
+paper. No existing attempt is migrated to the new images.

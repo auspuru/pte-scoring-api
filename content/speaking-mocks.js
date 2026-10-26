@@ -2,7 +2,7 @@
 const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const speakingAudio=require('./speaking-audio/manifest.json'),writingAudio=require('./writing-audio/manifest.json');
-const VERSION='speaking-mock-2026-10-25.1';
+const VERSION='speaking-mock-2026-10-26.2';
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function source(q,folder,id=q.id){
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];
@@ -18,9 +18,14 @@ let passage='';for(const sentence of archive.text.split(/(?<=[.!?])\s+/u)){const
 questions.push({id:'mock-ra-archives',type:'ra',...bank.types.ra,title:'Preserving accessible records',text:passage,sourceId:archive.id});
 questions.push(...bank.questions.filter(q=>q.type==='rs').map(q=>source(q,'speaking')));
 for(const q of writing.dictation.slice(0,5))questions.push(source({id:'mock-rs-'+q.id,type:'rs',...bank.types.rs,title:'Repeat Sentence',text:q.text,sourceId:q.id},'writing',q.id));
-questions.push(...[1,2,3,4,5].map(n=>pick('di-'+n)));
+// Original prediction assets reviewed for readable labels and matching samples.
+// Saved attempts and their reattempts retain their own original snapshots.
+questions.push(...['3000411','3000392','3000375','3000469','3000561'].map(id=>pick('di-pred-'+id)));
 for(const type of ['rl','sgd','rts'])questions.push(...[1,2].map(n=>source(pick(type+'-'+n),'speaking')));
 function paper(number,items){
+  for(const q of items.filter(q=>q.type==='di')){
+    if(!/^\/assets\/di-predictions-\d{8}\/[^/]+\.png$/.test(q.imageUrl||'')||!q.predictionSource?.sourceId||!q.sample||!q.facts?.length)throw Error('Speaking mocks require a sourced prediction image and matching sample: '+q.id);
+  }
   const seconds=items.reduce((sum,q)=>sum+3+(q.audioSeconds||0)+q.preparation+q.seconds,0);
   return {id:'speaking-mock-'+number,title:'Speaking Mock '+number,minutes:Math.ceil(seconds/60)+3,
     questionCount:items.filter(q=>q.type!=='intro').length,description:'A complete speaking practice paper using saved portal recordings, with an unscored introduction.',

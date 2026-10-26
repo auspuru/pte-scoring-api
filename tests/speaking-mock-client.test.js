@@ -220,10 +220,29 @@ test('New feedback arrives in place without replacing the current audio player o
 });
 
 test('A delayed recording from the previous question cannot replace the selected question audio',async t=>{
- const h=await harness(t);await sampleReport(h);const request=h.env.fetch;let resolveAudio;
+ const h=await harness(t),{questions}=await sampleReport(h);const request=h.env.fetch;let resolveAudio;
  h.env.fetch=(url,args)=>url.endsWith('/recordings/17')?new Promise(resolve=>{resolveAudio=resolve;}):request(url,args);
  await h.click({sm:'filter',type:'di'});assert(resolveAudio);await h.click({sm:'review-step',step:'1'});await h.flush();
  const audio=h.nodes.get('sm-review-audio'),markup=audio.innerHTML;
  resolveAudio({ok:true,blob:async()=>new Blob(['old audio'])});await h.flush();
- assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.match(h.nodes.get('sm-review-details').innerHTML,/student’s monthly budget/);
+ assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert(h.nodes.get('sm-review-details').innerHTML.includes(escaped(questions.filter(q=>q.type==='di')[1].title)));
+});
+
+test('Report sections, providers and response tabs preserve the loaded recording and never request a reassessment',async t=>{
+ const h=await harness(t);await sampleReport(h);await h.click({sm:'filter',type:'di'});
+ for(let n=0;n<100&&!h.nodes.get('sm-review-audio').innerHTML.includes('<audio');n++)await new Promise(resolve=>setTimeout(resolve,2));
+ const audio=h.nodes.get('sm-review-audio'),markup=audio.innerHTML,requests=h.requests.length;
+ for(const section of ['overview','next','answers']){await h.click({sm:'section',section});assert.equal(h.nodes.get('sm-panel-'+section).hidden,false);}
+ for(const provider of ['azure','all','gpt']){h.host.onchange({target:{id:'sm-review-provider',value:provider}});assert.match(h.nodes.get('sm-review-feedback').innerHTML,new RegExp('value="'+provider+'" selected'));}
+ await h.click({sm:'response-pane',pane:'sample'});assert.match(h.nodes.get('sm-review-feedback').innerHTML,/id="sm-response-sample"[^>]*aria-labelledby="sm-response-tab-sample">/);
+ await h.click({sm:'response-pane',pane:'transcript'});assert.match(h.nodes.get('sm-review-feedback').innerHTML,/id="sm-response-transcript"[^>]*aria-labelledby="sm-response-tab-transcript">/);
+ assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.equal(h.requests.length,requests);
+});
+
+test('Old generated-image attempts and their reattempts retain the saved question after new papers switch to prediction images',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h),legacy=structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-1'));
+ await h.lab.store.update('alice',id,a=>{a.questions[17]=legacy;return a;});
+ await h.click({sm:'resume',id});await h.click({sm:'filter',type:'di'});assert(h.nodes.get('sm-review-details').innerHTML.includes('/speaking-image/di-1.svg'));
+ await h.click({sm:'reattempt',id});const fresh=await h.active();assert.equal(fresh.reattemptOf,id);assert.deepEqual(fresh.questions[17],legacy);
+ assert.equal(require('../content/speaking-mocks').papers[0].questions[17].id,'di-pred-3000411');
 });
