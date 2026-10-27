@@ -1,6 +1,6 @@
 'use strict';
 const express=require('express'),crypto=require('node:crypto'),path=require('node:path'),fs=require('node:fs/promises');
-const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),gpt=require('./gpt-speaking-delivery'),azure=require('./speaking-delivery'),whole=require('./speaking-mock-overall');
+const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),azure=require('./speaking-delivery');
 const academy=require('./describe-image-academy');
 const manualDelivery=require('./speaking-manual-delivery');
 const azureWhole=require('./speaking-mock-azure');
@@ -26,26 +26,27 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
   const submitted=a.status==='submitted';
   const savedContent=a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:a.overall||null,overallAzure:a.overallAzure||null,combinedOverall:a.combinedOverall||null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
     speakingReport:submitted?speakingReport.summarize(a):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
-    combinedComparisons:a.providerComparisonRecovery?combined.providerComparisons(a):null,providerComparisonStatus:a.providerComparisonRecovery?.status||null,integrity:a.integrity,
+    combinedComparisons:null,providerComparisonStatus:null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
-        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{gpt:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'gpt'):r.gpt)||null,azure:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
+        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
-  assessGpt=gpt.assessRecording,assessAzure=azure.assessRecording,assessOverall=whole.assess,gradeResponse,
-  gptAvailable=gpt.isConfigured(),azureAvailable=azure.isConfigured(),
+  assessAzure=azure.assessRecording,gradeResponse,
+  azureAvailable=azure.isConfigured(),
   assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,now=Date.now}={}){
+  const gptAvailable=false;
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
-  const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
+  const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
   const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
-  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,diBackend:'academy',requiredProviders:['gpt','azure']}}:{};
+  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,diBackend:'academy',requiredProviders:['azure']}}:{};
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
   async function readResults(uid,id){
@@ -71,7 +72,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(overallOnly||azureOverallOnly)return;
       const q=a.questions[i],r=a.responses[i];if(!r?.recording||q.type==='intro')return;
       const patch=async value=>{a=await save(current=>{Object.assign(current.responses[i],value);});};
-      if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!gptAvailable||r.gpt?.status==='assessed')&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(q,r.recording,r));return;}
+      if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(q,r.recording,r));return;}
       if(!r.transcript){
         try{await patch({transcript:await transcribe(r.recording),transcriptionStatus:'assessed'});}
         catch{await patch({transcriptionStatus:'unavailable'});return;}
@@ -88,40 +89,10 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       };
       const providerFailure=provider=>current[provider]?.status==='assessed'?{...current[provider],retryStatus:'unavailable'}:unavailable();
       if(!speakingReport.validContent(q,current.content)||(q.type==='di'&&academy.needsReview(current.content)))tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
-      if(!contentGated&&gptAvailable&&speakingReport.deliveryTraits(current,'gpt').missing.length)tasks.push(assessGpt(r.recording,{question:q,transcript:current.transcript}).then(result=>patch({gpt:retainDelivery('gpt',result)}),()=>patch({gpt:providerFailure('gpt')})));
       if(!contentGated&&azureAvailable&&speakingReport.deliveryTraits(current,'azure').missing.length)tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?retainDelivery('azure',result):providerFailure('azure')}),()=>patch({azure:providerFailure('azure')})));
       await Promise.allSettled(tasks);
     }
-    const overallJob=(async()=>{
-      // Legacy whole-audio reviews are explicit diagnostic repairs only.
-      // New mock totals come from the task-weighted report, without an API call.
-      if(!overallOnly||azureOverallOnly)return;
-      if(!reassessOverall&&a.overall&&a.overall.status!=='unavailable'&&(!overallOnly||a.overall.status==='assessed'&&Number.isInteger(a.overall.overallScore)&&a.overall.overallScore>=10&&a.overall.overallScore<=90))return;
-      if(!gptAvailable){await save(current=>{
-        if(reassessOverall)current.overallRecovery={...current.overallRecovery,status:'failed',failure:{code:'WHOLE_NOT_CONFIGURED'}};
-        else current.overall={status:'unavailable',summary:'Whole-test audio assessment is not configured.'};
-      });return;}
-      // Deliberate boundary: no question, transcript, mark or feedback enters
-      // the blind overall scorer. It receives only the saved student audio.
-      const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
-      try{
-        const result=await assessOverall(recordings,{expectedCount:a.questionCount});
-        if(reassessOverall&&(result?.status!=='assessed'||!Number.isInteger(result.overallScore)||result.overallScore<10||result.overallScore>90))throw Object.assign(Error('The reassessment could not be verified.'),{code:'WHOLE_VALIDATION'});
-        await save(current=>{
-          if(reassessOverall){
-            const assessedAt=now();
-            current.overallHistory||=[];
-            if(current.overall)current.overallHistory.push({operation,replacedAt:assessedAt,assessment:current.overall});
-            current.overall={...result,reassessmentOperation:operation,assessedAt};
-          }else current.overall=result;
-        });
-      }
-      catch(error){const failure=whole.diagnostic(error);console.warn('[speaking-mock-overall]',JSON.stringify({status:'unavailable',...failure}));await save(current=>{
-        // A failed reassessment cannot erase a previously confirmed result.
-        if(reassessOverall)current.overallRecovery={...current.overallRecovery,status:'failed',failure};
-        else current.overall={status:'unavailable',failure,summary:'The whole-test audio review could not finish. Retry this saved mock without recording again.'};
-      });}
-    })();
+    const overallJob=Promise.resolve();
     const azureOverallJob=(async()=>{
       if(!azureOverallOnly||!azureOverallAvailable||a.overallAzure?.status==='assessed')return;
       const recordings=a.responses.flatMap((r,i)=>a.questions[i].type!=='intro'&&r?.recording?[{mime:r.recording.mime,data:r.recording.data,hash:r.recording.hash}]:[]);
@@ -156,32 +127,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     job.catch(()=>console.warn('[speaking-mock] Assessment interrupted; saved stages can resume.')).finally(()=>jobs.delete(a.id));
     return job;
   }
-  async function recoverOverall({username,attemptId,operation,provider='gpt',reassess=false,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
-    if(provider==='azure')return recoverAzureOverall({username,attemptId,operation,wait});
-    if(provider!=='gpt'||typeof reassess!=='boolean'||!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid overall repair scope.');
-    let a=await read(username,attemptId);if(a.status!=='submitted')throw fail('Finish the mock before reviewing scores.',409);
-    const confirmed=value=>value?.status==='assessed'&&Number.isInteger(value.overallScore)&&value.overallScore>=10&&value.overallScore<=90;
-    const completed=()=>confirmed(a.overall)&&(!reassess||a.overall.reassessmentOperation===operation);
-    const report=()=>{const failure=(a.overallRecovery?.operation===operation&&a.overallRecovery.failure)||a.overall?.failure;return {operation,attemptId,reassessment:reassess,status:completed()?'complete':'needs-review',overallStatus:a.overall?.status||'missing',
-      overallScore:confirmed(a.overall)?a.overall.overallScore:null,pronunciation:a.overall?.pronunciation?.score??null,fluency:a.overall?.fluency?.score??null,
-      recordingCount:a.overall?.recordingCount??a.completedCount??0,model:a.overall?.deliveryModel||null,rubricVersion:a.overall?.deliveryRubricVersion||null,
-      ...(failure?{failure}:{})};};
-    if(completed()||a.overallRecovery?.operation===operation){const result=report();console.info('[speaking-overall-recovery]',JSON.stringify({...result,existing:true}));return result;}
-    console.info('[speaking-overall-recovery]',JSON.stringify({operation,attemptId,status:'started'}));
-    // Respect an assessment already in flight, including an old deployment's
-    // still-valid lease. Do not start a second paid whole-test review.
-    for(let n=0;n<8;n++){
-      if(jobs.has(attemptId))await jobs.get(attemptId);
-      a=await read(username,attemptId);if(completed()||a.overallRecovery?.operation===operation)break;
-      if(a.lease?.expiresAt>now()||jobs.size>=2){await wait(Math.min(30000,Math.max(1000,(a.lease?.expiresAt||now()+30000)-now()+50)));continue;}
-      let scheduled=false;
-      a=await store.update(username,attemptId,current=>{scheduled=false;if(current.lease?.expiresAt>now()||current.overallRecovery?.operation===operation)return current;scheduled=true;current.grading={status:'pending'};current.overallRecovery={operation,status:'processing',reassessment:reassess,startedAt:now()};return current;});
-      if(!scheduled)continue;
-      const job=queue(username,a,{overallOnly:true,reassessOverall:reassess,operation});if(!job){await wait(1000);continue;}await job;a=await read(username,attemptId);
-      if(a.overallRecovery?.operation===operation)break;
-    }
-    const result=report();await store.update(username,attemptId,current=>{if(current.overallRecovery?.operation===operation)current.overallRecovery={...current.overallRecovery,...result,finishedAt:now()};return current;});
-    console.info('[speaking-overall-recovery]',JSON.stringify(result));return result;
+  async function recoverOverall(request={}){
+    if(request.provider&&request.provider!=='azure')throw fail('GPT speech scoring has been retired. Use Azure.',410);
+    return recoverAzureOverall(request);
   }
   async function recoverAzureOverall({username,attemptId,operation,wait}={}){
     if(!require('./speaking-access').allowed(username)||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw fail('Invalid Azure overall scope.');
@@ -191,7 +139,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       pronunciation:a.overallAzure?.pronunciation?.raw??null,fluency:a.overallAzure?.fluency?.raw??null,nativeMaximum:100,
       pronunciationBand:a.overallAzure?.pronunciation?.score??null,fluencyBand:a.overallAzure?.fluency?.score??null,
       recordingCount:a.overallAzure?.recordingCount??0,chunkCount:a.overallAzure?.chunkCount??0,version:a.overallAzure?.version||null,
-      gptOverallScore:a.overall?.overallScore??null,...(a.overallAzure?.failure?{failure:a.overallAzure.failure}:{})});
+      ...(a.overallAzure?.failure?{failure:a.overallAzure.failure}:{})});
     if(a.overallAzure?.status==='assessed'||a.overallAzureRecovery?.operation===operation){const result=report();console.info('[speaking-azure-overall-recovery]',JSON.stringify({...result,existing:true}));return result;}
     console.info('[speaking-azure-overall-recovery]',JSON.stringify({operation,attemptId,status:'started'}));
     for(let n=0;n<8;n++){

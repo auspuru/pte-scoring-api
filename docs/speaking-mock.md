@@ -1,3 +1,5 @@
+> Current policy (27 October 2026): Microsoft Azure is the sole pronunciation and fluency scorer. Current mock totals and publication use content plus Azure only. GPT delivery comparisons and pilot recovery sections below describe archived implementations. See [background scoring](speaking-background-scoring.md#azure-only-delivery-policy) for the active integration and migration.
+
 # Speaking mocks
 
 Active overall model (27 October 2026): [task-weighted Speaking](speaking-task-weighted-overall.md).

@@ -4,7 +4,7 @@ const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('n
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 const hash=value=>crypto.createHash('sha256').update(Buffer.isBuffer(value)||typeof value==='string'?value:JSON.stringify(canonical(value))).digest('hex');
 function createJobs({pool,directory,table,now=Date.now}={}){
-  if(!['speaking_answer_jobs','academy_di_jobs','speaking_mock_alert_jobs','admin_alert_test_jobs'].includes(table))throw Error('Invalid job namespace.');
+  if(!['speaking_answer_jobs','academy_di_jobs','speaking_mock_alert_jobs','admin_alert_test_jobs','academy_azure_jobs'].includes(table))throw Error('Invalid job namespace.');
   let ready,lock=Promise.resolve();
   const file=id=>path.join(directory,hash(id)+'.json');
   async function initialise(){return ready||=Promise.resolve().then(async()=>{
@@ -42,7 +42,15 @@ function createJobs({pool,directory,table,now=Date.now}={}){
     if(pool){const row=await get(owner,id),data=change(row);if(!data)return row;const result=await pool.query(`UPDATE ${table} SET data=$3,status='pending',run_after=0,lease_token=NULL,lease_until=0,updated_at=$4 WHERE id=$1 AND owner=$2 AND status='needs_attention' AND lease_token IS NOT DISTINCT FROM $5 RETURNING id`,[id,owner,JSON.stringify(data),now(),row.lease_token]);if(!result.rows.length)throw Object.assign(Error('Job changed during repair.'),{status:409});return get(owner,id);}
     return serial(async()=>{const row=await readFile(id),data=change(row);return data?write({...row,data,status:'pending',run_after:0,lease_until:0,lease_token:null,updated_at:now()}):row;});
   }
-  return{initialise,enqueue,get,list,claim,save,heartbeat,retry};
+  async function retire(owner,id,names){
+    if(!Array.isArray(names)||names.some(name=>!['gpt','academy'].includes(name)))throw Error('Invalid retired stages.');
+    const change=row=>{if(!row||row.owner!==owner||row.status==='running')return null;const data=structuredClone(row.data);let changed=false;
+      for(const name of names)if(data.stages?.[name]&&data.stages[name].status!=='retired'){data.stages[name]={...data.stages[name],status:'retired',retiredAt:now(),retirement:'azure-only-v1'};changed=true;}
+      if(!changed)return null;const held=Object.values(data.stages||{}).some(s=>s.status==='needs_attention');return{data,status:row.status==='ready'?'ready':held?'needs_attention':'pending'};};
+    await initialise();if(pool){const row=await get(owner,id),next=change(row);if(next)await pool.query(`UPDATE ${table} SET data=$3,status=$4,run_after=0,updated_at=$5 WHERE id=$1 AND owner=$2 AND status=$6 AND updated_at=$7 AND lease_token IS NOT DISTINCT FROM $8`,[id,owner,JSON.stringify(next.data),next.status,now(),row.status,row.updated_at,row.lease_token]);}
+    else await serial(async()=>{const row=await readFile(id),next=change(row);if(next)await write({...row,...next,run_after:0,updated_at:now()});});
+  }
+  return{initialise,enqueue,get,list,claim,save,heartbeat,retry,retire};
 }
 function createWorker({store,run,onSettled=async()=>{},concurrency=2,intervalMs=2000,now=Date.now}={}){
   const active=new Set();let timer,stopped=false,pumping;

@@ -3,7 +3,7 @@ const scoring=require('./speaking-scoring');
 const {confirmed}=require('./speaking-content-recovery');
 const manual=require('./speaking-manual-delivery');
 
-const VERSION='speaking-task-weighted-2026-10-27.1';
+const VERSION='speaking-task-weighted-azure-2026-10-27.1';
 // Pearson's rounded average Speaking contributions total 101, not 100.
 // Normalise their relative weights; never silently change RTS from 13 to 12.
 const WEIGHTS=Object.freeze({ra:9,rs:16,di:31,rl:13,sgd:19,rts:13});
@@ -71,10 +71,10 @@ function providerReport(a,provider){
     missingQuestions:rows.filter(r=>r.total===null).map(r=>({index:r.index,missing:r.missing})),
     coverageValid,supported,fullProfile:missingTypes.length===0,missingTypes,weightTotal,byType,questions:rows};
 }
-function summarize(a){
+function summarize(a,{includeArchived=false}={}){
   return {version:VERSION,scope:'speaking-sectional',weights:{...WEIGHTS},
     calibration:'uncalibrated',conversion:'round(10 + 80 × weighted task accuracy)',
     assessment:'Provisional Speaking practice estimate. Pearson item difficulty and proprietary scaling are not available.',
-    openai:providerReport(a,'gpt'),azure:providerReport(a,'azure')};
+    provider:'azure',requiredProviders:['azure'],...(includeArchived?{openai:providerReport(a,'gpt')}:{}),azure:providerReport(a,'azure')};
 }
 module.exports={VERSION,WEIGHTS,contentMaximum,validContent,deliveryTraits,questionResult,providerReport,summarize};

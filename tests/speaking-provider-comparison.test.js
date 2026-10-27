@@ -32,7 +32,7 @@ test('Pinned provider comparison reuses all content and OpenAI results and persi
  }};
  const [result]=await combined.recoverComparisons(options);assert.equal(result.status,'complete');assert.equal(result.openaiOverall,75);assert.equal(result.azureOverall,85);
  const saved=await s.mockStore.get('mahabir1',a.id);assert.deepEqual(saved.responses,before.responses);assert.deepEqual(saved.overall,before.overall);assert.deepEqual(saved.combinedOverall,before.combinedOverall);
- assert.equal(saved.combinedComparisons.azure.overallScore,85);assert.equal(present(saved).combinedComparisons.openai.overallScore,75);assert(!JSON.stringify(present(saved)).includes('private-audio'));
+ assert.equal(saved.combinedComparisons.azure.overallScore,85);assert.equal(present(saved).combinedComparisons,null);assert(!JSON.stringify(present(saved)).includes('private-audio'));
  await combined.recoverComparisons(options);assert.equal(calls,1);
  await assert.rejects(combined.recoverComparisons({...options,targets:[{username:'pppp',attemptId:a.id}]}));
 });

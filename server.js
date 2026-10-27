@@ -6360,6 +6360,7 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
 const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:process.env.SPEAKING_MOCK_ALERTS_ENABLED==='true'});
+const academyAzure=require('./academy-azure-service').installAcademyAzure(app,{pool:pgPool,directory:path.join(DATA_DIR,'academy-azure'),secret:process.env.PTE_DI_SERVICE_KEY||'',transcribe:require('./speaking-lab').transcribeRecording});
 app.get('/api/admin/speaking-mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(speakingAlerts.health()));
 app.post('/api/admin/speaking-mock-alerts/test',requireAdmin,async(req,res)=>{try{res.set('Cache-Control','no-store').status(202).json(await speakingAlerts.sendTest(req.body?.operation));}catch(error){res.status(error.status||503).json({error:error.status?error.message:'Test email could not be queued.'});}});
 app.get('/api/admin/speaking-mocks/:username/:id/scoring',requireAdmin,async(req,res)=>{try{const value=await speakingMock.progressive.diagnostics(req.params.username,req.params.id);res.set('Cache-Control','no-store').status(value?200:404).json(value||{error:'Mock attempt not found.'});}catch{res.status(503).json({error:'Scoring diagnostics temporarily unavailable.'});}});
@@ -6479,6 +6480,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise()]);
     await speakingMock.start();
     await speakingAlerts.start();
+    await academyAzure.start();
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
     if(process.env.NODE_ENV!=='test'&&process.env.SPEAKING_MOCK_ALERT_TEST){
@@ -6552,6 +6554,7 @@ installGracefulShutdown(httpServer, {
   onShutdown: () => serviceReadiness.stop(),
   cleanup: async () => {
     await speakingAlerts.stop();
+    await academyAzure.stop();
     await speakingMock.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([

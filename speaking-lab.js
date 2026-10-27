@@ -3,7 +3,6 @@ const express=require('express'),path=require('node:path'),fs=require('node:fs/p
 const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring'),delivery=require('./speaking-delivery');
 const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
-const gptDelivery=require('./gpt-speaking-delivery');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
 function question(q,reveal=false) {
@@ -17,7 +16,18 @@ function question(q,reveal=false) {
 function present(a) {
   return {id:a.id,questionId:a.questionId,status:a.status,startedAt:a.startedAt,transcript:a.transcript||'',revision:a.revision||0,
     recording:a.recording?{mime:a.recording.mime,bytes:Buffer.byteLength(a.recording.data,'base64')}:null,
-    transcribed:!!a.transcription,result:scoring.resultForClient(a.result,a.transcript||'')||null,question:question(bank.questions.find(q=>q.id===a.questionId),a.status==='submitted')};
+    transcribed:!!a.transcription,result:azureResult(a),question:question(bank.questions.find(q=>q.id===a.questionId),a.status==='submitted')};
+}
+function azureResult(a){
+  const source=scoring.resultForClient(a.result,a.transcript||'');if(!source)return null;
+  const cached=source.deliveryComparisons?.azure;
+  const native=(source.deliveryProvider==='azure-speech-pronunciation'||/^azure-/.test(source.deliveryVersion||''))?source:cached?.status==='assessed'&&(!cached.recordingHash||cached.recordingHash===a.recording?.hash)?cached:null;
+  const out={...source};
+  for(const key of ['pronunciation','fluency','deliveryVersion','deliveryProvider','deliveryModel','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryRubricVersion','deliveryCalibration','deliveryObservation','deliveryFailureTraits'])out[key]=native?.[key]??null;
+  if(native)out.deliveryProvider='azure-speech-pronunciation';
+  delete out.deliveryComparisons;delete out.deliveryComparisonHistory;delete out.deliveryRequestedModel;
+  if(!native&&a.recording)out.deliveryStatus=/gpt|openai/i.test([source.deliveryProvider,source.deliveryVersion,source.deliveryStatus].filter(Boolean).join(' '))?'Azure speech assessment is needed for this saved recording.':source.deliveryStatus||'Azure speech assessment is needed for this saved recording.';
+  return out;
 }
 async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,fetch:request=fetch}={}) {
   if(!apiKey)throw fail('Automatic transcription is not configured. Enter the exact words you said; content feedback still works.',503);
@@ -45,23 +55,11 @@ async function transcribeRecording(recording,{apiKey=process.env.OPENAI_API_KEY,
   const data=await response.json();if(typeof data.text!=='string'||data.text.length>6000)throw fail('The transcript could not be read. Enter your spoken words manually.',503);
   return data.text;
 }
-function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,transcriptionAvailable=!!process.env.OPENAI_API_KEY,assessDelivery=delivery.assessRecording,deliveryAssessmentAvailable=delivery.isConfigured()||gptDelivery.isConfigured(),assessGptDelivery=gptDelivery.assessRecording,gptDeliveryAvailable=gptDelivery.isConfigured(),azureComparisonAvailable=delivery.isConfigured()}) {
+function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,transcriptionAvailable=!!process.env.OPENAI_API_KEY,assessDelivery=delivery.assessRecording,deliveryAssessmentAvailable=delivery.isConfigured(),azureComparisonAvailable=delivery.isConfigured()}) {
   const store=createStore(pool,directory,{table:'speaking_lab_attempts'}),router=express.Router();
-  const gptJobs=new Map(),azureJobs=new Map();
-  const usesGpt=q=>gptDeliveryAvailable&&gptDelivery.applies(q);
-  const versionFor=q=>usesGpt(q)?gptDelivery.VERSION:delivery.VERSION;
-  if(gptDeliveryAvailable)console.info('[speaking-delivery-selection]',JSON.stringify({tasks:gptDelivery.TASKS,primary:'gpt',model:gptDelivery.MODEL,azureComparison:azureComparisonAvailable}));
+  const azureJobs=new Map();
+  const versionFor=()=>delivery.VERSION;
   const snapshot=(assessed,hash)=>({...assessed,status:'assessed',assessedAt:new Date().toISOString(),recordingHash:hash});
-  function primaryAudio(uid,a,q) {
-    const key=uid+':'+a.id+':'+gptDelivery.VERSION;
-    if(!gptJobs.has(key)){
-      const job=Promise.resolve().then(()=>assessGptDelivery(a.recording,{question:q,transcript:a.transcript}));
-      gptJobs.set(key,job);
-      job.catch(()=>{gptJobs.delete(key);});
-      if(gptJobs.size>100)gptJobs.delete(gptJobs.keys().next().value);
-    }
-    return gptJobs.get(key);
-  }
   function queueAzure(uid,a) {
     if(!a.recording||!azureComparisonAvailable||a.result?.deliveryComparisons?.azure?.status!=='pending')return;
     const key=uid+':'+a.id;if(azureJobs.has(key))return;
@@ -82,7 +80,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   if(assessDelivery===delivery.assessRecording)console.info('[speaking-delivery-config]',JSON.stringify(delivery.configurationSummary()));
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>{res.set('Cache-Control','no-store');res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved work is safe; please retry.'});});
   const get=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Attempt not found.',404);return a;});
-  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:gptDeliveryAvailable?Object.fromEntries(gptDelivery.TASKS.map(type=>[type,gptDelivery.VERSION])):{},types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:Object.fromEntries([...new Set(bank.questions.map(q=>q.type))].map(type=>[type,delivery.VERSION])),deliveryProvider:'azure',types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
   router.use(async(req,res,next)=>{try{const uid=verifyToken(req.headers['x-session-token']||'');const account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.speakingUser=uid;res.set('Cache-Control','no-store');next();}catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}});
   const limiter=require('express-rate-limit')({windowMs:600000,max:40,keyGenerator:req=>req.speakingUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking action.'}});
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));
@@ -130,32 +128,17 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
         const reviewed=await (describeReview ||= scoring.grade(q,a.transcript,callModel));
         a.result={...a.result,...(reviewed.coaching?{coaching:reviewed.coaching}:{}),coachingStatus:reviewed.coaching?'assessed':'unavailable'};
       }
-      if(!refreshDescribeFeedback&&a.result&&a.recording&&(deliveryAssessmentAvailable||usesGpt(q))&&(a.result.pronunciation==null||a.result.deliveryVersion!==versionFor(q))) {
+      if(!refreshDescribeFeedback&&a.result&&a.recording&&deliveryAssessmentAvailable&&(a.result.pronunciation==null||a.result.deliveryVersion!==versionFor(q))) {
         try {
-          if(usesGpt(q)){
-            const comparisons={...a.result.deliveryComparisons};
-            if(a.result.deliveryProvider==='azure-speech-pronunciation'&&!comparisons.azure)comparisons.azure=snapshot({pronunciation:a.result.pronunciation,fluency:a.result.fluency,deliveryVersion:a.result.deliveryVersion,deliveryProvider:a.result.deliveryProvider},a.recording.hash);
-            const assessed=await primaryAudio(req.speakingUser,a,q);
-            const history={...a.result.deliveryComparisonHistory};
-            if(comparisons.gpt&&comparisons.gpt.deliveryVersion!==gptDelivery.VERSION)history.gpt=[...(history.gpt||[]),comparisons.gpt].slice(-5);
-            if(comparisons.azure?.status==='assessed'&&comparisons.azure.deliveryVersion!==delivery.VERSION){
-              history.azure=[...(history.azure||[]),comparisons.azure].slice(-5);delete comparisons.azure;
-            }
-            comparisons.gpt=snapshot(assessed,a.recording.hash);
-            comparisons.azure ||= {status:azureComparisonAvailable?'pending':'not-configured',recordingHash:a.recording.hash};
-            a.result={...a.result,...assessed,deliveryComparisons:comparisons,...(Object.keys(history).length?{deliveryComparisonHistory:history}:{})};
-          } else {
-            const assessed=await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe});
-            if(assessed)a.result={...a.result,...assessed};
-          }
+          const cached=a.result.deliveryComparisons?.azure;
+          const assessed=cached?.status==='assessed'&&cached.recordingHash===a.recording.hash?cached:await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe,contentIndependent:true});
+          if(assessed)a.result={...a.result,...assessed,deliveryProvider:'azure-speech-pronunciation',deliveryVersion:assessed.deliveryVersion||delivery.VERSION,deliveryComparisons:{...a.result.deliveryComparisons,azure:snapshot(assessed,a.recording.hash)}};
         } catch(error) {
           const code=String(error?.code||error?.name||'delivery_error').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,80);
           const status=Number.isInteger(error?.providerStatus)?error.providerStatus:undefined;
           console.warn('[speaking-delivery]',JSON.stringify({code,...(status?{status}:{})}));
-          a.result={...a.result,deliveryStatus:usesGpt(q)?'GPT audio assessment temporarily unavailable. Retry this saved recording.':'Audio delivery assessment temporarily unavailable'};
-          if(usesGpt(q))a.result={...a.result,deliveryVersion:a.result.deliveryVersion||'unavailable',deliveryRequestedModel:gptDelivery.MODEL,
-            deliveryComparisons:{...a.result.deliveryComparisons,gpt:{status:'unavailable',deliveryModel:gptDelivery.MODEL,recordingHash:a.recording.hash,assessedAt:new Date().toISOString()},
-              azure:a.result.deliveryComparisons?.azure||{status:azureComparisonAvailable?'pending':'not-configured',recordingHash:a.recording.hash}}};
+          a.result={...a.result,deliveryStatus:'Azure audio assessment temporarily unavailable'};
+
         }
       } else if(!refreshDescribeFeedback&&a.result&&a.result.pronunciation==null&&!deliveryAssessmentAvailable) {
         a.result={...a.result,deliveryStatus:'Teacher review — automated audio assessment not configured'};

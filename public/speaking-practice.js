@@ -194,15 +194,15 @@
     function providerScores(r) {
       const paired=r?.deliveryComparisons;if(!paired)return '';
       const statuses={pending:'Assessing audio…',assessed:'Complete',unavailable:'Unavailable','not-configured':'Not available'};
-      const rows=[['GPT Audio',paired.gpt],['Azure Speech',paired.azure]].map(([name,row])=>{
+      const rows=[['Azure Speech',paired.azure]].map(([name,row])=>{
         const score=trait=>row?.[trait]?.score==null?'—':row[trait].score+'/5';
         const missing=[row?.pronunciation?.score,row?.fluency?.score].filter(score=>score==null).length;
-        const expected=name==='GPT Audio'?catalog.deliveryVersions?.[attempt?.question.type]:catalog.deliveryVersion;
+        const expected=catalog.deliveryVersion;
         const earlier=row?.status==='assessed'&&row.deliveryVersion&&expected&&row.deliveryVersion!==expected;
         const assessed=earlier?'Earlier scoring method':row?.status==='assessed'&&missing?(missing===2?'Not assessed':'Partly assessed'):statuses[row?.status]||'Not assessed';
         return '<tr><th scope="row">'+name+'</th><td>'+esc(score('pronunciation'))+'</td><td>'+esc(score('fluency'))+'</td><td>'+esc(assessed)+'</td></tr>';
       }).join('');
-      return '<h4>Scores from both providers</h4><p class="speaking-footnote">Same recording · separate audio assessments</p><div class="speaking-score-table-wrap"><table class="speaking-score-table"><thead><tr><th>Scorer</th><th>Pronunciation</th><th>Oral fluency</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="speaking-footnote">Minor slips and natural pauses are not automatic deductions. Each provider assesses the audio independently.</p>';
+      return '<h4>Microsoft Azure scores</h4><p class="speaking-footnote">Pronunciation and oral fluency from your recording</p><div class="speaking-score-table-wrap"><table class="speaking-score-table"><thead><tr><th>Scorer</th><th>Pronunciation</th><th>Oral fluency</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="speaking-footnote">Minor slips and natural pauses are not automatic deductions. Microsoft Azure assesses your recording.</p>';
     }
     function pollComparison() {
       if(comparisonTimer||attempt?.result?.deliveryComparisons?.azure?.status!=='pending')return;

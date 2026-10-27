@@ -4,7 +4,7 @@ const {createJobs,createWorker,stage,disposition,hash}=require('./scoring-jobs')
 const VERSION='speaking-admin-alert-v1',TEN_MINUTES=10*60000;
 const LABELS={ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
 const clean=(value,max=120)=>String(value||'').replace(/[\r\n<>]/g,' ').slice(0,max);
-const complete=a=>a?.status==='submitted'&&report.summarize(a).openai.status==='assessed'&&report.summarize(a).azure.status==='assessed';
+const complete=a=>a?.status==='submitted'&&report.summarize(a).azure.status==='assessed';
 function smtpFailure(error){
   const response=Number(error?.responseCode),command=String(error?.command||'').toUpperCase();
   const code=error?.code==='EAUTH'?'SMTP_AUTH':Number.isInteger(response)?'SMTP_'+response:/^(ECONNECTION|ESOCKET|ETIMEDOUT|EDNS)$/.test(error?.code||'')?error.code:'SMTP_UNCONFIRMED';
@@ -26,7 +26,7 @@ function messageFor(incident,{recipient,from,origin}){
   const lines=['A speaking mock needs administrator attention.','',
     'Student username: '+clean(incident.username),'Mock: '+clean(incident.title),'Attempt ID: '+incident.attemptId,
     'Submitted: '+date+' (Brisbane)','Waiting: '+incident.waitingMinutes+' minutes',
-    'Questions accounted for in both reports: '+incident.accountedFor+'/'+incident.total,'',
+    'Questions accounted for in the Azure report: '+incident.accountedFor+'/'+incident.total,'',
     incident.reason==='staff_review'?'Scoring has stopped for staff review.':'The complete report is still unpublished after 10 minutes. Automatic scoring may still be running.','',
     'Pending assessments:',...(incident.pending.length?incident.pending.map(q=>'- Question '+q.number+' — '+q.label+' ['+clean(q.questionId)+']: '+q.missing.join('; ')):['- All required marks are present; result publication needs checking.']),
     '', 'Checks needed:',...(incident.failures.length?incident.failures.map(f=>'- '+clean(f.stage)+' / '+clean(f.code)+(f.detail?' ('+clean(f.detail)+')':'')+': '+guidance(f.code)):['- Check worker progress, provider availability and result publication.']),
@@ -52,11 +52,11 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
     const diagnostic=await progressive.diagnostics(username,a.id),submittedAt=a.finishedAt||a.deadline||a.startedAt;
     const held=publicationFailed||diagnostic.jobs.some(j=>j.status==='needs_attention');
     if(!held&&now()-submittedAt<TEN_MINUTES)return null;
-    const summary=report.summarize(candidate),indices=[...new Set([...summary.openai.missingQuestions,...summary.azure.missingQuestions].map(q=>q.index))];
+    const summary=report.summarize(candidate),indices=summary.azure.missingQuestions.map(q=>q.index);
     const missingLabel={content:'content',pronunciation:'pronunciation',fluency:'fluency',recording:'saved recording','question-rubric':'question rubric'};
     return{username,attemptId:a.id,title:a.title||'Speaking mock',submittedAt,waitingMinutes:Math.max(0,Math.floor((now()-submittedAt)/60000)),reason:held?'staff_review':'overdue',
       total:a.questionCount,accountedFor:diagnostic.accountedFor,pending:indices.map(index=>({number:a.questions.slice(0,index+1).filter(q=>q.type!=='intro').length,label:LABELS[a.questions[index].type]||'Speaking answer',questionId:a.questions[index].id,
-        missing:['openai','azure'].flatMap(provider=>(summary[provider].missingQuestions.find(q=>q.index===index)?.missing||[]).map(name=>(provider==='openai'?'OpenAI':'Azure')+' '+(missingLabel[name]||'assessment')))})),
+        missing:(summary.azure.missingQuestions.find(q=>q.index===index)?.missing||[]).map(name=>'Azure '+(missingLabel[name]||'assessment'))})),
       failures:[...(publicationFailed?[{stage:'publication',code:'publication_save_failed',detail:null}]:[]),...diagnostic.jobs.flatMap(job=>[
         ...Object.entries(job.stages).filter(([name,s])=>s.status==='needs_attention'&&(name!=='academy'||s.code)).map(([name,s])=>({stage:name,code:s.code,detail:s.detail?.recognitionStatus||s.detail?.code||null})),
         ...(job.remoteFailures||[]).map(f=>({stage:'Visual Academy '+f.stage,code:f.code,detail:null}))])].slice(0,30)};

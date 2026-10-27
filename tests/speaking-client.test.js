@@ -45,35 +45,17 @@ function harness({includePredictions=false}={}) {
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
 
-for(const type of ['rl','sgd','rts'])test(`${type}: both provider scores are shown openly without trusting provider metadata`,async()=>{
-  const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={[type]:version};
-  await h.controller.open(type);await h.click({speakingQuestion:bank.questions.find(q=>q.type===type).id});
-  const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
-  a.result={total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:version,deliveryModel:'<img src=x onerror=alert(1)>',
-    pronunciation:{score:5,maximum:5,pattern:'minor_slips',reason:'The response is clear overall; the isolated slip is optional polish.'},fluency:{score:4,maximum:5,pattern:'recurring_difficulty',reason:'Recurring mid-phrase restarts interrupt otherwise connected flow.'},deliveryComparisons:{gpt:{status:'assessed',deliveryVersion:version,pronunciation:{score:5},fluency:{score:4}},azure:{status:'pending'}}};
-  await h.click({speakingAttempt:a.id});
-  assert.match(h.host.innerHTML,/<section class="speaking-provider-scores"/);assert.match(h.host.innerHTML,/Scores from both providers/);assert.match(h.host.innerHTML,/5\/5/);assert.match(h.host.innerHTML,/Azure Speech/);assert.match(h.host.innerHTML,/Assessing audio/);
-  assert.doesNotMatch(h.host.innerHTML,/<summary>Compare audio scorers/);assert.doesNotMatch(h.host.innerHTML,/Delivery scoring has been recalibrated/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);
-  assert.match(h.host.innerHTML,/Overall delivery:/);assert.match(h.host.innerHTML,/isolated slip is optional polish/);
-  assert.doesNotMatch(h.host.innerHTML,/Practise and check|Try this next/,'Pattern-based feedback keeps the targeted action without adding generic extra drills.');
-  const before=h.requests.length,uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length;
-  a.result.deliveryComparisons.azure={status:'assessed',pronunciation:{score:3},fluency:{score:4}};
-  h.tick(3000);await flush();
-  assert.match(h.nodes.get('speaking-provider-scores').innerHTML,/3\/5/);assert.match(h.nodes.get('speaking-provider-scores').innerHTML,/Complete/);
-  assert.equal(h.requests.slice(before).filter(r=>r.url.endsWith('/'+a.id)&&!r.body).length,1);
-  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
-  const done=h.requests.length;h.tick(3000);await flush();assert.equal(h.requests.length,done,'Stop polling after the comparison completes.');
+for(const type of ['rl','sgd','rts'])test(`${type}: only Azure scores are shown and opening a report never requests a reassessment`,async()=>{
+ const h=harness(),version=require('../speaking-delivery').VERSION;h.env.deliveryVersions={[type]:version};
+ await h.controller.open(type);await h.click({speakingQuestion:bank.questions.find(q=>q.type===type).id});
+ const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';a.result={total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:version,deliveryProvider:'azure-speech-pronunciation',pronunciation:{score:3,maximum:5},fluency:{score:4,maximum:5},deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}}}};
+ const before=h.requests.filter(r=>r.body).length;await h.click({speakingAttempt:a.id});assert.match(h.host.innerHTML,/Pronunciation/);assert.match(h.host.innerHTML,/Oral fluency/);assert.doesNotMatch(h.host.innerHTML,/GPT Audio|Compare audio scorers|Scores from both providers/);assert.equal(h.requests.filter(r=>r.body).length,before);
 });
 
-test('Earlier provider methods are identified while their original comparison marks remain visible',async()=>{
-  const h=harness(),version=require('../gpt-speaking-delivery').VERSION;h.env.deliveryVersions={rts:version};
-  await h.controller.open('rts');await h.click({speakingQuestion:bank.questions.find(q=>q.type==='rts').id});
-  const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
-  a.result={total:6,maximum:6,overview:'Saved content.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:'old-gpt',
-    pronunciation:{score:4,maximum:5},fluency:{score:4,maximum:5},deliveryComparisons:{gpt:{status:'assessed',deliveryVersion:'old-gpt',pronunciation:{score:4},fluency:{score:4}},azure:{status:'assessed',deliveryVersion:'test-delivery',pronunciation:{score:5},fluency:{score:4}}}};
-  const posts=h.requests.filter(r=>r.body).length;await h.click({speakingAttempt:a.id});
-  assert.match(h.host.innerHTML,/Earlier scoring method/);assert.match(h.host.innerHTML,/4\/5/);assert.match(h.host.innerHTML,/5\/5/);
-  assert.match(h.host.innerHTML,/Update audio score/);assert.equal(h.requests.filter(r=>r.body).length,posts,'Opening an old result does not regrade it.');
+test('a saved Azure comparison supplies the report while older GPT snapshots stay hidden',async()=>{
+ const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:bank.questions.find(q=>q.type==='rts').id});const a=[...h.attempts.values()][0];a.status='submitted';a.transcript='A saved response.';
+ a.result={total:6,maximum:6,overview:'Saved content.',strengths:[],improvements:[],scoringMode:'ai',deliveryVersion:'old-gpt',pronunciation:{score:1,maximum:5},fluency:{score:1,maximum:5},deliveryComparisons:{gpt:{status:'assessed',pronunciation:{score:1},fluency:{score:1}},azure:{status:'assessed',deliveryProvider:'azure-speech-pronunciation',deliveryVersion:'test-delivery',pronunciation:{score:5,maximum:5},fluency:{score:4,maximum:5}}}};
+ const before=h.requests.filter(r=>r.body).length;await h.click({speakingAttempt:a.id});assert.doesNotMatch(h.host.innerHTML,/GPT Audio|Scores from both providers/);assert.equal(h.requests.filter(r=>r.body).length,before);assert.equal(a.result.pronunciation.score,1,'The original stored result stays intact.');
 });
 
 test('Leaving a result cancels pending comparison polling',async()=>{

@@ -67,7 +67,7 @@ test('Pilot includes every question, preserves original results, is private and 
   let calls=0;const options={...s,callModel:async(prompt,context)=>{calls++;return judgment(context.wholeMockEntries);}};
   const report=await combined.recover(options);assert.equal(report.status,'complete');assert.equal(report.coverage.confirmedContent,6);assert.equal(report.overallScore,75);
   let saved=await s.mockStore.get('mahdis',a.id);assert.deepEqual(saved.responses,before.responses);assert.deepEqual(saved.overall,before.overall);assert.equal(saved.combinedOverall.contentReviewedCount,6);
-  const client=present(saved);assert.equal(client.combinedOverall.overallScore,75);assert(!JSON.stringify(client).includes('original-audio'));
+  const client=present(saved);assert.equal(client.combinedOverall,null);assert(!JSON.stringify(client).includes('original-audio'));
   const later={...attempt(),startedAt:20};await s.mockStore.update('mahdis',later.id,()=>later);
   await combined.recover(options);assert.equal(calls,1);assert.equal((await s.mockStore.get('mahdis',later.id)).combinedOverall,undefined);
   await assert.rejects(combined.recover({...options,username:'mehakbir1'}),/could not be verified/);

@@ -47,5 +47,5 @@ test('A later retry reuses manual RS delivery marks without calling either audio
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await lab.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port+'/api/speaking-mocks/attempts/'+attemptId;
  await fetch(base+'/retry',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});await lab.waitForJobs();const shown=await(await fetch(base)).json();
- assert.equal(calls,0);assert.equal(shown.overall.overallScore,75);assert.equal(shown.responses[0].providers.gpt.pronunciation.score,5);assert.equal(shown.responses[0].providers.azure.fluency.manualOverride,true);
+ assert.equal(calls,0);assert.equal(shown.overall,null);assert.equal(shown.responses[0].providers.gpt,undefined);assert.equal((await lab.store.get(uid,attemptId)).overall.overallScore,75);assert.equal(shown.responses[0].providers.azure.fluency.manualOverride,true);
 });

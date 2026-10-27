@@ -32,7 +32,7 @@ test('Saved fallback full marks are hidden without changing stored data or audio
   const q = bank.questions.find(x => x.type === 'di');
   const delivery = { score:4, maximum:5, coaching:'Group related ideas and pause between them.' };
   const attempt = { id:'saved-attempt', questionId:q.id, status:'submitted', transcript:'Sales fell in 2024.',
-    result:{ scoringMode:'local', total:6, maximum:6, pronunciation:delivery, fluency:delivery,
+    result:{ deliveryProvider:'azure-speech-pronunciation', scoringMode:'local', total:6, maximum:6, pronunciation:delivery, fluency:delivery,
       coverage:[{ point:'Sales rose.', status:'covered', evidence:'Sales fell in 2024.', feedback:'Fully covered.' }] } };
   const before = structuredClone(attempt);
   const result = present(attempt).result;

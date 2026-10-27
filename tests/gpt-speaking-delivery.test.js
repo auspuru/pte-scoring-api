@@ -66,7 +66,7 @@ test('Malformed GPT marks and provider failures remain failures without paid rep
 async function harness(t,{failGpt=false,failAzure=false,existingAzure=false}={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'dual-delivery-')),app=require('express')();app.use(require('express').json());
   let primaryCalls=0,comparisonCalls=0,release;
-  const gate=new Promise(resolve=>{release=resolve;});
+  const gate=Promise.resolve();release=()=>{};
   const {store}=installSpeakingLab(app,{directory,verifyToken:v=>['alice','bob'].includes(v)?v:null,getAccount:async()=>({}),
     deliveryAssessmentAvailable:true,gptDeliveryAvailable:true,azureComparisonAvailable:true,
     transcribe:async()=>transcript,callModel:async()=>{throw Error('Existing content should be reused.');},
@@ -89,61 +89,23 @@ async function harness(t,{failGpt=false,failAzure=false,existingAzure=false}={})
   return {request,seed,release,store,calls:()=>({primaryCalls,comparisonCalls})};
 }
 
-for(const type of ['ra','rs','di','rl','sgd','rts'])test(`${type}: GPT is immediate, Azure runs in the background, and both scores persist on the same recording`,async t=>{
-  const h=await harness(t),id=await h.seed(type);
-  const catalog=(await h.request('/catalog')).body;assert.equal(catalog.deliveryVersions[type],gpt.VERSION);assert.equal(catalog.deliveryVersions.di,gpt.VERSION);
-  const first=await h.request('/attempts/'+id+'/submit',{});
-  assert.equal(first.status,200);assert.equal(first.body.result.pronunciation.score,5);assert.equal(first.body.result.deliveryComparisons.azure.status,'pending');
-  assert.equal(first.body.result.deliveryComparisons.gpt.recordingHash,'same-recording');
-  const cached=await h.request('/attempts/'+id+'/submit',{});assert.equal(cached.body.result.pronunciation.score,5);
+for(const type of ['ra','rs','di','rl','sgd','rts'])test(`${type}: Azure alone supplies delivery and GPT is never called`,async t=>{
+  const h=await harness(t),id=await h.seed(type),catalog=(await h.request('/catalog')).body;
+  assert.equal(catalog.deliveryProvider,'azure');assert.equal(catalog.deliveryVersions[type],azure.VERSION);
+  const first=await h.request('/attempts/'+id+'/submit',{});assert.equal(first.status,200);
+  assert.equal(first.body.result.pronunciation.score,3);assert.equal(first.body.result.fluency.score,3);assert.equal(first.body.result.deliveryProvider,'azure-speech-pronunciation');assert.equal(first.body.result.deliveryComparisons,undefined);
+  await h.request('/attempts/'+id+'/submit',{});assert.deepEqual(h.calls(),{primaryCalls:0,comparisonCalls:1});assert.equal(first.body.result.total,6);
   assert.equal((await h.request('/attempts/'+id,undefined,'bob')).status,404);
-  assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:1});
-  h.release();
-  let saved;
-  for(let n=0;n<30;n++){saved=(await h.request('/attempts/'+id)).body;if(saved.result.deliveryComparisons.azure.status==='assessed')break;await new Promise(resolve=>setImmediate(resolve));}
-  assert.equal(saved.result.deliveryComparisons.azure.pronunciation.score,3);
-  assert.equal(saved.result.deliveryComparisons.azure.recordingHash,'same-recording');assert.equal(saved.result.pronunciation.score,5);
-  assert.equal(saved.result.total,6);assert.equal(saved.transcript,transcript);assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:1});
 });
-
-for(const type of ['rl','rts'])test(`${type}: updating an old Azure attempt retains its original comparison without assessing that audio again`,async t=>{
-  const h=await harness(t,{existingAzure:true}),id=await h.seed(type);
-  const result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
-  assert.equal(result.pronunciation.score,5);assert.equal(result.deliveryComparisons.azure.pronunciation.score,3);
-  assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:0});
+for(const type of ['rl','rts'])test(`${type}: an existing Azure assessment is reused without either provider being called`,async t=>{
+  const h=await harness(t,{existingAzure:true}),id=await h.seed(type),result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
+  assert.equal(result.pronunciation.score,3);assert.equal(result.deliveryComparisons,undefined);assert.deepEqual(h.calls(),{primaryCalls:0,comparisonCalls:0});
 });
-
-test('An explicit policy update preserves earlier provider snapshots before refreshing both assessments',async t=>{
-  const h=await harness(t,{existingAzure:true}),id=await h.seed();
-  await h.store.update('alice',id,a=>{
-    a.result.deliveryVersion='old-azure';
-    a.result.deliveryComparisons={gpt:{...gptResult(),status:'assessed',deliveryVersion:'old-gpt',pronunciation:{score:4,maximum:5}},azure:{...azureResult,status:'assessed',deliveryVersion:'old-azure'}};
-    return a;
-  });
-  const result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
-  assert.equal(result.deliveryComparisonHistory.gpt[0].pronunciation.score,4);
-  assert.equal(result.deliveryComparisonHistory.azure[0].deliveryVersion,'old-azure');
-  assert.equal(result.deliveryComparisons.gpt.deliveryVersion,gpt.VERSION);
-  assert.equal(result.deliveryComparisons.azure.status,'pending');h.release();
-  let saved;
-  for(let n=0;n<30;n++){saved=(await h.request('/attempts/'+id)).body;if(saved.result.deliveryComparisons.azure.status==='assessed')break;await new Promise(resolve=>setImmediate(resolve));}
-  assert.equal(saved.result.deliveryComparisons.azure.deliveryVersion,azure.VERSION);
-  assert.equal(saved.result.deliveryComparisonHistory.gpt[0].pronunciation.score,4);
-  assert.deepEqual(h.calls(),{primaryCalls:1,comparisonCalls:1});
+test('saved GPT snapshots are kept for audit while the existing Azure comparison becomes primary',async t=>{
+  const h=await harness(t),id=await h.seed();await h.store.update('alice',id,a=>{a.result={...a.result,...gptResult(),deliveryComparisons:{gpt:{...gptResult(),status:'assessed'},azure:{...azureResult,status:'assessed',recordingHash:'same-recording'}}};return a;});
+  const result=(await h.request('/attempts/'+id+'/submit',{})).body.result;assert.equal(result.pronunciation.score,3);assert.equal(result.deliveryComparisons,undefined);assert.deepEqual(h.calls(),{primaryCalls:0,comparisonCalls:0});assert.equal((await h.store.get('alice',id)).result.deliveryComparisons.gpt.pronunciation.score,5);
 });
-
-test('Azure failure does not replace valid GPT or content scores',async t=>{
-  const h=await harness(t,{failAzure:true}),id=await h.seed();await h.request('/attempts/'+id+'/submit',{});h.release();
-  let saved;
-  for(let n=0;n<30;n++){saved=(await h.request('/attempts/'+id)).body;if(saved.result.deliveryComparisons.azure.status==='unavailable')break;await new Promise(resolve=>setImmediate(resolve));}
-  assert.equal(saved.result.deliveryComparisons.azure.status,'unavailable');assert.equal(saved.result.pronunciation.score,5);assert.equal(saved.result.total,6);
-});
-
-test('GPT failure is labelled and still permits an independent Azure comparison',async t=>{
-  const h=await harness(t,{failGpt:true}),id=await h.seed();const result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
-  assert.equal(result.pronunciation,null);assert.equal(result.deliveryComparisons.gpt.status,'unavailable');assert.match(result.deliveryStatus,/GPT audio assessment temporarily unavailable/);
-  assert.notEqual(result.deliveryVersion,gpt.VERSION);assert.equal(result.total,6);h.release();
-  let saved;
-  for(let n=0;n<30;n++){saved=(await h.request('/attempts/'+id)).body;if(saved.result.deliveryComparisons.azure.status==='assessed')break;await new Promise(resolve=>setImmediate(resolve));}
-  assert.equal(saved.result.deliveryComparisons.azure.status,'assessed');assert.equal(saved.result.pronunciation,null);
+test('Azure failure keeps content and withholds speech marks without falling back to GPT',async t=>{
+  const h=await harness(t,{failAzure:true}),id=await h.seed(),result=(await h.request('/attempts/'+id+'/submit',{})).body.result;
+  assert.equal(result.pronunciation,null);assert.equal(result.fluency,null);assert.equal(result.total,6);assert.deepEqual(h.calls(),{primaryCalls:0,comparisonCalls:1});assert.match(result.deliveryStatus,/Azure/);
 });

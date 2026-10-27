@@ -1,11 +1,10 @@
 # Speaking mock overall calculation
 
-Version: `speaking-task-weighted-2026-10-27.1`.
+Version: `speaking-task-weighted-azure-2026-10-27.1`.
 
 The active Speaking mock overall is now derived from the individual saved
 question assessments. It replaces the report's previous whole-content 6:5:5
-blend and arbitrary content ceilings. OpenAI and Azure have separate totals;
-both use the same validated question content marks and their own delivery marks.
+blend and arbitrary content ceilings. The active report uses validated content marks and Microsoft Azure delivery marks only. Archived GPT results are retained in storage but are excluded from current publication and totals.
 
 ## Published rules and practice assumptions
 
