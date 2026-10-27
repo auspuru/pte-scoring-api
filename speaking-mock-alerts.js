@@ -41,6 +41,7 @@ function messageFor(incident,{recipient,from,origin}){
 function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,from='',recipient='',origin='https://swt.up.railway.app',enabled=false,now=Date.now,logger=console,intervalMs=60000}={}){
   if(enabled&&(!/^[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+$/.test(recipient)||!/^https:\/\/[^/]+$/.test(origin)))throw Error('Invalid speaking alert configuration.');
   const jobs=createJobs({pool,directory:path.join(directory,'admin-alerts'),table:'speaking_mock_alert_jobs',now});
+  const testJobs=createJobs({pool,directory:path.join(directory,'admin-alert-tests'),table:'admin_alert_test_jobs',now});
   let cursor='',timer,checking=false,started=false,verification;
   const provider=mailer?.provider||'smtp';
   const health={enabled,recipient:enabled?recipient:null,provider,transportConfigured:!!mailer&&!!from&&mailer.configured!==false,verified:false,verification:'not-checked',verifiedAt:null,lastError:null,lastSentAt:null};
@@ -60,11 +61,8 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
         ...Object.entries(job.stages).filter(([name,s])=>s.status==='needs_attention'&&(name!=='academy'||s.code)).map(([name,s])=>({stage:name,code:s.code,detail:s.detail?.recognitionStatus||s.detail?.code||null})),
         ...(job.remoteFailures||[]).map(f=>({stage:'Visual Academy '+f.stage,code:f.code,detail:null}))])].slice(0,30)};
   }
-  const worker=createWorker({store:jobs,now,concurrency:1,run:async ctx=>{
+  async function deliver(ctx,message){
     if(ctx.data.outcome==='sent')return{status:'ready'};
-    const a=await mockStore.get(ctx.row.owner,ctx.row.group_id,{omitMockAudio:true}),current=await incident(ctx.row.owner,a);
-    if(!current){await ctx.save(d=>{d.outcome='resolved-before-email';d.closedAt=now();});return{status:'ready'};}
-    await ctx.save(d=>{d.incident=current;});
     if(!health.transportConfigured){
       health.lastError=mailer?.configurationError||'MAIL_NOT_CONFIGURED';
       await ctx.save(d=>{d.deliveryBlocked=health.lastError;});
@@ -72,7 +70,7 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
     }
     // Freeze the exact request before its first send. Changing the waiting time
     // or missing-question list on a retry would invalidate HTTPS idempotency.
-    if(!ctx.data.emailRequest)await ctx.save(d=>{d.emailRequest={provider,startedAt:now(),message:messageFor(current,{recipient,from,origin})};delete d.deliveryBlocked;});
+    if(!ctx.data.emailRequest)await ctx.save(d=>{d.emailRequest={provider,startedAt:now(),message};delete d.deliveryBlocked;});
     const request=ctx.data.emailRequest;
     const changed=request.provider!==provider||request.message.to!==recipient||request.message.from!=='"IPT Brisbane Alerts" <'+from+'>';
     if(changed||mailer.replayWindowMs&&now()-request.startedAt>=mailer.replayWindowMs){
@@ -89,10 +87,38 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
       health.lastError=null;health.lastSentAt=now();health.verified=true;health.verifiedAt=now();health.verification='provider-accepted';return{messageId:clean(receipt.messageId,200),acceptedAt:now()};
     },{now,maxAttempts:8,retryDelay:n=>Math.min(3600000,60000*5**Math.min(n-1,3)),accept:(d,value)=>{d.outcome='sent';d.sentAt=value.acceptedAt;}});
     const final=disposition(ctx.data,ctx.data.outcome==='sent',now);
-    if(final.status==='ready')logger.info('[speaking-alerts]',JSON.stringify({event:'email_accepted',attemptId:ctx.row.group_id,provider,recipient}));
-    else if(final.status==='needs_attention')logger.warn('[speaking-alerts]',JSON.stringify({event:'email_delivery_needs_attention',attemptId:ctx.row.group_id,code:ctx.data.stages.email?.failure,detail:ctx.data.stages.email?.detail}));
+    const identity=ctx.data.test?{test:true,operation:ctx.row.group_id}:{attemptId:ctx.row.group_id};
+    if(final.status==='ready')logger.info('[speaking-alerts]',JSON.stringify({event:'email_accepted',...identity,provider,recipient}));
+    else if(final.status==='needs_attention')logger.warn('[speaking-alerts]',JSON.stringify({event:'email_delivery_needs_attention',...identity,code:ctx.data.stages.email?.failure,detail:ctx.data.stages.email?.detail}));
     return final;
+  }
+  const worker=createWorker({store:jobs,now,concurrency:1,run:async ctx=>{
+    if(ctx.data.outcome==='sent')return{status:'ready'};
+    const a=await mockStore.get(ctx.row.owner,ctx.row.group_id,{omitMockAudio:true}),current=await incident(ctx.row.owner,a);
+    if(!current){await ctx.save(d=>{d.outcome='resolved-before-email';d.closedAt=now();});return{status:'ready'};}
+    await ctx.save(d=>{d.incident=current;});
+    return deliver(ctx,messageFor(current,{recipient,from,origin}));
   }});
+  const testWorker=createWorker({store:testJobs,now,concurrency:1,run:ctx=>deliver(ctx,ctx.data.message)});
+  async function sendTest(operation){
+    if(!enabled||!started||!health.transportConfigured)throw Object.assign(Error('Administrator email is not configured and running.'),{status:503});
+    if(typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,120}$/.test(operation))throw Object.assign(Error('A valid test operation ID is required.'),{status:400});
+    const id=hash({kind:'admin-alert-test',recipient,operation});
+    const message={from:'"IPT Brisbane Alerts" <'+from+'>',to:recipient,replyTo:from,
+      subject:'[TEST] IPT Brisbane speaking mock alert',messageId:'<speaking-alert-test-'+id.slice(0,40)+'@'+new URL(origin).hostname+'>',
+      text:['THIS IS A TEST EMAIL — no student scoring incident has been created.','',
+        'Hi Puru,','This is the sample administrator email you requested from the PTE speaking mock alert workflow.','',
+        'The production alert service queued this message using the same durable delivery, retry and duplicate-protection code as real scoring alerts.','',
+        'Real alerts will be sent to '+recipient+' when:',
+        '- A submitted speaking mock requires staff intervention.',
+        '- Its complete result remains unpublished after 10 minutes.','',
+        'They will include the student username, affected attempt, missing question assessments, safe failure codes and suggested checks.',
+        'Describe Image alerts include Visual Academy failures when relevant.','',
+        'Admin portal: '+origin+'/admin','Test reference: '+operation,'',
+        'This test does not assess recordings, change marks or create a student attempt.'].join('\n')};
+    const row=await testJobs.enqueue({id,owner:recipient,groupId:operation,inputHash:hash({version:VERSION,recipient,operation}),data:{version:VERSION,test:true,message,openedAt:now(),stages:{}}});
+    await testWorker.wake();return{id:row.id,status:row.status,recipient,operation};
+  }
   async function candidates(){
     if(pool)return(await pool.query(`SELECT a.id::text AS id,a.username FROM speaking_mock_attempts a
       WHERE a.id::text>$1 AND a.data->>'status'='submitted' AND COALESCE(a.data->'assessment'->>'status','')<>'ready'
@@ -114,6 +140,6 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
   }catch(error){health.verified=false;health.verification='failed';health.lastError=mailer?.configurationError||(provider==='smtp'?(error?.code==='EAUTH'?'SMTP_AUTH':'SMTP_CONNECTION'):'MAIL_CONNECTION');
     logger.warn('[speaking-alerts]',JSON.stringify({event:'transport_verification_failed',provider,code:health.lastError}));
   }return{...health};}
-  return{jobs,check,verify,health:()=>({...health}),async start(){if(!enabled||started)return;started=true;await jobs.initialise();await worker.start();await check();timer=setInterval(()=>check().catch(()=>logger.warn('[speaking-alerts] monitor scan will retry')),intervalMs);timer.unref?.();verification=verify();},async stop(){started=false;clearInterval(timer);await worker.stop();await verification;},wait:worker.wait};
+  return{jobs,testJobs,sendTest,check,verify,health:()=>({...health}),async start(){if(!enabled||started)return;started=true;await jobs.initialise();await testJobs.initialise();await worker.start();await testWorker.start();await check();timer=setInterval(()=>check().catch(()=>logger.warn('[speaking-alerts] monitor scan will retry')),intervalMs);timer.unref?.();verification=verify();},async stop(){started=false;clearInterval(timer);await Promise.all([worker.stop(),testWorker.stop()]);await verification;},wait:()=>Promise.all([worker.wait(),testWorker.wait()])};
 }
 module.exports={VERSION,TEN_MINUTES,createSpeakingMockAlerts,messageFor,smtpFailure};

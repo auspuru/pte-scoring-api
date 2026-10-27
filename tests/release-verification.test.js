@@ -5,7 +5,7 @@ const { releaseEnvironment, verifyRelease } = require('../scripts/verify-release
 
 test('Release checks cannot use production storage, paid providers or mail', () => {
   const source = { PGURL:'private', DATABASE_URL:'private', DATABASE_PUBLIC_URL:'public', ANTHROPIC_API_KEY:'private', OPENAI_API_KEY:'private', AZURE_SPEECH_KEY:'private',
-    GMAIL_USER:'operator', GMAIL_APP_PASSWORD:'private', GMAIL_USER_PASSWORD:'private', RESEND_API_KEY:'private', RAILWAY_VOLUME_MOUNT_PATH:'/student-data', PATH:'/bin', NODE_ENV:'production' };
+    GMAIL_USER:'operator', GMAIL_APP_PASSWORD:'private', GMAIL_USER_PASSWORD:'private', RESEND_API_KEY:'private', SPEAKING_MOCK_ALERT_TEST:'test-request', RAILWAY_VOLUME_MOUNT_PATH:'/student-data', PATH:'/bin', NODE_ENV:'production' };
   const sanitized = releaseEnvironment(source);
   for (const key of Object.keys(source).filter(k => !['PATH', 'NODE_ENV', 'RAILWAY_VOLUME_MOUNT_PATH'].includes(k))) assert.equal(sanitized[key], '');
   assert.equal(sanitized.RAILWAY_VOLUME_MOUNT_PATH, undefined);

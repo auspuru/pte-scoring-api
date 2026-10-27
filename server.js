@@ -6361,6 +6361,7 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
 const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:process.env.SPEAKING_MOCK_ALERTS_ENABLED==='true'});
 app.get('/api/admin/speaking-mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(speakingAlerts.health()));
+app.post('/api/admin/speaking-mock-alerts/test',requireAdmin,async(req,res)=>{try{res.set('Cache-Control','no-store').status(202).json(await speakingAlerts.sendTest(req.body?.operation));}catch(error){res.status(error.status||503).json({error:error.status?error.message:'Test email could not be queued.'});}});
 app.get('/api/admin/speaking-mocks/:username/:id/scoring',requireAdmin,async(req,res)=>{try{const value=await speakingMock.progressive.diagnostics(req.params.username,req.params.id);res.set('Cache-Control','no-store').status(value?200:404).json(value||{error:'Mock attempt not found.'});}catch{res.status(503).json({error:'Scoring diagnostics temporarily unavailable.'});}});
 app.post('/api/admin/speaking-mocks/:username/:id/scoring/retry',requireAdmin,async(req,res)=>{try{res.set('Cache-Control','no-store').json(await speakingMock.progressive.repair(req.params.username,req.params.id,req.body||{}));}catch(e){res.status(e.status||503).json({error:e.status?e.message:'Scoring repair temporarily unavailable.'});}});
 require('./writing-lab-audio').installNarration(app, path.join(DATA_DIR, 'writing-audio'));
@@ -6480,6 +6481,9 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     await speakingAlerts.start();
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
+    if(process.env.NODE_ENV!=='test'&&process.env.SPEAKING_MOCK_ALERT_TEST){
+      setImmediate(()=>speakingAlerts.sendTest(process.env.SPEAKING_MOCK_ALERT_TEST).catch(()=>console.warn('[speaking-alerts] Requested test email could not be queued.')));
+    }
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_BACKGROUND_RECOVERY){
       setImmediate(async()=>{try{const request=JSON.parse(process.env.IPT_SPEAKING_BACKGROUND_RECOVERY);await require('./speaking-background-recovery').recover({...request,mockStore:speakingMock.store,progressive:speakingMock.progressive});}catch{console.warn('[speaking-background-recovery] Scoped recovery could not finish.');}});
     }

@@ -78,3 +78,23 @@ test('an unconfigured mail provider preserves queued alerts without consuming th
 test('configuration-only HTTPS validation does not claim a verified mail connection',async t=>{
   const h=await fixture(t,{held:false});h.mailer.provider='resend';h.mailer.verify=async()=>({configurationOnly:true});const service=h.create();t.after(()=>service.stop());await service.start();await service.verify();assert.equal(service.health().verified,false);assert.equal(service.health().verification,'configuration-only');assert.equal(service.health().transportConfigured,true);assert.equal(h.messages.length,0);
 });
+
+test('an explicitly requested sample uses the admin delivery queue once across repeat requests and restarts without reading student records',async t=>{
+  const h=await fixture(t,{held:false});h.store.scanForScoring=async()=>[];h.store.get=async()=>{throw Error('must not read a student attempt');};
+  await h.service.start();const sample=await h.service.sendTest('workflow-check-1');await h.service.wait();assert.equal(h.messages.length,1);const m=h.messages[0];
+  assert.equal(m.to,'auspuru@gmail.com');assert.match(m.subject,/^\[TEST\]/);assert.match(m.text,/THIS IS A TEST EMAIL/);assert.match(m.text,/no student scoring incident/);assert.match(m.text,/Test reference: workflow-check-1/);assert(!JSON.stringify(m).includes('PRIVATE_AUDIO'));assert(!JSON.stringify(m).includes('PRIVATE_TRANSCRIPT'));
+  assert.equal((await h.service.testJobs.get('auspuru@gmail.com',sample.id)).data.outcome,'sent');assert(h.logs.some(line=>JSON.parse(line).test===true&&JSON.parse(line).event==='email_accepted'));
+  await h.service.sendTest('workflow-check-1');await h.service.wait();await h.service.stop();const resumed=h.create();await resumed.start();await resumed.sendTest('workflow-check-1');await resumed.wait();await resumed.stop();assert.equal(h.messages.length,1);
+});
+
+test('sample delivery shares durable HTTPS backoff and freezes its request after a transient failure',async t=>{
+  let calls=0;const h=await fixture(t,{held:false,send:async message=>{if(++calls===1)throw Object.assign(Error('timeout'),{code:'RESEND_CONNECTION',httpStatus:503});return{accepted:['auspuru@gmail.com'],messageId:message.messageId};}});
+  h.store.scanForScoring=async()=>[];Object.assign(h.mailer,{provider:'resend',replayWindowMs:REPLAY_WINDOW_MS,classifyFailure:error=>error});const service=h.create();t.after(()=>service.stop());await service.start();const sample=await service.sendTest('workflow-check-2');await service.wait();let row=await service.testJobs.get('auspuru@gmail.com',sample.id);assert.equal(row.status,'retry_wait');
+  h.advance(60001);await service.wait();row=await service.testJobs.get('auspuru@gmail.com',sample.id);assert.equal(row.status,'ready');assert.equal(row.data.outcome,'sent');assert.deepEqual(h.messages[0],h.messages[1]);
+});
+
+test('sample requests reject invalid operation IDs and unconfigured or disabled delivery without sending',async t=>{
+  const h=await fixture(t,{held:false});h.store.scanForScoring=async()=>[];await h.service.start();for(const operation of [undefined,'','bad\r\nreference','x'.repeat(121)])await assert.rejects(h.service.sendTest(operation),{status:400});await h.service.stop();
+  h.mailer.configured=false;const blocked=h.create();t.after(()=>blocked.stop());await blocked.start();await assert.rejects(blocked.sendTest('workflow-check-3'),{status:503});assert.equal(h.messages.length,0);
+  const disabled=createSpeakingMockAlerts({directory:'/unused',enabled:false});await assert.rejects(disabled.sendTest('workflow-check-3'),{status:503});await disabled.stop();
+});
