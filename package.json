@@ -13,14 +13,15 @@
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
-    "build": "node scripts/build-frontend.js && node --test tests/frontend-build.test.js tests/login-assets.test.js tests/practice-catalogue.test.js tests/portal-workspace.test.js tests/reading-practice.test.js tests/content-trust.test.js tests/study-plan-progress.test.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js && npm run validate:edge-tts && node scripts/validate-puppeteer-browser.js",
+    "build": "node scripts/build-frontend.js && node --test tests/frontend-build.test.js tests/login-assets.test.js tests/practice-catalogue.test.js tests/portal-workspace.test.js tests/reading-practice.test.js tests/content-trust.test.js tests/study-plan-progress.test.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js && npm run validate:edge-tts && node scripts/validate-puppeteer-browser.js && node scripts/verify-di-reference-sync.js",
     "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js",
     "validate:swt-content": "node scripts/validate-swt-content.js",
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
     "validate:content-metadata": "node scripts/validate-content-metadata.js",
     "install:browser": "node -e \"require('fs').rmSync('.cache/puppeteer/chrome',{recursive:true,force:true})\" && puppeteer browsers install chrome",
     "install:edge-tts": "rm -rf .edge-tts && python3 -m venv .edge-tts && .edge-tts/bin/pip install --disable-pip-version-check edge-tts==7.2.8",
-    "validate:edge-tts": "node scripts/validate-edge-tts.js"
+    "validate:edge-tts": "node scripts/validate-edge-tts.js",
+    "validate:di-references": "node scripts/verify-di-reference-sync.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",

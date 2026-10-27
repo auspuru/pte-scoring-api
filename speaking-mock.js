@@ -176,7 +176,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
       return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
-        questions:structuredClone(original.questions),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
+        questions:original.questions.map(require('./di-reference').forNewAttempt),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));

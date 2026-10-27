@@ -231,7 +231,8 @@ test('Supplied image questions serve their real asset path and reveal reference 
  const {question}=require('../speaking-lab'),items=require('../content/di-user-predictions.json');
  for(const item of items){const q=bank.questions.find(q=>q.id===item.id),before=question(q),after=question(q,true);
  assert.equal(before.imageUrl,item.imageUrl);assert.equal(before.sample,undefined);
- assert.equal(after.sample,item.sample);assert.deepEqual(after.facts,item.facts);
+ const verified=require('../content/di-reference-manifest.json').entries[item.id];
+ assert.equal(after.sample,verified.sample);assert.deepEqual(after.facts,verified.mapping.facts);
  assert.equal(before.predictionSource.sourceId,item.predictionSource.sourceId);
  }
 });

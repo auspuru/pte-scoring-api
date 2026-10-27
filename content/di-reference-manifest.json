@@ -1,0 +1,1772 @@
+{
+  "version": "di-image-reference-2026-10-27.1",
+  "verifiedAt": "2026-10-27",
+  "sourceRepository": "auspuru/Describe",
+  "entries": {
+    "di-1": {
+      "academyId": "native-bar",
+      "source": {
+        "kind": "visual-sha256",
+        "sha256": "f19115d5ea1c3e5963f0f62b19a49a20b4900049f5f7892a1394dd0d921791ba"
+      },
+      "portalImageUrl": "/speaking-image/di-1.svg",
+      "mapping": {
+        "title": "Household electricity use",
+        "category": "bar",
+        "facts": [
+          "The chart compares four uses of household electricity.",
+          "Heating is highest at 40%.",
+          "Cooling is 25%, appliances 20% and lighting 15%.",
+          "Heating and cooling together account for 65%, almost two thirds of use."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Household electricity use",
+          "subtitle": "Share of annual consumption (%)",
+          "labels": [
+            "Heating",
+            "Cooling",
+            "Appliances",
+            "Lighting"
+          ],
+          "values": [
+            40,
+            25,
+            20,
+            15
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "fa19c24241c1f8c080cf6c4cb39fcf3174cbdda6f16de01b15889df73948d8db",
+      "sample": "The given image provides the detailed information about household electricity use. Overall, heating accounts for the largest share at 40 percent, followed by cooling at 25 percent and appliances at 20 percent. Lighting has the smallest proportion, at 15 percent. Together, heating and cooling make up 65 percent of consumption, so controlling indoor temperature uses almost two thirds of the household’s electricity."
+    },
+    "di-2": {
+      "academyId": "native-pie",
+      "source": {
+        "kind": "visual-sha256",
+        "sha256": "25ebe6ce94cc5cec9ba90c56a8d4d459cd38144866099f81f9e7c1807c4a134c"
+      },
+      "portalImageUrl": "/speaking-image/di-2.svg",
+      "mapping": {
+        "title": "A student’s monthly budget",
+        "category": "pie",
+        "facts": [
+          "The pie chart shows five categories of a student’s monthly spending.",
+          "Rent is the largest category at 40%, followed by food at 25% and transport at 15%.",
+          "Study materials represent 12% and leisure 8%.",
+          "Rent and food together account for 65% of the budget."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "A student’s monthly budget",
+          "subtitle": "Share of monthly spending (%)",
+          "labels": [
+            "Rent",
+            "Food",
+            "Transport",
+            "Study materials",
+            "Leisure"
+          ],
+          "values": [
+            40,
+            25,
+            15,
+            12,
+            8
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "32e8800e289666989bacbe93c165451330024d952e9526b53d50d00484045ee5",
+      "sample": "The given image provides the detailed information about a student’s monthly budget. Rent is the largest expense at 40 percent, followed by food at 25 percent and transport at 15 percent. The remaining categories are study materials at 12 percent and leisure at 8 percent. Overall, rent and food together account for 65 percent of spending, while leisure is the smallest expense."
+    },
+    "di-3": {
+      "academyId": "native-line",
+      "source": {
+        "kind": "visual-sha256",
+        "sha256": "bd2c6591082088f0192671940f97f569e197454278e30185855f25c311a3ec4a"
+      },
+      "portalImageUrl": "/speaking-image/di-3.svg",
+      "mapping": {
+        "title": "Bicycle trips to campus",
+        "category": "line",
+        "facts": [
+          "The line graph shows average weekday bicycle trips to campus from 2019 to 2023.",
+          "Trips rose from 200 in 2019 to 280 in 2020.",
+          "There was a temporary fall to 250 in 2021.",
+          "Trips then increased to 360 in 2022 and peaked at 450 in 2023.",
+          "The final value is more than twice the initial value."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Bicycle trips to campus",
+          "subtitle": "Average trips per weekday",
+          "labels": [
+            "2019",
+            "2020",
+            "2021",
+            "2022",
+            "2023"
+          ],
+          "values": [
+            200,
+            280,
+            250,
+            360,
+            450
+          ]
+        },
+        "optionalFactIndices": [
+          4
+        ]
+      },
+      "mappingHash": "c12065b81188ee8ae522afe7f4b1de19eb62bdfd461e41195ad9430390ffe6a0",
+      "sample": "The given image provides the detailed information about bicycle trips to campus between 2019 and 2023. Overall, the number of trips increased substantially, from 200 to 450 per weekday. It first rose to 280 in 2020, then fell slightly to 250 in 2021. After that, it climbed to 360 in 2022 and reached its highest point in 2023, more than double the starting figure."
+    },
+    "di-4": {
+      "academyId": "native-table",
+      "source": {
+        "kind": "visual-sha256",
+        "sha256": "6faffb7169c11dd0ac1daca4b0d6f5b10ce97b482492d5db687f4bb012e36974"
+      },
+      "portalImageUrl": "/speaking-image/di-4.svg",
+      "mapping": {
+        "title": "Getting to campus",
+        "category": "table",
+        "facts": [
+          "The table compares four travel methods at North and South campuses.",
+          "Bus travel is highest at North with 180 students; train travel is highest at South with 160.",
+          "Cycling is more common at South, 80 versus 60.",
+          "Walking is least common at both campuses, 40 at North and 20 at South."
+        ],
+        "visual": {
+          "kind": "table",
+          "title": "Getting to campus",
+          "subtitle": "Students surveyed at two campuses",
+          "columns": [
+            "Transport",
+            "North",
+            "South"
+          ],
+          "rows": [
+            [
+              "Bus",
+              "180",
+              "140"
+            ],
+            [
+              "Train",
+              "120",
+              "160"
+            ],
+            [
+              "Bicycle",
+              "60",
+              "80"
+            ],
+            [
+              "Walk",
+              "40",
+              "20"
+            ]
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "548bee7b02730e4d590f99d35152890fd78126d04bd5ff11b6cb0fcdcdd260a1",
+      "sample": "The given image provides the detailed information about how students travel to two campuses. Buses are most popular at North, with 180 users, while trains lead at South with 160. South also has more cyclists, at 80 compared with 60. Walking is the least common method at both campuses, with 40 students at North and 20 at South. Overall, the two campuses show different preferences for bus and train travel."
+    },
+    "di-5": {
+      "academyId": "native-process",
+      "source": {
+        "kind": "visual-sha256",
+        "sha256": "bc8dfdd61fa0c2c0a9deb470245a0ee100cc5f8b3a5da57095430f02240324f9"
+      },
+      "portalImageUrl": "/speaking-image/di-5.svg",
+      "mapping": {
+        "title": "Collecting rainwater",
+        "category": "process",
+        "facts": [
+          "The diagram explains a five-stage process for collecting rainwater for garden use.",
+          "Rain falls on a roof and gutters collect the runoff.",
+          "A filter removes debris before water enters a storage tank.",
+          "A pump moves stored water to the garden.",
+          "The diagram does not show treatment that makes the water safe to drink."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Collecting rainwater for a garden",
+          "subtitle": "A simple five-stage system",
+          "steps": [
+            "Rain falls on roof",
+            "Gutters collect runoff",
+            "Filter removes debris",
+            "Tank stores water",
+            "Pump supplies garden"
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "d5c5ad52d6dfad512a468a7eb1b1d71b0d44fc8e0f0b36e13e53ecbee0fcd8d0",
+      "sample": "The given image provides the detailed information about collecting rainwater for a garden. The process begins when rain falls on a roof. Gutters collect the runoff and direct it through a filter, which removes debris. The filtered water then enters a storage tank. Finally, a pump supplies the garden. Overall, the system collects, filters, stores and reuses rainwater; it does not show a drinking-water treatment process."
+    },
+    "di-pred-3000125": {
+      "academyId": "3000125",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "800d0a50d00304397760ae005bf535da54e47e51b104d8b8d7bad70d39394127"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000125.png",
+      "mapping": {
+        "title": "Bird Feeder",
+        "category": "photo",
+        "facts": [
+          "The photographs show two bird feeders made from plastic bottles.",
+          "The bottles contain seeds and have perches inserted through their sides.",
+          "One feeder is shown with a bird using its perch."
+        ],
+        "visual": {
+          "kind": "photo",
+          "title": "Bird Feeder",
+          "description": "The photographs show two bird feeders made from plastic bottles. The bottles contain seeds and have perches inserted through their sides. One feeder is shown with a bird using its perch."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "e624c8efc0743e7b16508fc37329dcf8dfdc840465f6d6c0ecac0d889c0d9ee0",
+      "sample": "The given image provides the detailed information about bird feeder. The photographs show two bird feeders made from plastic bottles. The bottles contain seeds and have perches inserted through their sides. One feeder is shown with a bird using its perch."
+    },
+    "di-pred-3000134": {
+      "academyId": "3000134",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "8cce603b4e1d6cdb67e68e0cf7aaa9566c6271db7231d6d2a1aa3dee5cd82edc"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000134.png",
+      "mapping": {
+        "title": "Earth’s Structure",
+        "category": "other",
+        "facts": [
+          "The diagram illustrates the internal structure of Earth and labels the surrounding atmosphere.",
+          "The labelled internal layers are the crust, mantle, outer core and inner core.",
+          "An inset distinguishes oceanic and continental crust, the upper and lower mantle, and the Mohorovicic discontinuity."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Earth’s Structure",
+          "description": "The diagram illustrates the internal structure of Earth and labels the surrounding atmosphere. The labelled internal layers are the crust, mantle, outer core and inner core. An inset distinguishes oceanic and continental crust, the upper and lower mantle, and the Mohorovicic discontinuity."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "dbc21c85f4d6d8a294bb9299e795a3b03005a8c681a40df7d2f335ee737090be",
+      "sample": "The given image provides the detailed information about Earth's structure. The internal layers are the crust, mantle, outer core and inner core. The atmosphere surrounds the Earth, while the inset distinguishes oceanic and continental crust and the upper and lower mantle. Overall, the diagram shows how the different layers fit together."
+    },
+    "di-pred-3000137": {
+      "academyId": "3000137",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000137.png",
+      "mapping": {
+        "title": "India Land Use",
+        "category": "map",
+        "facts": [
+          "The map shows different types of land use across India.",
+          "The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land.",
+          "The land-use patterns vary across the country."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "India Land Use",
+          "description": "The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "6c66a1eaba5435423982785c7a46500e2588966ebe1fa862da0afe3d2eb8e63d",
+      "sample": "The given image provides the detailed information about india land use. The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+    },
+    "di-pred-3000186": {
+      "academyId": "3000186",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9848084bdc3dca8ddda55e2b23565b74e37333c645a462152447a47d4e14598d"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000186.png",
+      "mapping": {
+        "title": "Average Rainfall",
+        "category": "bar",
+        "facts": [
+          "The chart compares average rainfall in inches in four cities.",
+          "New York has the highest rainfall at 47.25 inches, followed by Dallas at 33.70.",
+          "Honolulu records 22.02 inches, while Phoenix has the lowest at 7.66."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Average Rainfall",
+          "description": "The chart compares average rainfall in inches in four cities. New York has the highest rainfall at 47.25 inches, followed by Dallas at 33.70. Honolulu records 22.02 inches, while Phoenix has the lowest at 7.66."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "e45082e4630a42fb40f2dda8661dd4dbe7d1fe7f28df455d9b6fdfef7818a4b4",
+      "sample": "The given image provides the detailed information about average rainfall. The chart compares average rainfall in inches in four cities. New York has the highest rainfall at 47.25 inches, followed by Dallas at 33.70. Honolulu records 22.02 inches, while Phoenix has the lowest at 7.66."
+    },
+    "di-pred-3000195": {
+      "academyId": "3000195",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "fe06bafbdf2c04707d9bc5812826cd5e781b56c737e06582fd58921ccef330a7"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000195.png",
+      "mapping": {
+        "title": "Keyboard Hand Position",
+        "category": "other",
+        "facts": [
+          "The illustration contrasts correct and incorrect hand positions at a keyboard.",
+          "The correct examples show straighter wrists, while the wrong examples show wrists bent upward or sideways."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Keyboard Hand Position",
+          "description": "The illustration contrasts correct and incorrect hand positions at a keyboard. The correct examples show straighter wrists, while the wrong examples show wrists bent upward or sideways."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "65309d183166fa56d890ff3d9c63104839cfe381b372c6f75ecb6584c5c5e146",
+      "sample": "The given image provides the detailed information about keyboard hand position. The illustration contrasts correct and incorrect hand positions at a keyboard. The correct examples show straighter wrists, while the wrong examples show wrists bent upward or sideways."
+    },
+    "di-pred-3000349": {
+      "academyId": "3000349",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "1ade44bc6a2707fed093ad48f8d2af40b7b9cf669e201bbd1eeff6a74ea478c2"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000349.png",
+      "mapping": {
+        "title": "Earth’s Climate Zones",
+        "category": "map",
+        "facts": [
+          "The map divides the world into polar, temperate and tropical climate zones.",
+          "The tropical zone lies around the equator between approximately 30 degrees north and south.",
+          "Temperate zones lie farther from the equator, while polar zones are near the poles."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Earth’s Climate Zones",
+          "description": "The map divides the world into polar, temperate and tropical climate zones. The tropical zone lies around the equator between approximately 30 degrees north and south. Temperate zones lie farther from the equator, while polar zones are near the poles."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "307ab6d00bd393eb7b35a537ebd4c120aee48812748967bb3240fd40d530c3cf",
+      "sample": "The given image provides the detailed information about earth’s climate zones. The map divides the world into polar, temperate and tropical climate zones. The tropical zone lies around the equator between approximately 30 degrees north and south. Temperate zones lie farther from the equator, while polar zones are near the poles."
+    },
+    "di-pred-3000354": {
+      "academyId": "3000354",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "ea1bff69e33065609a918a54fdf27bda9cdbe92a9b680cbaf65068b3cb152325"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000354.png",
+      "mapping": {
+        "title": "Trading Goods",
+        "category": "other",
+        "facts": [
+          "The diagram shows imports into and exports from ancient Egypt, with arrows running from importing regions through Egypt to the export list.",
+          "Imports from Lebanon are cedar, oil and timber; imports from Nubia are copper, semi-precious stones and gold; imports from other parts of tropical Africa are ebony, ivory, slaves and exotic animals; imports from countries around the Mediterranean are horses, fruit, honey, pots and copper.",
+          "Exports listed are linen, tools, beads, beer, weapons and oil."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Trading Goods",
+          "description": "The diagram shows imports into and exports from ancient Egypt, with arrows running from importing regions through Egypt to the export list. Imports from Lebanon are cedar, oil and timber; imports from Nubia are copper, semi-precious stones and gold; imports from other parts of tropical Africa are ebony, ivory, slaves and exotic animals; imports from countries around the Mediterranean are horses, fruit, honey, pots and copper. Exports listed are linen, tools, beads, beer, weapons and oil."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "d9490a632e27f17c290d9f27677041927f042c31d9ed1edeeeec6d17bb0a00df",
+      "sample": "The given image provides the detailed information about trade in ancient Egypt. Imports come from several regions, including timber from Lebanon, metals from Nubia, and ivory and animals from tropical Africa. The Mediterranean region supplies goods such as horses, fruit and honey. Exports include linen, tools, beads, beer, weapons and oil. Overall, Egypt receives and supplies a range of goods."
+    },
+    "di-pred-3000365": {
+      "academyId": "3000365",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000365.png",
+      "mapping": {
+        "title": "Population Density",
+        "category": "map",
+        "facts": [
+          "The world map shows geographical differences in population density.",
+          "Dense concentrations appear in parts of Asia and Europe.",
+          "Large areas of northern regions, deserts and central Australia are less densely populated."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Population Density",
+          "description": "The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "9cc660e0283ef7284062606c13cd4fcd5a8907d69be8a9e808911d2b881fd55b",
+      "sample": "The given image provides the detailed information about population density. The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+    },
+    "di-pred-3000370": {
+      "academyId": "3000370",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "8dfa0f0046b17c7c70e8382539963e5ca9ffc322b55c0e66f8c47e496366dfc3"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000370.png",
+      "mapping": {
+        "title": "Athletics Participation Survey",
+        "category": "line",
+        "facts": [
+          "The line graph compares boys and girls participating in high school athletics from 1971 to 2010, with participants shown on a 0 to 5000000 scale.",
+          "Boys remain above girls throughout. Boys rise from about 3.7 million to an early peak around 4.4 million, fall to around 3.3 million, and then recover to about 4.5 million by the end.",
+          "Girls rise sharply from about 0.3 million to around 2.1 million, dip to roughly 1.8 million, and later increase to about 3.2 million. These figures are approximate readings of the plotted lines.",
+          "By the end, both groups are at their highest or near-highest levels."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Athletics Participation Survey",
+          "description": "The line graph compares boys and girls participating in high school athletics from 1971 to 2010, with participants shown on a 0 to 5000000 scale. Boys remain above girls throughout. Boys rise from about 3.7 million to an early peak around 4.4 million, fall to around 3.3 million, and then recover to about 4.5 million by the end. Girls rise sharply from about 0.3 million to around 2.1 million, dip to roughly 1.8 million, and later increase to about 3.2 million. These figures are approximate readings of the plotted lines. By the end, both groups are at their highest or near-highest levels."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "7629a6db5d83511bb409b15d45e6472ccb073c600fd59c3f4fc51b9bbf34eab7",
+      "sample": "The given image provides the detailed information about high school athletics participation from 1971 to 2010. Boys remain above girls throughout the period. Boys' participation falls after an early peak and then recovers to about 4.5 million. Girls' participation rises strongly overall to around 3.2 million. Overall, both groups finish near their highest levels."
+    },
+    "di-pred-3000375": {
+      "academyId": "3000375",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "4bbd258178e9619d098bd235f60531d395b842fb6931444e622e943a43326e59"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000375.png",
+      "mapping": {
+        "title": "Australian Population",
+        "category": "bar",
+        "facts": [
+          "The horizontal bar chart compares the populations of Australian states and territories in 2006. The unit is population per 10000 people.",
+          "New South Wales is largest at 682 units of 10000, followed by Victoria at 508, Queensland at 404, Western Australia at 205 and South Australia at 155.",
+          "The Northern Territory is smallest at 21 units of 10000, followed by the Australian Capital Territory at 33 and Tasmania at 49."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Australian states and territories, 2006",
+          "description": "The horizontal bar chart compares the populations of Australian states and territories in 2006. The unit is population per 10000 people. New South Wales is largest at 682 units of 10000, followed by Victoria at 508, Queensland at 404, Western Australia at 205 and South Australia at 155. The Northern Territory is smallest at 21 units of 10000, followed by the Australian Capital Territory at 33 and Tasmania at 49.",
+          "unit": "population per 10,000",
+          "labels": [
+            "NT",
+            "ACT",
+            "TAS",
+            "SA",
+            "WA",
+            "QLD",
+            "VIC",
+            "NSW"
+          ],
+          "series": [
+            {
+              "name": "Population",
+              "values": [
+                21,
+                33,
+                49,
+                155,
+                205,
+                404,
+                508,
+                682
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "8cb90da0c3ac20d9076c018db2f32990946f14c623ac1e255dc928c7000824f2",
+      "sample": "The given image provides the detailed information about Australian state and territory populations in 2006. The scale is in units of 10,000 people. New South Wales is largest at 682, followed by Victoria at 508 and Queensland at 404. The Northern Territory is smallest at 21, followed by the Australian Capital Territory at 33. Overall, the leading states have much larger populations than the territories."
+    },
+    "di-pred-3000392": {
+      "academyId": "3000392",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "0436b5e9d2819450ed0ec6c1aa1364fb446ca05c1b09e000e308e045ca3f1756"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000392.png",
+      "mapping": {
+        "title": "Australian Population Density",
+        "category": "map",
+        "facts": [
+          "The dot map shows the distribution of population across Australia. Its legend states that 1 dot represents 1000 people, using statistical local area boundaries.",
+          "Population is concentrated near the coast, especially in the east and southeast.",
+          "The interior has relatively few population dots. The labelled cities are Darwin, Perth, Adelaide, Brisbane, Sydney, Canberra, Melbourne and Hobart."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Australian Population Density",
+          "description": "The dot map shows the distribution of population across Australia. Its legend states that 1 dot represents 1000 people, using statistical local area boundaries. Population is concentrated near the coast, especially in the east and southeast. The interior has relatively few population dots. The labelled cities are Darwin, Perth, Adelaide, Brisbane, Sydney, Canberra, Melbourne and Hobart."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "b31ac2eae71ac190f48685a3c9981ee35bf7c0de790b4f0589e8b0cf2f23af65",
+      "sample": "The given image provides the detailed information about Australia's population distribution. Each dot represents 1,000 people. Most dots are concentrated near the coast, especially in the east and southeast around cities such as Sydney and Melbourne. The interior has far fewer dots. Overall, the population is unevenly distributed, with much stronger coastal concentrations."
+    },
+    "di-pred-3000411": {
+      "academyId": "3000411",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "e37271995224a53192d43288bc1ffb4141eabe9ce36c9516ced60a8d8be953ab"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000411.png",
+      "mapping": {
+        "title": "Rainfall vs Temperature",
+        "category": "mixed",
+        "facts": [
+          "The combined chart shows rainfall as blue bars and temperature as a red line across January to December. Rainfall uses the left scale from 0 to 500 and temperature the right scale from 0 to 30; measurement units are not printed.",
+          "Temperature rises to a July peak near 30 and then declines, ending near its low January level.",
+          "Rainfall is lowest around March and reaches its peak around October, near 400 on the left scale, before falling again. Bar heights are approximate readings, not exact labelled values."
+        ],
+        "visual": {
+          "kind": "mixed",
+          "title": "Rainfall vs Temperature",
+          "description": "The combined chart shows rainfall as blue bars and temperature as a red line across January to December. Rainfall uses the left scale from 0 to 500 and temperature the right scale from 0 to 30; measurement units are not printed. Temperature rises to a July peak near 30 and then declines, ending near its low January level. Rainfall is lowest around March and reaches its peak around October, near 400 on the left scale, before falling again. Bar heights are approximate readings, not exact labelled values."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "43cbc2acd234b183a49e02efa07c1d3eb5c84f1eb4034eadf2dbb7d9b456ad63",
+      "sample": "The given image provides the detailed information about monthly rainfall and temperature. Temperature rises to its highest point around July and then falls towards December. Rainfall is lowest around March and increases overall to a peak around October before falling sharply. Overall, the two measures reach their peaks in different months."
+    },
+    "di-pred-3000422": {
+      "academyId": "3000422",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9eba90fd6e8cb94d6cb572754ea61d4247158375ddbc47489afcf33ba0213cbe"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000422.png",
+      "mapping": {
+        "title": "International Student Funding",
+        "category": "table",
+        "facts": [
+          "The table compares primary funding sources for international students in the United States in 2003/04 and 2013/14, showing student counts, shares and percentage changes.",
+          "Personal and family funding remains the largest source: 385543 students and 67 percent in 2003/04, rising to 574129 students and 65 percent in 2013/14, a 49 percent increase in count.",
+          "The total rises from 572509 to 886052 students, a 55 percent increase. U.S. college or university funding rises from 134015 students and 23 percent to 171218 and 19 percent, a 28 percent increase.",
+          "Foreign government or university funding rises from 13699 students and 2 percent to 66147 and 7 percent, a 383 percent increase. Current employer funding rises from 10111 and 2 percent to 49503 and 6 percent, a 390 percent increase. Other sources fall from 29141 and 5 percent to 25055 and 3 percent, a 14 percent decline."
+        ],
+        "visual": {
+          "kind": "table",
+          "title": "International Student Funding",
+          "description": "The table compares primary funding sources for international students in the United States in 2003/04 and 2013/14, showing student counts, shares and percentage changes. Personal and family funding remains the largest source: 385543 students and 67 percent in 2003/04, rising to 574129 students and 65 percent in 2013/14, a 49 percent increase in count. The total rises from 572509 to 886052 students, a 55 percent increase. U.S. college or university funding rises from 134015 students and 23 percent to 171218 and 19 percent, a 28 percent increase. Foreign government or university funding rises from 13699 students and 2 percent to 66147 and 7 percent, a 383 percent increase. Current employer funding rises from 10111 and 2 percent to 49503 and 6 percent, a 390 percent increase. Other sources fall from 29141 and 5 percent to 25055 and 3 percent, a 14 percent decline.",
+          "unit": "student counts, percent of total, and percent change",
+          "columns": [
+            "2003/04 students",
+            "2003/04 %",
+            "2013/14 students",
+            "2013/14 %",
+            "Change %"
+          ],
+          "rows": [
+            {
+              "name": "Personal and family",
+              "values": [
+                385543,
+                67,
+                574129,
+                65,
+                49
+              ]
+            },
+            {
+              "name": "U.S. college or university",
+              "values": [
+                134015,
+                23,
+                171218,
+                19,
+                28
+              ]
+            },
+            {
+              "name": "Foreign government or university",
+              "values": [
+                13699,
+                2,
+                66147,
+                7,
+                383
+              ]
+            },
+            {
+              "name": "Current employer",
+              "values": [
+                10111,
+                2,
+                49503,
+                6,
+                390
+              ]
+            },
+            {
+              "name": "Other sources",
+              "values": [
+                29141,
+                5,
+                25055,
+                3,
+                -14
+              ]
+            },
+            {
+              "name": "Total",
+              "values": [
+                572509,
+                100,
+                886052,
+                100,
+                55
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "a11649dae52e53b54e9ecde6d2124b80d0546a0d2fa7577315a891463238be3c",
+      "sample": "The given image provides the detailed information about funding for international students in the United States in 2003/04 and 2013/14. Personal and family funding remains the largest source, although its share falls from 67 to 65 percent. Total student numbers rise from about 573,000 to 886,000. Employer and foreign government funding grow particularly strongly. Overall, student numbers increase despite changes in the funding shares."
+    },
+    "di-pred-3000429": {
+      "academyId": "3000429",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "3388f137645d9fa5ce7b0c7eb7556c3ce65585bd14e2fc07c133a0aa70cee0e9"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000429.png",
+      "mapping": {
+        "title": "Sitting Posture",
+        "category": "other",
+        "facts": [
+          "The illustration compares correct and incorrect sitting posture at a desk.",
+          "The correct example shows a more upright position and supported feet.",
+          "The incorrect example shows the person leaning forward towards the screen."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Sitting Posture",
+          "description": "The illustration compares correct and incorrect sitting posture at a desk. The correct example shows a more upright position and supported feet. The incorrect example shows the person leaning forward towards the screen."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "b06c3c60a243db02b62fce5cc3e1c383834a8b2ff7f0df9f9d411ac1043af4ca",
+      "sample": "The given image provides the detailed information about sitting posture. The illustration compares correct and incorrect sitting posture at a desk. The correct example shows a more upright position and supported feet. The incorrect example shows the person leaning forward towards the screen."
+    },
+    "di-pred-3000461": {
+      "academyId": "3000461",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "21085ffb8c93aba970e321976e1e9f18985be675aedd387d58368401f6d0ebc9"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000461.png",
+      "mapping": {
+        "title": "Pupil–Teacher Ratio",
+        "category": "bar",
+        "facts": [
+          "The chart shows percentages of primary schools by pupil-to-teacher ratio in January 1997, from less than 16 through ratios 16 to 27 to over 27.",
+          "The highest percentage occurs at 24 pupils per teacher, around 14 percent.",
+          "The percentages rise towards the middle-to-upper ratios and then fall; the smallest ratio groups and the over-27 group are lower than the peak. The heights are approximate because values are not printed on the bars.",
+          "The lowest bar is the category 16 pupils per teacher, at approximately 1 percent of schools. This is the smallest percentage, not the smallest ratio category.",
+          "The separate less-than-16 category accounts for approximately 2 percent of schools.",
+          "Ratios 23 and 25 are also relatively common near the peak; these neighbouring bars are optional supporting detail."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Pupil–Teacher Ratio",
+          "description": "The chart shows percentages of primary schools by pupil-to-teacher ratio in January 1997, from less than 16 through ratios 16 to 27 to over 27. The highest percentage occurs at 24 pupils per teacher, around 14 percent. The percentages rise towards the middle-to-upper ratios and then fall; the smallest ratio groups and the over-27 group are lower than the peak. The heights are approximate because values are not printed on the bars. The lowest bar is the category 16 pupils per teacher, at approximately 1 percent of schools. This is the smallest percentage, not the smallest ratio category. The separate less-than-16 category accounts for approximately 2 percent of schools. Ratios 23 and 25 are also relatively common near the peak; these neighbouring bars are optional supporting detail.",
+          "xAxis": "Pupil/Teacher Ratio (categories)",
+          "yAxis": "Percentage of primary schools",
+          "verifiedReadings": [
+            {
+              "label": "24",
+              "aliases": [
+                "24"
+              ],
+              "value": 14,
+              "unit": "percent",
+              "role": "maximum",
+              "approximate": true,
+              "factIndex": 1
+            },
+            {
+              "label": "16",
+              "aliases": [
+                "16"
+              ],
+              "value": 1,
+              "unit": "percent",
+              "role": "minimum",
+              "approximate": true,
+              "factIndex": 3
+            },
+            {
+              "label": "Less than 16",
+              "aliases": [
+                "less than 16",
+                "under 16",
+                "below 16"
+              ],
+              "value": 2,
+              "unit": "percent",
+              "approximate": true,
+              "factIndex": 4
+            }
+          ]
+        },
+        "optionalFactIndices": [
+          5
+        ]
+      },
+      "mappingHash": "aee345cd6bb6c06d57649d9c9b7a516bfd083e17af125dcdc21f86fdb68f8ade",
+      "sample": "The given image provides the detailed information about pupil-to-teacher ratios in primary schools in January 1997. The highest percentage of schools has 24 pupils per teacher, at around 14 percent. The lowest bar is for 16 pupils per teacher, at about 1 percent. Overall, the middle-to-upper ratios are more common than the smallest ratio groups."
+    },
+    "di-pred-3000469": {
+      "academyId": "3000469",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "5d6bd90bb134be6fb19ad77219d8ec94e542227c0f60927168f4100b74db9b46"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000469.png",
+      "mapping": {
+        "title": "Quiz Process Flow",
+        "category": "process",
+        "facts": [
+          "The flowchart begins with clicking to start a quiz and then opening Question 1.",
+          "Clicking false leads to a correct-answer slide, while clicking true leads to a wrong-answer slide.",
+          "Both routes proceed to Question 2."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Quiz Process Flow",
+          "description": "The flowchart begins with clicking to start a quiz and then opening Question 1. Clicking false leads to a correct-answer slide, while clicking true leads to a wrong-answer slide. Both routes proceed to Question 2."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "3ba33d2d76d0dfa780a280c74e348b3b95430b019c524a53e0dfef65719b87b6",
+      "sample": "The given image provides the detailed information about quiz process flow. The flowchart begins with clicking to start a quiz and then opening Question 1. Clicking false leads to a correct-answer slide, while clicking true leads to a wrong-answer slide. Both routes proceed to Question 2."
+    },
+    "di-pred-3000481": {
+      "academyId": "3000481",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000481.png",
+      "mapping": {
+        "title": "Population Doubling Time",
+        "category": "line",
+        "facts": [
+          "The graph plots the years required for world population to double against the ending year. The horizontal axis is marked from 1700 to 2000.",
+          "Doubling time falls from 544 years in 1715 to 304 years in 1804 and 166 years in 1881.",
+          "Later labels show 123 years in 1927, 79 years in 1960, 47 years in 1974 and 39 years in 1999. The overall trend is a sharp decline in doubling time, meaning that population doubles more quickly in later periods. The small projected annotation at the lower right is not used for exact claims."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Population Doubling Time",
+          "description": "The graph plots the years required for world population to double against the ending year. The horizontal axis is marked from 1700 to 2000. Doubling time falls from 544 years in 1715 to 304 years in 1804 and 166 years in 1881. Later labels show 123 years in 1927, 79 years in 1960, 47 years in 1974 and 39 years in 1999. The overall trend is a sharp decline in doubling time, meaning that population doubles more quickly in later periods. The small projected annotation at the lower right is not used for exact claims."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "95238b0bcbd56465f0029773aadb69655d63ead4777ed9bc701999647ff25945",
+      "sample": "The given image provides the detailed information about world population doubling time. The time falls from 544 years in 1715 to 304 years in 1804 and 166 years in 1881. It continues declining and reaches 39 years in 1999. Overall, the population takes much less time to double in the later periods."
+    },
+    "di-pred-3000542": {
+      "academyId": "3000542",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "77d705c8eec30ff46b4f37aba0f266fec43fa7879779eebfe910e83404bc0e0a"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000542.png",
+      "mapping": {
+        "title": "Laboratory",
+        "category": "photo",
+        "facts": [
+          "The photograph shows two people working in a laboratory.",
+          "They wear laboratory coats and protective glasses.",
+          "They are handling glass containers containing liquid."
+        ],
+        "visual": {
+          "kind": "photo",
+          "title": "Laboratory",
+          "description": "The photograph shows two people working in a laboratory. They wear laboratory coats and protective glasses. They are handling glass containers containing liquid."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "02bac17ae25e757580344d0f40c05637460459bd71f28ed18381dedbba79b1c1",
+      "sample": "The given image provides the detailed information about laboratory. The photograph shows two people working in a laboratory. They wear laboratory coats and protective glasses. They are handling glass containers containing liquid."
+    },
+    "di-pred-3000560": {
+      "academyId": "3000560",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "dc193e3f7ffe9594263f060a5437c6d193dccc6cb995a241adcbfb5ddfa92218"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000560.png",
+      "mapping": {
+        "title": "Homologies",
+        "category": "other",
+        "facts": [
+          "The diagram compares homologous structures in a human arm, seal forelimb, bird wing and bat wing.",
+          "The human example labels the hand, wrist, fingers, radius, ulna and humerus.",
+          "The limbs have different shapes and functions but share a related structural arrangement."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Homologies",
+          "description": "The diagram compares homologous structures in a human arm, seal forelimb, bird wing and bat wing. The human example labels the hand, wrist, fingers, radius, ulna and humerus. The limbs have different shapes and functions but share a related structural arrangement."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "3372e2ec32d4fcf235b6dabf8f2bb2bba07c83b862715d7b5881dd4e7e706210",
+      "sample": "The given image provides the detailed information about homologies. The diagram compares homologous structures in a human arm, seal forelimb, bird wing and bat wing. The human example labels the hand, wrist, fingers, radius, ulna and humerus. The limbs have different shapes and functions but share a related structural arrangement."
+    },
+    "di-pred-3000561": {
+      "academyId": "3000561",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "763b0d95db58964c2a500c621a55bb689140ec93c8a6ed051bbdb49355b7ecf4"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000561.png",
+      "mapping": {
+        "title": "Closed-Loop Recycling",
+        "category": "process",
+        "facts": [
+          "The diagram presents a closed-loop plastics supply chain.",
+          "The stages are collecting and recycling, sorting and shredding, moulding and manufacturing, assembling and shipping, and purchasing and using.",
+          "The circular arrows show that used products return to the recycling process."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Closed-Loop Recycling",
+          "description": "The diagram presents a closed-loop plastics supply chain. The stages are collecting and recycling, sorting and shredding, moulding and manufacturing, assembling and shipping, and purchasing and using. The circular arrows show that used products return to the recycling process."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "ebd126e8d166c79b350992ec24169f629146105291fa18e14e9fd3ba88743efa",
+      "sample": "The given image provides the detailed information about closed-loop recycling. The diagram presents a closed-loop plastics supply chain. The stages are collecting and recycling, sorting and shredding, moulding and manufacturing, assembling and shipping, and purchasing and using. The circular arrows show that used products return to the recycling process."
+    },
+    "di-pred-3000579": {
+      "academyId": "3000579",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "00a7978d5403c9a98686b88513552669302327ea0678bd768cd3cf5d066e423d"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000579.png",
+      "mapping": {
+        "title": "Drinking Habits",
+        "category": "bar",
+        "facts": [
+          "The stacked bar chart compares drinking habits in the United States across age groups 16–24, 25–34, 35–44, 45–54, 55–64 and 65–74.",
+          "The legend categories are heavy drinker in green, light drinker in red, ex-drinker in yellow and never drinker in blue.",
+          "Ex-drinkers have their largest share in the oldest group, while light drinkers generally become less common. Never drinkers form the largest single section in each age group, although their share is lower at the oldest ages. Individual segment percentages are not printed."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Drinking Habits",
+          "description": "The stacked bar chart compares drinking habits in the United States across age groups 16–24, 25–34, 35–44, 45–54, 55–64 and 65–74. The legend categories are heavy drinker in green, light drinker in red, ex-drinker in yellow and never drinker in blue. Ex-drinkers have their largest share in the oldest group, while light drinkers generally become less common. Never drinkers form the largest single section in each age group, although their share is lower at the oldest ages. Individual segment percentages are not printed."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "002f873e81bd488b21dafaa1a71895a82cd4d9d424ac6754ee5ed2e2f8055b8b",
+      "sample": "The given image provides the detailed information about drinking habits across age groups in the United States. Never drinkers form the largest single section in each group. Light drinkers generally become less common at older ages, while ex-drinkers have their largest share in the oldest group. Overall, drinking patterns differ noticeably by age."
+    },
+    "di-pred-3000580": {
+      "academyId": "3000580",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000580.png",
+      "mapping": {
+        "title": "Population Density",
+        "category": "map",
+        "facts": [
+          "The map shows Australian population density in June 2010.",
+          "Density is highest in several coastal regions, particularly in the east and southeast.",
+          "Most of the interior has a low population density."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Population Density",
+          "description": "The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "6c39d118063a4b529a06b156506f5f8e3ee467e13cb355b29d33208dcafedc38",
+      "sample": "The given image provides the detailed information about population density. The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+    },
+    "di-pred-3000586": {
+      "academyId": "3000586",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "4e9c530bedfe3fa99c368784c05b842674064cc5de4d7c16489b5775d3e11f48"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000586.png",
+      "mapping": {
+        "title": "Average Rainfall",
+        "category": "bar",
+        "facts": [
+          "The grouped bars compare average rainfall in millimetres in the United Kingdom, Japan and Australia across spring, summer, autumn and winter.",
+          "The United Kingdom is highest and Australia lowest in every season. The UK values are 5.3, 4.5, 3.5 and 1.5 millimetres respectively.",
+          "Japan records 2.4, 3.4, 1.8 and 1.2 millimetres, while Australia records 2, 2, 1.5 and 1 millimetre. Winter is the lowest season for all three countries; Japan peaks in summer and the UK in spring."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Average rainfall in millimetres",
+          "description": "The grouped bars compare average rainfall in millimetres in the United Kingdom, Japan and Australia across spring, summer, autumn and winter. The United Kingdom is highest and Australia lowest in every season. The UK values are 5.3, 4.5, 3.5 and 1.5 millimetres respectively. Japan records 2.4, 3.4, 1.8 and 1.2 millimetres, while Australia records 2, 2, 1.5 and 1 millimetre. Winter is the lowest season for all three countries; Japan peaks in summer and the UK in spring.",
+          "unit": "millimetres",
+          "labels": [
+            "Spring",
+            "Summer",
+            "Autumn",
+            "Winter"
+          ],
+          "series": [
+            {
+              "name": "UK",
+              "values": [
+                5.3,
+                4.5,
+                3.5,
+                1.5
+              ]
+            },
+            {
+              "name": "Japan",
+              "values": [
+                2.4,
+                3.4,
+                1.8,
+                1.2
+              ]
+            },
+            {
+              "name": "Australia",
+              "values": [
+                2,
+                2,
+                1.5,
+                1
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "d472fe7260db8e07d845702efc66d72d0678ddd5441c3e0d6827b146c100ffc1",
+      "sample": "The given image provides the detailed information about average seasonal rainfall in the United Kingdom, Japan and Australia. The United Kingdom records the highest rainfall in every season, while Australia has the lowest. UK rainfall peaks in spring at 5.3 millimetres, whereas Japan peaks in summer at 3.4. Overall, winter has the lowest rainfall for all three countries."
+    },
+    "di-pred-3000587": {
+      "academyId": "3000587",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "d3f0f14f4d9de4db7e2d7866a62653b63dbc256339c50e26277395fd2218ec4b"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000587.png",
+      "mapping": {
+        "title": "US States",
+        "category": "bar",
+        "facts": [
+          "The graphic compares five labelled places using horizontal pencil-shaped bars. No measurement unit is supplied.",
+          "New Jersey has the largest displayed value at 50.680, followed by Chicago at 46.750, South Carolina at 38.520 and Michigan at 26.710.",
+          "Virginia has the smallest displayed value at 18.950.",
+          "The supplied title says US States, although Chicago is included among the labels. Read the labels as printed; no different place name or unit is inferred."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "US States · labels as supplied",
+          "description": "The graphic compares five labelled places using horizontal pencil-shaped bars. No measurement unit is supplied. New Jersey has the largest displayed value at 50.680, followed by Chicago at 46.750, South Carolina at 38.520 and Michigan at 26.710. Virginia has the smallest displayed value at 18.950. The supplied title says US States, although Chicago is included among the labels. Read the labels as printed; no different place name or unit is inferred.",
+          "unit": "unit not supplied",
+          "labels": [
+            "New Jersey",
+            "Chicago",
+            "South Carolina",
+            "Michigan",
+            "Virginia"
+          ],
+          "series": [
+            {
+              "name": "Displayed value",
+              "values": [
+                50.68,
+                46.75,
+                38.52,
+                26.71,
+                18.95
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "2fc7f0ea7889b2042d505f81e844e3348fedd663324ff42e81cbc9dd9da8689e",
+      "sample": "The given image provides the detailed information about five labelled places. New Jersey has the highest displayed value at 50.680, followed by Chicago at 46.750. South Carolina and Michigan have lower values, while Virginia is lowest at 18.950. Overall, there is a clear gap between the highest and lowest figures. The image does not give a measurement unit."
+    },
+    "di-pred-3000589": {
+      "academyId": "3000589",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000589.png",
+      "mapping": {
+        "title": "Climate Zones",
+        "category": "map",
+        "facts": [
+          "The map shows climate zones across Australia based on temperature and humidity.",
+          "The north includes hot and humid areas, while the south includes temperate areas.",
+          "Cool temperate conditions are shown in the far southeast and Tasmania."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Climate Zones",
+          "description": "The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "570f0ab6b153f1c30c84860981081978d5b6a84ba0befc5c6906b8ece47acb2f",
+      "sample": "The given image provides the detailed information about climate zones. The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+    },
+    "di-pred-3000594": {
+      "academyId": "3000594",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "1901483ff1f347c7ed5666fbfa8722f8cc5a3349f59c1be561b4519d8c6a4ada"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000594.png",
+      "mapping": {
+        "title": "World Water Distribution",
+        "category": "mixed",
+        "facts": [
+          "The upper pie chart divides world water into 98 percent salt water and 2 percent fresh water.",
+          "The freshwater breakdown shows 87 percent ice, 12 percent groundwater and 1 percent rivers and lakes.",
+          "Most world water is saline, and most freshwater is stored as ice."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "World Water Distribution",
+          "description": "The upper pie chart divides world water into 98 percent salt water and 2 percent fresh water. The freshwater breakdown shows 87 percent ice, 12 percent groundwater and 1 percent rivers and lakes. Most world water is saline, and most freshwater is stored as ice."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "32d1e270aaeb4db9dfcd24e301cc9f2f4b909ba204e9b911fdc8f059b331bacc",
+      "sample": "The given image provides the detailed information about world water distribution. The upper pie chart divides world water into 98 percent salt water and 2 percent fresh water. The freshwater breakdown shows 87 percent ice, 12 percent groundwater and 1 percent rivers and lakes. Most world water is saline, and most freshwater is stored as ice."
+    },
+    "di-pred-3000601": {
+      "academyId": "3000601",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "076997dc02bad8221538bdedc3c1fac7eeaaf637c34ca6b60ebd2bb292933fa9"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000601.png",
+      "mapping": {
+        "title": "Number of Bonds",
+        "category": "pie",
+        "facts": [
+          "The pie chart shows the number of bonds listed at the end of 2012, measured as counts, not percentages.",
+          "Corporate bonds dominate with 740, followed by government bonds with 147.",
+          "Local government bonds and SME private debts each have 44. Convertible bonds and others each have 16. Bonds with detachable warrant have 14, the smallest count."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Number of Bonds",
+          "description": "The pie chart shows the number of bonds listed at the end of 2012, measured as counts, not percentages. Corporate bonds dominate with 740, followed by government bonds with 147. Local government bonds and SME private debts each have 44. Convertible bonds and others each have 16. Bonds with detachable warrant have 14, the smallest count.",
+          "unit": "number of bonds",
+          "panels": [
+            {
+              "name": "Bonds listed at the end of 2012",
+              "labels": [
+                "Government bonds",
+                "Local government bonds",
+                "Corporate bonds",
+                "Convertible bonds",
+                "Bond with detachable warrant",
+                "SME private debts",
+                "Others"
+              ],
+              "values": [
+                147,
+                44,
+                740,
+                16,
+                14,
+                44,
+                16
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "b7354cf0dc656104f27e0688d897354a6ad375dc34f8e8bf3aed7fb8092154d6",
+      "sample": "The given image provides the detailed information about the number of bonds listed at the end of 2012. Corporate bonds dominate with 740, followed by government bonds with 147. Local government bonds and SME private debts each have 44. Bonds with detachable warrant are smallest at 14. Overall, corporate bonds account for by far the largest count."
+    },
+    "di-pred-3000603": {
+      "academyId": "3000603",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "4169062433d9f777053053212a09a78c44651869d7abc88ffdd9c5ef9226d9d4"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000603.png",
+      "mapping": {
+        "title": "Tree Structure",
+        "category": "other",
+        "facts": [
+          "The diagram identifies the main parts of a tree.",
+          "Leaves, twigs and branches form the crown above the trunk.",
+          "Roots extend beneath the ground."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Tree Structure",
+          "description": "The diagram identifies the main parts of a tree. Leaves, twigs and branches form the crown above the trunk. Roots extend beneath the ground."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "2d11be719c63f624cbe4cc08b3299021172540c95c5308e07ff46f50ce80fcec",
+      "sample": "The given image provides the detailed information about tree structure. The diagram identifies the main parts of a tree. Leaves, twigs and branches form the crown above the trunk. Roots extend beneath the ground."
+    },
+    "di-pred-3000664": {
+      "academyId": "3000664",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "0c1250275aa69d1cce4612d170a42fbe9ec6d44cd7bf169fec3ef624fc2dafcd"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000664.png",
+      "mapping": {
+        "title": "Adults vs Teens",
+        "category": "bar",
+        "facts": [
+          "The grouped bars compare adults and teenagers who text by the number of texts sent on a typical day, measured as percentages.",
+          "Adults most commonly send 1 to 10 texts, at 51 percent, compared with 22 percent of teenagers. The no-text category has 9 percent of adults and 2 percent of teenagers.",
+          "For 11 to 20 texts the shares are 13 percent for adults and 11 percent for teenagers; for 21 to 50 they are 13 and 18 percent; for 51 to 100 they are 7 and 18 percent.",
+          "Teenagers are most common in the 101-plus category, at 29 percent compared with 8 percent for adults. Use the printed percentages without rescaling them."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Texts sent on a typical day",
+          "description": "The grouped bars compare adults and teenagers who text by the number of texts sent on a typical day, measured as percentages. Adults most commonly send 1 to 10 texts, at 51 percent, compared with 22 percent of teenagers. The no-text category has 9 percent of adults and 2 percent of teenagers. For 11 to 20 texts the shares are 13 percent for adults and 11 percent for teenagers; for 21 to 50 they are 13 and 18 percent; for 51 to 100 they are 7 and 18 percent. Teenagers are most common in the 101-plus category, at 29 percent compared with 8 percent for adults. Use the printed percentages without rescaling them.",
+          "unit": "percent",
+          "labels": [
+            "None",
+            "1–10",
+            "11–20",
+            "21–50",
+            "51–100",
+            "101+"
+          ],
+          "series": [
+            {
+              "name": "Adults",
+              "values": [
+                9,
+                51,
+                13,
+                13,
+                7,
+                8
+              ]
+            },
+            {
+              "name": "Teens",
+              "values": [
+                2,
+                22,
+                11,
+                18,
+                18,
+                29
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "0dfb69cf178dba1ede095d54b9a1931d84695bc25bafcf9d81113c37aab16fa4",
+      "sample": "The given image provides the detailed information about daily texting by adults and teenagers. Adults most commonly send one to ten texts, at 51 percent compared with 22 percent of teenagers. Teenagers are most common in the 101-plus group, at 29 percent compared with 8 percent of adults. Overall, teenagers are more strongly represented among the heaviest texters."
+    },
+    "di-pred-3000665": {
+      "academyId": "3000665",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "1186e59f47da913b95ffdf7532e8c5736718bdc6f17bdec6cd0b902030a0ea56"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000665.png",
+      "mapping": {
+        "title": "Lecture Hall",
+        "category": "photo",
+        "facts": [
+          "The illustration shows a lecture hall with rows of seats facing the front.",
+          "Aisles between the seating sections lead towards a stage and a large presentation screen.",
+          "Windows and ceiling lights surround the room."
+        ],
+        "visual": {
+          "kind": "photo",
+          "title": "Lecture Hall",
+          "description": "The illustration shows a lecture hall with rows of seats facing the front. Aisles between the seating sections lead towards a stage and a large presentation screen. Windows and ceiling lights surround the room."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "3b767317e68bc3f101160d7db34215e7e38d0b0e8fed89e677a59b75dd5091dd",
+      "sample": "The given image provides the detailed information about a lecture hall. Rows of seats face a stage and a large presentation screen at the front. Aisles between the seating sections provide access to the stage. Windows line the room, and lights are fitted in the ceiling. Overall, the room is arranged for a seated audience to watch a presentation."
+    },
+    "di-pred-3000669": {
+      "academyId": "3000669",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7a982c62ebd748f1ad52a8468928949334febcfc1047f16615569da885d00425"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000669.png",
+      "mapping": {
+        "title": "World Water Distribution",
+        "category": "other",
+        "facts": [
+          "The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres.",
+          "The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total.",
+          "The small-store labels are lakes 0.26 percent, soil 0.05 percent, atmosphere 0.04 percent, wetlands 0.03 percent, rivers 0.006 percent, and plants and animals 0.003 percent. The enlarged bars are marked times 12 and times 30. Their magnification is not a change in water volume."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "World Water Distribution",
+          "description": "The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres. The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total. The small-store labels are lakes 0.26 percent, soil 0.05 percent, atmosphere 0.04 percent, wetlands 0.03 percent, rivers 0.006 percent, and plants and animals 0.003 percent. The enlarged bars are marked times 12 and times 30. Their magnification is not a change in water volume."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "5c542f0e887482f14fe9a6436ade7df3f3804f7d42266d251ef69b85e5e0b830",
+      "sample": "The given image provides the detailed information about world water distribution. Saltwater accounts for 97.5 percent of global water, while freshwater represents only 2.5 percent. Most freshwater is stored in glaciers and permanent snow, followed by groundwater. Lakes, rivers and other small stores contain much smaller shares. Overall, freshwater forms only a small part of the world's water."
+    },
+    "di-pred-3000697": {
+      "academyId": "3000697",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "0f65b67846fbd770844ef2c1192473d703c84a440d04edd9a184c30b4949f586"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000697.png",
+      "mapping": {
+        "title": "Protective Equipment",
+        "category": "other",
+        "facts": [
+          "The illustration shows a worker surrounded by personal protective equipment symbols.",
+          "These include a helmet, hearing protection, protective glasses, a mask, gloves and boots.",
+          "The image emphasises several forms of workplace protection."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Protective Equipment",
+          "description": "The illustration shows a worker surrounded by personal protective equipment symbols. These include a helmet, hearing protection, protective glasses, a mask, gloves and boots. The image emphasises several forms of workplace protection."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "8b3c6552832a2fd4407e8ae36251c7cbf893f3eb8d8d108cfeed1be699523fba",
+      "sample": "The given image provides the detailed information about protective equipment. The illustration shows a worker surrounded by personal protective equipment symbols. These include a helmet, hearing protection, protective glasses, a mask, gloves and boots. The image emphasises several forms of workplace protection."
+    },
+    "di-pred-3000704": {
+      "academyId": "3000704",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "2e0e39c6f36e4eb006d96da986454825a4c8f36833944ef7c5ccd86ab7d2f569"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000704.png",
+      "mapping": {
+        "title": "Iron Age Hut",
+        "category": "other",
+        "facts": [
+          "The cross-section shows an Iron Age hut.",
+          "The roof is labelled with rafters and reed thatch.",
+          "The interior includes a seat and ashes, while the sides include a turf wall and ground level."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Iron Age Hut",
+          "description": "The cross-section shows an Iron Age hut. The roof is labelled with rafters and reed thatch. The interior includes a seat and ashes, while the sides include a turf wall and ground level."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "0c5022a5189979ef953c357ccffb86a8b21107a8626bef145bcbfe75b8880041",
+      "sample": "The given image provides the detailed information about iron age hut. The cross-section shows an Iron Age hut. The roof is labelled with rafters and reed thatch. The interior includes a seat and ashes, while the sides include a turf wall and ground level."
+    },
+    "di-pred-3000707": {
+      "academyId": "3000707",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "343bea8d6ebc2f9acd9a54f99fe9387ac227903516d595bb6c07bc183b58f1f2"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000707.png",
+      "mapping": {
+        "title": "Ice Thickness",
+        "category": "other",
+        "facts": [
+          "The illustration presents minimum ice-thickness guidelines for new clear ice only, with a heading stating that ice is never 100 percent safe.",
+          "The printed thicknesses increase from 4 inches for a person to 5–7 inches for a snowmobile or ATV, 8–12 inches for a car, and 12–15 inches for a truck.",
+          "The thinnest illustrated section shows a person breaking through the ice. The image presents increasing guideline thicknesses as the vehicles become heavier; it does not guarantee safety."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Ice Thickness",
+          "description": "The illustration presents minimum ice-thickness guidelines for new clear ice only, with a heading stating that ice is never 100 percent safe. The printed thicknesses increase from 4 inches for a person to 5–7 inches for a snowmobile or ATV, 8–12 inches for a car, and 12–15 inches for a truck. The thinnest illustrated section shows a person breaking through the ice. The image presents increasing guideline thicknesses as the vehicles become heavier; it does not guarantee safety."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "423c9a1f70d3dfabd4ef1f367f29368f43588f7e53a36b687db2a33814a0f942",
+      "sample": "The given image provides the detailed information about minimum ice-thickness guidelines for new clear ice. The illustrated thickness rises from four inches for a person to five to seven inches for a snowmobile or ATV. Cars and trucks require thicker ice in the diagram. Overall, the guidelines increase with heavier vehicles, while the heading warns that ice is never completely safe."
+    },
+    "di-pred-3000708": {
+      "academyId": "3000708",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9c5d87197a53af69b2aa01267b8113b0d9eb2d9fde43ebd7d52f7136ebb9e30f"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000708.png",
+      "mapping": {
+        "title": "Garden Instructions",
+        "category": "photo",
+        "facts": [
+          "The photograph shows a sign asking visitors to respect and enjoy historic gardens.",
+          "The symbols prohibit cycling, alcohol and a ball activity.",
+          "A person walking a dog is shown as permitted."
+        ],
+        "visual": {
+          "kind": "photo",
+          "title": "Garden Instructions",
+          "description": "The photograph shows a sign asking visitors to respect and enjoy historic gardens. The symbols prohibit cycling, alcohol and a ball activity. A person walking a dog is shown as permitted."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "a49f4d7f634df1da7d4c0cc4eb0072bcc5e832dbe195dcc18f1b1a8a0023dce0",
+      "sample": "The given image provides the detailed information about garden instructions. The photograph shows a sign asking visitors to respect and enjoy historic gardens. The symbols prohibit cycling, alcohol and a ball activity. A person walking a dog is shown as permitted."
+    },
+    "di-pred-3000726": {
+      "academyId": "3000726",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "ac6e535ebb9e06179fefabd8d0f3658a7f0bb47d740462fdce530763cf62b248"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000726.png",
+      "mapping": {
+        "title": "Plastic Bottle Recycling",
+        "category": "process",
+        "facts": [
+          "The diagram shows a cycle for recycling old plastic bottles.",
+          "Used bottles are collected and processed through a recycling facility.",
+          "New bottles are produced and can return to the cycle after use."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Plastic Bottle Recycling",
+          "description": "The diagram shows a cycle for recycling old plastic bottles. Used bottles are collected and processed through a recycling facility. New bottles are produced and can return to the cycle after use."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "649a6ea940267bf706d889464cd0445ed4c1c8805026a852a6cffc7955f07774",
+      "sample": "The given image provides the detailed information about plastic bottle recycling. The diagram shows a cycle for recycling old plastic bottles. Used bottles are collected and processed through a recycling facility. New bottles are produced and can return to the cycle after use."
+    },
+    "di-pred-3000739": {
+      "academyId": "3000739",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "6c6d54ed645fc3e317f88c4f2af9d0303e148401a99ff34bf8e93337d0ef2219"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000739.png",
+      "mapping": {
+        "title": "American Fast Food",
+        "category": "bar",
+        "facts": [
+          "The grouped bar chart compares American fast-food dining frequency in July 2003, December 2006 and July 2013. It shows six groups: every day, several times a week, about once a week, once or twice a month, a few times a year, and never.",
+          "About once a week and once or twice a month are the largest groups, reaching roughly 25 to 33 percent. Several times a week is around 16 to 20 percent, while a few times a year is around 13 to 15 percent.",
+          "Every day and never are the smallest groups, each around 3 to 5 percent. The chart also prints a sample size of 2027.",
+          "About once a week is the largest category in 2003 and 2006, whereas once or twice a month is largest in 2013. The latter is about 30 percent in 2003, 25 percent in 2006 and 33 percent in 2013."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "American Fast Food",
+          "description": "The grouped bar chart compares American fast-food dining frequency in July 2003, December 2006 and July 2013. It shows six groups: every day, several times a week, about once a week, once or twice a month, a few times a year, and never. About once a week and once or twice a month are the largest groups, reaching roughly 25 to 33 percent. Several times a week is around 16 to 20 percent, while a few times a year is around 13 to 15 percent. Every day and never are the smallest groups, each around 3 to 5 percent. The chart also prints a sample size of 2027. About once a week is the largest category in 2003 and 2006, whereas once or twice a month is largest in 2013. The latter is about 30 percent in 2003, 25 percent in 2006 and 33 percent in 2013."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "8388ba41d9a85453af184b235ebe7fe230bdcb9861ac4bc708aaa501c812d49f",
+      "sample": "The given image provides the detailed information about American fast-food dining frequency in 2003, 2006 and 2013. Eating about once a week is most common in the first two years. In 2013, once or twice a month becomes the largest group. Eating every day and never eating fast food remain the smallest categories. Overall, occasional eating is more common than either extreme."
+    },
+    "di-pred-3000742": {
+      "academyId": "3000742",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "800ae617dcca5184639210b23b1f39ab079cae53d206ed783dbc3e9b27b15380"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000742.png",
+      "mapping": {
+        "title": "Weekly Household Spending",
+        "category": "other",
+        "facts": [
+          "The infographic compares average weekly household expenditure in euros in 2015–2016.",
+          "Housing is largest at 164 euros, followed by transport at 124 and food at 123. Housing lists rent at 47 and mortgage at 65 euros; transport lists purchase of cars at 44 and petrol or diesel at 35 euros; food lists eating at home at 97 and eating out at 26 euros.",
+          "The remaining displayed categories are medical 50 euros, fuel and light 39, pensions 37, clothing and footwear 34, holidays 33, alcohol and tobacco 28, mobile and landline 20, and education and training 18, the smallest category. Housing refers to the primary dwelling, and mobile and landline excludes bundles."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Weekly Household Spending",
+          "description": "The infographic compares average weekly household expenditure in euros in 2015–2016. Housing is largest at 164 euros, followed by transport at 124 and food at 123. Housing lists rent at 47 and mortgage at 65 euros; transport lists purchase of cars at 44 and petrol or diesel at 35 euros; food lists eating at home at 97 and eating out at 26 euros. The remaining displayed categories are medical 50 euros, fuel and light 39, pensions 37, clothing and footwear 34, holidays 33, alcohol and tobacco 28, mobile and landline 20, and education and training 18, the smallest category. Housing refers to the primary dwelling, and mobile and landline excludes bundles."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "088e0091a9be2ebf70285febd6d9695002166fd388a62171a9f67f235b71d6e5",
+      "sample": "The given image provides the detailed information about average weekly household spending in 2015–2016. Housing is the largest category at 164 euros, followed by transport at 124 and food at 123. Education and training is the smallest displayed category at 18 euros. Overall, housing, transport and food account for much higher weekly spending than the smaller categories."
+    },
+    "di-pred-3000881": {
+      "academyId": "3000881",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "fda638def95b5e5fbcc2f6ecb0bfe8951e5881683bbb3bf9ae3fd9635fbf54a6"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000881.png",
+      "mapping": {
+        "title": "2014 Diamond Production",
+        "category": "pie",
+        "facts": [
+          "The pie chart compares diamond production by value in 2014.",
+          "Russia is largest at 26 percent, closely followed by Botswana at 25 percent.",
+          "Canada accounts for 14 percent, Angola 9 percent and South Africa 8 percent.",
+          "Other countries together contribute 18 percent."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "2014 Diamond Production",
+          "description": "The pie chart compares diamond production by value in 2014. Russia is largest at 26 percent, closely followed by Botswana at 25 percent. Canada accounts for 14 percent, Angola 9 percent and South Africa 8 percent. Other countries together contribute 18 percent.",
+          "unit": "percent",
+          "panels": [
+            {
+              "name": "2014 diamond production by value",
+              "labels": [
+                "Russia",
+                "Botswana",
+                "Canada",
+                "Angola",
+                "South Africa",
+                "Others"
+              ],
+              "values": [
+                26,
+                25,
+                14,
+                9,
+                8,
+                18
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "b7aa92bfdb5230da6985ae3646e94870d8e42351f28047290ae4940f578d45fc",
+      "sample": "The given image provides the detailed information about 2014 diamond production. The pie chart compares diamond production by value in 2014. Russia is largest at 26 percent, closely followed by Botswana at 25 percent. Canada accounts for 14 percent, Angola 9 percent and South Africa 8 percent. Other countries together contribute 18 percent."
+    },
+    "di-pred-3000885": {
+      "academyId": "3000885",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000885.png",
+      "mapping": {
+        "title": "Honey Production",
+        "category": "map",
+        "facts": [
+          "The map shows honey production as percentages of national production by state in Mexico.",
+          "Northern, central and southern zones are labelled.",
+          "Some southern and eastern states have higher shares than many northern states."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Honey Production",
+          "description": "The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "651faa7708f09554c7f1cdb87ffa4038e1cba5bec3c5c3554886780db54094f4",
+      "sample": "The given image provides the detailed information about honey production. The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+    },
+    "di-pred-3001061": {
+      "academyId": "3001061",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001061.png",
+      "mapping": {
+        "title": "Taxation by Countries",
+        "category": "bar",
+        "facts": [
+          "The horizontal bar chart compares payroll and superannuation taxation by country.",
+          "Australia and Austria both show 16.6 percent at the top.",
+          "Denmark appears lower in the ranking, and a weighted average is also shown.",
+          "Several other country labels are not readable in the supplied image."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Taxation by Countries",
+          "description": "The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "89f5095cf74a053a169a3baba8f5ec2d8bffb9790fa5dc65cee2094eadd784ba",
+      "sample": "The given image provides the detailed information about taxation by countries. The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image."
+    },
+    "di-pred-3001078": {
+      "academyId": "3001078",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "fd0775374a6c00cf6c4f2b00d48a64f48cc7ac6c0808ce361c0987f7c7616348"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001078.png",
+      "mapping": {
+        "title": "Good and Bad Habits",
+        "category": "other",
+        "facts": [
+          "The illustration contrasts food and lifestyle habits using two head silhouettes.",
+          "One side shows more processed foods, while the other shows fruit and vegetables.",
+          "Diet, exercise and sleep are presented as ways to change habits and boost brainpower."
+        ],
+        "visual": {
+          "kind": "other",
+          "title": "Good and Bad Habits",
+          "description": "The illustration contrasts food and lifestyle habits using two head silhouettes. One side shows more processed foods, while the other shows fruit and vegetables. Diet, exercise and sleep are presented as ways to change habits and boost brainpower."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "f8478d047565f9cfcda72037f41616629515599f1c62bc49a6177e1b8ebd8511",
+      "sample": "The given image provides the detailed information about good and bad habits. The illustration contrasts food and lifestyle habits using two head silhouettes. One side shows more processed foods, while the other shows fruit and vegetables. Diet, exercise and sleep are presented as ways to change habits and boost brainpower."
+    },
+    "di-pred-3001356": {
+      "academyId": "3001356",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "a741d4065023c54f8cc1681235ddecfeb19d41bf7aa04221e93349abd6aee829"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001356.png",
+      "mapping": {
+        "title": "Apple Life Cycle",
+        "category": "process",
+        "facts": [
+          "The diagram shows a repeating apple life cycle.",
+          "The labelled stages are seeds, tree, bud, flower and fruit.",
+          "The fruit supplies seeds that begin the next cycle."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Apple Life Cycle",
+          "description": "The diagram shows a repeating apple life cycle. The labelled stages are seeds, tree, bud, flower and fruit. The fruit supplies seeds that begin the next cycle."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "cca6dcbc1a10fd6816552e79870dc7b29b4fdc1851b4f5c283d8d6b1a95ca4c8",
+      "sample": "The given image provides the detailed information about apple life cycle. The diagram shows a repeating apple life cycle. The labelled stages are seeds, tree, bud, flower and fruit. The fruit supplies seeds that begin the next cycle."
+    },
+    "di-pred-3001366": {
+      "academyId": "3001366",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "13d2a8decae121de8f0a119de3354c9efe2664cb489f54a9ef861b4014cea66d"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001366.png",
+      "mapping": {
+        "title": "Gender Social Activities",
+        "category": "bar",
+        "facts": [
+          "The bar chart compares the number of men and women participating in drama, painting, sculpture and language activities.",
+          "Women outnumber men in drama, painting and language. Sculpture is the only activity where men outnumber women.",
+          "Women: drama 20, painting 30, sculpture 5 and language 40 people. Men: drama 10, painting 25, sculpture 10 and language 20 people. Language has the highest female count at 40; painting has the highest male count at 25."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Gender Social Activities",
+          "description": "The bar chart compares the number of men and women participating in drama, painting, sculpture and language activities. Women outnumber men in drama, painting and language. Sculpture is the only activity where men outnumber women. Women: drama 20, painting 30, sculpture 5 and language 40 people. Men: drama 10, painting 25, sculpture 10 and language 20 people. Language has the highest female count at 40; painting has the highest male count at 25."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "7099d6f1ac6fd643aca83cf6d13caa7bd65bb93488382073f5da05dfcba21f06",
+      "sample": "The given image provides the detailed information about social activities by gender. Women outnumber men in drama, painting and language, while men lead only in sculpture. Language has the highest female count at 40, compared with 20 men. Painting is the most popular activity among men, at 25. Overall, the two groups show different preferences across the four activities."
+    },
+    "di-pred-3001369": {
+      "academyId": "3001369",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001369.png",
+      "mapping": {
+        "title": "Influenced English",
+        "category": "pie",
+        "facts": [
+          "The supplied image shows a three-dimensional pie chart with several slices.",
+          "There are three large slices and several smaller slices.",
+          "No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Influenced English",
+          "description": "The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "36a757f1aff8be382398b356a947a953f87eccaafe08c5b182f00d064d233376",
+      "sample": "The given image provides the detailed information about influenced english. The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+    },
+    "di-pred-3001386": {
+      "academyId": "3001386",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "a27805eb504980e59e4c2ddf0df3394a884e3ac48bc88627b90f97af20de1dc0"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001386.png",
+      "mapping": {
+        "title": "Pet Household Owners",
+        "category": "pie",
+        "facts": [
+          "The pie chart shows the number of households in millions who own each type of pet, alongside each displayed percentage.",
+          "Dogs are largest at 69 million and 45 percent, followed by cats at 45.3 million and 29 percent. Freshwater fish account for 11.8 million and 8 percent, and birds for 9.9 million and 6 percent.",
+          "Horses account for 3.5 million and 2 percent, saltwater fish 2.9 million and 2 percent, reptiles 5.7 million and 4 percent, and small animals 6.2 million and 4 percent. The smallest household count is saltwater fish; horses and saltwater fish tie at 2 percent."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Pet Household Owners",
+          "description": "The pie chart shows the number of households in millions who own each type of pet, alongside each displayed percentage. Dogs are largest at 69 million and 45 percent, followed by cats at 45.3 million and 29 percent. Freshwater fish account for 11.8 million and 8 percent, and birds for 9.9 million and 6 percent. Horses account for 3.5 million and 2 percent, saltwater fish 2.9 million and 2 percent, reptiles 5.7 million and 4 percent, and small animals 6.2 million and 4 percent. The smallest household count is saltwater fish; horses and saltwater fish tie at 2 percent.",
+          "unit": "percent",
+          "panels": [
+            {
+              "name": "Households who own pets",
+              "labels": [
+                "Bird",
+                "Cat",
+                "Dog",
+                "Horse",
+                "Freshwater fish",
+                "Saltwater fish",
+                "Reptile",
+                "Small animal"
+              ],
+              "values": [
+                6,
+                29,
+                45,
+                2,
+                8,
+                2,
+                4,
+                4
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "083b7a821c36609d87828b5c6214f275b05bed548dc4414c18eab0caa226baa1",
+      "sample": "The given image provides the detailed information about households owning pets. Dogs lead with 69 million households and 45 percent, followed by cats with 45.3 million and 29 percent. Freshwater fish and birds have much smaller shares. Saltwater fish have the smallest household count at 2.9 million. Overall, dogs and cats are much more common than the other displayed pet categories."
+    },
+    "di-pred-3001398": {
+      "academyId": "3001398",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001398.png",
+      "mapping": {
+        "title": "Australian Birth Trends",
+        "category": "bar",
+        "facts": [
+          "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023.",
+          "India shows the largest increase and the largest 2023 population among the countries displayed.",
+          "China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Australian Birth Trends",
+          "description": "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "eb881087a12ed53b40fb32e5410d4e44538629fee37867be85fdabcc8c710ff1",
+      "sample": "The given image provides the detailed information about australian birth trends. The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+    },
+    "di-pred-3001403": {
+      "academyId": "3001403",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "f47aab7600764bfceaceefe6e2c9e8ef7f631f63dad66264ef53920f3470e623"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001403.png",
+      "mapping": {
+        "title": "Foreign Language Motivation",
+        "category": "pie",
+        "facts": [
+          "The chart shows why students choose to study foreign languages, with each reason measured as a percentage of students.",
+          "Personal interest or enjoyment is the largest reason at 43 percent, followed by degree requirements at 24 percent and use in a future career at 13 percent.",
+          "Future travel or study abroad accounts for 9 percent, family background for 6 percent, and application for an advanced degree for 3 percent. Societal responsibility and other reasons are tied for the smallest share at 1 percent each."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Foreign Language Motivation",
+          "description": "The chart shows why students choose to study foreign languages, with each reason measured as a percentage of students. Personal interest or enjoyment is the largest reason at 43 percent, followed by degree requirements at 24 percent and use in a future career at 13 percent. Future travel or study abroad accounts for 9 percent, family background for 6 percent, and application for an advanced degree for 3 percent. Societal responsibility and other reasons are tied for the smallest share at 1 percent each.",
+          "unit": "percent of students",
+          "panels": [
+            {
+              "name": "Reasons for studying foreign languages",
+              "labels": [
+                "Personal interest or enjoyment",
+                "Degree requirements",
+                "Use in a future career",
+                "Future travel or study abroad",
+                "Family background",
+                "Application for an advanced degree",
+                "Societal responsibility",
+                "Other reasons"
+              ],
+              "values": [
+                43,
+                24,
+                13,
+                9,
+                6,
+                3,
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "4f72c1f064367424eb55ff9378f071902c92c7c7899722f398ed39a3f02ac72a",
+      "sample": "The given image provides the detailed information about reasons for studying foreign languages. Personal interest or enjoyment leads at 43 percent, followed by degree requirements at 24 percent and future career use at 13 percent. Societal responsibility and other reasons are joint smallest at one percent each. Overall, personal interest is a much stronger motivation than the smallest reasons."
+    },
+    "di-pred-3001409": {
+      "academyId": "3001409",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "b6202f12016d4bdbe270823a6a848c7b652d0d5c1c0f5a4a252c692a79005200"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001409.png",
+      "mapping": {
+        "title": "Television Viewing Time",
+        "category": "bar",
+        "facts": [
+          "The histogram shows frequency by hours per day spent watching television, with adjoining hourly intervals from 0–1 through 6–7 hours.",
+          "The largest frequency is in the 3–4 hour interval at approximately 28, followed by 2–3 hours at about 25 and 1–2 hours at about 22.",
+          "The approximate frequencies are 1 for 0–1 hours, 14 for 4–5 hours, 8 for 5–6 hours and 2 for 6–7 hours. These are readings from the frequency axis; the source does not label them as percentages."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Television Viewing Time",
+          "description": "The histogram shows frequency by hours per day spent watching television, with adjoining hourly intervals from 0–1 through 6–7 hours. The largest frequency is in the 3–4 hour interval at approximately 28, followed by 2–3 hours at about 25 and 1–2 hours at about 22. The approximate frequencies are 1 for 0–1 hours, 14 for 4–5 hours, 8 for 5–6 hours and 2 for 6–7 hours. These are readings from the frequency axis; the source does not label them as percentages."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "3e172f6ebb83178a230822d6e14fac5a9a1505db40f326f91d5226c781fa758d",
+      "sample": "The given image provides the detailed information about daily television viewing. The highest frequency is for three to four hours, at approximately 28, followed by two to three hours at about 25. Very short viewing times and six to seven hours are uncommon. Overall, most of the displayed frequency is concentrated in the middle viewing intervals."
+    }
+  }
+}

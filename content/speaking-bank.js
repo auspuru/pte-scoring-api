@@ -129,5 +129,8 @@ for (const q of questions) {
   if (q.turns) q.text = q.turns.map(([speaker, text]) => speaker + ': ' + text).join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
 }
+// Verified references are applied only when authoring current questions. Saved
+// attempts keep their own question snapshots and completed assessments.
+for(let i=0;i<questions.length;i++)questions[i]=require('../di-reference').apply(questions[i]);
 module.exports = { version: 3, types, questions,
   source: 'https://www.pearsonpte.com/content/dam/ELL/pte/pearsonpte/pdfs/pte-academic-pdfs/PTE-Academic-Test-Taker-Score-Guide.pdf' };

@@ -2,7 +2,7 @@
 const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const speakingAudio=require('./speaking-audio/manifest.json'),writingAudio=require('./writing-audio/manifest.json');
-const VERSION='speaking-mock-2026-10-26.2';
+const VERSION='speaking-mock-2026-10-27.1';
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function source(q,folder,id=q.id){
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];

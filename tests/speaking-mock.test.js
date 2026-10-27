@@ -137,7 +137,9 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal(a.responses[1].providers.azure.pronunciation.score,4);assert.equal(a.responses[1].providers.gpt,undefined);
   await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,0,'Task-weighted totals never request a separate whole-audio judgment.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
   assert.equal((await request('/attempts/'+id+'/recordings/2',Buffer.alloc(200,99),'alice',true)).status,409);
-  const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';return value;});assert(saved.responses.every(r=>r.recording.hash));
+  const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';
+    const old=require('../content/di-user-predictions.json').find(q=>q.id==='di-pred-3000411'),image=value.questions.find(q=>q.id===old.id);
+    image.facts=structuredClone(old.facts);image.visual=structuredClone(old.visual);image.sample=old.sample;delete image.imageReference;delete image.optionalFactIndices;return value;});assert(saved.responses.every(r=>r.recording.hash));
   const before=JSON.stringify(saved),newId=crypto.randomUUID();now+=10000;
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId},'bob')).status,404);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id})).status,409);
@@ -145,7 +147,8 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   const fresh=(await request('/attempts/'+id+'/reattempt',{id:newId,overallScore:90})).body;
   assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
   assert.equal(fresh.deadline-fresh.startedAt,saved.deadline-saved.startedAt);assert(fresh.startedAt>saved.startedAt);
-  const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,saved.questions);assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
+  const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,saved.questions.map(require('../di-reference').forNewAttempt));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
+  assert.match(copy.questions.find(q=>q.id==='di-pred-3000411').sample,/October/);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000411').imageReference,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
   assert.equal(itemCalls,27);assert.equal(overallCalls,0);

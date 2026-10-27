@@ -8,8 +8,9 @@ function createAcademyClient({origin=process.env.VISUAL_ACADEMY_SCORING_URL,secr
     if(!response.ok)throw Object.assign(Error('Academy request failed.'),{status:response.status});return response.json();
   }
   return{available:!!url&&!!secret,async submit({id,question,recording,transcript,requested,onPrepared=async()=>{},expected}){
+    const reference=require('./di-reference').referenceFor(question);
     const {wav}=await toWav(recording),normalizedHash=hash(wav);
-    const body={id,version:VERSION,deliveryRubricVersion:rubric.RUBRIC_VERSION,recordingHash:recording.hash,normalizedHash,mapping:require('./describe-image-feedback').mapping(question),transcript,requested,wav:wav.toString('base64')};
+    const body={id,version:VERSION,deliveryRubricVersion:rubric.RUBRIC_VERSION,recordingHash:recording.hash,normalizedHash,mapping:require('./describe-image-feedback').mapping(question),...(reference?{reference}:{}),transcript,requested,wav:wav.toString('base64')};
     const {wav:_,...metadata}=body;const inputHash=hash(metadata),prepared={id,inputHash,normalizedHash};
     if(expected&&JSON.stringify(expected)!==JSON.stringify(prepared))throw Object.assign(Error('Saved Academy audio preparation changed.'),{status:409});
     await onPrepared(prepared);const receipt=await call('/internal/v1/di/jobs',body);
@@ -20,7 +21,7 @@ function createAcademyClient({origin=process.env.VISUAL_ACADEMY_SCORING_URL,secr
 }
 function contentResult(value,feedback){if(value?.status!=='scored'||value.max!==6||!Number.isInteger(value.score)||value.score<0||value.score>6)return null;
   return{version:academy.VERSION,contentPolicyVersion:academy.VERSION,academyPolicyVersion:value.policyVersion,source:'Describe Image Academy',serviceVersion:VERSION,maximum:6,total:value.score,contentStatus:'assessed',scoringMode:'ai',score_provisional:false,needs_semantic_review:false,
-    academyAssessment:value,overview:value.reason,strengths:feedback?.strength?[feedback.strength.why]:[],improvements:[value.nextStep],contentGate:value.score===0,academyFeedback:feedback||null,providerModel:value.model};
+    academyAssessment:value,...(value.imageReference?{imageReference:structuredClone(value.imageReference)}:{}),overview:value.reason,strengths:feedback?.strength?[feedback.strength.why]:[],improvements:[value.nextStep],contentGate:value.score===0,academyFeedback:feedback||null,providerModel:value.model};
 }
 function deliveryResult(value,recordingHash,now=Date.now){if(!value)return null;const out={status:'assessed',recordingHash,assessedAt:now(),deliveryProvider:'visual-academy-openai',deliveryModel:value.model,deliveryRubricVersion:rubric.RUBRIC_VERSION,deliveryEvidence:{sufficient:true,durationSeconds:value.durationSeconds},serviceVersion:VERSION};
   for(const name of ['pronunciation','fluency']){const t=value[name];out[name]=t?.rubricVersion===rubric.RUBRIC_VERSION?{...t,maximum:5,coaching:t.nextStep}:null;}return out;
