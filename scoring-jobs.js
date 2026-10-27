@@ -4,11 +4,11 @@ const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('n
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 const hash=value=>crypto.createHash('sha256').update(Buffer.isBuffer(value)||typeof value==='string'?value:JSON.stringify(canonical(value))).digest('hex');
 function createJobs({pool,directory,table,now=Date.now}={}){
-  if(!['speaking_answer_jobs','academy_di_jobs'].includes(table))throw Error('Invalid job namespace.');
+  if(!['speaking_answer_jobs','academy_di_jobs','speaking_mock_alert_jobs'].includes(table))throw Error('Invalid job namespace.');
   let ready,lock=Promise.resolve();
   const file=id=>path.join(directory,hash(id)+'.json');
   async function initialise(){return ready||=Promise.resolve().then(async()=>{
-    if(pool)await pool.query(`CREATE TABLE IF NOT EXISTS ${table}(id TEXT PRIMARY KEY,owner TEXT NOT NULL ${table==='speaking_answer_jobs'?'REFERENCES accounts(username) ON DELETE CASCADE':''},group_id TEXT NOT NULL,input_hash TEXT NOT NULL,data JSONB NOT NULL,status TEXT NOT NULL DEFAULT 'pending',run_after BIGINT NOT NULL DEFAULT 0,lease_token TEXT,lease_until BIGINT NOT NULL DEFAULT 0,updated_at BIGINT NOT NULL);
+    if(pool)await pool.query(`CREATE TABLE IF NOT EXISTS ${table}(id TEXT PRIMARY KEY,owner TEXT NOT NULL ${table.startsWith('speaking_')?'REFERENCES accounts(username) ON DELETE CASCADE':''},group_id TEXT NOT NULL,input_hash TEXT NOT NULL,data JSONB NOT NULL,status TEXT NOT NULL DEFAULT 'pending',run_after BIGINT NOT NULL DEFAULT 0,lease_token TEXT,lease_until BIGINT NOT NULL DEFAULT 0,updated_at BIGINT NOT NULL);
       CREATE INDEX IF NOT EXISTS ${table}_due ON ${table}(status,run_after);
       CREATE INDEX IF NOT EXISTS ${table}_group ON ${table}(owner,group_id)`);
     else await fs.mkdir(directory,{recursive:true});
@@ -63,7 +63,7 @@ function createWorker({store,run,onSettled=async()=>{},concurrency=2,intervalMs=
 }
 // Record the paid-call boundary before sending. An expired in-flight call is
 // held for staff investigation, rather than silently charging for it twice.
-async function stage(ctx,name,call,{valid=()=>true,accept=()=>{},now=Date.now,maxAttempts=3}={}){
+async function stage(ctx,name,call,{valid=()=>true,accept=()=>{},now=Date.now,maxAttempts=3,retryDelay=attempt=>Math.min(120000,15000*2**(attempt-1))}={}){
   const state=ctx.data.stages?.[name];if(state?.status==='ready')return state.value;
   if(state?.status==='calling'){await ctx.save(d=>{d.stages[name]={...state,status:'needs_attention',failure:'uncertain_provider_outcome'};});return;}
   if(state?.status==='needs_attention'||state?.nextAt>now())return;
@@ -74,7 +74,7 @@ async function stage(ctx,name,call,{valid=()=>true,accept=()=>{},now=Date.now,ma
     const terminal=error?.uncertain||[400,401,403,404,413,422].includes(code)||attempts>=maxAttempts;
     const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_:-]{1,80}$/.test(v)?v:undefined;
     const detail={...(safe(error?.code)?{code:error.code}:{}),...(safe(error?.recognitionStatus)?{recognitionStatus:error.recognitionStatus}:{}),...(safe(error?.audioValidationCode)?{validation:error.audioValidationCode}:{})};
-    await ctx.save(d=>{d.stages[name]={status:terminal?'needs_attention':'retry_wait',attempts,failure:code,...(Object.keys(detail).length?{detail}:{}),nextAt:now()+Math.min(120000,15000*2**(attempts-1))};});}
+    await ctx.save(d=>{d.stages[name]={status:terminal?'needs_attention':'retry_wait',attempts,failure:code,...(Object.keys(detail).length?{detail}:{}),nextAt:now()+retryDelay(attempts)};});}
 }
-function disposition(data,ready,now=Date.now){if(ready)return{status:'ready'};const values=Object.values(data.stages||{});if(values.some(s=>s.status==='needs_attention'))return{status:'needs_attention'};return{status:'retry_wait',runAfter:Math.max(now()+2000,Math.min(...values.filter(s=>s.status==='retry_wait').map(s=>s.nextAt||now()+5000),now()+5000))};}
+function disposition(data,ready,now=Date.now){if(ready)return{status:'ready'};const values=Object.values(data.stages||{});if(values.some(s=>s.status==='needs_attention'))return{status:'needs_attention'};const scheduled=values.filter(s=>s.status==='retry_wait').map(s=>s.nextAt||now()+5000);if(values.some(s=>s.status==='waiting'))scheduled.push(now()+5000);return{status:'retry_wait',runAfter:Math.max(now()+2000,scheduled.length?Math.min(...scheduled):now()+5000)};}
 module.exports={createJobs,createWorker,stage,disposition,hash};
