@@ -6531,6 +6531,9 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_BACKGROUND_RECOVERY){
       setImmediate(async()=>{try{const request=JSON.parse(process.env.IPT_SPEAKING_BACKGROUND_RECOVERY);await require('./speaking-background-recovery').recover({...request,mockStore:speakingMock.store,progressive:speakingMock.progressive});}catch{console.warn('[speaking-background-recovery] Scoped recovery could not finish.');}});
     }
+    if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_INCIDENT_RECOVERY){
+      setImmediate(async()=>{try{const request=JSON.parse(process.env.IPT_SPEAKING_INCIDENT_RECOVERY);await require('./speaking-incident-recovery').recover({...request,mockStore:speakingMock.store,progressive:speakingMock.progressive});}catch(error){console.warn('[speaking-incident-recovery]',JSON.stringify({status:'needs-review',code:error.status||error.name||'error'}));}});
+    }
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_CONTENT_REPAIR){
       setImmediate(async()=>{try{
         const request=JSON.parse(process.env.IPT_SPEAKING_CONTENT_REPAIR);
