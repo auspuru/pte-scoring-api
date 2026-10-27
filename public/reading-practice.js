@@ -112,10 +112,11 @@
     }
     const snapshot = progressSync() ? progressSync().packReading(state) : state;
     const changed = JSON.stringify(snapshot) !== JSON.stringify(lastSnapshot);
-    try { localStorage.setItem(storageKey(owner), JSON.stringify(snapshot)); saveNotice = cloudStatus?.text || 'Saved on this device'; lastPersisted = Date.now(); }
+    let localSaved = false;
+    try { localStorage.setItem(storageKey(owner), JSON.stringify(snapshot)); localSaved = true; saveNotice = cloudStatus?.text || 'Saved on this device'; lastPersisted = Date.now(); }
     catch (_) { saveNotice = 'Could not save on this device. Keep this page open.'; }
     lastSnapshot = JSON.parse(JSON.stringify(snapshot));
-    if (changed && typeof queueSync === 'function') queueSync();
+    if (changed && typeof queueSync === 'function') queueSync({ localSaved });
     const el = host?.querySelector('[data-save-status]'); if (el) el.textContent = saveNotice;
   }
   function setSyncStatus(status, text) {

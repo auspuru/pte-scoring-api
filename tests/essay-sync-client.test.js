@@ -32,7 +32,8 @@ function harness() {
     setTimeout: callback => { timers.push(callback); return timers.length; }, clearTimeout() {},
     fetch: (url, options) => new Promise(resolve => requests.push({ url, options,
       payload: options.body ? JSON.parse(options.body) : undefined,
-      reply: body => resolve({ ok: true, status: 200, json: async () => body }),
+      reply: (body, status = 200, headers = {}) => resolve({ ok: status >= 200 && status < 300, status,
+        headers: { get: key => headers[key] || null }, json: async () => body }),
       fail: () => resolve({ ok: false, status: 503, json: async () => ({}) }) }))
   };
   ctx.getPracticeHistory = () => ctx.userProfile.practiceHistory;
@@ -120,6 +121,49 @@ test('A refresh finishing after sign-out does not repopulate private history', a
   ctx.currentUserId = ''; ctx.sessionToken = ''; ctx.userProfile = null;
   requests[0].reply({ success: true, data: { practiceHistory: [a('private')] } });
   assert.equal(await refresh, false); assert.equal(caches.length, 0);
+});
+
+test('unchanged background polls use the account revision without parsing or merging history again', async () => {
+  const { ctx, requests, caches } = harness();
+  ctx.syncQueued = false;
+  const first = ctx.refreshPracticeHistory({ force: true });
+  requests[0].reply({ success: true, data: { practiceHistory: [a('remote')] } }, 200, { etag: 'W/"profile-1"' });
+  await first;
+  const writes = caches.length;
+  const next = ctx.refreshPracticeHistory({ force: true });
+  assert.equal(requests[1].options.headers['If-None-Match'], 'W/"profile-1"');
+  requests[1].reply(null, 304);
+  assert.equal(await next, true);
+  assert.equal(caches.length, writes);
+  assert.equal(ctx.userProfile.practiceHistory.some(item => item.id === 'remote'), true);
+  ctx.currentUserId = 'other'; ctx.sessionToken = 'new-session';
+  const other = ctx.refreshPracticeHistory({ force: true });
+  assert.equal(requests[2].options.headers['If-None-Match'], undefined);
+  requests[2].reply({ success: true, data: { practiceHistory: [] } });
+  await other;
+});
+
+test('automatic background pulls wait while the student is editing; an explicit refresh still works', async () => {
+  const { ctx, requests } = harness();
+  ctx.document.activeElement = { matches: () => true };
+  assert.equal(await ctx.refreshPracticeHistory(), false);
+  assert.equal(requests.length, 0);
+  const forced = ctx.refreshPracticeHistory({ force: true });
+  assert.equal(requests.length, 1);
+  requests[0].reply({ success: true, data: { practiceHistory: [] } });
+  assert.equal(await forced, true);
+});
+
+test('editor records already saved locally queue a cloud save without scanning unrelated histories', () => {
+  const { ctx } = harness();
+  let captures = 0;
+  ctx.captureAccountProgress = () => captures++;
+  vm.runInContext(fn('queueSync'), ctx);
+  for (let i = 0; i < 100; i++) ctx.queueSync({ localSaved: true });
+  assert.equal(captures, 0);
+  assert.equal(ctx.syncQueued, true);
+  ctx.queueSync();
+  assert.equal(captures, 1, 'Library edits without a local checkpoint must still be recovered');
 });
 
 test('The shared sync helper has an explicit executable-JavaScript route', () => {

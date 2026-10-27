@@ -161,7 +161,7 @@ test('Actual server storage serializes simultaneous sync writes and preserves ev
 });
 
 test('Postgres sync uses optimistic row versions instead of a four-round-trip lock transaction', () => {
-  const start = serverSource.indexOf('async setUserData(userId, userData)', serverSource.indexOf('const PgStorage'));
+  const start = serverSource.indexOf('async setUserData(userId, userData, options = {})', serverSource.indexOf('const PgStorage'));
   const end = serverSource.indexOf('\n  async getProgress(userId)', start);
   assert(start >= 0 && end > start);
   const source = serverSource.slice(start, end);
@@ -377,6 +377,21 @@ test('unchanged cloud refreshes do not rebuild editors, history or dashboard', a
   await browser.ctx.refreshPracticeHistory({force:true});
   assert.equal(libraryRedraws,0);
   assert.equal(browser.ctx.localAccountProgress().summaries[1].text,'A newer summary.');
+});
+
+test('library typing checkpoints its edits without reading unrelated practice histories', async () => {
+  const store = backend(), browser = device(store);
+  browser.ctx.essays = [{ id: 'typed', intro: 'Locally protected paragraph' }];
+  const read = browser.ctx.LocalStore.get;
+  browser.ctx.LocalStore.get = key => {
+    assert(!key.startsWith('ipt_reading_') && !key.endsWith('_history') && !key.endsWith('_scores'), 'Typing scanned unrelated histories');
+    return read(key);
+  };
+  browser.ctx.queueSync();
+  assert.equal(JSON.parse(browser.values.get('pte_student_essays'))[0].intro, 'Locally protected paragraph');
+  browser.ctx.LocalStore.get = read;
+  assert.equal(await browser.ctx.flushSync(), true, browser.errors.join('\n'));
+  assert.equal((await store.getUserData('student')).essays[0].intro, 'Locally protected paragraph');
 });
 
 test('Opening reading with no current session still downloads and uploads cloud progress', async () => {

@@ -188,7 +188,8 @@ app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   // C3: the client now sends x-session-token on sync calls; admin uses x-admin-key.
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response', 'x-essay-scoring-version', 'x-essay-sample-contract']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-session-token', 'x-admin-key', 'x-sync-response', 'x-essay-scoring-version', 'x-essay-sample-contract', 'If-None-Match'],
+  exposedHeaders: ['ETag']
 }));
 // H1: 10mb was generous enough to wave through abusive payloads. Adjusted to 25mb for PDF html uploads.
 app.use((req,res,next)=>{
@@ -642,6 +643,21 @@ async function pgAdminUserDiagnostics() {
   return out;
 }
 
+function postgresSyncFields(incoming) {
+  const fields = new Set(['attempted', 'stats']);
+  const has = key => Object.prototype.hasOwnProperty.call(incoming || {}, key);
+  const add = keys => keys.forEach(key => fields.add(key));
+  // Read every dependency of a merge, but leave unrelated large histories in
+  // Postgres. The version check still protects the entire row on every write.
+  if (['attempted', 'history', 'summaries', 'scores', 'scratch'].some(has)) add(['history', 'summaries', 'scores', 'scratch']);
+  if (['essays', 'essayLibraryDeleted'].some(has)) add(['essays', 'essayLibraryDeleted']);
+  if (['practiceHistory', 'practiceHistoryDeleted'].some(has)) add(['practiceHistory', 'practiceHistoryDeleted']);
+  for (const key of ['vocabProgress', 'essayDraft', 'readingProgress', 'email', 'templates', 'currentId', 'quotaUsed', 'quotaDate', 'studyPlan']) {
+    if (has(key)) fields.add(key);
+  }
+  return [...fields];
+}
+
 function postgresProgressPatch(incoming, merged, existing = {}) {
   const patch = {};
   const has = key => Object.prototype.hasOwnProperty.call(incoming || {}, key);
@@ -834,28 +850,38 @@ const PgStorage = {
       client.release();
     }
   },
-  async getUserData(userId) {
+  async getUserData(userId, options = {}) {
     userId = canonicalUserId(userId);
-    const { rows } = await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
+    const knownVersion = /^\d+$/.test(String(options.version || '')) ? String(options.version) : '';
+    const { rows } = options.conditional
+      ? await pgPool.query(
+        `SELECT CASE WHEN xmin::text = $2 THEN NULL ELSE data END AS data,
+                xmin::text AS version FROM user_data WHERE username = $1`, [userId, knownVersion])
+      : await pgPool.query('SELECT data FROM user_data WHERE username = $1', [userId]);
+    const version = String(rows[0]?.version || '');
+    if (options.conditional && version && version === knownVersion) return { notModified: true, version };
     if (!rows.length) {
-      return {
+      const data = {
         attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 },
         essays: [], templates: {}, currentId: null, quotaUsed: {}, quotaDate: "", practiceHistory: [],
         practiceHistoryDeleted: [], vocabProgress: {}, readingProgress: {}, essayDraft: null, essayLibraryDeleted: {}, scratch: {}, studyPlan: {}
       };
+      return options.conditional ? { data, version } : data;
     }
     const u = rows[0].data || {};
-    return {
+    const data = {
       attempted: u.attempted || [], summaries: u.summaries || {}, scores: u.scores || {}, history: u.history || {}, stats: u.stats || {},
       essays: u.essays || [], templates: u.templates || {}, currentId: u.currentId || null,
       quotaUsed: u.quotaUsed || {}, quotaDate: u.quotaDate || "", practiceHistory: u.practiceHistory || [],
       practiceHistoryDeleted: u.practiceHistoryDeleted || [], vocabProgress: u.vocabProgress || {}, email: u.email || '',
       readingProgress: u.readingProgress || {}, essayDraft: u.essayDraft || null, essayLibraryDeleted: u.essayLibraryDeleted || {}, scratch: u.scratch || {}, studyPlan: u.studyPlan || {}
     };
+    return options.conditional ? { data, version } : data;
   },
-  async setUserData(userId, userData) {
+  async setUserData(userId, userData, options = {}) {
     userId = canonicalUserId(userId);
     const incoming = (userData && typeof userData === 'object') ? userData : {};
+    const readFields = options.compact ? postgresSyncFields(incoming) : null;
     const perfStart = Date.now(), perf = { fields: Object.keys(incoming).sort(), conflicts: 0 };
     let phase = Date.now();
     const client = await pgPool.connect();
@@ -869,10 +895,12 @@ const PgStorage = {
       const maxAttempts = 4;
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         phase = Date.now();
-        let { rows } = await client.query(
-          'SELECT data, xmin::text AS version FROM user_data WHERE username = $1',
-          [userId]
-        );
+        let { rows } = readFields
+          ? await client.query(
+            `SELECT (SELECT jsonb_object_agg(field, data -> field)
+                     FROM unnest($2::text[]) AS selected(field) WHERE data ? field) AS data,
+                    xmin::text AS version FROM user_data WHERE username = $1`, [userId, readFields])
+          : await client.query('SELECT data, xmin::text AS version FROM user_data WHERE username = $1', [userId]);
         perf.readMs = (perf.readMs || 0) + (Date.now() - phase);
 
         if (!rows.length) {
@@ -909,16 +937,20 @@ const PgStorage = {
           practiceHistory: mergedPracticeHistory,
           practiceHistoryDeleted: deleted
         };
-        let total = 0, count = 0;
-        Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
-        u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+        let total = 0, count = Number(existing.stats?.totalAttempts || 0);
+        if (!readFields || readFields.includes('history')) {
+          count = 0;
+          Object.values(u.history).forEach(arr => { if (Array.isArray(arr)) arr.forEach(a => { total += (a.overall_score || 0); count++; }); });
+          u.stats = { totalAttempts: count, averageScore: count > 0 ? Math.round(total / count) : 0 };
+        } else u.stats = existing.stats || { totalAttempts: 0, averageScore: 0 };
         const patch = postgresProgressPatch(incoming, u, existing);
         perf.mergeMs = (perf.mergeMs || 0) + (Date.now() - phase);
 
         const finish = () => {
           phase = Date.now();
-          const result = { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
+          let result = { success: true, stats: u.stats, passageCount: u.attempted.length, attemptCount: count,
             practiceHistory: u.practiceHistory, practiceHistoryDeleted: u.practiceHistoryDeleted, progress: AccountProgress.mergeProgress(u, {}) };
+          if (options.compact) result = compactSyncPushResponse(incoming, result);
           perf.responseBuildMs = (perf.responseBuildMs || 0) + (Date.now() - phase);
           perf.totalMs = Date.now() - perfStart;
           perf.attempts = attempt + 1;
@@ -3455,7 +3487,17 @@ function compactSyncPushResponse(incoming, result) {
 // C3: now requires a valid session token matching :userId.
 app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
   res.set('Cache-Control', 'no-store');
-  try { res.json({ success: true, data: await StorageAPI.getUserData(canonicalUserId(req.params.userId)) }); }
+  try {
+    const uid = canonicalUserId(req.params.userId);
+    if (USE_POSTGRES) {
+      const version = /^W\/"profile-(\d+)"$/.exec(req.get('If-None-Match') || '')?.[1] || '';
+      const snapshot = await StorageAPI.getUserData(uid, { conditional: true, version });
+      if (snapshot.version) res.set('ETag', `W/"profile-${snapshot.version}"`);
+      if (snapshot.notModified) return res.status(304).end();
+      return res.json({ success: true, data: snapshot.data });
+    }
+    res.json({ success: true, data: await StorageAPI.getUserData(uid) });
+  }
   catch (e) { res.status(500).json({ error: 'Sync pull failed' }); }
 });
 
@@ -3463,7 +3505,7 @@ app.get('/api/sync/:userId', requireSyncAuth, async (req, res) => {
 // C3: now requires a valid session token matching :userId.
 app.post('/api/sync/:userId', requireSyncAuth, async (req, res) => {
   try {
-    const result = await StorageAPI.setUserData(canonicalUserId(req.params.userId), req.body);
+    const result = await StorageAPI.setUserData(canonicalUserId(req.params.userId), req.body, { compact: req.get('x-sync-response') === 'delta' });
     res.json(req.get('x-sync-response') === 'delta' ? compactSyncPushResponse(req.body, result) : result);
   }
   catch (e) { res.status(500).json({ error: 'Sync push failed' }); }

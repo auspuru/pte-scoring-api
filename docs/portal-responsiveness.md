@@ -14,3 +14,15 @@ Production investigation on 21 October 2026 found low resource utilisation (peak
 Regression tests cover JSONB key order, one-record deltas, answer order/deletions, unchanged refreshes, remote draft merges, concurrent request coalescing, failed reads, session switches, cache expiry, hidden widgets, dependency loading and slow optional configuration. Fifty simultaneous catalogue/resume calls issue three shared API requests in the controlled regression test. These are controlled checks, not a measured guarantee for every student's browser.
 
 All 844 automated tests pass locally. The full production release workflow, including media/browser checks, is required before merge. No production accounts or student progress were modified during investigation.
+
+## 27 October 2026 follow-up
+
+The live service still had ample spare capacity (four-hour peak CPU 0.067 against an eight-CPU limit; memory below 0.83 GB). Recent sync logs showed 1.5–5.2-second saves and one 15-second request. Three no-op draft saves on the authorised `pppp` test account had a median round-trip time of 8,979 ms; its full profile response was 1,694,200 bytes. No draft text was replaced during that measurement.
+
+The compact Postgres save path now projects only the domains required for the incoming merge. A draft-only save reads `essayDraft`, `attempted` and `stats`, keeping unrelated Reading, SWT and essay histories in the database. Merge dependencies remain grouped, and the existing whole-row `xmin` compare-and-swap still retries concurrent edits before applying a top-level JSONB patch. Legacy full-profile callers retain their original response contract.
+
+Progress reads expose a private account revision. Conditional background reads return 304 without transferring the stored JSON when that revision is unchanged. The client scopes the revision to both username and session token, skips history parsing and rendering after a 304, and defers automatic pulls while an input is focused. Explicit history refreshes still run. Authentication occurs before every conditional read; no shared response cache is introduced.
+
+SWT, scratch-pad, essay-draft and Reading editors mark recovery records they have already saved locally. Queuing their cloud save no longer scans and rewrites every other practice area. Library edits checkpoint just the library and vocabulary fields; the debounced cloud flush still captures and merges all progress. Local checkpoints, offline retries, exit saves and cross-device field clocks remain in place.
+
+A controlled Node reproduction with the actual SWT input handler, a synthetic 276,765-byte account and 100 input events reduced total handler work from 15,129 ms to 4 ms and local-storage writes from 29,886,000 to 32,250 bytes. This isolates synchronous JavaScript/storage work; it is not a browser input-latency or student-network guarantee. Regression checks cover projected/full merge parity, untouched history preservation, concurrent updates, no-op saves, conditional revisions, session isolation and local draft recovery.

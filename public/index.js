@@ -512,9 +512,11 @@ function cacheAccountProgress(data, uid = currentUserId) {
   return saved;
 }
 
-function captureAccountProgress() {
+function captureAccountProgress(options = {}) {
   if (!currentUserId || !userProfile || !window.AccountProgress) return null;
-  const cached = localAccountProgress();
+  const owner = canonicalClientUserId(currentUserId);
+  const cached = options.localOnly ? Object.fromEntries(['essays', 'essayLibraryDeleted', 'vocabProgress', 'attempted']
+    .map(key => [key, LocalStore.get(`pte_${owner}_${key}`) || (['essays', 'attempted'].includes(key) ? [] : {})])) : localAccountProgress();
   const library = window.AccountProgress.stampLibrary(essays, cached.essays, cached.essayLibraryDeleted);
   essays = library.essays;
   const progress = { ...cached, ...library,
@@ -522,7 +524,12 @@ function captureAccountProgress() {
     vocabProgress: window.AccountProgress.stampVocab(userProfile.vocabProgress, cached.vocabProgress)
   };
   userProfile.vocabProgress = progress.vocabProgress;
-  cacheAccountProgress(progress);
+  if (options.localOnly) {
+    accountProgressMemory.set(owner, { ...(accountProgressMemory.get(owner) || {}), ...progress });
+    for (const key of ['essays', 'essayLibraryDeleted', 'vocabProgress', 'attempted']) {
+      if (!window.AccountProgress.equal(cached[key], progress[key])) LocalStore.set(`pte_${owner}_${key}`, progress[key]);
+    }
+  } else cacheAccountProgress(progress);
   return progress;
 }
 
@@ -1017,6 +1024,7 @@ async function loadUserData(uid) {
     const d = await r.json();
     if (!sameSession()) return false;
     if (d.success && d.data) {
+      refreshPracticeHistory.snapshot = { uid, token, etag: r.headers?.get?.('etag') || '' };
       const data = receiveAccountProgress(d.data, true);
       
       // Load SWT state components
@@ -1152,12 +1160,15 @@ function todayStamp() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-function queueSync() {
+function queueSync(options = {}) {
   // Keep the queue alive during a temporary network outage.  An authenticated
   // account can still retry later; only a signed-out/local-only session is
   // excluded.
   if (!currentUserId || !sessionToken) return;
-  if (typeof captureAccountProgress === 'function') captureAccountProgress();
+  // SWT, Reading and essay draft editors already persist their own small
+  // recovery record. Do not re-read, merge and rewrite every practice history
+  // on their input events. The coalesced cloud save captures them all below.
+  if (!options.localSaved && typeof captureAccountProgress === 'function') captureAccountProgress({ localOnly: true });
   syncQueued = true;
   LocalStore.set(`pte_${canonicalClientUserId(currentUserId)}_syncPending`, true);
   setSync('syncing', 'Saving to your account…');
@@ -1324,6 +1335,7 @@ async function flushSyncDirect(options = {}) {
 async function refreshPracticeHistory(options = {}) {
   const uid = canonicalClientUserId(currentUserId), token = sessionToken;
   if (!uid || !token || !userProfile || document.visibilityState === 'hidden') return false;
+  if (!options.force && document.activeElement?.matches?.('input,textarea,[contenteditable="true"]')) return false;
   if (practiceRefreshInFlight) return practiceRefreshInFlight;
   if (!options.force && Date.now() - lastPracticeRefreshAt < 15000) return false;
   const sameSession = () => uid === canonicalClientUserId(currentUserId) && token === sessionToken;
@@ -1331,15 +1343,23 @@ async function refreshPracticeHistory(options = {}) {
     try {
       // Reconcile every practice area. Field clocks preserve newer edits,
       // and active editors are never rebuilt by a background refresh.
+      const snapshot = refreshPracticeHistory.snapshot;
+      const etag = snapshot?.uid === uid && snapshot?.token === token ? snapshot.etag : '';
       const response = await fetchAccountProgress(API_URL + '/api/sync/' + encodeURIComponent(uid), {
         cache: 'no-store', signal: AbortSignal.timeout(20000),
-        headers: { 'x-session-token': token }
+        headers: { 'x-session-token': token, ...(etag ? { 'If-None-Match': etag } : {}) }
       }, sameSession);
       if (!sameSession()) return false;
       if (response.status === 401 || response.status === 403) { handleAuthExpired(); return false; }
+      if (response.status === 304) {
+        lastPracticeRefreshAt = Date.now();
+        if (!syncQueued && !syncInFlight) setSync('synced', 'Synced across devices');
+        return true;
+      }
       if (!response.ok) throw new Error('Could not refresh cloud history');
       const body = await response.json();
       if (!sameSession() || !userProfile || !body.success || !body.data) return false;
+      refreshPracticeHistory.snapshot = { uid, token, etag: response.headers?.get?.('etag') || '' };
       if (typeof receiveAccountProgress === 'function') receiveAccountProgress(body.data);
       const priorHistory = getPracticeHistory(), priorDeleted = practiceHistoryDeleted;
       const deleted = mergePracticeDeletedClient(body.data.practiceHistoryDeleted || [], practiceHistoryDeleted);
@@ -12480,7 +12500,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=20261001-hiw-score2', 'reading review'],
-      ['reading-practice.js?v=sha256-017e48e04e61', 'reading practice']
+      ['reading-practice.js?v=sha256-4e80ba9501ba', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12999,7 +13019,7 @@ function savePortalEssayDraft(options = {}) {
     status.textContent = saved ? 'Draft saved on this device' : 'Draft is open here. Device saving is unavailable.';
     status.dataset.state = saved ? 'saved' : 'error';
   }
-  if (!options.skipSync && typeof queueSync === 'function') queueSync();
+  if (!options.skipSync && typeof queueSync === 'function') queueSync({ localSaved: saved });
 }
 
 function queuePortalEssayDraft() {
@@ -15636,8 +15656,8 @@ function onSummaryInput(){
   const storageId = swtPassageStorageId();
   if (storageId != null && String(summaries[storageId]?.text || '') !== text) {
     summaries[storageId] = { text, timestamp: new Date().toISOString(), score: summaries[storageId]?.score || 0 };
-    LocalStore.set(getPteStorageKey('summaries'), summaries);
-    queueSync();
+    const saved = LocalStore.set(getPteStorageKey('summaries'), summaries);
+    queueSync({ localSaved: saved });
   }
 }
 
@@ -15679,11 +15699,11 @@ document.addEventListener('input', function(e){
   if(e.target && e.target.id === 'scratchInput'){
     const scratch = LocalStore.get(getPteStorageKey('scratch')) || {};
     scratch[swtPassageStorageId()] = e.target.value;
-    LocalStore.set(getPteStorageKey('scratch'), scratch);
+    const saved = LocalStore.set(getPteStorageKey('scratch'), scratch);
     const updated = LocalStore.get(getPteStorageKey('scratchUpdatedAt')) || {};
     updated[swtPassageStorageId()] = Date.now();
-    LocalStore.set(getPteStorageKey('scratchUpdatedAt'), updated);
-    queueSync();
+    const clockSaved = LocalStore.set(getPteStorageKey('scratchUpdatedAt'), updated);
+    queueSync({ localSaved: saved && clockSaved });
   }
 });
 
