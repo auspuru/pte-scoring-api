@@ -72,7 +72,9 @@ async function stage(ctx,name,call,{valid=()=>true,accept=()=>{},now=Date.now,ma
   try{const value=await call();await ctx.save(d=>{accept(d,value);d.stages[name]={status:valid(value,d)?'ready':attempts>=maxAttempts?'needs_attention':'retry_wait',attempts,...(valid(value,d)?{value}:{failure:'validation',nextAt:now()+15000*attempts})};});return value;}
   catch(error){const code=error?.uncertain?'uncertain_provider_outcome':error?.httpStatus||error?.providerStatus||error?.status||'provider';
     const terminal=error?.uncertain||[400,401,403,404,413,422].includes(code)||attempts>=maxAttempts;
-    await ctx.save(d=>{d.stages[name]={status:terminal?'needs_attention':'retry_wait',attempts,failure:code,nextAt:now()+Math.min(120000,15000*2**(attempts-1))};});}
+    const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_:-]{1,80}$/.test(v)?v:undefined;
+    const detail={...(safe(error?.code)?{code:error.code}:{}),...(safe(error?.recognitionStatus)?{recognitionStatus:error.recognitionStatus}:{}),...(safe(error?.audioValidationCode)?{validation:error.audioValidationCode}:{})};
+    await ctx.save(d=>{d.stages[name]={status:terminal?'needs_attention':'retry_wait',attempts,failure:code,...(Object.keys(detail).length?{detail}:{}),nextAt:now()+Math.min(120000,15000*2**(attempts-1))};});}
 }
 function disposition(data,ready,now=Date.now){if(ready)return{status:'ready'};const values=Object.values(data.stages||{});if(values.some(s=>s.status==='needs_attention'))return{status:'needs_attention'};return{status:'retry_wait',runAfter:Math.max(now()+2000,Math.min(...values.filter(s=>s.status==='retry_wait').map(s=>s.nextAt||now()+5000),now()+5000))};}
 module.exports={createJobs,createWorker,stage,disposition,hash};

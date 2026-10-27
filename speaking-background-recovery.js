@@ -20,4 +20,22 @@ async function diagnose({usernames,operation,limit=3,mockStore,progressive,logge
     }
   }return results;
 }
-module.exports={diagnose};
+async function recover(options={}){
+  const {action='diagnose',repairs=[],operation,usernames,progressive,mockStore,logger=console}=options;
+  if(action==='diagnose')return diagnose(options);
+  if(action!=='repair'||!Array.isArray(repairs)||!repairs.length||repairs.length>10)throw Error('Invalid background repair scope.');
+  // Validate the complete account scope before changing any job.
+  await diagnose({...options,logger:{info(){}}});
+  const plans=[];
+  for(const repair of repairs){if(!usernames.includes(repair.username)||typeof repair.attemptId!=='string'||typeof repair.jobId!=='string'||!Array.isArray(repair.stages)||!repair.stages.length||repair.stages.some(s=>!['gpt','azure'].includes(s)))throw Error('Invalid background repair target.');
+    const row=await progressive.jobs.get(repair.username,repair.jobId),attempt=await mockStore.get(repair.username,repair.attemptId,{omitMockAudio:true});
+    if(!row||row.group_id!==repair.attemptId||!attempt||attempt.responses[row.data.index]?.recording?.hash!==row.data.recordingHash)throw Error('Background repair target changed.');
+    if(!row.data.repairs?.some(r=>r.operation===operation))for(const name of repair.stages){const stage=row.data.stages?.[name];if(stage?.status!=='needs_attention'||!['validation','provider',429,500,502,503,504].includes(stage.failure))throw Error('Only known, confirmed failures can use automatic recovery.');}
+    plans.push(repair);
+  }
+  for(const plan of plans){await progressive.jobs.retry(plan.username,plan.jobId,{stages:plan.stages,operation});logger.info('[speaking-background-recovery]',JSON.stringify({operation,username:plan.username,attemptId:plan.attemptId,jobId:plan.jobId,stages:plan.stages,status:'resumed'}));}
+  for(const {username,attemptId}of plans)await progressive.ensure(username,await mockStore.get(username,attemptId,{omitMockAudio:true}));
+  await progressive.wait();
+  return diagnose(options);
+}
+module.exports={diagnose,recover};

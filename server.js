@@ -6477,7 +6477,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_BACKGROUND_RECOVERY){
-      setImmediate(async()=>{try{const request=JSON.parse(process.env.IPT_SPEAKING_BACKGROUND_RECOVERY);await require('./speaking-background-recovery').diagnose({...request,mockStore:speakingMock.store,progressive:speakingMock.progressive});}catch{console.warn('[speaking-background-recovery] Scoped diagnostics could not finish.');}});
+      setImmediate(async()=>{try{const request=JSON.parse(process.env.IPT_SPEAKING_BACKGROUND_RECOVERY);await require('./speaking-background-recovery').recover({...request,mockStore:speakingMock.store,progressive:speakingMock.progressive});}catch{console.warn('[speaking-background-recovery] Scoped recovery could not finish.');}});
     }
     if(process.env.NODE_ENV!=='test'&&process.env.IPT_SPEAKING_CONTENT_REPAIR){
       setImmediate(async()=>{try{

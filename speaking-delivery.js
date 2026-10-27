@@ -6,7 +6,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-10-24.1';
+const VERSION = 'azure-delivery-2026-10-27.1';
 const DELIVERY_RUBRIC_VERSION = require('./delivery-rubric').RUBRIC_VERSION;
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
@@ -107,28 +107,41 @@ function lcsLength(a,b) {
   return previous[b.length];
 }
 
-function deliveryEvidence(question,transcript,durationSeconds) {
+function deliveryEvidence(question,transcript,durationSeconds,{contentIndependent=false}={}) {
   const spoken=tokens(transcript),type=String(question?.type||''),scripted=['ra','rs'].includes(type);
   const reference=scripted?tokens(question?.text):[],matched=scripted?lcsLength(reference,spoken):null;
   const coverage=scripted&&reference.length?matched/reference.length:null;
   let sufficient=true;
   // Delivery traits need enough continuous speech to be meaningful.
   // These are portal safeguards, not official Pearson cut-offs.
-  if(type==='ra')sufficient=durationSeconds>=10&&spoken.length>=18&&coverage>=0.50;
-  else if(type==='rs')sufficient=durationSeconds>=2&&spoken.length>=4&&coverage>=0.50;
+  if(type==='ra')sufficient=durationSeconds>=10&&spoken.length>=18&&(contentIndependent||coverage>=0.50);
+  else if(type==='rs')sufficient=durationSeconds>=2&&spoken.length>=4&&(contentIndependent||coverage>=0.50);
   else sufficient=durationSeconds>=6&&spoken.length>=12;
   return {
     sufficient,
     durationSeconds:round1(durationSeconds),
     spokenWords:spoken.length,
+    ...(contentIndependent?{evidencePolicy:'content-independent-delivery-v1'}:{}),
     ...(scripted?{referenceWords:reference.length,matchedWords:matched,coverage:round1(coverage*100)}:{})
   };
 }
 
-function wavSeconds(buffer) {
-  if(!Buffer.isBuffer(buffer)||buffer.length<44)return 0;
-  const rate=buffer.readUInt32LE(28);
-  return rate>0?Math.max(0,(buffer.length-44)/rate):0;
+function pcmData(buffer){
+  if(!Buffer.isBuffer(buffer)||buffer.length<44||buffer.toString('ascii',0,4)!=='RIFF'||buffer.toString('ascii',8,12)!=='WAVE')throw Error('Invalid PCM recording.');
+  let format,pcm;for(let p=12;p+8<=buffer.length;){const tag=buffer.toString('ascii',p,p+4),size=buffer.readUInt32LE(p+4),start=p+8,end=start+size;if(end>buffer.length)throw Error('Invalid PCM chunk.');
+    if(tag==='fmt '&&size>=16)format={encoding:buffer.readUInt16LE(start),channels:buffer.readUInt16LE(start+2),sampleRate:buffer.readUInt32LE(start+4),byteRate:buffer.readUInt32LE(start+8),align:buffer.readUInt16LE(start+12),bits:buffer.readUInt16LE(start+14)};
+    if(tag==='data')pcm=buffer.subarray(start,end);p=end+(size%2);
+  }if(!format||!pcm||format.encoding!==1||format.channels!==1||format.sampleRate!==16000||format.bits!==16||format.align!==2||format.byteRate!==32000||pcm.length%2)throw Error('Unsupported PCM recording.');return pcm;
+}
+function wavSeconds(buffer) {try{return pcmData(buffer).length/32000;}catch{return 0;}}
+function pcmWav(pcm){const b=Buffer.alloc(44+pcm.length);b.write('RIFF');b.writeUInt32LE(b.length-8,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(16000,24);b.writeUInt32LE(32000,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(pcm.length,40);pcm.copy(b,44);return b;}
+function balanceShortTail(chunks){
+  if(chunks.length<2||wavSeconds(chunks.at(-1))>=4)return chunks;
+  // Azure pronunciation requests allow up to 30 seconds. Retain every PCM
+  // sample and every pause; change only a tiny final segment's boundaries.
+  const prefix=chunks.slice(0,-2),pcm=Buffer.concat(chunks.slice(-2).map(pcmData));
+  if(pcm.length<30*32000)return[...prefix,pcmWav(pcm)];
+  const split=Math.floor(pcm.length/4)*2;return[...prefix,pcmWav(pcm.subarray(0,split)),pcmWav(pcm.subarray(split))];
 }
 
 function extractAssessment(json) {
@@ -224,7 +237,7 @@ async function splitToWav(recording,{directory,ffmpeg='ffmpeg'}={}) {
     if(!names.length)throw Error('No assessable audio was produced.');
     const chunks=[];
     for(const name of names){const data=await fs.readFile(path.join(work,name));if(data.length>44)chunks.push(data);}
-    return chunks;
+    return balanceShortTail(chunks);
   } finally {
     if(owned)await fs.rm(work,{recursive:true,force:true}).catch(()=>{});
   }
@@ -274,7 +287,7 @@ async function assessRecording(recording,{
   locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',
   ffmpeg='ffmpeg',
   directory,
-  chunkCache={},checkpointChunk=async()=>{}
+  chunkCache={},checkpointChunk=async()=>{},contentIndependent=false
 }={}) {
   if(!recording?.data||!recording?.mime)throw Error('A saved recording is required for delivery assessment.');
   if(!apiKey||!endpoint)return null;
@@ -301,7 +314,7 @@ async function assessRecording(recording,{
     assessed.weight=seconds;
     results.push(assessed);
   }
-  return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds)});
+  return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds,{contentIndependent})});
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds};
+module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds,pcmData,pcmWav,balanceShortTail};

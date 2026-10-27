@@ -3,30 +3,8 @@ const azure=require('./speaking-delivery');
 const VERSION='azure-whole-audio-2026-10-25.2';
 // These are fresh Azure acoustic chunks, never stored question marks. Azure
 // does not provide GPT's holistic review or a calibrated PTE /90 estimate.
-function pcm(wav){
-  // ffmpeg's PCM output can include LIST metadata: locate the actual data chunk.
-  for(let offset=12;offset+8<=wav.length;){
-    const size=wav.readUInt32LE(offset+4),start=offset+8;
-    if(wav.toString('ascii',offset,offset+4)==='data'){
-      return wav.subarray(start,Math.min(wav.length,start+size));
-    }
-    offset=start+size+(size%2);
-  }
-  throw Error('Invalid Azure assessment audio.');
-}
+const pcm=azure.pcmData,balanceTail=azure.balanceShortTail;
 function silent(wav){const data=pcm(wav);for(let i=0;i+1<data.length;i+=2)if(Math.abs(data.readInt16LE(i))>16)return false;return true;}
-function fromPcm(data){
-  const wav=Buffer.alloc(44+data.length);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(16000,24);wav.writeUInt32LE(32000,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(data.length,40);data.copy(wav,44);return wav;
-}
-function balanceTail(parts){
-  if(parts.length<2||pcm(parts.at(-1)).length/32000>=4)return parts;
-  const joined=Buffer.concat(parts.slice(-2).map(pcm)),prefix=parts.slice(0,-2);
-  // Preserve every sample. A near-silent sub-second remainder cannot support a
-  // separate Azure recognition; assess it in the preceding audio's context.
-  if(joined.length/32000<30)return [...prefix,fromPcm(joined)];
-  const middle=Math.floor(joined.length/4)*2;
-  return [...prefix,fromPcm(joined.subarray(0,middle)),fromPcm(joined.subarray(middle))];
-}
 function summarize(chunks,{recordingCount,expectedCount,assessedRecordings,audioSeconds}={}){
   if(recordingCount!==expectedCount||assessedRecordings!==recordingCount||!chunks.length)throw Object.assign(Error('Azure needs assessable audio from every saved response.'),{code:'AZURE_COVERAGE',coverage:{recordingCount,assessedRecordings,expectedCount}});
   for(const c of chunks)for(const key of ['accuracy','fluency','seconds'])if(!Number.isFinite(c[key])||c[key]<0||(key==='seconds'?c[key]===0:c[key]>100))throw Error('Incomplete Azure whole-audio measurements.');

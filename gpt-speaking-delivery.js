@@ -59,10 +59,10 @@ function normalize(raw,evidence,{model=MODEL}={}) {
     deliveryAssessment:'Independent audio-based practice estimate from GPT; not Pearson scoring.'};
 }
 
-async function assessRecording(recording,{question,transcript='',apiKey=process.env.OPENAI_API_KEY,model=MODEL,request=fetch,convert=toWav}={}) {
+async function assessRecording(recording,{question,transcript='',apiKey=process.env.OPENAI_API_KEY,model=MODEL,request=fetch,convert=toWav,contentIndependent=false}={}) {
   if(!apiKey)throw Error('GPT audio assessment is not configured.');
   const {wav,seconds}=await convert(recording);
-  const evidence=azure.deliveryEvidence(question,transcript,seconds);
+  const evidence=azure.deliveryEvidence(question,transcript,seconds,{contentIndependent});
   if(!evidence.sufficient)return {deliveryVersion:VERSION,deliveryProvider:'openai-gpt-audio',deliveryModel:model,
     pronunciation:{score:null,maximum:5},fluency:{score:null,maximum:5},deliveryEvidence:evidence,
     deliveryStatus:'Not enough speech for a reliable GPT delivery estimate.',deliveryAssessment:'Delivery scores are withheld when there is insufficient speech.'};
