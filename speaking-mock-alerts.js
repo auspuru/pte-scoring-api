@@ -42,7 +42,8 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
   if(enabled&&(!/^[^\s@<>\r\n]+@[^\s@<>\r\n]+\.[^\s@<>\r\n]+$/.test(recipient)||!/^https:\/\/[^/]+$/.test(origin)))throw Error('Invalid speaking alert configuration.');
   const jobs=createJobs({pool,directory:path.join(directory,'admin-alerts'),table:'speaking_mock_alert_jobs',now});
   let cursor='',timer,checking=false,started=false,verification;
-  const health={enabled,recipient:enabled?recipient:null,transportConfigured:!!mailer&&!!from,verified:false,verifiedAt:null,lastError:null,lastSentAt:null};
+  const provider=mailer?.provider||'smtp';
+  const health={enabled,recipient:enabled?recipient:null,provider,transportConfigured:!!mailer&&!!from&&mailer.configured!==false,verified:false,verification:'not-checked',verifiedAt:null,lastError:null,lastSentAt:null};
   async function incident(username,a){
     if(!a||a.status!=='submitted'||complete(a))return null;
     const candidate=await progressive.hydrate(username,a);let publicationFailed=false;
@@ -60,17 +61,35 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
         ...(job.remoteFailures||[]).map(f=>({stage:'Visual Academy '+f.stage,code:f.code,detail:null}))])].slice(0,30)};
   }
   const worker=createWorker({store:jobs,now,concurrency:1,run:async ctx=>{
+    if(ctx.data.outcome==='sent')return{status:'ready'};
     const a=await mockStore.get(ctx.row.owner,ctx.row.group_id,{omitMockAudio:true}),current=await incident(ctx.row.owner,a);
     if(!current){await ctx.save(d=>{d.outcome='resolved-before-email';d.closedAt=now();});return{status:'ready'};}
     await ctx.save(d=>{d.incident=current;});
+    if(!health.transportConfigured){
+      health.lastError=mailer?.configurationError||'MAIL_NOT_CONFIGURED';
+      await ctx.save(d=>{d.deliveryBlocked=health.lastError;});
+      return{status:'retry_wait',runAfter:now()+60000};
+    }
+    // Freeze the exact request before its first send. Changing the waiting time
+    // or missing-question list on a retry would invalidate HTTPS idempotency.
+    if(!ctx.data.emailRequest)await ctx.save(d=>{d.emailRequest={provider,startedAt:now(),message:messageFor(current,{recipient,from,origin})};delete d.deliveryBlocked;});
+    const request=ctx.data.emailRequest;
+    const changed=request.provider!==provider||request.message.to!==recipient||request.message.from!=='"IPT Brisbane Alerts" <'+from+'>';
+    if(changed||mailer.replayWindowMs&&now()-request.startedAt>=mailer.replayWindowMs){
+      health.lastError=changed?'MAIL_CONFIGURATION_CHANGED':'MAIL_REPLAY_WINDOW_EXPIRED';
+      await ctx.save(d=>{d.stages.email={...d.stages.email,status:'needs_attention',failure:'uncertain_provider_outcome',detail:{code:health.lastError}};});
+      return{status:'needs_attention'};
+    }
+    // HTTPS can recover a process crash at the send boundary using the same
+    // provider key. SMTP retains its conservative uncertain-outcome hold.
+    if(mailer.replayWindowMs&&ctx.data.stages.email?.status==='calling')await ctx.save(d=>{d.stages.email={...d.stages.email,status:'retry_wait',nextAt:0};});
     await stage(ctx,'email',async()=>{
-      if(!mailer||!from)throw Object.assign(Error('Portal mailer is not configured.'),{httpStatus:400,code:'SMTP_NOT_CONFIGURED'});
-      let receipt;try{receipt=await mailer.sendMail(messageFor(current,{recipient,from,origin}));}catch(error){const failure=smtpFailure(error);health.lastError=failure.code;if(error?.code==='EAUTH')health.verified=false;throw failure;}
+      let receipt;try{receipt=await mailer.sendMail(request.message);}catch(error){const failure=mailer.classifyFailure?mailer.classifyFailure(error):smtpFailure(error);health.lastError=failure.code;health.verified=false;throw failure;}
       if(!receipt?.accepted?.some(address=>String(address).toLowerCase()===recipient.toLowerCase()))throw Object.assign(Error('Alert recipient was rejected.'),{httpStatus:400,code:'SMTP_RECIPIENT_REJECTED'});
-      health.lastError=null;health.lastSentAt=now();return{messageId:clean(receipt.messageId,200),acceptedAt:now()};
+      health.lastError=null;health.lastSentAt=now();health.verified=true;health.verifiedAt=now();health.verification='provider-accepted';return{messageId:clean(receipt.messageId,200),acceptedAt:now()};
     },{now,maxAttempts:8,retryDelay:n=>Math.min(3600000,60000*5**Math.min(n-1,3)),accept:(d,value)=>{d.outcome='sent';d.sentAt=value.acceptedAt;}});
     const final=disposition(ctx.data,ctx.data.outcome==='sent',now);
-    if(final.status==='ready')logger.info('[speaking-alerts]',JSON.stringify({event:'email_sent',attemptId:ctx.row.group_id,recipient}));
+    if(final.status==='ready')logger.info('[speaking-alerts]',JSON.stringify({event:'email_accepted',attemptId:ctx.row.group_id,provider,recipient}));
     else if(final.status==='needs_attention')logger.warn('[speaking-alerts]',JSON.stringify({event:'email_delivery_needs_attention',attemptId:ctx.row.group_id,code:ctx.data.stages.email?.failure,detail:ctx.data.stages.email?.detail}));
     return final;
   }});
@@ -88,7 +107,13 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
     for(const row of rows){try{const a=await mockStore.get(row.username,row.id,{omitMockAudio:true});if(await incident(row.username,a))await jobs.enqueue({id:row.id,owner:row.username,groupId:row.id,inputHash:hash({version:VERSION,username:row.username,id:row.id}),data:{version:VERSION,openedAt:now(),stages:{}}});}catch{logger.warn('[speaking-alerts]',JSON.stringify({event:'attempt_check_failed',attemptId:row.id}));}}
     await worker.wake();
   }finally{checking=false;}}
-  async function verify(){if(!enabled)return health;try{if(!mailer?.verify||!from)throw Error('not-configured');await mailer.verify();health.verified=true;health.verifiedAt=now();health.lastError=null;logger.info('[speaking-alerts]',JSON.stringify({event:'smtp_verified',recipient,stallMinutes:10,checkSeconds:intervalMs/1000}));}catch(error){health.verified=false;health.lastError=error?.code==='EAUTH'?'SMTP_AUTH':mailer?'SMTP_CONNECTION':'SMTP_NOT_CONFIGURED';logger.warn('[speaking-alerts]',JSON.stringify({event:'smtp_verification_failed',code:health.lastError}));}return{...health};}
+  async function verify(){if(!enabled)return health;try{
+    if(!health.transportConfigured||!mailer?.verify)throw Error('not-configured');
+    const result=await mailer.verify();if(!(result?.configurationOnly&&health.verification==='provider-accepted')){health.verified=!result?.configurationOnly;health.verification=result?.configurationOnly?'configuration-only':'smtp-connected';health.verifiedAt=health.verified?now():null;}health.lastError=null;
+    logger.info('[speaking-alerts]',JSON.stringify({event:'transport_ready',provider,verification:health.verification,recipient,stallMinutes:10,checkSeconds:intervalMs/1000}));
+  }catch(error){health.verified=false;health.verification='failed';health.lastError=mailer?.configurationError||(provider==='smtp'?(error?.code==='EAUTH'?'SMTP_AUTH':'SMTP_CONNECTION'):'MAIL_CONNECTION');
+    logger.warn('[speaking-alerts]',JSON.stringify({event:'transport_verification_failed',provider,code:health.lastError}));
+  }return{...health};}
   return{jobs,check,verify,health:()=>({...health}),async start(){if(!enabled||started)return;started=true;await jobs.initialise();await worker.start();await check();timer=setInterval(()=>check().catch(()=>logger.warn('[speaking-alerts] monitor scan will retry')),intervalMs);timer.unref?.();verification=verify();},async stop(){started=false;clearInterval(timer);await worker.stop();await verification;},wait:worker.wait};
 }
 module.exports={VERSION,TEN_MINUTES,createSpeakingMockAlerts,messageFor,smtpFailure};

@@ -7,7 +7,7 @@ function releaseEnvironment(source) {
   // Railway exposes service variables during builds. Release tests must never
   // connect to student storage, send mail, or consume paid provider credits.
   for (const key of ['PGURL', 'DATABASE_URL', 'DATABASE_PUBLIC_URL', 'ANTHROPIC_API_KEY',
-    'OPENAI_API_KEY', 'AZURE_SPEECH_KEY', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 'GMAIL_USER_PASSWORD']) env[key] = '';
+    'OPENAI_API_KEY', 'AZURE_SPEECH_KEY', 'GMAIL_USER', 'GMAIL_APP_PASSWORD', 'GMAIL_USER_PASSWORD', 'RESEND_API_KEY']) env[key] = '';
   delete env.RAILWAY_VOLUME_MOUNT_PATH;
   return env;
 }
