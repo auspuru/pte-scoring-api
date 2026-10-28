@@ -58,10 +58,11 @@ test('Legacy mocks have explicit partial coverage and unsupported types cannot s
   assert.equal(unsupported.weighting.supported,false);assert.equal(unsupported.score90,null);
   assert.equal(report.summarize([],[],context).score90,null);
 });
-test('Listening mocks and individual practice retain their current unweighted calculation',()=>{
+test('Listening mocks reject Writing-only tasks while individual practice remains unweighted',()=>{
   const {questions,results}=fixture();
   const listening=report.summarize(questions,results,{kind:'mock',module:'listening'});
-  assert.equal(listening.score90,70);assert.equal(listening.weighting,undefined);
+  assert.equal(listening.score90,null);assert.equal(listening.weighting.profile,'listening');
+  assert.equal(listening.weighting.supported,false);
   const practice=report.summarize(questions,results,{kind:'sst',module:'writing'});
   assert.equal(practice.score90,70);assert.equal(practice.weighting,undefined);
 });
