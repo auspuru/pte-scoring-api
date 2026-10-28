@@ -6,6 +6,11 @@
   'use strict';
   const labels = { swt: 'Summarise Written Text', essay: 'Write Essay', sst: 'Summarise Spoken Text', wfd: 'Write from Dictation', lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks (Type In)',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words' };
   const WRITING_WEIGHTS = Object.freeze({ swt:28, essay:31, sst:18, wfd:23 });
+  // Pearson's published average Listening contribution for the eight types
+  // available in sectional mocks. Excluded integrated Speaking tasks mean
+  // this is an uncalibrated sectional estimate, not a Pearson skill result.
+  const LISTENING_WEIGHTS = Object.freeze({ sst:10, lmcma:3, lfi:8, hcs:2, lmcsa:2, smw:1, hiw:8, wfd:13 });
+  const LISTENING_WEIGHTING_VERSION = 'listening-task-weighted-2026-10-28.1';
   const WEIGHTING_VERSION = 'writing-task-weighted-2026-10-26.1';
   const isWritingMock = attempt => attempt?.kind === 'mock' && attempt.module !== 'listening';
   const needsReview = (result,question) => !!result && (result.score_provisional === true || result.needs_semantic_review === true
@@ -20,7 +25,9 @@
     return questions.reduce((sum, q, i) => sum + (i && q.timeGroup && q.timeGroup === questions[i - 1].timeGroup ? 0 : q.minutes), 0);
   }
   function summarize(questions, results = [], attempt = {}) {
-    const weighted = isWritingMock(attempt);
+    const profile = isWritingMock(attempt) ? 'writing' :
+      attempt?.kind === 'mock' && attempt?.module === 'listening' ? 'listening' : null;
+    const weighted = profile !== null;
     const groups = {};
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i], r = results[i], maximum = maximumFor(q);
@@ -32,11 +39,12 @@
     const total = byType.reduce((sum, g) => sum + g.total, 0), maximum = byType.reduce((sum, g) => sum + g.maximum, 0);
     let complete = questions.length > 0 && byType.every(g => g.marked === g.count);
     if (weighted) {
-      const supported = byType.every(g => Object.hasOwn(WRITING_WEIGHTS,g.type));
-      const weightTotal = byType.reduce((sum,g) => sum + (WRITING_WEIGHTS[g.type] || 0),0);
+      const weights = profile === 'writing' ? WRITING_WEIGHTS : LISTENING_WEIGHTS;
+      const supported = byType.every(g => Object.hasOwn(weights,g.type));
+      const weightTotal = byType.reduce((sum,g) => sum + (weights[g.type] || 0),0);
       complete = complete && supported && weightTotal > 0;
       for (const group of byType) {
-        group.weight = WRITING_WEIGHTS[group.type] || 0;
+        group.weight = weights[group.type] || 0;
         group.normalizedWeight = weightTotal ? 100 * group.weight / weightTotal : 0;
         group.performancePercent = group.marked === group.count ? 100 * group.total / group.maximum : null;
       }
@@ -44,13 +52,15 @@
       // length must not multiply the task type's published weight a second time.
       // Keep the complete denominator, including zero-mark submitted answers.
       const ratio = complete ? byType.reduce((sum,g) => sum + g.weight * g.total / g.maximum,0) / weightTotal : null;
-      const missingTypes = Object.keys(WRITING_WEIGHTS).filter(type => !groups[type]);
+      const missingTypes = Object.keys(weights).filter(type => !groups[type]);
       return { complete, total, maximum, score90:complete ? score90(ratio,1) : null, byType,
-        weighting:{ version:WEIGHTING_VERSION, profile:'writing', supported, weights:{...WRITING_WEIGHTS},
-          weightTotal, fullProfile:supported && missingTypes.length === 0, missingTypes,
+        weighting:{ version:profile === 'writing' ? WEIGHTING_VERSION : LISTENING_WEIGHTING_VERSION,
+          profile, supported, weights:{...weights},
+          weightTotal, fullProfile:profile === 'writing' && supported && missingTypes.length === 0, missingTypes,
           performancePercent:complete ? ratio * 100 : null, calibration:'uncalibrated', conversion:'round(10 + 80 × weighted ratio)' } };
     }
     return { complete, total, maximum, score90: complete ? score90(total, maximum) : null, byType };
   }
-  return { labels, tokens, maximumFor, score90, minutesFor, summarize, WRITING_WEIGHTS, WEIGHTING_VERSION, isWritingMock, needsReview };
+  return { labels, tokens, maximumFor, score90, minutesFor, summarize,
+    WRITING_WEIGHTS, LISTENING_WEIGHTS, WEIGHTING_VERSION, LISTENING_WEIGHTING_VERSION, isWritingMock, needsReview };
 });
