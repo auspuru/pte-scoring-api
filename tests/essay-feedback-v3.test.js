@@ -21,6 +21,7 @@ function issue(overrides={}) {
   explanation:'The claim needs a condition explaining who is affected.',suggestedChange:'Explain which young viewers may be affected and why.',scoreRationale:'This reasoning gap limits development of one argument.',...overrides};
 }
 function reviewFrom(a) { return {...a,scores:{content:a.scores.content,linguistic:a.scores.linguistic,coherence:a.scores.coherence},rationale:{content:a.feedback.content,linguistic:a.feedback.linguistic,coherence:a.feedback.coherence}}; }
+function supportFindings(prompt) {return {findings:JSON.parse(prompt.split('DATA:\n')[1]).claims.map(c=>({id:c.id,claimAccurate:true,existingSupport:'',explanation:'The candidate criticism is confirmed for this fixture.'}))};}
 
 test('Prompt requirements retain exact spans, OR choice, personal requirement and separate paired parts',()=>{
  const cases=[['Do you agree? Give reasons or your own experience.',2,'OR'],['Do you agree? Explain why with your own experience.',3,'AND'],[question,2,'AND'],['Discuss the advantages and disadvantages of automation.',2,'AND']];
@@ -81,6 +82,7 @@ for(const stage of ['assessment','subjective-review','subjective-resolver'])test
  const b=reviewFrom(raw());b.scores.content=5;b.feedbackIssues=[issue()];
  const {assessment}=await assessEssay(question,essay,async(p,o)=>{
   stages.push(o.stage);counts[o.stage]=(counts[o.stage]||0)+1;
+  if(o.stage==='support-audit')return supportFindings(p);
   if(o.stage===stage && counts[o.stage]===1){
    assert.equal(o.semanticReassessment,false);
    const rejected=raw();rejected.scores.content=5;
@@ -142,8 +144,8 @@ test('Duplicate issues collapse, while all distinct material issues remain avail
 test('Final resolver removes prior subjective criticism, optional polish and stale verdict/strengths',async()=>{
  const a=raw();a.scores.content=5;a.feedbackIssues=[issue()];a.improvements=['OLD CRITICISM'];a.strengths=['OLD STRENGTH'];
  const b=raw();let stages=[];
- const {assessment}=await assessEssay(question,essay,async(_p,o)=>{stages.push(o.stage);return o.stage==='assessment'?a:reviewFrom(b);},{feedbackV3:true});
- assert.deepEqual(stages,['assessment','subjective-review','subjective-resolver']);assert.equal(assessment.scores.content,6);
+ const {assessment}=await assessEssay(question,essay,async(p,o)=>{stages.push(o.stage);return o.stage==='support-audit'?supportFindings(p):o.stage==='assessment'?a:reviewFrom(b);},{feedbackV3:true});
+ assert.deepEqual(stages,['assessment','subjective-review','support-audit','subjective-resolver']);assert.equal(assessment.scores.content,6);
  assert.deepEqual(assessment.feedbackIssues,[]);assert.deepEqual(assessment.improvements,[]);assert(!JSON.stringify(assessment).includes('OLD CRITICISM'));
  assert.equal(assessment.overallVerdict,b.overallVerdict);assert.deepEqual(assessment.strengths,b.strengths);
 });
