@@ -12,6 +12,23 @@
   'use strict';
   const labels = { dropdown: 'Dropdown blanks', wordbank: 'Drag-and-drop blanks', reorder: 'Reorder paragraphs', mcsa: 'Single answer', mcma: 'Multiple answers' };
   const taskLabels = { ...labels, ...mock.extraLabels };
+  // Pearson's published AVERAGE Reading skill contribution by task type.
+  // Sectional mocks cover only the task types present; rescale their weights
+  // within that paper. This is an uncalibrated practice estimate, not PTE scoring.
+  const READING_WEIGHTS = Object.freeze({ swt:23, dropdown:25, mcma:5, reorder:9, wordbank:20, mcsa:3, hcs:3, hiw:13 });
+  const READING_WEIGHTING_VERSION = 'reading-task-weighted-2026-10-28.1';
+  function weightedReading(rows, session) {
+    if (!session || session.practiceUid || ['practice', 'diagnostic'].includes(session.mode) ||
+      !rows.length || rows.some(row => !Object.hasOwn(READING_WEIGHTS, row.type))) return null;
+    const weightTotal = rows.reduce((sum,row) => sum + READING_WEIGHTS[row.type], 0);
+    const complete = rows.every(row => !row.pending && !row.excluded && row.possible > 0 && row.gradedPossible === row.possible);
+    const ratio = complete ? rows.reduce((sum,row) => sum + READING_WEIGHTS[row.type] * row.earned / row.possible, 0) / weightTotal : null;
+    return { profile:'reading', version:READING_WEIGHTING_VERSION, weights:{...READING_WEIGHTS}, weightTotal,
+      fullProfile:Object.keys(READING_WEIGHTS).every(type => rows.some(row => row.type === type)),
+      performancePercent:ratio == null ? null : ratio * 100,
+      score90:ratio == null ? null : Math.round(10 + 80 * ratio),
+      calibration:'uncalibrated', conversion:'round(10 + 80 × task-weighted ratio)' };
+  }
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function score(q, answer = [], assessment) {
     const extra = mock.scoreExtra(q, answer, assessment);
@@ -49,12 +66,14 @@
     const rows = report(session.questions, session.answers, session.assessments, session.audioStates);
     const sum = key => rows.reduce((n,r)=>n+r[key],0);
     const earned = sum('earned'), possible = sum('gradedPossible');
-    return { rows, earned, possible, pending: sum('pending'), excluded: sum('excluded'), percent: possible ? Math.round(earned/possible*100) : null };
+    const weighting = weightedReading(rows, session);
+    return { rows, earned, possible, pending: sum('pending'), excluded: sum('excluded'),
+      percent: possible ? Math.round(earned/possible*100) : null, score90:weighting?.score90 ?? null, weighting };
   }
   function refreshSavedResults(reading=state) {
     let changed=false;
     for(const record of [reading.session,...reading.history,...reading.drafts].filter(s=>s?.done)) {
-      const {earned,possible,percent,pending,excluded}=totals(record), result={earned,possible,percent,pending,excluded};
+      const {earned,possible,percent,pending,excluded,score90}=totals(record), result={earned,possible,percent,pending,excluded,score90};
       if(Object.keys(result).some(key=>record[key]!==result[key])) {Object.assign(record,result);changed=true;}
       if(record.practiceUid) {
         const before=reading.practiceResults[record.practiceUid];
@@ -605,8 +624,8 @@
   }
   function syncHistory(s) {
     if(!s.done)return;
-    const { earned, possible, percent, pending, excluded }=totals(s);
-    const entry={...JSON.parse(JSON.stringify(s)),earned,possible,percent,pending,excluded};
+    const { earned, possible, percent, pending, excluded, score90 }=totals(s);
+    const entry={...JSON.parse(JSON.stringify(s)),earned,possible,percent,pending,excluded,score90};
     state.history=[entry,...state.history.filter(r=>r.id!==s.id)].sort((a,b)=>b.finishedAt-a.finishedAt);
     state.drafts=(state.drafts||[]).filter(r=>r.id!==s.id);
     if(s.practiceUid)state.practiceResults[s.practiceUid]={earned,possible,percent,finishedAt:s.finishedAt};
