@@ -576,7 +576,7 @@
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results,attempt), scored=summary.complete;
     const section=summary.weighting?.profile==='listening'?'Listening':'Writing';
-    const scoreNote=summary.weighting ? 'Weighted '+section+' practice estimate · '+(scored?summary.weighting.performancePercent.toFixed(1)+'% task-weighted accuracy. ':'')+'Provisional; not calibrated to Pearson scores.'+(summary.weighting.profile==='listening'
+    const scoreNote=summary.weighting ? 'Weighted '+section+' practice estimate · '+(scored?summary.weighting.performancePercent.toFixed(1)+'% weighted accuracy. ':'')+'Provisional; not calibrated to Pearson scores.'+(summary.weighting.profile==='listening'
       ? ' This sectional mock excludes integrated Speaking tasks that also contribute to official Listening scores.'
       : (summary.weighting.fullProfile?'':' This saved mock covers only part of the Writing task profile.'))
       : (attempt.module==='listening'?'Practice estimate from these listening tasks. Integrated speaking tasks are not included.':'Estimated PTE practice score. This is not an official Pearson PTE score.');
