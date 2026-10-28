@@ -1,0 +1,74 @@
+{
+  "rts-2-prompt-20261028-1": {
+    "questionId": "rts-2",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7b332f1e07a1916292479f54bea887ed477234508f400a6e3415e4f1567a1bf1",
+    "audioSha256": "f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe",
+    "bytes": 98301,
+    "seconds": 16.344,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  },
+  "rts-1-prompt-20261028-1": {
+    "questionId": "rts-1",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "3b71a80fa33640fa7202c4e6edaec495aea42329f21a7ec7e9b95d7736e98ffb",
+    "audioSha256": "65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679",
+    "bytes": 107517,
+    "seconds": 17.88,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  },
+  "rts-3-prompt-20261028-1": {
+    "questionId": "rts-3",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a7ed12f81df963bd2c4bd964e931e7de86978525a45f4cfdcbc6300eab3f5595",
+    "audioSha256": "ad1622aea8832938e24a627f0024fac81a9c25aa3e5371c2271ab7aebb7e921d",
+    "bytes": 107949,
+    "seconds": 17.952,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  },
+  "rts-user-tom-book-prompt-20261028-1": {
+    "questionId": "rts-user-tom-book",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "e871306d927c0b71f3cda66f242df794dcaf20ad82785541d9a2dcfaf43da853",
+    "audioSha256": "2dc89333ef8b876dc6ea3321954a09e572e83e5acf4cc6c88e22fe0277bb1a88",
+    "bytes": 72525,
+    "seconds": 12.048,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  },
+  "rts-4-prompt-20261028-1": {
+    "questionId": "rts-4",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "dbe67e933a2a2bd99b73eb599c67c62acac53e53991eef6251005151e8efaa74",
+    "audioSha256": "940524fdad21d5209f51162ebfa1aa90623ebc62b9b4ad0f0edb793ef3098e77",
+    "bytes": 95133,
+    "seconds": 15.816,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  },
+  "rts-5-prompt-20261028-1": {
+    "questionId": "rts-5",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "d629f13e66aa23214549c22e2f18b2e874f8f92faef0353fa246b4fbf8228f46",
+    "audioSha256": "538e960762c806cd6072075936f54027e82c730e19f1ecfa48e3e5013cc7ef4b",
+    "bytes": 105213,
+    "seconds": 17.496,
+    "voices": [
+      "en-AU-NatashaNeural"
+    ],
+    "generator": "edge-tts 7.3.1"
+  }
+}

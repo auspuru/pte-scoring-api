@@ -175,7 +175,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const a=await store.update(req.mockUser,req.body?.id,old=>{
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
-      return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
+      return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
         questions:bank.reattemptQuestions(original),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
     });res.json(view(a));
@@ -223,6 +223,10 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   app.use('/api/speaking-mocks',router);
   app.get('/speaking-mock-audio/:id.mp3',wrap(async(req,res)=>{
     const q=bank.papers.flatMap(p=>p.questions).find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
+    if(q.type==='rts'){
+      const audio=require('./rts-prompts').requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
+      res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;
+    }
     const file=path.join(__dirname,'content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');
     await fs.access(file);res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(file);
   }));

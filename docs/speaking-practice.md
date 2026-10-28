@@ -313,6 +313,8 @@ avoiding writes for each saved result when navigating.
 
 ## Original situation practice expansion
 
+The subsequent portal-wide RTS prompt update is documented in [rts-question-prompts.md](rts-question-prompts.md). All 36 authored RTS prompts now end with a direct question naming the listener; existing attempts retain their original prompt and audio.
+
 Added 30 original Respond to a Situation questions from the revised teaching
 booklet, each ending in a direct question such as "What would you say to your
 manager?" Existing questions and IDs are retained. Each addition has a sample

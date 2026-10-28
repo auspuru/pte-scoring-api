@@ -44,7 +44,7 @@
   {
     "id": "rts-original-20261024-04",
     "title": "Study room booking",
-    "text": "You booked a library study room for a group meeting, but another group is using it when you arrive. They believe they also have a booking. You have the confirmation on your phone and approach the library staff for help. What would you say to them?",
+    "text": "You booked a library study room for a group meeting, but another group is using it when you arrive. They believe they also have a booking. You have the confirmation on your phone and approach the library staff for help. What would you say to the library staff?",
     "sample": "Hello, I booked this study room, but another group believes they have booked it too. Here is my confirmation. Could you check the bookings and help us find a room without interrupting anyone unnecessarily?",
     "facts": [
       "Communicate the purpose of the situation directly to the intended person.",
@@ -72,7 +72,7 @@
   {
     "id": "rts-original-20261024-06",
     "title": "Food for a club event",
-    "text": "You are organising lunch for your university photography club. One member has told you that they cannot eat certain foods, but you are unsure which foods they need to avoid. You need to check their dietary requirements before ordering. What would you say to this member?",
+    "text": "You are organising lunch for your university photography club. One member has told you that they cannot eat certain foods, but you are unsure which foods they need to avoid. You need to check their dietary requirements before ordering. What would you say to the club member?",
     "sample": "Hi, I am organising our photography club lunch and want to make sure there is something suitable for you. Could you tell me which foods you need to avoid and whether there is anything else I should check with the caterer?",
     "facts": [
       "Communicate the purpose of the situation directly to the intended person.",
@@ -254,7 +254,7 @@
   {
     "id": "rts-original-20261024-19",
     "title": "A leak in student housing",
-    "text": "The tap in your student apartment has been leaking for several days. You reported it online, but nobody has contacted you, and water is now collecting under the sink. You call the accommodation office to request a repair. What would you say to the staff member?",
+    "text": "The tap in your student apartment has been leaking for several days. You reported it online, but nobody has contacted you, and water is now collecting under the sink. You call the accommodation office to request a repair. What would you say to the accommodation office staff member?",
     "sample": "Hello, I reported a leaking tap online several days ago, but have not heard back. Water is now collecting under the sink. Could you arrange a repair and tell me when someone can come? Please let me know what I should do meanwhile.",
     "facts": [
       "Communicate the purpose of the situation directly to the intended person.",
@@ -310,7 +310,7 @@
   {
     "id": "rts-original-20261024-23",
     "title": "A workshop has moved",
-    "text": "You are helping run a university workshop. The original room has become unavailable, so the session has moved to a building five minutes away and will start fifteen minutes later. Several students are waiting outside the original room. What would you say to explain the new arrangements to them?",
+    "text": "You are helping run a university workshop. The original room has become unavailable, so the session has moved to a building five minutes away and will start fifteen minutes later. Several students are waiting outside the original room. What would you say to the waiting students?",
     "sample": "Hi everyone, our workshop has moved because this room is unavailable. It will now be in another building about five minutes away and start fifteen minutes later. I can show you where to go. Thank you for your patience.",
     "facts": [
       "Communicate the purpose of the situation directly to the intended person.",

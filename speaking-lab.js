@@ -3,12 +3,13 @@ const express=require('express'),path=require('node:path'),fs=require('node:fs/p
 const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring'),delivery=require('./speaking-delivery');
 const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
+const rtsPrompts=require('./rts-prompts');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
 function question(q,reveal=false) {
   return {id:q.id,type:q.type,name:q.name,title:q.title,instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
     ...(['ra','rts'].includes(q.type)?{text:q.text}:{}),
-    ...(hasPrompt(q)?{audioUrl:'/speaking-audio/'+q.id+'.mp3?v='+bank.version}:{}),
+    ...(hasPrompt(q)?(rtsPrompts.publicAudio(q,'/speaking-audio')||{audioUrl:'/speaking-audio/'+q.id+'.mp3?v='+bank.version}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('./di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
     ...(q.predictionSource?{predictionSource:q.predictionSource}:{}),
     ...(reveal?{sample:q.sample,reference:q.text,facts:q.facts,visual:q.visual}:{})};
@@ -16,8 +17,9 @@ function question(q,reveal=false) {
 function present(a) {
   return {id:a.id,questionId:a.questionId,status:a.status,startedAt:a.startedAt,transcript:a.transcript||'',revision:a.revision||0,
     recording:a.recording?{mime:a.recording.mime,bytes:Buffer.byteLength(a.recording.data,'base64')}:null,
-    transcribed:!!a.transcription,result:azureResult(a),question:question(bank.questions.find(q=>q.id===a.questionId),a.status==='submitted')};
+    transcribed:!!a.transcription,result:azureResult(a),question:question(attemptQuestion(a),a.status==='submitted')};
 }
+function attemptQuestion(a){return rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId));}
 function azureResult(a){
   const source=scoring.resultForClient(a.result,a.transcript||'');if(!source)return null;
   const cached=source.deliveryComparisons?.azure;
@@ -63,7 +65,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   function queueAzure(uid,a) {
     if(!a.recording||!azureComparisonAvailable||a.result?.deliveryComparisons?.azure?.status!=='pending')return;
     const key=uid+':'+a.id;if(azureJobs.has(key))return;
-    const hash=a.recording.hash,q=bank.questions.find(q=>q.id===a.questionId);
+    const hash=a.recording.hash,q=attemptQuestion(a);
     const job=(async()=>{
       let comparison;
       try {const assessed=await assessDelivery(a.recording,{question:q,transcript:a.transcript,transcribe});
@@ -86,7 +88,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const q=bank.questions.find(q=>q.id===req.body?.questionId);if(!q)throw fail('Question not found.',404);
-    const a=await store.update(req.speakingUser,req.body.id,old=>{if(old&&old.questionId!==q.id)throw fail('This attempt belongs to another question.',409);return old||{id:req.body.id,questionId:q.id,status:'draft',startedAt:Date.now(),transcript:'',revision:0};});res.json(present(a));
+    const a=await store.update(req.speakingUser,req.body.id,old=>{if(old&&old.questionId!==q.id)throw fail('This attempt belongs to another question.',409);return old||{id:req.body.id,questionId:q.id,...(q.type==='rts'?{questionSnapshot:structuredClone(q)}:{}),status:'draft',startedAt:Date.now(),transcript:'',revision:0};});res.json(present(a));
   }));
   router.get('/attempts/:id',wrap(async(req,res)=>{const a=await get(req.speakingUser,req.params.id);res.json(present(a));queueAzure(req.speakingUser,a);}));
   router.post('/attempts/:id/recording',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'3mb'}),wrap(async(req,res)=>{
@@ -111,7 +113,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
       if(!a.transcript?.trim())throw fail('No spoken words were recognised. Review your recording and enter what you said, or record a new attempt.');
     }a.status='submitted';return a;});
     a=await store.update(req.speakingUser,req.params.id,async a=>{
-      const q=bank.questions.find(q=>q.id===a.questionId);
+      const q=attemptQuestion(a);
       if(!a.result || a.result.scoringMode==='local') {
         const previous=a.result,next=await scoring.grade(q,a.transcript,callModel);
         if(!previous || next.scoringMode!=='local'||next.version!==previous.version) {
@@ -151,6 +153,10 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   app.get('/speaking-image/:id.svg',(req,res)=>{const q=bank.questions.find(q=>q.id===req.params.id&&q.visual&&!q.imageUrl);if(!q)return res.sendStatus(404);res.type('image/svg+xml').set('Cache-Control','public,max-age=3600').send(require('./speaking-visuals').render(q.visual));});
   app.get('/speaking-audio/:id.mp3',wrap(async(req,res)=>{
     const q=bank.questions.find(q=>q.id===req.params.id&&hasPrompt(q));if(!q)throw fail('Recording not found.',404);
+    if(q.type==='rts'){
+      const audio=rtsPrompts.requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
+      res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;
+    }
     const folder=path.join(__dirname,'content','speaking-audio'),manifest=require('./content/speaking-audio-manifest')(),entry=manifest[q.id];
     if(!entry||entry.textSha256!==crypto.createHash('sha256').update(q.text).digest('hex'))throw fail('This prompt recording is unavailable. Please retry later.',503);
     res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(path.join(folder,q.id+'.mp3'));

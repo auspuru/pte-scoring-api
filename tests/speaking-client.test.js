@@ -26,7 +26,7 @@ function harness({includePredictions=false,audioCue=false}={}) {
     const reply=(data,ok=true)=>({ok,json:async()=>data,blob:async()=>new Blob([Buffer.alloc(300)])});
     if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:includePredictions?bank.questions:bank.questions.filter(q=>!q.predictionSource),transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery',deliveryVersions:env.deliveryVersions||{}});
     if(route==='/attempts'&&!body)return reply([...attempts.values()].map(a=>({...a,title:bank.questions.find(q=>q.id===a.questionId).title,type:bank.questions.find(q=>q.id===a.questionId).type})));
-    if(route==='/attempts'){const a={id:body.id,questionId:body.questionId,status:'draft',revision:0,transcript:'',startedAt:now};attempts.set(a.id,a);return reply(present(a));}
+    if(route==='/attempts'){const q=bank.questions.find(q=>q.id===body.questionId),a={id:body.id,questionId:body.questionId,...(q.type==='rts'?{questionSnapshot:structuredClone(q)}:{}),status:'draft',revision:0,transcript:'',startedAt:now};attempts.set(a.id,a);return reply(present(a));}
     const a=attempts.get(parts[1]);assert(a,route);
     if(parts[2]==='recording'&&body){if(env.rejectUpload)return reply({error:'Upload interrupted'},false);a.recording={mime:body.type||'audio/webm',data:Buffer.alloc(300).toString('base64')};}
     if(parts[2]==='transcript'){a.transcript=body.text;a.revision++;}

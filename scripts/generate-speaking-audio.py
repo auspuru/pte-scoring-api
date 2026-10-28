@@ -26,6 +26,10 @@ async def main():
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
     limit = asyncio.Semaphore(3)
     async def generate(q):
+        # Versioned RTS prompts have a dedicated append-only generator. Keep
+        # the old question-ID recordings available to historical attempts.
+        if q.get('promptAudioKey'):
+            return
         if q.get('audioPrompt') is False or (user_imports and q.get('source', {}).get('kind') != 'user-supplied-transcript') or q['type'] not in ('rs', 'rl', 'sgd', 'rts'):
             return
         async with limit:

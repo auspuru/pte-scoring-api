@@ -2,8 +2,8 @@
 const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const references=require('../di-reference'),supplied=new Map(require('./di-user-predictions.json').map(q=>[q.id,q]));
-const speakingAudio=require('./speaking-audio/manifest.json'),writingAudio=require('./writing-audio/manifest.json');
-const VERSION='speaking-mock-2026-10-28.1';
+const speakingAudio=require('./speaking-audio-manifest')(),writingAudio=require('./writing-audio/manifest.json'),rtsPrompts=require('../rts-prompts');
+const VERSION='speaking-mock-2026-10-28.2';
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
   const original=supplied.get(q.id),entry=references.manifest.entries[q.id];
@@ -11,6 +11,7 @@ function suppliedMockImage(q){
     &&entry.mapping.category!=='photo'&&/^\/assets\/di-predictions-\d{8}\/\d+\.png$/.test(q.imageUrl||''));
 }
 function source(q,folder,id=q.id){
+  if(folder==='speaking'&&q.promptAudioKey)id=q.promptAudioKey;
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];
   if(!entry||entry.textSha256!==crypto.createHash('sha256').update(q.text).digest('hex'))throw Error('Missing verified speaking mock audio: '+id);
   return {...q,audioSource:{folder,id},audioSeconds:entry.seconds};
@@ -57,7 +58,7 @@ for(const [number,passages,sentenceStart,imageIds,lectureIds,discussionIds,situa
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(['intro','ra','rts'].includes(q.type)?{text:q.text}:{}),
-    ...(q.audioSource?{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}:{}),
+    ...(q.audioSource?(rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('../di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
     ...(reveal?{title:q.title,reference:q.text,sample:q.sample,facts:q.facts}:{} )};
 }
@@ -65,6 +66,10 @@ const catalogue=()=>papers.map(({questions,...paper})=>({...paper,tasks:Object.k
 function reattemptQuestions(original){
   const images=(papers.find(p=>p.id===original.paperId)||papers[0]).questions.filter(q=>q.type==='di');let imageIndex=0;
   return original.questions.map(q=>{
+    if(q.type==='rts'){
+      const current=bank.questions.find(item=>item.id===q.id&&item.type==='rts');
+      return current?(current.audioPrompt===false?structuredClone(current):source(structuredClone(current),'speaking')):structuredClone(q);
+    }
     if(q.type==='rs')return{...structuredClone(q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
     if(q.type!=='di')return structuredClone(q);
     const replacement=images[imageIndex++%images.length];

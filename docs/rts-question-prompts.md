@@ -1,0 +1,15 @@
+# Respond to a Situation prompt format
+
+All 36 portal RTS questions use a short situation followed by a direct question naming the listener: `What would you say to ...?` The five older mock scenarios were rewritten into this format. Four practice endings now name the library staff, club member, accommodation office staff member or waiting students explicitly. The supplied Tom scenario uses the same final-question wording in the authored portal bank; its supplied source transcript remains unchanged.
+
+Twenty-six prompts already followed the format and retain their text. Every question keeps its ID, sample response and communication purpose. The 30 reading-only practice questions retain their text-only flow. The six questions with audio have new Australian-English narration files. All three mock papers still contain two RTS questions and 27 scored questions overall; preparation remains 10 seconds and the response window remains 40 seconds.
+
+`rts-prompts.js` assigns the authored prompt version and binds each narrated question to an immutable audio key. `content/speaking-audio/rts-manifest.json` records the exact input-text SHA-256, MP3 SHA-256, duration, voice and generator for each key. Practice and mock audio URLs include that key and the audio hash. A different question's key, unknown key or traversal path is rejected.
+
+Existing question-ID audio files and their original manifests remain unchanged. Requests without a prompt key still serve those original recordings. Historical mock attempts retain their complete question snapshots. New RTS practice attempts now save a full question snapshot; older practice attempts without one resolve through `content/rts-prompt-legacy.json`, archived from release `48a84b93c7cac37587ed86b6407d3cce9593408b`. Presentation, content grading and Azure assessment use the same saved question. Recordings and completed marks are preserved.
+
+New mock reattempts refresh known RTS questions from the current bank, while retaining original attempt data. New practice attempts also receive the current prompt. Existing attempts retain the prompt and audio associated with their original response.
+
+Narrations were generated with edge-tts 7.3.1 and `en-AU-NatashaNeural`, decoded with FFmpeg, and checked with ffprobe. The generation tool was installed separately from the portal's existing narration runtime. To author a future release, choose new audio keys and run `scripts/generate-rts-prompt-audio.py` in a configured edge-tts environment. The script refuses to replace an existing key with different text or bytes; the general speaking-audio generator skips versioned RTS questions. Bundled narrations require no synthesis calls during student use or deployment.
+
+Release checks cover all 36 prompts, all six new/old narration pairs, HTTP MP3 and byte-range responses, ownership of audio keys, old practice scoring against the original prompt, new practice scoring against the updated prompt, historical mock preservation and refreshed reattempts. `scripts/validate-speaking-content.js` also enforces final questions and the 10/40-second windows.
