@@ -12499,8 +12499,8 @@ function ensureReadingRuntimeLoaded() {
       ['reading-mock-tools.js?v=20261001-mock-input2', 'reading mock tools'],
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
-      ['reading-review.js?v=20261028-weighted1', 'reading review'],
-      ['reading-practice.js?v=20261028-weighted1', 'reading practice']
+      ['reading-review.js?v=sha256-0f53e432ecc7', 'reading review'],
+      ['reading-practice.js?v=sha256-3ae92bcdaa16', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12554,7 +12554,7 @@ function ensureSpeakingMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=20261028-weighted1', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-ca7f0d03b2a3', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12569,7 +12569,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=20261028-weighted1', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-cce81fddc0c0', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;
