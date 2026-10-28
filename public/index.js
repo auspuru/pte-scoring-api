@@ -12554,7 +12554,7 @@ function ensureSpeakingMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-b22366360ecf', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-6185ab85335a', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -14750,17 +14750,6 @@ function resultsView() {
     <span style="flex:1;">${escapeHtml(a.templateNote || tplDefaultNote)}</span>
   </div>`;
 
-  // Score cells (using modern pte-grid metric cards)
-  const cells = PRACTICE_RUBRIC.map(r => {
-    const score = a.scores?.[r.key] || 0;
-    return `
-      <div class="pte-metric-card">
-        <span class="pte-metric-label">${r.label}</span>
-        <span class="pte-metric-score">${score}/${r.max}</span>
-      </div>
-    `;
-  }).join('');
-
   const pteDashboardHtml = `
     <div class="pte-dashboard" style="margin-bottom: 24px;">
       <div class="pte-score-circle-wrap">
@@ -14769,44 +14758,14 @@ function resultsView() {
         </div>
         <span class="pte-metric-label">Practice score</span>
       </div>
-      <div class="pte-grid">
-        ${cells}
+      <div class="essay-result-meta">
+        <strong>${wc} words</strong>
+        <p>A practice assessment using the portal’s 26-point rubric. Read the explanation beside each mark below.</p>
       </div>
     </div>
   `;
 
-  // Per-category feedback cards
-  const feedbackCards = PRACTICE_RUBRIC.map(r => {
-    const score = a.scores?.[r.key] || 0;
-    const ratio = score / r.max;
-    let cls = 'bad';
-    if (ratio >= 0.75) cls = 'good';
-    else if (ratio >= 0.4) cls = 'mid';
-    const fb = a.feedback?.[r.key] || 'No feedback for this category.';
-    let extra = '';
-    if (r.key === 'spelling' && a.spellingErrors && a.spellingErrors.length > 0) {
-      extra = `<div class="practice-fb-issues">
-        <div class="practice-fb-issues-label">Words to check</div>
-        ${a.spellingErrors.map(w => `<span class="practice-fb-issues-chip">${escapeHtml(w)}</span>`).join('')}
-      </div>`;
-    }
-    if (r.key === 'grammar' && a.grammarIssues && a.grammarIssues.length > 0) {
-      extra = `<div class="practice-fb-issues">
-        <div class="practice-fb-issues-label">Grammar issues spotted</div>
-        ${a.grammarIssues.map(g => `<div style="font-size:12px; color:var(--ink); padding:3px 0;">• ${escapeHtml(g)}</div>`).join('')}
-      </div>`;
-    }
-    return `
-      <div class="practice-fb-card ${cls}">
-        <div class="practice-fb-card-header">
-          <div class="practice-fb-card-title">${r.label}</div>
-          <span class="practice-fb-card-score">${score} / ${r.max}</span>
-        </div>
-        <div class="practice-fb-card-body">${escapeHtml(fb).replace(/\n/g, '<br>')}</div>
-        ${extra}
-      </div>
-    `;
-  }).join('');
+  const scoreBreakdown = window.EssayFeedback?.renderScoreBreakdown(a) || '';
 
   // Strengths / improvements summary
   const strengths = (a.strengths || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
@@ -14831,13 +14790,8 @@ function resultsView() {
     </div>
   ` : '';
 
-  // Verdict line
-  const contentScore = Number(a.scores?.content) || 0;
-  const verdict = contentScore <= 1 ? 'Focus on answering the question with relevant ideas.'
-    : contentScore <= 3 ? 'Develop your answer to the question more fully.'
-    : contentScore < 6 ? 'A useful answer — strengthen the points below.'
-    : total === 26 ? 'A clear, developed essay that meets this practice rubric.'
-    : 'Your answer covers the question. Review the language and structure below.';
+  const legacyOverall = !structuredFeedback && a.overallVerdict
+    ? '<section class="essay-feedback-v3"><h3>Overall assessment</h3><p>'+escapeHtml(a.overallVerdict)+'</p></section>' : '';
   const optionalItems = (a.optionalRefinements || []).map(item => '<li><p>“' + escapeHtml(item.phrase) +
     '” → “' + escapeHtml(item.correction) + '”</p><p>' + escapeHtml(item.explanation || '') + '</p></li>').join('');
   const optionalSection = optionalItems ? '<details class="essay-feedback-details essay-optional"><summary>Optional refinements</summary><ul>' + optionalItems + '</ul></details>' : '';
@@ -14864,27 +14818,19 @@ function resultsView() {
 
   return `
     <div class="practice-results">
-      <div class="practice-verdict-banner" style="background:var(--bg-card); border:1px solid var(--line-soft); border-radius:12px; padding:18px 24px; margin-bottom:20px; box-shadow:var(--shadow);">
-        <div style="font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:4px;">Evaluation Verdict</div>
-        <div style="font-family:var(--serif); font-size:18px; font-weight:700; color:var(--ink);">${escapeHtml(verdict)}</div>
-      </div>
-
       ${pteDashboardHtml}
       ${formBanner}
       ${templateBanner}
       ${taskFocusSection}
+      ${scoreBreakdown}
 
-      ${structuredFeedback ? window.EssayFeedback.render(a,{includeLanguage:false}) : summaryRow}
+      ${structuredFeedback ? window.EssayFeedback.render(a,{includeLanguage:false,includeScores:false}) : legacyOverall + summaryRow}
 
       ${grammarSection}
       ${optionalSection}
       ${window.EssayNextSteps?.render(a) || ''}
 
       ${sampleResponseSection}
-
-      <details class="essay-feedback-details"><summary>Score breakdown and feedback</summary>
-      ${feedbackCards}
-      </details>
 
       ${questionPanel}
 

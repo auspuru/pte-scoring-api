@@ -379,12 +379,13 @@ test('Essay notifications are concise and always self-dismiss', () => {
   assert.match(htmlSource, /index\.min\.js\?v=[^"\s]+/);
 });
 
-test('Essay UI uses the validated grader and keeps the detailed rubric secondary', () => {
+test('Essay UI uses the validated grader and shows the mark explanations without expansion', () => {
   assert.match(uiSource, /\/api\/essay\/grade/);
   assert.match(uiSource, /EssayScoring\.normalizeResult\(data, essay\)/);
   assert.match(uiSource, /EssayScoring\.taskFocusNote/);
   assert.match(uiSource, /<span class="pte-metric-label">Practice score<\/span>/);
-  assert.match(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
+  assert.match(uiSource, /EssayFeedback\?\.renderScoreBreakdown\(a\)/);
+  assert.doesNotMatch(uiSource, /<details class="essay-feedback-details"><summary>Score breakdown and feedback<\/summary>/);
   assert.match(htmlSource, /essay-scoring\.js\?v=sha256-[a-f0-9]{12}/);
 });
 

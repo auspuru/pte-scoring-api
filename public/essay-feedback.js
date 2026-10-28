@@ -9,11 +9,26 @@
   const CODE_ALIASES={comparison_incomplete:'comparison_missing',incomplete_comparison:'comparison_missing',stance_contradiction:'stance_conflict',unsupported_generalisation:'unsupported_inference',unsupported_generalization:'unsupported_inference',design_location_mismatch:'category_mismatch',missing_personal_experience:'missing_requirement'};
   const canonicalCode=code=>CODE_ALIASES[code] || code;
   const SUBJECTIVE = ['content', 'linguistic', 'coherence'];
+  const CRITERIA = [
+    ['content','Content',6], ['form','Form',2],
+    ['coherence','Development, structure and coherence',6],
+    ['linguistic','Language range',6], ['grammar','Grammar',2],
+    ['vocabulary','Vocabulary',2], ['spelling','Spelling',2]
+  ];
+  const ISSUE_TITLES = {
+    missing_requirement:'Answer this part of the question', stance_conflict:'Clarify your position',
+    unsupported_inference:'Explain this claim', category_mismatch:'Keep this point focused on the question',
+    comparison_missing:'Make the comparison clear', development_gap:'Develop this point',
+    language_range:'Make your expression clearer', word_choice:'Choose a more precise expression',
+    organisation_gap:'Improve the connection between ideas', irrelevant_example:'Use a relevant example'
+  };
   const clean = value => typeof value === 'string' ? value.trim() : '';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function hash(text) { let n = 2166136261; for (const c of text) n = Math.imul(n ^ c.charCodeAt(0), 16777619); return (n >>> 0).toString(36); }
   function invalid(message, semanticConflict = false) { const e = Error('Essay feedback could not be verified. Your writing is safe.'); e.code = 'feedback_contract'; e.validationHint = message; if (semanticConflict) e.feedbackSemanticConflict = true; throw e; }
   const GUIDANCE = `FEEDBACK POLICY ${VERSION}
+TEACHING STYLE: Give a clear, fair assessment in everyday English. In overallVerdict, identify a specific strength and the most useful next improvement, without merely repeating a score or generic praise. Strengths must refer to ideas actually present in this essay. Each trait rationale explains its own mark, crediting what works before identifying a real limitation and a practical action where needed. Quote short original wording when it makes the advice clear. Suggested changes preserve the student's position and facts. Distinguish unclear wording from a definite contradiction: if a phrase has more than one plausible reading, say what it could imply and what to clarify, rather than asserting that the writer intended the wrong meaning. Do not turn an awkward but understandable expression into a missing idea, unsupported conclusion or meaning reversal. Keep grammar corrections visible even when minor errors retain full Grammar marks under the practice rule. A score of 2/2 for Grammar does not mean error-free writing. Do not invent mistakes, extra prompt requirements, or a mandatory correction for an otherwise sufficient response.
+Credit ordinary cause-and-effect connections, including reasons conveyed by a behaviour, timing, comparison or consequence. Do not demand another sentence spelling out an obvious intermediate step, or describe brief support as wholly absent. Name a separate undeveloped claim precisely if one remains. Judge Content from the actual ideas, coverage and development: awkward but understandable introductory wording belongs to language feedback, and does not by itself establish a Content gap. A minor limitation does not justify describing an otherwise clear, supported argument as materially incomplete. Keep trait rationales to one or two short student-facing sentences, at most 40 words each; omit internal audit terminology and word-number citations from prose.
 Assess the complete CURRENT essay before criticising a passage. Recognise explanations already present elsewhere. A conditional explanation such as managers sharing productivity gains through shorter shifts already supplies a mechanism for reduced hours; contrast with gains used only to increase output explains why hours may remain unchanged. Do not claim that no causal explanation or conditions exist when such a chain is present. Do not demand development of every qualifier in a concluding list (such as demand, investment and management) after the central reason is sufficiently explained. If only a distinct employment claim lacks support, name that specific claim and credit the hour-reduction explanation rather than criticising the whole paragraph or calling all reasons absent. Do not confuse a concession, a negative personal experience or a qualified position with a stance contradiction. Preserve the writer's position.
 For taskRelevance, do not confuse partial prompt coverage with minimal relevance: a relevant response can earn low Content for a category mismatch, thin development or missing comparison. minimal requires exactly Content 1 and an isolated topical assertion amid otherwise unrelated material. Preserve accurate design details when explaining a location-versus-design mismatch. Interpret canonical prompt requirements below faithfully. OR alternatives permit a choice: reasons OR experience never makes a personal story compulsory. Explicit own experience asks for a genuine experience or observation attributable to the writer; never invent it. Supported one-sided agreement does not require an opposing paragraph. Advantages AND disadvantages requires both. A relative comparison such as as great as requires weighing significance, not merely listing effects.
 Prioritise missing requirements, contradictions, irrelevant examples and material reasoning gaps. Distinguish design features from location when that is the task. A mall requiring workers does not by itself establish a NET increase in employment; automation does not automatically reduce everyone's hours or jobs without explaining the conditions. Accept plausible clearly hypothetical illustrations without demanding citations, statistics or named studies. Correct exaggerated certainty only when it materially weakens the argument. Do not require extra examples, counterarguments, synonyms, connectors or sentence techniques simply as stylistic preferences.
@@ -212,20 +227,31 @@ For revisionDecisions, assess current text independently first; previous issues 
     for (const i of spans) { const e=i.evidence; if(e.start<end) continue; out+=esc(essay.slice(end,e.start))+'<mark title="'+esc(i.explanation)+'">'+esc(essay.slice(e.start,e.end))+'</mark>';end=e.end; }
     return out+esc(essay.slice(end));
   }
-  function render(a, {includeLanguage = true, includeOptional = includeLanguage} = {}) {
+  function renderScoreBreakdown(a) {
+    if (!a?.scores) return '';
+    const rows=CRITERIA.filter(([key])=>Number.isFinite(a.scores[key]));
+    if (!rows.length) return '';
+    const grammarNote=a.scores.grammar===2
+      ? '<p class="muted">Full Grammar marks follow this portal’s meaning-based practice rule. Minor errors can still need correction; 2/2 does not mean error-free writing.</p>' : '';
+    return '<section class="essay-feedback-v3 essay-score-breakdown" aria-label="Essay score breakdown"><h3>Score breakdown</h3><p class="muted">Practice assessment using the portal’s 26-point rubric; not an official Pearson score.</p>'+
+      '<div class="essay-score-table-wrap"><table class="essay-score-table"><caption class="sr-only">Marks and feedback for each essay criterion</caption><thead><tr><th scope="col">Criterion</th><th scope="col">Mark</th><th scope="col">Why this mark</th></tr></thead><tbody>'+
+      rows.map(([key,label,max])=>'<tr><th scope="row">'+esc(label)+'</th><td class="essay-trait-mark">'+esc(a.scores[key])+'/'+max+'</td><td>'+esc(a.feedback?.[key] || a.rationale?.[key] || 'No explanation was saved for this criterion.')+'</td></tr>').join('')+
+      '</tbody></table></div>'+grammarNote+'</section>';
+  }
+  function render(a, {includeLanguage = true, includeOptional = includeLanguage, includeScores = true} = {}) {
     if (a.feedbackVersion !== VERSION) return '';
     const issues=(a.feedbackIssues||[]).filter(i=>i.priority!=='optional' && !['spelling','grammar'].includes(i.trait)).sort((a,b)=>({major:0,minor:1}[a.priority]??2)-({major:0,minor:1}[b.priority]??2));
-    const item=i=>'<article class="essay-feedback-issue"><h4>'+esc(i.code.replace(/_/g,' '))+'</h4>'+(i.evidence.essayQuote?'<p><strong>Your wording:</strong> <q>'+esc(i.evidence.essayQuote)+'</q></p>':'<p><strong>Question requirement:</strong> '+esc(i.evidence.promptQuote)+'</p>')+'<p><strong>Why it matters:</strong> '+esc(i.explanation)+'</p><p><strong>Suggested change:</strong> '+esc(i.suggestedChange)+'</p>'+(i.affectsScore?'<p class="muted">'+esc(i.trait)+': '+esc(i.scoreRationale)+' Marks are judged holistically; issues are not added as separate deductions.</p>':'<p class="muted">Correction without a score deduction.</p>')+'</article>';
+    const item=i=>'<article class="essay-feedback-issue"><h4>'+esc(ISSUE_TITLES[i.code] || 'Review this point')+'</h4>'+(i.evidence.essayQuote?'<p><strong>Your wording:</strong> <q>'+esc(i.evidence.essayQuote)+'</q></p>':'<p><strong>Question requirement:</strong> '+esc(i.evidence.promptQuote)+'</p>')+'<p><strong>Why it matters:</strong> '+esc(i.explanation)+'</p><p><strong>What to change:</strong> '+esc(i.suggestedChange)+'</p>'+(i.affectsScore?'<p class="muted"><strong>Effect on the mark:</strong> '+esc(CRITERIA.find(([key])=>key===i.trait)?.[1] || i.trait)+': '+esc(i.scoreRationale)+' Marks are judged holistically; issues are not added as separate deductions.</p>':'<p class="muted">Correction without a score deduction.</p>')+'</article>';
     const fixed=(a.revisionDecisions||[]).filter(d=>d.status==='resolved');
-    const language=[...(a.errors||[]),...(a.languageCorrections||[])];
-    return '<section class="essay-feedback-v3" aria-label="Essay feedback"><h3>Overall assessment</h3><p>'+esc(a.overallVerdict||'Review the assessment below.')+'</p>'+
+    const language=[...(a.errors||[]),...(a.languageCorrections||[])].filter((e,index,all)=>all.findIndex(other=>other.type===e.type && other.phrase===e.phrase && other.correction===e.correction)===index);
+    return (includeScores ? renderScoreBreakdown(a) : '')+'<section class="essay-feedback-v3" aria-label="Essay feedback"><h3>Overall assessment</h3><p>'+esc(a.overallVerdict||'Review the assessment below.')+'</p>'+
       (fixed.length?'<h3>What you fixed</h3><ul>'+fixed.map(d=>'<li>'+esc(d.reason)+' <q>'+esc(d.evidence)+'</q></li>').join('')+'</ul>':'')+
       ((a.strengths||[]).length?'<h3>What you did well</h3><ul>'+a.strengths.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
       '<h3>Main corrections</h3>'+(issues.length?issues.slice(0,3).map(item).join(''):'<p>No substantial argument correction was identified. Your response is sufficient on the assessed requirements; review any language corrections below.</p>')+
       (issues.length>3?'<details><summary>More corrections ('+(issues.length-3)+')</summary>'+issues.slice(3).map(item).join('')+'</details>':'')+
-      (includeLanguage && language.length?'<h3>Language corrections</h3><ul>'+language.map(e=>'<li><q>'+esc(e.phrase)+'</q> → '+esc(e.correction)+'<p>'+esc(e.explanation)+'</p></li>').join('')+'</ul>':'')+
+      (includeLanguage && language.length?'<h3>Specific language corrections</h3><ul>'+language.map(e=>'<li><q>'+esc(e.phrase)+'</q> → '+esc(e.correction)+'<p>'+esc(e.explanation)+'</p></li>').join('')+'</ul>':'')+
       (includeOptional && (a.optionalRefinements||[]).length ? '<details><summary>Optional polish</summary><ul>'+a.optionalRefinements.map(i=>'<li><q>'+esc(i.phrase)+'</q> → '+esc(i.correction)+'<p>'+esc(i.explanation)+'</p></li>').join('')+'</ul></details>' : '')+
       '<details><summary>See feedback passages in your essay</summary><div class="essay-feedback-source">'+highlight(a.essayText||a.response,issues)+'</div></details></section>';
   }
-  return {VERSION,CODES,GUIDANCE,requirements,context,enrichPrompt,normalize,apply,reconcileRevisions,scope,render,highlight};
+  return {VERSION,CODES,CRITERIA,GUIDANCE,requirements,context,enrichPrompt,normalize,apply,reconcileRevisions,scope,renderScoreBreakdown,render,highlight};
 });
