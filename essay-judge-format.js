@@ -42,8 +42,9 @@ const primary = object({ scores: scores(Object.keys(maxima)), ...common,
     phrase_span: { $ref: '#/$defs/span' }, correction: text, explanation: text
   }) },
   templateDetector: { type: 'string', enum: ['good', 'ok', 'flag'] },
-  templateNote: text, templateEvidence: texts, strengths: texts,
-  improvements: texts, overallVerdict: text
+  templateNote: text, templateEvidence: texts,
+  strengths: {...texts,description:'Up to three specific strengths grounded in ideas or wording actually present in the essay; avoid generic praise.'},
+  improvements: texts, overallVerdict: {...text,description:'A brief student-facing assessment: one concrete strength and the most useful next improvement if justified. Preserve the viewpoint; describe ambiguous meaning as uncertain.'}
 });
 const review = object({ scores: scores(traits), ...common, rationale: reasons(traits) });
 const resolver = object({ ...review.properties,
@@ -125,6 +126,11 @@ function request(prompt, model, options = {}) {
     ...(tool ? { tools: [tool], tool_choice: { type: 'tool', name: tool.name } } : {}) };
 }
 
+function essayModel(env = process.env) {
+  // Essay assessment has its own model, independent of the general chat proxy.
+  return env.ESSAY_CLAUDE_MODEL || 'claude-sonnet-4-6';
+}
+
 function modelFor(model, options = {}, reassessmentModel = 'claude-sonnet-4-6') {
   return options.supportReview || (options.feedbackV3 && options.semanticReassessment) ? reassessmentModel : model;
 }
@@ -144,4 +150,4 @@ function response(value, { stage } = {}) {
   return JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] || 'null');
 }
 
-module.exports = { toolFor, request, response, modelFor };
+module.exports = { toolFor, request, response, modelFor, essayModel };

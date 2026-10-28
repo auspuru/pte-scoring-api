@@ -598,8 +598,9 @@
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.score90(r.total,r.maximum)) : '')+
       (dictation&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+
       (dictation&&r.wordFeedback?'<h3>Sentence check</h3><p class="muted">Green = correct · underlined = missing, misspelled or out of order</p><div class="word-feedback">'+(r.wordFeedback||[]).map(w=>'<span class="'+(w.correct?'word-correct':'word-missed')+'">'+esc(w.word)+'</span>').join(' ')+'</div>':'')+
-      (structured?window.EssayFeedback.render({...r,essayText:attempt.answers[i]||''})+'<details><summary>Score breakdown and feedback</summary>':'')+
-      '<table class="trait-table"><thead><tr><th>Criterion</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+'</td><td>'+esc(r.feedback[k]||(r.gated?'No further scoring feedback when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>'+(structured?'</details>':'')+
+      (q.type==='essay'
+        ? (structured?window.EssayFeedback.render({...r,essayText:attempt.answers[i]||''}):(window.EssayFeedback?.renderScoreBreakdown(r)||''))
+        : '<table class="trait-table"><thead><tr><th>Criterion</th><th>Feedback</th></tr></thead><tbody>'+Object.keys(r.maxima).map(k=>'<tr><td>'+labels[k]+'</td><td>'+esc(r.feedback[k]||(r.gated?'No further scoring feedback when Content or Form is zero.':''))+'</td></tr>').join('')+'</tbody></table>')+
       (!structured&&(r.strengths||[]).length?'<h3>What worked well</h3><ul>'+(r.strengths||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+
       (q.type==='essay'&&window.EssayNextSteps?window.EssayNextSteps.render({...r,essayText:attempt.answers[i]||'',questionText:q.text}):'')+
       (!structured&&(r.improvements||[]).length?'<h3>What to improve</h3><ul>'+(r.improvements||[]).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'')+

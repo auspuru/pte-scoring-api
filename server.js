@@ -243,9 +243,10 @@ if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
 }
 
 const essayJudgeFormat = require('./essay-judge-format');
+const ESSAY_CLAUDE_MODEL = essayJudgeFormat.essayModel();
 const essayGrader = createEssayGrader(async (prompt, options) => {
   if (!anthropic) throw new Error('Essay grader unavailable');
-  const response = await anthropic.messages.create(essayJudgeFormat.request(prompt, CLAUDE_MODEL, options),
+  const response = await anthropic.messages.create(essayJudgeFormat.request(prompt, ESSAY_CLAUDE_MODEL, options),
     { timeout: options?.timeoutMs || 85000, maxRetries: 0, ...(options?.signal ? {signal:options.signal} : {}) });
   return essayJudgeFormat.response(response, options);
 }, { onAttemptError: details => console.warn('[essay-grade] attempt failed:', JSON.stringify(details)),
