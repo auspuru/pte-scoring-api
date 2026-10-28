@@ -32,6 +32,8 @@ the existing server access gate.
 
 ## Test experience
 
+Next advances directly to the following item without a confirmation pop-up. It stops and saves any active recording before advancing; an unanswered item is explicitly marked skipped. While saving or moving on, Next shows an inline progress label and ignores repeated clicks. A save failure keeps the student on the current item with the recording available to retry.
+
 The published Pearson examples informed the plain white question area, instruction
 line, separate audio and lavender Recorded Answer panels, progress bars, volume
 control and fixed Next footer. The shared protected-screen controller hides portal

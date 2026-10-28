@@ -12547,7 +12547,7 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-d78ab8476e5a','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-90a8ed81aaa5','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 

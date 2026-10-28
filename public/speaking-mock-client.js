@@ -165,14 +165,14 @@
     }
     async function next(){
       if(busy||!a||a.status!=='active')return;busy=true;const ticket=serial,id=a.id,index=a.index;
+      const button=doc.getElementById('sm-next');if(button){button.disabled=true;button.textContent='Moving on…';}
       try{
         if(recorder?.state==='recording')recorder.stop();if(recordingPromise&&capture?.id===id&&capture.index===index)await recordingPromise;
         const blob=await pending('get',key(id,index));if(blob)await upload(blob,id,index);
         const completed=a.timing.phase==='completed';
-        if(!completed&&!env.confirm('No response is saved for this question. Continue without an answer?'))return;
         stopTimer();stopPrompt();startCue.cancel();rsCue=null;a=await api('/attempts/'+id+'/next',{index,skip:!completed});if(!valid(ticket))return;
         capture=null;recordingPromise=null;if(a.status==='submitted'){release();results();}else await begin();
-      }catch(error){message(error.message);}finally{busy=false;}
+      }catch(error){message(error.message);}finally{busy=false;if(button){button.disabled=false;button.innerHTML='Next <span aria-hidden="true">➜</span>';}}
     }
     async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'){release();results();}else{renderExam();protectedMode();tick();}}
     function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5'+(trait.manualOverride?' (manual override)':'');}

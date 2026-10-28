@@ -51,6 +51,22 @@ test('Cancelling protected-screen preflight creates no attempt and does not open
   const h=await harness(t,{prepare:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
   assert.equal(h.permissions(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);assert.equal(await h.active(),undefined);
 });
+test('Next opens the following question without a confirmation when the current question is unanswered',async t=>{
+ const h=await harness(t);h.env.confirm=()=>{throw Error('Next must not open a confirmation.');};
+ await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});await h.click({sm:'next'});
+ const saved=await h.active();assert.equal(saved.index,1);assert.equal(saved.responses[0].skipped,true);assert.match(h.host.innerHTML,/Item 2 of 28/);
+ assert.equal(h.requests.filter(r=>r.method==='POST'&&r.url.endsWith('/next')).length,1);
+});
+test('Next saves an in-flight recording before advancing and repeated clicks cannot skip another question',async t=>{
+ const h=await harness(t);h.env.confirm=()=>{throw Error('Next must not open a confirmation.');};
+ await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});await h.tick(28100);
+ const request=h.env.fetch;let release;
+ h.env.fetch=(url,options)=>url.endsWith('/recordings/0')&&options?.method==='POST'?new Promise(resolve=>{release=()=>resolve(request(url,options));}):request(url,options);
+ const first=h.click({sm:'next'});await h.flush();assert.equal(typeof release,'function');assert.equal((await h.active()).index,0);assert.equal(h.nodes.get('sm-next').disabled,true);
+ await h.click({sm:'next'});release();await first;
+ const saved=await h.active();assert.equal(saved.index,1);assert(saved.responses[0].recording);assert(!saved.responses[0].skipped);
+ assert.equal(h.requests.filter(r=>r.method==='POST'&&r.url.endsWith('/recordings/0')).length,1);assert.equal(h.requests.filter(r=>r.method==='POST'&&r.url.endsWith('/next')).length,1);
+});
 test('mock Repeat Sentence waits for audio and one beep, keeping 15 seconds after a late prompt finish',async t=>{
  const h=await harness(t,{audioCue:true});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  const first=await h.active(),index=first.questions.findIndex(q=>q.type==='rs');
