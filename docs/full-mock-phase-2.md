@@ -83,7 +83,7 @@ mono MP3. A human listening review is still needed before release.
 # Validate the already frozen paper and probe/decode every recording:
 npm run validate:full-mock-1
 
-# Re-run freezing against identical authoring bytes (a no-op):
+# Authoring at the pinned Phase 2 source revision (identical inputs are a no-op):
 npm run freeze:full-mock-1
 
 # Focused regressions:
@@ -130,6 +130,13 @@ Phase 4 must enforce the saved assessment version and completeness contract.
 The scoring source lock was deliberately extended for the new ASQ adapter and
 the existing transcription entry point. The snapshot retains its own freeze-time
 source fingerprints; no saved sectional answer or legacy task rubric was altered.
+
+Phase 3's player and durable-session contract is documented in
+`docs/full-mock-phase-3.md`. Its preview has assessment disabled, so it does not
+select model providers or make grading calls. The current server integration
+changes the current source lock; the historical v1 paper remains immutable. Use
+the paper validator on this branch rather than attempting to refreeze v1 against
+changed source fingerprints.
 
 ## Validation
 

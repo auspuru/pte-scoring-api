@@ -6402,6 +6402,12 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   getAccount:getPracticeAccount,callModel:speakingContentModel,backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
+const fullMock = require('./full-mock/api').installFullMock(app, {
+  pool: pgPool, directory: path.join(DATA_DIR, 'full-mock'),
+  verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
+  getAccount: getPracticeAccount,
+  canPreview: ({ account, token }) => account.role === 'admin' || !!verifyImpersonationToken(token)
+});
 const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:process.env.SPEAKING_MOCK_ALERTS_ENABLED==='true'});
 const academyAzure=require('./academy-azure-service').installAcademyAzure(app,{pool:pgPool,directory:path.join(DATA_DIR,'academy-azure'),secret:process.env.PTE_DI_SERVICE_KEY||'',transcribe:require('./speaking-lab').transcribeRecording});
 app.get('/api/admin/speaking-mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(speakingAlerts.health()));
@@ -6520,8 +6526,9 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   if (!storageInitialized) return;
   try {
     await ensureDataDir();
-    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise()]);
+    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise(), fullMock.store.initialise()]);
     await speakingMock.start();
+    fullMock.start();
     await speakingAlerts.start();
     await academyAzure.start();
     serviceReadiness.markInitialized();
@@ -6602,6 +6609,7 @@ installGracefulShutdown(httpServer, {
     await speakingAlerts.stop();
     await academyAzure.stop();
     await speakingMock.stop();
+    fullMock.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([
       browserInstance ? browserInstance.close() : Promise.resolve(),

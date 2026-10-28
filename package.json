@@ -1,7 +1,7 @@
 {
   "name": "ptewriting",
   "version": "20.4.7",
-  "description": "PTE Writing Practice Portal \u2014 connected summaries, meaning-based scoring and student feedback",
+  "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
     "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && npm run install:edge-tts && npm run validate:edge-tts && node scripts/generate-user-speaking-audio.js && node scripts/validate-speaking-content.js && npm run install:browser && node scripts/validate-puppeteer-browser.js",
@@ -39,5 +39,9 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.0.0",
+    "linkedom": "0.18.12"
   }
 }
