@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "89c096860cc262f06d435c1c102691a655ff45be",
-  "checkedAt": "2026-10-28",
-  "scope": "Scoring source audit only; runtime provider/model configuration must also be saved with future attempts.",
+  "baseCommit": "1d6bc40cb07a54ce3058528c09118736b34eee6a",
+  "checkedAt": "2026-10-29",
+  "scope": "Source fingerprints include the Phase 2 ASQ adapter; baseCommit identifies the prior development revision. Runtime provider/model configuration must be saved with future attempts.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -35,12 +35,16 @@
         "sha256": "5f8b6ba1b67e4388c67f47e5f00f41148e13193810cb31052fed030eb9f4f7cd",
         "version": null
       },
+      "full-mock/asq-scoring.js": {
+        "sha256": "03af8e89e9af544436e574de97596672398a2bf10540080db0e89317ce2fcf8c",
+        "version": "full-mock-asq-2026-10-28.1"
+      },
       "full-mock/blueprint.js": {
         "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
         "version": null
       },
       "full-mock/rubrics.js": {
-        "sha256": "7284182723e9e147aaf3a4efc19f17fbaebdbe1fc8b18e9667e223f733180a74",
+        "sha256": "e4a62b3809278e7aa43e432dede2c4da7f8c4f1a157913cb712014d553c59565",
         "version": null
       },
       "gpt-speaking-delivery.js": {
@@ -82,6 +86,10 @@
       },
       "speaking-delivery.js": {
         "sha256": "3eff2225f3daa16d85cf45e2fc88acff043e8212397fcb76b7a206092a55be0b",
+        "version": null
+      },
+      "speaking-lab.js": {
+        "sha256": "76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1",
         "version": null
       },
       "speaking-scoring.js": {

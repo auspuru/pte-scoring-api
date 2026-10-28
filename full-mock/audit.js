@@ -197,15 +197,16 @@ function auditInventory({ root, candidates, reviews = {}, lock }) {
       difficultyBands: [...new Set(eligible.map(row => row.difficulty))].sort() };
   });
   return { schemaVersion: 1, blueprintVersion: VERSION, scope: 'existing-sectional-paper-candidates',
-    sourceCommit: lock?.sourceCommit || null, sections: SECTIONS, scoredQuestions: 65, taskTypes: 22,
+    sourceCommit: lock?.sourceCommit || null, auditBaseCommit: lock?.baseCommit || lock?.sourceCommit || null,
+    sections: SECTIONS, scoredQuestions: 65, taskTypes: 22,
     scoringDependenciesPinned: !scoringDrift.length, scoringDrift, tasks,
     contentReady: tasks.every(task => !task.shortfall),
     difficultyCoverage: Object.fromEntries(SECTIONS.map(section => [section.id,
       [...new Set(results.filter(row => row.eligible && taskByType.get(row.type)?.section === section.id).map(row => row.difficulty))].sort()])),
     fullMockReady: false, // Player, scoring, reporting and calibration are later phases.
     unresolved: [
-      'ASQ content, accepted-answer scoring and recording support belong to Phase 2.',
-      'Freeze a reviewed, unique 65-question selection in Phase 2; this inventory is not a paper.',
+      RUBRICS.asq.implementation === 'missing' ? 'ASQ content, accepted-answer scoring and recording support belong to Phase 2.' : 'ASQ is available in Full Mock authoring; the legacy sectional inventory does not include it.',
+      'This legacy inventory is not a paper. Validate the separate frozen Full Mock 1 selection with validate:full-mock-1.',
       'Verify the five weighting profiles before Phase 4. Published <1% values must not become invented exact percentages.',
       'The partners-report URL currently opens an Institution Score Guide; verify the weighting source before locking it.',
       'Do not use sectional /90 estimates or the holistic speaking-mock estimate as full-mock raw marks.',

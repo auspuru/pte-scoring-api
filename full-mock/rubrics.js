@@ -10,7 +10,7 @@ const RUBRICS = {
   di: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'],
     files: [...speechFiles, 'describe-image-feedback.js', 'describe-image-feedback/scoring-policy.js', 'di-reference.js'] },
   rl: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
-  asq: { rule: 'accepted-short-answer', traits: { content: 1 }, gates: [], files: [], implementation: 'missing' },
+  asq: { rule: 'accepted-short-answer', traits: { content: 1 }, gates: [], files: ['full-mock/asq-scoring.js', 'speaking-lab.js'], implementation: 'full-mock-asq' },
   sgd: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
   rts: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'situation-content-policy.js'] },
   swt: { rule: 'rubric', traits: { content: 4, form: 1, grammar: 2, vocabulary: 2 }, gates: ['content', 'form'],
@@ -35,6 +35,7 @@ const VERSION_EXPORTS = {
   'speaking-scoring.js': 'VERSION', 'delivery-rubric.js': 'RUBRIC_VERSION',
   'gpt-speaking-delivery.js': 'VERSION', 'spoken-summary-policy.js': 'VERSION',
   'situation-content-policy.js': 'VERSION', 'writing-lab-scoring.js': 'VERSION',
-  'swt-scoring-policy.js': 'POLICY_VERSION', 'public/essay-scoring.js': 'VERSION'
+  'swt-scoring-policy.js': 'POLICY_VERSION', 'public/essay-scoring.js': 'VERSION',
+  'full-mock/asq-scoring.js': 'VERSION'
 };
 module.exports = { RUBRICS, VERSION_EXPORTS };

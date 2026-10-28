@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "papers": [
+    {
+      "id": "full-mock-1",
+      "version": 1,
+      "sha256": "f1dfe1045d4c657ed3a03c428ca3953f91dc706ff53281598b697a7ce84de173",
+      "title": "IPT Brisbane — Full Mock 1",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-1.v1.json"
+    }
+  ]
+}

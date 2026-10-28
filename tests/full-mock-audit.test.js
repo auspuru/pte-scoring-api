@@ -40,9 +40,9 @@ test('The immutable baseline has 65 scored items, all 22 tasks and the eight int
   assert.equal(TASKS.find(task => task.type === 'ra').timing.responseSeconds, null);
 });
 
-test('Every task has an audited rubric and sources are pinned; ASQ is explicitly missing', () => {
+test('Every task has an audited rubric and sources are pinned, including the new ASQ adapter', () => {
   assert.deepEqual(Object.keys(RUBRICS), blueprint.TASKS.map(task => task.type));
-  assert.equal(RUBRICS.asq.implementation, 'missing');
+  assert.equal(RUBRICS.asq.implementation, 'full-mock-asq');
   const writing = require('../writing-lab-scoring'), essay = require('../public/essay-scoring');
   for (const type of ['swt', 'sst']) assert.deepEqual(RUBRICS[type].traits, writing.MAXIMA[type]);
   assert.deepEqual(RUBRICS.essay.traits, essay.MAXIMA);
@@ -187,7 +187,7 @@ test('Current inventory exposes gaps without inventing reviews, difficulty data 
   assert.equal(JSON.stringify(candidates), before);
   assert.equal(report.scoringDependenciesPinned, true);
   assert.equal(report.tasks.find(task => task.type === 'asq').available, 0);
-  assert.equal(report.tasks.find(task => task.type === 'asq').scorer, 'missing');
+  assert.equal(report.tasks.find(task => task.type === 'asq').scorer, 'full-mock-asq');
   assert.equal(report.contentReady, false);
   assert.equal(report.fullMockReady, false);
   assert.equal(report.tasks.reduce((count, task) => count + task.reviewedEligible, 0), 0);

@@ -1,0 +1,542 @@
+{
+  "fm1-rs-01": {
+    "path": "content/full-mock/assets/d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1.mp3",
+    "textSha256": "08a66cec3a00be3d41bf0d4724f6295733f3a2c928fb7e652d38a4c0e23fe815",
+    "audioSha256": "d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1",
+    "bytes": 20973,
+    "seconds": 3.456,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-02": {
+    "path": "content/full-mock/assets/9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86.mp3",
+    "textSha256": "d6bdf58d50693d0f4aff3cc083368cc914dd34b7196389920873f0e67ffd6650",
+    "audioSha256": "9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86",
+    "bytes": 26445,
+    "seconds": 4.368,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-03": {
+    "path": "content/full-mock/assets/496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd.mp3",
+    "textSha256": "c3689535f7d86b57b148c8da645dca7d2a33218e47cae163c423bad8b0f02384",
+    "audioSha256": "496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd",
+    "bytes": 28029,
+    "seconds": 4.632,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-04": {
+    "path": "content/full-mock/assets/dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c.mp3",
+    "textSha256": "d720634fb66e62a460eb279333f2f3fbeb190054809ee090677fbe4115fa2e61",
+    "audioSha256": "dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c",
+    "bytes": 31341,
+    "seconds": 5.184,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-05": {
+    "path": "content/full-mock/assets/e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9.mp3",
+    "textSha256": "d1f43f7fdb3973bed8967bae15d3eaa29e091df3d7452f65438a62f5ff075693",
+    "audioSha256": "e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9",
+    "bytes": 26013,
+    "seconds": 4.296,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-06": {
+    "path": "content/full-mock/assets/c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796.mp3",
+    "textSha256": "4dbe3774787665a0d452c92e945ef20b2e501bf3b2888c381206a1893376927b",
+    "audioSha256": "c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796",
+    "bytes": 27453,
+    "seconds": 4.536,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-07": {
+    "path": "content/full-mock/assets/bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949.mp3",
+    "textSha256": "3dd6491edd4d6da131976b145108ccea93dbebfe6c1cf64706327f234f2b395f",
+    "audioSha256": "bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949",
+    "bytes": 27309,
+    "seconds": 4.512,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-08": {
+    "path": "content/full-mock/assets/6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985.mp3",
+    "textSha256": "03bfb1dfd4350e4c589844568884d8b19a112ee00758b86fec63b9e63f07936b",
+    "audioSha256": "6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985",
+    "bytes": 35949,
+    "seconds": 5.952,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-09": {
+    "path": "content/full-mock/assets/c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900.mp3",
+    "textSha256": "acd6c6e18e21f6354d9aed43a1f000b67d15a73480235ff68921d03e99690ff7",
+    "audioSha256": "c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900",
+    "bytes": 25149,
+    "seconds": 4.152,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-rs-10": {
+    "path": "content/full-mock/assets/08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb.mp3",
+    "textSha256": "f88873f0b77ee5959d43715b2d35bf92b7cd8c0d7aca8db8d0a2780a115ea125",
+    "audioSha256": "08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb",
+    "bytes": 30333,
+    "seconds": 5.016,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-asq-01": {
+    "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+    "textSha256": "c04aa4bb76593db1d4a367665e22158b8a528c2bde05bf71336379f5c6e46d45",
+    "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+    "bytes": 21837,
+    "seconds": 3.6,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-5%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-asq-02": {
+    "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+    "textSha256": "c9e1681c36339de5e9aa9a7915d13bc8439e6dfbdaf6fb732dae7e5eaabc7469",
+    "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+    "bytes": 20397,
+    "seconds": 3.36,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-5%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-asq-03": {
+    "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+    "textSha256": "eb6d0f4c7f73c5b5cbb685852467d1ba0311262312d1abf2fc3850995b937e5d",
+    "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+    "bytes": 24141,
+    "seconds": 3.984,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-5%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-asq-04": {
+    "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+    "textSha256": "cad9fb9778ba688e0d41a938d1c8c6591303c25ed7398959fafd1671a4a2ae6f",
+    "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+    "bytes": 18525,
+    "seconds": 3.048,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-15%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-asq-05": {
+    "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+    "textSha256": "2e4b16774d69f27767f1a5162eb805beda55b968e34ac6768a277eeeff581c6f",
+    "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+    "bytes": 19389,
+    "seconds": 3.192,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-5%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-sst-01": {
+    "path": "content/full-mock/assets/4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc.mp3",
+    "textSha256": "0dcfd402a7ab9a0b9cf1e121225c4ab7c7d2fd18914dd313fe6ebbe14327fe0d",
+    "audioSha256": "4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc",
+    "bytes": 460173,
+    "seconds": 76.656,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lmcma-01": {
+    "path": "content/full-mock/assets/9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1.mp3",
+    "textSha256": "c0c3368d56d44a0f1e7fbee2d18830b3936f1809fe61f89261a11c5b1ad936a7",
+    "audioSha256": "9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1",
+    "bytes": 497613,
+    "seconds": 82.896,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-11%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lmcma-02": {
+    "path": "content/full-mock/assets/886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215.mp3",
+    "textSha256": "9f78e9e63252f8325e5e1e6e9133a24dd23c2ee484011f3ad0ee1025f3b66a83",
+    "audioSha256": "886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215",
+    "bytes": 484365,
+    "seconds": 80.688,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lfi-01": {
+    "path": "content/full-mock/assets/5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2.mp3",
+    "textSha256": "14acba13b96651827e7619466f821fee13fad21d5e41887ebe0a83dac0809e8e",
+    "audioSha256": "5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2",
+    "bytes": 190749,
+    "seconds": 31.752,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lfi-02": {
+    "path": "content/full-mock/assets/2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7.mp3",
+    "textSha256": "9237714f45b23f3ed1067131531638ddb4950a19e162ae185a5e3b7cda4edb62",
+    "audioSha256": "2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7",
+    "bytes": 202989,
+    "seconds": 33.792,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-hcs-01": {
+    "path": "content/full-mock/assets/b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd.mp3",
+    "textSha256": "a140f217448f354f92c131b8058bb2f761f47cc9bfd240e8a3c40711d7e053bb",
+    "audioSha256": "b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd",
+    "bytes": 234093,
+    "seconds": 38.976,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-hcs-02": {
+    "path": "content/full-mock/assets/b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e.mp3",
+    "textSha256": "d6493316ac5c8925b93ddb954cc058934808ee65c88da01c0b44c07efcfc462f",
+    "audioSha256": "b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e",
+    "bytes": 269949,
+    "seconds": 44.952,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lmcsa-01": {
+    "path": "content/full-mock/assets/1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285.mp3",
+    "textSha256": "ce2afde7af8ac0c4ee096935f467d951046fed4e23cb510c7f25912d19cd1853",
+    "audioSha256": "1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285",
+    "bytes": 200253,
+    "seconds": 33.336,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-lmcsa-02": {
+    "path": "content/full-mock/assets/39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed.mp3",
+    "textSha256": "521a792e68ceac5edcfcb4794c9c36dbbe7054c3a59a648a2e453fe8a3432cea",
+    "audioSha256": "39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed",
+    "bytes": 192765,
+    "seconds": 32.088,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-smw-01": {
+    "path": "content/full-mock/assets/1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696.mp3",
+    "textSha256": "e7bcf55c0de7380f7d77a8703e23d31177bee55ac752fa52a2685fa8d712d154",
+    "audioSha256": "1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696",
+    "bytes": 161517,
+    "seconds": 26.88,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": true
+  },
+  "fm1-hiw-01": {
+    "path": "content/full-mock/assets/37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf.mp3",
+    "textSha256": "9a9856d034addb0cfbf4b9c7fcebafbcc0053978d9798c1ee0bb765a2aa38534",
+    "audioSha256": "37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf",
+    "bytes": 200541,
+    "seconds": 33.384,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-hiw-02": {
+    "path": "content/full-mock/assets/13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d.mp3",
+    "textSha256": "188e7827537322ababfd862549c36eeaddc33ed5a0eb8770291e52b6b395ddbf",
+    "audioSha256": "13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d",
+    "bytes": 196509,
+    "seconds": 32.712,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-wfd-01": {
+    "path": "content/full-mock/assets/9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c.mp3",
+    "textSha256": "5a2fb0a67a26e001c444c633ef7bf26a43a8f8d1d2cd91eac963249df172225f",
+    "audioSha256": "9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c",
+    "bytes": 19677,
+    "seconds": 3.24,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-wfd-02": {
+    "path": "content/full-mock/assets/db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2.mp3",
+    "textSha256": "66c5de43f4837841f6c103d3c5d07de9fed0e142b6adab8e34915fd69979d60c",
+    "audioSha256": "db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2",
+    "bytes": 18957,
+    "seconds": 3.12,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  },
+  "fm1-wfd-03": {
+    "path": "content/full-mock/assets/d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466.mp3",
+    "textSha256": "359122963e691fae0872abe60715d52a17877403e60ea46383dccd3731c27946",
+    "audioSha256": "d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466",
+    "bytes": 24573,
+    "seconds": 4.056,
+    "voices": [
+      "en_US-ljspeech-high"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-3%",
+    "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+    "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+    "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+    "validationStatus": "decoded-and-probed",
+    "humanListeningReview": "pending",
+    "endCue": false
+  }
+}
