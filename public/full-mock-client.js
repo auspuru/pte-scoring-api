@@ -228,11 +228,23 @@
       }
       finally { loadingState = false; }
     }
+    async function syncReceipt() {
+      if (attempt?.status !== 'submitted' || loadingState) return;
+      loadingState = true; const ticket = generation;
+      try {
+        const value = await api('/attempts/' + attempt.id);
+        if (!valid(ticket)) return;
+        const changed = value.assessmentStatus !== attempt.assessmentStatus || value.mediaPending !== attempt.mediaPending || value.assessmentProgress?.assessed !== attempt.assessmentProgress?.assessed;
+        accept(value); if (changed) render();
+      } catch (error) { if (valid(ticket)) notice(error.message, true); }
+      finally { loadingState = false; }
+    }
     function render() {
       if (!attempt) return;
       if (attempt.status === 'submitted') {
-        stopCapture(); stopPrompt(); env.clearInterval(timer); env.clearInterval(poller); poller = env.setInterval(flush, 1500); env.PortalExamMode?.set(OWNER, false, host);
-        shell('<span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Test submitted</h1><p>Saved responses are retained. Keep this tab open until pending recordings finish uploading.</p><p>Assessment is not available for this preview.</p><p>' + attempt.completedCount + ' of 66 items completed · ' + attempt.mediaPending + ' recording segment(s) still uploading.</p><p id="fm-save-status" role="status"></p><p id="fm-notice" role="status"></p><button class="portal-button" data-fm="retry">Retry pending saves</button><button class="portal-button" data-fm="reload">Saved attempts</button>'); return;
+        stopCapture(); stopPrompt(); env.clearInterval(timer); env.clearInterval(poller); poller = env.setInterval(() => { flush(); syncReceipt(); }, 1500); env.PortalExamMode?.set(OWNER, false, host);
+        const assessment = { 'not-requested':'Assessment is queued.', processing:'Assessment is in progress.', complete:'Assessment is complete.', 'needs-attention':'Some responses still need assessment or review.', 'version-mismatch':'The assessment version needs review. Your responses are saved.' }[attempt.assessmentStatus] || 'Assessment is not available for this preview.';
+        shell('<span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Test submitted</h1><p>Saved responses are retained. Keep this tab open until pending recordings finish uploading.</p><p>' + assessment + (attempt.assessmentProgress ? ' ' + attempt.assessmentProgress.assessed + ' of 65 questions assessed.' : '') + '</p><p>' + attempt.completedCount + ' of 66 items completed · ' + attempt.mediaPending + ' recording segment(s) still uploading.</p><p id="fm-save-status" role="status"></p><p id="fm-notice" role="status"></p><button class="portal-button" data-fm="retry">Retry pending saves</button><button class="portal-button" data-fm="reload">Saved attempts</button>'); return;
       }
       if (rendering === attempt.current.token) return;
       stopCapture(); stopPrompt(); rendering = attempt.current.token; played = ''; cued = ''; lastPhase = ''; sequence = attempt.draftSequence; draft = structuredClone(attempt.draft || []);

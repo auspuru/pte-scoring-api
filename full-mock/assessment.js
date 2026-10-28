@@ -1,0 +1,130 @@
+'use strict';
+const { randomUUID } = require('node:crypto');
+const { scoringSnapshot } = require('./audit');
+const { digest, deepFreeze, loadPaper } = require('./paper');
+const { aggregate, inputHash, nativeValid } = require('./aggregation');
+const { SPOKEN, createAdapters, maxima, VERSION: adapterVersion } = require('./adapters');
+const { fail } = require('./store');
+const media = require('./recording');
+const weighting = require('./profiles');
+const VERSION = 'full-mock-assessment-2026-10-29.1';
+function configuration(env = process.env) {
+  const content = env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
+  const essay = require('../essay-provider').configuration(env);
+  return {
+    transcription: { provider: 'openai', model: env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe' },
+    speakingContent: { provider: 'anthropic', model: content, reviewModel: 'claude-sonnet-4-6', describeImagePolicy: require('../describe-image-academy').VERSION },
+    delivery: { provider: 'azure-speech-pronunciation', model: 'provider-managed', locale: env.AZURE_SPEECH_LOCALE || 'en-AU', version: require('../speaking-delivery').VERSION },
+    swt: { provider: 'anthropic', model: env.SWT_CLAUDE_MODEL || 'claude-sonnet-4-6', reviewModel: env.SWT_REVIEW_MODEL || env.SWT_CLAUDE_MODEL || 'claude-sonnet-4-6' },
+    essay: { ...essay, reviewModel: essay.provider === 'openai' ? essay.model : env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6', reasoningEffort: env.ESSAY_OPENAI_REASONING_EFFORT || 'medium' },
+    sst: { provider: 'anthropic', model: content }
+  };
+}
+function snapshot(config = configuration(), root = require('node:path').resolve(__dirname, '..'), paper = loadPaper()) {
+  const allowed = configuration({});
+  if (!config || Object.keys(config).sort().join() !== Object.keys(allowed).sort().join()) throw Error('Concrete provider configuration is required.');
+  for (const [name, fields] of Object.entries(allowed)) {
+    if (!config[name] || Object.keys(config[name]).sort().join() !== Object.keys(fields).sort().join()
+      || Object.values(config[name]).some(value => typeof value !== 'string' || !value.trim() || value.length > 200 || /sk-|Bearer\s|https?:/i.test(value))) throw Error('Only provider/model metadata belongs in an assessment snapshot.');
+  }
+  return deepFreeze({ schemaVersion: 1, version: VERSION, configuration: structuredClone(config), scoringSources: scoringSnapshot(root),
+    paperHash: digest(paper), nativeMaxima: Object.fromEntries(paper.questions.map(candidate => [candidate.id, maxima(candidate.question)])),
+    weighting: structuredClone(weighting.SNAPSHOT), calibration: 'uncalibrated', official: false });
+}
+function stateFor(value) { return { version: VERSION, snapshot: structuredClone(value), snapshotHash: digest(value), status: 'not-requested', run: 0, items: {} }; }
+function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
+  const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false;
+  function validate(state) {
+    const saved = state.assessment;
+    if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.snapshotHash !== currentHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
+  }
+  async function request(uid, id, { retry = false } = {}) {
+    const saved = await store.get(uid, id); if (!saved) throw fail('Attempt not found.', 404);
+    const state = await store.update(uid, id, state => {
+      if (state.status !== 'submitted') throw fail('Submit the test before requesting assessment.');
+      state.assessment ||= stateFor(currentSnapshot); validate(state);
+      if (state.assessment.status === 'processing' || state.assessment.status === 'complete' && aggregate(saved.paper, state).ready) return state;
+      if (state.assessment.run && !retry) return state;
+      state.assessment.status = 'processing'; state.assessment.run++; state.assessment.requestedAt = now(); return state;
+    });
+    if (state.assessment.status === 'processing') queue(uid, id);
+    return state;
+  }
+  async function wakeMedia(uid, id) {
+    const record = await store.get(uid, id); if (!record?.state.assessment) return;
+    const changed = record.paper.questions.some((candidate, index) => {
+      const job = record.state.assessment.items[candidate.id]; return SPOKEN.has(candidate.question.type) && ['pending','assessed'].includes(job?.status) && job.inputHash !== inputHash(record.state.responses[index + 1]);
+    });
+    if (!changed) return record.state;
+    const state = await store.update(uid, id, state => { validate(state); if (state.assessment.status !== 'processing') state.assessment.status = 'processing'; return state; });
+    queue(uid, id); return state;
+  }
+  function queue(uid, id) {
+    const key = uid + ':' + id; if (closing || jobs.has(key) || jobs.size >= concurrency) return jobs.get(key);
+    const task = work(uid, id); jobs.set(key, task); task.catch(() => {}).finally(() => jobs.delete(key)); return task;
+  }
+  async function work(uid, id) {
+    const lease = randomUUID(); let claimed = false;
+    let state = await store.update(uid, id, state => {
+      claimed = false; validate(state);
+      if (state.status !== 'submitted' || state.assessment.status !== 'processing' || state.assessment.lease?.expiresAt > now()) return state;
+      state.assessment.lease = { id: lease, expiresAt: now() + 180000 }; claimed = true; return state;
+    });
+    if (!claimed) return;
+    const record = await store.get(uid, id), savedPaper = record.paper;
+    if (digest(savedPaper) !== state.paperHash) throw fail('Saved paper integrity failed.', 503);
+    async function save(update) {
+      return store.update(uid, id, current => {
+        validate(current); if (current.assessment.lease?.id !== lease) throw fail('The assessment worker was replaced.');
+        update(current); current.assessment.lease.expiresAt = now() + 180000; return current;
+      });
+    }
+    const heartbeat = setInterval(() => save(() => {}).catch(() => {}), 15000); heartbeat.unref?.();
+    let index = 0;
+    async function itemWorker() {
+      while (!closing && index < savedPaper.questions.length) {
+        const position = index++, candidate = savedPaper.questions[position], q = candidate.question;
+        const saved = await store.get(uid, id), response = saved.state.responses[position + 1];
+        if (!response?.sealed) continue;
+        const fingerprint = inputHash(response), previous = saved.state.assessment.items[candidate.id];
+        if (previous?.inputHash === fingerprint && previous.snapshotHash === currentHash && previous.status === 'assessed') continue;
+        const stages = previous?.inputHash === fingerprint && previous.snapshotHash === currentHash ? previous.stages : {};
+        const persist = async patch => save(current => {
+          if (inputHash(current.responses[position + 1]) !== fingerprint) throw fail('Saved media changed while assessment was running.');
+          const prior = current.assessment.items[candidate.id];
+          current.assessment.items[candidate.id] = { ...(prior?.inputHash === fingerprint && prior.snapshotHash === currentHash ? prior : {}), inputHash: fingerprint, snapshotHash: currentHash, ...patch };
+        });
+        try {
+          await persist({ status: 'processing', stages });
+          let recording;
+          if (SPOKEN.has(q.type) && response.segments.some(value => !value.cancelled && value.chunkCount !== 0)) {
+            const audio = await assemble(uid, id, q, response, { getChunk: store.getChunk });
+            if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
+            recording = audio.recording;
+          }
+          const value = await adapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+            checkpoint: value => persist({ status: 'processing', stages: value }) });
+          const { stages: evidence = stages, ...result } = value;
+          if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !nativeValid(result, maxima(q)))) throw Error('Invalid native assessment result.');
+          await persist({ status: result.status, result, stages: evidence, assessedAt: now() });
+        } catch { try { await persist({ status: 'failed', reason: 'assessment-unavailable' }); } catch { /* Stale workers never overwrite replacements. */ } }
+      }
+    }
+    try {
+      await Promise.all([itemWorker(), itemWorker()]);
+      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) current.assessment.finishedAt = now(); });
+      await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
+    } finally { clearInterval(heartbeat); }
+  }
+  async function results(uid, id) {
+    const record = await store.get(uid, id); if (!record) throw fail('Attempt not found.', 404);
+    if (record.state.assessment && digest(record.state.assessment.snapshot) !== record.state.assessment.snapshotHash) throw fail('Saved assessment integrity failed.', 503);
+    return aggregate(record.paper, record.state);
+  }
+  async function recover() { for (const row of await store.assessmentQueue()) { if (jobs.size >= concurrency) break; queue(row.uid, row.id); } }
+  function start() { closing = false; if (!sweep) { sweep = setInterval(() => recover().catch(() => {}), 10000); sweep.unref?.(); recover().catch(() => {}); } }
+  function stop() { closing = true; clearInterval(sweep); sweep = null; return drain(); }
+  async function drain() { await Promise.allSettled([...jobs.values()]); }
+  return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs };
+}
+module.exports = { VERSION, configuration, snapshot, stateFor, createEngine };

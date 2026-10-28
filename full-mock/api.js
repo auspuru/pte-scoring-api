@@ -6,8 +6,9 @@ const { loadPaper, digest, assertReleased } = require('./paper');
 const { createStore, fail } = require('./store');
 const session = require('./session');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper() } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), assessment } = {}) {
   const store = createStore({ pool, directory }), router = express.Router();
+  const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...assessment }) : null;
   let sweep;
   const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => res.status(error.status || 503).json({ error: error.status ? error.message : 'This action could not finish. Your saved responses are retained; retry when connected.' }));
   router.use(wrap(async (req, res, next) => {
@@ -21,12 +22,21 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   router.use(require('express-rate-limit')({ windowMs: 60000, max: 360, keyGenerator: req => req.fullMock.uid,
     standardHeaders: true, legacyHeaders: false, message: { error: 'Please wait briefly before retrying.' } }));
   function available(context) { if (context.preview) return true; try { assertReleased(paper); return true; } catch { return false; } }
+  async function settle(record, uid) {
+    if (assessor && record.state.status === 'submitted') {
+      try {
+        if (record.state.assessment?.status === 'not-requested') record.state = await assessor.request(uid, record.state.id);
+        else if (['needs-attention','complete'].includes(record.state.assessment?.status)) record.state = await assessor.wakeMedia(uid, record.state.id) || record.state;
+      } catch (error) { if (error.status !== 409) throw error; record.state.assessment = { ...record.state.assessment, displayStatus: 'version-mismatch' }; }
+    }
+    return record;
+  }
   async function read(uid, id, context) {
     const record = await store.get(uid, id); if (!record) throw fail('Attempt not found.', 404);
     if (context && record.state.preview && !context.preview) throw fail('This draft attempt is restricted to authorised preview users.', 403);
     if (digest(record.paper) !== record.state.paperHash) throw fail('The saved paper could not be verified. Your responses are retained.', 503);
     record.state = await store.update(uid, id, state => session.reconcile(state, record.paper, now()));
-    return record;
+    return settle(record, uid);
   }
   const view = record => session.present(record.state, record.paper, now());
   async function change(req, transform, { controlling = true } = {}) {
@@ -36,7 +46,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
       if (controlling) session.control(state, req.headers['x-full-mock-control'], now());
       transform(state, record.paper); return state;
     });
-    return record;
+    return settle(record, req.fullMock.uid);
   }
   router.get('/catalog', wrap(async (req, res) => res.json({ available: available(req.fullMock), preview: paper.status !== 'released',
     papers: available(req.fullMock) ? [{ id: paper.id, version: paper.version, title: paper.title, questionCount: 65, taskTypeCount: 22, preview: paper.status !== 'released' }] : [] })));
@@ -44,13 +54,24 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   router.post('/attempts', wrap(async (req, res) => {
     if (!available(req.fullMock)) throw fail('Full Mock 1 is not available for student attempts yet.', 403);
     if (req.body?.paperId !== paper.id || req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
-    const make = (id, at) => session.create(id, paper, at, { preview: paper.status !== 'released' && req.fullMock.preview });
+    const make = (id, at) => session.create(id, paper, at, { preview: paper.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshot });
     let record = await store.create(req.fullMock.uid, req.body.id, paper, make, now());
     record = await read(req.fullMock.uid, record.state.id, req.fullMock);
     if (record.state.status === 'submitted' && record.state.id !== req.body.id) record = await store.create(req.fullMock.uid, req.body.id, paper, make, now());
     res.json(view(record));
   }));
   router.get('/attempts/:id', wrap(async (req, res) => res.json(view(await read(req.fullMock.uid, req.params.id, req.fullMock)))));
+  router.post('/attempts/:id/assessment', wrap(async (req, res) => {
+    if (!assessor) throw fail('Assessment is not enabled.', 503);
+    await read(req.fullMock.uid, req.params.id, req.fullMock);
+    const state = await assessor.request(req.fullMock.uid, req.params.id, { retry: req.body?.retry === true });
+    res.status(202).json({ id: state.id, status: state.assessment.status });
+  }));
+  router.get('/attempts/:id/results', wrap(async (req, res) => {
+    await read(req.fullMock.uid, req.params.id, req.fullMock);
+    if (!assessor) throw fail('Assessment is not enabled.', 503);
+    res.json(await assessor.results(req.fullMock.uid, req.params.id));
+  }));
   router.post('/attempts/:id/claim', wrap(async (req, res) => res.json(view(await change(req, state => session.claim(state, req.body || {}, now()), { controlling: false })))));
   router.post('/attempts/:id/pulse', wrap(async (req, res) => res.json(view(await change(req, () => {})))));
   router.post('/attempts/:id/draft', wrap(async (req, res) => res.json(view(await change(req, (state, savedPaper) => session.saveDraft(state, savedPaper, req.body || {}))))));
@@ -107,8 +128,8 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   async function reconcileAll() {
     for (const value of await store.active(now())) { try { await read(value.uid, value.id); } catch { /* A transient failure retains the existing attempt. */ } }
   }
-  function start() { if (!sweep) { sweep = setInterval(() => reconcileAll().catch(() => {}), 10000); sweep.unref?.(); } }
-  function stop() { clearInterval(sweep); sweep = null; }
-  return { store, start, stop, reconcileAll };
+  function start() { assessor?.start(); if (!sweep) { sweep = setInterval(() => reconcileAll().catch(() => {}), 10000); sweep.unref?.(); } }
+  function stop() { clearInterval(sweep); sweep = null; return assessor?.stop(); }
+  return { store, assessor, start, stop, reconcileAll };
 }
 module.exports = { installFullMock };

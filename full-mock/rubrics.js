@@ -4,11 +4,14 @@
 // converting sectional /90 estimates into full-exam marks.
 const speechFiles = ['speaking-scoring.js', 'delivery-rubric.js', 'gpt-speaking-delivery.js', 'speaking-delivery.js'];
 const writingFiles = ['writing-lab-scoring.js', 'local-scoring-engine.js', 'public/writing-lab-report.js'];
+const academyFiles = ['describe-image-academy.js', 'describe-image-academy/content.js', 'describe-image-academy/scoring-policy.js',
+  'describe-image-academy/chart-readings.js', 'describe-image-academy/review-evidence.js', 'describe-image-academy/image-claims.js',
+  'describe-image-academy/response-selection.js', 'describe-image-academy/score-impact.js'];
 const RUBRICS = {
   ra: { rule: 'word-errors', traits: { content: 'prompt-word-count', pronunciation: 5, fluency: 5 }, gates: ['content'], files: speechFiles },
   rs: { rule: 'word-sequences', traits: { content: 3, pronunciation: 5, fluency: 5 }, gates: ['content'], files: speechFiles },
   di: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'],
-    files: [...speechFiles, 'describe-image-feedback.js', 'describe-image-feedback/scoring-policy.js', 'di-reference.js'] },
+    files: [...speechFiles, ...academyFiles, 'describe-image-feedback.js', 'describe-image-feedback/scoring-policy.js', 'di-reference.js'] },
   rl: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
   asq: { rule: 'accepted-short-answer', traits: { content: 1 }, gates: [], files: ['full-mock/asq-scoring.js', 'speaking-lab.js'], implementation: 'full-mock-asq' },
   sgd: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
@@ -36,6 +39,7 @@ const VERSION_EXPORTS = {
   'gpt-speaking-delivery.js': 'VERSION', 'spoken-summary-policy.js': 'VERSION',
   'situation-content-policy.js': 'VERSION', 'writing-lab-scoring.js': 'VERSION',
   'swt-scoring-policy.js': 'POLICY_VERSION', 'public/essay-scoring.js': 'VERSION',
-  'full-mock/asq-scoring.js': 'VERSION'
+  'full-mock/asq-scoring.js': 'VERSION', 'full-mock/adapters.js': 'VERSION', 'full-mock/aggregation.js': 'VERSION',
+  'full-mock/assessment.js': 'VERSION', 'full-mock/profiles.js': 'VERSION', 'full-mock/recording.js': 'VERSION', 'full-mock/session.js': 'VERSION'
 };
 module.exports = { RUBRICS, VERSION_EXPORTS };

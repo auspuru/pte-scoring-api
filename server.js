@@ -6397,11 +6397,24 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   getAccount:getPracticeAccount,callModel:speakingContentModel,backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
+async function writingContentModel(prompt) {
+  if (!anthropic) throw new Error('Writing assessment is not configured.');
+  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
+    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
+  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
+  const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
+  return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
+}
 const fullMock = require('./full-mock/api').installFullMock(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'full-mock'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
-  canPreview: ({ account, token }) => account.role === 'admin' || !!verifyImpersonationToken(token)
+  canPreview: ({ account, token }) => account.role === 'admin' || !!verifyImpersonationToken(token),
+  assessment: {
+    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
+      swtGrader: (question, text) => judgeContentWithClaude(text, question.text, {}), essayGrader }),
+    providerConfiguration: require('./full-mock/assessment').configuration()
+  }
 });
 const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:process.env.SPEAKING_MOCK_ALERTS_ENABLED==='true'});
 const academyAzure=require('./academy-azure-service').installAcademyAzure(app,{pool:pgPool,directory:path.join(DATA_DIR,'academy-azure'),secret:process.env.PTE_DI_SERVICE_KEY||'',transcribe:require('./speaking-lab').transcribeRecording});
@@ -6424,14 +6437,7 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
     const response = await anthropic.messages.create(overall.request(attempt,'claude-sonnet-4-6'), { timeout:120000, maxRetries:0 });
     return overall.response(response);
   },
-  callModel: async prompt => {
-    if (!anthropic) throw new Error('Writing assessment is not configured.');
-    const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-      max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
-    if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
-    const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
-    return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
-  }
+  callModel: writingContentModel
 });
 app.get(['/writing-mocks', '/spoken-text'], (req, res) => {
   res.set('Cache-Control', 'no-store');
@@ -6604,7 +6610,7 @@ installGracefulShutdown(httpServer, {
     await speakingAlerts.stop();
     await academyAzure.stop();
     await speakingMock.stop();
-    fullMock.stop();
+    await fullMock.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([
       browserInstance ? browserInstance.close() : Promise.resolve(),

@@ -3,7 +3,7 @@ const { randomUUID } = require('node:crypto');
 const { TASKS } = require('./blueprint');
 const { questionForPlayer, digest, assertReleased } = require('./paper');
 const { hash, uuid, fail } = require('./store');
-const VERSION = 'full-mock-session-2026-10-29.1';
+const VERSION = 'full-mock-session-2026-10-29.2';
 const SPEECH = new Set(['intro', 'ra', 'rs', 'di', 'rl', 'asq', 'sgd', 'rts']);
 function item(paper, index) {
   return index === 0 ? { id: 'introduction', question: { ...paper.introduction, preparation: 25, seconds: 30, startCueMs: 300 } } : paper.questions[index - 1];
@@ -22,10 +22,11 @@ function enter(state, paper, at) {
   state.responses[state.index] = { token: state.current.token, type: q.type, draft: SPEECH.has(q.type) ? null : [], draftSequence: -1, segments: [], sealed: false,
     ...(SPEECH.has(q.type) ? { permit: { id: randomUUID(), token: randomUUID(), responseAt, deadline: endsAt } } : {}) };
 }
-function create(id, paper, at, { preview = false } = {}) {
+function create(id, paper, at, { preview = false, assessmentSnapshot } = {}) {
   if (!preview) assertReleased(paper);
   const state = { id, version: VERSION, paperId: paper.id, paperVersion: paper.version, paperHash: digest(paper), preview,
     title: paper.title, createdAt: at, status: 'active', index: 0, clocks: {}, responses: [], events: [], recoveries: [] };
+  if (assessmentSnapshot) state.assessment = require('./assessment').stateFor(assessmentSnapshot);
   enter(state, paper, at); return state;
 }
 function responseStatus(response) {
@@ -145,11 +146,14 @@ function recover(state, paper, body, now) {
 }
 function present(state, paper, now) {
   const response = state.status === 'active' ? state.responses[state.index] : null;
+  const assessed = state.assessment && state.status === 'submitted' ? require('./aggregation').aggregate(paper, state) : null;
+  const assessmentStatus = state.assessment?.displayStatus || (state.assessment?.status === 'complete' && assessed && !assessed.ready ? 'needs-attention' : state.assessment?.status) || 'not-enabled';
   const output = { id: state.id, paperId: state.paperId, paperVersion: state.paperVersion, paperHash: state.paperHash, title: state.title,
     status: state.status, preview: state.preview, createdAt: state.createdAt, submittedAt: state.submittedAt || null,
     index: state.index, totalItems: 66, scoredQuestionCount: 65, completedCount: state.responses.filter(value => value.sealed).length,
     serverNow: now, mediaPending: state.responses.reduce((sum, value) => sum + value.segments.filter(segment => !segment.finished).length, 0),
-    recoveredEvidenceCount: state.recoveries.length, assessmentStatus: 'not-enabled' };
+    recoveredEvidenceCount: state.recoveries.length, assessmentStatus,
+    ...(state.assessment ? { assessmentProgress: { assessed: assessed?.assessedCount || 0, expected: 65 } } : {}) };
   if (response) Object.assign(output, { question: state.index === 0 ? { ...paper.introduction, preparation: 25, seconds: 30, startCueMs: 300 } : questionForPlayer(item(paper, state.index)),
     current: { ...state.current, phase: phase(state, now) }, draft: response.draft, draftSequence: response.draftSequence,
     ...(response.permit ? { recordingPermit: { id: response.permit.id, token: response.permit.token } } : {}),

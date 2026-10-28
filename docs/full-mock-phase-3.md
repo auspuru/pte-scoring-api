@@ -134,3 +134,6 @@ implement the five independently verified weighting profiles with completeness
 rules. Phase 5 adds reports/feedback. Phase 6 covers real desktop/mobile hardware,
 autoplay, long sessions and independent calibration before student release. This
 phase does not authorise release or claim hardware QA.
+
+Phase 4's assessment adapters, durable worker, protected aggregates and explicit
+practice-index limitations are documented in `docs/full-mock-phase-4.md`.

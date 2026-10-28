@@ -134,6 +134,12 @@ sectional reports or import the independent holistic Speaking-mock estimate.
 Practice estimates remain provisional and uncalibrated, and required pending or
 failed assessments must block the corresponding final estimate.
 
+**Phase 4 follow-up:** the actual partners report was retrieved from Pearson's
+download CDN and its weighting table visually checked. See
+`docs/full-mock-phase-4.md` for the verified source digest, five versioned profiles,
+bounded `<1%` contributions, native adapters and provisional index contract. The
+source mismatch above remains part of this historical Phase 1 audit record.
+
 ## Editorial evidence format
 
 `content/full-mock/reviews.json` starts empty deliberately. Add only reviews that

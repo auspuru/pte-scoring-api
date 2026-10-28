@@ -146,6 +146,31 @@ function createStore({ pool, directory }) {
     }
     return { sha256, bytes: bytes.length };
   }
-  return { initialise, create, get, update, list, active, putChunk };
+  async function getChunk(uid, id, segment, sequence) {
+    await initialise(); attemptDirectory(uid, id);
+    if (!uuid(segment) || !Number.isInteger(sequence) || sequence < 0 || sequence > 255) throw fail('Invalid recording chunk.', 400);
+    if (pool) {
+      const row = (await pool.query('SELECT c.sha256,c.mime,c.payload FROM full_mock_audio_chunks c JOIN full_mock_attempts a ON a.id=c.attempt_id WHERE a.id=$1 AND a.username=$2 AND c.segment_id=$3 AND c.sequence=$4', [id, uid, segment, sequence])).rows[0];
+      return row ? { sha256: row.sha256, mime: row.mime, bytes: row.payload } : null;
+    }
+    try { const row = JSON.parse(await fs.readFile(path.join(attemptDirectory(uid, id), 'audio', segment, sequence + '.json'), 'utf8')); return { sha256: row.sha256, mime: row.mime, bytes: Buffer.from(row.data, 'base64') }; }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  }
+  async function assessmentQueue() {
+    await initialise();
+    if (pool) return (await pool.query("SELECT username,state->>'id' AS id FROM full_mock_attempts WHERE state->>'status'='submitted' AND state->'assessment'->>'status'='processing' ORDER BY updated_at LIMIT 100")).rows.map(row => ({ uid: row.username, id: row.id }));
+    const rows = [];
+    for (const dir of await fs.readdir(directory, { withFileTypes: true })) {
+      if (!dir.isDirectory()) continue;
+      const index = await readVersion(path.join(directory, dir.name, 'index'));
+      if (!index) continue;
+      for (const id of index.value.ids.slice(-100)) {
+        const saved = await readVersion(path.join(directory, dir.name, id, 'state'));
+        if (saved?.value.status === 'submitted' && saved.value.assessment?.status === 'processing') rows.push({ uid: index.value.owner, id });
+      }
+    }
+    return rows.slice(0, 100);
+  }
+  return { initialise, create, get, update, list, active, putChunk, getChunk, assessmentQueue };
 }
 module.exports = { createStore, casFile, readVersion, hash, uuid, fail };
