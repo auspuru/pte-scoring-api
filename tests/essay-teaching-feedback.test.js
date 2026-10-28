@@ -71,5 +71,6 @@ test('Essay scoring defaults to Sonnet independently of the general model and ho
   assert.equal(format.essayModel({CLAUDE_MODEL:'claude-haiku-4-5-20251001'}),'claude-sonnet-4-6');
   assert.equal(format.essayModel({ESSAY_CLAUDE_MODEL:'configured-essay-model'}),'configured-essay-model');
   const source=fs.readFileSync(path.join(root,'server.js'),'utf8');
-  assert.match(source,/essayJudgeFormat\.request\(prompt, ESSAY_CLAUDE_MODEL, options\)/);
+  assert.match(source,/createEssayProvider\(\{anthropic\}\)/);
+  assert.match(source,/createEssayGrader\(essayProvider,/);
 });

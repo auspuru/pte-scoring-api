@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "4b60e970af8c54695d08717a4251cafbd3b65c45",
+  "baseCommit": "a0bd988af0cc111e39e78b35a39c2595cf6d6cd9",
   "checkedAt": "2026-10-29",
-  "scope": "Current scoring source fingerprints after Phase 3 server integration. Task scoring is unchanged; the immutable v1 paper retains its original freeze-time source fingerprints. Assessment is not enabled for these player previews.",
+  "scope": "Current source fingerprints after Phase 3 player integration and the upstream essay-provider update. Provider/format modules are pinned explicitly. The immutable v1 paper retains its original freeze-time source fingerprints; player previews have assessment disabled.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -32,7 +32,15 @@
         "version": null
       },
       "essay-judge-format.js": {
-        "sha256": "5f8b6ba1b67e4388c67f47e5f00f41148e13193810cb31052fed030eb9f4f7cd",
+        "sha256": "2b71a72a2272e779130caee01c8fc06b97cae69ff85a96a95a5d8f80bd341b06",
+        "version": null
+      },
+      "essay-openai-format.js": {
+        "sha256": "28cdccc0f9097aab19bffa4a99bfb93bf2e3e61c0a2f33d37dfc73c57bd35285",
+        "version": null
+      },
+      "essay-provider.js": {
+        "sha256": "1d0adabaf1722922942cb7adba2849f76b8539812a858ab21c09926929e717ce",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -44,7 +52,7 @@
         "version": null
       },
       "full-mock/rubrics.js": {
-        "sha256": "e4a62b3809278e7aa43e432dede2c4da7f8c4f1a157913cb712014d553c59565",
+        "sha256": "d78e0e3d5be62b2ba73994490a2d6f54a106c2a5efeb6d0ac76fdff342b77d34",
         "version": null
       },
       "gpt-speaking-delivery.js": {
@@ -77,7 +85,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "d45cfb7e47420206495b68a8d919e2126dcda1727bb09bb7976e11ac955f7de1",
+        "sha256": "ae665e3098fac1bf25bb97fdd6df106b5cf9f4aadbffa1d5029623c3cfb8fcc1",
         "version": null
       },
       "situation-content-policy.js": {
@@ -125,5 +133,6 @@
         "version": "exam-practice-2026-10-09.1"
       }
     }
-  }
+  },
+  "integratedMainCommit": "fbbbd390cb69b9f2b06c725d6dffb4001ec1a808"
 }

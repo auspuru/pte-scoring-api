@@ -47,6 +47,7 @@ test('Every task has an audited rubric and sources are pinned, including the new
   for (const type of ['swt', 'sst']) assert.deepEqual(RUBRICS[type].traits, writing.MAXIMA[type]);
   assert.deepEqual(RUBRICS.essay.traits, essay.MAXIMA);
   for (const type of ['swt', 'essay', 'sst']) assert.deepEqual(RUBRICS[type].gates, ['content', 'form']);
+  for (const file of ['essay-provider.js', 'essay-openai-format.js']) assert(RUBRICS.essay.files.includes(file), file);
   assert.deepEqual(scoringSnapshot(root), lock.snapshot);
   const dynamic = lock.snapshot.files['gpt-speaking-delivery.js'];
   assert.equal(dynamic.version, null);

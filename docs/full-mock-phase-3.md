@@ -107,6 +107,12 @@ the server integration; the paper retains its historical freeze-time fingerprint
 Validate v1 instead of refreezing it against changed sources. Content edits need
 a new explicit paper version.
 
+The branch also integrates main's essay-provider update from
+`fbbbd390cb69b9f2b06c725d6dffb4001ec1a808`. The current audit pins its two new
+provider/format modules as well as the changed server and essay schema. This
+prevents the PR merge checks from testing stale source fingerprints. The frozen
+paper's historical fingerprints are not rewritten.
+
 ## Verification and remaining phases
 
 ```sh

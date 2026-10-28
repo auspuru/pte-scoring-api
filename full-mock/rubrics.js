@@ -16,7 +16,7 @@ const RUBRICS = {
   swt: { rule: 'rubric', traits: { content: 4, form: 1, grammar: 2, vocabulary: 2 }, gates: ['content', 'form'],
     files: [...writingFiles, 'swt-scoring-policy.js', 'swt-form-policy.js', 'swt-judgment-service.js', 'swt-judge-format.js', 'swt-reference.js'] },
   essay: { rule: 'rubric', traits: { content: 6, form: 2, grammar: 2, vocabulary: 2, spelling: 2, linguistic: 6, coherence: 6 }, gates: ['content', 'form'],
-    files: [...writingFiles, 'public/essay-scoring.js', 'essay-assessment-service.js', 'essay-judge-format.js', 'essay-evidence.js'] },
+    files: [...writingFiles, 'public/essay-scoring.js', 'essay-assessment-service.js', 'essay-judge-format.js', 'essay-provider.js', 'essay-openai-format.js', 'essay-evidence.js'] },
   dropdown: { rule: 'one-per-blank', files: ['public/reading-practice.js', 'public/reading-mock-tools.js'] },
   mcma: { rule: 'correct-minus-incorrect-floor-zero', files: ['public/reading-practice.js'] },
   reorder: { rule: 'adjacent-correct-pairs', files: ['public/reading-practice.js'] },

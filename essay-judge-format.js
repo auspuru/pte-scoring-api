@@ -35,7 +35,7 @@ const primary = object({ scores: scores(Object.keys(maxima)), ...common,
   feedback: reasons(Object.keys(maxima)),
   errors: { type: 'array', items: object({
     type: { type: 'string', enum: ['grammar', 'spelling'] },
-    phrase_span: { $ref: '#/$defs/span' }, correction: text,
+    phrase_span: { $ref: '#/$defs/span' }, correction: {...text,description:'A nonempty corrected version of the quoted phrase. To remove an unnecessary word, quote enough surrounding original words and return the corrected phrase with that word removed; never use an empty correction.'},
     impact: { type: 'string', enum: ['minor', 'meaning'] }, explanation: text
   }) },
   optionalRefinements: { type: 'array', items: object({
@@ -100,7 +100,7 @@ function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds, su
     schema = {...schema,properties:{...schema.properties,feedbackIssues:{...schema.properties.feedbackIssues,
       items:object({...schema.properties.feedbackIssues.items.properties,requirementId:{...text,enum:['',...canonical.map(r=>r.id)]}})}}};
   }
-  if (canonical && judgement) {
+  if (canonical && judgement && schema.properties.promptCoverage) {
     schema = {...schema, properties:{...schema.properties,
       promptCoverage:{...schema.properties.promptCoverage, minItems:canonical.length, maxItems:canonical.length,
         description:'Return exactly one entry per supplied canonical requirement, each id exactly once. Assess all parts within a grouped requirement together; do not split it into new ids. Canonical id and exact label pairs: '+JSON.stringify(canonical.map(({id,label})=>({id,label})))}}};
