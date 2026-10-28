@@ -1,0 +1,237 @@
+{
+  "model": "gpt-6.1-sol",
+  "reasoningEffort": "medium",
+  "rubricMaximum": 26,
+  "method": "Local complete assessment service through an authenticated isolated Responses bridge; no student attempts were saved. Repeats add blank lines, without changing essay words.",
+  "limitations": [
+    "Small teaching-oriented comparison, not Pearson calibration or production latency percentiles.",
+    "The second television run needed one primary validation retry and took 115 seconds; the final run with nonempty-replacement guidance took 59 seconds.",
+    "Initial strict-tool schema failures were fixed before these completed results; no failed or partial grade was published."
+  ],
+  "results": [
+    {
+      "case": "late-submission",
+      "run": 0,
+      "words": 208,
+      "scores": {
+        "content": 5,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 1,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 22
+      },
+      "durationMs": 80398,
+      "providerCalls": 4,
+      "validationRetries": [],
+      "contentIssues": [
+        {
+          "code": "development_gap",
+          "explanation": "The valid-reason exception supports your concern for genuine difficulties, but normal grading alongside a restriction on higher scores could still imply a mark penalty.",
+          "suggestedChange": "Clarify what 'a higher score' means and how this restriction avoids the unfair deductions you oppose."
+        }
+      ],
+      "verdict": "Your fairness argument and automatic extension policy give a clear, relevant response; clarifying the higher-score restriction would make the second alternative more convincing."
+    },
+    {
+      "case": "late-submission",
+      "run": 1,
+      "words": 208,
+      "scores": {
+        "content": 5,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 1,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 22
+      },
+      "durationMs": 79800,
+      "providerCalls": 4,
+      "validationRetries": [],
+      "contentIssues": [
+        {
+          "code": "development_gap",
+          "explanation": "The extension is concrete, but the second alternative's normal grading and restriction on higher scores leave its operation unclear rather than establishing a definite contradiction.",
+          "suggestedChange": "Clarify what \u201chigher score\u201d means and whether the late-submission flag changes the mark when no valid reason is provided."
+        }
+      ],
+      "verdict": "Your position is clear and supported by a practical extension proposal; the most useful improvement is to make the second alternative's scoring rule unambiguous."
+    },
+    {
+      "case": "television",
+      "run": 0,
+      "words": 206,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 1,
+        "linguistic": 4,
+        "coherence": 6,
+        "form": 2,
+        "total": 23
+      },
+      "durationMs": 50998,
+      "providerCalls": 2,
+      "validationRetries": [],
+      "contentIssues": [],
+      "verdict": "Your personal examples convincingly support both benefits of television; the most useful next step is to repair sentence construction while preserving your qualified agreement."
+    },
+    {
+      "case": "television",
+      "run": 1,
+      "words": 206,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 5,
+        "coherence": 5,
+        "form": 2,
+        "total": 24
+      },
+      "durationMs": 114995,
+      "providerCalls": 4,
+      "validationRetries": [
+        {
+          "stage": "assessment",
+          "code": "error_quote"
+        }
+      ],
+      "contentIssues": [],
+      "verdict": "Your personal examples convincingly support both television benefits; the most useful improvement is to make the final recommendation about viewing limits explicit."
+    },
+    {
+      "case": "television",
+      "run": 2,
+      "words": 206,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 4,
+        "coherence": 5,
+        "form": 2,
+        "total": 23
+      },
+      "durationMs": 58899,
+      "providerCalls": 3,
+      "validationRetries": [],
+      "contentIssues": [],
+      "verdict": "Your personal examples fully support the two benefits and your qualified position; the most useful improvement is clearer control of explanatory and contrasting clauses."
+    },
+    {
+      "case": "television-long",
+      "run": 0,
+      "words": 293,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 1,
+        "linguistic": 4,
+        "coherence": 5,
+        "form": 2,
+        "total": 22
+      },
+      "durationMs": 42448,
+      "providerCalls": 2,
+      "validationRetries": [],
+      "contentIssues": [],
+      "verdict": "Your evening-presenter example supports a fully developed partial-agreement argument; your most useful next step is to express that example in more controlled sentences with accurate verb agreement."
+    },
+    {
+      "case": "one_sided_supported",
+      "run": 0,
+      "words": 203,
+      "scores": {
+        "content": 6,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 6,
+        "coherence": 6,
+        "form": 2,
+        "total": 26
+      },
+      "durationMs": 18696,
+      "providerCalls": 2,
+      "validationRetries": [],
+      "contentIssues": [],
+      "verdict": "Your argument is clear and fully supported, especially the link between reliable services and reduced car use; no substantive correction is needed for this practice response."
+    },
+    {
+      "case": "jobs_automation",
+      "run": 0,
+      "words": 211,
+      "scores": {
+        "content": 4,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 6,
+        "coherence": 5,
+        "form": 2,
+        "total": 23
+      },
+      "durationMs": 66276,
+      "providerCalls": 4,
+      "validationRetries": [],
+      "contentIssues": [
+        {
+          "code": "unsupported_inference",
+          "explanation": "Completing tasks faster explains potential time savings, but the factory's increased output and quality checks do not establish that every worker can leave earlier.",
+          "suggestedChange": "Make shorter hours conditional on employers using the saved time to shorten shifts rather than increase output."
+        },
+        {
+          "code": "unsupported_inference",
+          "explanation": "The essay explains productivity benefits but does not connect them to additional recruitment rather than unchanged or reduced staffing.",
+          "suggestedChange": "Explain a plausible condition for additional hiring, such as expansion requiring more staff, and qualify the guarantee."
+        },
+        {
+          "code": "unsupported_inference",
+          "explanation": "Reduced repetition and faster production do not establish that benefits reach workers automatically without discussing work allocation.",
+          "suggestedChange": "Qualify this assertion to acknowledge that employers still need to decide how saved time and remaining work are shared."
+        }
+      ],
+      "verdict": "Your clear position and useful factory example make the argument easy to follow; strengthen it by explaining the conditions for shorter hours and additional hiring rather than presenting these outcomes as automatic."
+    },
+    {
+      "case": "stance_conflict",
+      "run": 0,
+      "words": 204,
+      "scores": {
+        "content": 4,
+        "spelling": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "linguistic": 6,
+        "coherence": 4,
+        "form": 2,
+        "total": 22
+      },
+      "durationMs": 57274,
+      "providerCalls": 4,
+      "validationRetries": [],
+      "contentIssues": [
+        {
+          "code": "stance_conflict",
+          "explanation": "Despite developed reasons for prioritising public transport, the conclusion explicitly excludes it from investment, making your answer to the agreement question inconsistent.",
+          "suggestedChange": "Revise the roads-only statement to express the public-transport priority supported by your reasons."
+        }
+      ],
+      "verdict": "Your access and congestion arguments are clear and well supported; making the conclusion follow them would restore a consistent position and logical ending."
+    }
+  ],
+  "optionalSample": {
+    "status": "ready",
+    "words": 258,
+    "originalIdeasVerified": true
+  }
+}
