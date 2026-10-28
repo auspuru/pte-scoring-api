@@ -24,7 +24,8 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
   if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
 
   const submitted=a.status==='submitted';
-  const savedContent=a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
+  const hasExclusions=a.questions.some((q,i)=>speakingReport.exclusionFor(a,q,i));
+  const savedContent=!hasExclusions&&a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
   return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
     reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
     speakingReport:submitted?speakingReport.summarize(a):null,
@@ -33,8 +34,10 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
+      const exclusion=speakingReport.exclusionFor(a,q,i);
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
-        content:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
+        ...(exclusion?{exclusion:{reason:exclusion.reason,note:exclusion.note}}:{}),
+        content:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:exclusion?null:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,

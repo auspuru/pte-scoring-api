@@ -4,29 +4,54 @@ const {createAcademyClient,contentResult}=require('./visual-academy-client');
 const knownFailure=code=>['validation','provider',429,500,502,503,504].includes(code);
 // Only explicitly selected content stages can be resumed. All provider calls
 // still go through the existing owned, hash-checked and idempotent job repair.
-async function recover({username,attemptId,operation,action='diagnose',indices=[],mockStore,progressive,
+async function recover({username,attemptId,operation,action='diagnose',indices=[],questionId,note,mockStore,progressive,
   academyClient=createAcademyClient(),logger=console}={}){
   if(typeof username!=='string'||!/^[a-z0-9_.-]{1,80}$/.test(username)||typeof attemptId!=='string'||!/^[a-f0-9-]{36}$/.test(attemptId)
-    ||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,100}$/.test(operation)||!['diagnose','repair'].includes(action)
+    ||typeof operation!=='string'||!/^[a-zA-Z0-9:_-]{1,100}$/.test(operation)||!['diagnose','repair','exclude'].includes(action)
     ||!Array.isArray(indices)||indices.length>6||new Set(indices).size!==indices.length||indices.some(i=>!Number.isInteger(i)||i<0||i>200)
-    ||action==='repair'&&!indices.length)throw Error('Invalid incident recovery scope.');
+    ||action==='repair'&&!indices.length||action==='exclude'&&(indices.length!==1||typeof questionId!=='string'||!questionId||typeof note!=='string'||!note.trim()||note.length>500))throw Error('Invalid incident recovery scope.');
   const attempt=await mockStore.get(username,attemptId,{omitMockAudio:true});
   if(!attempt||attempt.status!=='submitted'||indices.some(i=>!attempt.questions[i]||attempt.questions[i].type==='intro'))throw Error('Submitted incident attempt not found.');
   async function diagnose(){
     const current=await mockStore.get(username,attemptId,{omitMockAudio:true}),candidate=await progressive.hydrate(username,current);
     const scores=report.summarize(candidate).azure,diagnostics=await progressive.diagnostics(username,attemptId);
     const value={operation,attemptId,status:diagnostics.status,accountedFor:diagnostics.accountedFor,total:current.questionCount,
-      overallScore:scores.overallScore,missing:scores.missingQuestions,
+      overallScore:scores.overallScore,assessedCount:scores.assessedCount,excludedCount:scores.excludedCount,excludedQuestions:scores.excludedQuestions,missing:scores.missingQuestions,
       jobs:diagnostics.jobs.filter(j=>scores.missingQuestions.some(q=>q.index===j.index)).map(j=>({id:j.id,index:j.index,status:j.status,
         stages:Object.fromEntries(Object.entries(j.stages||{}).map(([name,s])=>[name,{status:s.status,attempts:s.attempts,code:s.code}])),
         remoteFailures:(j.remoteFailures||[]).map(f=>({stage:f.stage,code:f.code}))}))};
     logger.info('[speaking-incident-recovery]',JSON.stringify(value));return value;
   }
   const before=await diagnose();if(action==='diagnose')return before;
+  if(action==='exclude'){
+    const index=indices[0],q=attempt.questions[index],response=attempt.responses[index];
+    if(q.id!==questionId||!response?.recording?.hash)throw Error('Exclusion question or recording does not match the requested scope.');
+    const row=(await progressive.jobs.list(username,attemptId)).find(row=>row.data.index===index);
+    if(!row||row.owner!==username||row.group_id!==attemptId||row.data.questionHash!==hash(q)||row.data.recordingHash!==response.recording.hash)throw Error('Exclusion recording or question changed.');
+    const prior=attempt.assessmentExclusions?.[index]||row.data.assessmentExclusion;
+    if(prior&&(prior.operation!==operation||prior.note!==note))throw Error('A different exclusion is already recorded.');
+    if(!prior){
+      const candidate=await progressive.hydrate(username,attempt);
+      if(report.validContent(q,candidate.responses[index]?.content)||row.status!=='needs_attention')throw Error('Only the missing feedback of a held question can be excluded.');
+    }
+    const exclusion=prior||{attemptId,username,index,questionId,questionHash:hash(q),recordingHash:response.recording.hash,
+      operation,note,reason:'feedback-unavailable',authorizedBy:'administrator',excludedAt:Date.now()};
+    if(!report.validExclusion(exclusion,q,response,index,attemptId))throw Error('Invalid exclusion receipt.');
+    await progressive.jobs.exclude(username,row.id,exclusion);
+    await mockStore.update(username,attemptId,current=>{
+      if(!report.validExclusion(exclusion,current.questions[index],current.responses[index],index,current.id))throw Error('Exclusion input changed before saving.');
+      const existing=current.assessmentExclusions?.[index];if(existing&&hash(existing)!==hash(exclusion))throw Error('Exclusion receipt changed.');
+      current.assessmentExclusions||={};current.assessmentExclusions[index]=exclusion;return current;
+    });
+    logger.info('[speaking-incident-recovery]',JSON.stringify({operation,attemptId,index,questionId,status:'excluded',note}));
+    await progressive.ensure(username,await mockStore.get(username,attemptId,{omitMockAudio:true}));
+    await progressive.wait();return diagnose();
+  }
   const candidate=await progressive.hydrate(username,attempt),rows=await progressive.jobs.list(username,attemptId),plans=[];
   // Validate every selected target before issuing any paid retry.
   for(const index of indices){
     const q=attempt.questions[index],response=candidate.responses[index];
+    if(report.exclusionFor(candidate,q,index))continue;
     if(report.validContent(q,response?.content))continue;
     const row=rows.find(r=>r.data.index===index);
     if(!row||!attempt.responses[index]?.recording?.hash||row.owner!==username||row.group_id!==attemptId||row.data.recordingHash!==attempt.responses[index].recording.hash

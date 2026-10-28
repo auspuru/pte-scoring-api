@@ -214,6 +214,15 @@ async function sampleReport(h,{paperIndex=0,processing=false}={}){
 }
 const escaped=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+test('an excluded faulty-headphones response shows its note and an overall for the other 26 answers',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h,{paperIndex:1}),note='Feedback could not be generated for your response to the faulty headphones question. This question is excluded from your overall assessment.';
+ await h.lab.store.update('alice',id,a=>{const q=a.questions[27],r=a.responses[27];delete r.content;a.assessmentExclusions={27:{attemptId:id,username:'alice',index:27,questionId:q.id,questionHash:require('../scoring-jobs').hash(q),recordingHash:r.recording.hash,operation:'exclude-headphones-ui',note,reason:'feedback-unavailable',authorizedBy:'administrator',excludedAt:1}};return a;});
+ await h.controller.open({history:true});await h.click({sm:'resume',id});const summary=h.nodes.get('sm-results-summary').innerHTML;
+ assert.match(summary,/26 of 26 questions accounted for/);assert.match(summary,/1 question excluded from the overall score/);assert(summary.includes(note));assert.doesNotMatch(summary,/Overall pending/);assert.match(h.nodes.get('sm-assessment-status').textContent,/26 of 26 content scores available/);
+ await h.click({sm:'review',index:'27'});assert.match(h.nodes.get('sm-question-list').innerHTML,/Excluded/);assert(h.nodes.get('sm-review-details').innerHTML.includes(note));assert.match(h.nodes.get('sm-review-details').innerHTML,/Excluded from the overall score/);assert.doesNotMatch(h.nodes.get('sm-review-details').innerHTML,/Unavailable/);
+ assert.match(h.nodes.get('sm-review-audio').innerHTML,/<audio/);await h.click({sm:'response-pane',pane:'transcript'});assert.match(h.nodes.get('sm-review-feedback').innerHTML,/A saved response/);
+});
+
 test('Task-weighted reports update with question marks and never fall back to a legacy whole score',async t=>{
  const h=await harness(t),{id}=await sampleReport(h,{processing:true});
  await h.lab.store.update('alice',id,a=>{a.responses[1].azure.fluency.score=null;return a;});

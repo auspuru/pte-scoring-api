@@ -50,7 +50,22 @@ function createJobs({pool,directory,table,now=Date.now}={}){
     await initialise();if(pool){const row=await get(owner,id),next=change(row);if(next)await pool.query(`UPDATE ${table} SET data=$3,status=$4,run_after=0,updated_at=$5 WHERE id=$1 AND owner=$2 AND status=$6 AND updated_at=$7 AND lease_token IS NOT DISTINCT FROM $8`,[id,owner,JSON.stringify(next.data),next.status,now(),row.status,row.updated_at,row.lease_token]);}
     else await serial(async()=>{const row=await readFile(id),next=change(row);if(next)await write({...row,...next,run_after:0,updated_at:now()});});
   }
-  return{initialise,enqueue,get,list,claim,save,heartbeat,retry,retire};
+  async function exclude(owner,id,exclusion){
+    if(!exclusion||exclusion.username!==owner||exclusion.reason!=='feedback-unavailable'||exclusion.authorizedBy!=='administrator'||!Number.isInteger(exclusion.index)||exclusion.index<0||typeof exclusion.note!=='string'||!exclusion.note.trim()||exclusion.note.length>500||typeof exclusion.operation!=='string'||!/^[a-zA-Z0-9:_-]{1,100}$/.test(exclusion.operation))throw Object.assign(Error('Invalid exclusion scope.'),{status:400});
+    const change=row=>{
+      if(!row||row.owner!==owner||row.group_id!==exclusion.attemptId||row.data.index!==exclusion.index||row.data.questionHash!==exclusion.questionHash||row.data.recordingHash!==exclusion.recordingHash)throw Object.assign(Error('Exclusion input changed.'),{status:409});
+      if(row.data.assessmentExclusion){if(hash(row.data.assessmentExclusion)!==hash(exclusion))throw Object.assign(Error('This answer has a different exclusion receipt.'),{status:409});return null;}
+      if(row.status!=='needs_attention')throw Object.assign(Error('Only a held assessment can be excluded.'),{status:409});
+      return {...structuredClone(row.data),assessmentExclusion:structuredClone(exclusion)};
+    };
+    await initialise();
+    if(pool){const row=await get(owner,id),data=change(row);if(!data)return row;
+      const result=await pool.query(`UPDATE ${table} SET data=$3,status='ready',run_after=0,lease_token=NULL,lease_until=0,updated_at=$4 WHERE id=$1 AND owner=$2 AND status='needs_attention' AND updated_at=$5 AND lease_token IS NOT DISTINCT FROM $6 RETURNING id`,[id,owner,JSON.stringify(data),now(),row.updated_at,row.lease_token]);
+      if(!result.rows.length)throw Object.assign(Error('Assessment changed during exclusion.'),{status:409});return get(owner,id);
+    }
+    return serial(async()=>{const row=await readFile(id),data=change(row);return data?write({...row,data,status:'ready',run_after:0,lease_token:null,lease_until:0,updated_at:now()}):row;});
+  }
+  return{initialise,enqueue,get,list,claim,save,heartbeat,retry,retire,exclude};
 }
 function createWorker({store,run,onSettled=async()=>{},concurrency=2,intervalMs=2000,now=Date.now}={}){
   const active=new Set();let timer,stopped=false,pumping;
