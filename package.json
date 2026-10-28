@@ -8,6 +8,8 @@
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
+    "audit:full-mock": "node scripts/audit-full-mock.js",
+    "validate:full-mock": "node scripts/audit-full-mock.js --strict",
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node --test tests/*.test.js",

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "89c096860cc262f06d435c1c102691a655ff45be",
+  "checkedAt": "2026-10-28",
+  "scope": "Scoring source audit only; runtime provider/model configuration must also be saved with future attempts.",
+  "snapshot": {
+    "schemaVersion": 1,
+    "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
+    "files": {
+      "delivery-rubric.js": {
+        "sha256": "ff0deff2081f49d45387d72be41f8f952938e813ae0399317c601e876a9147b3",
+        "version": "intelligibility-delivery-v5"
+      },
+      "describe-image-feedback.js": {
+        "sha256": "9007b443fa29d350ddcac535bb9ded9548a3ee9c63698d53405a892d53ae5f23",
+        "version": null
+      },
+      "describe-image-feedback/scoring-policy.js": {
+        "sha256": "e3ab902ec27dad63aa3deade1da6b1d048376b2625a9e0f138b97356151515ec",
+        "version": null
+      },
+      "di-reference.js": {
+        "sha256": "3699d9f1ef5c01503add68ec7bf5f8e0675b81fc8367da777a2eb05f5239921e",
+        "version": null
+      },
+      "essay-assessment-service.js": {
+        "sha256": "a95f563194088c4fe5d03e7b9b6ca951b1fbb1a84d9a81ececd84e59f5bed02c",
+        "version": null
+      },
+      "essay-evidence.js": {
+        "sha256": "2e28d4904e75e848590de8f37cf182a8d1740dd51cb5200a7c57f4ee8f1c7dc0",
+        "version": null
+      },
+      "essay-judge-format.js": {
+        "sha256": "5f8b6ba1b67e4388c67f47e5f00f41148e13193810cb31052fed030eb9f4f7cd",
+        "version": null
+      },
+      "full-mock/blueprint.js": {
+        "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "version": null
+      },
+      "full-mock/rubrics.js": {
+        "sha256": "7284182723e9e147aaf3a4efc19f17fbaebdbe1fc8b18e9667e223f733180a74",
+        "version": null
+      },
+      "gpt-speaking-delivery.js": {
+        "sha256": "cb42317a9cf1b4f34dbdcceeb32ff7df509fe55a449e518b6a312d40142cb580",
+        "version": null,
+        "versionExpression": "'gpt-delivery-2026-10-25.1:' + MODEL"
+      },
+      "listening-scoring.js": {
+        "sha256": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
+        "version": null
+      },
+      "local-scoring-engine.js": {
+        "sha256": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
+        "version": null
+      },
+      "public/essay-scoring.js": {
+        "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
+        "version": "essay-unified-2.6"
+      },
+      "public/reading-mock-tools.js": {
+        "sha256": "ef3a28b80678ee9e9c1b03831dcc87054e65dd8cebc5ee7848b370180ee42588",
+        "version": null
+      },
+      "public/reading-practice.js": {
+        "sha256": "4e80ba9501ba1d63fa7191ff263179b5bc15cef49e41c082ccb36ec2fead5d8d",
+        "version": null
+      },
+      "public/writing-lab-report.js": {
+        "sha256": "9df6a755fddf4342731462708d84d0e9100a37fb99d4c29fe9e3decb76d88b69",
+        "version": null
+      },
+      "server.js": {
+        "sha256": "0e2b2be1525cfccc85118b25810b6a4880a4cf47e52b337ede50b382714878e0",
+        "version": null
+      },
+      "situation-content-policy.js": {
+        "sha256": "a38eea55cc0dbec6e6011d59a50b91068bd61e866b6a3103337eb5085e2036fd",
+        "version": "functional-situation-content-2026-10-24.1"
+      },
+      "speaking-delivery.js": {
+        "sha256": "3eff2225f3daa16d85cf45e2fc88acff043e8212397fcb76b7a206092a55be0b",
+        "version": null
+      },
+      "speaking-scoring.js": {
+        "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+        "version": "speaking-content-2026-10-25.2"
+      },
+      "spoken-summary-policy.js": {
+        "sha256": "469d8543929f1035310868a6153e89424d1fef084e61c0a47e70892a5ae7a2e4",
+        "version": "connected-spoken-summary-2026-10-25.1"
+      },
+      "swt-form-policy.js": {
+        "sha256": "43ffe8755a7b025cbb9ba354fb69058d85d90d716666ed0233a5826c678bb2c2",
+        "version": null
+      },
+      "swt-judge-format.js": {
+        "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+        "version": null
+      },
+      "swt-judgment-service.js": {
+        "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+        "version": null
+      },
+      "swt-reference.js": {
+        "sha256": "252823dcc952fa561195591c79e79855d388a8c4f2e39a7b7534d1c74dd36a3a",
+        "version": null
+      },
+      "swt-scoring-policy.js": {
+        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
+        "version": "20.3.16"
+      },
+      "writing-lab-scoring.js": {
+        "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
+        "version": "exam-practice-2026-10-09.1"
+      }
+    }
+  }
+}
