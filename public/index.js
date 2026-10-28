@@ -12518,9 +12518,12 @@ function ensureReadingRuntimeLoaded() {
 
 let speakingCueLoadPromise=null;
 function ensureSpeakingCueLoaded(){
-  if(window.SpeakingStartCue)return Promise.resolve(window.SpeakingStartCue);
-  if(!speakingCueLoadPromise)speakingCueLoadPromise=loadDeferredScript('/speaking-start-cue.js?v=sha256-a6b555dcdbf7','speaking start sound').then(()=>{
-    if(!window.SpeakingStartCue)throw Error('Speaking start sound did not load.');return window.SpeakingStartCue;
+  if(window.SpeakingStartCue&&window.SpeakingImages)return Promise.resolve(window.SpeakingStartCue);
+  if(!speakingCueLoadPromise)speakingCueLoadPromise=Promise.all([
+    window.SpeakingStartCue?null:loadDeferredScript('/speaking-start-cue.js?v=sha256-a6b555dcdbf7','speaking start sound'),
+    window.SpeakingImages?null:loadDeferredScript('/speaking-images.js?v=sha256-64e96a99ea48','speaking image viewer')
+  ]).then(()=>{
+    if(!window.SpeakingStartCue||!window.SpeakingImages)throw Error('Speaking media did not load.');return window.SpeakingStartCue;
   }).catch(error=>{speakingCueLoadPromise=null;throw error;});
   return speakingCueLoadPromise;
 }
@@ -12528,7 +12531,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-51b2d17ac53f', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-9b9e2fef39ca', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12544,7 +12547,7 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-6485b89cf918','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-d78ab8476e5a','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 

@@ -9,7 +9,7 @@ function question(q,reveal=false) {
   return {id:q.id,type:q.type,name:q.name,title:q.title,instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
     ...(['ra','rts'].includes(q.type)?{text:q.text}:{}),
     ...(hasPrompt(q)?{audioUrl:'/speaking-audio/'+q.id+'.mp3?v='+bank.version}:{}),
-    ...(q.imageUrl?{imageUrl:q.imageUrl}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
+    ...(q.imageUrl?{imageUrl:q.imageUrl,...require('./di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
     ...(q.predictionSource?{predictionSource:q.predictionSource}:{}),
     ...(reveal?{sample:q.sample,reference:q.text,facts:q.facts,visual:q.visual}:{})};
 }

@@ -45,6 +45,12 @@ function harness({includePredictions=false,audioCue=false}={}) {
     click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}})};
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
+test('Describe Image practice uses a matching clear file and retains the saved original as fallback',async()=>{
+ const h=harness({includePredictions:true});await h.controller.open('di');await h.click({speakingQuestion:'di-pred-3000137'});
+ const entry=require('../di-image-display').manifest.entries['di-pred-3000137'];assert(h.host.innerHTML.includes('src="'+entry.displayImageUrl+'"'));assert(h.host.innerHTML.includes('data-original-image="'+entry.originalImageUrl+'"'));
+ assert.match(h.host.innerHTML,/Enlarge image/);assert.match(h.host.innerHTML,/Non-agricultural land/);assert.match(h.host.innerHTML,/speaking-image-dialog/);assert.equal(h.attempts.size,1);
+ h.controller.reset();
+});
 test('Repeat Sentence practice waits for one beep, then records the complete 15-second response',async()=>{
  const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});
  assert.equal(h.cueAudio.tones.length,0);assert.equal(h.recorders.length,0);

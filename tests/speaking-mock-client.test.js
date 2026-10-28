@@ -32,6 +32,13 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
     starts:()=>recorderStarts,permissions:()=>permissionCalls,protected:()=>full,user:value=>uid=value};
 }
 
+test('the active mock shows a verified clear image with enlargement while preserving the saved question',async t=>{
+ const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ const saved=await h.active(),index=saved.questions.findIndex(q=>q.type==='di');await h.lab.store.update('alice',saved.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
+ await h.controller.open();await h.click({sm:'resume',id:saved.id});const q=(await h.active()).questions[index],entry=require('../di-image-display').manifest.entries[q.id];
+ assert(h.host.innerHTML.includes('src="'+entry.displayImageUrl+'"'));assert(h.host.innerHTML.includes('data-original-image="'+q.imageUrl+'"'));assert.match(h.host.innerHTML,/Enlarge image/);assert.match(h.host.innerHTML,/sm-image-dialog/);
+ assert.equal(q.displayImageUrl,undefined);assert.equal(q.imageUrl,entry.originalImageUrl);
+});
 test('background results show only a preparing banner, poll automatically and open the complete report',async t=>{
   let release;const gradeGate=new Promise(resolve=>release=resolve),h=await harness(t,{backgroundEnabled:true,gradeGate}),paper=require('../content/speaking-mocks').papers[0],id=require('node:crypto').randomUUID();
   const questions=structuredClone(paper.questions),index=questions.length-1,responses=questions.map(()=>({skipped:true}));responses[index]={recording:{mime:'audio/webm',data:Buffer.alloc(200,7).toString('base64'),hash:'saved'},transcript:'Saved response.'};

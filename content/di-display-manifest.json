@@ -1,0 +1,1016 @@
+{
+  "version": "di-display-2026-10-28.1",
+  "sourceRepository": "auspuru/Describe",
+  "sourceCommit": "fd65b34bd66849e2148188e05f4e14a78fb77d76",
+  "purpose": "Verified display-only versions of the same supplied images. Canonical scoring images and references are unchanged.",
+  "limitation": "Resampling improves display size and edges but cannot recover unreadable source text. No image model or guessed values are used.",
+  "entries": {
+    "di-pred-3000195": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000195.png",
+      "originalSha256": "fe06bafbdf2c04707d9bc5812826cd5e781b56c737e06582fd58921ccef330a7",
+      "displayImageUrl": "/assets/di-display-20261028/3000195-6b783c6f309e.webp",
+      "displaySha256": "6b783c6f309e05b10081a4d95a2a74da516e6401132cfe381e704d5e078fd048",
+      "bytes": 643154,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000195.webp",
+      "legend": [],
+      "originalDimensions": [
+        422,
+        362
+      ],
+      "displayDimensions": [
+        1688,
+        1448
+      ],
+      "roundTripRmse": 0.013252
+    },
+    "di-pred-3000186": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000186.png",
+      "originalSha256": "9848084bdc3dca8ddda55e2b23565b74e37333c645a462152447a47d4e14598d",
+      "displayImageUrl": "/assets/di-display-20261028/3000186-af1a9cccac87.svg",
+      "displaySha256": "af1a9cccac8759d439d73968503921bc204d3a54a77848b50d51d0c421daa62d",
+      "bytes": 2227,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/average-rainfall.svg",
+      "legend": []
+    },
+    "di-pred-3000137": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000137.png",
+      "originalSha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578",
+      "displayImageUrl": "/assets/di-display-20261028/3000137-c4260540a4fc.webp",
+      "displaySha256": "c4260540a4fc7eb7f4b6215288036075299ed14286f5c633dc64c6094cfadeff",
+      "bytes": 1681454,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/upscaled/3000137.webp",
+      "legend": [
+        [
+          "Arable land",
+          "#f4fa80"
+        ],
+        [
+          "Forests",
+          "#007541"
+        ],
+        [
+          "Non-agricultural land",
+          "#b65128"
+        ],
+        [
+          "Plantation",
+          "#4ee900"
+        ],
+        [
+          "Scrub and grass",
+          "#e18bf5"
+        ],
+        [
+          "Unproductive land",
+          "#f9c877"
+        ]
+      ]
+    },
+    "di-pred-3000134": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000134.png",
+      "originalSha256": "8cce603b4e1d6cdb67e68e0cf7aaa9566c6271db7231d6d2a1aa3dee5cd82edc",
+      "displayImageUrl": "/assets/di-display-20261028/3000134-7b93b5aa96ea.webp",
+      "displaySha256": "7b93b5aa96eadbf3e0ee141249a542ac4611da7adf2220d00b0fdf400bb462e9",
+      "bytes": 649190,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000134.webp",
+      "legend": [],
+      "originalDimensions": [
+        342,
+        301
+      ],
+      "displayDimensions": [
+        1368,
+        1204
+      ],
+      "roundTripRmse": 0.012369
+    },
+    "di-pred-3000125": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000125.png",
+      "originalSha256": "800d0a50d00304397760ae005bf535da54e47e51b104d8b8d7bad70d39394127",
+      "displayImageUrl": "/assets/di-display-20261028/3000125-f623ffc6fc7f.webp",
+      "displaySha256": "f623ffc6fc7fce55d8f65a7cc50b8ac53c20fc595b3c9ebf45382a4756cb49a9",
+      "bytes": 813620,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000125.webp",
+      "legend": [],
+      "originalDimensions": [
+        487,
+        285
+      ],
+      "displayDimensions": [
+        1461,
+        855
+      ],
+      "roundTripRmse": 0.008232
+    },
+    "di-pred-3000370": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000370.png",
+      "originalSha256": "8dfa0f0046b17c7c70e8382539963e5ca9ffc322b55c0e66f8c47e496366dfc3",
+      "displayImageUrl": "/assets/di-display-20261028/3000370-c2638133a26b.webp",
+      "displaySha256": "c2638133a26b684260805669bba5dabd1f092725bee2df6f59bb292af63eaf2c",
+      "bytes": 282952,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000370.webp",
+      "legend": [],
+      "originalDimensions": [
+        504,
+        273
+      ],
+      "displayDimensions": [
+        1512,
+        819
+      ],
+      "roundTripRmse": 0.006086,
+      "limitations": [
+        "The curves have no exact labels for every point; plotted participant counts are approximate, not a complete numerical series."
+      ]
+    },
+    "di-pred-3000365": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000365.png",
+      "originalSha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3",
+      "displayImageUrl": "/assets/di-display-20261028/3000365-cbfd7d5a3cc9.png",
+      "displaySha256": "cbfd7d5a3cc94bc26b1f40f3e57b550b83ea6c72da2f323c12b2d84d59c441f1",
+      "bytes": 1181860,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/world-population-density-1994.png",
+      "legend": [
+        [
+          "Fewer than 2 people per km²",
+          "#e6e6e6"
+        ],
+        [
+          "2–10 people per km²",
+          "#99ff99"
+        ],
+        [
+          "11–40 people per km²",
+          "#ff8000"
+        ],
+        [
+          "41–100 people per km²",
+          "#ff0000"
+        ],
+        [
+          "101–500 people per km²",
+          "#cc0000"
+        ],
+        [
+          "More than 500 people per km²",
+          "#ff00ff"
+        ]
+      ],
+      "source": {
+        "asset": "assets/clear/world-population-density-1994.png",
+        "sha256": "cbfd7d5a3cc94bc26b1f40f3e57b550b83ea6c72da2f323c12b2d84d59c441f1",
+        "dimensions": [
+          6693,
+          3977
+        ],
+        "url": "https://upload.wikimedia.org/wikipedia/commons/archive/4/49/20200504023515%21World_population_density_1994_-_with_equator.png",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:World_population_density_1994_-_with_equator.png",
+        "reviewedAt": "2026-10-24",
+        "method": "Visual comparison of geography, boundaries, equator, colour classes, labels and legend against the canonical image.",
+        "notes": "USDA, public domain; archived 2016 rendition preserves the original colour classes and equator."
+      }
+    },
+    "di-pred-3000354": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000354.png",
+      "originalSha256": "ea1bff69e33065609a918a54fdf27bda9cdbe92a9b680cbaf65068b3cb152325",
+      "displayImageUrl": "/assets/di-display-20261028/3000354-2dc6b393f71a.webp",
+      "displaySha256": "2dc6b393f71a1a52e1630a5931cf9b1f0f1b33d1a796279d2e0fb60a1d69eb63",
+      "bytes": 508824,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000354.webp",
+      "legend": [],
+      "originalDimensions": [
+        495,
+        275
+      ],
+      "displayDimensions": [
+        1485,
+        825
+      ],
+      "roundTripRmse": 0.010182
+    },
+    "di-pred-3000349": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000349.png",
+      "originalSha256": "1ade44bc6a2707fed093ad48f8d2af40b7b9cf669e201bbd1eeff6a74ea478c2",
+      "displayImageUrl": "/assets/di-display-20261028/3000349-0aef59fefb02.jpg",
+      "displaySha256": "0aef59fefb0289cbdd29199e2970722ca93979c0c1fa17a616992bccaf15416a",
+      "bytes": 46081,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/earth-climate-zones.jpg",
+      "legend": [
+        [
+          "Polar zone",
+          "#f192bc"
+        ],
+        [
+          "Temperate zone",
+          "#f2be43"
+        ],
+        [
+          "Tropical zone",
+          "#a0bf58"
+        ]
+      ],
+      "source": {
+        "asset": "assets/clear/earth-climate-zones.jpg",
+        "sha256": "0aef59fefb0289cbdd29199e2970722ca93979c0c1fa17a616992bccaf15416a",
+        "dimensions": [
+          702,
+          521
+        ],
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000349.jpeg",
+        "sourcePage": "https://ptenepal.com/pte-predictions/describe-image/#q84",
+        "reviewedAt": "2026-10-24",
+        "method": "Visual comparison of geography, boundaries, equator, colour classes, labels and legend against the canonical image.",
+        "notes": "Higher-resolution copy of the same provider image; no redrawing or resampling."
+      }
+    },
+    "di-pred-3000422": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000422.png",
+      "originalSha256": "9eba90fd6e8cb94d6cb572754ea61d4247158375ddbc47489afcf33ba0213cbe",
+      "displayImageUrl": "/assets/di-display-20261028/3000422-026f13b0c4f6.svg",
+      "displaySha256": "026f13b0c4f608937e1d8e01c4efba09f496fae7bcbc9aecda962901401af89f",
+      "bytes": 7711,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000422.svg",
+      "legend": []
+    },
+    "di-pred-3000411": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000411.png",
+      "originalSha256": "e37271995224a53192d43288bc1ffb4141eabe9ce36c9516ced60a8d8be953ab",
+      "displayImageUrl": "/assets/di-display-20261028/3000411-43deacf14ae0.webp",
+      "displaySha256": "43deacf14ae063bb1ff5088e07d810c2c914d299859e577ea49689105f4e24b7",
+      "bytes": 225284,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000411.webp",
+      "legend": [],
+      "originalDimensions": [
+        504,
+        257
+      ],
+      "displayDimensions": [
+        1512,
+        771
+      ],
+      "roundTripRmse": 0.00998,
+      "limitations": [
+        "No measurement units or exact monthly data labels are printed; preserve the original and use approximate chart readings only."
+      ]
+    },
+    "di-pred-3000392": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000392.png",
+      "originalSha256": "0436b5e9d2819450ed0ec6c1aa1364fb446ca05c1b09e000e308e045ca3f1756",
+      "displayImageUrl": "/assets/di-display-20261028/3000392-c1e5ac45a40e.webp",
+      "displaySha256": "c1e5ac45a40ee89e1ba113e2cd9b71e752a813e289e86356b607c68b6db5027e",
+      "bytes": 717388,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000392.webp",
+      "legend": [],
+      "originalDimensions": [
+        386,
+        325
+      ],
+      "displayDimensions": [
+        1544,
+        1300
+      ],
+      "roundTripRmse": 0.020948
+    },
+    "di-pred-3000375": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000375.png",
+      "originalSha256": "4bbd258178e9619d098bd235f60531d395b842fb6931444e622e943a43326e59",
+      "displayImageUrl": "/assets/di-display-20261028/3000375-b72161b6e379.svg",
+      "displaySha256": "b72161b6e37984887f65631fa47090e318a2198749d8ee16dde219cbe61cf5c0",
+      "bytes": 4336,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000375.svg",
+      "legend": []
+    },
+    "di-pred-3000481": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000481.png",
+      "originalSha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc",
+      "displayImageUrl": "/assets/di-display-20261028/3000481-b4526401b7e6.webp",
+      "displaySha256": "b4526401b7e6a1455830e314ddc400d712d30b636f8d556a99f812812d572fc7",
+      "bytes": 226840,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000481.webp",
+      "legend": [],
+      "originalDimensions": [
+        469,
+        341
+      ],
+      "displayDimensions": [
+        1407,
+        1023
+      ],
+      "roundTripRmse": 0.007536,
+      "limitations": [
+        "The projected lower-right annotation is too small for reliable transcription; no forecast numbers are inferred."
+      ]
+    },
+    "di-pred-3000469": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000469.png",
+      "originalSha256": "5d6bd90bb134be6fb19ad77219d8ec94e542227c0f60927168f4100b74db9b46",
+      "displayImageUrl": "/assets/di-display-20261028/3000469-0e836f3dc0ba.webp",
+      "displaySha256": "0e836f3dc0bab6ab3a7206539d5d6d5ab9cd5791c4244099e57ce03f822d14d6",
+      "bytes": 324820,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000469.webp",
+      "legend": [],
+      "originalDimensions": [
+        455,
+        342
+      ],
+      "displayDimensions": [
+        1365,
+        1026
+      ],
+      "roundTripRmse": 0.008202
+    },
+    "di-pred-3000461": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000461.png",
+      "originalSha256": "21085ffb8c93aba970e321976e1e9f18985be675aedd387d58368401f6d0ebc9",
+      "displayImageUrl": "/assets/di-display-20261028/3000461-922d2a9dd080.webp",
+      "displaySha256": "922d2a9dd0808b2c70a97e185dcb94ce5b4310e0482227a5a290602b89d0fa92",
+      "bytes": 185494,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000461.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        301
+      ],
+      "displayDimensions": [
+        1506,
+        903
+      ],
+      "roundTripRmse": 0.00345,
+      "limitations": [
+        "Bar percentages are estimated from the vertical axis; exact unlabelled heights are not inferred."
+      ]
+    },
+    "di-pred-3000429": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000429.png",
+      "originalSha256": "3388f137645d9fa5ce7b0c7eb7556c3ce65585bd14e2fc07c133a0aa70cee0e9",
+      "displayImageUrl": "/assets/di-display-20261028/3000429-bb6c7d3a3db8.webp",
+      "displaySha256": "bb6c7d3a3db829e29221a4b1ca221734512b7502d3c62baa76f5b5be2bb8594e",
+      "bytes": 618132,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000429.webp",
+      "legend": [],
+      "originalDimensions": [
+        423,
+        338
+      ],
+      "displayDimensions": [
+        1692,
+        1352
+      ],
+      "roundTripRmse": 0.005098
+    },
+    "di-pred-3000579": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000579.png",
+      "originalSha256": "00a7978d5403c9a98686b88513552669302327ea0678bd768cd3cf5d066e423d",
+      "displayImageUrl": "/assets/di-display-20261028/3000579-4b17eec6dad3.webp",
+      "displaySha256": "4b17eec6dad38d67a501e434669a1e6d06ab6d14c62ba450d1d3a12fac0df92f",
+      "bytes": 535224,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000579.webp",
+      "legend": [
+        [
+          "Heavy drinker",
+          "#8cac12"
+        ],
+        [
+          "Light drinker",
+          "#c11610"
+        ],
+        [
+          "Ex-drinker",
+          "#ffce19"
+        ],
+        [
+          "Never drinker",
+          "#2699b6"
+        ]
+      ],
+      "originalDimensions": [
+        391,
+        271
+      ],
+      "displayDimensions": [
+        1564,
+        1084
+      ],
+      "roundTripRmse": 0.005871,
+      "limitations": [
+        "No exact percentages are printed on the segments; the stacked distribution is interpreted qualitatively."
+      ]
+    },
+    "di-pred-3000561": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000561.png",
+      "originalSha256": "763b0d95db58964c2a500c621a55bb689140ec93c8a6ed051bbdb49355b7ecf4",
+      "displayImageUrl": "/assets/di-display-20261028/3000561-576caf91cb99.webp",
+      "displaySha256": "576caf91cb995a3987ca1c8ffe736e5a3e72f53da403e58b8fc391358c100da7",
+      "bytes": 339432,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000561.webp",
+      "legend": [],
+      "originalDimensions": [
+        473,
+        338
+      ],
+      "displayDimensions": [
+        1419,
+        1014
+      ],
+      "roundTripRmse": 0.005317
+    },
+    "di-pred-3000560": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000560.png",
+      "originalSha256": "dc193e3f7ffe9594263f060a5437c6d193dccc6cb995a241adcbfb5ddfa92218",
+      "displayImageUrl": "/assets/di-display-20261028/3000560-4b55df6ad2f0.webp",
+      "displaySha256": "4b55df6ad2f0145a41daadef941b0103023fdeaa72e79fa3312e204a52fd73c1",
+      "bytes": 242918,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000560.webp",
+      "legend": [],
+      "originalDimensions": [
+        501,
+        375
+      ],
+      "displayDimensions": [
+        1503,
+        1125
+      ],
+      "roundTripRmse": 0.008815
+    },
+    "di-pred-3000542": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000542.png",
+      "originalSha256": "77d705c8eec30ff46b4f37aba0f266fec43fa7879779eebfe910e83404bc0e0a",
+      "displayImageUrl": "/assets/di-display-20261028/3000542-5bfc22dc08fb.webp",
+      "displaySha256": "5bfc22dc08fb76e3c5214cda319aee2d165db9634379fdb6f23e5f2d7f78e74f",
+      "bytes": 768522,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000542.webp",
+      "legend": [],
+      "originalDimensions": [
+        381,
+        284
+      ],
+      "displayDimensions": [
+        1524,
+        1136
+      ],
+      "roundTripRmse": 0.006526
+    },
+    "di-pred-3000589": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000589.png",
+      "originalSha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1",
+      "displayImageUrl": "/assets/di-display-20261028/3000589-4b3c65831768.webp",
+      "displaySha256": "4b3c65831768baa3d951c1ec112e864bf58a34ea7c892892c2d1719650067d5f",
+      "bytes": 439174,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000589.webp",
+      "legend": [
+        [
+          "Hot humid",
+          "#ef141c"
+        ],
+        [
+          "Warm humid",
+          "#ed5f89"
+        ],
+        [
+          "Hot dry summer, warm winter",
+          "#ffac08"
+        ],
+        [
+          "Hot dry summer, cold winter",
+          "#ffff00"
+        ],
+        [
+          "Temperate",
+          "#28ef51"
+        ],
+        [
+          "Cool temperate",
+          "#0cace2"
+        ]
+      ],
+      "originalDimensions": [
+        348,
+        379
+      ],
+      "displayDimensions": [
+        1392,
+        1516
+      ],
+      "roundTripRmse": 0.006519
+    },
+    "di-pred-3000587": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000587.png",
+      "originalSha256": "d3f0f14f4d9de4db7e2d7866a62653b63dbc256339c50e26277395fd2218ec4b",
+      "displayImageUrl": "/assets/di-display-20261028/3000587-28943d487d5a.svg",
+      "displaySha256": "28943d487d5a5f8fdcb147774af92d7ebe128652bd5a8aca257f74cc89b093f7",
+      "bytes": 3545,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000587.svg",
+      "legend": []
+    },
+    "di-pred-3000586": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000586.png",
+      "originalSha256": "4e9c530bedfe3fa99c368784c05b842674064cc5de4d7c16489b5775d3e11f48",
+      "displayImageUrl": "/assets/di-display-20261028/3000586-ca5d9b32f672.svg",
+      "displaySha256": "ca5d9b32f672dc87987d6eccde66a365c27a7025ce8d306949bf6975889dbbfd",
+      "bytes": 5934,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000586.svg",
+      "legend": []
+    },
+    "di-pred-3000580": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000580.png",
+      "originalSha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8",
+      "displayImageUrl": "/assets/di-display-20261028/3000580-1f4427e76647.webp",
+      "displaySha256": "1f4427e7664785f60880e5bb865b83b744970f6bc804eec547039ee4e6dd287b",
+      "bytes": 518458,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000580.webp",
+      "legend": [
+        [
+          "100 or more people per sq km",
+          "#f6502b"
+        ],
+        [
+          "10 to 100 people per sq km",
+          "#ff9060"
+        ],
+        [
+          "1 to 10 people per sq km",
+          "#ffb47b"
+        ],
+        [
+          "0.1 to 1 person per sq km",
+          "#f9d989"
+        ],
+        [
+          "Less than 0.1 person per sq km",
+          "#fff7ba"
+        ]
+      ],
+      "originalDimensions": [
+        374,
+        349
+      ],
+      "displayDimensions": [
+        1496,
+        1396
+      ],
+      "roundTripRmse": 0.004221
+    },
+    "di-pred-3000603": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000603.png",
+      "originalSha256": "4169062433d9f777053053212a09a78c44651869d7abc88ffdd9c5ef9226d9d4",
+      "displayImageUrl": "/assets/di-display-20261028/3000603-b0a9fd6fdf70.webp",
+      "displaySha256": "b0a9fd6fdf70ccc1d43454fa39f7c5c146bb94cca3973d9897c4906bb058b34a",
+      "bytes": 455264,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000603.webp",
+      "legend": [],
+      "originalDimensions": [
+        282,
+        233
+      ],
+      "displayDimensions": [
+        1128,
+        932
+      ],
+      "roundTripRmse": 0.012685
+    },
+    "di-pred-3000601": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000601.png",
+      "originalSha256": "076997dc02bad8221538bdedc3c1fac7eeaaf637c34ca6b60ebd2bb292933fa9",
+      "displayImageUrl": "/assets/di-display-20261028/3000601-8d2055181257.svg",
+      "displaySha256": "8d2055181257abf21c39dfd61678722dab1999fef9dee6b38d80ca868a2b8cf7",
+      "bytes": 4203,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000601.svg",
+      "legend": []
+    },
+    "di-pred-3000594": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000594.png",
+      "originalSha256": "1901483ff1f347c7ed5666fbfa8722f8cc5a3349f59c1be561b4519d8c6a4ada",
+      "displayImageUrl": "/assets/di-display-20261028/3000594-34e96b28403b.webp",
+      "displaySha256": "34e96b28403b9e81a315b852deadfadeb6a758fd1a7166673a8dc94d57829fa1",
+      "bytes": 424922,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000594.webp",
+      "legend": [],
+      "originalDimensions": [
+        382,
+        282
+      ],
+      "displayDimensions": [
+        1528,
+        1128
+      ],
+      "roundTripRmse": 0.007055
+    },
+    "di-pred-3000669": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000669.png",
+      "originalSha256": "7a982c62ebd748f1ad52a8468928949334febcfc1047f16615569da885d00425",
+      "displayImageUrl": "/assets/di-display-20261028/3000669-00fdfa9a15fb.webp",
+      "displaySha256": "00fdfa9a15fb636933337a130bcfb28b631b180f4f534ca57384edca40e1f7d3",
+      "bytes": 493192,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000669.webp",
+      "legend": [],
+      "originalDimensions": [
+        281,
+        307
+      ],
+      "displayDimensions": [
+        1124,
+        1228
+      ],
+      "roundTripRmse": 0.013495,
+      "limitations": [
+        "The source prints an inconsistent freshwater subtotal; retain its literal labels and do not infer corrected totals or normalize the percentages."
+      ]
+    },
+    "di-pred-3000665": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000665.png",
+      "originalSha256": "1186e59f47da913b95ffdf7532e8c5736718bdc6f17bdec6cd0b902030a0ea56",
+      "displayImageUrl": "/assets/di-display-20261028/3000665-7969f2ebab40.webp",
+      "displaySha256": "7969f2ebab40fdc49f05545f08dd68d96e90d6aa8a74812504bf8646c29927e5",
+      "bytes": 706248,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000665.webp",
+      "legend": [],
+      "originalDimensions": [
+        459,
+        383
+      ],
+      "displayDimensions": [
+        1377,
+        1149
+      ],
+      "roundTripRmse": 0.005362
+    },
+    "di-pred-3000664": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000664.png",
+      "originalSha256": "0c1250275aa69d1cce4612d170a42fbe9ec6d44cd7bf169fec3ef624fc2dafcd",
+      "displayImageUrl": "/assets/di-display-20261028/3000664-b0adee37e7cd.svg",
+      "displaySha256": "b0adee37e7cdfb3369a4e6bb3d3bf20f8d4d35f057704b454f1293e3747e8303",
+      "bytes": 6174,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000664.svg",
+      "legend": []
+    },
+    "di-pred-3000708": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000708.png",
+      "originalSha256": "9c5d87197a53af69b2aa01267b8113b0d9eb2d9fde43ebd7d52f7136ebb9e30f",
+      "displayImageUrl": "/assets/di-display-20261028/3000708-bdf8aa1a7c06.webp",
+      "displaySha256": "bdf8aa1a7c0607d99dbe253fd9fc1bbaf1f6153990e2de4dd7f25e80e59203b9",
+      "bytes": 912952,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000708.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        328
+      ],
+      "displayDimensions": [
+        1509,
+        984
+      ],
+      "roundTripRmse": 0.007682
+    },
+    "di-pred-3000707": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000707.png",
+      "originalSha256": "343bea8d6ebc2f9acd9a54f99fe9387ac227903516d595bb6c07bc183b58f1f2",
+      "displayImageUrl": "/assets/di-display-20261028/3000707-96cd6413ca6a.webp",
+      "displaySha256": "96cd6413ca6ac0411f0755e94a8c0b7e0373d825403c967b9bafa8e625086c95",
+      "bytes": 826490,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000707.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        293
+      ],
+      "displayDimensions": [
+        1509,
+        879
+      ],
+      "roundTripRmse": 0.004636
+    },
+    "di-pred-3000704": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000704.png",
+      "originalSha256": "2e0e39c6f36e4eb006d96da986454825a4c8f36833944ef7c5ccd86ab7d2f569",
+      "displayImageUrl": "/assets/di-display-20261028/3000704-b6f0a49c7e53.webp",
+      "displaySha256": "b6f0a49c7e5334acd113265e0b36345ec8aa9eb7c2754b957b848b0560a0633a",
+      "bytes": 125068,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000704.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        278
+      ],
+      "displayDimensions": [
+        1509,
+        834
+      ],
+      "roundTripRmse": 0.004578
+    },
+    "di-pred-3000697": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000697.png",
+      "originalSha256": "0f65b67846fbd770844ef2c1192473d703c84a440d04edd9a184c30b4949f586",
+      "displayImageUrl": "/assets/di-display-20261028/3000697-5c7019d7fc4d.webp",
+      "displaySha256": "5c7019d7fc4d03db43587bda10ee3fce4d1d5b20fe77256d152752a114b55eb3",
+      "bytes": 796968,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000697.webp",
+      "legend": [],
+      "originalDimensions": [
+        388,
+        372
+      ],
+      "displayDimensions": [
+        1552,
+        1488
+      ],
+      "roundTripRmse": 0.00682
+    },
+    "di-pred-3000742": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000742.png",
+      "originalSha256": "800ae617dcca5184639210b23b1f39ab079cae53d206ed783dbc3e9b27b15380",
+      "displayImageUrl": "/assets/di-display-20261028/3000742-ba0adb2946d2.webp",
+      "displaySha256": "ba0adb2946d2dd1b7fd56662264fffaaf4397232fbc7e5ecdb79de2de8e6e2f6",
+      "bytes": 529584,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000742.webp",
+      "legend": [],
+      "originalDimensions": [
+        505,
+        335
+      ],
+      "displayDimensions": [
+        1515,
+        1005
+      ],
+      "roundTripRmse": 0.008751
+    },
+    "di-pred-3000739": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000739.png",
+      "originalSha256": "6c6d54ed645fc3e317f88c4f2af9d0303e148401a99ff34bf8e93337d0ef2219",
+      "displayImageUrl": "/assets/di-display-20261028/3000739-77a79d8c12d4.webp",
+      "displaySha256": "77a79d8c12d48d9678cf8c8ffdffa2dda7fa080127320a9ca93914a29134bc03",
+      "bytes": 392704,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000739.webp",
+      "legend": [],
+      "originalDimensions": [
+        505,
+        317
+      ],
+      "displayDimensions": [
+        1515,
+        951
+      ],
+      "roundTripRmse": 0.011252,
+      "limitations": [
+        "Percentages are approximate readings of bars; the source does not label every bar with an exact value."
+      ]
+    },
+    "di-pred-3000726": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000726.png",
+      "originalSha256": "ac6e535ebb9e06179fefabd8d0f3658a7f0bb47d740462fdce530763cf62b248",
+      "displayImageUrl": "/assets/di-display-20261028/3000726-9dce785517c7.webp",
+      "displaySha256": "9dce785517c7bd1f83b8a9501bdf7fd8c289d0f0397806449c7edb96cad9767b",
+      "bytes": 541914,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000726.webp",
+      "legend": [],
+      "originalDimensions": [
+        361,
+        379
+      ],
+      "displayDimensions": [
+        1444,
+        1516
+      ],
+      "roundTripRmse": 0.008785
+    },
+    "di-pred-3001061": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001061.png",
+      "originalSha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9",
+      "displayImageUrl": "/assets/di-display-20261028/3001061-c36d7654beb4.webp",
+      "displaySha256": "c36d7654beb4bcd94fcc3994a7367f8ab75a0685dc35a5a1687bd7e85841a51c",
+      "bytes": 129118,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001061.webp",
+      "legend": [],
+      "originalDimensions": [
+        486,
+        197
+      ],
+      "displayDimensions": [
+        1458,
+        591
+      ],
+      "roundTripRmse": 0.008749,
+      "limitations": [
+        "Several country labels and unlabelled bar values are absent or illegible in the original; no names or missing percentages are invented."
+      ]
+    },
+    "di-pred-3000885": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000885.png",
+      "originalSha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf",
+      "displayImageUrl": "/assets/di-display-20261028/3000885-e538acc8f87a.webp",
+      "displaySha256": "e538acc8f87ad20039cfe150ed55ab4e3d051b05ca38b88086cd0a044fef57f0",
+      "bytes": 341486,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000885.webp",
+      "legend": [
+        [
+          "10–16.38% of national honey production",
+          "#a7410b"
+        ],
+        [
+          "3–10%",
+          "#f69821"
+        ],
+        [
+          "1–3%",
+          "#ffd391"
+        ],
+        [
+          "0–1%",
+          "#fff0d6"
+        ]
+      ],
+      "originalDimensions": [
+        446,
+        305
+      ],
+      "displayDimensions": [
+        1338,
+        915
+      ],
+      "roundTripRmse": 0.009806,
+      "limitations": [
+        "Individual states are not named on the map; do not assign exact percentages or names to an unlabeled state."
+      ]
+    },
+    "di-pred-3000881": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000881.png",
+      "originalSha256": "fda638def95b5e5fbcc2f6ecb0bfe8951e5881683bbb3bf9ae3fd9635fbf54a6",
+      "displayImageUrl": "/assets/di-display-20261028/3000881-229807afc83b.svg",
+      "displaySha256": "229807afc83b313fbbc041cad5e265d7650a90d26bf91fe6f0b7a4a6e96a28a0",
+      "bytes": 3510,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000881.svg",
+      "legend": []
+    },
+    "di-pred-3001369": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001369.png",
+      "originalSha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b",
+      "displayImageUrl": "/assets/di-display-20261028/3001369-077de1eb6cbf.webp",
+      "displaySha256": "077de1eb6cbf70fceef769e9d393d9dfa6541cdfc5742b2851bef09a74441f1b",
+      "bytes": 209622,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001369.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        375
+      ],
+      "displayDimensions": [
+        1506,
+        1125
+      ],
+      "roundTripRmse": 0.002115,
+      "limitations": [
+        "The original has no readable labels, legend or numerical values; exact categories and shares cannot be recovered from this image."
+      ]
+    },
+    "di-pred-3001366": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001366.png",
+      "originalSha256": "13d2a8decae121de8f0a119de3354c9efe2664cb489f54a9ef861b4014cea66d",
+      "displayImageUrl": "/assets/di-display-20261028/3001366-2eacaa5de25f.svg",
+      "displaySha256": "2eacaa5de25f797120a24c56a8a8f51cdbb55ee86b77c7b12f949bb4de44c9ab",
+      "bytes": 3055,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/social-activities.svg",
+      "legend": []
+    },
+    "di-pred-3001356": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001356.png",
+      "originalSha256": "a741d4065023c54f8cc1681235ddecfeb19d41bf7aa04221e93349abd6aee829",
+      "displayImageUrl": "/assets/di-display-20261028/3001356-cf0e271a2d3d.webp",
+      "displaySha256": "cf0e271a2d3d3b80c3becbc9ee1d77cf98d64bbad466e60cbc84f75750baec27",
+      "bytes": 429598,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001356.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        309
+      ],
+      "displayDimensions": [
+        1506,
+        927
+      ],
+      "roundTripRmse": 0.003213
+    },
+    "di-pred-3001078": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001078.png",
+      "originalSha256": "fd0775374a6c00cf6c4f2b00d48a64f48cc7ac6c0808ce361c0987f7c7616348",
+      "displayImageUrl": "/assets/di-display-20261028/3001078-672669ca09b1.webp",
+      "displaySha256": "672669ca09b1b8dacb3c85875d3340b6d0e81675354640bb82d8b4fa9af55e9c",
+      "bytes": 674038,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001078.webp",
+      "legend": [],
+      "originalDimensions": [
+        496,
+        385
+      ],
+      "displayDimensions": [
+        1488,
+        1155
+      ],
+      "roundTripRmse": 0.004617
+    },
+    "di-pred-3001409": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001409.png",
+      "originalSha256": "b6202f12016d4bdbe270823a6a848c7b652d0d5c1c0f5a4a252c692a79005200",
+      "displayImageUrl": "/assets/di-display-20261028/3001409-1e9b25928140.webp",
+      "displaySha256": "1e9b259281408a9bbf6e42e7d55d7ca1fccf243fa8dfad5f523d510a2cf9419a",
+      "bytes": 95504,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001409.webp",
+      "legend": [],
+      "originalDimensions": [
+        324,
+        335
+      ],
+      "displayDimensions": [
+        1296,
+        1340
+      ],
+      "roundTripRmse": 0.018648,
+      "limitations": [
+        "Frequencies are approximate bar readings; do not infer that they are percentages or exact labelled counts."
+      ]
+    },
+    "di-pred-3001403": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001403.png",
+      "originalSha256": "f47aab7600764bfceaceefe6e2c9e8ef7f631f63dad66264ef53920f3470e623",
+      "displayImageUrl": "/assets/di-display-20261028/3001403-caab74e56c68.svg",
+      "displaySha256": "caab74e56c68bc04441e9a8a6ebc9f287d02e96e5b6e579f887aaff6a567efef",
+      "bytes": 4954,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3001403.svg",
+      "legend": []
+    },
+    "di-pred-3001398": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001398.png",
+      "originalSha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4",
+      "displayImageUrl": "/assets/di-display-20261028/3001398-0ef0b52c8e9e.webp",
+      "displaySha256": "0ef0b52c8e9ec5dc0f27ccbf9806e8e05c38a504e47751b1a7d209bd856d6119",
+      "bytes": 405326,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001398.webp",
+      "legend": [],
+      "originalDimensions": [
+        303,
+        387
+      ],
+      "displayDimensions": [
+        1212,
+        1548
+      ],
+      "roundTripRmse": 0.010481
+    },
+    "di-pred-3001386": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001386.png",
+      "originalSha256": "a27805eb504980e59e4c2ddf0df3394a884e3ac48bc88627b90f97af20de1dc0",
+      "displayImageUrl": "/assets/di-display-20261028/3001386-43589fe5de62.svg",
+      "displaySha256": "43589fe5de625fb23a979b3f27a1fce3465fe23cdecd1288471adf62cb92b800",
+      "bytes": 5381,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3001386.svg",
+      "legend": []
+    }
+  }
+}

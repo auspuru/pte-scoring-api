@@ -1,8 +1,8 @@
 (function(root,factory){
-  const api=factory(typeof module==='object'&&module.exports?require('./practice-studio'):root.PracticeStudio,typeof module==='object'&&module.exports?require('./speaking-start-cue'):root.SpeakingStartCue);
+  const api=factory(typeof module==='object'&&module.exports?require('./practice-studio'):root.PracticeStudio,typeof module==='object'&&module.exports?require('./speaking-start-cue'):root.SpeakingStartCue,typeof module==='object'&&module.exports?require('./speaking-images'):root.SpeakingImages);
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.SpeakingPractice=api.createController(root,{getUserId:()=>typeof currentUserId==='undefined'?'':currentUserId});
-})(typeof globalThis==='undefined'?this:globalThis,function(studio,cues){
+})(typeof globalThis==='undefined'?this:globalThis,function(studio,cues,images){
   'use strict';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const time=n=>{const seconds=Math.ceil(Math.max(0,n));return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');};
@@ -19,7 +19,7 @@
       &&(!query||[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ').toLowerCase().includes(query)));
   }
   function createController(env,{getUserId=()=>env.currentUserId||''}={}) {
-    const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map(),startCue=cues.create(env);
+    const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map(),startCue=cues.create(env),imageViewer=images.create(env);
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
@@ -63,6 +63,7 @@
       }catch{stopLevel();}
     }
     function clearAudio(keepCue=false) {
+      imageViewer.close();
       captureGeneration++;env.clearInterval(permissionTimer);stopLevel();if(keepCue)startCue.cancel();else startCue.close();
       env.clearInterval(clockId);stopPrompt();
       if(recorder?.state==='recording')recorder.stop();
@@ -87,7 +88,8 @@
     }
     function chrome(content) {
       const locked=!!(attempt&&attempt.status!=='submitted');
-      host.innerHTML='<div class="speaking-workspace practice-studio">'+studio.navigation('speaking','speaking-'+activeType,{disabled:locked})+'<div class="practice-studio-content"><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+(!attempt?'<section class="practice-studio-library">'+content+'</section>':content)+'</div></div>';
+      imageViewer.close();host.innerHTML='<div class="speaking-workspace practice-studio">'+studio.navigation('speaking','speaking-'+activeType,{disabled:locked})+'<div class="practice-studio-content"><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+(!attempt?'<section class="practice-studio-library">'+content+'</section>':content)+'</div><dialog id="speaking-image-dialog" class="speaking-image-viewer" aria-label="Full-size question image"></dialog></div>';
+      images.bindFallback(host);
       host.onclick=click;host.oninput=e=>{if(e.target.id==='speaking-search'){filters().search=e.target.value;filters().page=0;renderLibraryList();}else cacheDraft();};host.onchange=change;
     }
     async function open(type, questionId) {
@@ -186,7 +188,7 @@
           +'<div class="speaking-result-actions"><button class="portal-button primary" data-speaking-question="'+q.id+'">Reattempt this question</button><button class="portal-button" data-speaking-action="list">Back to my questions</button></div>'
         : '';
       chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+number+'</h2></div>'+(submitted?'<button class="portal-button" data-speaking-action="list">My questions</button>':'')+'</div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
-        +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<img class="speaking-image" src="'+q.imageUrl+'" alt="'+esc(q.title)+' — describe the visual and its labelled data">':'')
+        +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<figure class="speaking-question-image"><button type="button" class="speaking-image-button" data-speaking-action="zoom-image" aria-label="Enlarge question image">'+images.image(q,'speaking-image')+'</button><button type="button" class="portal-button" data-speaking-action="zoom-image">Enlarge image</button>'+images.legend(q)+'</figure>':'')
         +examPanel+review+questionNavigation());
       if(submitted){mountPlayback();pollComparison();}refreshControls();
     }
@@ -461,6 +463,7 @@
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
       if(d.speakingQuestion)return start(d.speakingQuestion);if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
+      if(action==='zoom-image')return imageViewer.open(doc.getElementById('speaking-image-dialog'),attempt?.question);
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
       if(action==='refresh-di-feedback')return submit(true);
