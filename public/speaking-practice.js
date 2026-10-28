@@ -1,8 +1,8 @@
 (function(root,factory){
-  const api=factory(typeof module==='object'&&module.exports?require('./practice-studio'):root.PracticeStudio);
+  const api=factory(typeof module==='object'&&module.exports?require('./practice-studio'):root.PracticeStudio,typeof module==='object'&&module.exports?require('./speaking-start-cue'):root.SpeakingStartCue);
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.SpeakingPractice=api.createController(root,{getUserId:()=>typeof currentUserId==='undefined'?'':currentUserId});
-})(typeof globalThis==='undefined'?this:globalThis,function(studio){
+})(typeof globalThis==='undefined'?this:globalThis,function(studio,cues){
   'use strict';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const time=n=>{const seconds=Math.ceil(Math.max(0,n));return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');};
@@ -19,7 +19,7 @@
       &&(!query||[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ').toLowerCase().includes(query)));
   }
   function createController(env,{getUserId=()=>env.currentUserId||''}={}) {
-    const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map();
+    const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map(),startCue=cues.create(env);
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
@@ -62,8 +62,8 @@
         },150);
       }catch{stopLevel();}
     }
-    function clearAudio() {
-      captureGeneration++;env.clearInterval(permissionTimer);stopLevel();
+    function clearAudio(keepCue=false) {
+      captureGeneration++;env.clearInterval(permissionTimer);stopLevel();if(keepCue)startCue.cancel();else startCue.close();
       env.clearInterval(clockId);stopPrompt();
       if(recorder?.state==='recording')recorder.stop();
       stream?.getTracks().forEach(t=>t.stop());stream=null;
@@ -83,7 +83,7 @@
     function leave() {
       stopComparisonPoll();
       cacheDraft();if(attempt?.status==='draft'&&!busy)saveTranscript().catch(()=>{});
-      visible=false;serial++;clearAudio();if(phase==='preparing'||phase==='listening')phase='idle';
+      visible=false;serial++;clearAudio();if(['preparing','listening','cue'].includes(phase))phase='idle';
     }
     function chrome(content) {
       const locked=!!(attempt&&attempt.status!=='submitted');
@@ -128,14 +128,14 @@
     }
     async function start(questionId) {
       stopComparisonPoll();
-      if(busy)return;busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;const needsCue=catalog.questions.find(q=>q.id===questionId)?.type==='rs';if(needsCue)startCue.unlock();busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
+      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio(needsCue);releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id) {
       stopComparisonPoll();
-      if(busy)return;busy=true;const ticket=serial,user=owner;let shouldBegin=false,shouldAssess=false;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio();releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted')await loadPlayback();else if(a.recording)shouldAssess=true;else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;if(activeType==='rs')startCue.unlock();busy=true;const ticket=serial,user=owner;let shouldBegin=false,shouldAssess=false;
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(activeType==='rs');releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.status==='submitted')await loadPlayback();else if(a.recording)shouldAssess=true;else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldAssess&&valid(ticket,user)&&attempt?.status==='draft'&&attempt.recording)await submit();
       else if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
@@ -161,7 +161,7 @@
       if(busy||uploadBlob||phase==='saving'){message('Wait for your response to save before changing questions.');return;}
       const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId),target=questions[index+direction];
       if(!target)return;
-      skipCapture();busy=true;refreshControls();const ticket=serial,user=owner;
+      skipCapture();if(activeType==='rs')startCue.unlock();busy=true;refreshControls();const ticket=serial,user=owner;
       try {await saveTranscript();const history=await api('/attempts');if(!valid(ticket,user))return;
         const saved=history.filter(a=>a.questionId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
         busy=false;if(saved)await resume(saved.id);else await start(target.id);
@@ -341,6 +341,7 @@
         permission:'Microphone check',
         listening:'Listening',
         preparing:'Preparation',
+        cue:'Get ready',
         recording:'● Recording',
         saving:'Submitting response',
         error:attempt?.recording?'Assessment interrupted':'Attempt interrupted'
@@ -348,7 +349,13 @@
       const clock=doc.getElementById('speaking-clock');if(clock)clock.textContent=['recording','preparing'].includes(phase)?time((deadline-now())/1000):'';
     }
     function countdown(seconds,next) {deadline=now()+seconds*1000;env.clearInterval(clockId);refreshControls();clockId=env.setInterval(()=>{refreshControls();if(now()>=deadline){env.clearInterval(clockId);next();}},200);}
-    function prepare(){if(!visible){clearAudio();phase='idle';return;}phase='preparing';if(attempt.question.preparation)countdown(attempt.question.preparation,record);else record();}
+    function prepare(){if(!visible){clearAudio();phase='idle';return;}
+      if(attempt.question.type==='rs'){
+        const ticket=serial,user=owner,id=attempt.id;phase='cue';refreshControls();
+        startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&!doc.hidden&&attempt?.id===id&&phase==='cue')record();});return;
+      }
+      phase='preparing';if(attempt.question.preparation)countdown(attempt.question.preparation,record);else record();
+    }
     function record() {
       env.clearInterval(clockId);if(!visible||doc.hidden||!stream){clearAudio();phase='idle';refreshControls();return;}
       if(stream.getAudioTracks?.().some(track=>track.readyState==='ended')){clearAudio();phase='error';message('Microphone disconnected. Reconnect it, then use Retry microphone.');refreshControls();return;}
@@ -392,6 +399,7 @@
     }
     async function begin(respondNow=false) {
       if(busy||attempt.recording||uploadBlob||!['idle','error'].includes(phase))return;
+      startCue.unlock();
       if(!env.navigator.mediaDevices?.getUserMedia||!env.MediaRecorder){phase='error';message('Microphone recording is unavailable in this browser. Open this HTTPS portal directly in Safari or Chrome.');refreshControls();return;}
       if(stream&&attempt.question.audioUrl){levelContext?.resume().catch(()=>{});return respondNow?record():playPrompt(serial,owner);}
       try{const Context=env.AudioContext||env.webkitAudioContext;if(Context){levelContext ||= new Context();levelContext.resume().catch(()=>{});}}catch{}
@@ -434,7 +442,7 @@
     }
     async function submit(refreshDescribeFeedback=false) {
       if(busy||!attempt)return;
-      if(['permission','listening','preparing','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
+      if(['permission','listening','preparing','cue','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
       if(!attempt.recording&&!refreshDescribeFeedback){message('No saved recording is available for assessment.');return;}
       const retryingContent=attempt.result?.scoringMode==='local';
       busy=true;phase='saving';refreshControls();const id=attempt.id,user=owner;message(retryingContent?'Retrying content review…':'Checking your saved response…');
@@ -475,7 +483,7 @@
       if(!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(file.type.split(';')[0])||file.size>3*1024*1024){message('Choose a WebM, MP4, WAV or MP3 audio file under 3 MB.');return;}
       uploadBlob=file;await uploadRecording();
     }
-    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','preparing','permission'].includes(phase);clearAudio();if(interrupted){phase='error';message('This timed attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
+    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','preparing','permission','cue'].includes(phase);clearAudio();if(interrupted){phase='error';message('This timed attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
     env.addEventListener?.('beforeunload',()=>{cacheDraft();clearAudio();});
     return {open,leave,reset};
   }

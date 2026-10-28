@@ -13,8 +13,8 @@ function timing(a,now=Date.now()){
   if(a.responses[a.index]?.recording||a.responses[a.index]?.skipped)return {phase:'completed'};
   if(!a.questionStartedAt)return {phase:'ready'};
   const audioAt=a.questionStartedAt+3000,prepAt=audioAt+(q.audioSeconds||0)*1000;
-  const recordingAt=prepAt+q.preparation*1000,endsAt=recordingAt+q.seconds*1000;
-  return {audioAt,prepAt,recordingAt,endsAt,phase:now<audioAt?'instructions':now<prepAt?'listening':now<recordingAt?'preparing':now<endsAt?'recording':'expired'};
+  const cueAt=prepAt+q.preparation*1000,recordingAt=cueAt+(q.type==='rs'?q.startCueMs||0:0),endsAt=recordingAt+q.seconds*1000;
+  return {audioAt,prepAt,cueAt,recordingAt,endsAt,phase:now<audioAt?'instructions':now<prepAt?'listening':now<cueAt?'preparing':now<recordingAt?'cue':now<endsAt?'recording':'expired'};
 }
 function reconcile(a,now=Date.now()){
   if(a.status==='active'&&now>=a.deadline){a.status='submitted';a.finishedAt=now;a.grading={status:'pending'};}
@@ -176,7 +176,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
       return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:original.version,questionCount:original.questionCount,
-        questions:original.questions.map(require('./di-reference').forNewAttempt),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
+        questions:bank.reattemptQuestions(original),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));

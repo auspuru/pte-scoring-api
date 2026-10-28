@@ -1,10 +1,10 @@
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.SpeakingMock=api.createController(root,{getUserId:()=>typeof currentUserId==='undefined'?'':currentUserId});})(typeof globalThis==='undefined'?this:globalThis,function(){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./speaking-start-cue'):root.SpeakingStartCue);if(typeof module==='object'&&module.exports)module.exports=api;else root.SpeakingMock=api.createController(root,{getUserId:()=>typeof currentUserId==='undefined'?'':currentUserId});})(typeof globalThis==='undefined'?this:globalThis,function(cues){
   'use strict';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const clock=value=>{const s=Math.max(0,Math.ceil(value));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
   const labels={intro:'Introduction',ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
-    const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map();
+    const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map(),promptFinished=new Set(),startCue=cues.create(env);let rsCue;
     let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,reportSection='overview',reportProvider='azure',responsePane='feedback',context,analyser,silence=0,heard=false;
     const now=()=>env.Date?.now?.()||Date.now(),identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
@@ -39,11 +39,11 @@
     function stopPrompt(){if(prompt){prompt.pause();prompt.onended=null;prompt=null;}}
     function stopTimer(){env.clearInterval(timer);timer=null;}
     function stopPolling(){env.clearInterval(poller);poller=null;}
-    function release(){stopTimer();stopPrompt();if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
+    function release(){stopTimer();stopPrompt();startCue.close();rsCue=null;if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
     function leave(){stopPolling();release();serial++;}
     function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reportSection='overview';reportProvider='azure';responsePane='feedback';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
     function shell(html){host.innerHTML=html;host.onclick=click;host.onchange=reportChange;host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
-    function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
+    function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
       if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
       shell('<p role="status">Loading speaking mocks…</p>');
@@ -61,18 +61,18 @@
       try{const Context=env.AudioContext||env.webkitAudioContext;if(Context){context=new Context();await context.resume();const source=context.createMediaStreamSource(stream);analyser=context.createAnalyser();analyser.fftSize=256;source.connect(analyser);}}catch{analyser=null;}
     }
     async function start(paperId,reattemptId){
-      if(busy)return;busy=true;const ticket=serial;
+      if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
         const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
       }catch(error){message(error.message||'Microphone access is required to start the speaking mock.');env.PortalExamMode?.set(OWNER,false,host);release();}
       finally{busy=false;}
     }
     async function resume(id){
-      if(busy)return;busy=true;const ticket=serial;
+      if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
         if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
         a=saved;selected=null;reportFilter='all';reportSection='overview';responsePane='feedback';reviewSignature='';
-        if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else results();
+        if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
       }catch(error){message(error.message);env.PortalExamMode?.set(OWNER,false,host);}
       finally{busy=false;}
     }
@@ -96,6 +96,8 @@
       if(!a?.question.audioUrl||env.PortalExamMode?.isLocked(OWNER))return;
       const clipKey=key(a.id,a.index);played=clipKey;stopPrompt();prompt=new env.Audio(a.question.audioUrl);
       const audio=prompt;audio.currentTime=Math.max(0,(now()-a.timing.audioAt)/1000);
+      const ticket=serial;promptFinished.delete(clipKey);
+      audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();tick();};
       audio.onerror=()=>message('The prompt audio could not load. Check your connection before continuing.');
       try{await audio.play();}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
     }
@@ -103,7 +105,7 @@
       const captureKey=key(a.id,a.index);if(done.has(captureKey)||capture?.key===captureKey)return;
       const options=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>env.MediaRecorder.isTypeSupported?.(type));
       try{
-        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial};capture=current;
+        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial,startedAt:now(),endsAt:a.question.type==='rs'?now()+a.question.seconds*1000:a.timing.endsAt};capture=current;
         heard=false;silence=0;if(a.question.type!=='rs')beep();
         recordingPromise=new Promise(resolve=>{
           recorder.ondataavailable=event=>{if(event.data?.size)chunks.push(event.data);};
@@ -121,7 +123,7 @@
     }
     async function finishAtDeadline(){
       if(ending)return;ending=true;const ticket=serial;
-      stopTimer();stopPrompt();
+      stopTimer();stopPrompt();startCue.cancel();rsCue=null;
       try{
         if(recorder?.state==='recording')recorder.stop();
         if(recordingPromise)await recordingPromise;
@@ -138,12 +140,23 @@
       const completed=t.phase==='completed'||done.has(captureKey);
       let text;
       if(completed)text='Completed';else if(current<t.audioAt)text='Beginning in '+clock((t.recordingAt-current)/1000);else if(current<t.prepAt){text='Beginning in '+clock((t.recordingAt-current)/1000);if(played!==captureKey)playPrompt();}
+      else if(q.type==='rs'){
+        if(!promptFinished.has(captureKey)){
+          text='Listening';if(played!==captureKey)playPrompt();
+        }else{
+          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;});}
+          if(!rsCue.ready||current<t.recordingAt)text='Get ready';
+          else if(!capture||capture.key!==captureKey||current<capture.endsAt){text='Recording';startRecording();}
+          else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
+        }
+      }
       else if(current<t.recordingAt){stopPrompt();text='Beginning in '+clock((t.recordingAt-current)/1000);}
       else if(current<t.endsAt){stopPrompt();text='Recording';startRecording();}
       else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
       const status=doc.getElementById('sm-record-status');if(status&&status.textContent!==text)status.textContent=text;
-      const bar=doc.getElementById('sm-record-bar');if(bar)bar.style.width=(completed?100:Math.max(0,Math.min(100,(current-t.recordingAt)/(q.seconds*10))))+'%';
-      const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=current<t.audioAt?'Beginning shortly':current<t.prepAt?'Playing':'Completed';
+      const began=q.type==='rs'?(capture?.key===captureKey?capture.startedAt:Math.max(current,t.recordingAt)):t.recordingAt;
+      const bar=doc.getElementById('sm-record-bar');if(bar)bar.style.width=(completed?100:Math.max(0,Math.min(100,(current-began)/(q.seconds*10))))+'%';
+      const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=current<t.audioAt?'Beginning shortly':current<t.prepAt||q.type==='rs'&&!promptFinished.has(captureKey)?'Playing':'Completed';
       const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10)))+'%';
       if(analyser&&recorder?.state==='recording'){
         const data=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(data);const level=Math.sqrt(data.reduce((sum,n)=>sum+((n-128)/128)**2,0)/data.length);
@@ -157,7 +170,7 @@
         const blob=await pending('get',key(id,index));if(blob)await upload(blob,id,index);
         const completed=a.timing.phase==='completed';
         if(!completed&&!env.confirm('No response is saved for this question. Continue without an answer?'))return;
-        stopTimer();stopPrompt();a=await api('/attempts/'+id+'/next',{index,skip:!completed});if(!valid(ticket))return;
+        stopTimer();stopPrompt();startCue.cancel();rsCue=null;a=await api('/attempts/'+id+'/next',{index,skip:!completed});if(!valid(ticket))return;
         capture=null;recordingPromise=null;if(a.status==='submitted'){release();results();}else await begin();
       }catch(error){message(error.message);}finally{busy=false;}
     }

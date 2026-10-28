@@ -1,12 +1,12 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {createController}=require('../public/speaking-mock-client'),{installSpeakingMock}=require('../speaking-mock');
-async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve()}={}){
+async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve(),audioCue=false}={}){
   let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[];let seq=0;
   class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
   class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
-  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);}async play(){this.played=true;}pause(){this.paused=true;}}
+  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);const id=url.split('/').at(-1).split('.mp3')[0];this.duration=require('../content/speaking-mocks').papers.flatMap(p=>p.questions).find(q=>q.id===id)?.audioSeconds;}async play(){this.played=true;this.paused=false;this.playedAt=at;this.offset=this.currentTime;}pause(){this.paused=true;}}
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-ui-')),app=require('express')();app.use(require('express').json());
   const lab=installSpeakingMock(app,{directory,backgroundEnabled,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
     gradeResponse:async q=>{await gradeGate;return({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}});},
@@ -21,12 +21,13 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
     PortalExamMode:{prepare:async()=>{full=prepare;return prepare;},set:(owner,active)=>{full=active;},isLocked:()=>false},
     fetch:async(url,options={})=>{requests.push({url,...options});if(failUpload&&url.includes('/recordings/')&&options.method==='POST'){failUpload=false;return {ok:false,json:async()=>({error:'Upload interrupted'})};}return fetch(base+url,options);}
   };
+  const cueAudio=audioCue?require('./fixtures/speaking-audio-context')(env):null;
   const controller=createController(env,{getUserId:()=>uid});
   t.after(async()=>{controller.reset();await lab.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
   const flush=async()=>{for(let n=0;n<25;n++)await new Promise(resolve=>setImmediate(resolve));};
-  return {env,host,nodes,requests,audios,controller,lab,flush,
+  return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,
     click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}}),
-    tick:async ms=>{at+=ms;for(const fn of [...intervals.values()])await fn();await flush();},
+    tick:async ms=>{at+=ms;for(const audio of audios)if(audio.played&&!audio.paused&&!audio.ended&&audio.duration&&at>=audio.playedAt+(audio.duration-audio.offset)*1000){audio.ended=true;audio.onended?.();}cueAudio?.run();for(const fn of [...intervals.values()])await fn();await flush();},
     active:async()=>{const [row]=await lab.store.list('alice');return row&&lab.store.update('alice',row.id,a=>a);},
     starts:()=>recorderStarts,permissions:()=>permissionCalls,protected:()=>full,user:value=>uid=value};
 }
@@ -43,12 +44,32 @@ test('Cancelling protected-screen preflight creates no attempt and does not open
   const h=await harness(t,{prepare:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
   assert.equal(h.permissions(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);assert.equal(await h.active(),undefined);
 });
+test('mock Repeat Sentence waits for audio and one beep, keeping 15 seconds after a late prompt finish',async t=>{
+ const h=await harness(t,{audioCue:true});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ const first=await h.active(),index=first.questions.findIndex(q=>q.type==='rs');
+ await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
+ await h.controller.open();await h.click({sm:'resume',id:first.id});let a=await h.active();
+ await h.tick(a.questionStartedAt+3001-h.env.Date.now());assert.equal(h.cueAudio.tones.length,0);
+ const audio=h.audios.at(-1);audio.playedAt+=1000; // Simulate a slow playback start.
+ await h.tick(a.questions[index].audioSeconds*1000);assert.equal(h.starts(),0);assert.equal(h.cueAudio.tones.length,0);
+ await h.tick(1000);assert.equal(h.cueAudio.tones.length,1);assert.equal(h.starts(),0);
+ await h.tick(100);await h.tick(100);assert.equal(h.cueAudio.tones.length,1);assert.equal(h.starts(),0);
+ await h.tick(100);assert.equal(h.starts(),1);const started=h.env.Date.now();
+ await h.tick(14999);assert.equal((await h.active()).responses[index],undefined);
+ await h.tick(1);await h.flush();a=await h.active();assert(a.responses[index].recording);assert.equal(h.env.Date.now()-started,15000);assert.equal(h.cueAudio.tones.length,1);
+});
+test('moving to the next mock question cancels a pending beep without saving a phantom response',async t=>{
+ const h=await harness(t,{audioCue:true});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ const first=await h.active(),index=first.questions.findIndex(q=>q.type==='rs');await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
+ await h.controller.open();await h.click({sm:'resume',id:first.id});const a=await h.active();await h.tick(a.questionStartedAt+3001-h.env.Date.now());await h.tick(a.questions[index].audioSeconds*1000);
+ assert.equal(h.cueAudio.tones.length,1);await h.click({sm:'next'});await h.tick(300);assert.equal(h.starts(),0);assert.equal((await h.active()).responses[index].skipped,true);
+});
 
 test('One complete mock runs timed recording, reuses saved audio, hides feedback until submission and shows Azure delivery',async t=>{
   const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
   assert.equal(h.protected(),true);assert.match(h.host.innerHTML,/Recorded Answer/);assert.doesNotMatch(h.host.innerHTML,/Individual question feedback|Score|Transcript|Sample response|Pause|Replay/);
   for(let index=0;index<28;index++){
-    const a=await h.active(),q=a.questions[index];const recordingAt=a.questionStartedAt+3000+(q.audioSeconds||0)*1000+q.preparation*1000;
+    const a=await h.active(),q=a.questions[index];const recordingAt=a.questionStartedAt+3000+(q.audioSeconds||0)*1000+q.preparation*1000+(q.startCueMs||0);
     if(q.audioSource){await h.tick(Math.max(0,a.questionStartedAt+3001-h.env.Date.now()));const count=h.audios.length;await h.tick(100);assert.equal(h.audios.length,count,'A prompt plays once.');}
     await h.tick(Math.max(0,recordingAt+100-h.env.Date.now()));assert.equal(h.starts(),index+1);
     await h.click({sm:'next'});
@@ -247,10 +268,11 @@ test('Report sections, providers and response tabs preserve the loaded recording
  assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.equal(h.requests.length,requests);
 });
 
-test('Old generated-image attempts and their reattempts retain the saved question after new papers switch to prediction images',async t=>{
+test('Old generated-image reports retain their saved image while a new reattempt uses the supplied prediction image',async t=>{
  const h=await harness(t),{id}=await sampleReport(h),legacy=structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-1'));
  await h.lab.store.update('alice',id,a=>{a.questions[17]=legacy;return a;});
  await h.click({sm:'resume',id});await h.click({sm:'filter',type:'di'});assert(h.nodes.get('sm-review-details').innerHTML.includes('/speaking-image/di-1.svg'));
- await h.click({sm:'reattempt',id});const fresh=await h.active();assert.equal(fresh.reattemptOf,id);assert.deepEqual(fresh.questions[17],legacy);
+ await h.click({sm:'reattempt',id});const fresh=await h.active();assert.equal(fresh.reattemptOf,id);assert.equal(fresh.questions[17].id,'di-pred-3000411');
+ assert.deepEqual((await h.lab.store.get('alice',id)).questions[17],legacy);
  assert.equal(require('../content/speaking-mocks').papers[0].questions[17].id,'di-pred-3000411');
 });

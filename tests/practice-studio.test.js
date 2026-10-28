@@ -92,7 +92,7 @@ test('Essay optional panels preserve the saved response, word counter and scorin
 
 test('Shared UI and deferred practice runtimes are fingerprinted and loaded in dependency order', () => {
   const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
-  for(const name of ['practice-studio.js','practice-studio.css','reading-practice.js','speaking-practice.js','speaking-mock-client.js','speaking-mock.css','portal-calm.css']) {
+  for(const name of ['practice-studio.js','practice-studio.css','reading-practice.js','speaking-start-cue.js','speaking-practice.js','speaking-mock-client.js','speaking-mock.css','portal-calm.css']) {
     const hash=createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../public',name))).digest('hex').slice(0,12);
     assert((name.startsWith('practice-studio')||name.endsWith('.css')?html:source).includes(name+'?v=sha256-'+hash),name+' must invalidate older immutable browser copies');
   }

@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createController,time}=require('../public/speaking-practice'),bank=require('../content/speaking-bank'),{present}=require('../speaking-lab');
-function harness({includePredictions=false}={}) {
+function harness({includePredictions=false,audioCue=false}={}) {
   const nodes=new Map(),events={},intervals=new Map(),attempts=new Map(),requests=[],recorders=[],audio=[],storage=new Map();let seq=0,now=1000,stops=0,uid='alice';
   class Element {
     constructor(id){this.id=id;this.value='';this.dataset={};this.disabled=false;this.hidden=false;this.textContent='';nodes.set(id,this);}
@@ -12,7 +12,7 @@ function harness({includePredictions=false}={}) {
   class Recorder {
     static isTypeSupported(t){return t==='audio/webm;codecs=opus';}
     constructor(stream,opts){this.state='inactive';this.mimeType=opts?.mimeType||'audio/webm';recorders.push(this);}
-    start(){this.state='recording';}
+    start(){this.state='recording';this.startedAt=now;}
     stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(300,2)],{type:this.mimeType})});this.onstop?.();}
   }
   class Audio {constructor(url){this.url=url;this.paused=true;audio.push(this);}async play(){this.paused=false;}pause(){this.paused=true;}}
@@ -38,12 +38,24 @@ function harness({includePredictions=false}={}) {
     }
     return reply(present(a));
   };
+  const cueAudio=audioCue?require('./fixtures/speaking-audio-context')(env):null;
   const controller=createController(env,{getUserId:()=>uid});
-  return {env,doc,host,nodes,controller,attempts,requests,recorders,audio,storage,events,stops:()=>stops,user:value=>uid=value,
-    tick:milliseconds=>{now+=milliseconds;for(const fn of [...intervals.values()])fn();},
+  return {env,doc,host,nodes,controller,attempts,requests,recorders,audio,storage,events,cueAudio,stops:()=>stops,user:value=>uid=value,
+    tick:milliseconds=>{now+=milliseconds;cueAudio?.run();for(const fn of [...intervals.values()])fn();},
     click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}})};
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
+test('Repeat Sentence practice waits for one beep, then records the complete 15-second response',async()=>{
+ const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});
+ assert.equal(h.cueAudio.tones.length,0);assert.equal(h.recorders.length,0);
+ const ended=h.audio[0].onended;ended();ended();assert.equal(h.cueAudio.tones.length,1);assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-phase').textContent,'Get ready');
+ h.tick(299);assert.equal(h.recorders.length,0);h.tick(1);assert.equal(h.recorders.length,1);
+ assert(h.recorders[0].startedAt>=h.cueAudio.tones[0].stoppedAt*1000);h.tick(14999);assert.equal(h.recorders[0].state,'recording');h.tick(1);assert.equal(h.recorders[0].state,'inactive');await flush();
+});
+test('leaving practice during the beep prevents a late microphone start',async()=>{
+ const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.audio[0].onended();
+ h.controller.leave();h.tick(1000);assert.equal(h.recorders.length,0);assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')).length,0);
+});
 
 for(const type of ['rl','sgd','rts'])test(`${type}: only Azure scores are shown and opening a report never requests a reassessment`,async()=>{
  const h=harness(),version=require('../speaking-delivery').VERSION;h.env.deliveryVersions={[type]:version};

@@ -18,7 +18,9 @@ not replace an existing job's input, reference, marks or provider-call history.
 
 Requests without a reference descriptor remain compatible with existing saved
 jobs. Current attempts and completed results are not rewritten. New reattempts
-refresh references only for known images, and keep the previous attempt intact.
+refresh references for known images and replace legacy photographs or generated
+DI placements with the current paper's supplied original charts and diagrams.
+The previous attempt remains intact.
 Azure delivery marks and the requirement to finish every scored question before
 publication are unchanged. There is no automatic historical rescoring.
 

@@ -2,7 +2,7 @@
 // Original teaching material plus separately attributed user-supplied prediction images.
 const types = {
   ra: { name: 'Read Aloud', preparation: 35, seconds: 40, instruction: 'Read the passage aloud exactly as written. Use the preparation time to notice punctuation and meaningful phrases.' },
-  rs: { name: 'Repeat Sentence', preparation: 0, seconds: 15, instruction: 'Listen once, then repeat the sentence exactly. Keep the words in their original order.' },
+  rs: { name: 'Repeat Sentence', preparation: 0, startCueMs: 300, seconds: 15, instruction: 'Listen once. After the beep, repeat the sentence exactly. Keep the words in their original order.' },
   di: { name: 'Describe Image', preparation: 25, seconds: 40, instruction: 'Describe the image in your own words. Identify its topic, main features and important relationships, using accurate details.' },
   rl: { name: 'Retell Lecture', preparation: 10, seconds: 40, instruction: 'Listen to the lecture, then retell its main ideas and relevant supporting details in your own words.' },
   sgd: { name: 'Summarise Group Discussion', preparation: 10, seconds: 120, instruction: 'Listen to three speakers. Summarise the topic, each person’s contribution, and how their views relate to one another.' },

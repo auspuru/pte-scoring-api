@@ -147,7 +147,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   const fresh=(await request('/attempts/'+id+'/reattempt',{id:newId,overallScore:90})).body;
   assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
   assert.equal(fresh.deadline-fresh.startedAt,saved.deadline-saved.startedAt);assert(fresh.startedAt>saved.startedAt);
-  const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,saved.questions.map(require('../di-reference').forNewAttempt));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
+  const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,bank.reattemptQuestions(saved));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
   assert.match(copy.questions.find(q=>q.id==='di-pred-3000411').sample,/October/);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000411').imageReference,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
@@ -160,6 +160,22 @@ test('The mock clock follows preparation, saved audio, response time and complet
   const q=bank.papers[0].questions.find(q=>q.type==='rl'),a={questions:[q],responses:[],index:0,status:'active',questionStartedAt:1000};
   const start=timing(a,1000);assert.equal(start.phase,'instructions');assert.equal(timing(a,start.audioAt+1).phase,'listening');assert.equal(timing(a,start.prepAt+1).phase,'preparing');assert.equal(timing(a,start.recordingAt+1).phase,'recording');assert.equal(timing(a,start.endsAt+1).phase,'expired');
   a.responses[0]={recording:{}};assert.equal(timing(a,start.endsAt+1).phase,'completed');
+});
+test('Repeat Sentence reserves its beep interval before the full response window',()=>{
+  const q=bank.papers[0].questions.find(q=>q.type==='rs'),a={questions:[q],responses:[],index:0,status:'active',questionStartedAt:1000};
+  const t=timing(a,1000);assert.equal(t.recordingAt-t.prepAt,300);assert.equal(t.endsAt-t.recordingAt,15000);assert.equal(timing(a,t.cueAt+1).phase,'cue');
+  const legacy=structuredClone(a);delete legacy.questions[0].startCueMs;assert.equal(timing(legacy,1000).recordingAt,t.prepAt,'Already-started legacy snapshots retain their clock.');
+});
+test('all mock DI placements use supplied original PNGs and reattempts replace legacy photos without editing saved work',()=>{
+ const fs=require('node:fs'),path=require('node:path'),manifest=require('../content/di-reference-manifest.json');
+ for(const paper of bank.papers)for(const q of paper.questions.filter(q=>q.type==='di')){
+  assert(bank.suppliedMockImage(q));assert.notEqual(q.imageCategory,'photo');assert(q.predictionSource.suppliedFile);
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../public',q.imageUrl))).digest('hex'),manifest.entries[q.id].source.sha256);
+ }
+ const original={paperId:'speaking-mock-2',questions:structuredClone(bank.papers[1].questions),responses:[{recording:{hash:'saved-audio'}}]};
+ const index=original.questions.findLastIndex(q=>q.type==='di');original.questions[index]=structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-pred-3000125'));
+ const before=JSON.stringify(original),fresh=bank.reattemptQuestions(original);assert.equal(fresh[index].id,'di-pred-3000586');assert(bank.suppliedMockImage(fresh[index]));assert.equal(JSON.stringify(original),before);
+ original.questions[index]={id:'older-generated-image',type:'di',visual:{kind:'bar'},facts:['Old placeholder.']};assert(bank.suppliedMockImage(bank.reattemptQuestions(original)[index]));
 });
 
 test('Default assessment persists successful stages and retries only a failed audio provider',async t=>{
