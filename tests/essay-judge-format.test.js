@@ -45,9 +45,11 @@ test('sample generation retains its separate response contract', () => {
   assert.deepEqual(format.response({ content: [{ type: 'text', text: '{"sampleStatus":"needs-ideas"}' }] }), { sampleStatus: 'needs-ideas' });
 });
 
-test('Only an explicitly rejected semantic judgement uses the bounded reassessment model',()=>{
+test('Rejected semantic judgements and support checks use the bounded stronger reviewer',()=>{
  assert.equal(format.modelFor('normal-model',{feedbackV3:true}),'normal-model');
  assert.equal(format.modelFor('normal-model',{semanticReassessment:true}),'normal-model');
+ assert.equal(format.modelFor('normal-model',{supportReview:true}),'claude-sonnet-4-6');
+ assert.equal(format.modelFor('normal-model',{feedbackV3:true,supportReview:true},'configured-reviewer'),'configured-reviewer');
  assert.equal(format.modelFor('normal-model',{feedbackV3:true,semanticReassessment:true}),'claude-sonnet-4-6');
  assert.equal(format.modelFor('normal-model',{feedbackV3:true,semanticReassessment:true},'configured-reviewer'),'configured-reviewer');
  assert.equal(format.request('Reassess.','normal-model',{stage:'assessment',feedbackV3:true,semanticReassessment:true}).model,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6');

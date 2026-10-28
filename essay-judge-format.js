@@ -53,7 +53,7 @@ const repair = object({ repairs: { type: 'array', items: object({
   path: { type: 'array', items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } },
   span: { $ref: '#/$defs/span' }
 }) } });
-const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': resolver, 'evidence-repair': repair };
+const schemas = { assessment: primary, 'subjective-review': review, 'subjective-resolver': resolver, 'evidence-repair': repair, 'support-audit': require('./essay-support-audit').schema };
 
 const feedbackIssue = object({code:{type:'string',enum:require('./public/essay-feedback').CODES}, category:{type:'string',enum:['coverage','reasoning','relevance','organisation','language']},
   priority:{type:'string',enum:['major','minor','optional']}, requirementId:text,
@@ -64,9 +64,13 @@ const feedbackIssue = object({code:{type:'string',enum:require('./public/essay-f
 const revisionDecision = object({priorIssueId:text,status:{type:'string',enum:['resolved','open','needs_clarification']},currentIssueCode:text,evidence_span:span,reason:text});
 const feedbackRepair=object({feedbackIssues:{type:'array',items:feedbackIssue},revisionDecisions:{type:'array',items:revisionDecision},rationale:reasons(traits),strengths:texts,overallVerdict:text});
 schemas['feedback-repair']=feedbackRepair;
-function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = {}) {
+schemas['organisation-review']=object({scores:scores(['coherence']),rationale:reasons(['coherence']),
+  scoringEvidence:object({developmentEvidence:citations}),
+  feedbackIssues:{type:'array',items:object({...feedbackIssue.properties,trait:{type:'string',enum:['coherence']},category:{type:'string',enum:['organisation']}})},
+  revisionDecisions:{type:'array',items:revisionDecision}});
+function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds, supportReview=false} = {}) {
   let schema = schemas[stage];
-  if (schema && feedbackV3 && !['evidence-repair','feedback-repair'].includes(stage)) {
+  if (schema && feedbackV3 && !['evidence-repair','feedback-repair','organisation-review'].includes(stage)) {
     const issueSchema = stage === 'assessment' ? feedbackIssue : object({...feedbackIssue.properties,
       trait:{type:'string',enum:traits,description:'Review only Content, Linguistic Range and Coherence. Vocabulary, spelling and grammar belong to the primary assessment.'}});
     schema = object({...schema.properties,
@@ -74,6 +78,12 @@ function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = 
       ...(stage==='subjective-resolver' ? {strengths:texts,overallVerdict:text} : {})});
   }
   if (!schema) return null;
+  if(stage==='subjective-resolver' && supportReview && feedbackV3) {
+    const {scores:scoreSchema,...evidenceFirst}=schema.properties;
+    schema=object({...evidenceFirst,scores:object({...scoreSchema.properties,
+      coherence:{...scoreSchema.properties.coherence,description:'0–6. A score of 4 or below requires a material progression or connection problem supported by a major, score-affecting Organisation issue with exact essay evidence. Clear logical structure with minor repetition or optional transitions fits 5. Do not invent an issue or force full marks.'}
+    })});
+  }
   if (feedbackV3 && Array.isArray(previousIssueIds) && schema.properties.revisionDecisions) {
     schema = {...schema,properties:{...schema.properties,revisionDecisions:{
       ...schema.properties.revisionDecisions,
@@ -109,14 +119,14 @@ function toolFor(stage, {feedbackV3=false, requirements=[], previousIssueIds} = 
 
 function request(prompt, model, options = {}) {
   const tool = toolFor(options.stage, options);
-  if (tool && !['evidence-repair','feedback-repair'].includes(options.stage)) prompt += '\n\nCONCISE OUTPUT: Return the complete structured assessment with short, specific explanations. Use one sentence per trait rationale, issue explanation, suggested change and verdict where sufficient; do not repeat the same advice across fields. Cite only the shortest useful supporting spans. Include every genuine distinct correction and every canonical requirement; do not invent extra issues or optional rewrites to fill the response. Independent review and resolution assess only Content, Linguistic Range and Coherence, leaving primary spelling, grammar and vocabulary unchanged.';
-  return { model:modelFor(model,options,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6'), temperature: 0, max_tokens: options.feedbackV3 ? 9000 : 6000,
+  if (tool && !['evidence-repair','feedback-repair','support-audit'].includes(options.stage)) prompt += '\n\nCONCISE OUTPUT: Return the complete structured assessment with short, specific explanations. Use one sentence per trait rationale, issue explanation, suggested change and verdict where sufficient; do not repeat the same advice across fields. Cite only the shortest useful supporting spans. Include every genuine distinct correction and every canonical requirement; do not invent extra issues or optional rewrites to fill the response. Independent review and resolution assess only Content, Linguistic Range and Coherence, leaving primary spelling, grammar and vocabulary unchanged.';
+  return { model:modelFor(model,options,process.env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6'), temperature: 0, max_tokens: ['support-audit','organisation-review'].includes(options.stage) ? 2400 : options.feedbackV3 ? 9000 : 6000,
     messages: [{ role: 'user', content: prompt }],
     ...(tool ? { tools: [tool], tool_choice: { type: 'tool', name: tool.name } } : {}) };
 }
 
 function modelFor(model, options = {}, reassessmentModel = 'claude-sonnet-4-6') {
-  return options.feedbackV3 && options.semanticReassessment ? reassessmentModel : model;
+  return options.supportReview || (options.feedbackV3 && options.semanticReassessment) ? reassessmentModel : model;
 }
 
 function response(value, { stage } = {}) {

@@ -83,13 +83,13 @@ test('valid paraphrases and a missing requested opinion keep their assessed mark
     const stages = [];
     const grader = createEssayGrader(async (_prompt, options) => {
       stages.push(options?.stage || 'sample');
-      return options?.stage === 'assessment' ? raw : options?.stage === 'subjective-review' ? review(raw) : sample();
+      return options?.stage === 'assessment' ? raw : ['subjective-review','subjective-resolver'].includes(options?.stage) ? review(raw) : sample();
     });
     const result = await grader.grade(mediaQuestion + (item.content === 4 ? ' Give your opinion.' : ''), mediaEssay);
     assert.equal(result.scores.content, item.content);
     assert.equal(result.scores.total, item.content + 18);
     assert.equal(result.scoreGate.status, 'valid');
-    assert.deepEqual(stages, ['assessment', 'subjective-review', 'sample']);
+    assert.deepEqual(stages, ['assessment', 'subjective-review', ...(item.content === 4 ? ['subjective-resolver'] : []), 'sample']);
   }
 });
 
