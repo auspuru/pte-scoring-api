@@ -40,6 +40,10 @@
     const grading=session.questions.some(q=>session.assessments?.[q.uid]?.status==='working');
     const accuracy=total.percent==null?'—':total.percent+'%';
     return '<section class="reading-card reading-report reading-review-overview"><div class="reading-review-hero"><div class="reading-score-orbit" style="--accuracy:'+(total.percent||0)+'%"><div><strong>'+accuracy+'</strong><span>Accuracy</span></div></div><div class="reading-review-headline"><p class="portal-eyebrow">IPT Brisbane · Session complete</p><h2>Exam results</h2><p>'+total.earned+'/'+total.possible+' graded points · '+Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' minutes elapsed</p>'
+      + (total.weighting ? '<p class="reading-note">'+(total.score90 == null
+        ? 'Weighted Reading mock estimate pending until every task is assessed.'
+        : 'Weighted Reading mock practice estimate: <strong>'+total.score90+'/90</strong> · '+total.weighting.performancePercent.toFixed(1)+'% task-weighted accuracy.')+
+        ' Provisional, uncalibrated and not an official Pearson score. '+(total.weighting.fullProfile?'':'This paper omits some integrated Reading tasks.')+'</p>' : '')
       + (session.completionReason==='timeout'?'<p role="status">Time is up. Your saved answers were submitted automatically.</p>':'')
       + '<div class="reading-result-stats"><span><strong>'+correct+'</strong> correct</span><span><strong>'+improve+'</strong> to improve</span><span><strong>'+(total.pending+total.excluded)+'</strong> unassessed</span></div>'
       + (improve?'<button class="portal-button" data-review-filter="review">Focus on improvements <span aria-hidden="true">↓</span></button>':'')+'</div></div>'
