@@ -110,7 +110,13 @@ test('Each complete listening paper saves, resumes, locks answers and returns al
     }
     assert.equal(a.status,'submitted');
     for(let i=0;i<m.questions.length;i++)if(!a.results[i]||i===1)await request('/attempts/'+id+'/score/'+i,{});
-    a=await request('/attempts/'+id);assert(a.report.complete);assert.equal(a.report.byType.length,8);
+    a=await request('/attempts/'+id);
+    // The test's model always fails, so the local SST mark is provisional:
+    // retain objective marks but never claim a complete weighted /90 estimate.
+    assert.equal(a.report.complete,false);assert.equal(a.report.score90,null);
+    assert.equal(a.report.weighting.profile,'listening');
+    assert.equal(a.report.byType.length,8);
+    assert.equal(a.report.byType.find(g=>g.type==='sst').marked,0);
     for(const group of a.report.byType.filter(g=>g.type!=='sst'))assert.equal(group.total,group.maximum,group.type);
     const saved=a.answers[1];a=await request('/attempts/'+id+'/answer',{index:1,text:'tamper',revision:2,next:true});assert.equal(a.answers[1],saved);
     assert.equal((await store.list('tester')).find(row=>row.id===id).module,'listening');
