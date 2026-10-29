@@ -35,8 +35,11 @@ async function fixture(t, mobile) {
     args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream','--use-file-for-fake-audio-capture=' + microphone] });
   t.diagnostic('Browser: ' + await browser.version() + '; sandbox enabled; synthetic microphone; ' + (mobile ? 'mobile emulation' : 'desktop'));
   const page = await browser.newPage(); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
-  page.setDefaultTimeout(15000); const unexpectedDialogs = [];
-  page.on('dialog', dialog => { unexpectedDialogs.push(dialog.message()); return dialog.dismiss(); });
+  page.setDefaultTimeout(15000); const unexpectedDialogs = []; let reloading = false;
+  page.on('dialog', dialog => {
+    if (reloading && dialog.type() === 'beforeunload') return dialog.accept();
+    unexpectedDialogs.push(dialog.message()); return dialog.dismiss();
+  });
   const errors = [], apiErrors = []; page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400 && response.url().includes('/api/full-mocks/')) apiErrors.push(response.status() + ' ' + new URL(response.url()).pathname); });
   await page.setRequestInterception(true);
@@ -44,7 +47,8 @@ async function fixture(t, mobile) {
   await page.evaluateOnNewDocument(() => { window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
   await page.goto('http://127.0.0.1:' + server.address().port);
   const state = async () => (await service.store.list('alice'))[0];
-  return { page, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); } };
+  return { page, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); },
+    reload:async () => { reloading = true; try { await page.reload(); } finally { reloading = false; } } };
 }
 async function clickControl(page, selector) {
   await page.$eval(selector, node => node.scrollIntoView({ block:'center', inline:'nearest' }));
@@ -115,7 +119,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
       if (q.type === 'swt' && !mobile && ![...expected.keys()].some(index => index !== i + 1 && paper.questions[index - 1].question.type === 'swt')) {
         await page.setOfflineMode(true); await paste(page, '#fm-text', response[0] + ' Saved while offline.'); expected.set(i + 1, [response[0] + ' Saved while offline.']);
         await until(async () => page.evaluate(() => new Promise(resolve => { const open = indexedDB.open('ipt-full-mock-v1', 1); open.onsuccess = () => { const db = open.result, read = db.transaction('pending').objectStore('pending').getAll(); read.onsuccess = () => { resolve(read.result.some(row => row.value.kind === 'draft')); db.close(); }; }; })), 'Offline draft was not saved to IndexedDB.');
-        await page.setOfflineMode(false); await page.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]');
+        await page.setOfflineMode(false); await f.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]');
         await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
         await page.waitForFunction(value => document.getElementById('fm-text')?.value === value, {}, expected.get(i + 1)[0]);
         assert.equal((await f.state()).current.endsAt, saved.current.endsAt);
@@ -137,7 +141,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   await page.click('[data-fm="review-type"][data-type="rs"]'); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
   await page.click('[data-fm="review-type"][data-type="ra"]'); await page.click('[data-kind="recording"]'); await page.waitForSelector('#fm-review-detail audio');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Report overflows viewport');
-  await page.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]'); await page.waitForSelector('.fm-report-status');
+  await f.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]'); await page.waitForSelector('.fm-report-status');
   assert.equal((await f.service.assessor.results('alice', attemptId)).ready, true); assert([...f.calls.values()].every(count => count === 1));
   } catch (error) {
     const saved = await f.state();
