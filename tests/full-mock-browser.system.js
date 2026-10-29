@@ -95,6 +95,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
         else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');
         await until(async () => (await f.state()).responses[i + 1].segments.some(segment => Object.values(segment.chunks).some(chunk => chunk.stored)), 'Native MediaRecorder did not upload audio.');
+        if (q.type === 'rs') assert(await page.evaluate(() => window.__cues > 0), 'Start cue was not produced before the speaking response');
         await clickControl(page, '[data-fm="next"]');
       } else await clickControl(page, '[data-fm="skip"]');
     } else {
@@ -116,7 +117,6 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   assert.deepEqual(f.unexpectedDialogs, []);
   assert.equal(f.calls.size, 65); assert([...f.calls.values()].every(count => count === 1)); assert.equal(f.errors.length, 0, f.errors.join('; '));
   for (const type of ['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
-  assert(await page.evaluate(() => window.__cues > 0), 'Start cue was not produced');
   assert.equal(await page.$$eval('.fm-score-card', nodes => nodes.length), 5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length), 65);
   await page.click('[data-fm="review-type"][data-type="di"]'); await page.click('[data-kind="image"]'); await page.waitForFunction(() => document.querySelector('#fm-review-image img')?.naturalWidth > 0);
   await page.click('[data-fm="review-type"][data-type="rs"]'); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
