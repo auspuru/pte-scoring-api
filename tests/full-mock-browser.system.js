@@ -35,13 +35,14 @@ async function fixture(t, mobile) {
   t.diagnostic('Browser: ' + await browser.version() + '; sandbox enabled; synthetic microphone; ' + (mobile ? 'mobile emulation' : 'desktop'));
   const page = await browser.newPage(); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
   page.setDefaultTimeout(15000); page.on('dialog', dialog => dialog.accept());
-  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const errors = [], apiErrors = []; page.on('pageerror', error => errors.push(error.message));
+  page.on('response', response => { if (response.status() >= 400 && response.url().includes('/api/full-mocks/')) apiErrors.push(response.status() + ' ' + new URL(response.url()).pathname); });
   await page.setRequestInterception(true);
   page.on('request', request => { if (request.url().startsWith('http://127.0.0.1:') || request.url().startsWith('blob:') || request.url().startsWith('data:')) request.continue(); else request.abort(); });
   await page.evaluateOnNewDocument(() => { window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
   await page.goto('http://127.0.0.1:' + server.address().port);
   const state = async () => (await service.store.list('alice'))[0];
-  return { page, service, errors, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); } };
+  return { page, service, errors, apiErrors, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); } };
 }
 async function paste(page, selector, text) { await page.$eval(selector, (node, value) => { node.value = value; node.dispatchEvent(new Event('input', { bubbles:true })); }, text); }
 async function answer(page, q) {
@@ -64,6 +65,8 @@ async function answer(page, q) {
 }
 for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation' : 'desktop') + ': native recording, all 22 forms, refresh recovery and submitted report', { timeout:240000 }, async t => {
   const f = await fixture(t, mobile), { page } = f;
+  let expectedIndex = 0;
+  try {
   await page.waitForSelector('[data-fm="setup"]'); await page.click('[data-fm="setup"]');
   await page.click('[data-fm="sample"]'); await page.waitForSelector('#fm-sample audio');
   await page.click('#fm-sample audio', { offset:{ x:20, y:25 } });
@@ -73,6 +76,8 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   const expected = new Map(), seen = new Set(); let attemptId, readingDeadline, listeningDeadline;
   for (let i = 0; i < paper.questions.length; i++) {
     const q = paper.questions[i].question;
+    expectedIndex = i + 1;
+    if (!seen.has(q.type)) t.diagnostic('Entering ' + q.type + ' at question ' + expectedIndex);
     await page.waitForFunction(number => document.querySelector('.fm-exam-meta')?.textContent.includes('Question ' + number + ' of 65'), {}, i + 1);
     const saved = await f.state(); attemptId = saved.id; assert.equal(saved.index, i + 1); seen.add(q.type);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Page overflow at ' + q.type);
@@ -112,4 +117,10 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Report overflows viewport');
   await page.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]'); await page.waitForSelector('.fm-report-status');
   assert.equal((await f.service.assessor.results('alice', attemptId)).ready, true); assert([...f.calls.values()].every(count => count === 1));
+  } catch (error) {
+    const saved = await f.state();
+    t.diagnostic('Expected Q' + expectedIndex + '; saved index=' + saved?.index + '; status=' + saved?.status + '; type=' + saved?.responses[saved?.index]?.type);
+    t.diagnostic('Screen: ' + await page.$eval('#fullMockPane', node => node.textContent.slice(-2200)).catch(() => 'unavailable'));
+    t.diagnostic('API errors: ' + f.apiErrors.slice(-12).join('; ')); throw error;
+  }
 });
