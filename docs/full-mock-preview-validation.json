@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "origin": "https://pte-full-mock-review-production.up.railway.app",
+  "paperHash": "f1dfe1045d4c657ed3a03c428ca3953f91dc706ff53281598b697a7ce84de173",
+  "startedAt": "2026-10-29T04:18:19.120Z",
+  "status": "passed",
+  "synthetic": true,
+  "calibrated": false,
+  "studentReleaseEnabled": false,
+  "checks": [
+    {
+      "name": "readiness-and-authentication",
+      "status": "passed",
+      "milliseconds": 16138
+    },
+    {
+      "name": "student-gate-and-persistence-write",
+      "status": "passed",
+      "milliseconds": 26184,
+      "studentAccess": false
+    },
+    {
+      "name": "native-swt-live-contract",
+      "status": "passed",
+      "milliseconds": 32280,
+      "version": "full-mock-adapters-2026-10-29.2",
+      "scores": {
+        "content": 4,
+        "form": 1,
+        "grammar": 2,
+        "vocabulary": 2
+      },
+      "maximum": 9
+    },
+    {
+      "name": "native-sst-live-contract",
+      "status": "passed",
+      "milliseconds": 14510,
+      "version": "full-mock-adapters-2026-10-29.2",
+      "scores": {
+        "content": 4,
+        "form": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "spelling": 2
+      },
+      "maximum": 12
+    },
+    {
+      "name": "native-essay-live-contract",
+      "status": "passed",
+      "milliseconds": 16289,
+      "version": "full-mock-adapters-2026-10-29.2",
+      "scores": {
+        "content": 6,
+        "form": 2,
+        "grammar": 2,
+        "vocabulary": 2,
+        "spelling": 2,
+        "linguistic": 6,
+        "coherence": 6
+      },
+      "maximum": 26
+    },
+    {
+      "name": "describe-image-live-content-contract",
+      "status": "passed",
+      "milliseconds": 21465,
+      "version": "describe-academy-mock:meaning-first-40s-v5:e014131",
+      "content": 6,
+      "maximum": 6
+    },
+    {
+      "name": "transcription-and-azure-native-speaking",
+      "status": "passed",
+      "milliseconds": 38915,
+      "fixture": "existing native RS original audio",
+      "version": "full-mock-adapters-2026-10-29.2",
+      "scores": {
+        "content": 3,
+        "pronunciation": 5,
+        "fluency": 5
+      },
+      "deliveryProvider": "azure-speech-pronunciation"
+    },
+    {
+      "name": "readiness-and-authentication",
+      "status": "passed",
+      "milliseconds": 15775
+    },
+    {
+      "name": "postgres-persistence-after-app-restart",
+      "status": "passed",
+      "milliseconds": 25626,
+      "studentAccess": false
+    }
+  ],
+  "finishedAt": "2026-10-29T04:22:45.513Z",
+  "expectedSourceCommit": "290f037068514229de2efa7497f689f5db79f4e5",
+  "localRuntimeContext": {
+    "paperHash": "f1dfe1045d4c657ed3a03c428ca3953f91dc706ff53281598b697a7ce84de173",
+    "runtimeHash": "71f3f19e543fcd249b042e10e7f4a5f181da14d7b806274f0f441f5df0b37d95"
+  },
+  "scope": "Bounded synthetic provider contract checks and preview persistence; not a complete timed live-provider Full Mock or independent review.",
+  "independentlyReviewed": false,
+  "platformObservation": {
+    "previewDeploymentId": "761f1505-491c-463a-9f11-8c94b6a7149b",
+    "previewDeploymentStatus": "SUCCESS",
+    "sourceCommit": "290f037068514229de2efa7497f689f5db79f4e5",
+    "databaseDeploymentId": "16f95a73-9ed5-4d9e-b208-f9d63c5552dd",
+    "databaseDeploymentStatus": "SUCCESS",
+    "sourceVerification": "Railway describe-service read before and after checks; source pinned to tested commit.",
+    "initialBootAt": "2026-10-29T04:17:45.872Z",
+    "restartedBootAt": "2026-10-29T04:21:33.971Z",
+    "unchangedProductionDeploymentId": "e5abe3e0-fe7d-4d0d-b6c3-241e70da5662"
+  },
+  "manualChecks": [
+    {
+      "id": "desktop-real-microphone",
+      "status": "pending"
+    },
+    {
+      "id": "mobile-real-microphone",
+      "status": "pending"
+    },
+    {
+      "id": "live-provider-contracts",
+      "status": "pending"
+    },
+    {
+      "id": "independent-editorial-listening",
+      "status": "pending"
+    }
+  ],
+  "initialRunRequests": 20
+}

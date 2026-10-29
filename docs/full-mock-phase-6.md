@@ -138,12 +138,15 @@ missing evidence references and stale runtime/paper hashes cannot pass.
 | Live provider contracts | The exact preview branch, existing server-side configured providers, recorded speech plus difficult DI/RL/SGD/RTS and SWT/Essay/SST cases, independent content/delivery traits, failure/retry handling and teacher review of the saved native feedback |
 | Independent editorial/listening | A human independently checks all 65 instructions/keys/references, five visuals, all 36 recordings, three-speaker SGD identities, SMW cue and acoustic clarity against the immutable paper |
 
-As of 29 October 2026, read-only Railway metadata identifies production
+At the end of automated validation on 29 October 2026, read-only Railway metadata identified production
 `swt.up.railway.app` as `auspuru/pte-scoring-api` from `main`. It is not evidence
 that this draft branch's Full Mock contracts have been tested live. Provider
 variable names being present is not proof of successful provider requests. No
 production deployment, account, stored attempt, setting or credential is changed
-by this validation work. A suitably isolated preview is needed for that step.
+by that validation work. The user subsequently approved an isolated preview;
+see [the review deployment and device protocol](full-mock-preview-review.md).
+Provider smoke checks in that preview remain distinct from the full manual
+provider/teacher review described above.
 
 ## Release gate
 
