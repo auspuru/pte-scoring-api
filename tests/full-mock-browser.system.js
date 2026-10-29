@@ -142,8 +142,9 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   for (const type of ['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
   assert.equal(await page.$$eval('.ipr-overall,.ipr-skill', nodes => nodes.length), 5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length), 65);
   await page.click('[data-fm="review-type"][data-type="di"]'); await page.click('[data-kind="image"]'); await page.waitForFunction(() => document.querySelector('#fm-review-image img')?.naturalWidth > 0);
-  await page.click('[data-fm="review-type"][data-type="rs"]'); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
-  await page.click('[data-fm="review-type"][data-type="ra"]'); await page.click('[data-kind="recording"]:not([disabled])'); await page.waitForSelector('#fm-review-detail audio');
+  await page.waitForSelector('[data-mock-panel="answers"]:not([hidden])');
+  await page.select('#fm-review-select', result.items.find(item => item.type === 'rs').id); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
+  await page.select('#fm-review-select', result.items.find(item => item.type === 'ra').id); await page.click('[data-kind="recording"]:not([disabled])'); await page.waitForSelector('#fm-review-detail audio');
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Report overflows viewport');
   await f.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]'); await page.waitForSelector('.fm-report-status');
   assert.equal((await f.service.assessor.results('alice', attemptId)).ready, true); assert([...f.calls.values()].every(count => count === 1));
