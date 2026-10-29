@@ -267,11 +267,16 @@
           const previousItem = report.items.find(row => row.id === reviewId); report = next;
           doc.getElementById('fm-report-overview').innerHTML = reports.overview(report);
           doc.getElementById('fm-report-priorities').innerHTML = reports.priorities(report);
+          const summaryOpen = doc.querySelector('.fm-task-summary')?.open;
           doc.getElementById('fm-report-breakdown').innerHTML = reports.breakdown(report);
+          if (summaryOpen) doc.querySelector('.fm-task-summary').open = true;
           doc.getElementById('fm-review-navigation').innerHTML = reports.selector(report, reviewId);
           const currentItem = report.items.find(row => row.id === reviewId);
           if (JSON.stringify(previousItem) !== JSON.stringify(currentItem)) { clearReviewMedia(); doc.getElementById('fm-review-detail').innerHTML = reports.review(currentItem); }
-          doc.getElementById('fm-report-media-status').textContent = report.mediaPending + ' recording segment(s) still uploading.' + (report.mediaPending ? ' Keep this tab open until pending recordings finish uploading.' : '') + (report.recoveredEvidenceCount ? ' Recovered late evidence is retained separately for review.' : '');
+          const mediaStatus = doc.getElementById('fm-report-media-status');
+          mediaStatus.hidden = !report.mediaPending;
+          mediaStatus.textContent = report.mediaPending ? 'Saving ' + report.mediaPending + ' recording(s)… Keep this tab open.' : '';
+          doc.querySelector('[data-fm="retry"]').hidden = !report.mediaPending;
           doc.querySelector('[data-fm="assessment-retry"]').hidden = !report.retryAvailable;
         }
       } catch (error) { if (valid(ticket)) notice(error.message, true); }
