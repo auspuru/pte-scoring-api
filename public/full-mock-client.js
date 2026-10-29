@@ -475,17 +475,19 @@
     async function advance(skip = false, automatic = false) {
       if (advancing || !attempt?.current || env.PortalExamMode?.isLocked?.(OWNER)) return;
       advancing = true; const id = attempt.id, token = attempt.current.token, ticket = generation;
-      const next = doc.getElementById('fm-next'); if (next) { next.disabled = true; next.textContent = 'Saving…'; }
+      const next = doc.getElementById('fm-next'); if (next) { next.disabled = true; next.textContent = 'Moving on…'; }
       const editor = doc.getElementById('fm-question'); if (editor) editor.inert = true;
       try {
-        stopCapture(); await flush();
+        // Recording chunks already have their own durable retry queue. Do not
+        // make navigation wait for every earlier upload on a slow connection.
+        stopCapture();
         if (!valid(ticket)) return; await commitDraft(); if (!valid(ticket)) return;
         const value = await api('/attempts/' + id + '/next', { itemToken: token, skip }); accept(value);
       } catch (error) { notice(error.message, true); }
       finally {
         advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false;
         const next = doc.getElementById('fm-next'); if (next) next.textContent = (attempt?.index === 65 ? 'Submit test' : 'Next') + ' →';
-        if (valid(ticket)) tick();
+        if (valid(ticket)) { tick(); void flush(); }
       }
     }
     async function finishPreview() {

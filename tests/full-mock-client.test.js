@@ -152,6 +152,34 @@ test('Typing offline survives refresh and Next seals the newest revision even wi
   assert.deepEqual(response.answer, ['The exact final answer.']); assert(response.sealed);
 });
 
+test('Next advances while queued recording uploads are stalled, then saves every original chunk', async t => {
+  const f = await fixture(t); await f.resume();
+  await until(async () => (await f.state()).responses[0].segments.length === 1);
+  await f.step((await f.state()).current.responseAt - f.now());
+  const recording = f.recorders.find(row => row.state === 'recording'); assert(recording);
+  f.offline(true); recording.emit(600 * 1024); recording.stop();
+  await until(async () => (await f.pending.list('alice:')).some(row => row.value.kind === 'finish'));
+  await f.client.flush(); await settle();
+  let release, blocked = false;
+  f.intercept(async (route, init, send) => {
+    if (init.method === 'PUT' && !blocked) { blocked = true; await new Promise(resolve => { release = resolve; }); }
+    return send();
+  });
+  f.offline(false); const moving = f.click('[data-fm="next"]');
+  try {
+    await until(() => release);
+    await until(async () => (await f.state()).index === 1);
+    await moving;
+    assert((await f.pending.list('alice:')).some(row => row.value.kind === 'chunk'));
+    assert.equal((await f.state()).responses[0].status, 'media-pending');
+  } finally { release?.(); }
+  await moving;
+  await until(async () => { await f.client.flush(); const token = (await f.state()).responses[0].token; return (await f.pending.list('alice:')).every(row => row.value.itemToken !== token); });
+  const response = (await f.state()).responses[0];
+  assert.equal(response.segments[0].chunkCount, 4); assert(response.segments[0].finished);
+  assert.equal(response.status, 'saved');
+});
+
 test('Delayed recorder callbacks stay with the original owner and split large final blobs into bounded chunks', async t => {
   const f = await fixture(t); await f.resume(); await until(async () => (await f.state()).responses[0].segments.length === 1);
   await f.step((await f.state()).current.responseAt - f.now()); const recording = f.recorders.find(row => row.state === 'recording'); assert(recording);
