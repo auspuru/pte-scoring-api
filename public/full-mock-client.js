@@ -353,7 +353,7 @@
       } catch { if (rendering === token) { played = token; audioFailure(); } }
     }
     async function prepareSegment(token) {
-      if (preparingSegment || capture || !stream) return;
+      if (advancing || preparingSegment || capture || !stream || attempt?.status !== 'active' || attempt.current?.token !== token) return;
       preparingSegment = true;
       try {
         const used = attempt.recordingSegments?.length || segmentCounts.get(token);
@@ -362,14 +362,14 @@
         const value = { kind: 'segment', id: attempt.id, itemToken: token, segmentId: permit.id, segmentToken: permit.token, mime: selectedMime, count: 0 };
         const ownerPrefix = prefix(), ticket = generation, key = ownerPrefix + value.id + ':segment:' + value.segmentId;
         await queuePut(key, value); segmentCounts.set(token, (segmentCounts.get(token) || 0) + 1);
-        if (rendering !== token || !valid(ticket)) { await finishCapture(value, ownerPrefix); return; }
+        if (advancing || rendering !== token || !valid(ticket)) { await finishCapture(value, ownerPrefix); return; }
         capture = { ...value, key, ownerPrefix, ticket, preparedRecorder, recorder: null, persisted: [], lastSoundAt: null, stopped: false };
         flush();
       } catch (error) { notice(error.message, true); logEvent('local-storage-failure'); }
       finally { preparingSegment = false; }
     }
     function record() {
-      if (!capture || capture.recorder || capture.stopped || !stream) return;
+      if (advancing || !capture || capture.recorder || capture.stopped || !stream) return;
       const current = capture, media = current.preparedRecorder || recorder(); current.recorder = media; current.lastSoundAt = serverNow();
       media.ondataavailable = event => {
         if (!event.data.size) return;
@@ -400,9 +400,9 @@
       meter(); const level = doc.getElementById('fm-level'); if (level) level.value = readingLevel;
       if (phase !== lastPhase) { lastPhase = phase; const label = doc.getElementById('fm-record-status'); if (label) label.textContent = { instructions: 'Audio begins shortly', listening: 'Listening', preparing: 'Preparing', recording: 'Recording' }[phase] || phase; }
       if (q.audio && now >= current.promptAt && now < current.promptEndsAt && outputUrl && played !== rendering) playPrompt();
-      if (speech(q.type) && !capture && now < current.endsAt) prepareSegment(rendering);
+      if (!advancing && speech(q.type) && !capture && now < current.endsAt) prepareSegment(rendering);
       if (q.startCueMs && cued !== rendering && now >= current.responseAt - q.startCueMs && now < current.responseAt) { cued = rendering; beep(); }
-      if (speech(q.type) && phase === 'recording' && now < current.endsAt) {
+      if (!advancing && speech(q.type) && phase === 'recording' && now < current.endsAt) {
         record();
         if (capture?.recorder?.state === 'recording') {
           if (readingLevel > 0.06) capture.lastSoundAt = now;

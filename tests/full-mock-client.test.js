@@ -221,6 +221,21 @@ test('Delayed heartbeat acknowledgements cannot rewind the visible exam countdow
   assert.equal(f.document.getElementById('fm-time').textContent, before);
 });
 
+test('Ticks during an in-flight Next cannot create another recording for the sealed question', async t => {
+  const f = await fixture(t); await f.resume(); await until(async () => (await f.state()).responses[0].segments.length === 1);
+  const original = (await f.state()).responses[0]; let release, held = false;
+  f.intercept(async (route, init, send) => {
+    if (route.endsWith('/next') && !held) { held = true; const reply = await send(); await new Promise(resolve => { release = resolve; }); return reply; }
+    return send();
+  });
+  const moving = f.click('[data-fm="skip"]'); await until(() => release); await f.step(500); release(); await moving;
+  await f.step(100); await f.client.flush();
+  const declarations = f.requests.filter(row => row.route.endsWith('/segments')).map(row => JSON.parse(row.init.body)).filter(row => row.itemToken === original.token);
+  assert(declarations.length); assert(declarations.every(row => row.segmentId === original.permit.id), 'A navigation tick created an undeclared late segment');
+  assert.equal((await f.state()).index, 1);
+  assert.equal((await f.pending.list('alice:')).filter(row => row.value.itemToken === original.token).length, 0);
+});
+
 test('The portal route and lazy loader include the player with fresh immutable cache keys', async () => {
   const read = name => fs.readFile(path.join(__dirname, '..', name), 'utf8');
   const html = await read('public/index.html'), source = await read('public/index.js');

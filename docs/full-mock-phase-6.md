@@ -37,6 +37,12 @@ retry; ordinary attempt updates retain the existing revision checks.
 The PostgreSQL store also works without a filesystem directory; UUID validation
 does not construct a disk path when the selected backend is PostgreSQL.
 
+The real browser run also exposed recording preparation restarting while a
+Next/Skip request was in flight. Preparation and recording now stay stopped until
+navigation finishes. A regression test holds the server acknowledgement while
+ticks continue and rejects any new declaration for the sealed question. This
+prevents stale recording retries from exhausting the existing request limit.
+
 Both browser cases use the actual Full Mock client, report, styles, exam-mode
 controller, authenticated HTTP API, IndexedDB, MediaRecorder and PostgreSQL store.
 One uses a desktop viewport and one a 390×844 touch/mobile viewport. Chrome's
