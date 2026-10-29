@@ -41,7 +41,7 @@ async function casFile(directory, transform) {
 function createStore({ pool, directory }) {
   let ready;
   const ownerDirectory = uid => path.join(directory, hash(String(uid)));
-  function attemptDirectory(uid, id) { if (!uuid(id)) throw fail('Invalid attempt.', 400); return path.join(ownerDirectory(uid), id); }
+  function attemptDirectory(uid, id) { if (!uuid(id)) throw fail('Invalid attempt.', 400); return pool ? null : path.join(ownerDirectory(uid), id); }
   async function initialise() {
     if (!ready) ready = (async () => {
       if (!pool) { await fs.mkdir(directory, { recursive: true, mode: 0o700 }); return; }

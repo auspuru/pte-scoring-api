@@ -34,6 +34,8 @@ Startup schema creation now takes a transaction-scoped advisory lock on its
 dedicated connection. Concurrent processes cannot race their initial table/index
 creation. A failed initialisation rolls back and releases the connection before
 retry; ordinary attempt updates retain the existing revision checks.
+The PostgreSQL store also works without a filesystem directory; UUID validation
+does not construct a disk path when the selected backend is PostgreSQL.
 
 Both browser cases use the actual Full Mock client, report, styles, exam-mode
 controller, authenticated HTTP API, IndexedDB, MediaRecorder and PostgreSQL store.

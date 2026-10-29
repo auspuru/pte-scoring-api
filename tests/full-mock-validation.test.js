@@ -73,6 +73,14 @@ test('System tests refuse production and nonlocal database connections without p
   }
   assert(testDatabaseUrl('postgresql://full_mock_test:test@127.0.0.1:5432/full_mock_test'));
 });
+test('PostgreSQL-only stores need no filesystem path and a failed bootstrap rolls back before retry', async () => {
+  let failing = true, released = 0; const statements = [];
+  const client = { query:async sql => { statements.push(sql); if (sql.startsWith('CREATE TABLE') && failing) { failing = false; throw Error('Synthetic bootstrap failure'); } return { rows:[] }; }, release:() => { released++; } };
+  const store = require('../full-mock/store').createStore({ pool:{ connect:async () => client, query:async () => ({ rows:[] }) } });
+  await assert.rejects(store.initialise(), /Synthetic bootstrap failure/); assert.equal(released, 1); assert(statements.includes('ROLLBACK'));
+  assert.equal(await store.get('alice', randomUUID()), null); assert.equal(released, 2); assert(statements.includes('COMMIT'));
+  await assert.rejects(store.get('alice', 'bad-id'), { status:400 });
+});
 test('Failed system verification replaces stale passed evidence and cannot publish new success', t => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'full-mock-evidence-')); t.after(() => fs.rmSync(directory, { recursive:true, force:true }));
   const file = path.join(directory, 'evidence.json'); fs.writeFileSync(file, JSON.stringify(evidence())); let calls = 0;

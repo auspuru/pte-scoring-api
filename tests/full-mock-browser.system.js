@@ -81,7 +81,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     if (adapters.SPOKEN.has(q.type)) {
       if (q.id === 'fm1-ra-01' || q.id === 'fm1-rs-01') {
         if (q.type === 'rs') { f.advanceTo(saved.current.promptAt + 100); await page.waitForFunction(() => /Playing/.test(document.getElementById('fm-audio-status')?.textContent)); await page.waitForFunction(() => /Audio completed/.test(document.getElementById('fm-audio-status')?.textContent)); }
-        else f.advanceTo(saved.current.responseAt - 220);
+        else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');
         await until(async () => (await f.state()).responses[i + 1].segments.some(segment => Object.values(segment.chunks).some(chunk => chunk.stored)), 'Native MediaRecorder did not upload audio.');
         await page.click('[data-fm="next"]');
